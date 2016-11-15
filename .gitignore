@@ -3,8 +3,13 @@ pfm/msvc/msvc-2013/ipch
 pfm/msvc/msvc-2013/appplex.opensdf
 pfm/msvc/msvc-2013/appplex.sdf
 pfm/msvc/msvc-2013/appplex.v12.suo
-src/units/private
 pfm/msvc/appplex.exe
 pfm/msvc/appplex.exp
 pfm/msvc/appplex.lib
 pfm/msvc/appplex.ilk
+res/barnes-hut
+res/metrolife
+res/reliquus
+res/test-digital-krikits
+res/vorofract
+src/units/private
