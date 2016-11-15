@@ -5,7 +5,7 @@ default
 [
 	uses[ boost, gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit[ cmd ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
@@ -18,7 +18,7 @@ units
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
 	test-gl[ uses[ gfx ], platf[ all ], ],
-	gl-frag-shader-demo[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
+	gl-frag-shader-demo[ uses[ boost, gfx, snd, stk ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	test-shadow-map[ ],
 	test-kube-sphere[ ],

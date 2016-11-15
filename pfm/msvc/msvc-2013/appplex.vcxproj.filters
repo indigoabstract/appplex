@@ -114,6 +114,7 @@
     </Filter>
     <Filter Include="units\private">
       <UniqueIdentifier>{302c1596-401d-4ccb-b636-7656f9a6ac51}</UniqueIdentifier>
+      <ParseFiles>true</ParseFiles>
     </Filter>
     <Filter Include="units\private\break-reminder">
       <UniqueIdentifier>{c030c7cd-9bef-40f8-bef8-3fc6d04df41e}</UniqueIdentifier>
@@ -414,93 +415,6 @@
     <ClInclude Include="..\..\..\src\ext\tlib\sbmd\sbmd.hpp">
       <Filter>ext\tlib\sbmd</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\break-reminder\unique-random.hpp">
-      <Filter>units\private\break-reminder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.hpp">
-      <Filter>units\private\break-reminder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\unit-vorofract.hpp">
-      <Filter>units\private\vorofract</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.hpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi-visual-utils.hpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\faction.hpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.hpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.hpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\barnes-hut.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-node.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\star-palette.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.hpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\allocator.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\idef.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\port.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\process.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\vm.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\xlink.hpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\reliquus\kubic-space.hpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\reliquus\rnfx-unit.hpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\reliquus\unit-reliquus.hpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.hpp">
-      <Filter>units\private\orbital-deathmatch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.hpp">
-      <Filter>units\private\shipwrecked</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\musix\unit-musix.hpp">
-      <Filter>units\private\musix</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.hpp">
-      <Filter>units\private\test-digital-krikits</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp">
-      <Filter>units\private\metrolife</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\units\public\abstract-racing\spline.hpp">
       <Filter>units\public\abstract-racing</Filter>
     </ClInclude>
@@ -656,6 +570,93 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\units\public\texxed\unit-texxed.hpp">
       <Filter>units\public\texxed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unique-random.hpp">
+      <Filter>units\private\break-reminder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.hpp">
+      <Filter>units\private\break-reminder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\unit-vorofract.hpp">
+      <Filter>units\private\vorofract</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi-visual-utils.hpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.hpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\faction.hpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.hpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.hpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\barnes-hut.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-node.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\star-palette.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.hpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\allocator.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\idef.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\port.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\process.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\vm.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\xlink.hpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\kubic-space.hpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\rnfx-unit.hpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\unit-reliquus.hpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.hpp">
+      <Filter>units\private\orbital-deathmatch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.hpp">
+      <Filter>units\private\shipwrecked</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\musix\unit-musix.hpp">
+      <Filter>units\private\musix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.hpp">
+      <Filter>units\private\test-digital-krikits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp">
+      <Filter>units\private\metrolife</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -944,90 +945,6 @@
     <ClCompile Include="..\..\..\src\ext\tlib\sbmd\sbmd.cpp">
       <Filter>ext\tlib\sbmd</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\break-reminder\unique-random.cpp">
-      <Filter>units\private\break-reminder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.cpp">
-      <Filter>units\private\break-reminder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract.cpp">
-      <Filter>units\private\vorofract</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract-ux.cpp">
-      <Filter>units\private\vorofract</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.cpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\faction.cpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.cpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.cpp">
-      <Filter>units\private\vorofract\algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\barnes-hut.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\star-palette.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut-ux.cpp">
-      <Filter>units\private\barnes-hut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\allocator.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\port.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\process.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\vm.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\xlink.cpp">
-      <Filter>units\private\kappaxx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\reliquus\kubic-space.cpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\reliquus\rnfx-unit.cpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\reliquus\unit-reliquus.cpp">
-      <Filter>units\private\reliquus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.cpp">
-      <Filter>units\private\orbital-deathmatch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.cpp">
-      <Filter>units\private\shipwrecked</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\musix\unit-musix.cpp">
-      <Filter>units\private\musix</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.cpp">
-      <Filter>units\private\test-digital-krikits</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp">
-      <Filter>units\private\metrolife</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\units\public\abstract-racing\spline.cpp">
       <Filter>units\public\abstract-racing</Filter>
     </ClCompile>
@@ -1195,6 +1112,90 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\units\public\texxed\unit-texxed.cpp">
       <Filter>units\public\texxed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unique-random.cpp">
+      <Filter>units\private\break-reminder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.cpp">
+      <Filter>units\private\break-reminder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract-ux.cpp">
+      <Filter>units\private\vorofract</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract.cpp">
+      <Filter>units\private\vorofract</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.cpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\faction.cpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.cpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.cpp">
+      <Filter>units\private\vorofract\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\barnes-hut.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\star-palette.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut-ux.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.cpp">
+      <Filter>units\private\barnes-hut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\allocator.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\port.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\process.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\vm.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\xlink.cpp">
+      <Filter>units\private\kappaxx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\kubic-space.cpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\rnfx-unit.cpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\unit-reliquus.cpp">
+      <Filter>units\private\reliquus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.cpp">
+      <Filter>units\private\orbital-deathmatch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.cpp">
+      <Filter>units\private\shipwrecked</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\musix\unit-musix.cpp">
+      <Filter>units\private\musix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.cpp">
+      <Filter>units\private\test-digital-krikits</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp">
+      <Filter>units\private\metrolife</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,14 +3,14 @@
 
 #include "appplex-conf.hpp"
 #include "unit.hpp"
-#include "public\cmd\unit-cmd.hpp"
+#include "public\gl-frag-shader-demo\unit-gl-frag-shader-demo.hpp"
 
 void app_units_setup::create_units(shared_ptr<unit_list> ul0)
 {
 	ul = ul0;
 
-#ifdef UNIT_CMD
-	add_unit(unit_cmd::new_instance(), true);
+#ifdef UNIT_GL_FRAG_SHADER_DEMO
+	add_unit(unit_gl_frag_shader_demo::new_instance(), true);
 #endif
 
 }

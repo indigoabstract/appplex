@@ -4,17 +4,17 @@
 
 
 // #define UNIT_COMMENT
-
-#if defined PLATFORM_WINDOWS_PC
-	#define UNIT_CMD
-#endif
-
+// #define UNIT_CMD
 // #define UNIT_TEMPLATE
 // #define UNIT_TEST_FFMPEG
 // #define UNIT_TEST_VPLAYER_ANDROID
 // #define UNIT_TEST_VPLAYER_IOS
 // #define UNIT_TEST_GL
-// #define UNIT_GL_FRAG_SHADER_DEMO
+
+#if defined PLATFORM_WINDOWS_PC || defined PLATFORM_ANDROID
+	#define UNIT_GL_FRAG_SHADER_DEMO
+#endif
+
 // #define UNIT_MX_LISP
 // #define UNIT_TEST_SHADOW_MAP
 // #define UNIT_TEST_KUBE_SPHERE
@@ -52,8 +52,9 @@
 
 
 #define MOD_BOOST
-#define MOD_SBMD
-#define MOD_KAPPAXX_BUG
+#define MOD_SND
+#define MOD_GFX
+#define MOD_STK
 
 #define SINGLE_UNIT_BUILD
 

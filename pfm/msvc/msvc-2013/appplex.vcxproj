@@ -67,35 +67,93 @@
     <ClInclude Include="..\..\..\src\min\stdafx.h" />
     <ClInclude Include="..\..\..\src\min\unit\unit-ctrl.hpp" />
     <ClInclude Include="..\..\..\src\min\unit\unit.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\barnes-hut.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-node.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\star-palette.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\break-reminder\unique-random.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\allocator.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\idef.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\port.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\process.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\vm.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\kappaxx\xlink.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\musix\unit-musix.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\reliquus\kubic-space.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\reliquus\rnfx-unit.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\reliquus\unit-reliquus.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi-visual-utils.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\faction.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.hpp" />
-    <ClInclude Include="..\..\..\src\units\private\vorofract\unit-vorofract.hpp" />
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\barnes-hut.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\star-palette.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unique-random.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\allocator.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\idef.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\port.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\process.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\vm.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\xlink.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\musix\unit-musix.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\kubic-space.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\rnfx-unit.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\unit-reliquus.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi-visual-utils.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\faction.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\unit-vorofract.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\units\public\abstract-racing\spline.hpp" />
     <ClInclude Include="..\..\..\src\units\public\abstract-racing\track.hpp" />
     <ClInclude Include="..\..\..\src\units\public\abstract-racing\unit-abstract-racing.hpp" />
@@ -247,34 +305,90 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\min\unit\unit-ctrl.cpp" />
     <ClCompile Include="..\..\..\src\min\unit\unit.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\barnes-hut.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\star-palette.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut-ux.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\break-reminder\unique-random.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\allocator.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\port.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\process.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\vm.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\kappaxx\xlink.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\musix\unit-musix.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\reliquus\kubic-space.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\reliquus\rnfx-unit.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\reliquus\unit-reliquus.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\faction.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract-ux.cpp" />
-    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract.cpp" />
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\barnes-hut.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\star-palette.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut-ux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unique-random.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\allocator.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\port.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\process.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\vm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\xlink.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\musix\unit-musix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\kubic-space.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\rnfx-unit.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\unit-reliquus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\faction.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract-ux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\units\public\abstract-racing\spline.cpp" />
     <ClCompile Include="..\..\..\src\units\public\abstract-racing\track.cpp" />
     <ClCompile Include="..\..\..\src\units\public\abstract-racing\unit-abstract-racing.cpp" />
@@ -378,6 +492,7 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
