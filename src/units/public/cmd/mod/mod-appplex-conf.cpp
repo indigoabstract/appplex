@@ -496,7 +496,7 @@ namespace appplex_conf_ns
 
 					for (auto& k : *unit_entry_map_android)
 					{
-						std::string unit_path = k.second->unit_hpp_path.string();
+						std::string unit_path = k.second->unit_path.string();
 						unit_list += indent + "'../../../src/units/" + unit_path + "',\n";
 					}
 
