@@ -1,0 +1,485 @@
+@@kappaxx,
+
+@@[when creating a new object, first allocate a pointer (4 bytes), which will then hold the address to the actual object. the object will also hold a reference to the pointer. then it's possible to move/reallocate the object in memory and only update the initial pointer's referenced address],
+@@[when it's ready, it will flow],
+@@[after the wait will come the flow],
+
+copy <- [ todir <- "newdir", fileset <- dir <- "srcdir"],
+abc -> print,
+[abc -> print, def -> print],
+"text xxx1 xxx2" -> print,
+	xyx		 [symbol1] -> print,
+print <- [kappaxx,]
+[k, a, p, p, a, x, x,] -> print
+bloxx [1, 2, 3] -> print,
+[k, a, p, p, a, x, x,] -> count -> print[],
+
+@@[ sample programs. regarding valid comments, there is only one rule: mst-mtb. make sure to 'match the brackets' ],
+@@[
+	@@[ hello world! ]
+	[
+		"hello world!" -> print,
+		print <- "hello world!",
+	],
+	@@[ controlled loop ]
+	[
+		[ in[2], stop[5] ] ->
+		[ in < stop -> ?[ true -> in + 1 -> in ]]
+		->
+		[ in[7], stop[16] ] ->
+		[
+			in < stop -> ?[ true -> in + 1 -> in ],
+			in < stop -> ?[ true -> in + 1 -> in ],
+		],
+	],
+	@@[ simple loop ]
+	[
+		main-loop
+		[
+			@on-start[ 2 -> in, 5 -> in.stop ],
+			in < in.stop -> ?[ true -> [ in -> print -> in + 1 -> in ], ],
+		],
+		@@c++
+		[
+			for(int k = 2; k < 5; k++)
+			{
+				printf("%d", k);
+			}
+		],
+	],
+	@@[ loop example ]
+	[
+		main-loop
+		[
+			@on-start[ in.idx <- 3, in.last <- 9],
+			in <= in.last -> ?
+			[
+				true ->
+				[
+					in.idx + 1 -> in.idx ->
+					"x = " + in.idx -> print ->
+					in.idx * in.idx -> sq ->
+					" x^2 = " + sq + " x * (x - 1) = " + (sq - in.idx) -> print
+				],
+			],
+		],
+		@@c++
+		[
+			int idx = 3, last = 9;
+
+			for (; idx <= last; idx++)
+			{
+				cout << "x = " << idx;
+				int sq = idx * idx;
+				cout << " x^2 = " << sq << " x * (x - 1) = " << (sq - idx);
+			}
+		],
+	],
+	@@[ loop example-3 ]
+	[
+		[ in[2], stop[5] ] ->
+		[ in < stop -> ?[ true -> in + 1 -> in ]]
+		->
+		[ in[7], stop[16] ] ->
+		[
+			in < stop -> ?[ true -> in + 1 -> in ],
+			in < stop -> ?[ true -> in + 1 -> in ],
+		],
+	],
+	@@[ conditionals ]
+	[
+		a >= b -> ? [ true -> "a >= b" -> print, a = b -> "a = b" -> print, false -> "a < b" -> print, ],
+		5 ->
+		[
+			(.in > 2 & .in < 19) | .in = 5 -> ?[ true -> print <- "between 2 and 19 or 5" ],
+			.in > 3 & .in < 6 -> ?[ true -> "between 3 and 6" -> print ],
+			.in > 99 -> ?[ true -> print[ "greater than 99" ] ],
+		],
+		5 > 10 -> ?
+		[
+			true -> print[ "in is true" ],
+			false -> print[ "in is false" ] -> 10 = 10 -> ?
+			[
+				true -> print[ "in is true, nested" ],
+				false -> print[ "in is false, nested" ],
+			],
+			?[ print["default condition"] ],
+		],
+		"text" -> ??
+		[
+			@@[ ?? evaluates all cases ],
+			"te" + "xt" -> print[ "case 1" ],
+			"text" -> print[ "case 2" ],
+			"t" + "ex" + "t" -> print[ "case 3" ],
+		],
+	],
+	@@[ pack in.val and the time it is received as a sequence and export it ],
+	[
+		main-line
+		[
+			[ in.val -> time-ms -> .ex ] -> [ in.val, .in @@[ the time received at the import ] ] -> ex,
+		] -> print,
+	],	
+	@@[ react to (input) events ]
+	[
+		input-router
+		[
+			@@[ import data from the system input and forward it to the 'input' channel in 'main-line' ]
+			io.input -> main-line.input,
+		],
+		
+		main-line
+		[
+			@@[ make io.input and input-router unavailable in this block and its subblocks ],
+			@available[ -io.input, -input-router, +io.print ]
+		],
+	],	
+	@@[ synchronise on 3 lines / chains, where each will take a variable time to produce an output, export the maximum of their output, and print it ]
+	[
+		infinite-loop ->
+		[
+			5 -> main
+			[
+				:chain[ in + rand -> wait-loop -> ex ],
+				in -> chain[@n[l1]],
+				in -> [@n[l2] in + rand -> wait-loop -> ex ],
+				in -> chain#l3,
+				in -> xxx[@n[l2] in + rand -> wait-loop -> ex ],
+				[ chain#l1, #l2, chain#l3, xxx#l2 ] -> max -> ex,
+				in.no-data-channel -> ex, @@[ should this make it wait forever? ],
+			] -> print,
+		
+			wait-loop
+			[
+				in -> timer-ms -> in -> ex,
+			],
+		]
+	],
+	@@[ simple packet counter ]
+	[
+		range[ 5 - 25 ] -> count[@n[count1]] -> print, count#count1.count -> [ "total" + .in -> print ],
+		count[ @on-start[ 0 -> in.count], in.count + 1 -> in.count, in -> ex, @on-end[ in.count -> ex.count] ],
+	],
+	@@[ sum and average ],
+	[
+		range[ 10 - 50 ] -> [ .in -> average -> .ex, .in -> sum -> .ex ] -> print,
+		average[ @on-start[ 0 -> in.avg, 1 -> in.count ],
+		(in + in.avg) / in.count -> in.avg -> [ in.count + 1 -> in.count],
+		@on-end[ in.avg -> ex ] ],
+		sum[ @on-start[ 0 -> in.sum ], in + in.sum -> in.sum @on-end[ in.sum -> ex ] ],
+	],	
+	@@[ factorial ]
+	[
+		5 -> factorial -> print,		
+		factorial
+		[
+			@on-start[ in -> in.fact, in.stack <- 1, 0 -> in.keep-alive-data ],
+			in.fact > 1 ?
+			[
+				true ->
+				[
+					in.stack * in.fact -> in.stack -> [ in.fact - 1 -> in.fact ],
+					in.keep-alive-data -> in.keep-alive-data, @@[ any input data must be resent to be kept alive ]
+				],
+				false ->
+				[
+					in.stack -> ex,
+				]
+			],			
+		],
+	],
+	@@[ factorial recursive ]
+	[
+		5 -> fact
+		[
+			in = 1 -> ?
+			[
+				true -> 1 -> ex,
+				false -> in - 1 -> fact -> [ .in * in ] -> ex,
+			]
+		],
+		5 -> fact2
+		[
+			in <= 1 -> ?
+			[
+				true -> 1 -> ex,
+				false -> (in - 1) -> fact2 * in -> ex,
+			],			
+		],
+		@@c++
+		[
+			int factorial(int i)
+			{
+				if(i == 1){return 1;}
+				return i * factorial(i - 1);
+			}
+		],
+	],
+	@@[ factorial tail recursive ]
+	[
+		@@c++
+		[
+			int factorial_tail(int i, int isum)
+			{
+				if(i == 1){return isum;}
+				return factorial_tail(i - 1, isum * i);
+			}			
+			int factorial(int i)
+			{
+				if(i == 0){return 1;}
+				return  factorial_tail(i, 1);
+			}
+		],
+	],
+	@@[ sum of numbers up to a given number. recursive ]
+	[
+		@@c++
+		[
+			int sum(int i)
+			{ 
+				if(i == 0){return 0;}
+				return sum(i - 1) + i;
+			}
+			int sum(int i, int itotal = 0)
+			{ 
+				if(i <= 0){return itotal;}
+				sum(i - 1, i + itotal);
+			}
+		],
+	],
+	@@[ fibonacci sequence generator ]
+	[
+		@on-start[ in.f0 <- 0, in.f1 <- 1, 0 -> in.counter, in.times <- 10 ],
+		in.f0 + in.f1 -> in.f ->
+		[
+			in.counter >= in.times ?
+			[
+				true -> [ in.f -> ex ], false -> [ in.f1 -> in.f0 -> [ in.f -> in.f1 ], in.counter + 1 -> in.counter ]
+			]
+		],
+		@@c++
+		[
+			fibonacci(int n)
+			{
+				if(n == 0){return 0;}
+				if(n == 1){return 1;}
+				return fibonacci(n - 2) + fibonacci(n - 1);
+			}
+		],
+	],
+	@@[ draw a scaled circle ],
+	[
+		main-line
+		[
+			@on-start[ 1.0 -> in.scale, 0.2 -> in.step, draw-circle -> ex.draw ]
+			check[ @s .in -> in <= 1 || in >= 10 -> ?[ true[ @s in.step <- -in.step ] ] ],
+			in.scale + in.step -> [ .in -> ex.scale, .in -> in.scale, [50, 100] -> ex.position ] -> check,
+			@@[ <-> [ @n[check] in.scale -> ?[ in <= 1 || in >= 10 -> [ in.step <- -in.step ] ] ] ]
+		] -> draw-circle
+		
+		:draw-circle
+		[
+			[ in.scale -> ex.scale, in.position -> ex.position ] -> draw-circle-impl
+		],
+		
+		@@c++
+		[
+			void draw_cicle_impl(float scale, point_2d position);
+			
+			void draw_cicle(float scale, point_2d position)
+			{
+				draw_circle_impl(scale, position);
+			}
+			
+			void main_loop()
+			{
+				float scale = 1.0f;
+				float step = 0.2f;
+				
+				for(;;)
+				{
+					scale += step;
+					
+					if(scale <= 1.f || scale >= 10)
+					{
+						step = -step;
+					}
+					
+					draw_circle(scale, point_2d(50, 100));
+				}
+			}
+		],
+	],
+	@@[ greatest common divisor-1 ],
+	[
+		@@c++
+		[
+			int gcd(int ix, int iy)
+			{
+				int rem = 0;
+				while(iy != 0)
+				{
+					rem = ix % iy; ix = iy; iy = rem;
+				}
+				return ix;
+			}
+		],
+	],
+	@@[ greatest common divisor-2 ],
+	[
+		@@c++
+		[
+			int gcd(int ix, int iy)
+			{
+				while(true)
+				{
+					ix = ix % iy; if(ix == 0){return iy;} iy = iy % ix;	if(iy == 0){return ix;}
+				}
+			}
+		],
+	],
+	@@ [ ping-pong between processes ]
+	[
+		@@[ a process receives a signal, the 'ball', from another process
+			now it must pass it on to the next process, which must be different from the sending process and from itself
+			so it has to find another process which is closeby
+			for this, it will send a request to a known process which knows the locations of all the processes in the program
+			it will request 3 processes nearest to itself. after this data arrives, it will select a process randomly,
+			from the list, and it will send the 'ball' to it.
+			after the 'ball' arrives, the receiving process will follow the same steps.
+		]
+	],
+	@@[ what is the behaviour in case of errors? ]
+	[
+		ex1[ 3 -> chain1[ in / 0 -> ex ], 0 -> chain2[ 5 / in -> ex ], ],
+		ex2[ "hello world1!" -> print <- "hello world2!", ],
+	],
+],
+
+@@cmp
+[
+	.mx[a, b, c, d] -> combine-all,
+	split-all -> .dmx[a, b, c, d],
+	list [k, a, p, p, a, x, "x",] -> print, @@evaluated,
+	"list [k, a, p, p, a, x, "x",]" -> print, @@[not-evaluated, printed verbatim],
+	@@list [k, a, p, p, a, x, "x",] -> print, @@[not-evaluated, printed verbatim],
+	[ k, [ ex <- [ @on-start[ 10 -> in.counter ], in.counter ->> [ in + 1 -> ex ] -> in.counter] ] -> print[inf], p, p, a, x, print[xxx], x, ] -> print,
+	[[[] -> in] -> ex] -> print[inf]
+],
+
+@@loops/generators-generate-data
+[
+	@@loop-example, [1, 2, 3] -> [1, 2, 3] -> print, @@[should print 3 times [1, 2, 3]],
+	interval-set[10 - 20, 14, 15, 50 - 20] -> print,
+	[[10, 20]] -> range[in[0] - in[1]] -> print,
+	prime-seq[133] -> print @@[print prime number sequence],
+	odd-numbers-seq[100 - 200] -> print,
+	@@odd-numbers-seq[[i <- startidx <- in[0], stopidx <- in[1],] -> [*] -> if[i < in[1]][if[i%1=0]i -> ex, i++]]
+	@@odd-numbers-seq[]
+	infinite-loop[[[] -> in] -> ex] @@[creates a basic infinite loop],
+	infinite-loop2[[] -> .dmx[in, ex]] @@[creates a basic infinite loop],
+	@@odd-numbers-seq2[.mx[i <- startidx <- in[0], stopidx <- in[1],] -> infinite-loop -> if[i < in[1]][if[i%1=0]i -> ex, i++]]
+],
+
+@@filters/enumerators
+[
+	@@[operate on existing sequences, but do not generate new ones],
+	[a, b[c, d[e, f]], h] -> print @@[should print a, b[], h],
+	[k, a, ls[p1, [p2, p3, ls2[p4, p5, p6, ls, ls2], ], ], a, x, x,] -> print @@[should print k, a, ls[], a, x, x]
+	recursive-seq[a, b[c, d[e, f]], h] -> print @@[should print a, c, e, f, h]
+	odd-pos-seq[a, b[c, d[e, f]], h] -> print @@[elems in odd positions. should print a, h]
+	[infinite-loop] -> recursive-seq -> print @@[should print the internals of infinite-loop, [[] -> ex] -> [] -> in]
+	for[counter = 10; counter < 331; counter += 3]
+],
+
+@@evaluate
+[
+	@@[no idea how to do it...],
+	
+	@@here-s-one-idea
+	[
+		[in.eval -> process-xxx],
+		'process-xxx' is suspended, waiting for data on the in.eval channel
+		to make the process run, simply send anything at in.eval, and it will start
+	],
+],
+
+@@conditionals
+[
+	[v1, v2] -> ?[r1 -> [x], r2 -> [y], ? -> [default-z]]
+	[@mt [name[meta111]]->a, b, c[]7] -> ?[a -> print[o1], c -> print[c], x -> print[x]] -> print[odefault],
+	[x, y, z] -> .match[[b, c, x] -> []] -> print[def],
+	@@[not ready yet], [@[name[xxx#42]], 10, 20] -> ?[in > 15 && in < 19 -> print[aaa]],
+	[v1, v2] -> eval[cond1] -> ?[true[exp], false[eval[cond2] -> [true[exp], false[...]]], ?[@default, signal-error]]
+],
+
+@@break
+[
+	infinite-loop -> [if(i = 3){[] -> infinite-loop.pause}] @@pause-signal,
+	infinite-loop -> [if(i > 5){[] -> infinite-loop.stop}] @@stop-signal,
+],
+
+@@mx-multiplexers
+[
+	.mx[a, b, c, d] -> combine-all,
+],
+
+@@dmx-demultiplexers
+[
+	split-all -> .dmx[a, b, c, d],
+],
+
+@declaring-data
+[
+	button[posx, posy],
+	list[name, unit],
+	[button[33, 44], list[abc, unit-xxx]],
+],
+
+@@embeded-languages
+[
+	.java
+	[
+		class xxx
+		{
+			public void main(String[] args)
+			{
+				int x = Math.pow(2, 3);
+				System.out.println("pow(x, y) : " + x);
+			}
+		}
+	],
+],
+
+@@domain-specific-languages
+[
+	math[integral(3 * x ^ 2) | x [0, 20]],
+],
+
+@@misc
+[
+	print <- xxx.ref-count
+	print <- xxx.dim
+	print <- xxx[0]
+	print -> [text -> in @@[should print 'text' at the console]]
+],
+
+@@old
+[
+	@@dw1[ dw2[ dws[ url4[ img[ src['*_*.jpg8'] [xxx] ] ] ] url5[ a [ href ['*kami_*_*.php'] ] ] ] url9[xxx2-url1+zz] ],
+	[[k ,a,p, p , a,x , x] print[abc]],
+	[k , a , p , p , a , x , x, 133, ] print,
+	a, ->, b,
+	b ->c, d<-e,
+	'name with space 1' -> "name with space 2",
+	[kappaxx] -> print[xxk],
+	[1, 2, 3, what-is-this, 4] -> [average, min, max,] -> print,
+
+	@@	comments-section,
+	@@[comment typ3 1, usual block comment]
+	@@comment-typ3-2, [@@[if you put a comma instead of a block, you get a short comment. this block's parent is active] x, a -> n],
+	@@ comment-typ3-3 [*comment typ3 3* [mixes both [comment types]] [and [multiple[blocks]]]],
+	@@	another-comment	[!321$%^^&*()_^%&vlsdvolgkskdom lf,g - fd,gl ,ddsjehnnbsdv===++fghxc]
+
+	msg -> site.com:8080,
+]

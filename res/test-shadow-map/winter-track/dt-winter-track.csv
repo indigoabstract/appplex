@@ -1,0 +1,8 @@
+EnvironmentMesh,TagTrackTerrain,-23.5593,-1.36993,-39.7325,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_o"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""grid_alpha""}}",J251_WF_Grid
+EnvironmentMesh,,-17.1068,47.6009,-25.0706,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_t"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""WR_1_Fence_alpha""}}",J251_WF_fence
+EnvironmentMesh,,27.9879,10.9334,-23.3728,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_o"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""wr1_stuff01""}}",J251_WF_adssigns
+EnvironmentMesh,,-25.4093,-3.19614,-35.3901,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_o"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""terrain_WR_1""}}",J251_WF_terrain
+EnvironmentMesh,,-23.968,-7.51691,-19.171,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_o"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""terrain_WR_1""}}",J251_WF_relief
+EnvironmentMesh,,33.1036,15.3175,-21.1601,1.0,0.0,0.0,0.0,1.0,1.0,1.0,"{{ShaderName=""sp_l_d_t"",u_UseAlpha = 0.0,u_DissableFaceCulling = 0.0,u_DiffuseTexture = ""WR_1_tree""}}",J251_WF_trees
+CollisionMesh,TagCollisionGround,-25.4093,-3.19614,-35.3759,1.0,0.0,0.0,0.0,1.0,1.0,1.0,J251_WF_CollisionMesh
+EnvironmentMesh,TagDTFrictionMap,-23.5593,-1.36993,-26.2295,1.0,0.0,0.0,0.0,1.0,1.0,0.00196851,"{{AmbientColor = Color(0.588, 0.588, 0.588, 1.0),DiffuseColor = Color(0.588, 0.588, 0.588, 1.0),SpecularColor = Color(0.9, 0.9, 0.9, 1.0),Shininess = 10.0,DiffuseTexture = ""frictionmap""}}",J251_WF_Grid001

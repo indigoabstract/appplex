@@ -1,0 +1,84 @@
+@@[ square bracket markup document ],
+@@[ or square bracket meta-data ],
+
+default
+[
+	uses[ boost, gfx ], enabled[ true ], platf[ all ],
+	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
+	start[ unit[ cmd ], exclusive [ true ], launch-unit [ true ], ],
+],
+
+units
+[
+	@@[ public units ],
+
+	cmd[ uses[ boost, sbmd, kappaxx_bug ], platf[ windows ], ],
+	template[ enabled[ false ], ],
+	test-ffmpeg[ uses[ gfx, ffmpeg ], enabled[ true ], ],
+	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
+	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
+	test-gl[ uses[ gfx ], platf[ all ], ],
+	gl-frag-shader-demo[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
+	mx-lisp[ uses[ boost ], platf[ windows ], ],
+	test-shadow-map[ ],
+	test-kube-sphere[ ],
+	test-grid[ ],
+	test-reflections[ ],
+	test-dyn-geometry[ ],
+	test-freetype-gl[ ],
+	test-normal-mapping[ ],
+	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
+	kinetic-scrolling[ ],
+	abstract-racing[ ],
+	test-fmod[ uses[ boost, gfx, fmod ], ],
+	ux-test[ ],
+	texxed[ ],
+	exercise[ ],
+	gen-texture[ ],
+	test[ ],
+	test-freeimage[ uses[ boost, gfx, freeimage ], enabled[ false ], ],
+	test-openvg[ uses[ boost, gfx, openvg ], enabled[ false ], ],
+	test-stk[ uses[ boost, gfx, fmod, stk ], platf[ windows ], ],
+	test-audioengine[ uses[ boost, gfx, snd ], platf[ windows, android, ios ], ],
+	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
+	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
+
+	@@[ private units ],
+
+	barnes-hut[ ],
+	kappaxx[ platf[ windows ], ],
+	reliquus[ ],
+	orbital-deathmatch[ ],
+	shipwrecked[ ],
+	vorofract[ uses[ boost, gfx ] ],
+	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
+	break-reminder[ uses[ boost, gfx, snd, stk, notifications ], platf[ windows, android ], ],
+	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
+	metrolife[ uses[ boost, gfx, ffmpeg, unit-texxed ], platf[ windows, android ], ],
+],
+
+paths
+[
+	@@[ only relative paths (as text) ],
+	proj-rel-res-path[ 'res' ],
+	proj-rel-units-path[ "src/units" ],
+	proj-rel-appplex-conf-path[ "src/min" ],
+	appplex-conf-hpp-name[ "appplex-conf.hpp" ],
+	appplex-conf-cpp-name[ "appplex-conf.cpp" ],
+
+	platform-android
+	[
+		root-path[ 'pfm/android' ],
+		app-gradle-path[ 'app/build.gradle' ],
+		app-gradle-rel-units-path[ '../../../src/units' ],
+		asset-path[ 'app/src/main/assets' ],
+	],
+	platform-ios
+	[
+		root-path[ 'pfm/ios' ],
+	],
+	platform-windows-pc
+	[
+		root-path[ 'pfm/msvc' ],
+	],
+],
