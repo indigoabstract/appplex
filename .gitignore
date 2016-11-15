@@ -12,6 +12,10 @@ pfm/msvc/msvc-2013/ipch
 pfm/msvc/msvc-2013/appplex.opensdf
 pfm/msvc/msvc-2013/appplex.sdf
 pfm/msvc/msvc-2013/appplex.v12.suo
+pfm/msvc/msvc-2015/.vs
+pfm/msvc/msvc-2015/debug
+pfm/msvc/msvc-2015/ipch
+pfm/msvc/msvc-2015/appplex.sdf
 pfm/msvc/appplex.exe
 pfm/msvc/appplex.exp
 pfm/msvc/appplex.lib
