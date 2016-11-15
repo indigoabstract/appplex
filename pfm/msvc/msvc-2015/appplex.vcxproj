@@ -1,0 +1,583 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src-lib\boost\date_time\gregorian\greg_names.hpp" />
+    <ClInclude Include="..\..\..\src-lib\boost\filesystem\windows_file_codecvt.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\unit\input-ctrl.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\unit\transitions.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\unit\update-ctrl.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\util\unicode\boost-filesystem-util.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\util\unicode\boost-program-options-util.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\util\unicode\conversions-util.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\util\util.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\font-db.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\text-vxo.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\ux-camera.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\ux-com.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\ux-ext.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\ux-font.hpp" />
+    <ClInclude Include="..\..\..\src\ext\com\ux\ux.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-param-surface.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-surface.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-camera.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-color.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-material.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-obj.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-quad-2d.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-rt.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-scene.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-shader.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-state-const.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-state.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-tex.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-util.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-vxo.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\gfx.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\ovg\ovg-const.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\ovg\ovg-obj.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\res-ld\res-ld.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\snd\snd.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\noise\palette.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\noise\perlinnoise.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\noise\perlinsettings.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\rng\rng.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\sbmd\kx-elem.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\sbmd\kx-krte.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\sbmd\kx-parser.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\sbmd\sbmd.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\tiny-obj-loader\tiny_obj_loader.hpp" />
+    <ClInclude Include="..\..\..\src\ext\tlib\utils\free-camera.hpp" />
+    <ClInclude Include="..\..\..\src\min\appplex-conf.hpp" />
+    <ClInclude Include="..\..\..\src\min\cpp-property.hpp" />
+    <ClInclude Include="..\..\..\src\min\data-sequence.hpp" />
+    <ClInclude Include="..\..\..\src\min\min.hpp" />
+    <ClInclude Include="..\..\..\src\min\pfm-def.h" />
+    <ClInclude Include="..\..\..\src\min\pfm.hpp" />
+    <ClInclude Include="..\..\..\src\min\pfmgl.h" />
+    <ClInclude Include="..\..\..\src\min\stdafx.h" />
+    <ClInclude Include="..\..\..\src\min\unit\unit-ctrl.hpp" />
+    <ClInclude Include="..\..\..\src\min\unit\unit.hpp" />
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\barnes-hut.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\oct-tree-node.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\star-palette.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unique-random.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\allocator.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\idef.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\port.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\process.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\vm.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\kappaxx\xlink.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\musix\unit-musix.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\kubic-space.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\rnfx-unit.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\reliquus\unit-reliquus.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi-visual-utils.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\faction.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\private\vorofract\unit-vorofract.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\public\abstract-racing\spline.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\abstract-racing\track.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\abstract-racing\unit-abstract-racing.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\cmd-line-arg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\long-operation.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\mod-appplex-conf.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\rdo-add-stdafx-include.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\rdo-call-ffmpeg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\rdo-directory-statistics.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\rdo-recursive-copy.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\mod\rdo-std-fmt-rename.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\recursive-dir.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\start-process.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\cmd\unit-cmd.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\exercise\unit-exercise.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\gen-texture\unit-gen-texture.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\gl-frag-shader-demo\unit-gl-frag-shader-demo.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\kemx\info.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\kemx\node-info.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\kemx\unit-kemx.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\kinetic-scrolling\unit-kinetic-scrolling.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\mx-lisp\unit-mx-lisp.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\template\unit-template.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-audioengine\unit-test-audioengine.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\b-spline.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\catmull-rom-spline.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\control-curve.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\curve-mesh.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\natural-cubic-spline.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-dyn-geometry\unit-test-dyn-geometry.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\vconv.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\vdec-ffmpeg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\venc-ffmpeg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-ffmpeg\unit-test-ffmpeg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-fmod\unit-test-fmod.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-freeimage\unit-test-freeimage.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-freetype-gl\unit-test-freetype-gl.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-gl\unit-test-gl.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-grid\unit-test-grid.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-kube-sphere\icosphere.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-kube-sphere\unit-test-kube-sphere.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-normal-mapping\unit-test-normal-mapping.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-openvg\unit-test-openvg.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-reflections\unit-test-reflections.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-shadow-map\unit-test-shadow-map.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-snd-android\unit-test-snd-android.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-snd-generators\unit-test-snd-generators.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-stk\unit-test-stk.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test\unit-test.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\ux-test\unit-ux-test.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\texxed\gap-buffer.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\texxed\unit-texxed.hpp" />
+    <ClInclude Include="..\src\main.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src-lib\boost\chrono\chrono.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\chrono\process_cpu_clocks.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\chrono\thread_clock.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\date_time\gregorian\date_generators.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\date_time\gregorian\gregorian_types.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\date_time\gregorian\greg_month.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\date_time\gregorian\greg_weekday.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\date_time\posix_time\posix_time_types.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\codecvt_error_category.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\operations.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\path.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\path_traits.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\portability.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\unique_path.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\utf8_codecvt_facet_filesystem.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\filesystem\windows_file_codecvt.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\cmdline.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\config_file.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\convert.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\options_description.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\parsers.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\positional_options.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\split.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\utf8_codecvt_facet_program_options.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\value_semantic.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\variables_map.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\program_options\winmain.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\system\error_code.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\thread\future.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\thread\tss_null.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\thread\win32\thread.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\thread\win32\tss_dll.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\thread\win32\tss_pe.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\timer\auto_timers_construction.cpp" />
+    <ClCompile Include="..\..\..\src-lib\boost\timer\cpu_timer.cpp" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\edtaa3func.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\font-manager.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\mat4.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\platform.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\shader.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\text-buffer.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\texture-atlas.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\texture-font.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\vector.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\vertex-attribute.c" />
+    <ClCompile Include="..\..\..\src-lib\freetype-gl\vertex-buffer.c" />
+    <ClCompile Include="..\..\..\src-lib\notifications\win32\local-notification-win32.cpp" />
+    <ClCompile Include="..\..\..\src-lib\snd\win32\snd-win32.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\unit\input-ctrl.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\unit\transitions.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\unit\update-ctrl.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\util\util.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\font-db.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\text-vxo.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\ux-camera.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\ux-com.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\ux-ext.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\ux-font.cpp" />
+    <ClCompile Include="..\..\..\src\ext\com\ux\ux.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-param-surface.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-surface.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-camera.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-color.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-material.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-obj.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-quad-2d.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-rt.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-scene.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-shader.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-state.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-tex.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-util.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-vxo.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\gfx.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\ovg\ovg-obj.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\res-ld\res-ld.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\snd\snd.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\noise\palette.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\noise\perlinnoise.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\noise\perlinsettings.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\rng\rng.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\sbmd\kx-elem.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\sbmd\kx-krte.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\sbmd\kx-parser.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\sbmd\sbmd.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\tiny-obj-loader\tiny_obj_loader.cpp" />
+    <ClCompile Include="..\..\..\src\ext\tlib\utils\free-camera.cpp" />
+    <ClCompile Include="..\..\..\src\min\appplex-conf.cpp" />
+    <ClCompile Include="..\..\..\src\min\data-sequence.cpp" />
+    <ClCompile Include="..\..\..\src\min\min.cpp" />
+    <ClCompile Include="..\..\..\src\min\pfm.cpp" />
+    <ClCompile Include="..\..\..\src\min\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\min\unit\unit-ctrl.cpp" />
+    <ClCompile Include="..\..\..\src\min\unit\unit.cpp" />
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\barnes-hut.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-internal-node.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\oct-tree-leaf-node.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\star-palette.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut-ux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\barnes-hut\unit-barnes-hut.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unique-random.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\break-reminder\unit-break-reminder.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\allocator.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\port.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\process.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\unit-kappaxx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\vm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\kappaxx\xlink.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\musix\unit-musix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\orbital-deathmatch\unit-orbital-deathmatch.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\kubic-space.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\rnfx-unit.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\reliquus\unit-reliquus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\shipwrecked\unit-shipwrecked.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\test-digital-krikits\unit-test-digital-krikits.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\boost-voronoi.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\faction.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\vorofract-visual.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\algorithm\voronoi-diagram-data.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract-ux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\private\vorofract\unit-vorofract.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\public\abstract-racing\spline.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\abstract-racing\track.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\abstract-racing\unit-abstract-racing.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\cmd-line-arg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\long-operation.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\mod-appplex-conf.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\rdo-add-stdafx-include.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\rdo-call-ffmpeg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\rdo-directory-statistics.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\rdo-recursive-copy.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\mod\rdo-std-fmt-rename.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\recursive-dir.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\start-process.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\cmd\unit-cmd.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\exercise\unit-exercise-ux.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\exercise\unit-exercise.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\gen-texture\unit-gen-texture.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\gl-frag-shader-demo\unit-gl-frag-shader-demo.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\kemx\info.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\kemx\node-info.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\kemx\unit-kemx.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\kinetic-scrolling\unit-kinetic-scrolling.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\mx-lisp\mx-lisp.c" />
+    <ClCompile Include="..\..\..\src\units\public\mx-lisp\unit-mx-lisp.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\template\unit-template.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-audioengine\unit-test-audioengine.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\b-spline.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\catmull-rom-spline.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\control-curve.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\curve-mesh.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\natural-cubic-spline.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-dyn-geometry\unit-test-dyn-geometry.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\vconv.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\vdec-ffmpeg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-ffmpeg\ffmpeg\venc-ffmpeg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-ffmpeg\unit-test-ffmpeg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-fmod\unit-test-fmod.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-freeimage\unit-test-freeimage.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-freetype-gl\unit-test-freetype-gl.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-gl\unit-test-gl.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-grid\unit-test-grid.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-kube-sphere\icosphere.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-kube-sphere\unit-test-kube-sphere.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-normal-mapping\unit-test-normal-mapping.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-openvg\unit-test-openvg-ux-monkvg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-openvg\unit-test-openvg-ux-shivavg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-openvg\unit-test-openvg.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-reflections\unit-test-reflections.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-shadow-map\unit-test-shadow-map.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-snd-android\unit-test-snd-android.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-snd-generators\unit-test-snd-generators.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-stk\unit-test-stk.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test\unit-test.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\ux-test\unit-ux-test.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\texxed\gap-buffer.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\texxed\unit-texxed.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\appplex-conf.sbmd" />
+    <None Include="..\..\..\src\units\public\tests\test-openvg\svg-tiger-paths.inc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>appplex</ProjectName>
+    <ProjectGuid>{F61DC0C0-8D8C-4FD3-9F61-927A6B13DD27}</ProjectGuid>
+    <RootNamespace>Hunting</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)release\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\min;..\..\..\src\min\unit;..\..\..\src\ext;..\..\..\src\ext\media\gfx;..\..\..\src\ext\media\ovg;..\..\..\src\ext\media\snd;..\..\..\src\ext\tlib;..\..\..\src\units;..\..\..\src-inc;..\..\..\src-inc\boost;..\..\..\src-inc\ffmpeg;..\..\..\src-inc\freetype-gl;..\..\..\src-inc\VG;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>T_WINNT;WIN32;_WINDOWS;_USRDLL;$(Configuration);English;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)debug\__project_name__.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(ProjectDir)debug\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)debug\</ObjectFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)debug\</ProgramDataBaseFileName>
+      <BrowseInformation>false</BrowseInformation>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zm131 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(ProjectDir)..\appplex.exe</OutputFile>
+      <AdditionalLibraryDirectories>lib;lib/ffmpeg;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>
+      </AssemblyDebug>
+      <ProgramDatabaseFile>$(ProjectDir)debug\__project_name__.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <HeapReserveSize>0</HeapReserveSize>
+      <HeapCommitSize>0</HeapCommitSize>
+      <StackReserveSize>0</StackReserveSize>
+      <StackCommitSize>0</StackCommitSize>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <NoEntryPoint>false</NoEntryPoint>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ShowProgress>NotSet</ShowProgress>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMPT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <DelayLoadDLLs>libpng17.dll;fmodex.dll</DelayLoadDLLs>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>false</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\src;..\..\..\src\min;..\..\..\src\min\unit;..\..\..\src\ext;..\..\..\src\ext\media\gfx;..\..\..\src\ext\media\ovg;..\..\..\src\ext\media\snd;..\..\..\src\ext\tlib;..\..\..\src\units;..\..\..\src-inc;..\..\..\src-inc\boost;..\..\..\src-inc\ffmpeg;..\..\..\src-inc\freetype-gl;..\..\..\src-inc\VG;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>T_WINNT;WIN32;_WINDOWS;_USRDLL;$(Configuration);English;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
+      <WarningLevel>Level1</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(ProjectDir)..\appplex.exe</OutputFile>
+      <AdditionalLibraryDirectories>lib;lib/ffmpeg;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <SubSystem>Console</SubSystem>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMPT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <DelayLoadDLLs>libpng17.dll</DelayLoadDLLs>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
