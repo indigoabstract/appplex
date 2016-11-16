@@ -1,3 +1,5 @@
+.svn
+libs
 pfm/android/.idea
 pfm/android/.gradle
 pfm/android/app/build
@@ -7,6 +9,8 @@ pfm/android/android.iml
 pfm/android/app/app.iml
 pfm/android/gradlew.bat
 pfm/android/gradlew
+pfm/android/local.properties
+pfm/android.adt
 pfm/msvc/msvc-2013/debug
 pfm/msvc/msvc-2013/ipch
 pfm/msvc/msvc-2013/appplex.opensdf
@@ -24,6 +28,10 @@ pfm/msvc/appplex.exe
 pfm/msvc/appplex.exp
 pfm/msvc/appplex.lib
 pfm/msvc/appplex.ilk
+pfm/appplex.exe
+pfm/appplex.exp
+pfm/appplex.ilk
+pfm/appplex.lib
 res/barnes-hut
 res/metrolife
 res/reliquus

@@ -153,16 +153,9 @@ model {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:support-v4:18.0.+"
-    //compile(name:'FFmpegAndroid', ext:'aar')
 }
 
-repositories {
-//    flatDir {
-//        dirs 'libs'
-//    }
-
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 //android.signingConfigs {
 //    create("myConfig") {

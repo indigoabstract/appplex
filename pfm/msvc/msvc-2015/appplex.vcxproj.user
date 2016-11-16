@@ -7,9 +7,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommandArguments>--module=appplex-conf --source-path="c:\data\devel\appplex" --exclude-path="ext\lib"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
 </Project>
