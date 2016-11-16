@@ -77,7 +77,7 @@ namespace appplex_conf_ns
 
 				if (!p.is_relative())
 				{
-					throw ia_exception(trs("path [%1%] is not relative to [%2%]") % p.string() % src_path.string());
+					throw ia_exception(trs("path [%1%] is not relative to [%2%]") % p.generic_string() % src_path.generic_string());
 				}
 
 				utrx(untr("%1% %2%")) % k % s;
@@ -123,7 +123,7 @@ namespace appplex_conf_ns
 		{
 			const std::string unit_pfx = "unit-";
 			const std::string unit_sfx = ".hpp";
-			std::string fname = file->rel_file_path.filename().string();
+			std::string fname = file->rel_file_path.filename().generic_string();
 
 			if (is_inside_units_dir && starts_with(fname, unit_pfx) && ends_with(fname, unit_sfx))
 			{
@@ -145,7 +145,7 @@ namespace appplex_conf_ns
 					itp++;
 				}
 
-				std::string ui = tp2.string();
+				std::string ui = tp2.generic_string();
 				ue->unit_path = tp2;
 				ue->unit_hpp_path = tp2 / file->rel_file_path.filename();
 				(*unit_entry_map)[ue->unit_name] = ue;
@@ -292,7 +292,7 @@ namespace appplex_conf_ns
 			{
 				std::string appplex_conf_name = "appplex-conf.sbmd";
 				bfs::path axc_path = proj_path / appplex_conf_name;
-				auto sgmd_txt = pfm::filesystem::load_res_as_string(axc_path.string());
+				auto sgmd_txt = pfm::filesystem::load_res_as_string(axc_path.generic_string());
 
 				krt = std::make_shared<kx_krte>();
 				krt->set_src(sgmd_txt);
@@ -312,8 +312,8 @@ namespace appplex_conf_ns
 				bfs::path appplex_conf_path = proj_path / sbmd_ops::get_sbmd_str_seq("paths.proj-rel-appplex-conf-path", sbmd, { "" })[0];
 				std::string appplex_conf_hpp = sbmd_ops::get_sbmd_str_seq("paths.appplex-conf-hpp-name", sbmd, { "" })[0];
 				std::string appplex_conf_cpp = sbmd_ops::get_sbmd_str_seq("paths.appplex-conf-cpp-name", sbmd, { "" })[0];
-				auto hpp = pfm_file::get_inst(appplex_conf_hpp, appplex_conf_path.string());
-				auto cpp = pfm_file::get_inst(appplex_conf_cpp, appplex_conf_path.string());
+				auto hpp = pfm_file::get_inst(appplex_conf_hpp, appplex_conf_path.generic_string());
+				auto cpp = pfm_file::get_inst(appplex_conf_cpp, appplex_conf_path.generic_string());
 
 				hpp->io.open("w+t");
 				cpp->io.open("w+t");
@@ -390,7 +390,7 @@ namespace appplex_conf_ns
 								if (start_unit == file_name)
 								{
 									unit_list += get_new_unit_line(ue, file_name, launch_unit);
-									line = "#include \"" + ue->unit_hpp_path.string() + "\"";
+									line = "#include \"" + ue->unit_hpp_path.generic_string() + "\"";
 									rw_cpp->w.write_line(line);
 									def = get_define_unit_line(ue, def, file_name, platf_seq);
 									unit_dependencies_def_map[unit_def] = true;
@@ -401,7 +401,7 @@ namespace appplex_conf_ns
 									if (!default_exclusive)
 									{
 										unit_list += get_new_unit_line(ue, file_name);
-										line = "#include \"" + ue->unit_hpp_path.string() + "\"";
+										line = "#include \"" + ue->unit_hpp_path.generic_string() + "\"";
 										rw_cpp->w.write_line(line);
 										def = get_define_unit_line(ue, def, file_name, platf_seq);
 										unit_dependencies_def_map[unit_def] = true;
@@ -475,7 +475,7 @@ namespace appplex_conf_ns
 		void update_android_studio_project()
 		{
 			bfs::path android_gradle_path = proj_path / "pfm" / "android" / "app" / "build.gradle";
-			shared_ptr<pfm_file> gradle_file = pfm_file::get_inst(android_gradle_path.string());
+			shared_ptr<pfm_file> gradle_file = pfm_file::get_inst(android_gradle_path.generic_string());
 			shared_ptr<std::string> gradle_file_txt = pfm::filesystem::load_res_as_string(gradle_file);
 			std::string& gf_txt = *gradle_file_txt;
 			std::string start = "// [";
@@ -496,7 +496,7 @@ namespace appplex_conf_ns
 
 					for (auto& k : *unit_entry_map_android)
 					{
-						std::string unit_path = k.second->unit_path.string();
+						std::string unit_path = k.second->unit_path.generic_string();
 						unit_list += indent + "'../../../src/units/" + unit_path + "',\n";
 					}
 

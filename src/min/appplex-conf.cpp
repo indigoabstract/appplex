@@ -3,7 +3,7 @@
 
 #include "appplex-conf.hpp"
 #include "unit.hpp"
-#include "public\gl-frag-shader-demo\unit-gl-frag-shader-demo.hpp"
+#include "public/gl-frag-shader-demo/unit-gl-frag-shader-demo.hpp"
 
 void app_units_setup::create_units(shared_ptr<unit_list> ul0)
 {
