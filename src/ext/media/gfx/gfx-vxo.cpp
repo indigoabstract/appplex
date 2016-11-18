@@ -720,6 +720,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 			{
 			case gfx_input::ivec1:
 				gl_type = GL_UNSIGNED_INT;
+				glVertexAttribIPointer(loc_idx, at->get_component_count(), gl_type, vxi.vertex_size, (const void*)offset);
 				break;
 
 			case gfx_input::ivec2:
@@ -727,6 +728,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 			case gfx_input::ivec4:
 				normalized = true;
 				gl_type = GL_UNSIGNED_BYTE;
+				glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, (const void*)offset);
 				break;
 
 			case gfx_input::vec1:
@@ -734,13 +736,13 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 			case gfx_input::vec3:
 			case gfx_input::vec4:
 				gl_type = GL_FLOAT;
+				glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, (const void*)offset);
 				break;
 
 			default:
 				throw ia_exception("unknown value");
 			}
 
-			glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, (const void*)offset);// begin_ptr(vertices_buffer) + offset);
 			glEnableVertexAttribArray(loc_idx);
 		}
 
