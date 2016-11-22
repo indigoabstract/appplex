@@ -226,6 +226,8 @@ void snd::update()
 
 #else
 
+#include "main.hpp"
+
 void android_main::snd_init(int isample_rate, int ibuffer_size)
 {
 	sample_rate = isample_rate;

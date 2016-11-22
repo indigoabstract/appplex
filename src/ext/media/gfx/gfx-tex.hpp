@@ -17,6 +17,7 @@ public:
 	};
 
 	virtual ~gfx_tex();
+	static bool mipmaps_supported(gfx_enum iinternal_format);
 	static std::string gen_id();
 	virtual gfx_obj::e_gfx_obj_type get_type()const;
 	virtual bool is_valid()const;

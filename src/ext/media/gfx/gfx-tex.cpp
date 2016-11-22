@@ -23,6 +23,17 @@ gfx_tex::~gfx_tex()
 	release();
 }
 
+bool gfx_tex::mipmaps_supported(gfx_enum iinternal_format)
+{
+	switch (iinternal_format)
+	{
+	case GL_R32UI:
+		return false;
+	}
+
+	return true;
+}
+
 std::string gfx_tex::gen_id()
 {
 	char name[256];
@@ -127,12 +138,22 @@ void gfx_tex::update(int iactive_tex_index, const char* ibb)
 	if (!is_external && uni_tex_type == TEX_2D)
 	{
 		glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, format, type, ibb);
-		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		if (mipmaps_supported(internal_format))
+		{
+			glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+		else
+		{
+			glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+
 		glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_S, TEXTURE_WRAPPING_S);
 		glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_T, TEXTURE_WRAPPING_T);
 		if (use_aniso)glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-		if (gen_mipmap)glGenerateMipmap(gl_tex_target);
+		if (gen_mipmap && mipmaps_supported(internal_format))glGenerateMipmap(gl_tex_target);
 	}
 
 	gfx_util::check_gfx_error();
@@ -154,18 +175,28 @@ void gfx_tex::reload()
 
 			if (uni_tex_type == TEX_2D)
 			{
-				int mipmap_count = gfx_util::get_tex_2d_mipmap_count(width, height);
+				int mipmap_count = mipmaps_supported(internal_format) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
 				glTexStorage2D(gl_tex_target, mipmap_count, internal_format, width, height);
 			}
 
 			gfx_util::check_gfx_error();
-			glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			if (mipmaps_supported(internal_format))
+			{
+				glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
+			else
+			{
+				glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+
 			glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_S, TEXTURE_WRAPPING_S);
 			glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_T, TEXTURE_WRAPPING_T);
 			if (use_aniso)glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-			if (gen_mipmap)glGenerateMipmap(gl_tex_target);
+			if (gen_mipmap && mipmaps_supported(internal_format))glGenerateMipmap(gl_tex_target);
 
 			gfx_util::check_gfx_error();
 		}
@@ -203,19 +234,29 @@ gfx_tex::gfx_tex(std::string itex_name)
 
 	if (uni_tex_type == TEX_2D)
 	{
-		int mipmap_count = gfx_util::get_tex_2d_mipmap_count(width, height);
+		int mipmap_count = mipmaps_supported(internal_format) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
 		glTexStorage2D(gl_tex_target, mipmap_count, internal_format, width, height);
 		glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, format, type, rid->data);
 	}
 
 	gfx_util::check_gfx_error();
-	glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	if (mipmaps_supported(internal_format))
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_S, TEXTURE_WRAPPING_S);
 	glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_T, TEXTURE_WRAPPING_T);
 	if (use_aniso)glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-	if (gen_mipmap)glGenerateMipmap(gl_tex_target);
+	if (gen_mipmap && mipmaps_supported(internal_format))glGenerateMipmap(gl_tex_target);
 
 	gfx_util::check_gfx_error();
 	is_valid_state = true;
@@ -263,18 +304,28 @@ gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, int iinternal_fo
 
 	if (uni_tex_type == TEX_2D)
 	{
-		int mipmap_count = gfx_util::get_tex_2d_mipmap_count(width, height);
+		int mipmap_count = mipmaps_supported(internal_format) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
 		glTexStorage2D(gl_tex_target, mipmap_count, internal_format, width, height);
 	}
 
 	gfx_util::check_gfx_error();
-	glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	if (mipmaps_supported(internal_format))
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_S, TEXTURE_WRAPPING_S);
 	glTexParameterf(gl_tex_target, GL_TEXTURE_WRAP_T, TEXTURE_WRAPPING_T);
 	if (use_aniso)glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-	if (gen_mipmap)glGenerateMipmap(gl_tex_target);
+	if (gen_mipmap && mipmaps_supported(internal_format))glGenerateMipmap(gl_tex_target);
 
 	gfx_util::check_gfx_error();
 	is_valid_state = true;
@@ -391,7 +442,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name)
 
 		if (!is_init)
 		{
-			int mipmap_count = gfx_util::get_tex_2d_mipmap_count(rid->width, rid->height);
+			int mipmap_count = mipmaps_supported(internal_format) ? gfx_util::get_tex_2d_mipmap_count(rid->width, rid->height) : 1;
 
 			is_init = true;
 			init_dimensions(rid->width, rid->height);
@@ -402,15 +453,25 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name)
 	}
 
 	gfx_util::check_gfx_error();
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	if (mipmaps_supported(internal_format))
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	if (use_aniso)glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-	if (gen_mipmap)glGenerateMipmap(gl_tex_target);
+	if (gen_mipmap && mipmaps_supported(internal_format))glGenerateMipmap(gl_tex_target);
 
 	gfx_util::check_gfx_error();
 	is_valid_state = true;
