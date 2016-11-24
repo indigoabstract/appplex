@@ -12,6 +12,7 @@ class unit_ctrl
 {
 public:
 	static std::shared_ptr<unit_ctrl> inst();
+	bool back_evt();
 	bool app_uses_gfx();
 	void exit_app(int exit_code = 0);
 	bool is_set_app_exit_on_next_run();

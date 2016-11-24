@@ -405,8 +405,11 @@ public class main extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		super.onBackPressed();
-		System.exit(0);
+		if(native_back_evt())
+		{
+			super.onBackPressed();
+			//System.exit(0);
+		}
 	}
 
 	@Override
@@ -485,6 +488,7 @@ public class main extends Activity
 		}
 	}
 
+	private static native boolean native_back_evt();
 	private static native void native_snd_init(int isample_rate, int ibuffer_size);
 	private static native void native_snd_close();
 	private native void native_set_writable_path(String iwritable_path);

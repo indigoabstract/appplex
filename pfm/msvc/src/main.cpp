@@ -1123,6 +1123,12 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 	case WM_SYSKEYUP:
 	{
 			unit_ctrl::inst()->key_action(KEY_RELEASE, get_key(wparam));
+
+			if (get_key(wparam) == KEY_ESCAPE)
+			{
+				unit_ctrl::inst()->back_evt();
+			}
+
 			return 0;
 		}
 

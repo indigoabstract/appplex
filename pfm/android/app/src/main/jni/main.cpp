@@ -492,6 +492,12 @@ extern "C"
 		android_main::get_instance()->run();
 	}
 
+	JNIEXPORT jboolean JNICALL Java_com_indigoabstract_appplex_main_native_1back_1evt(JNIEnv *env, jobject thiz)
+	{
+		bool r = android_main::get_instance()->back_evt();
+		return jboolean(r ? 1 : 0);
+	}
+	
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1init(JNIEnv *env, jobject thiz, jint isample_rate, jint ibuffer_size)
 	{
 		android_main::get_instance()->snd_init(isample_rate, ibuffer_size);

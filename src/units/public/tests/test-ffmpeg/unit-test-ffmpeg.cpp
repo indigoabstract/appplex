@@ -96,7 +96,7 @@ void unit_test_ffmpeg::load()
 
 	if (!raf->exists())
 	{
-		vprint("\nfile %s not found\n", raf->get_file_name());
+		vprint("\nfile %s not found\n", raf->get_file_name().c_str());
 	}
 }
 

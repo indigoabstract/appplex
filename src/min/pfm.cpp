@@ -700,6 +700,12 @@ pfm_data::pfm_data()
 
 pfm_data pfm::data;
 
+
+bool pfm_main::back_evt()
+{
+	return unit_ctrl::inst()->back_evt();
+}
+
 //shared_ptr<ia_console> pfm::get_console()
 //{
 //	return data.console;

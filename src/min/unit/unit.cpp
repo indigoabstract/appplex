@@ -173,10 +173,6 @@ void unit::receive(shared_ptr<iadp> idp)
 
 					switch(ke->get_key())
 					{
-					case KEY_ESCAPE:
-						back();
-						break;
-
 					case KEY_F1:
 						unit_ctrl::inst()->pause();
 						break;

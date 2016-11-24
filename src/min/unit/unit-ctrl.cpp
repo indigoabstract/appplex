@@ -29,6 +29,24 @@ shared_ptr<unit_ctrl> unit_ctrl::inst()
 	return instance;
 }
 
+bool unit_ctrl::back_evt()
+{
+	auto u = crt_unit.lock();
+
+	if (u)
+	{
+		if (u == ul)
+		{
+			set_app_exit_on_next_run(true);
+			return true;
+		}
+
+		u->back();
+	}
+
+	return false;
+}
+
 bool unit_ctrl::app_uses_gfx()
 {
 	bool req_gfx = false;

@@ -49,6 +49,12 @@ namespace appplex_conf_ns
 	class unit_entry
 	{
 	public:
+		unit_entry()
+		{
+			enabled = false;
+		}
+
+		bool enabled;
 		std::string unit_name;
 		bfs::path unit_path;
 		bfs::path unit_hpp_path;
@@ -240,14 +246,6 @@ namespace appplex_conf_ns
 				}
 
 				def = prefx + "\n\t" + def + "\n#endif\n";
-				iue->platforms = iplatf;
-			}
-			else
-			{
-				for (auto& key : platf_def_map)
-				{
-					iue->platforms.push_back(key.first);
-				}
 			}
 
 			return def;
@@ -276,11 +274,31 @@ namespace appplex_conf_ns
 			return line;
 		}
 
-		void update_dependencies(const std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map)
+		void update_dependencies(shared_ptr<unit_entry> ue, std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map)
 		{
+			auto& pf = ue->platforms;
+			bool add_android = false;
+
+			if (std::find(pf.begin(), pf.end(), "android") != pf.end())
+			{
+				(*unit_entry_map_android)[ue->unit_name] = ue;
+				add_android = true;
+			}
+
 			for (int k = 0; k < iuses.size(); k++)
 			{
 				std::string s = iuses[k];
+
+				if (starts_with(s, "unit-"))
+				{
+					std::string un = s.substr(5, s.length() - 5);
+					auto ue2 = (*unit_entry_map)[un];
+
+					if (ue2 && add_android)
+					{
+						(*unit_entry_map_android)[ue2->unit_name] = ue2;
+					}
+				}
 
 				idependencies_def_map[s] = true;
 			}
@@ -356,55 +374,69 @@ namespace appplex_conf_ns
 
 						if (enabled)
 						{
-							std::vector<std::string> uses = sbmd_ops::get_sbmd_str_seq(unit_path + ".uses", sbmd);
-							auto platf_seq = sbmd_ops::get_sbmd_str_seq(unit_path + ".platf", sbmd);
-							std::string line;
+							auto ue = (*unit_entry_map)[file_name];
 
-							if (uses.empty())
+							if (ue)
 							{
-								uses = default_uses;
-							}
+								enabled = false;
+								std::vector<std::string> uses = sbmd_ops::get_sbmd_str_seq(unit_path + ".uses", sbmd);
+								auto platf_seq = sbmd_ops::get_sbmd_str_seq(unit_path + ".platf", sbmd);
+								auto platf = platf_seq;
+								std::string line;
 
-							if (single_unit_build)
-							{
-								if (file_name == start_unit_list[0])
+								if (platf.empty())
 								{
-									update_dependencies(uses, dependencies_def_map);
+									platf = default_platf;
 								}
-							}
-							else
-							{
-								if (default_exclusive)
+
+								// if it's not enabled for 'all' platforms, put an '#if defined' for each platform
+								if (std::find(platf.begin(), platf.end(), "all") == platf.end())
 								{
-									if (std::find(start_unit_list.begin(), start_unit_list.end(), file_name) != start_unit_list.end())
+									ue->platforms = platf;
+								}
+								else
+								{
+									for (auto& key : platf_def_map)
 									{
-										update_dependencies(uses, dependencies_def_map);
+										ue->platforms.push_back(key.first);
+									}
+								}
+
+								if (uses.empty())
+								{
+									uses = default_uses;
+								}
+
+								if (single_unit_build)
+								{
+									if (file_name == start_unit_list[0])
+									{
+										update_dependencies(ue, uses, dependencies_def_map);
 									}
 								}
 								else
 								{
-									update_dependencies(uses, dependencies_def_map);
+									if (default_exclusive)
+									{
+										if (std::find(start_unit_list.begin(), start_unit_list.end(), file_name) != start_unit_list.end())
+										{
+											update_dependencies(ue, uses, dependencies_def_map);
+										}
+									}
+									else
+									{
+										update_dependencies(ue, uses, dependencies_def_map);
+									}
 								}
-							}
 
-							if (platf_seq.empty())
-							{
-								platf_seq = default_platf;
-							}
-
-							auto ue = (*unit_entry_map)[file_name];
-							enabled = false;
-
-							if (ue)
-							{
 								if (std::find(start_unit_list.begin(), start_unit_list.end(), file_name) != start_unit_list.end())
 								{
 									unit_list += get_new_unit_line(ue, file_name, launch_unit);
 									line = "#include \"" + ue->unit_hpp_path.generic_string() + "\"";
 									rw_cpp->w.write_line(line);
-									def = get_define_unit_line(ue, def, file_name, platf_seq);
+									def = get_define_unit_line(ue, def, file_name, platf);
 									unit_dependencies_def_map[unit_def] = true;
-									enabled = true;
+									ue->enabled = enabled = true;
 								}
 								else
 								{
@@ -413,20 +445,9 @@ namespace appplex_conf_ns
 										unit_list += get_new_unit_line(ue, file_name);
 										line = "#include \"" + ue->unit_hpp_path.generic_string() + "\"";
 										rw_cpp->w.write_line(line);
-										def = get_define_unit_line(ue, def, file_name, platf_seq);
+										def = get_define_unit_line(ue, def, file_name, platf);
 										unit_dependencies_def_map[unit_def] = true;
-										enabled = true;
-									}
-								}
-
-								if (enabled)
-								{
-
-									auto& pf = ue->platforms;
-
-									if (std::find(pf.begin(), pf.end(), "android") != pf.end())
-									{
-										(*unit_entry_map_android)[ue->unit_name] = ue;
+										ue->enabled = enabled = true;
 									}
 								}
 							}
@@ -450,7 +471,7 @@ namespace appplex_conf_ns
 
 						if (starts_with(s, "UNIT-"))
 						{
-							s.replace(4, 1, "_");
+							std::replace(s.begin(), s.end(), '-', '_');
 
 							if (unit_dependencies_def_map.find(s) == unit_dependencies_def_map.end())
 							{
