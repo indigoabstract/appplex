@@ -301,11 +301,11 @@ namespace appplex_conf_ns
 				auto sbmd = krt->kxb;
 				std::vector<std::string> default_uses = sbmd_ops::get_sbmd_str_seq("default.uses", sbmd, { "gfx", "boost" });
 				bool default_enabled = sbmd_ops::get_bool_from_list(sbmd_ops::get_sbmd_str_seq("default.enabled", sbmd, { "true" }));
-				std::string start_unit = sbmd_ops::get_sbmd_str_seq("default.start.unit", sbmd, { "test" })[0];
+				std::vector<std::string> start_unit_list = sbmd_ops::get_sbmd_str_seq("default.start.unit-list", sbmd, { "test" });
 				bool launch_unit = sbmd_ops::get_bool_from_list(sbmd_ops::get_sbmd_str_seq("default.start.launch-unit", sbmd, { "true" }));
 				std::vector<std::string> default_platf = sbmd_ops::get_sbmd_str_seq("default.platf", sbmd, { "all" });
 				bool default_exclusive = sbmd_ops::get_bool_from_list(sbmd_ops::get_sbmd_str_seq("default.start.exclusive", sbmd, { "false" }));
-				bool single_unit_build = default_exclusive && launch_unit;
+				bool single_unit_build = (start_unit_list.size() == 1) && default_exclusive && launch_unit;
 				std::unordered_map<std::string, bool> dependencies_def_map;
 				std::unordered_map<std::string, bool> unit_dependencies_def_map;
 
@@ -367,14 +367,24 @@ namespace appplex_conf_ns
 
 							if (single_unit_build)
 							{
-								if (file_name == start_unit)
+								if (file_name == start_unit_list[0])
 								{
 									update_dependencies(uses, dependencies_def_map);
 								}
 							}
 							else
 							{
-								update_dependencies(uses, dependencies_def_map);
+								if (default_exclusive)
+								{
+									if (std::find(start_unit_list.begin(), start_unit_list.end(), file_name) != start_unit_list.end())
+									{
+										update_dependencies(uses, dependencies_def_map);
+									}
+								}
+								else
+								{
+									update_dependencies(uses, dependencies_def_map);
+								}
 							}
 
 							if (platf_seq.empty())
@@ -387,7 +397,7 @@ namespace appplex_conf_ns
 
 							if (ue)
 							{
-								if (start_unit == file_name)
+								if (std::find(start_unit_list.begin(), start_unit_list.end(), file_name) != start_unit_list.end())
 								{
 									unit_list += get_new_unit_line(ue, file_name, launch_unit);
 									line = "#include \"" + ue->unit_hpp_path.generic_string() + "\"";

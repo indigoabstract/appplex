@@ -5,7 +5,7 @@ default
 [
 	uses[ boost, gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit-list[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
