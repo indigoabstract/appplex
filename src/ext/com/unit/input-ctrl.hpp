@@ -126,22 +126,19 @@ public:
 	bool is_pointer_released();
 	const std::vector<pointer_sample>& get_pointer_samples();
 	void update();
-	void pointer_pressed(int ix, int iy);
-	void pointer_dragged(int ix, int iy);
-	void pointer_released(int ix, int iy);
-	void on_mouse_wheel(int ix, int iy, int iwheel_delta);
+	void enqueue_pointer_event(std::shared_ptr<pfm_touch_event> ite);
 
-	std::atomic<std::vector<pointer_action>*> queue_ptr;
+	std::atomic<std::vector<std::shared_ptr<pfm_touch_event> >*> queue_ptr;
 
 private:
 	touchctrl();
 
 	virtual shared_ptr<ia_sender> sender_inst();
 
-	void on_pointer_action_pressed(pointer_action& pa);
-	void on_pointer_action_dragged(pointer_action& pa);
-	void on_pointer_action_released(pointer_action& pa);
-	void on_pointer_action_mouse_wheel(pointer_action& pa);
+	void on_pointer_action_pressed(std::shared_ptr<pfm_touch_event> pa);
+	void on_pointer_action_dragged(std::shared_ptr<pfm_touch_event> pa);
+	void on_pointer_action_released(std::shared_ptr<pfm_touch_event> pa);
+	void on_pointer_action_mouse_wheel(std::shared_ptr<pfm_touch_event> pa);
 
 	void on_pointer_pressed_event(pointer_sample& ps);
 	void on_pointer_dragged_event(pointer_sample& ps);
@@ -149,7 +146,7 @@ private:
 	void new_touch_symbol_event(shared_ptr<touch_sym_evt> ts);
 
 	int queue_idx;
-	std::vector<std::vector<pointer_action> > queue_tab;
+	std::vector<std::vector<std::shared_ptr<pfm_touch_event> > > queue_tab;
 
 	int TAP_PRESS_RELEASE_DELAY;
 	int TAP_NEXT_PRESS_DELAY;

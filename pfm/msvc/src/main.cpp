@@ -992,7 +992,6 @@ POINT get_pointer_coord(HWND hwnd)
 LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 	// processes messages for the main window
 {
-	POINT pointer_coord;
 	shared_ptr<msvc_main> app = msvc_main::get_instance();
 
 	//trx("message 0x%04x") % message;
@@ -1048,6 +1047,8 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			}
 			else if (lparam == WM_RBUTTONDOWN)
 			{
+				POINT pointer_coord;
+
 				printf("Mmm.  Let's get contextual.  I'm showing you my context menu.\n");
 				GetCursorPos(&pointer_coord);
 				//SetActiveWindow(hWnd);
@@ -1078,46 +1079,102 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		break;
 
 	case WM_LBUTTONDOWN:
-		pointer_coord = get_pointer_coord(hwnd);
-		unit_ctrl::inst()->pointer_action(0, POINTER_PRESS, pointer_coord.x, pointer_coord.y);
+	{
+		auto pfm_te = std::make_shared<pfm_touch_event>();
+		POINT pointer_coord = get_pointer_coord(hwnd);
+		pfm_touch_event::touch_point& te = pfm_te->points[0];
+
+		te.identifier = 0;
+		te.is_changed = false;
+		te.x = (float)pointer_coord.x;
+		te.y = (float)pointer_coord.y;
+		pfm_te->time = pfm::time::get_time_millis();
+		pfm_te->touch_count = 1;
+		pfm_te->type = pfm_touch_event::touch_began;
+
+		unit_ctrl::inst()->pointer_action(pfm_te);
+
 		return 0;
+	}
 
 	case WM_LBUTTONUP:
-		pointer_coord = get_pointer_coord(hwnd);
-		unit_ctrl::inst()->pointer_action(0, POINTER_RELEASE, pointer_coord.x, pointer_coord.y);
+	{
+		auto pfm_te = std::make_shared<pfm_touch_event>();
+		POINT pointer_coord = get_pointer_coord(hwnd);
+		pfm_touch_event::touch_point& te = pfm_te->points[0];
+
+		te.identifier = 0;
+		te.is_changed = false;
+		te.x = (float)pointer_coord.x;
+		te.y = (float)pointer_coord.y;
+		pfm_te->time = pfm::time::get_time_millis();
+		pfm_te->touch_count = 1;
+		pfm_te->type = pfm_touch_event::touch_ended;
+
+		unit_ctrl::inst()->pointer_action(pfm_te);
+
 		return 0;
+	}
 
 	case WM_MOUSEMOVE:
-		pointer_coord = get_pointer_coord(hwnd);
-		unit_ctrl::inst()->pointer_action(0, POINTER_DRAGG, pointer_coord.x, pointer_coord.y);
+	{
+		auto pfm_te = std::make_shared<pfm_touch_event>();
+		POINT pointer_coord = get_pointer_coord(hwnd);
+		pfm_touch_event::touch_point& te = pfm_te->points[0];
+
+		te.identifier = 0;
+		te.is_changed = false;
+		te.x = (float)pointer_coord.x;
+		te.y = (float)pointer_coord.y;
+		pfm_te->time = pfm::time::get_time_millis();
+		pfm_te->touch_count = 1;
+		pfm_te->type = pfm_touch_event::touch_moved;
+
+		unit_ctrl::inst()->pointer_action(pfm_te);
+
 		return 0;
+	}
 
 	case WM_MOUSEWHEEL:
+	{
+		int state = GET_KEYSTATE_WPARAM(wparam);
+		int wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
+		POINT pointer_coord;
+		pointer_coord.x = GET_X_LPARAM(lparam);
+		pointer_coord.y = GET_Y_LPARAM(lparam);
+
+		ScreenToClient(hwnd, &pointer_coord);
+		RECT client_area_coord = app->get_window_coord();
+		int width = pfm::screen::get_width();
+		int height = pfm::screen::get_height();
+
+		if (pointer_coord.x >= 0 && pointer_coord.y >= 0 && pointer_coord.x < width && pointer_coord.y < height)
 		{
-			int state = GET_KEYSTATE_WPARAM(wparam);
-			int wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
-			pointer_coord.x = GET_X_LPARAM(lparam);
-			pointer_coord.y = GET_Y_LPARAM(lparam);
-			ScreenToClient(hwnd, &pointer_coord);
-			RECT client_area_coord = app->get_window_coord();
-			int width = pfm::screen::get_width();
-			int height = pfm::screen::get_height();
+			auto pfm_te = std::make_shared<pfm_touch_event>();
+			pfm_touch_event::touch_point& te = pfm_te->points[0];
 
-			if(pointer_coord.x >= 0 && pointer_coord.y >= 0 && pointer_coord.x < width && pointer_coord.y < height)
-			{
-				unit_ctrl::inst()->pointer_action(0, POINTER_MOUSE_WHEEL, pointer_coord.x, pointer_coord.y, wheel_delta);
-				//trx("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
-			}
+			te.identifier = 0;
+			te.is_changed = false;
+			te.x = (float)pointer_coord.x;
+			te.y = (float)pointer_coord.y;
+			pfm_te->time = pfm::time::get_time_millis();
+			pfm_te->touch_count = 1;
+			pfm_te->type = pfm_touch_event::mouse_wheel;
+			pfm_te->mouse_wheel_delta = wheel_delta;
 
-			return 0;
+			unit_ctrl::inst()->pointer_action(pfm_te);
+			//trx("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
 		}
+
+		return 0;
+	}
 
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 	{
 			unit_ctrl::inst()->key_action(KEY_PRESS, get_key(wparam));
 			return 0;
-		}
+	}
 
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
@@ -1130,7 +1187,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			}
 
 			return 0;
-		}
+	}
 
 	case WM_CLOSE:
 		printf("Got an actual WM_CLOSE Message!  Woo hoo!\n");
@@ -1138,15 +1195,15 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
-		{
-			int width = LOWORD(lparam);
-			int height = HIWORD(lparam);
+	{
+		int width = LOWORD(lparam);
+		int height = HIWORD(lparam);
 
-			height = (height > 0) ? height : 1;
-			unit_ctrl::inst()->resize_app(width, height);
+		height = (height > 0) ? height : 1;
+		unit_ctrl::inst()->resize_app(width, height);
 
-			return 0;
-		}
+		return 0;
+	}
 
 		//case WM_DESTROY:
 		//	PostQuitMessage(0);

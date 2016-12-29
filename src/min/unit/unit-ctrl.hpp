@@ -25,7 +25,7 @@ public:
 	void pause();
 	void resume();
     void resize_app(int iwidth, int iheight);
-	void pointer_action(int ipress_id, pointer_actions iaction_type, int ix, int iy, int iwheel_delta = 0);
+	void pointer_action(std::shared_ptr<pfm_touch_event> ite);
 	void key_action(key_actions iaction_type, int ikey);
     std::shared_ptr<unit> get_current_unit();
 	void set_next_unit(std::shared_ptr<unit> iunit);

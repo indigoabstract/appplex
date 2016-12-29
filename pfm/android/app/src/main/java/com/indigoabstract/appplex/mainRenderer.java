@@ -105,11 +105,11 @@ public class mainRenderer implements GLSurfaceView.Renderer
 
 	public native void nativeResize(int x, int y);
 
-	public native void nativeTouchEvent(int finger_id, int finger_state, float x, float y);
-
-	public native void nativeKeyPressed(int keyCode);
-
-	public native void nativeKeyReleased(int keyCode);
+	public native void native_touch_event
+			(
+					int itouch_type, int itouch_count, int[] itouch_points_identifier,
+					boolean[] itouch_points_is_changed, float[] itouch_points_x, float[] itouch_points_y
+			);
 
 	public static void ExitApplication()
 	{

@@ -63,6 +63,34 @@ namespace pfm_impl
 }
 
 
+struct pfm_touch_event
+{
+	static const int MAX_TOUCH_POINTS = 8;
+	enum e_touch_type
+	{
+		touch_invalid,
+		touch_began,
+		touch_moved,
+		touch_ended,
+		touch_cancelled,
+		mouse_wheel,
+	};
+	struct touch_point
+	{
+		uint32 identifier = 0;
+		float x = 0.f;
+		float y = 0.f;
+		bool is_changed = false;
+	};
+
+	e_touch_type type = touch_invalid;
+	uint32 time;
+	uint32 touch_count = 0;
+	touch_point points[MAX_TOUCH_POINTS];
+	int32 mouse_wheel_delta;
+};
+
+
 class pfm_path
 {
 public:

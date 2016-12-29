@@ -182,30 +182,13 @@ void unit_ctrl::resize_app(int iwidth, int iheight)
 	}
 }
 
-void unit_ctrl::pointer_action(int ipress_id, pointer_actions iaction_type, int ix, int iy, int iwheel_data)
+void unit_ctrl::pointer_action(std::shared_ptr<pfm_touch_event> ite)
 {
 	shared_ptr<unit> u = std::dynamic_pointer_cast<unit>(get_current_unit());
 
 	if(u)
 	{
-		switch (iaction_type)
-		{
-		case POINTER_PRESS:
-			u->touch_ctrl->pointer_pressed(ix, iy);
-			break;
-
-		case POINTER_RELEASE:
-			u->touch_ctrl->pointer_released(ix, iy);
-			break;
-
-		case POINTER_DRAGG:
-			u->touch_ctrl->pointer_dragged(ix, iy);
-			break;
-
-		case POINTER_MOUSE_WHEEL:
-			u->touch_ctrl->on_mouse_wheel(ix, iy, iwheel_data);
-			break;
-		}
+		u->touch_ctrl->enqueue_pointer_event(ite);
 	}
 }
 

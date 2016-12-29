@@ -462,29 +462,36 @@ extern "C"
 		unit_ctrl::inst()->resize_app(w, h);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeTouchEvent(JNIEnv*  env, jobject thiz, jint finger_id, jint finger_state, jfloat x, jfloat y)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_native_1touch_1event
+			(JNIEnv*  env, jobject thiz, jint itouch_type, jint itouch_count, jintArray itouch_points_identifier,
+			 jbooleanArray itouch_points_is_changed, jfloatArray itouch_points_x, jfloatArray itouch_points_y)
 	{
-		pointer_actions action_type;
+		auto pfm_te = std::make_shared<pfm_touch_event>();
+		jint* touch_points_identifier = env->GetIntArrayElements(itouch_points_identifier, NULL);
+		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(itouch_points_is_changed, NULL);
+		jfloat* touch_points_x = env->GetFloatArrayElements(itouch_points_x, NULL);
+		jfloat* touch_points_y = env->GetFloatArrayElements(itouch_points_y, NULL);
 
-		switch (finger_state)
+		for (int k = 0; k < itouch_count; k++)
 		{
-		case 0:
-			action_type = POINTER_PRESS;
-			break;
+			pfm_touch_event::touch_point& te = pfm_te->points[k];
 
-		case 1:
-			action_type = POINTER_RELEASE;
-			break;
-
-		case 2:
-			action_type = POINTER_DRAGG;
-			break;
-
-		default:
-			return;
+			te.identifier = touch_points_identifier[k];
+			te.is_changed = touch_points_is_changed[k];
+			te.x = touch_points_x[k];
+			te.y = touch_points_y[k];
 		}
 
-		unit_ctrl::inst()->pointer_action(finger_id, action_type, x, y);
+		env->ReleaseIntArrayElements(itouch_points_identifier, touch_points_identifier, 0);
+		env->ReleaseBooleanArrayElements(itouch_points_is_changed, touch_points_is_changed, 0);
+		env->ReleaseFloatArrayElements(itouch_points_x, touch_points_x, 0);
+		env->ReleaseFloatArrayElements(itouch_points_y, touch_points_y, 0);
+
+		pfm_te->time = pfm::time::get_time_millis();
+		pfm_te->touch_count = itouch_count;
+		pfm_te->type = (pfm_touch_event::e_touch_type)itouch_type;
+
+		unit_ctrl::inst()->pointer_action(pfm_te);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeRender(JNIEnv*  env, jobject thiz)

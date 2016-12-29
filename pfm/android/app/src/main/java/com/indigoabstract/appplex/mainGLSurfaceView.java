@@ -14,17 +14,24 @@ import android.view.MotionEvent;
 
 public class mainGLSurfaceView extends GLSurfaceView
 {
-
-	// static public boolean allowTouchMove = true;
-	private static final int	INVALID_POINTER_ID	= -1;
-	private static final int	MOUSE_DOWN			= 0;
-	private static final int	MOUSE_UP			= 1;
-	private static final int	MOUSE_MOVE			= 2;
 	public mainRenderer			mRenderer;
+
+	public static final int MAX_TOUCH_POINTS = 8;
+	public static final int TOUCH_INVALID = 0;
+	public static final int TOUCH_BEGAN = 1;
+	public static final int TOUCH_MOVED = 2;
+	public static final int TOUCH_ENDED = 3;
+	public static final int TOUCH_CANCELLED = 4;
+
+	public int[] touch_points_identifier = new int[MAX_TOUCH_POINTS];
+	public float[] touch_points_x = new float[MAX_TOUCH_POINTS];
+	public float[] touch_points_y = new float[MAX_TOUCH_POINTS];
+	public boolean[] touch_points_is_changed = new boolean[MAX_TOUCH_POINTS];
 
 	public mainGLSurfaceView(main context)
 	{
 		super(context);
+
 		mRenderer = new mainRenderer(context, this);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -55,81 +62,48 @@ public class mainGLSurfaceView extends GLSurfaceView
 	public boolean onTouchEvent(final MotionEvent event)
 	{
 		int action = event.getAction();
-		float x;
-		float y;
+		int flags = action & MotionEvent.ACTION_MASK;
+		int touch_type = TOUCH_INVALID;
 
-		switch (action & MotionEvent.ACTION_MASK)
+		switch (flags)
 		{
 			case MotionEvent.ACTION_DOWN:
-			{
-				x = event.getX();
-				y = event.getY();
-				mRenderer.nativeTouchEvent(event.getPointerId(0), MOUSE_DOWN, x, y);
-
+			case MotionEvent.ACTION_POINTER_DOWN:
+				touch_type = TOUCH_BEGAN;
 				break;
-			}
 
-			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
-			{
-				x = event.getX();
-				y = event.getY();
-				mRenderer.nativeTouchEvent(event.getPointerId(0), MOUSE_UP, x, y);
-
+			case MotionEvent.ACTION_POINTER_UP:
+				touch_type = TOUCH_ENDED;
 				break;
-			}
 
 			case MotionEvent.ACTION_MOVE:
-			{
-				for (int index = event.getPointerCount() - 1; index >= 0; --index)
-				{
-					int pointer_id = event.getPointerId(index);
-
-					if (pointer_id == INVALID_POINTER_ID)
-					{
-						continue;
-					}
-
-					x = event.getX(index);
-					y = event.getY(index);
-					mRenderer.nativeTouchEvent(pointer_id, MOUSE_MOVE, x, y);
-				}
-
+				touch_type = TOUCH_MOVED;
 				break;
-			}
 
-			case MotionEvent.ACTION_POINTER_DOWN:
-			{
-				int pointer_index = (action & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-				int pointer_id = event.getPointerId(pointer_index);
-
-				if (pointer_id != INVALID_POINTER_ID)
-				{
-					x = (int) event.getX(pointer_index);
-					y = (int) event.getY(pointer_index);
-					mRenderer.nativeTouchEvent(pointer_id, MOUSE_DOWN, x, y);
-				}
-
+			case MotionEvent.ACTION_CANCEL:
+				touch_type = TOUCH_CANCELLED;
 				break;
-			}
-
-			case MotionEvent.ACTION_POINTER_UP:
-			{
-				int pointer_index = (action & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-				int pointer_id = event.getPointerId(pointer_index);
-
-				if (pointer_id != INVALID_POINTER_ID)
-				{
-					x = (int) event.getX(pointer_index);
-					y = (int) event.getY(pointer_index);
-					mRenderer.nativeTouchEvent(pointer_id, MOUSE_UP, x, y);
-				}
-
-				break;
-			}
 
 			default:
-				break;
+				return false;
+		}
+
+		int touch_count = Math.min(event.getPointerCount(), MAX_TOUCH_POINTS);
+		int pointer_index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+		for (int k = 0; k < touch_count; k++)
+		{
+			touch_points_identifier[k] = event.getPointerId(k);
+			touch_points_is_changed[k] = (k == pointer_index);
+			touch_points_x[k] = event.getX(k);
+			touch_points_y[k] = event.getY(k);
+
+			mRenderer.native_touch_event
+					(
+							touch_type, touch_count, touch_points_identifier, touch_points_is_changed,
+							touch_points_x, touch_points_y
+					);
 		}
 
 		return true;
