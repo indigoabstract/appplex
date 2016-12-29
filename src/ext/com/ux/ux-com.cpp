@@ -53,7 +53,7 @@ void ux_button::receive(shared_ptr<iadp> idp)
 		switch(ts->get_type())
 		{
 		case touch_sym_evt::TS_FIRST_TAP:
-			if(enabled && is_hit(ts->pressed.pos.x, ts->pressed.pos.y))
+			if(enabled && is_hit(ts->pressed.te->points[0].x, ts->pressed.te->points[0].y))
 			{
 				on_click();
 				ts->process();
@@ -156,8 +156,8 @@ void ux_list::receive(shared_ptr<iadp> idp)
 		{
 		case touch_sym_evt::TS_FIRST_TAP:
 			{
-				float x = ts->pressed.pos.x;
-				float y = ts->pressed.pos.y;
+				float x = ts->pressed.te->points[0].x;
+				float y = ts->pressed.te->points[0].y;
 
 				if(ts->tap_count == 1)
 				{

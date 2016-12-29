@@ -63,8 +63,9 @@ namespace pfm_impl
 }
 
 
-struct pfm_touch_event
+class pfm_touch_event
 {
+public:
 	static const int MAX_TOUCH_POINTS = 8;
 	enum e_touch_type
 	{
@@ -82,6 +83,11 @@ struct pfm_touch_event
 		float y = 0.f;
 		bool is_changed = false;
 	};
+
+	bool is_multitouch()
+	{
+		return touch_count > 1;
+	}
 
 	e_touch_type type = touch_invalid;
 	uint32 time;

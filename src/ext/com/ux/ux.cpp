@@ -288,8 +288,8 @@ public:
 
 			if (ts->get_type() == touch_sym_evt::TS_FIRST_TAP)
 			{
-				float x = ts->pressed.pos.x;
-				float y = ts->pressed.pos.y;
+				float x = ts->pressed.te->points[0].x;
+				float y = ts->pressed.te->points[0].y;
 
 				if (is_inside_box(x, y, uxr.x, uxr.h - 40, uxr.w, uxr.h))
 				{
@@ -1084,8 +1084,8 @@ void ux_page::update_input_subux(shared_ptr<iadp> idp)
 	{
 		shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-		float x = ts->crt_state.pos.x;
-		float y = ts->crt_state.pos.y;
+		float x = ts->crt_state.te->points[0].x;
+		float y = ts->crt_state.te->points[0].y;
 
 		BOOST_FOREACH(shared_ptr<ux> b, mlist)
 		{
@@ -1117,8 +1117,8 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 		{
 		case touch_sym_evt::TS_PRESSED:
 		{
-			float x = ts->pressed.pos.x;
-			float y = ts->pressed.pos.y;
+			float x = ts->pressed.te->points[0].x;
+			float y = ts->pressed.te->points[0].y;
 
 			if (ts->tap_count == 1)
 			{
@@ -1131,8 +1131,8 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
 		case touch_sym_evt::TS_PRESS_AND_DRAG:
 		{
-			float x = ts->crt_state.pos.x;
-			float y = ts->crt_state.pos.y;
+			float x = ts->crt_state.te->points[0].x;
+			float y = ts->crt_state.te->points[0].y;
 
 			switch (ts->tap_count)
 			{
@@ -1144,11 +1144,11 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 				}
 				else
 				{
-					ks.begin(ts->crt_state.pos.x, ts->crt_state.pos.y);
+					ks.begin(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
 				}
 
-				uxr.x += ts->crt_state.pos.x - ts->prev_state.pos.x;
-				uxr.y += ts->crt_state.pos.y - ts->prev_state.pos.y;
+				uxr.x += ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+				uxr.y += ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
 
 				if (uxr.x > 0)
 				{

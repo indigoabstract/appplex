@@ -409,7 +409,7 @@ void unit::update_view(int update_count)
 			const pointer_sample& p1 = ps[k];
 			const pointer_sample& p2 = ps[k + 1];
 
-			gfx->drawLine(p1.pos.x, p1.pos.y, p2.pos.x, p2.pos.y);
+			gfx->drawLine(p1.te->points[0].x, p1.te->points[0].y, p2.te->points[0].x, p2.te->points[0].y);
 		}
 	}
 

@@ -165,7 +165,7 @@ void touchctrl::update()
 	{
 		shared_ptr<touch_sym_evt> ts = tap_sym_events.back();
 		uint32 crtTime =  pfm::time::get_time_millis();
-		uint32 delta = crtTime - ts->crt_state.time;
+		uint32 delta = crtTime - ts->crt_state.te->time;
 
 		switch(ts->get_type())
 		{
@@ -229,11 +229,9 @@ void touchctrl::on_pointer_action_pressed(std::shared_ptr<pfm_touch_event> pa)
 
 	pointer_sample ps;
 
-	ps.te = POINTER_PRESSED;
-	ps.pos = first_press;
+	ps.te = pa;
 	ps.vel.set(0, 0);
 	ps.acc.set(0, 0);
-	ps.time = pa->time;
 	ps.delta_pressed_time = 0;
 	ps.dt = 0;
 
@@ -252,16 +250,14 @@ void touchctrl::on_pointer_action_dragged(std::shared_ptr<pfm_touch_event> pa)
 		pointer_last_event_time = pa->time;
 		last_pointer_pos.set(pa->points[0].x, pa->points[0].y);
 
-		ps.te = POINTER_DRAGGED;
-		ps.pos.set(pa->points[0].x, pa->points[0].y);
-		ps.time = pa->time;
-		ps.delta_pressed_time = ps.time - pointer_press_time;
+		ps.te = pa;
+		ps.delta_pressed_time = ps.te->time - pointer_press_time;
 
 		ps.dt = ps.delta_pressed_time - pps.delta_pressed_time;
 
 		if (ps.dt > 0)
 		{
-			ps.vel.set((ps.pos.x - pps.pos.x) / ps.dt, (ps.pos.y - pps.pos.y) / ps.dt);
+			ps.vel.set((ps.te->points[0].x - pps.te->points[0].x) / ps.dt, (ps.te->points[0].y - pps.te->points[0].y) / ps.dt);
 			ps.acc.set((ps.vel.x - pps.vel.x) / ps.dt, (ps.vel.y - pps.vel.y) / ps.dt);
 		}
 		else
@@ -286,16 +282,14 @@ void touchctrl::on_pointer_action_released(std::shared_ptr<pfm_touch_event> pa)
 		pointer_sample ps;
 		pointer_sample pps = pointer_samples.back();
 
-		ps.te = POINTER_RELEASED;
-		ps.pos.set(pa->points[0].x, pa->points[0].y);
-		ps.time = pa->time;
-		ps.delta_pressed_time = ps.time - pointer_press_time;
+		ps.te = pa;
+		ps.delta_pressed_time = ps.te->time - pointer_press_time;
 
 		ps.dt = ps.delta_pressed_time - pps.delta_pressed_time;
 
 		if (ps.dt > 0)
 		{
-			ps.vel.set((ps.pos.x - pps.pos.x) / ps.dt, (ps.pos.y - pps.pos.y) / ps.dt);
+			ps.vel.set((ps.te->points[0].x - pps.te->points[0].x) / ps.dt, (ps.te->points[0].y - pps.te->points[0].y) / ps.dt);
 			ps.acc.set((ps.vel.x - pps.vel.x) / ps.dt, (ps.vel.y - pps.vel.y) / ps.dt);
 		}
 		else
@@ -358,8 +352,8 @@ void touchctrl::on_pointer_dragged_event(pointer_sample& ps)
 	{
 	case touch_sym_evt::TS_PRESSED:
 		{
-			float dx = ps.pos.x - pressed.pos.x;
-			float dy = ps.pos.y - pressed.pos.y;
+			float dx = ps.te->points[0].x - pressed.te->points[0].x;
+			float dy = ps.te->points[0].y - pressed.te->points[0].y;
 			float dist = dx * dx + dy * dy;
 
 			if(dist > DRAG_MAX_RADIUS_SQ)
@@ -407,11 +401,11 @@ void touchctrl::on_pointer_released_event(pointer_sample& ps)
 	*nts = *ts;
 	nts->set_type(touch_sym_evt::TS_RELEASED);
 
-	float dx = ps.pos.x - pressed.pos.x;
-	float dy = ps.pos.y - pressed.pos.y;
+	float dx = ps.te->points[0].x - pressed.te->points[0].x;
+	float dy = ps.te->points[0].y - pressed.te->points[0].y;
 	float dist = dx * dx + dy * dy;
 
-	if(dist < DRAG_MAX_RADIUS_SQ)
+	if(dist < DRAG_MAX_RADIUS_SQ && !ps.te->is_multitouch())
 	{
 		shared_ptr<touch_sym_evt> nts(new touch_sym_evt(touch_sym_evt::TS_FIRST_TAP));
 
@@ -424,9 +418,9 @@ void touchctrl::on_pointer_released_event(pointer_sample& ps)
 	{
 	case touch_sym_evt::TS_PRESSED:
 		{
-			uint32 delta = ps.time - pressed.time;
+			uint32 delta = ps.te->time - pressed.te->time;
 
-			if(delta <= TAP_PRESS_RELEASE_DELAY)
+			if(delta <= TAP_PRESS_RELEASE_DELAY && !ps.te->is_multitouch())
 			{
 				ts->set_type(touch_sym_evt::TS_TAP);
 			}
@@ -455,7 +449,7 @@ void touchctrl::on_pointer_released_event(pointer_sample& ps)
 				pointer_sample& p1 = pointer_samples.front();
 				pointer_sample& p2 = pointer_samples.back();
 				//trx("swipe %1%, %2%		%3%, %4%") % p1.pos.x % p1.pos.y % p2.pos.x % p2.pos.y;
-				point2d p(p2.pos.x - p1.pos.x, p2.pos.y - p1.pos.y);
+				point2d p(p2.te->points[0].x - p1.te->points[0].x, p2.te->points[0].y - p1.te->points[0].y);
 				p.y = -p.y;
 				float length = sqrtf(p.x * p.x + p.y * p.y);
 				float cosa = p.x / length;

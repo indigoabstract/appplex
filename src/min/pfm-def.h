@@ -91,14 +91,6 @@ typedef uint32 gfx_indices_type;
 
 
 // input defines
-enum pointer_actions
-{
-	POINTER_PRESS,
-	POINTER_RELEASE,
-	POINTER_DRAGG,
-	POINTER_MOUSE_WHEEL,
-};
-
 
 enum key_actions
 {

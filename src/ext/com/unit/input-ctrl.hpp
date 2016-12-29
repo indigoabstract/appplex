@@ -11,39 +11,15 @@ class keyctrl;
 class touchctrl;
 
 
-enum touch_event
-{
-	POINTER_PRESSED,
-	POINTER_DRAGGED,
-	POINTER_RELEASED,
-};
-
-
 struct pointer_sample
 {
-	touch_event te;
-	point2d pos;
+	std::shared_ptr<pfm_touch_event> te;
 	point2d vel;
 	point2d acc;
-	uint32 time;
 	uint32 delta_pressed_time;
 	float dt;
 };
 
-
-class pointer_action
-{
-public:
-	pointer_action(pointer_actions iaction, uint32 itime, int ix, int iy, int ipress_id) :
-		action(iaction), time(itime), x(ix), y(iy), press_id(ipress_id)
-	{}
-
-	pointer_actions action;
-	uint32 time;
-	int x;
-	int y;
-	int press_id;
-};
 
 class touch_sym_evt : public enable_shared_from_this<touch_sym_evt>, public iadp
 {
