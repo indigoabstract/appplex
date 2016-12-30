@@ -307,6 +307,7 @@ void touchctrl::on_pointer_action_mouse_wheel(std::shared_ptr<pfm_touch_event> p
 {
 	shared_ptr<mouse_wheel_evt> ts(new mouse_wheel_evt());
 
+	ts->crt_state.te = pa;
 	ts->x = pa->points[0].x;
 	ts->y = pa->points[0].y;
 	ts->wheel_delta = pa->mouse_wheel_delta;
