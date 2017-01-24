@@ -188,7 +188,7 @@ protected:
 	shared_ptr<draw_context> draw_ctx;
 	shared_ptr<rw_sequence> draw_ops;
 
-private:
+public:
 	glm::mat4 view_translation;
 	glm::mat4 view_rotation;
 	glm::mat4 camera;

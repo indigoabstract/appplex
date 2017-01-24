@@ -32,6 +32,10 @@ void gfx_quad_2d::set_translation(float ix, float iy)
 	case e_center:
 		position = glm::vec3(tx, ty, 0.f);
 		break;
+
+	case e_btm_center:
+		position = glm::vec3(tx, ty - sy / 2, 0.f);
+		break;
 	}
 }
 

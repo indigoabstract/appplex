@@ -14,6 +14,7 @@ public:
 	{
 		e_top_left,
 		e_center,
+		e_btm_center,
 	};
 
 	gfx_quad_2d();
