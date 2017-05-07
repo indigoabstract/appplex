@@ -6,7 +6,6 @@
 #include "kx-parser.hpp"
 #include "kx-elem.hpp"
 #include "min.hpp"
-#include <boost/foreach.hpp>
 
 using std::string;
 using std::vector;

@@ -13,7 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -408,7 +410,7 @@ public class main extends Activity
 		if(native_back_evt())
 		{
 			super.onBackPressed();
-			//System.exit(0);
+			System.exit(0);
 		}
 	}
 
@@ -437,9 +439,9 @@ public class main extends Activity
 
 		Calendar alarmStartTime = Calendar.getInstance();
 		alarmStartTime.add(Calendar.MILLISECOND, delayInSeconds * 1000);
-		long millis = alarmStartTime.getTimeInMillis();
+		long millis = SystemClock.elapsedRealtime() + delayInSeconds * 1000;//alarmStartTime.getTimeInMillis();
 
-		alarmManager.set(AlarmManager.RTC, millis, pendingIntent);
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, millis, pendingIntent);
 		//Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
 	}
 
@@ -488,10 +490,22 @@ public class main extends Activity
 		}
 	}
 
+	public static int get_screen_dpi()
+    {
+        if(inst().display_metrics == null)
+        {
+            inst().display_metrics = new DisplayMetrics();
+            inst().getWindowManager().getDefaultDisplay().getRealMetrics(inst().display_metrics);
+        }
+
+        return inst().display_metrics.densityDpi;
+    }
+
 	private static native boolean native_back_evt();
 	private static native void native_snd_init(int isample_rate, int ibuffer_size);
 	private static native void native_snd_close();
 	private native void native_set_writable_path(String iwritable_path);
 
+    private DisplayMetrics display_metrics;
 	private static main instance = null;
 }

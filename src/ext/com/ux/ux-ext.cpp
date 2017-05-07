@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "ux-ext.hpp"
-#include <boost/foreach.hpp>
+
 
 using std::string;
 
@@ -93,7 +93,7 @@ void ux_list_menu_model::set_data(std::vector<ux_list_menu_item> ielems)
 
 	elems.clear();
 
-	BOOST_FOREACH(ux_list_menu_item e, ielems)
+	for(auto e : ielems)
 	{
 		set_data_helper(uxroot, e);
 	}

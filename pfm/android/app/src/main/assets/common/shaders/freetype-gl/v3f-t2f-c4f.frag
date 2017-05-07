@@ -30,6 +30,9 @@
  * those of the authors and should not be interpreted as representing official
  * policies, either expressed or implied, of Nicolas P. Rougier.
  * ========================================================================= */
+#ifdef GL_ES
+	precision lowp float;
+#endif
 uniform sampler2D texture;
 varying vec2 v_v2_tex_coord;
 varying vec4 v_v4_color;

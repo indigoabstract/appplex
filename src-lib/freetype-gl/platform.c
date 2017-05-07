@@ -34,7 +34,7 @@
  * ============================================================================
  */
 #include <string.h>
-#include "platform.h"
+#include "freetype-gl/platform.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 

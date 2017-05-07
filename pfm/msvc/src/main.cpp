@@ -178,6 +178,11 @@ shared_ptr<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::stri
 	return std::make_shared<msvc_file_impl>(ifilename, iroot_dir);
 }
 
+int msvc_main::get_screen_dpi()const
+{
+   return 127;
+}
+
 void msvc_main::write_text(const char* text)const
 {
 	if(text && instance->console_handle != INVALID_HANDLE_VALUE)
@@ -851,7 +856,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
 		if(sampleBufferCount > 0)
 		{
-			trx((std::string("MSAA samples per pixel count: ") + std::to_string(static_cast<long long>(sampleCount))).c_str());
+			trx("MSAA samples per pixel count: {}", sampleCount);
 		}
 	}
 

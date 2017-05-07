@@ -28,7 +28,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
-#include <boost/foreach.hpp>
 #include <string>
 #include <vector>
 
@@ -206,25 +205,22 @@ public:
 
 	virtual const shared_ptr<std::string> on_before_submit_fsh_source(shared_ptr<gfx_shader> gp, const shared_ptr<std::string> ishader_src)
 	{
-		std::string fsh = GLSL_SRC(
-#ifdef GL_ES
-			\n
-			precision highp float;
-		\n
-#else \n
-#define lowp \n
-#define mediump \n
-#define highp \n
-#endif \n
-			// shadertoy\n
-			uniform vec3 iResolution; \n
-			uniform float iGlobalTime; \n
-			uniform float iChannelTime[4]; \n
-			uniform vec3 iChannelResolution[4]; \n
-			uniform vec4 iMouse; \n
-			uniform vec4 iDate; \n
-			uniform float iSampleRate; \n
-			);
+		std::string fsh =
+      "#ifdef GL_ES\n\
+      precision highp float;\n\
+      #else \n\
+      #define lowp \n\
+      #define mediump \n\
+      #define highp \n\
+      #endif \n\
+      // shadertoy\n\
+      uniform vec3 iResolution; \n\
+      uniform float iGlobalTime; \n\
+      uniform float iChannelTime[4]; \n\
+      uniform vec3 iChannelResolution[4]; \n\
+      uniform vec4 iMouse; \n\
+      uniform vec4 iDate; \n\
+      uniform float iSampleRate;\n";
 
 
 		std::string channel_list = "";

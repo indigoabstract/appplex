@@ -426,7 +426,7 @@ public:
 	std::vector<shared_ptr<ux_select_button> > button_list;
 	bool recalc_points;
 	shared_ptr<curve_mesh> cm;
-	std::vector<point2d> point_list;
+	std::vector<pfm_touch_event::touch_point> point_list;
 	shared_ptr<gfx_camera> persp_cam;
 	shared_ptr<ux_camera> ortho_cam;
 	shared_ptr<std::vector<glm::vec2> > poly;
@@ -565,7 +565,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 			{
 			case touch_sym_evt::TS_PRESS_AND_DRAG:
 			{
-				p->point_list.push_back(ts->crt_state.pos);
+				p->point_list.push_back(ts->crt_state.te->points[0]);
 				p->recalc_points = true;
 				ts->process();
 				//vprint("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
@@ -583,7 +583,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 			case touch_sym_evt::TS_PRESSED:
 			{
 				p->point_list.clear();
-				p->point_list.push_back(ts->crt_state.pos);
+				p->point_list.push_back(ts->crt_state.te->points[0]);
 				p->recalc_points = true;
 				ts->process();
 
@@ -592,7 +592,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 
 			case touch_sym_evt::TS_RELEASED:
 			{
-				control_curve_ns::Point pt(ts->crt_state.pos.x, ts->crt_state.pos.y);
+				control_curve_ns::Point pt(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
 
 				p->point_list.clear();
 				p->recalc_points = false;

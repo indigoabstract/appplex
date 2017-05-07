@@ -3,7 +3,7 @@ model {
     android {
         //compileOptions.incremental = false
         compileSdkVersion = 23
-        buildToolsVersion = "23.0.2"
+        buildToolsVersion = "25.0.0"
 
         defaultConfig.with {
             applicationId = "com.indigoabstract.appplex"
@@ -46,10 +46,6 @@ model {
                             '../../../src/ext/tlib',
                             '../../../src/units',
                             '../../../src-inc',
-                            '../../../src-inc/boost',
-                            '../../../src-inc/ffmpeg',
-                            '../../../src-inc/freetype-gl',
-                            '../../../src-inc/VG',
                     ]
                 }
 

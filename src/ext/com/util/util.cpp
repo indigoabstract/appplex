@@ -3,9 +3,6 @@
 #include "util.hpp"
 #include "com/unit/transitions.hpp"
 #include "unit-ctrl.hpp"
-#include <boost/circular_buffer.hpp>
-#include <boost/foreach.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 
 
 using std::string;

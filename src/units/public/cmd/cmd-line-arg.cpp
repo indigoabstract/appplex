@@ -14,9 +14,7 @@
 #include "mod/rdo-add-stdafx-include.hpp"
 #include "mod/rdo-recursive-copy.hpp"
 #include "mod/mod-appplex-conf.hpp"
-//#include "misc/sherlock.h"
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/algorithm/string.hpp>
@@ -25,7 +23,7 @@ using namespace boost::program_options;
 using std::string;
 using std::vector;
 
-typedef boost::unordered_map<std::string, shared_ptr<mod_cmd> > smap;
+using smap = std::unordered_map<std::string, shared_ptr<mod_cmd> >;
 
 
 const string HELP			= "help";

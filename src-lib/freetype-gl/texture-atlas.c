@@ -38,8 +38,8 @@
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
-#include "opengl.h"
-#include "texture-atlas.h"
+#include "freetype-gl/opengl.h"
+#include "freetype-gl/texture-atlas.h"
 
 
 // ------------------------------------------------------ texture_atlas_new ---

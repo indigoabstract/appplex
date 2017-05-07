@@ -2,7 +2,6 @@
 
 #include "pfm.hpp"
 #include "min.hpp"
-#include <boost/date_time.hpp>
 #include <string>
 #include <vector>
 
@@ -66,9 +65,9 @@ public:
 	virtual void update();
 
 protected:
-	boost::posix_time::ptime start_time;
-	boost::posix_time::ptime pause_time;
-	boost::posix_time::time_duration pause_duration;
+   uint32 start_time;
+   uint32 pause_time;
+   uint32 pause_duration;
 	bool finished;
 	bool paused;
 };
@@ -103,12 +102,12 @@ public:
 protected:
 	friend class ms_linear_transition;
 	virtual void reset();
-	virtual void start(boost::posix_time::time_duration offset);
+	virtual void start(uint32 offset);
 
 	int duration;
-	boost::posix_time::ptime start_time;
-	boost::posix_time::ptime pause_time;
-	boost::posix_time::time_duration pause_duration;
+	uint32 start_time;
+   uint32 pause_time;
+   uint32 pause_duration;
 	float position;
 	bool finished;
 	bool paused;

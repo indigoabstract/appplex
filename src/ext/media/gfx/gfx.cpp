@@ -152,7 +152,7 @@ void gfx::init()
 	else
 	{
 		vprint("gl_ctrl::init: this method must only be called once\n");
-		reload();
+		//reload();
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
 		//throw ia_exception("this method must only be called once");
 	}

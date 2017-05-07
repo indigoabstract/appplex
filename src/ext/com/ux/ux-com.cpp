@@ -7,7 +7,6 @@
 #include "com/util/util.hpp"
 #include "com/unit/transitions.hpp"
 #include "glm/vec2.hpp"
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 using std::string;

@@ -47,8 +47,8 @@
 #include <assert.h>
 #include <math.h>
 #include <wchar.h>
-#include "texture-font.h"
-#include "platform.h"
+#include "freetype-gl/texture-font.h"
+#include "freetype-gl/platform.h"
 
 #define HRES  64
 #define HRESf 64.f

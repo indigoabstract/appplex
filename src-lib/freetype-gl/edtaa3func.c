@@ -58,7 +58,7 @@
  *
 */
 #include <math.h>
-#include "edtaa3func.h"
+#include "freetype-gl/edtaa3func.h"
 
 /*
  * Compute the local gradient at edge pixels using convolution filters.

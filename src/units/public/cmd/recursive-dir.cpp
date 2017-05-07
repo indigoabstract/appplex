@@ -8,7 +8,6 @@
 #include "com/util/unicode/boost-filesystem-util.hpp"
 #include "min.hpp"
 #include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
 #include <string>
 
 using namespace boost::algorithm;

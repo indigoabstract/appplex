@@ -5,7 +5,6 @@
 
 #include "kx-elem.hpp"
 #include "min.hpp"
-#include <boost/foreach.hpp>
 
 using std::string;
 using std::vector;
@@ -27,17 +26,17 @@ class kx_scn_main;
 
 shared_ptr<kx_whitespace> kx_whitespace::new_instance(){ return shared_ptr<kx_whitespace>(new kx_whitespace()); }
 
-string kx_whitespace::print(){ return data; }
+string kx_whitespace::print(int ilevel){ return data; }
 
 
 shared_ptr<kx_comma> kx_comma::new_instance(){ return shared_ptr<kx_comma>(new kx_comma()); }
 
-string kx_comma::print(){ return ","; }
+string kx_comma::print(int ilevel){ return ", "; }
 
 
 shared_ptr<kx_async_flowop> kx_async_flowop::new_instance(){ return shared_ptr<kx_async_flowop>(new kx_async_flowop()); }
 
-string kx_async_flowop::print()
+string kx_async_flowop::print(int ilevel)
 {
 	std::string s = "->>";
 
@@ -51,7 +50,7 @@ string kx_async_flowop::print()
 
 shared_ptr<kx_flowop> kx_flowop::new_instance(){ return shared_ptr<kx_flowop>(new kx_flowop()); }
 
-string kx_flowop::print()
+string kx_flowop::print(int ilevel)
 {
 	std::string s = "->";
 
@@ -66,7 +65,7 @@ string kx_flowop::print()
 
 bool kx_process::is_process(){ return true; }
 
-string kx_process::print(){ return "kx_process"; }
+string kx_process::print(int ilevel){ return "kx_process"; }
 
 shared_ptr<kx_process> kx_process::find_by_name(const std::string& iname)
 {
@@ -81,7 +80,7 @@ shared_ptr<kx_process> kx_process::find_by_name(const std::string& iname)
 
 shared_ptr<kx_symbol> kx_symbol::new_instance(){ return shared_ptr<kx_symbol>(new kx_symbol()); }
 
-string kx_symbol::print(){ return name; }
+string kx_symbol::print(int ilevel){ return name; }
 
 void kx_symbol::eval()
 {
@@ -91,7 +90,7 @@ void kx_symbol::eval()
 
 shared_ptr<kx_text> kx_text::new_instance(){ return shared_ptr<kx_text>(new kx_text()); }
 
-std::string kx_text::print(){ return data; }
+std::string kx_text::print(int ilevel){ return data; }
 
 void kx_text::eval()
 {
@@ -101,21 +100,22 @@ void kx_text::eval()
 
 shared_ptr<kx_block> kx_block::new_instance(){ return shared_ptr<kx_block>(new kx_block()); }
 
-string kx_block::print()
+string kx_block::print(int ilevel)
 {
 	std::string s = "";
 
 	if (name)
 	{
-		s.append(name->name);
+		s.append(indent_by_level(ilevel) + name->name);
 	}
 
-	s.append("[");
+	s.append("\n" + indent_by_level(ilevel) + "[\n");
+	s.append(indent_by_level(ilevel + 1));
 	BOOST_FOREACH(shared_ptr<kx_elem> ke, list)
 	{
-		s.append(ke->print());
+		s.append(ke->print(ilevel + 1));
 	}
-	s.append("]");
+	s.append("\n" + indent_by_level(ilevel) + "]\n");
 
 	return s;
 }
@@ -162,20 +162,20 @@ shared_ptr<kx_process> kx_block::find_by_name(const std::string& iname)
 
 shared_ptr<kx_ignore_block> kx_ignore_block::new_instance(){ return shared_ptr<kx_ignore_block>(new kx_ignore_block()); }
 
-string kx_ignore_block::print()
+string kx_ignore_block::print(int ilevel)
 {
 	std::string s = "@@";
 
 	if (name)
 	{
-		s.append(name->name);
+		s.append(indent_by_level(ilevel) + name->name);
 	}
 
 	if (!body.empty())
 	{
-		s.append("[");
-		s.append(body);
-		s.append("]");
+		s.append(indent_by_level(ilevel) + "\n[\n");
+		s.append(indent_by_level(ilevel) + body);
+		s.append(indent_by_level(ilevel) + "\n]\n");
 	}
 
 	return s;
@@ -184,21 +184,22 @@ string kx_ignore_block::print()
 
 shared_ptr<kx_match_block> kx_match_block::new_instance(){ return shared_ptr<kx_match_block>(new kx_match_block()); }
 
-string kx_match_block::print()
+string kx_match_block::print(int ilevel)
 {
 	std::string s = "?";
 
 	if (name)
 	{
-		s.append(name->name);
+		s.append(indent_by_level(ilevel) + name->name);
 	}
 
-	s.append("[");
+	s.append(indent_by_level(ilevel) + "\n[\n");
+	s.append(indent_by_level(ilevel));
 	BOOST_FOREACH(shared_ptr<kx_elem> ke, blk->list)
 	{
-		s.append(ke->print());
+		s.append(ke->print(ilevel + 1));
 	}
-	s.append("]");
+	s.append(indent_by_level(ilevel) + "\n]\n");
 
 	return s;
 }
@@ -206,23 +207,24 @@ string kx_match_block::print()
 
 shared_ptr<kx_meta_block> kx_meta_block::new_instance(){ return shared_ptr<kx_meta_block>(new kx_meta_block()); }
 
-std::string kx_meta_block::print()
+std::string kx_meta_block::print(int ilevel)
 {
 	std::string s = "@";
 
 	if (name)
 	{
-		s.append(name->name);
+		s.append(indent_by_level(ilevel) + name->name);
 	}
 
 	if (blk)
 	{
-		s.append("[");
+		s.append(indent_by_level(ilevel) + "\n[\n");
+		s.append(indent_by_level(ilevel));
 		BOOST_FOREACH(shared_ptr<kx_elem> ke, blk->list)
 		{
-			s.append(ke->print());
+			s.append(ke->print(ilevel + 1));
 		}
-		s.append("]");
+		s.append(indent_by_level(ilevel) + "\n]\n");
 	}
 
 	return s;

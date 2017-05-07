@@ -46,8 +46,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-#include "texture-font.h"
-#include "font-manager.h"
+#include "freetype-gl/texture-font.h"
+#include "freetype-gl/font-manager.h"
 
 wchar_t *
 wcsdup(const wchar_t *s)

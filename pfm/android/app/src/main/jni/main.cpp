@@ -208,6 +208,17 @@ shared_ptr<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::s
 	return std::make_shared<android_file_impl>(ifilename, iroot_dir);
 }
 
+int android_main::get_screen_dpi()const
+{
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass("com/indigoabstract/appplex/main");
+    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()I");
+
+    jint dpi = env->CallStaticIntMethod(clazz, mid);
+
+    return (int)dpi;
+}
+
 void android_main::write_text(const char* text)const
 {
 	__android_log_print(ANDROID_LOG_VERBOSE, APPNAME, text, 0);
@@ -432,16 +443,15 @@ extern "C"
 
 		asset_manager = AAssetManager_fromJava(env, iasset_manager);
 
-		if (!asset_manager)
-		{
-			trx("error loading asset manager");
-		}
-		else
-		{
-			trx("loaded asset manager");
-		}
-
-		android_main::get_instance()->init();
+        if(asset_manager)
+        {
+            android_main::get_instance()->init();
+            trx("asset manager loaded");
+        }
+        else
+        {
+            trx("error loading asset manager");
+        }
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeStartApp(JNIEnv*  env, jobject thiz)

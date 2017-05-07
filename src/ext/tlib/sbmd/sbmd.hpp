@@ -5,6 +5,7 @@
 #ifdef MOD_SBMD
 
 #include "pfm.hpp"
+#include <boost/any.hpp>
 #include <string>
 #include <vector>
 

@@ -63,7 +63,7 @@ std::string musical_note::get_name()
 
 std::string musical_note::get_full_name()
 {
-	std::string name = trs("%1%[%2%]") % note_names[note_id] % (int)octave;
+	std::string name = trs("{0}[{1}]", note_names[note_id], (int)octave);
 	return name;
 }
 

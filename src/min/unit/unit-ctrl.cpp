@@ -38,10 +38,11 @@ bool unit_ctrl::back_evt()
 		if (u == ul)
 		{
 			set_app_exit_on_next_run(true);
+
 			return true;
 		}
 
-		u->back();
+		return u->back();
 	}
 
 	return false;

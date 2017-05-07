@@ -772,6 +772,11 @@ int pfm::screen::get_target_fps()
 	return 30;
 }
 
+int pfm::screen::get_screen_dpi()
+{
+   return pfm_app_inst->get_screen_dpi();
+}
+
 bool pfm::screen::is_full_screen_mode()
 {
 	return pfm_app_inst->is_full_screen_mode();
@@ -998,84 +1003,39 @@ shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 }
 
 
-
-#if defined MOD_BOOST
-
-uint32 pfm::time::get_time_millis()
+void trx(const char* format, fmt::ArgList args)
 {
-	return (boost::posix_time::microsec_clock::local_time() - time_start).total_milliseconds();
+   std::string s = fmt::format(format, args);
+   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
 }
 
-// trace
-fmttrace fmttrace::inst0(0);
-fmttrace fmttrace::inst1(1);
-fmttrace fmttrace::inst2(2);
-
-
-fmttrace::fmttrace(int iType)
+void wtrx(const wchar_t* format, fmt::ArgList args)
 {
-	type = iType;
+   std::wstring s = fmt::format(format, args);
+   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
 }
 
-void fmttrace::operator<(boost::format& fmt)const
+void trc(const char* format, fmt::ArgList args)
 {
-	string ts = boost::str(fmt);
-	const char* c = ts.c_str();
-
-	switch (type)
-	{
-	case 0:
-		pfm_app_inst->write_text_nl(c);
-		break;
-
-	case 1:
-		pfm_app_inst->write_text(c);
-		break;
-	}
-
-	//pfm::get_console()->add_line(c);
+   std::string s = fmt::format(format, args);
+   pfm::get_pfm_main_inst()->write_text(s.c_str());
 }
 
-void fmttrace::operator<(boost::wformat& fmt)const
+void wtrc(const wchar_t* format, fmt::ArgList args)
 {
-	wstring ts = boost::str(fmt);
-	const wchar_t* c = ts.c_str();
-
-	switch (type)
-	{
-	case 0:
-		pfm_app_inst->write_text_nl(c);
-		break;
-
-	case 1:
-		pfm_app_inst->write_text(c);
-		break;
-	}
-
-	//pfm::get_console()->add_line(c);
+   std::wstring s = fmt::format(format, args);
+   pfm::get_pfm_main_inst()->write_text(s.c_str());
 }
 
-string fmttrace::operator>(boost::format& fmt)const
+std::string trs(const char* format, fmt::ArgList args)
 {
-	return boost::str(fmt);
+   return fmt::format(format, args);
 }
 
-wstring fmttrace::operator>(boost::wformat& fmt)const
+std::wstring wtrs(const wchar_t* format, fmt::ArgList args)
 {
-	return boost::str(fmt);
+   return fmt::format(format, args);
 }
-
-shared_ptr<string> fmttrace::operator>=(boost::format& fmt)const
-{
-	return shared_ptr<string>(new string(boost::str(fmt)));
-}
-
-shared_ptr<wstring> fmttrace::operator>=(boost::wformat& fmt)const
-{
-	return shared_ptr<wstring>(new wstring(boost::str(fmt)));
-}
-
-#endif
 
 
 void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw()

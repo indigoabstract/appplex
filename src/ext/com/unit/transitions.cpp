@@ -1,14 +1,9 @@
 #include "stdafx.h"
 
 #include "transitions.hpp"
-#include <boost/foreach.hpp>
 
 using std::string;
 using std::vector;
-using boost::posix_time::ptime;
-using boost::posix_time::microsec_clock;
-using boost::posix_time::time_duration;
-using boost::posix_time::milliseconds;
 
 
 const string transition_evt::TRANSITION_EVT_TYPE					= "tr-";
@@ -88,9 +83,9 @@ bool linear_transition::is_paused()const
 
 int linear_transition::get_elapsed_time()const
 {
-	time_duration delta = microsec_clock::local_time() - start_time - pause_duration;
+	uint32 delta = pfm::time::get_time_millis() - start_time - pause_duration;
 
-	return delta.total_milliseconds();
+	return delta;
 }
 
 int linear_transition::get_duration()const
@@ -105,7 +100,7 @@ float linear_transition::get_position()const
 
 void linear_transition::start()
 {
-	start(milliseconds(0));
+	start(pfm::time::get_time_millis());
 }
 
 void linear_transition::stop()
@@ -121,7 +116,7 @@ void linear_transition::pause()
 		throw ia_exception();//trs("transition cannot be paused. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
-	pause_time = microsec_clock::local_time();
+	pause_time = pfm::time::get_time_millis();
 	paused = true;
 }
 
@@ -132,7 +127,7 @@ void linear_transition::resume()
 		throw ia_exception();//trs("transition cannot be resumed. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
-	pause_duration += microsec_clock::local_time() - pause_time;
+	pause_duration += pfm::time::get_time_millis() - pause_time;
 	paused = false;
 }
 
@@ -156,18 +151,18 @@ void linear_transition::update()
 
 void linear_transition::reset()
 {
-	start_time = ptime();
-	pause_time = ptime();
-	pause_duration = milliseconds(0);
+	start_time = pfm::time::get_time_millis();
+	pause_time = pfm::time::get_time_millis();
+	pause_duration = pfm::time::get_time_millis();
 	position = 0;
 	finished = true;
 	paused = false;
 }
 
-void linear_transition::start(boost::posix_time::time_duration offset)
+void linear_transition::start(uint32 offset)
 {
 	reset();
-	start_time = microsec_clock::local_time() - offset;
+	start_time = pfm::time::get_time_millis() - offset;
 	finished = false;
 	paused = false;
 }
@@ -181,7 +176,7 @@ shared_ptr<ms_linear_transition> ms_linear_transition::new_instance(shared_ptr<m
 
 	mslt->duration = 0;
 
-	BOOST_FOREACH(shared_ptr<linear_transition> lt, td->transitions)
+	for(auto lt : td->transitions)
 	{
 		mslt->transitions.push_back(lt);
 		mslt->duration += lt->get_duration();
@@ -270,7 +265,7 @@ void ms_linear_transition::update()
 				td += transitions[k]->get_duration();
 			}
 
-			tr->start(milliseconds(tms - td));
+			tr->start(tms - td);
 			tr->update();
 		}
 		else
@@ -310,7 +305,7 @@ shared_ptr<ms_transition_data> ms_transition_data::new_transition_data(const vec
 {
 	shared_ptr<ms_transition_data> td(new ms_transition_data());
 
-	BOOST_FOREACH(shared_ptr<linear_transition> t, itransitions)
+	for(auto t : itransitions)
 	{
 		td->transitions.push_back(t);
 	}
@@ -323,7 +318,7 @@ shared_ptr<ms_transition_data> ms_transition_data::new_position_data(const vecto
 	shared_ptr<ms_transition_data> td(new ms_transition_data());
 	int deltat = 0;
 
-	BOOST_FOREACH(int position, tposition)
+	for(int position : tposition)
 	{
 		shared_ptr<linear_transition> lt(new linear_transition(position - deltat));
 
@@ -355,7 +350,7 @@ shared_ptr<ms_transition_data> ms_transition_data::new_duration_data(const vecto
 {
 	shared_ptr<ms_transition_data> td(new ms_transition_data());
 
-	BOOST_FOREACH(int duration, tduration)
+	for(int duration : tduration)
 	{
 		shared_ptr<linear_transition> lt(new linear_transition(duration));
 

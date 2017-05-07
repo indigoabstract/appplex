@@ -7,7 +7,6 @@
 #include "min.hpp"
 #include <sbmd/kx-krte.hpp>
 #include <sbmd/kx-elem.hpp>
-#include <boost/any.hpp>
 #include <boost/algorithm/string.hpp>
 
 

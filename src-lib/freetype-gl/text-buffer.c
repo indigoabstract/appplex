@@ -41,9 +41,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
-#include "texture-font.h"
-#include "opengl.h"
-#include "text-buffer.h"
+#include "freetype-gl/texture-font.h"
+#include "freetype-gl/opengl.h"
+#include "freetype-gl/text-buffer.h"
 
 
 #define SET_GLYPH_VERTEX(value,x0,y0,z0,s0,t0,r,g,b,a,sh,gm) { \

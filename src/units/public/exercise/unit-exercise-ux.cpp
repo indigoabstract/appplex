@@ -7,7 +7,6 @@
 #include "com/ux/ux-camera.hpp"
 #include "com/ux/ux-com.hpp"
 #include "com/unit/transitions.hpp"
-#include <boost/foreach.hpp>
 
 using boost::posix_time::ptime;
 using boost::posix_time::microsec_clock;

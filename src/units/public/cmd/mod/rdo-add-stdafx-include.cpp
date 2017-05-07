@@ -10,7 +10,6 @@
 #include "com/util/unicode/boost-program-options-util.hpp"
 #include "rdo-recursive-copy.hpp"
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>

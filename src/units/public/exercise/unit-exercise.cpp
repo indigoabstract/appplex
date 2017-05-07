@@ -8,8 +8,8 @@
 #include "com/ux/ux-com.hpp"
 #include "com/unit/transitions.hpp"
 #include "min.hpp"
-#include "cmd/start-process.hpp"
-#include "cmd/long-operation.hpp"
+#include "public/cmd/start-process.hpp"
+#include "public/cmd/long-operation.hpp"
 #include <boost/date_time.hpp>
 
 using boost::posix_time::ptime;

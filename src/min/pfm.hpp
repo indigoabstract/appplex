@@ -41,7 +41,6 @@ typedef wchar_t		 unicodechar;
 #define utrx(arg)	 trx(arg)
 #define utrc(arg)	 trc(arg)
 #define utrs(arg)	 trs(arg)
-#define utrss(arg)	 trss(arg)
 
 #elif defined UNICODE_USING_STD_WSTRING
 
@@ -50,7 +49,6 @@ typedef wchar_t		 unicodechar;
 #define utrx(arg)	 wtrx(arg)
 #define utrc(arg)	 wtrc(arg)
 #define utrs(arg)	 wtrs(arg)
-#define utrss(arg)	 wtrss(arg)
 
 #endif
 
@@ -58,6 +56,7 @@ class ia_console;
 class unit;
 class unit_ctrl;
 class pfm_file;
+
 namespace pfm_impl
 {
 	class pfm_file_impl;
@@ -68,6 +67,7 @@ class pfm_touch_event
 {
 public:
 	static const int MAX_TOUCH_POINTS = 8;
+
 	enum e_touch_type
 	{
 		touch_invalid,
@@ -77,6 +77,7 @@ public:
 		touch_cancelled,
 		mouse_wheel,
 	};
+
 	struct touch_point
 	{
 		uint32 identifier = 0;
@@ -100,7 +101,7 @@ public:
 
 	const touch_point* find_point(uint32 touch_id) const
 	{
-		for (int i = 0; i < touch_count; i++)
+		for (uint32 i = 0; i < touch_count; i++)
 		{
 			if (this->points[i].identifier == touch_id)
 			{
@@ -114,7 +115,7 @@ public:
 	bool same_touches(const pfm_touch_event& other) const
 	{
 		if (other.touch_count == this->touch_count) {
-			for (int i = 0; i < this->touch_count; i++) {
+			for (uint32 i = 0; i < this->touch_count; i++) {
 				if (nullptr == this->find_point(other.points[i].identifier)) {
 					return false;
 				}
@@ -263,6 +264,7 @@ public:
 class pfm_main
 {
 public:
+   virtual int get_screen_dpi()const = 0;
 	virtual void write_text(const char* text)const = 0;
 	virtual void write_text_nl(const char* text)const = 0;
 	virtual void write_text(const wchar_t* text)const = 0;
@@ -291,6 +293,7 @@ public:
 		static int get_width();
 		static int get_height();
 		static int get_target_fps();
+      static int get_screen_dpi();
 		static bool is_full_screen_mode();
 		static void set_full_screen_mode(bool ienabled);
 		static bool is_gfx_available();
@@ -342,66 +345,24 @@ private:
 };
 
 
-#if defined MOD_BOOST
+// format lib
+#include <fmt/format.h>
 
-	#include <format.hpp>
+#define trn() pfm::get_pfm_main_inst()->write_text_nl("")
+#define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
+void trx(const char* format, fmt::ArgList args);
+FMT_VARIADIC(void, trx, const char*)
+void wtrx(const wchar_t* format, fmt::ArgList args);
+FMT_VARIADIC(void, wtrx, const wchar_t*)
+void trc(const char* format, fmt::ArgList args);
+FMT_VARIADIC(void, trc, const char*)
+void wtrc(const wchar_t* format, fmt::ArgList args);
+FMT_VARIADIC(void, wtrc, const wchar_t*)
+std::string trs(const char* format, fmt::ArgList args);
+FMT_VARIADIC(std::string, trs, const char*)
+std::wstring wtrs(const wchar_t* format, fmt::ArgList args);
+FMT_VARIADIC(std::wstring, wtrs, const wchar_t*)
 
-	// trace
-	class fmttrace
-	{
-	public:
-		static fmttrace inst0, inst1, inst2;
-		boost::format f;
-		boost::wformat wf;
-
-		void operator<(boost::format& fmt)const;
-		void operator<(boost::wformat& fmt)const;
-		std::string operator>(boost::format& fmt)const;
-		std::wstring operator>(boost::wformat& fmt)const;
-		shared_ptr<std::string> operator>=(boost::format& fmt)const;
-		shared_ptr<std::wstring> operator>=(boost::wformat& fmt)const;
-
-	private:
-		fmttrace(int itype);
-
-		int type;
-	};
-
-	// if these are called before fmttrace is initialized (ie, in a static variable's constructor), it will cause a crash
-	#define trn()		fmttrace::inst0 < fmttrace::inst0.f.parse("")
-	#define wtrn()		fmttrace::inst0 < fmttrace::inst0.wf.parse(L"")
-	#define trx(arg)	fmttrace::inst0 < fmttrace::inst0.f.parse(arg)
-	#define wtrx(arg)	fmttrace::inst0 < fmttrace::inst0.wf.parse(arg)
-	#define trc(arg)	fmttrace::inst1 < fmttrace::inst1.f.parse(arg)
-	#define wtrc(arg)	fmttrace::inst1 < fmttrace::inst1.wf.parse(arg)
-	#define trs(arg)	fmttrace::inst2 > fmttrace::inst2.f.parse(arg)
-	#define wtrs(arg)	fmttrace::inst2 > fmttrace::inst2.wf.parse(arg)
-	#define trss(arg)	fmttrace::inst2 >= fmttrace::inst2.f.parse(arg)
-	#define wtrss(arg)	fmttrace::inst2 >= fmttrace::inst2.wf.parse(arg)
-
-#else
-
-	#define trn()		pfm::get_pfm_main_inst()->write_text_nl("")
-	#define wtrn()		pfm::get_pfm_main_inst()->write_text_nl(arg)
-	#define trx(arg)	pfm::get_pfm_main_inst()->write_text_nl(arg)
-	#define wtrx(arg)	pfm::get_pfm_main_inst()->write_text(arg)
-	#define trc(arg)	pfm::get_pfm_main_inst()->write_text(arg)
-	#define wtrc(arg)	pfm::get_pfm_main_inst()->write_text(arg)
-	#define trs(arg)	
-	#define wtrs(arg)	
-	#define trss(arg)	
-	#define wtrss(arg)	
-
-#endif
-
-//#if defined PLATFORM_ANDROID
-//#define vprint(iformat, args...)		pfm::get_pfm_main_inst()->write_text_v(iformat, args)
-//#elif defined PLATFORM_WINDOWS_PC
-//#define vprint(iformat, ...)		pfm::get_pfm_main_inst()->write_text_v(iformat, __VA_ARGS__)
-//#endif
-
-//#define vprint(iformat, ...)		pfm::get_pfm_main_inst()->write_text_v(iformat, __VA_ARGS__)
-//#define vprint(...)		pfm::get_pfm_main_inst()->write_text_v(__VA_ARGS__)
 #define vprint(iformat, ...)		pfm::get_pfm_main_inst()->write_text_v(iformat, ##__VA_ARGS__)
 
 // assert

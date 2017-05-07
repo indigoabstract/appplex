@@ -3,7 +3,7 @@
 #include "pfm.hpp"
 #include "com/util/util.hpp"
 #include "com/unit/input-ctrl.hpp"
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <exception>
 #include <string>
 #include <vector>
@@ -250,7 +250,7 @@ public:
 	virtual void update_view(shared_ptr<ux_camera> g);
 	shared_ptr<ux> get_ux_at(int idx);
 
-	boost::unordered_map<touch_sym_evt::touch_sym_evt_types, shared_ptr<ux_page_transition> > tmap;
+	std::unordered_map<int, std::shared_ptr<ux_page_transition> > tmap;
 
 protected:
 	ux_page();

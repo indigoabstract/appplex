@@ -11,14 +11,17 @@
 #include "gfx.hpp"
 #include "gfx-scene.hpp"
 #include "gfx-state.hpp"
-#include <boost/filesystem.hpp>
 #include "media/res-ld/res-ld.hpp"
 #include "com/ux/font-db.hpp"
 #include <cstdio>
 
+#ifdef MOD_BOOST
+   #include <boost/filesystem.hpp>
+   namespace bfs = ::boost::filesystem;
+#endif // MOD_BOOST
+
 using std::string;
 using std::vector;
-namespace bfs = ::boost::filesystem;
 
 
 int unit::unit_count = 0;
@@ -145,6 +148,12 @@ void unit::on_resize()
 
 void unit::receive(shared_ptr<iadp> idp)
 {
+	if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+	{
+		shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+		auto pa = ts->crt_state.te;
+		//trx("_mt2 %1% tt %2%") % pa->is_multitouch() % pa->type;
+	}
 	send(uxroot, idp);
 
 	if(!idp->is_processed())
@@ -298,9 +307,15 @@ bool unit::cancel_operation(int ioperation_id)
 	return false;
 }
 
-void unit::back()
+bool unit::back()
 {
+#ifndef SINGLE_UNIT_BUILD
 	unit_list::up_one_level();
+
+	return false;
+#else
+	return true;
+#endif
 }
 
 bool unit::is_gfx_unit()
@@ -413,15 +428,13 @@ void unit::update_view(int update_count)
 		}
 	}
 
-#ifdef MOD_BOOST
 	if(fps > 0)
 	{
 		float ups = 1000.f / update_ctrl->getTimeStepDuration();
-		string f = trs("uc %d u %02.1f f %02.1f") % update_count % ups % fps;
+		string f = trs("uc {} u {:02.1f} f {:02.1f}", update_count, ups, fps);
 
 		gfx->drawText(f, get_width() - 220, 0);
 	}
-#endif
 
 	//signal_opengl_error();
 }
@@ -453,7 +466,8 @@ shared_ptr<pfm_file> unit::ustorage::random_access(std::string name)
 
 void unit::ustorage::save_screenshot(std::string ifilename)
 {
-	if (!u.lock()->is_gfx_unit())
+#ifdef MOD_BOOST
+   if (!u.lock()->is_gfx_unit())
 	{
 		return;
 	}
@@ -463,13 +477,13 @@ void unit::ustorage::save_screenshot(std::string ifilename)
 
 	if (ifilename.size() == 0)
 	{
-		string file_root = trs("%1%-") % u.lock()->get_name();
+		string file_root = trs("{}-", u.lock()->get_name());
 		string img_ext = ".png";
 		string zeroes[] =
 		{
 			"00", "0"
 		};
-		std::string dir_name = trs("f:\\data\\media\\work\\screens\\%1%") % u.lock()->get_name();
+		std::string dir_name = trs("f:\\data\\media\\work\\screens\\{}", u.lock()->get_name());
 		//shared_ptr<pfm_file> dir = pfm_file::get_inst(dir_name);
 		bfs::path dst_dir(dir_name);
 		//bfs::path screenshot_file;
@@ -497,15 +511,15 @@ void unit::ustorage::save_screenshot(std::string ifilename)
 			// assign a zero prefix.
 			if (digits < 2)
 			{
-				idx_nr = trs("%1%%2%%3%") % file_root % zeroes[digits] % screenshot_idx;
+				idx_nr = trs("{0}{1}{2}", file_root, zeroes[digits], screenshot_idx);
 			}
 			else
 			{
-				idx_nr = trs("%1%%2%") % file_root % screenshot_idx;
+				idx_nr = trs("{0}{1}", file_root, screenshot_idx);
 			}
 
 			//screenshot_file = dst_dir / bfs::path(trs("%1%%2%") % idx_nr % img_ext);
-			std::string file_name = trs("%1%%2%") % idx_nr % img_ext;
+			std::string file_name = trs("{0}{1}", idx_nr, img_ext);
 			screenshot_file = pfm_file::get_inst(dir_name + "\\" + file_name);
 			screenshot_idx++;
 		}
@@ -518,6 +532,7 @@ void unit::ustorage::save_screenshot(std::string ifilename)
 	}
 
 	res_ld::inst()->save_image(screenshot_file, gfx::rt::get_screen_width(), gfx::rt::get_screen_height(), (uint8*)begin_ptr(pixels), res_ld::e_vertical_flip);
+#endif
 }
 
 

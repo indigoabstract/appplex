@@ -18,7 +18,6 @@
 #include <sbmd/kx-krte.hpp>
 #include <sbmd/kx-elem.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>

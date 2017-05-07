@@ -35,7 +35,7 @@ public:
 
 	shared_ptr<kx_elem> get_inst(){ return shared_from_this(); }
 	virtual bool is_process(){ return false; }
-	virtual std::string print(){ return "kx_elem"; }
+	virtual std::string print(int ilevel = 0){ return "kx_elem"; }
 	virtual void eval(){}
 	virtual shared_ptr<kx_process> find_by_name(const std::string& iname){ return nullptr; }
 
@@ -43,6 +43,17 @@ public:
 
 protected:
 	kx_elem(){}
+	std::string indent_by_level(int ilevel)
+	{
+		std::string ret;
+
+		for (int k = 0; k < ilevel; k++)
+		{
+			ret += '\t';
+		}
+
+		return ret;
+	}
 };
 
 
@@ -52,7 +63,7 @@ public:
 	static shared_ptr<kx_whitespace> new_instance();
 	virtual ~kx_whitespace(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 
 	std::string data;
 
@@ -67,7 +78,7 @@ public:
 	static shared_ptr<kx_comma> new_instance();
 	virtual ~kx_comma(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 
 private:
 	kx_comma(){ type = kxe_comma; }
@@ -86,7 +97,7 @@ public:
 	static shared_ptr<kx_async_flowop> new_instance();
 	virtual ~kx_async_flowop(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 
 	int fltype;
 	std::vector<shared_ptr<kx_process> > cnx;
@@ -113,7 +124,7 @@ public:
 	static shared_ptr<kx_flowop> new_instance();
 	virtual ~kx_flowop(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 
 	int fltype;
 	weak_ptr<kx_process> src, dst;
@@ -136,7 +147,7 @@ public:
 	virtual ~kx_process(){}
 
 	virtual bool is_process();
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual std::string get_name()const = 0;
 	virtual shared_ptr<kx_process> find_by_name(const std::string& iname);
 
@@ -155,7 +166,7 @@ public:
 	static shared_ptr<kx_symbol> new_instance();
 	virtual ~kx_symbol(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual void eval();
 	virtual std::string get_name()const{ return name; }
 
@@ -172,7 +183,7 @@ public:
 	static shared_ptr<kx_text> new_instance();
 	virtual ~kx_text(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual void eval();
 	virtual std::string get_name()const{ return data; }
 
@@ -189,7 +200,7 @@ public:
 	static shared_ptr<kx_block> new_instance();
 	virtual ~kx_block(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual void eval();
 	virtual std::string get_name()const
 	{
@@ -212,7 +223,7 @@ public:
 	static shared_ptr<kx_ignore_block> new_instance();
 	virtual ~kx_ignore_block(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual std::string get_name()const{ return "comment"; }
 
 	shared_ptr<kx_symbol> name;
@@ -229,7 +240,7 @@ public:
 	static shared_ptr<kx_match_block> new_instance();
 	virtual ~kx_match_block(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual std::string get_name()const{ return "match-block"; }
 
 	shared_ptr<kx_symbol> name;
@@ -246,7 +257,7 @@ public:
 	static shared_ptr<kx_meta_block> new_instance();
 	virtual ~kx_meta_block(){}
 
-	virtual std::string print();
+	virtual std::string print(int ilevel = 0);
 	virtual std::string get_name()const{ return "meta-block"; }
 
 	shared_ptr<kx_symbol> name;

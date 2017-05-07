@@ -8,6 +8,9 @@
 class gfx_shader;
 class gfx_shader_impl;
 
+// avoid using this if shader contains preprocessing macros
+// on android, line s containing #ifdef GL_ES seem to get left out,
+// which means the shader will FAIL to compile
 #define GLSL_SRC(src) "\n" #src
 const std::string FS_EXT = ".fsh";
 const std::string VS_EXT = ".vsh";

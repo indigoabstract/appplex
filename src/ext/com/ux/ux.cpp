@@ -7,7 +7,6 @@
 #include "gfx-tex.hpp"
 #include "unit.hpp"
 #include "com/unit/transitions.hpp"
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 using std::string;
@@ -369,7 +368,7 @@ void ux_page_tab::init()
 		page_stack.push_back(current_page);
 	}
 
-	BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+	for(auto p : pages)
 	{
 		p->init();
 	}
@@ -377,7 +376,7 @@ void ux_page_tab::init()
 
 void ux_page_tab::on_destroy()
 {
-	BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+	for(auto p : pages)
 	{
 		p->on_destroy();
 	}
@@ -392,7 +391,7 @@ shared_ptr<ux> ux_page_tab::contains_id(const string& iid)
 			return get_instance();
 		}
 
-		BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+		for(auto p : pages)
 		{
 			shared_ptr<ux> u = p->contains_id(iid);
 
@@ -408,7 +407,7 @@ shared_ptr<ux> ux_page_tab::contains_id(const string& iid)
 
 bool ux_page_tab::contains_ux(const shared_ptr<ux> iux)
 {
-	BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+	for(auto p : pages)
 	{
 		if (iux == p || p->contains_ux(iux))
 		{
@@ -436,6 +435,12 @@ bool ux_page_tab::is_empty()
 
 void ux_page_tab::receive(shared_ptr<iadp> idp)
 {
+	if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+	{
+		shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+		auto pa = ts->crt_state.te;
+		//trx("_mt1 %1% tt %2%") % pa->is_multitouch() % pa->type;
+	}
 	if (idp->is_processed())
 	{
 		return;
@@ -614,7 +619,7 @@ void ux_page_tab::update_state()
 			case ux_page_transition::REPLACE_CURRENT_PAGE:
 				last_page->update_state();
 
-				BOOST_FOREACH(shared_ptr<ux_page> p, page_stack)
+				for(auto p : page_stack)
 				{
 					p->update_state();
 				}
@@ -622,7 +627,7 @@ void ux_page_tab::update_state()
 				break;
 
 			case ux_page_transition::PUSH_CURRENT_PAGE:
-				BOOST_FOREACH(shared_ptr<ux_page> p, page_stack)
+				for(auto p : page_stack)
 				{
 					p->update_state();
 				}
@@ -632,7 +637,7 @@ void ux_page_tab::update_state()
 			case ux_page_transition::POP_CURRENT_PAGE:
 				last_page->update_state();
 
-				BOOST_FOREACH(shared_ptr<ux_page> p, page_stack)
+				for(auto p : page_stack)
 				{
 					p->update_state();
 				}
@@ -642,7 +647,7 @@ void ux_page_tab::update_state()
 			case ux_page_transition::CLEAR_PAGE_STACK:
 				current_page->update_state();
 
-				BOOST_FOREACH(shared_ptr<ux_page> p, page_stack)
+				for(auto p : page_stack)
 				{
 					p->update_state();
 				}
@@ -665,7 +670,7 @@ void ux_page_tab::update_state()
 		}
 		else
 		{
-			BOOST_FOREACH(shared_ptr<ux_page> p, page_stack)
+			for(auto p : page_stack)
 			{
 				p->update_state();
 			}
@@ -901,7 +906,7 @@ void ux_page_tab::on_resize()
 	uxr.w = u.lock()->get_width();
 	uxr.h = u.lock()->get_height();
 
-	BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+	for(auto p : pages)
 	{
 		p->on_resize();
 	}
@@ -921,7 +926,7 @@ int ux_page_tab::get_page_index(shared_ptr<ux_page> ipage)
 {
 	int k = 0;
 
-	BOOST_FOREACH(shared_ptr<ux_page> p, pages)
+	for(auto p : pages)
 	{
 		if (ipage == p)
 		{
@@ -1011,7 +1016,7 @@ void ux_page::init() {}
 
 void ux_page::on_destroy()
 {
-	BOOST_FOREACH(shared_ptr<ux_page_item> p, mlist)
+	for(auto p : mlist)
 	{
 		p->on_destroy();
 	}
@@ -1026,7 +1031,7 @@ shared_ptr<ux> ux_page::contains_id(const string& iid)
 			return get_instance();
 		}
 
-		BOOST_FOREACH(shared_ptr<ux_page_item> p, mlist)
+		for(auto p : mlist)
 		{
 			shared_ptr<ux> u = p->contains_id(iid);
 
@@ -1042,7 +1047,7 @@ shared_ptr<ux> ux_page::contains_id(const string& iid)
 
 bool ux_page::contains_ux(const shared_ptr<ux> iux)
 {
-	BOOST_FOREACH(shared_ptr<ux_page_item> p, mlist)
+	for(auto p : mlist)
 	{
 		if (iux == p)
 		{
@@ -1087,7 +1092,7 @@ void ux_page::update_input_subux(shared_ptr<iadp> idp)
 		float x = ts->crt_state.te->points[0].x;
 		float y = ts->crt_state.te->points[0].y;
 
-		BOOST_FOREACH(shared_ptr<ux> b, mlist)
+		for(auto b : mlist)
 		{
 			if (b->is_hit(x, y))
 			{
@@ -1264,7 +1269,7 @@ void ux_page::update_state()
 	uxr.x += p.x;
 	uxr.y += p.y;
 
-	BOOST_FOREACH(shared_ptr<ux> b, mlist)
+	for(auto b : mlist)
 	{
 		uxr.w = std::max(uxr.w, b->get_pos().w);
 		uxr.h = std::max(uxr.h, b->get_pos().h);
@@ -1288,7 +1293,7 @@ void ux_page::update_state()
 		uxr.y = -uxr.h + pfm::screen::get_height();
 	}
 
-	BOOST_FOREACH(shared_ptr<ux> b, mlist)
+	for(auto b : mlist)
 	{
 		b->update_state();
 	}
@@ -1296,7 +1301,7 @@ void ux_page::update_state()
 
 void ux_page::update_view(shared_ptr<ux_camera> g)
 {
-	BOOST_FOREACH(shared_ptr<ux> b, mlist)
+	for(auto b : mlist)
 	{
 		b->update_view(g);
 	}

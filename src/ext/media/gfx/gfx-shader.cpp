@@ -82,18 +82,13 @@ public:
 		}
 		)));
 
-		shared_ptr<std::string> fsh(new std::string(GLSL_SRC(
-#ifdef GL_ES
-			\n
-			precision lowp float;
-		\n
-#endif
-			\n
-			void main()
-		{
-			gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-		}
-		)));
+		shared_ptr<std::string> fsh(new std::string(
+         "#ifdef GL_ES\n\
+			precision lowp float;\n\
+         #endif\n\
+			void main()\n\
+         { gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); }"
+      ));
 
 		black_shader = gfx::shader::new_program_from_src("black_shader", vsh, fsh);
 
@@ -108,18 +103,13 @@ public:
 		}
 		)));
 
-		fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-#ifdef GL_ES
-			\n
-			precision lowp float;
-		\n
-#endif
-			\n
-			void main()
-		{
-			gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0);
-		}
-		)));
+		fsh = shared_ptr<std::string>(new std::string(
+      "#ifdef GL_ES\n\
+      precision lowp float;\n\
+      #endif\n\
+      void main()\n\
+      { gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0); }"
+		));
 
 		wireframe_shader = gfx::shader::new_program_from_src("wireframe_shader", vsh, fsh);
 		//vprint("fsh %s\n", fsh.c_str());

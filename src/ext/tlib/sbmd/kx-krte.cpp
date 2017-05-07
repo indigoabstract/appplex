@@ -5,7 +5,6 @@
 
 #include "kx-krte.hpp"
 #include "kx-elem.hpp"
-#include <boost/foreach.hpp>
 
 using std::string;
 
@@ -38,10 +37,12 @@ void kx_krte::run()
 		string s = ke->print();
 		trx("%1%") % s;
 	}
-
-	trx("\n\n");
-	kxb->eval();
-	trx("\n\n");
+	
+	//trx("%1%") % kxb->print();
+	
+	//trx("\n\n");
+	//kxb->eval();
+	//trx("\n\n");
 }
 
 #endif

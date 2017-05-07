@@ -3,9 +3,9 @@
 #include "ovg-obj.hpp"
 #include "min.hpp"
 #include "gfx-color.hpp"
-#include <openvg.h>
-#include <vgext.h>
-#include <vgu.h>
+#include <vg/openvg.h>
+#include <vg/vgext.h>
+#include <vg/vgu.h>
 
 //#include "lib-shivavg/shImage.h"
 

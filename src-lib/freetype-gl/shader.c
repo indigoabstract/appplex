@@ -35,8 +35,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "opengl.h"
-#include "shader.h"
+#include "freetype-gl/opengl.h"
+#include "freetype-gl/shader.h"
 
 
 // ------------------------------------------------------------ shader_read ---

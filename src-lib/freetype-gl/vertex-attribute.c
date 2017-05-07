@@ -37,9 +37,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "vec234.h"
-#include "platform.h"
-#include "vertex-attribute.h"
+#include "freetype-gl/vec234.h"
+#include "freetype-gl/platform.h"
+#include "freetype-gl/vertex-attribute.h"
 
 
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "pfm.hpp"
-#include <boost/circular_buffer_fwd.hpp>
 #include <string>
 #include <vector>
 
