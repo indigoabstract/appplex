@@ -3,6 +3,10 @@
 #include "pfm.hpp"
 
 
+#define PACKAGE_NAME "com/indigoabstract/appplex"
+#define CLASS_MAIN_PATH "com/indigoabstract/appplex/main"
+
+
 class android_main : public pfm_main
 {
 public:

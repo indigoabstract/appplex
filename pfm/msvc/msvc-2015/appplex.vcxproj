@@ -29,6 +29,7 @@
     <ClInclude Include="..\..\..\src\ext\com\ux\ux.hpp" />
     <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-param-surface.hpp" />
     <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-surface.hpp" />
+    <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-trail.hpp" />
     <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-camera.hpp" />
     <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-color.hpp" />
     <ClInclude Include="..\..\..\src\ext\media\gfx\gfx-material.hpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="..\..\..\src\units\public\tests\test-snd-android\unit-test-snd-android.hpp" />
     <ClInclude Include="..\..\..\src\units\public\tests\test-snd-generators\unit-test-snd-generators.hpp" />
     <ClInclude Include="..\..\..\src\units\public\tests\test-stk\unit-test-stk.hpp" />
+    <ClInclude Include="..\..\..\src\units\public\tests\test-trail\unit-test-trail.hpp" />
     <ClInclude Include="..\..\..\src\units\public\tests\test\unit-test.hpp" />
     <ClInclude Include="..\..\..\src\units\public\tests\ux-test\unit-ux-test.hpp" />
     <ClInclude Include="..\..\..\src\units\public\texxed\gap-buffer.hpp" />
@@ -244,6 +246,10 @@
     <ClCompile Include="..\..\..\src-lib\boost\thread\win32\tss_pe.cpp" />
     <ClCompile Include="..\..\..\src-lib\boost\timer\auto_timers_construction.cpp" />
     <ClCompile Include="..\..\..\src-lib\boost\timer\cpu_timer.cpp" />
+    <ClCompile Include="..\..\..\src-lib\fmt\format.cc" />
+    <ClCompile Include="..\..\..\src-lib\fmt\ostream.cc" />
+    <ClCompile Include="..\..\..\src-lib\fmt\posix.cc" />
+    <ClCompile Include="..\..\..\src-lib\fmt\printf.cc" />
     <ClCompile Include="..\..\..\src-lib\freetype-gl\edtaa3func.c" />
     <ClCompile Include="..\..\..\src-lib\freetype-gl\font-manager.c" />
     <ClCompile Include="..\..\..\src-lib\freetype-gl\mat4.c" />
@@ -270,6 +276,7 @@
     <ClCompile Include="..\..\..\src\ext\com\ux\ux.cpp" />
     <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-param-surface.cpp" />
     <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-surface.cpp" />
+    <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-trail.cpp" />
     <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-camera.cpp" />
     <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-color.cpp" />
     <ClCompile Include="..\..\..\src\ext\media\gfx\gfx-material.cpp" />
@@ -441,6 +448,7 @@
     <ClCompile Include="..\..\..\src\units\public\tests\test-snd-android\unit-test-snd-android.cpp" />
     <ClCompile Include="..\..\..\src\units\public\tests\test-snd-generators\unit-test-snd-generators.cpp" />
     <ClCompile Include="..\..\..\src\units\public\tests\test-stk\unit-test-stk.cpp" />
+    <ClCompile Include="..\..\..\src\units\public\tests\test-trail\unit-test-trail.cpp" />
     <ClCompile Include="..\..\..\src\units\public\tests\test\unit-test.cpp" />
     <ClCompile Include="..\..\..\src\units\public\tests\ux-test\unit-ux-test.cpp" />
     <ClCompile Include="..\..\..\src\units\public\texxed\gap-buffer.cpp" />

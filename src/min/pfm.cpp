@@ -368,7 +368,7 @@ pfm_file::~pfm_file()
 	io.close();
 }
 
-shared_ptr<pfm_file> pfm_file::get_inst(const std::string& ifilename, const std::string& iroot_dir)
+shared_ptr<pfm_file> pfm_file::get_inst(std::string ifilename, std::string iroot_dir)
 {
 	shared_ptr<pfm_file> inst;
 	auto ppath = pfm_path::get_inst(ifilename, iroot_dir);
@@ -548,7 +548,7 @@ int pfm_file::io_op::write(const uint8* ibuffer, int isize)
 }
 
 
-shared_ptr<pfm_path> pfm_path::get_inst(const std::string& ifile_path, const std::string& iaux_root_dir)
+shared_ptr<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string iaux_root_dir)
 {
 	shared_ptr<pfm_path> inst(new pfm_path());
 
@@ -816,7 +816,7 @@ bool pfm::screen::is_gfx_available()
 //}
 
 
-std::string pfm::filesystem::get_writable_path(const std::string& iname)
+std::string pfm::filesystem::get_writable_path(std::string iname)
 {
 	std::string p = pfm_app_inst->get_writable_path();
 
@@ -832,7 +832,7 @@ std::string pfm::filesystem::get_writable_path(const std::string& iname)
 	return p;
 }
 
-std::string pfm::filesystem::get_path(const std::string& iname)
+std::string pfm::filesystem::get_path(std::string iname)
 {
 	std::string p = pfm_impl::get_res_path();
 
@@ -981,25 +981,34 @@ bool pfm::filesystem::store_unit_byte_vect(shared_ptr<unit> iu, string ifilename
 
 shared_ptr<pfm_file> pfm::filesystem::random_access(shared_ptr<unit> iu, std::string ifilename)
 {
-	if (!iu)
-	{
-		return shared_ptr<pfm_file>();
-	}
+   if (!iu)
+   {
+      return shared_ptr<pfm_file>();
+   }
 
-	//ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+   //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
 
-	//return get_random_access(get_path(ifilename.c_str()), true);
-	return shared_ptr<pfm_file>();
+   //return get_random_access(get_path(ifilename.c_str()), true);
+   return shared_ptr<pfm_file>();
 }
+
+#if defined MOD_BOOST
+
+uint32 pfm::time::get_time_millis()
+{
+   return (boost::posix_time::microsec_clock::local_time() - time_start).total_milliseconds();
+}
+
+#endif
 
 shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 {
-	if (!pfm_impl::res_files_map)
-	{
-		pfm::filesystem::load_res_file_map();
-	}
+   if (!pfm_impl::res_files_map)
+   {
+      pfm::filesystem::load_res_file_map();
+   }
 
-	return pfm_app_inst;
+   return pfm_app_inst;
 }
 
 

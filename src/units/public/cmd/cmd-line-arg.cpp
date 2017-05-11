@@ -207,7 +207,7 @@ public:
 		int k = 0;
 		int lastIdx = modules.size() - 1;
 
-		BOOST_FOREACH(smap::value_type i, modules)
+		for(smap::value_type i : modules)
 		{
 			s += i.first;
 

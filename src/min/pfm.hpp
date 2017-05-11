@@ -59,205 +59,205 @@ class pfm_file;
 
 namespace pfm_impl
 {
-	class pfm_file_impl;
+   class pfm_file_impl;
 }
 
 
 class pfm_touch_event
 {
 public:
-	static const int MAX_TOUCH_POINTS = 8;
+   static const int MAX_TOUCH_POINTS = 8;
 
-	enum e_touch_type
-	{
-		touch_invalid,
-		touch_began,
-		touch_moved,
-		touch_ended,
-		touch_cancelled,
-		mouse_wheel,
-	};
+   enum e_touch_type
+   {
+      touch_invalid,
+      touch_began,
+      touch_moved,
+      touch_ended,
+      touch_cancelled,
+      mouse_wheel,
+   };
 
-	struct touch_point
-	{
-		uint32 identifier = 0;
-		float x = 0.f;
-		float y = 0.f;
-		bool is_changed = false;
-	};
+   struct touch_point
+   {
+      uint32 identifier = 0;
+      float x = 0.f;
+      float y = 0.f;
+      bool is_changed = false;
+   };
 
-	pfm_touch_event()
-	{
-		type = touch_invalid;
-		time = 0;
-		touch_count = 0;
-		mouse_wheel_delta = 0;
-	}
+   pfm_touch_event()
+   {
+      type = touch_invalid;
+      time = 0;
+      touch_count = 0;
+      mouse_wheel_delta = 0;
+   }
 
-	bool is_multitouch()
-	{
-		return touch_count > 1;
-	}
+   bool is_multitouch()
+   {
+      return touch_count > 1;
+   }
 
-	const touch_point* find_point(uint32 touch_id) const
-	{
-		for (uint32 i = 0; i < touch_count; i++)
-		{
-			if (this->points[i].identifier == touch_id)
-			{
-				return &(this->points[i]);
-			}
-		}
+   const touch_point* find_point(uint32 touch_id) const
+   {
+      for (uint32 i = 0; i < touch_count; i++)
+      {
+         if (this->points[i].identifier == touch_id)
+         {
+            return &(this->points[i]);
+         }
+      }
 
-		return nullptr;
-	}
+      return nullptr;
+   }
 
-	bool same_touches(const pfm_touch_event& other) const
-	{
-		if (other.touch_count == this->touch_count) {
-			for (uint32 i = 0; i < this->touch_count; i++) {
-				if (nullptr == this->find_point(other.points[i].identifier)) {
-					return false;
-				}
-			}
+   bool same_touches(const pfm_touch_event& other) const
+   {
+      if (other.touch_count == this->touch_count) {
+         for (uint32 i = 0; i < this->touch_count; i++) {
+            if (nullptr == this->find_point(other.points[i].identifier)) {
+               return false;
+            }
+         }
 
-			return true;
-		}
+         return true;
+      }
 
-		return false;
-	}
+      return false;
+   }
 
-	glm::vec2 touch_pos(uint32 touch_id) const;
+   glm::vec2 touch_pos(uint32 touch_id) const;
 
-	e_touch_type type = touch_invalid;
-	uint32 time;
-	uint32 touch_count = 0;
-	touch_point points[MAX_TOUCH_POINTS];
-	int32 mouse_wheel_delta;
+   e_touch_type type = touch_invalid;
+   uint32 time;
+   uint32 touch_count = 0;
+   touch_point points[MAX_TOUCH_POINTS];
+   int32 mouse_wheel_delta;
 };
 
 
 class pfm_path
 {
 public:
-	static shared_ptr<pfm_path> get_inst(const std::string& ifile_path, const std::string& iaux_root_dir = "");
-	std::string get_full_path()const;
-	const std::string& get_file_name()const;
-	std::string get_file_stem()const;
-	std::string get_file_extension()const;
-	const std::string& get_root_directory()const;
-	shared_ptr<std::vector<shared_ptr<pfm_file> > > list_directory(bool recursive = false)const;
+   static shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string iaux_root_dir = "");
+   std::string get_full_path()const;
+   const std::string& get_file_name()const;
+   std::string get_file_stem()const;
+   std::string get_file_extension()const;
+   const std::string& get_root_directory()const;
+   shared_ptr<std::vector<shared_ptr<pfm_file> > > list_directory(bool recursive = false)const;
 
 private:
-	friend class pfm_impl::pfm_file_impl;
-	pfm_path(){}
-	void make_standard_path();
+   friend class pfm_impl::pfm_file_impl;
+   pfm_path() {}
+   void make_standard_path();
 
-	std::string filename;
-	std::string aux_root_dir;
+   std::string filename;
+   std::string aux_root_dir;
 };
 
 
 class pfm_file
 {
 public:
-	static shared_ptr<pfm_file> get_inst(const std::string& ifilename, const std::string& iroot_dir = "");
-	static shared_ptr<pfm_file> get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimpl);
-	virtual ~pfm_file();
+   static shared_ptr<pfm_file> get_inst(std::string ifilename, std::string iroot_dir = "");
+   static shared_ptr<pfm_file> get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimpl);
+   virtual ~pfm_file();
 
-	bool remove();
-	bool exists();
-	bool is_opened()const;
-	bool is_writable()const;
-	uint64 length();
-	uint64 creation_time()const;
-	uint64 last_write_time()const;
-	std::string get_full_path()const;
-	const std::string& get_file_name()const;
-	std::string get_file_stem()const;
-	std::string get_file_extension()const;
-	const std::string& get_root_directory()const;
-	void* get_file_impl()const;
+   bool remove();
+   bool exists();
+   bool is_opened()const;
+   bool is_writable()const;
+   uint64 length();
+   uint64 creation_time()const;
+   uint64 last_write_time()const;
+   std::string get_full_path()const;
+   const std::string& get_file_name()const;
+   std::string get_file_stem()const;
+   std::string get_file_extension()const;
+   const std::string& get_root_directory()const;
+   void* get_file_impl()const;
 
-	class io_op
-	{
-	public:
-		bool open();
-		bool open(std::string iopen_mode);
-		void close();
-		void seek(uint64 ipos);
+   class io_op
+   {
+   public:
+      bool open();
+      bool open(std::string iopen_mode);
+      void close();
+      void seek(uint64 ipos);
 
-		int read(shared_ptr<std::vector<uint8> > ibuffer);
-		int write(const shared_ptr<std::vector<uint8> > ibuffer);
-		int read(uint8* ibuffer, int isize);
-		int write(const uint8* ibuffer, int isize);
+      int read(shared_ptr<std::vector<uint8> > ibuffer);
+      int write(const shared_ptr<std::vector<uint8> > ibuffer);
+      int read(uint8* ibuffer, int isize);
+      int write(const uint8* ibuffer, int isize);
 
-	private:
-		friend class pfm_file;
-		io_op();
-		shared_ptr<pfm_impl::pfm_file_impl> impl;
-	};
-	io_op io;
+   private:
+      friend class pfm_file;
+      io_op();
+      shared_ptr<pfm_impl::pfm_file_impl> impl;
+   };
+   io_op io;
 
 private:
-	friend class msvc_main;
-	pfm_file();
+   friend class msvc_main;
+   pfm_file();
 };
 
 
-using umf_r = std::unordered_map < std::string, shared_ptr<pfm_file> > ;
-using umf_list = shared_ptr < umf_r > ;
+using umf_r = std::unordered_map < std::string, shared_ptr<pfm_file> >;
+using umf_list = shared_ptr < umf_r >;
 
 
 namespace pfm_impl
 {
-	class pfm_file_impl
-	{
-	public:
-		pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
-		virtual ~pfm_file_impl();
-		virtual void* get_file_impl()const;
-		virtual bool exists();
-		virtual bool is_opened()const;
-		virtual bool is_writable()const;
-		virtual uint64 length() = 0;
-		virtual uint64 creation_time()const = 0;
-		virtual uint64 last_write_time()const = 0;
-		virtual bool open(std::string iopen_mode);
-		virtual void close();
-		virtual void seek(uint64 ipos);
-		virtual int read(shared_ptr<std::vector<uint8> > ibuffer);
-		virtual int write(const shared_ptr<std::vector<uint8> > ibuffer);
-		virtual int read(uint8* ibuffer, int isize);
-		virtual int write(const uint8* ibuffer, int isize);
-		virtual void check_state()const;
+   class pfm_file_impl
+   {
+   public:
+      pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
+      virtual ~pfm_file_impl();
+      virtual void* get_file_impl()const;
+      virtual bool exists();
+      virtual bool is_opened()const;
+      virtual bool is_writable()const;
+      virtual uint64 length() = 0;
+      virtual uint64 creation_time()const = 0;
+      virtual uint64 last_write_time()const = 0;
+      virtual bool open(std::string iopen_mode);
+      virtual void close();
+      virtual void seek(uint64 ipos);
+      virtual int read(shared_ptr<std::vector<uint8> > ibuffer);
+      virtual int write(const shared_ptr<std::vector<uint8> > ibuffer);
+      virtual int read(uint8* ibuffer, int isize);
+      virtual int write(const uint8* ibuffer, int isize);
+      virtual void check_state()const;
 
-		pfm_path ppath;
-		void* file;
-		uint64 file_pos;
-		bool file_is_open;
-		bool file_is_writable;
+      pfm_path ppath;
+      void* file;
+      uint64 file_pos;
+      bool file_is_open;
+      bool file_is_writable;
 
-	protected:
-		virtual void* open_impl(std::string iopen_mode);
-		virtual void close_impl();
-		virtual void seek_impl(uint64 ipos, int iseek_pos);
-		virtual uint64 tell_impl();
-		virtual int read_impl(uint8* ibuffer, int isize);
-		virtual int write_impl(const uint8* ibuffer, int isize);
-	};
+   protected:
+      virtual void* open_impl(std::string iopen_mode);
+      virtual void close_impl();
+      virtual void seek_impl(uint64 ipos, int iseek_pos);
+      virtual uint64 tell_impl();
+      virtual int read_impl(uint8* ibuffer, int isize);
+      virtual int write_impl(const uint8* ibuffer, int isize);
+   };
 }
 
 
 class pfm_data
 {
 public:
-	pfm_data();
+   pfm_data();
 
-	bool gfx_available;
-	int screen_width;
-	int screen_height;
-	//shared_ptr<ia_console> console;
+   bool gfx_available;
+   int screen_width;
+   int screen_height;
+   //shared_ptr<ia_console> console;
 };
 
 
@@ -265,83 +265,83 @@ class pfm_main
 {
 public:
    virtual int get_screen_dpi()const = 0;
-	virtual void write_text(const char* text)const = 0;
-	virtual void write_text_nl(const char* text)const = 0;
-	virtual void write_text(const wchar_t* text)const = 0;
-	virtual void write_text_nl(const wchar_t* text)const = 0;
-	virtual void write_text_v(const char* iformat, ...)const = 0;
-	virtual std::string get_writable_path()const = 0;
-	// return true to exit the app
-	virtual bool back_evt();
+   virtual void write_text(const char* text)const = 0;
+   virtual void write_text_nl(const char* text)const = 0;
+   virtual void write_text(const wchar_t* text)const = 0;
+   virtual void write_text_nl(const wchar_t* text)const = 0;
+   virtual void write_text_v(const char* iformat, ...)const = 0;
+   virtual std::string get_writable_path()const = 0;
+   // return true to exit the app
+   virtual bool back_evt();
 };
 
 
 class pfm
 {
 public:
-	struct params
-	{
-		static int get_app_argument_count();
-		static const unicodestring& get_app_path();
-		static const std::vector<unicodestring>& get_app_argument_vector();
-		static void set_app_arguments(int iargument_count, unicodechar** iargument_vector, bool iapp_path_included = false);
-	};
+   struct params
+   {
+      static int get_app_argument_count();
+      static const unicodestring& get_app_path();
+      static const std::vector<unicodestring>& get_app_argument_vector();
+      static void set_app_arguments(int iargument_count, unicodechar** iargument_vector, bool iapp_path_included = false);
+   };
 
 
-	struct screen
-	{
-		static int get_width();
-		static int get_height();
-		static int get_target_fps();
+   struct screen
+   {
+      static int get_width();
+      static int get_height();
+      static int get_target_fps();
       static int get_screen_dpi();
-		static bool is_full_screen_mode();
-		static void set_full_screen_mode(bool ienabled);
-		static bool is_gfx_available();
-	};
+      static bool is_full_screen_mode();
+      static void set_full_screen_mode(bool ienabled);
+      static bool is_gfx_available();
+   };
 
 
-	class filesystem
-	{
-	public:
-		static std::string get_writable_path(const std::string& iname);
-		static std::string get_path(const std::string& iname);
-		static void load_res_file_map(shared_ptr<unit> iu = 0);
-		//static shared_array<uint8> load_res_byte_array(std::string ifile_name, int& isize);
-		static shared_ptr<std::vector<uint8> > load_res_byte_vect(shared_ptr<pfm_file> ifile);
-		static shared_ptr<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);
-		static shared_ptr<std::string> load_res_as_string(shared_ptr<pfm_file> ifile);
-		static shared_ptr<std::string> load_res_as_string(std::string ifilename);
+   class filesystem
+   {
+   public:
+      static std::string get_writable_path(std::string iname);
+      static std::string get_path(std::string iname);
+      static void load_res_file_map(shared_ptr<unit> iu = 0);
+      //static shared_array<uint8> load_res_byte_array(std::string ifile_name, int& isize);
+      static shared_ptr<std::vector<uint8> > load_res_byte_vect(shared_ptr<pfm_file> ifile);
+      static shared_ptr<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);
+      static shared_ptr<std::string> load_res_as_string(shared_ptr<pfm_file> ifile);
+      static shared_ptr<std::string> load_res_as_string(std::string ifilename);
 
-	private:
+   private:
 
-		friend class unit;
+      friend class unit;
 
-		static shared_ptr<std::vector<uint8> > load_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name);
-		//static shared_array<uint8> load_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, int& isize);
-		static bool store_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, const uint8* ires, int isize);
-		static bool store_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name, const std::vector<uint8>& ires);
-		static shared_ptr<pfm_file> random_access(shared_ptr<unit> iu, std::string ifile_name);
-	};
-
-
-	struct time
-	{
-		static uint32 get_time_millis();
-	};
+      static shared_ptr<std::vector<uint8> > load_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name);
+      //static shared_array<uint8> load_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, int& isize);
+      static bool store_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, const uint8* ires, int isize);
+      static bool store_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name, const std::vector<uint8>& ires);
+      static shared_ptr<pfm_file> random_access(shared_ptr<unit> iu, std::string ifile_name);
+   };
 
 
-	static platform_id get_platform_id();
-	static gfx_type_id get_gfx_type_id();
-	static shared_ptr<pfm_main> get_pfm_main_inst();
-	//static shared_ptr<ia_console> get_console();
+   struct time
+   {
+      static uint32 get_time_millis();
+   };
+
+
+   static platform_id get_platform_id();
+   static gfx_type_id get_gfx_type_id();
+   static shared_ptr<pfm_main> get_pfm_main_inst();
+   //static shared_ptr<ia_console> get_console();
 
 private:
-	friend class unit_ctrl;
-	friend class unit_ctrl;
+   friend class unit_ctrl;
+   friend class unit_ctrl;
 
-	static pfm_data data;
+   static pfm_data data;
 
-	pfm(){}
+   pfm() {}
 };
 
 
@@ -371,15 +371,15 @@ FMT_VARIADIC(std::wstring, wtrs, const wchar_t*)
 inline void ia_signal_error(const char* imessage = 0)
 {
 #if defined _DEBUG
-	if (imessage)
-	{
-		trx(imessage);
-	}
+   if (imessage)
+   {
+      trx(imessage);
+   }
 
 #if defined PLATFORM_WINDOWS_PC
-	_asm int 3;
+   _asm int 3;
 #else
-	assert(icondition);
+   assert(icondition);
 #endif
 #endif
 }
@@ -387,16 +387,16 @@ inline void ia_signal_error(const char* imessage = 0)
 inline void ia_assert(bool icondition, const char* imessage)
 {
 #if defined _DEBUG
-	if (icondition == false)
-	{
-		ia_signal_error(imessage);
-	}
+   if (icondition == false)
+   {
+      ia_signal_error(imessage);
+   }
 #endif
 }
 
 inline void ia_assert(bool icondition)
 {
 #if defined _DEBUG
-	ia_assert(icondition, "assertion failed");
+   ia_assert(icondition, "assertion failed");
 #endif
 }

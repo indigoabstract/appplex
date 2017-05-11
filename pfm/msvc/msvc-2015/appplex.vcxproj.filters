@@ -242,6 +242,12 @@
     <Filter Include="units\public\tests\ux-test">
       <UniqueIdentifier>{3b514631-8354-4eaf-bcb2-665f5b8e5c6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="units\public\tests\test-trail">
+      <UniqueIdentifier>{e3320aa5-c46f-40a0-a8bd-25e9280c836a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src-lib\fmt">
+      <UniqueIdentifier>{17d82cd1-f554-40a4-9b03-611c10e15b2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\ext\media\snd\snd.hpp">
@@ -657,6 +663,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\units\private\metrolife\unit-metrolife.hpp">
       <Filter>units\private\metrolife</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\units\public\tests\test-trail\unit-test-trail.hpp">
+      <Filter>units\public\tests\test-trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\ext\media\gfx\ext\gfx-trail.hpp">
+      <Filter>ext\media\gfx\ext</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1196,6 +1208,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\units\private\metrolife\unit-metrolife.cpp">
       <Filter>units\private\metrolife</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\units\public\tests\test-trail\unit-test-trail.cpp">
+      <Filter>units\public\tests\test-trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ext\media\gfx\ext\gfx-trail.cpp">
+      <Filter>ext\media\gfx\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src-lib\fmt\format.cc">
+      <Filter>src-lib\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src-lib\fmt\ostream.cc">
+      <Filter>src-lib\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src-lib\fmt\posix.cc">
+      <Filter>src-lib\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src-lib\fmt\printf.cc">
+      <Filter>src-lib\fmt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

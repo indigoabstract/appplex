@@ -12,7 +12,7 @@ public:
 	virtual ~ux_button(){}
 	static shared_ptr<ux_button> new_instance(shared_ptr<ux_page> iparent);
 	static shared_ptr<ux_button> new_shared_instance(ux_button* newButtonClassInstance);
-	virtual void init(ux_rect iuxr, int icolor, const std::string& itext = "n/a");
+	virtual void init(ux_rect iuxr, int icolor, std::string itext = "n/a");
 
 	virtual void receive(shared_ptr<iadp> idp);
 
@@ -20,7 +20,7 @@ public:
 	virtual void update_state();
 	virtual void update_view(shared_ptr<ux_camera> g);
 	void set_color(const gfx_color& icolor);
-	void set_text(const std::string& iText);
+	void set_text(std::string iText);
 
 protected:
 	ux_button(shared_ptr<ux_page> iparent);

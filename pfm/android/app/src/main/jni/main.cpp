@@ -49,7 +49,10 @@ public:
 			{
 				if(is_external)
 				{
-					size = ftell((FILE*)file);
+                    FILE* f = (FILE*)file;
+
+                    fseek(f, 0, SEEK_END );
+                    size = ftell(f);
 				}
 				else
 				{
@@ -63,7 +66,12 @@ public:
 		{
 			if(is_external)
 			{
-				size = ftell((FILE*)file);
+                FILE* f = (FILE*)file;
+                long crt_pos = ftell(f);
+
+                fseek(f, 0, SEEK_END );
+                size = ftell(f);
+                fseek(f, crt_pos, SEEK_SET );
 			}
 			else
 			{
@@ -211,7 +219,7 @@ shared_ptr<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::s
 int android_main::get_screen_dpi()const
 {
     JNIEnv* env = JniHelper::getEnv();
-    jclass clazz = env->FindClass("com/indigoabstract/appplex/main");
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
     jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()I");
 
     jint dpi = env->CallStaticIntMethod(clazz, mid);
@@ -425,10 +433,6 @@ extern "C"
 		JavaCallStaticMethodByObject_void("ExitApplication", "()V");
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeResume(JNIEnv*  env, jobject thiz)
-	{
-	}
-
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeInitRenderer(JNIEnv* env, jobject obj, jobject iasset_manager, jstring iapk_path)
 	{
 		initJavaMethodsIDs(env, obj);
@@ -461,10 +465,17 @@ extern "C"
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeDestroy(JNIEnv*  env, jobject thiz)
 	{
+        unit_ctrl::inst()->destroy_app();
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativePause(JNIEnv*  env, jobject thiz)
+    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeResume(JNIEnv*  env, jobject thiz)
+    {
+        unit_ctrl::inst()->resume();
+    }
+
+    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativePause(JNIEnv*  env, jobject thiz)
 	{
+        unit_ctrl::inst()->pause();
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeResize(JNIEnv*  env, jobject  thiz, jint w, jint h)
@@ -534,6 +545,5 @@ extern "C"
 			writable_path = twritable_path;
 			env->ReleaseStringUTFChars(iwritable_path, twritable_path);
 		}
-
 	}
 }

@@ -166,10 +166,22 @@ bool unit_ctrl::update()
 
 void unit_ctrl::pause()
 {
+    auto u = get_current_unit();
+
+    if(u)
+    {
+        u->on_pause();
+    }
 }
 
 void unit_ctrl::resume()
 {
+    auto u = get_current_unit();
+
+    if(u)
+    {
+        u->on_resume();
+    }
 }
 
 void unit_ctrl::resize_app(int iwidth, int iheight)

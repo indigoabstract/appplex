@@ -178,9 +178,10 @@ public class main extends Activity
 //            listf[k] = lst;
 //        }
 
+        String files_dir = getFilesDir().getPath();
 		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "dk");
 		String str = file.getPath();
-		native_set_writable_path(str);
+		native_set_writable_path(files_dir);
 //		if(dirs != null && dirs.length > 1)
 //		{
 //			native_set_writable_path(dirs[1]);
@@ -441,7 +442,7 @@ public class main extends Activity
 		alarmStartTime.add(Calendar.MILLISECOND, delayInSeconds * 1000);
 		long millis = SystemClock.elapsedRealtime() + delayInSeconds * 1000;//alarmStartTime.getTimeInMillis();
 
-		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, millis, pendingIntent);
+		alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, millis, pendingIntent);
 		//Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
 	}
 

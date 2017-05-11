@@ -478,7 +478,7 @@ public:
 
 		if (c != '[')
 		{
-			string msg = trs("matchblk parse error %1%-%2%. unknown token '%3%'. expected a '['") % startidx % ss->crt_idx % c;
+			string msg = trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a '['", startidx, ss->crt_idx, c);
 			throw ia_exception(msg);
 		}
 
@@ -491,7 +491,7 @@ public:
 
 		if (c != ']')
 		{
-			string msg = trs("matchblk parse error %1%-%2%. unknown token '%3%'. expected a ']'") % startidx % ss->crt_idx % c;
+			string msg = trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a ']'", startidx, ss->crt_idx, c);
 			throw ia_exception(msg);
 		}
 
@@ -570,7 +570,7 @@ public:
 
 		if (c != '[')
 		{
-			string msg = trs("metablk parse error %1%-%2%. unknown token '%3%'. expected a '%4%'") % startidx % ss->crt_idx % c % '[';
+			string msg = trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", startidx, ss->crt_idx, c, '[');
 			throw ia_exception(msg);
 		}
 
@@ -583,7 +583,7 @@ public:
 
 		if (c != ']')
 		{
-			string msg = trs("metablk parse error %1%-%2%. unknown token '%3%'. expected a '%4%'") % startidx % ss->crt_idx % c % ']';
+			string msg = trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", startidx, ss->crt_idx, c, ']');
 			throw ia_exception(msg);
 		}
 
@@ -662,7 +662,7 @@ public:
 
 		if (c != '[')
 		{
-			string msg = trs("ignoreblock parse error %1%-%2%. unknown token '%3%'. expected a '%4%'") % startidx % ss->crt_idx % c % '[';
+			string msg = trs("ignoreblock parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", startidx, ss->crt_idx, c, '[');
 			throw ia_exception(msg);
 		}
 
@@ -718,7 +718,7 @@ public:
 			{
 				ttokenFound = false;
 
-				BOOST_FOREACH(kx_scanner_type et, sct)
+				for(auto et : sct)
 					// check every character for start / end of text / blocks pairs : {", ', [, ]},
 					// to make sure they are matched correctly. ignore everything else
 				{
@@ -737,7 +737,7 @@ public:
 							throw ia_exception("kxscnignoreblock_body - passed the end of the string. this shouldn't happen...");
 						}
 
-						string msg = trs("ex 1 mismatched block started at %1%") % (startidx + 1);
+						string msg = trs("ex 1 mismatched block started at {}", startidx + 1);
 						throw ia_exception(msg);
 					}
 				}
@@ -762,7 +762,7 @@ public:
 
 		if (!tokenFound)
 		{
-			string msg = trs("ex 2 mismatched block started at %1%") % (startidx + 1);
+			string msg = trs("ex 2 mismatched block started at {}", startidx + 1);
 			throw ia_exception(msg);
 		}
 
@@ -804,7 +804,7 @@ public:
 
 		if (c != ']')
 		{
-			string msg = trs("block parse error %1%-%2%. unknown token '%3%'. expected a '%4%'") % startidx % ss->crt_idx % c % ']';
+			string msg = trs("block parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", startidx, ss->crt_idx, c, ']');
 			throw ia_exception(msg);
 		}
 
@@ -854,7 +854,7 @@ public:
 		{
 			bool ttokenFound = false;
 
-			BOOST_FOREACH(kx_scanner_type et, sct)
+			for(auto et : sct)
 			{
 				shared_ptr<kx_scn> scn = kx_scn_factory::new_instance(et, ss);
 				kxt = scn->scan();
@@ -965,7 +965,7 @@ public:
 
 		if (parseError)
 		{
-			string msg = trs("main line scan error %1%-%2%. unknown token '%3%'") % startidx % ss->crt_idx % c;
+			string msg = trs("main line scan error {0}-{1}. unknown token '{2}'", startidx, ss->crt_idx, c);
 			throw ia_exception(msg);
 		}
 

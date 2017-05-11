@@ -18,7 +18,7 @@ units
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
 	test-gl[ uses[ gfx ], platf[ all ], ],
-	gl-frag-shader-demo[ uses[ boost, gfx, snd, stk ], platf[ windows, android ], ],
+	gl-frag-shader-demo[ uses[ boost, gfx ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	test-shadow-map[ ],
 	test-kube-sphere[ ],
@@ -42,6 +42,7 @@ units
 	test-audioengine[ uses[ boost, gfx, snd ], platf[ windows, android, ios ], ],
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
+	test-trail[ uses[ gfx ], ],
 
 	@@[ private units ],
 
@@ -52,7 +53,7 @@ units
 	shipwrecked[ ],
 	vorofract[ uses[ boost, gfx, sbmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
-	break-reminder[ uses[ boost, gfx, snd, stk, notifications ], platf[ windows, android ], ],
+	break-reminder[ uses[ gfx, snd, notifications ], platf[ windows, android ], ],
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	metrolife[ uses[ boost, gfx, ffmpeg, unit-texxed, unit-ffmpeg ], platf[ windows, android ], ],
 ],

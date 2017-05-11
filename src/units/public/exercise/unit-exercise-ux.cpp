@@ -252,12 +252,12 @@ void unit_exercise::init_ux()
 				int ttduration[] = { 500, 1500, 1500, 500 };
 				float lim[] = { 0, 0, 1, 0, 0 };
 
-				BOOST_FOREACH(int td, ttduration)
+				for(int td : ttduration)
 				{
 					tduration.push_back(td);
 				}
 
-				BOOST_FOREACH(int tl, lim)
+				for(int tl : lim)
 				{
 					limits.push_back(tl);
 				}
@@ -270,12 +270,12 @@ void unit_exercise::init_ux()
 				int ttduration[] = { 500, 2000, 500, 15000, 500 };
 				float lim[] = { 0, 0, 1, 1, 0, 0 };
 
-				BOOST_FOREACH(int td, ttduration)
+            for (int td, : ttduration)
 				{
 					tduration.push_back(td);
 				}
 
-				BOOST_FOREACH(int tl, lim)
+            for (int tl : lim)
 				{
 					limits.push_back(tl);
 				}
@@ -499,12 +499,12 @@ void unit_exercise::init_ux()
 
 			mst = ms_linear_transition::new_instance(ms_transition_data::new_transition_data(tr));
 
-			BOOST_FOREACH(float tl, t1lim)
+         for (float tl : t1lim)
 			{
 				limits1.push_back(tl);
 			}
 
-			BOOST_FOREACH(float tl, t2lim)
+         for (float tl : t2lim)
 			{
 				limits2.push_back(tl);
 			}
@@ -707,7 +707,7 @@ void unit_exercise::init_ux()
 
 			mslt = ms_linear_transition::new_instance(ms_transition_data::new_duration_data(tduration, tdurationLength));
 
-			BOOST_FOREACH(float tl, lim)
+         for (float tl : lim)
 			{
 				limits.push_back(tl);
 			}

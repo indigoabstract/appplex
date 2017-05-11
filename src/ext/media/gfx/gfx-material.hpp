@@ -93,7 +93,7 @@ public:
 	float get_float_value();
 	const glm::vec2& get_vec2_value();
 	const glm::vec3& get_vec3_value();
-	const std::vector<glm::vec3>& get_vec3_array_value();
+	const std::vector<glm::vec3>* get_vec3_array_value();
 	const glm::vec4& get_vec4_value();
 	const glm::mat2& get_mat2_value();
 	const glm::mat3& get_mat3_value();

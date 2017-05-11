@@ -258,8 +258,8 @@ void unit_test_kube_sphere::receive(shared_ptr<iadp> idp)
 			//vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
 			{
-				float dx = ts->crt_state.pos.x - ts->prev_state.pos.x;
-				float dy = ts->crt_state.pos.y - ts->prev_state.pos.y;
+				float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+				float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
 				float dx_rad = glm::radians(dx / 2);
 				float dy_rad = glm::radians(dy / 2);
 

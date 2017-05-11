@@ -10,7 +10,6 @@
 #include "pfmgl.h"
 #include <glm/glm.hpp>
 
-
 static std::string depth_func_name_list[] = { MV_NEVER, MV_LESS, MV_EQUAL, MV_LESS_OR_EQUAL, MV_GREATER, MV_NOT_EQUAL, MV_GREATER_OR_EQUAL, MV_ALWAYS };
 static gfx_uint depth_func_list[] = { gl::NEVER_GL, gl::LESS_GL, gl::EQUAL_GL, gl::LEQUAL_GL, gl::GREATER_GL, gl::NOTEQUAL_GL, gl::GEQUAL_GL, gl::ALWAYS_GL };
 static int depth_func_list_length = sizeof(depth_func_list) / sizeof(gfx_uint);
@@ -431,7 +430,7 @@ const glm::vec3& gfx_material_entry::get_vec3_value()
 	return *v;
 }
 
-const std::vector<glm::vec3>& gfx_material_entry::get_vec3_array_value()
+const std::vector<glm::vec3>* gfx_material_entry::get_vec3_array_value()
 {
 	if (value == 0)
 	{
@@ -445,7 +444,7 @@ const std::vector<glm::vec3>& gfx_material_entry::get_vec3_array_value()
 
 	std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)value;
 
-	return *v;
+	return v;
 }
 
 const glm::vec4& gfx_material_entry::get_vec4_value()

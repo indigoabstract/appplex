@@ -146,6 +146,14 @@ void unit::on_resize()
 	}
 }
 
+void unit::on_pause()
+{
+}
+
+void unit::on_resume()
+{
+}
+
 void unit::receive(shared_ptr<iadp> idp)
 {
 	if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
@@ -598,14 +606,6 @@ int unit_list::get_unit_count()const
 void unit_list::on_resize()
 {
 	unit::on_resize();
-
-	//BOOST_FOREACH(shared_ptr<unit> u, ulist)
-	//{
-	//	if(u->isInit())
-	//	{
-	//		u->on_resize();
-	//	}
-	//}
 }
 
 void unit_list::receive(shared_ptr<iadp> idp)
@@ -662,11 +662,6 @@ void unit_list::up_one_level()
 
 void unit_list::on_destroy()
 {
-	//BOOST_FOREACH(shared_ptr<unit> u, ulist)
-	//{
-	//	u->on_destroy();
-	//}
-
 	ulist.clear();
 }
 

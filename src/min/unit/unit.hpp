@@ -88,6 +88,8 @@ protected:
 
 	virtual bool update();
 	virtual void on_resize();
+    virtual void on_pause();
+    virtual void on_resume();
 	virtual void receive(std::shared_ptr<iadp> idp);
 	// finish-constructor. here you can use things that won't work in the constructor, ie shared_from_this(), etc
 	virtual void iInit();

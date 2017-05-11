@@ -10,21 +10,7 @@
 #include <fmod/fmod_errors.h>
 #pragma comment (lib, "fmodex_vc.lib")
 
-#ifdef MOD_STK
-
-#include <stk/Guitar.h>
-#include <stk/Plucked.h>
-#pragma comment (lib, "libstk.lib")
-
-#endif // MOD_STK
-
-
-struct snd_context
-{
-	std::weak_ptr<guitar_note_player_impl> gnp;
-};
-
-FMOD::System* fmodSystem;
+FMOD::System* fmodSystem = nullptr;
 // FMOD Callbacks
 static FMOD_RESULT F_CALLBACK PCMRead32(FMOD_SOUND *sound, void *data, unsigned int length);
 static FMOD_RESULT F_CALLBACK PCMSetPosition(FMOD_SOUND *sound, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
@@ -32,23 +18,38 @@ static FMOD_RESULT F_CALLBACK PCMSetPosition(FMOD_SOUND *sound, int subsound, un
 // this is an error handling function for FMOD errors
 void fmod_error_check(FMOD_RESULT result)
 {
-	if (result != FMOD_OK)
-	{
-		vprint("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
-	}
+   if (result != FMOD_OK)
+   {
+      vprint("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
+   }
 }
 
 void init_fmod()
 {
-	FMOD_RESULT result;
-	result = FMOD::System_Create(&fmodSystem);
-	fmod_error_check(result);
+   FMOD_RESULT result;
+   result = FMOD::System_Create(&fmodSystem);
+   fmod_error_check(result);
 
-	result = fmodSystem->init(32, FMOD_INIT_NORMAL, 0);
-	fmod_error_check(result);
+   result = fmodSystem->init(32, FMOD_INIT_NORMAL, 0);
+   fmod_error_check(result);
 
-	stk::Stk::setSampleRate(44100.0);
+#ifdef MOD_STK
+   stk::Stk::setSampleRate(44100.0);
+#endif
 }
+
+
+#ifdef MOD_STK
+
+#include <stk/Guitar.h>
+#include <stk/Plucked.h>
+#pragma comment (lib, "libstk.lib")
+
+
+struct snd_context
+{
+	std::weak_ptr<guitar_note_player_impl> gnp;
+};
 
 
 class guitar_note_player_impl
@@ -229,6 +230,8 @@ void guitar_note_player::set_note(std::shared_ptr<musical_note> inote)
 {
 	p->set_note(inote);
 }
+
+#endif // MOD_STK
 
 
 // snd code

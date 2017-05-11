@@ -128,7 +128,7 @@ rec_dir_op_add_stdafx_include::rec_dir_op_add_stdafx_include(path iSrcPath, vect
 	src_path = iSrcPath;
 
 	int k = 0;
-	BOOST_FOREACH(unicodestring s, iExcludePath)
+	for(unicodestring s : iExcludePath)
 	{
 		exclude_path.push_back(path(s));
 		path& p = exclude_path.back();
@@ -163,7 +163,7 @@ bool rec_dir_op_add_stdafx_include::on_entering_dir(shared_ptr<dir_node> dir)
 {
 	path& relPath = dir->rel_dir_path;
 
-	BOOST_FOREACH(path p, exclude_path)
+	for(path p : exclude_path)
 	{
 		if(p == relPath)
 		{

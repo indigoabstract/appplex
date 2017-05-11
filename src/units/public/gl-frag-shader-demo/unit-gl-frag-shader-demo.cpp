@@ -536,7 +536,7 @@ public:
 			{
 			case touch_sym_evt::TS_PRESSED:
 			{
-				pressed_pos = glm::vec2(ts->crt_state.pos.x, ts->crt_state.pos.y);
+				pressed_pos = glm::vec2(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
 				ts->process();
 				break;
 			}
@@ -553,11 +553,11 @@ public:
 
 			case touch_sym_evt::TS_PRESS_AND_DRAG:
 			{
-				int x = ts->crt_state.pos.x;
-				int y = ts->crt_state.pos.y;
+				int x = ts->crt_state.te->points[0].x;
+				int y = ts->crt_state.te->points[0].y;
 				int k = std::max(std::min(x, pfm::screen::get_width() - tsh), tsh);
 				int l = std::max(std::min(y, pfm::screen::get_height() - tsh), tsh);
-				pointer_pos = glm::vec2(ts->crt_state.pos.x, ts->crt_state.pos.y);
+				pointer_pos = glm::vec2(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
 				ts->process();
 				break;
 			}

@@ -75,7 +75,7 @@ namespace appplex_conf_ns
 			boost_thread_path = bfs::path("ext") / "lib-src" / "boost" / "thread" / "win32";
 
 			int k = 0;
-			BOOST_FOREACH(unicodestring s, iexclude_path)
+			for(unicodestring s : iexclude_path)
 			{
 				exclude_path.push_back(bfs::path(s));
 				bfs::path& p = exclude_path.back();

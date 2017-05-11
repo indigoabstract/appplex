@@ -651,7 +651,8 @@ void gfx_shader::update_uniform(std::string iuni_name, const void* ival)
 
 		case gfx_input::vec3_array:
 		{
-			glUniform3fv(loc_idx, array_size, (gfx_float*)ival);
+			std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)ival;
+			glUniform3fv(loc_idx, v->size(), (gfx_float*)v->data());
 			break;
 		}
 

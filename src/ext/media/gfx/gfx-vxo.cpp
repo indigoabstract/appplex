@@ -524,8 +524,8 @@ void gfx_vxo::push_material_params()
 
 			case gfx_input::vec3_array:
 			{
-				const std::vector<glm::vec3>& v = e->get_vec3_array_value();
-				value = (void*)begin_ptr(v);
+				const std::vector<glm::vec3>* v = e->get_vec3_array_value();
+				value = (void*)v;
 				break;
 			}
 

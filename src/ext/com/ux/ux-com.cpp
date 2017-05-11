@@ -35,7 +35,7 @@ shared_ptr<ux_button> ux_button::new_shared_instance(ux_button* newButtonClassIn
 	return u;
 }
 
-void ux_button::init(ux_rect iuxr, int iColor, const string& iText)
+void ux_button::init(ux_rect iuxr, int iColor, string iText)
 {
 	uxr = iuxr;
 	color = gfx_color(iColor);
@@ -82,7 +82,7 @@ void ux_button::set_color(const gfx_color& icolor)
 	color = icolor;
 }
 
-void ux_button::set_text(const string& iText)
+void ux_button::set_text(string iText)
 {
 	text = iText;
 }

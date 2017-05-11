@@ -42,13 +42,3 @@ void local_notification::cancell_all()
 }
 
 std::vector<int> local_notification::active_notif_tag_list;
-
-std::vector<int> local_notification::notification_list =
-{
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-};

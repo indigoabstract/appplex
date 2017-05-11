@@ -98,7 +98,7 @@ shared_ptr<directory_tree> directory_tree::new_directory_tree(path& iroot_path, 
 	rootNode->root = rootNode;
 	d->root_node = rootNode;
 
-	BOOST_FOREACH(unicodestring s, iexclude_path)
+	for(unicodestring s : iexclude_path)
 	{
 		path& p = path(s);
 
@@ -195,7 +195,7 @@ void directory_tree::recursive_read(shared_ptr<directory_tree> dt, shared_ptr<di
 
 			bool skip = false;
 
-			BOOST_FOREACH(path p, dt->exclude_path)
+			for(path p : dt->exclude_path)
 			{
 				if (p == dx->rel_dir_path)
 				{

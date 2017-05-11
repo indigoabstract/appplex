@@ -32,10 +32,10 @@ void kx_krte::run()
 	name->name = "main-program";
 	kxb->name = name;
 
-	BOOST_FOREACH(shared_ptr<kx_elem> ke, kxb->list)
+	for(auto ke : kxb->list)
 	{
 		string s = ke->print();
-		trx("%1%") % s;
+		trx("{}", s);
 	}
 	
 	//trx("%1%") % kxb->print();

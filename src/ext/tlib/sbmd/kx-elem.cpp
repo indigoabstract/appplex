@@ -84,7 +84,7 @@ string kx_symbol::print(int ilevel){ return name; }
 
 void kx_symbol::eval()
 {
-	trx("sym[%1%]") % name;
+	trx("sym[{}]", name);
 }
 
 
@@ -94,7 +94,7 @@ std::string kx_text::print(int ilevel){ return data; }
 
 void kx_text::eval()
 {
-	trx("text[%1%]") % data;
+	trx("text[{}]", data);
 }
 
 
@@ -111,7 +111,7 @@ string kx_block::print(int ilevel)
 
 	s.append("\n" + indent_by_level(ilevel) + "[\n");
 	s.append(indent_by_level(ilevel + 1));
-	BOOST_FOREACH(shared_ptr<kx_elem> ke, list)
+	for(auto ke : list)
 	{
 		s.append(ke->print(ilevel + 1));
 	}
@@ -126,12 +126,12 @@ void kx_block::eval()
 
 	if (name)
 	{
-		trc("%1%") % name->name;
+		trc("{}", name->name);
 	}
 
 	trc("[");
 
-	BOOST_FOREACH(shared_ptr<kx_elem> ke, list)
+	for(auto ke : list)
 	{
 		ke->eval();
 	}
@@ -146,7 +146,7 @@ shared_ptr<kx_process> kx_block::find_by_name(const std::string& iname)
 		return static_pointer_cast<kx_process>(get_inst());
 	}
 
-	BOOST_FOREACH(shared_ptr<kx_elem> ke, list)
+	for(auto ke : list)
 	{
 		shared_ptr<kx_process> f = ke->find_by_name(iname);
 
@@ -195,7 +195,7 @@ string kx_match_block::print(int ilevel)
 
 	s.append(indent_by_level(ilevel) + "\n[\n");
 	s.append(indent_by_level(ilevel));
-	BOOST_FOREACH(shared_ptr<kx_elem> ke, blk->list)
+	for(auto ke : blk->list)
 	{
 		s.append(ke->print(ilevel + 1));
 	}
@@ -220,7 +220,7 @@ std::string kx_meta_block::print(int ilevel)
 	{
 		s.append(indent_by_level(ilevel) + "\n[\n");
 		s.append(indent_by_level(ilevel));
-		BOOST_FOREACH(shared_ptr<kx_elem> ke, blk->list)
+		for(auto ke : blk->list)
 		{
 			s.append(ke->print(ilevel + 1));
 		}
