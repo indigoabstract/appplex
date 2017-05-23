@@ -18,6 +18,7 @@
 #include <boost/program_options.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/algorithm/string.hpp>
+#include <fmt/ostream.h>
 
 using namespace boost::program_options;
 using std::string;
@@ -113,8 +114,8 @@ public:
 		options_description general("available main options");
 		general.add_options()
 			(HELP.c_str(), "produce help message")
-			(HELP_MODULE.c_str(), value<string>(), (trs("produce a help for a given module. valid modules are [%1%]") % get_module_list()).c_str())
-			(MODULE.c_str(), value<string>(), (trs("module name. valid modules are [%1%]") % get_module_list()).c_str())
+			(HELP_MODULE.c_str(), value<string>(), (trs("produce a help for a given module. valid modules are [{}]", get_module_list())).c_str())
+			(MODULE.c_str(), value<string>(), (trs("module name. valid modules are [{}]", get_module_list())).c_str())
 			;
 
 		variables_map vm;
@@ -124,7 +125,7 @@ public:
 
 		if(vm.count(HELP))
 		{
-			trx("%1%") % general;
+			trx("{}", general);
 
 			return shared_ptr<long_operation>();
 		}
@@ -135,11 +136,11 @@ public:
 
 			if(modules.find(modNameVal) != modules.end())
 			{
-				trx("%1%") % modules[modNameVal]->get_options_description();
+				trx("{}", modules[modNameVal]->get_options_description());
 			}
 			else
 			{
-				throw ia_exception(trs("module [%1%] does not exist. valid modules [%2%]") % modNameVal % get_module_list());
+				throw ia_exception(trs("module [{0}] does not exist. valid modules [{1}]", modNameVal, get_module_list()));
 			}
 
 			return shared_ptr<long_operation>();
@@ -153,7 +154,7 @@ public:
 			{
 				vector<unicodestring> argsCopy = args;
 				unicodestring umodule = string2unicodestring(MODULE);
-				unicodestring moduleEq = utrs(untr("%1%=")) % umodule;
+            unicodestring moduleEq = utrs(untr("{}="), umodule);
 
 				for(int k = 0; k < argsCopy.size(); k++)
 					// remove module and module-name from the argument list
@@ -190,7 +191,7 @@ public:
 			}
 			else
 			{
-				throw ia_exception(trs("module [%1%] does not exist. valid modules [%2%]") % mod_name_val % get_module_list());
+				throw ia_exception(trs("module [{0}] does not exist. valid modules [{1}]", mod_name_val, get_module_list()));
 			}
 		}
 		else
@@ -229,7 +230,7 @@ private:
 
 		if(modules.find(moduleName) != modules.end())
 		{
-			throw ia_exception(trs("dispatcher::addModule. module [%1%] has already been added") % moduleName);
+			throw ia_exception(trs("dispatcher::addModule. module [{}] has already been added", moduleName));
 		}
 
 		modules[moduleName] = module;

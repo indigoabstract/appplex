@@ -52,7 +52,7 @@ void long_op_print_process_output::run()
 	{
 		while (std::getline(*isStderr, line))
 		{
-			trx("%1%") % line;
+			trx("{}", line);
 		}
 	}
 
@@ -60,7 +60,7 @@ void long_op_print_process_output::run()
 	{
 		while (std::getline(*isStdout, line))
 		{
-			trx("%1%") % line;
+			trx("{}", line);
 		}
 	}
 }
@@ -69,11 +69,11 @@ void long_op_print_process_output::run()
 void start_process::exe_args(unicodestring& exec, vector<unicodestring>& args, int ms_to_wait_for_process)
 	// make sure you put process location path as first argument
 {
-	utrc(untr("exe-args [%1%")) % exec;
+	utrc(untr("exe-args [{}"), exec);
 
 	for(int k = 1; k < args.size(); k++)
 	{
-		utrc(untr(" %1%")) % args[k];
+		utrc(untr(" {}"), args[k]);
 	}
 
 	utrx(untr("]"));
@@ -87,7 +87,7 @@ void start_process::exe_args(unicodestring& exec, vector<unicodestring>& args, i
 
 	if(s.exited())
 	{
-		trx("exit-code [%1%]") % s.exit_status();
+		trx("exit-code [{}]", s.exit_status());
 	}
 	else
 	{
@@ -100,7 +100,7 @@ void start_process::exe_args(unicodestring& exec, vector<unicodestring>& args, i
 
 void start_process::exe_shell(unicodestring& exec, int ms_to_wait_for_process)
 {
-	utrx(untr("exe-shell [%1%]")) % exec;
+	utrx(untr("exe-shell [{}]"), exec);
 
 	unicode_context ctx;
 	ctx.stdout_behavior = bp::capture_stream();
@@ -111,7 +111,7 @@ void start_process::exe_shell(unicodestring& exec, int ms_to_wait_for_process)
 
 	if(s.exited())
 	{
-		trx("exit-code [%1%]") % s.exit_status();
+		trx("exit-code [{}]", s.exit_status());
 	}
 	else
 	{

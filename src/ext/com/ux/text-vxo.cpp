@@ -12,9 +12,10 @@
 #include "gfx-state.hpp"
 #include "gfx-vxo.hpp"
 #include "pfmgl.h"
-#include <freetype-gl/mat4.h>
 #include <freetype-gl/vertex-buffer.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 struct vertex_t
@@ -35,23 +36,15 @@ public:
 		ti[MP_SHADER_NAME][MP_VSH_NAME] = "v3f-t2f-c4f.vert";
 		ti[MP_SHADER_NAME][MP_FSH_NAME] = "v3f-t2f-c4f.frag";
 		ti[MP_BLENDING] = MV_ALPHA;
-		ti[MP_CULL_BACK] = true;
-		ti[MP_DEPTH_WRITE] = false;
+      ti[MP_CULL_BACK] = true;
+      ti[MP_CULL_FRONT] = false;
+      ti[MP_DEPTH_WRITE] = false;
 		ti[MP_DEPTH_TEST] = false;
 
 		vbuffer = vertex_buffer_new("vertex:3f,tex_coord:2f,color:4f,ashift:1f,agamma:1f");
-
-		mat4_set_identity(&projection);
-		mat4_set_identity(&model);
-		mat4_set_identity(&view);
-
-		float left = 0;
-		float right = gfx::rt::get_render_target_width();
-		float bottom = gfx::rt::get_render_target_height();
-		float top = 0;
-		mat4_set_orthographic(&projection, 0, right, 0, bottom, -1, 1);
-
-		gfx_util::check_gfx_error();
+      update_projection_mx();
+      
+      gfx_util::check_gfx_error();
 	}
 
 	~text_vxo_impl()
@@ -91,11 +84,17 @@ public:
 			inst->push_material_params();
 			icamera->update_glp_params(inst, shader);
 
-			model.m30 = ipos.x;
-			model.m31 = -ipos.y;
-			shader->update_uniform("model", model.data);
-			shader->update_uniform("view", view.data);
-			shader->update_uniform("projection", projection.data);
+         model[3][0] = ipos.x;
+         model[3][1] = -ipos.y;
+
+         if (rt_width != gfx::rt::get_render_target_width() || rt_height != gfx::rt::get_render_target_height())
+         {
+            update_projection_mx();
+         }
+
+         shader->update_uniform("model", glm::value_ptr(model));
+			shader->update_uniform("view", glm::value_ptr(view));
+         shader->update_uniform("projection", glm::value_ptr(projection));
 
 			vertex_buffer_render(vbuffer, GL_TRIANGLES);
 		}
@@ -165,8 +164,22 @@ public:
 		}
 	}
 
+   void update_projection_mx()
+   {
+      float left = 0;
+      float right = rt_width = gfx::rt::get_render_target_width();
+      float bottom = rt_height = gfx::rt::get_render_target_height();
+      float top = 0;
+
+      projection = glm::ortho(left, right, top, bottom, -100.f, 100.f);
+   }
+
 	vertex_buffer_t* vbuffer;
-	mat4 model, view, projection;
+   glm::mat4 model;
+   glm::mat4 view;
+   glm::mat4 projection;
+   int rt_width;
+   int rt_height;
 };
 
 

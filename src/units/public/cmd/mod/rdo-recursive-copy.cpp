@@ -12,6 +12,7 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -57,12 +58,12 @@ const string DESTINATION_PATH		= "destination-path";
 
 boost::program_options::options_description mod_cmd_recursive_copy::get_options_description()
 {
-	options_description desc(trs("available options for module [%1%]") % get_module_name());
+	options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path. must be an absolute path")
 		(DESTINATION_PATH.c_str(), unicodevalue<unicodestring>()->default_value(untr(""), ""),
-		(trs("destination path. a relative path is considered relative to the [%1%] directory") % SOURCE_PATH).c_str())
+		(trs("destination path. a relative path is considered relative to the [{}] directory", SOURCE_PATH)).c_str())
 		;
 
 	return desc;
@@ -80,8 +81,8 @@ shared_ptr<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestrin
 	boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
 	boost::filesystem::path dstPath;
 
-	utrx(untr("source-path was set to %1%")) % vm[SOURCE_PATH].as<unicodestring>();
-	utrx(untr("destination-path was set to %1%")) % vm[DESTINATION_PATH].as<unicodestring>();
+	utrx(untr("source-path was set to {}"), vm[SOURCE_PATH].as<unicodestring>());
+	utrx(untr("destination-path was set to {}"), vm[DESTINATION_PATH].as<unicodestring>());
 
 	dstPath = vm[DESTINATION_PATH].as<unicodestring>();
 
@@ -110,10 +111,10 @@ void long_op_recursive_copy::run()
 		{
 			if(src_path == dst_path)
 			{
-				throw ia_exception(trs("longOpRecursiveCopy: cannot copy a directory to itself. [%1%] must not be the same as [%2%]") % SOURCE_PATH % DESTINATION_PATH);
+				throw ia_exception(trs("longOpRecursiveCopy: cannot copy a directory to itself. [{0}] must not be the same as [{1}]", SOURCE_PATH, DESTINATION_PATH));
 			}
 
-			utrx(untr("starting longOpRecursiveCopy from [%1%] to [%2%]")) % path2string(src_path) % path2string(dst_path);
+			utrx(untr("starting longOpRecursiveCopy from [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 
 			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_copy rdo(src_path, dst_path);
@@ -122,12 +123,12 @@ void long_op_recursive_copy::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpRecursiveCopy: %1% is not a directory") % src_path);
+			throw ia_exception(trs("longOpRecursiveCopy: {} is not a directory", src_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpRecursiveCopy: %1% does not exist") % src_path);
+		throw ia_exception(trs("longOpRecursiveCopy: {} does not exist", src_path));
 	}
 }
 
@@ -146,15 +147,15 @@ void rec_dir_op_copy::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-		throw ia_exception(trs("failed to create directory %1%!") % dst_path);
+		throw ia_exception(trs("failed to create directory {}!", dst_path));
 	}
 
-	utrx(untr("copying files from directory [%1%] to [%2%]")) % path2string(src_path) % path2string(dst_path);
+	utrx(untr("copying files from directory [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 }
 
 void rec_dir_op_copy::on_finish(shared_ptr<dir_node> dir)
 {
-	utrx(untr("total directories [%1%], total files [%2%], total file size [%3%]")) % directory_count % file_count % total_file_size;
+	utrx(untr("total directories [{0}], total files [{1}], total file size [{2}]"), directory_count, file_count, total_file_size);
 }
 
 bool rec_dir_op_copy::on_entering_dir(shared_ptr<dir_node> dir)
@@ -198,12 +199,12 @@ void rec_dir_op_copy::copy_path(bfs::path& srcp, bfs::path& dstp, bool iis_direc
 	{
 		if(iis_directory)
 		{
-			utrx(untr("copying directory from [%1%] to [%2%]")) % path2string(srcp) % path2string(dstp);
+			utrx(untr("copying directory from [{0}] to [{1}]"), path2string(srcp), path2string(dstp));
 			copy_directory(srcp, dstp);
 		}
 		else
 		{
-			utrx(untr("copying file from [%1%] to [%2%]")) % path2string(srcp) % path2string(dstp);
+			utrx(untr("copying file from [{0}] to [{1}]"), path2string(srcp), path2string(dstp));
 			copy_file(srcp, dstp);
 		}
 	}

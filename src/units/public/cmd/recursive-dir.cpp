@@ -43,18 +43,18 @@ rdo_list_files::rdo_list_files()
 void rdo_list_files::on_start(shared_ptr<dir_node> dir)
 {
 	file_count = directory_count = total_file_size = 0;
-	utrx(untr("started file list for directory [%1%]")) % path2string(dir->abs_dir_path);
+	utrx(untr("started file list for directory [{}]"), path2string(dir->abs_dir_path));
 }
 
 void rdo_list_files::on_finish(shared_ptr<dir_node> dir)
 {
-	utrx(untr("finished file list for directory [%1%]")) % path2string(dir->abs_dir_path);
-	utrx(untr("total directories [%1%], total files [%2%], total file size [%3%]")) % directory_count % file_count % total_file_size;
+	utrx(untr("finished file list for directory [{}]"), path2string(dir->abs_dir_path));
+	utrx(untr("total directories [{0}], total files [{1}], total file size [{2}]"), directory_count, file_count, total_file_size);
 }
 
 bool rdo_list_files::on_entering_dir(shared_ptr<dir_node> dir)
 {
-	utrx(untr("directory [%1%]\n[")) % path2string(dir->rel_dir_path);
+	utrx(untr("directory [{}]\n["), path2string(dir->rel_dir_path));
 
 	return true;
 }
@@ -67,7 +67,7 @@ void rdo_list_files::on_leaving_dir(shared_ptr<dir_node> dir)
 
 void rdo_list_files::apply_to_file(shared_ptr<file_node> file)
 {
-	utrx(untr("[%1%]")) % path2string(file->rel_file_path.filename());
+	utrx(untr("[{}]"), path2string(file->rel_file_path.filename()));
 	file_count++;
 	total_file_size += file->file_size;
 }
@@ -81,13 +81,13 @@ shared_ptr<directory_tree> directory_tree::new_directory_tree(path& iroot_path, 
 {
 	if (!exists(iroot_path))
 	{
-		utrx(untr("error [%1% doesn't exist]")) % iroot_path;
+		utrx(untr("error [{} doesn't exist]"), iroot_path.native());
 		return shared_ptr<directory_tree>();
 	}
 
 	if (!is_directory(iroot_path))
 	{
-		utrx(untr("error [%1% is not a directory]")) % iroot_path;
+		utrx(untr("error [{} is not a directory]"), iroot_path.native());
 		return shared_ptr<directory_tree>();
 	}
 
@@ -108,7 +108,7 @@ shared_ptr<directory_tree> directory_tree::new_directory_tree(path& iroot_path, 
 		}
 		else
 		{
-			throw ia_exception(trs("path [%1%] is not relative to [%2%]") % p.string() % iroot_path.string());
+			throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), iroot_path.string()));
 		}
 	}
 

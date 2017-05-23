@@ -13,6 +13,7 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -57,7 +58,7 @@ const string EXCLUDE_PATH			= "exclude-path";
 
 boost::program_options::options_description mod_cmd_add_stdafx_include::get_options_description()
 {
-	options_description desc(trs("available options for module [%1%]") % get_module_name());
+	options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path. must be an absolute path")
@@ -104,7 +105,7 @@ void long_op_add_stdafx_include::run()
 	{
 		if (is_directory(src_path))
 		{
-			utrx(untr("starting longOpAddStdafxInclude in directory [%1%]")) % path2string(src_path);
+			utrx(untr("starting longOpAddStdafxInclude in directory [{}]"), path2string(src_path));
 
 			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_add_stdafx_include rdo(src_path, exclude_path);
@@ -113,12 +114,12 @@ void long_op_add_stdafx_include::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpAddStdafxInclude: %1% is not a directory") % src_path);
+			throw ia_exception(trs("longOpAddStdafxInclude: {} is not a directory", src_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpAddStdafxInclude: %1% does not exist") % src_path);
+		throw ia_exception(trs("longOpAddStdafxInclude: {} does not exist", src_path));
 	}
 }
 
@@ -135,10 +136,10 @@ rec_dir_op_add_stdafx_include::rec_dir_op_add_stdafx_include(path iSrcPath, vect
 
 		if(!p.is_relative())
 		{
-			throw ia_exception(trs("path [%1%] is not relative to [%2%]") % p.string() % src_path.string());
+			throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), src_path.string()));
 		}
 
-		utrx(untr("%1% %2%")) % k % s;
+		utrx(untr("{0} {1}"), k, s);
 		k++;
 	}
 }
@@ -156,7 +157,7 @@ void rec_dir_op_add_stdafx_include::on_finish(shared_ptr<dir_node> dir)
 		trx("no changes made");
 	}
 
-	trx("cpp files [%1%]") % file_count;
+	trx("cpp files [{}]", file_count);
 }
 
 bool rec_dir_op_add_stdafx_include::on_entering_dir(shared_ptr<dir_node> dir)
@@ -224,14 +225,14 @@ void rec_dir_op_add_stdafx_include::apply_to_file(shared_ptr<file_node> file)
 
 		if(!hasEndoffileNewline)
 		{
-			trx("added end of file new line in file [%1%]") % p.string();
+			trx("added end of file new line in file [{}]", p.string());
 			newstr += "\n";
 		}
 
 		if(!hasStdafx)
 		{
 			newstr = "#include \"stdafx.h\"\n\n" + newstr;
-			trx("added stdafx include in file [%1%]") % p.string();
+			trx("added stdafx include in file [{}]", p.string());
 		}
 
 		fs.seekp(0, std::ios_base::beg);

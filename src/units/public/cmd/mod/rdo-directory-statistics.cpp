@@ -13,6 +13,7 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -58,7 +59,7 @@ const string SOURCE_PATH			= "source-path";
 
 boost::program_options::options_description mod_cmd_dir_statistics::get_options_description()
 {
-	options_description desc(trs("available options for module [%1%]") % get_module_name());
+	options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path. must be an absolute path")
@@ -95,7 +96,7 @@ void long_op_dir_statistics::run()
 	{
 		if (is_directory(src_path))
 		{
-			utrx(untr("starting longOpDirStatistics in directory [%1%]")) % path2string(src_path);
+			utrx(untr("starting longOpDirStatistics in directory [{}]"), path2string(src_path));
 
 			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_dir_statistics rdo(src_path);
@@ -104,12 +105,12 @@ void long_op_dir_statistics::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpDirStatistics: %1% is not a directory") % src_path);
+			throw ia_exception(trs("longOpDirStatistics: {} is not a directory", src_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpDirStatistics: %1% does not exist") % src_path);
+		throw ia_exception(trs("longOpDirStatistics: {} does not exist", src_path));
 	}
 }
 
@@ -128,8 +129,8 @@ void rec_dir_op_dir_statistics::on_start(shared_ptr<dir_node> dir)
 
 void rec_dir_op_dir_statistics::on_finish(shared_ptr<dir_node> dir)
 {
-	trx("directories [%1%], files [%2%], all-file size [%3%]") % directory_count % file_count % total_file_size;
-	utrx(untr("smallest file [%1%] size [%2%], largest file [%3%] size [%4%]")) % path2string(min_file) % min_file_size % path2string(max_file) % max_file_size;
+	trx("directories [{0}], files [{1}], all-file size [{2}]", directory_count, file_count, total_file_size);
+	utrx(untr("smallest file [{0}] size [{1}], largest file [{2}] size [{3}]"), path2string(min_file), min_file_size, path2string(max_file), max_file_size);
 }
 
 bool rec_dir_op_dir_statistics::on_entering_dir(shared_ptr<dir_node> dir)

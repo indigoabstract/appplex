@@ -79,7 +79,7 @@ void unit_cmd::load()
 	}
 	catch(std::exception& e)
 	{
-		trx("error. [%1%]") % e.what();
+		trx("error. [{}]", e.what());
 	}
 	catch(...)
 	{

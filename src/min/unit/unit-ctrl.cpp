@@ -193,6 +193,15 @@ void unit_ctrl::resize_app(int iwidth, int iheight)
 	{
 		ul->on_resize();
 	}
+   else
+   {
+      auto u = get_current_unit();
+
+      if (u)
+      {
+         u->on_resize();
+      }
+   }
 }
 
 void unit_ctrl::pointer_action(std::shared_ptr<pfm_touch_event> ite)

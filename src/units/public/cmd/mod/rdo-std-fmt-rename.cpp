@@ -13,6 +13,7 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -62,13 +63,13 @@ const string COPY_ONLY				= "copy-only";
 
 boost::program_options::options_description mod_cmd_std_fmt_filenames::get_options_description()
 {
-	options_description desc(trs("available options for module [%1%]") % get_module_name());
+	options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path. must be an absolute path")
 		(DESTINATION_PATH.c_str(), unicodevalue<unicodestring>()->default_value(untr(""), ""),
 		(trs("destination path. when missing, it's assumed to be the same as [%1%]."
-			 " a relative path is considered relative to the [%1%] directory") % SOURCE_PATH).c_str())
+			 " a relative path is considered relative to the [{}] directory", SOURCE_PATH)).c_str())
 		(COPY_ONLY.c_str(), "files will only be copied, not renamed")
 	;
 
@@ -87,8 +88,8 @@ shared_ptr<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodest
 	boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
 	boost::filesystem::path dstPath;
 
-	utrx(untr("source-path was set to %1%")) % vm[SOURCE_PATH].as<unicodestring>();
-	utrx(untr("destination-path was set to %1%")) % vm[DESTINATION_PATH].as<unicodestring>();
+	utrx(untr("source-path was set to {}"), vm[SOURCE_PATH].as<unicodestring>());
+	utrx(untr("destination-path was set to {}"), vm[DESTINATION_PATH].as<unicodestring>());
 
 	dstPath = vm[DESTINATION_PATH].as<unicodestring>();
 
@@ -134,7 +135,7 @@ void long_op_std_fmt_rename::run()
 	{
 		if (is_directory(dst_path))
 		{
-			utrx(untr("starting longOpStdFmtRename in directory [%1%]")) % path2string(dst_path);
+			utrx(untr("starting longOpStdFmtRename in directory [{}]"), path2string(dst_path));
 
 			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(dst_path);
 			rec_dir_op_std_fmt_rename rdo(dst_path);
@@ -143,12 +144,12 @@ void long_op_std_fmt_rename::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpStdFmtRename: %1% is not a directory") % dst_path);
+			throw ia_exception(trs("longOpStdFmtRename: {} is not a directory", dst_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpStdFmtRename: %1% does not exist") % dst_path);
+		throw ia_exception(trs("longOpStdFmtRename: {} does not exist", dst_path));
 	}
 }
 
@@ -162,13 +163,13 @@ void rec_dir_op_std_fmt_rename::on_start(shared_ptr<dir_node> dir)
 {
 	file_count = directory_count = total_file_size = ren_exception_count = files_renamed_count = directories_renamed_count = 0;
 
-	utrx(untr("renaming files from directory [%1%]")) % path2string(src_dir);
+	utrx(untr("renaming files from directory [{}]"), path2string(src_dir));
 }
 
 void rec_dir_op_std_fmt_rename::on_finish(shared_ptr<dir_node> dir)
 {
-	trx("directories [%1%], files [%2%], all-files size [%3%]") % directory_count % file_count % total_file_size;
-	trx("renamed directories [%1%], renamed files [%2%], rename exceptions [%3%]") % directories_renamed_count % files_renamed_count % ren_exception_count;
+	trx("directories [{0}], files [{1}], all-files size [{2}]", directory_count, file_count, total_file_size);
+	trx("renamed directories [{0}], renamed files [{1}], rename exceptions [{2}]", directories_renamed_count, files_renamed_count, ren_exception_count);
 }
 
 bool rec_dir_op_std_fmt_rename::on_entering_dir(shared_ptr<dir_node> dir)
@@ -234,12 +235,12 @@ void rec_dir_op_std_fmt_rename::rename_path(const path& irel_path, unicodestring
 
 			if(!iequals(inew_filename, iold_filename) && exists(newPath))
 			{
-				utrx(untr("%1% [%2%] was not renamed to [%3%] because a %1% with that name already exists")) % fileType % path2string(oldRelPath)  % path2string(newRelPath);
+				utrx(untr("{0} [{1}] was not renamed to [{2}] because a {0} with that name already exists"), fileType, path2string(oldRelPath), path2string(newRelPath));
 			}
 			else
 			{
 				rename(oldPath, newPath);
-				utrx(untr("%1% [%2%] -> [%3%]")) % fileType % iold_filename % inew_filename;
+				utrx(untr("{0} [{1}] -> [{2}]"), fileType, iold_filename, inew_filename);
 
 				if(iis_directory)
 				{
@@ -261,14 +262,14 @@ void rec_dir_op_std_fmt_rename::rename_path(const path& irel_path, unicodestring
 		path oldRelPath = irel_path / iold_filename;
 		path newRelPath = irel_path / inew_filename;
 
-		utrx(untr("rename error [%1%]. failed to rename [%2%] to [%3%]")) % e.what() % path2string(oldRelPath)  % path2string(newRelPath);
+		utrx(untr("rename error [{0}]. failed to rename [{1}] to [{2}]"), e.what(), path2string(oldRelPath), path2string(newRelPath));
 	}
 	catch(std::exception)
 	{
 		path oldRelPath = irel_path / iold_filename;
 		path newRelPath = irel_path / inew_filename;
 
-		utrx(untr("rename error. failed to rename [%1%] to [%2%]")) % path2string(oldRelPath)  % path2string(newRelPath);
+		utrx(untr("rename error. failed to rename [{0}] to [{1}]"), path2string(oldRelPath), path2string(newRelPath));
 	}
 }
 

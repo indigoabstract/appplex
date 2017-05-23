@@ -1,7 +1,6 @@
 #pragma once
 
 #include "pfm-def.h"
-#include "appplex-conf.hpp"
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -37,18 +36,18 @@ typedef wchar_t		 unicodechar;
 #if defined UNICODE_USING_STD_STRING
 
 #define untr(arg)	 arg
-#define utrn()		 trn()
-#define utrx(arg)	 trx(arg)
-#define utrc(arg)	 trc(arg)
-#define utrs(arg)	 trs(arg)
+#define utrn    trn
+#define utrx	 trx
+#define utrc	 trc
+#define utrs	 trs
 
 #elif defined UNICODE_USING_STD_WSTRING
 
 #define untr(arg)	 L##arg
-#define utrn()		 wtrn()
-#define utrx(arg)	 wtrx(arg)
-#define utrc(arg)	 wtrc(arg)
-#define utrs(arg)	 wtrs(arg)
+#define utrn	 wtrn
+#define utrx	 wtrx
+#define utrc	 wtrc
+#define utrs	 wtrs
 
 #endif
 
@@ -353,15 +352,15 @@ private:
 void trx(const char* format, fmt::ArgList args);
 FMT_VARIADIC(void, trx, const char*)
 void wtrx(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC(void, wtrx, const wchar_t*)
+FMT_VARIADIC_W(void, wtrx, const wchar_t*)
 void trc(const char* format, fmt::ArgList args);
 FMT_VARIADIC(void, trc, const char*)
 void wtrc(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC(void, wtrc, const wchar_t*)
+FMT_VARIADIC_W(void, wtrc, const wchar_t*)
 std::string trs(const char* format, fmt::ArgList args);
 FMT_VARIADIC(std::string, trs, const char*)
 std::wstring wtrs(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC(std::wstring, wtrs, const wchar_t*)
+FMT_VARIADIC_W(std::wstring, wtrs, const wchar_t*)
 
 #define vprint(iformat, ...)		pfm::get_pfm_main_inst()->write_text_v(iformat, ##__VA_ARGS__)
 

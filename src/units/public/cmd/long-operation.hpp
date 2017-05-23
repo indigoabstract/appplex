@@ -7,7 +7,7 @@
 #include "pfm.hpp"
 
 
-namespace boost
+namespace std
 {
 	class thread;
 }
@@ -26,7 +26,7 @@ public:
 private:
 	void run_impl();
 
-	shared_ptr<boost::thread> threadp;
+	shared_ptr<std::thread> threadp;
 	volatile bool active;
 };
 

@@ -6,7 +6,7 @@
 
 #include "long-operation.hpp"
 #include "min.hpp"
-#include <boost/thread.hpp>
+#include <thread>
 #include <exception>
 
 
@@ -23,7 +23,7 @@ void long_operation::run_on_separate_thread(shared_ptr<long_operation> lop)
 	}
 
 	lop->active = true;
-	lop->threadp = shared_ptr<boost::thread>(new boost::thread(&long_operation::run_impl, lop.get()));
+	lop->threadp = shared_ptr<std::thread>(new std::thread(&long_operation::run_impl, lop.get()));
 }
 
 void long_operation::run()
@@ -51,7 +51,7 @@ void long_operation::run_impl()
 	catch(ia_exception& e)
 	{
 		active = false;
-		trx("op error. [%1%]") % e.what();
+		trx("op error. [{}]", e.what());
 	}
     catch(std::exception& e)
 	{

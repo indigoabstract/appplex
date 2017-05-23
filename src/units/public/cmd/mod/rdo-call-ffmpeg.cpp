@@ -13,6 +13,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <string>
 #include <vector>
@@ -58,14 +59,14 @@ const string WAIT_TIME				= "wait-time";
 
 boost::program_options::options_description mod_cmd_start_process::get_options_description()
 {
-	options_description desc(trs("available options for module [%1%]") % get_module_name());
+	options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(PROCESS_PATH.c_str(), unicodevalue<unicodestring>()->required(), "process path")
 		(PROCESS_ARGUMENTS.c_str(), unicodevalue<unicodestring>()->required(), "process arguments")
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path")
 		(DESTINATION_PATH.c_str(), unicodevalue<unicodestring>()->required(), (trs("destination path."
-		" a relative path is considered relative to the [%1%] directory") % SOURCE_PATH).c_str())
+		" a relative path is considered relative to the [{}] directory", SOURCE_PATH)).c_str())
 		(FORMAT_EXTENSION.c_str(), unicodevalue<unicodestring>(), "format extension (without dot)")
 		(WAIT_TIME.c_str(), value<int>()->default_value(60), "number of seconds to wait for the process to finish")
 		;
@@ -83,14 +84,14 @@ shared_ptr<long_operation> mod_cmd_start_process::run(const vector<unicodestring
 	store(parsed, vm);
 	notify(vm);
 
-	utrx(untr("process-path was set to %1%")) % vm[PROCESS_PATH].as<unicodestring>();
-	utrx(untr("process-arguments was set to %1%")) % vm[PROCESS_ARGUMENTS].as<unicodestring>();
-	trx("wait-time was set to %1%") % vm[WAIT_TIME].as<int>();
+	utrx(untr("process-path was set to {}"), vm[PROCESS_PATH].as<unicodestring>());
+	utrx(untr("process-arguments was set to {}"), vm[PROCESS_ARGUMENTS].as<unicodestring>());
+	trx("wait-time was set to {}", vm[WAIT_TIME].as<int>());
 
 	if(!vm[FORMAT_EXTENSION].empty())
 	{
 		format_extension = vm[FORMAT_EXTENSION].as<unicodestring>();
-		utrx(untr("format extension was set to %1%")) % format_extension;
+		utrx(untr("format extension was set to {}"), format_extension);
 	}
 
 	boost::filesystem::path process_path(vm[PROCESS_PATH].as<unicodestring>());
@@ -127,19 +128,19 @@ void long_op_ffmpeg::run()
 	{
 		if (!is_regular_file(process_path))
 		{
-			throw ia_exception(trs("longOpFfmpeg: %1% is not a regular file") % process_path);
+			throw ia_exception(trs("longOpFfmpeg: {} is not a regular file", process_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpFfmpeg: %1% does not exist") % process_path);
+		throw ia_exception(trs("longOpFfmpeg: {} does not exist", process_path));
 	}
 
 	if (exists(src_path))
 	{
 		if (is_directory(src_path))
 		{
-			utrx(untr("starting longOpFfmpeg from [%1%] to [%2%]")) % path2string(src_path) % path2string(dst_path);
+			utrx(untr("starting longOpFfmpeg from [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 
 			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_flac_to_mp3 rdo(process_path, process_arguments, src_path, dst_path, format_extension, milliseconds_to_wait);
@@ -148,12 +149,12 @@ void long_op_ffmpeg::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpFfmpeg: %1% is not a directory") % src_path);
+			throw ia_exception(trs("longOpFfmpeg: {} is not a directory", src_path));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpFfmpeg: %1% does not exist") % src_path);
+		throw ia_exception(trs("longOpFfmpeg: {} does not exist", src_path));
 	}
 }
 
@@ -175,7 +176,7 @@ void rec_dir_op_flac_to_mp3::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-		throw ia_exception(trs("failed to create directory %1%!") % dst_path);
+		throw ia_exception(trs("failed to create directory {}!", dst_path));
 	}
 }
 
@@ -190,7 +191,7 @@ bool rec_dir_op_flac_to_mp3::on_entering_dir(shared_ptr<dir_node> dir)
 
 		if(!result && !exists(dst_path))
 		{
-			throw ia_exception(trs("failed to create directory %1%!") % tp);
+			throw ia_exception(trs("failed to create directory {}!", tp));
 		}
 
 		return true;
@@ -205,8 +206,8 @@ void rec_dir_op_flac_to_mp3::on_leaving_dir(shared_ptr<dir_node> dir)
 
 void rec_dir_op_flac_to_mp3::apply_to_file(shared_ptr<file_node> file)
 {
-	static const unicodestring REPL_SOURCE_PATH			= utrs(untr("[%1%]")) % string2unicodestring(SOURCE_PATH);
-	static const unicodestring REPL_DESTINATION_PATH	= utrs(untr("[%1%]")) % string2unicodestring(DESTINATION_PATH);
+	static const unicodestring REPL_SOURCE_PATH			= utrs(untr("[{}]"), string2unicodestring(SOURCE_PATH));
+	static const unicodestring REPL_DESTINATION_PATH	= utrs(untr("[{}]"), string2unicodestring(DESTINATION_PATH));
 
 	unicodestring ext = path2string(file->rel_file_path.extension());
 
@@ -226,7 +227,7 @@ void rec_dir_op_flac_to_mp3::apply_to_file(shared_ptr<file_node> file)
 
 		boost::algorithm::replace_all(exec, REPL_SOURCE_PATH, tss);
 		boost::algorithm::replace_all(exec, REPL_DESTINATION_PATH, tds);
-		exec = utrs(untr("%1% %2%")) % process_path % exec;
+		exec = utrs(untr("{0} {1}"), process_path, exec);
 		//utrx(exec);
 		trn();
 

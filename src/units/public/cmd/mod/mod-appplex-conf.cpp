@@ -22,6 +22,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <boost/any.hpp>
+#include <fmt/ostream.h>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -82,10 +83,10 @@ namespace appplex_conf_ns
 
 				if (!p.is_relative())
 				{
-					throw ia_exception(trs("path [%1%] is not relative to [%2%]") % p.generic_string() % src_path.generic_string());
+					throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.generic_string(), src_path.generic_string()));
 				}
 
-				utrx(untr("%1% %2%")) % k % s;
+				utrx(untr("{0} {1}"), k, s);
 				k++;
 			}
 		}
@@ -198,7 +199,7 @@ namespace appplex_conf_ns
 			{
 				if (is_directory(src_path))
 				{
-					utrx(untr("starting mod-appplex-conf in directory [%1%]")) % path2string(src_path);
+					utrx(untr("starting mod-appplex-conf in directory [{}]"), path2string(src_path));
 					trx("\nloading the source file tree.\n");
 					unit_entry_map = std::make_shared<unit_entry_map_type>();
 					unit_entry_map_android = std::make_shared<unit_entry_map_type>();
@@ -215,12 +216,12 @@ namespace appplex_conf_ns
 				}
 				else
 				{
-					throw ia_exception(trs("mod-appplex-conf: %1% is not a directory") % src_path);
+					throw ia_exception(trs("mod-appplex-conf: {} is not a directory", src_path));
 				}
 			}
 			else
 			{
-				throw ia_exception(trs("mod-appplex-conf: %1% does not exist") % src_path);
+				throw ia_exception(trs("mod-appplex-conf: {} does not exist", src_path));
 			}
 		}
 
@@ -498,7 +499,7 @@ namespace appplex_conf_ns
 			}
 			catch (ia_exception& e)
 			{
-				trx("exception %1%") % e.what();
+				trx("exception {}", e.what());
 			}
 		}
 
@@ -562,7 +563,7 @@ std::string mod_cmd_appplex_conf::get_module_name()
 
 boost::program_options::options_description mod_cmd_appplex_conf::get_options_description()
 {
-	bpo::options_description desc(trs("available options for module [%1%]") % get_module_name());
+	bpo::options_description desc(trs("available options for module [{}]", get_module_name()));
 
 	desc.add_options()
 		(SOURCE_PATH.c_str(), unicodevalue<unicodestring>()->required(), "source path. must be an absolute path")

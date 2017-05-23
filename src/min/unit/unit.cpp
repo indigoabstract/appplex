@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "unit.hpp"
+#include "appplex-conf.hpp"
 #include "com/ux/ux-camera.hpp"
 #include "com/ux/ux.hpp"
 #include "com/ux/ux-com.hpp"
@@ -245,7 +246,7 @@ void unit::iInit()
 		init_ux();
 		uxroot->init();
 	}
-#endif
+#endif // MOD_GFX
 }
 
 /**
@@ -605,7 +606,15 @@ int unit_list::get_unit_count()const
 
 void unit_list::on_resize()
 {
-	unit::on_resize();
+   if (ulmodel.lock())
+   {
+      auto u = ulist[ulmodel.lock()->get_selected_elem()];
+
+      if (u)
+      {
+         u->on_resize();
+      }
+   }
 }
 
 void unit_list::receive(shared_ptr<iadp> idp)
