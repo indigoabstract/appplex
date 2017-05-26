@@ -13,7 +13,6 @@
 #include "com/util/unicode/boost-filesystem-util.hpp"
 #include "com/util/unicode/boost-program-options-util.hpp"
 #include <boost/program_options.hpp>
-#include <fmt/ostream.h>
 #include <exception>
 
 using std::string;
@@ -59,12 +58,12 @@ namespace appplex_conf_ns
 				}
 				else
 				{
-					throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->src_path));
+					throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->src_path.string()));
 				}
 			}
 			else
 			{
-				throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->src_path));
+				throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->src_path.string()));
 			}
 		}
 

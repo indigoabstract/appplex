@@ -86,6 +86,7 @@ paths
 			gradle
 			[
 				gradle-path[ 'app/build.gradle' ],
+				rel-proj-path[ '../../..' ],
 				rel-units-path[ '../../../src/units' ],
 				java-src-start[ '// java-src[' ],
 				java-src-end[ '// java-src]' ],

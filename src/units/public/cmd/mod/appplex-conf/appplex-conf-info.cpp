@@ -361,46 +361,117 @@ void android_studio_project_conf::update_project()
    auto sbmd = info->krt->kxb;
    auto platforms_android_root_path = sbmd_ops::get_sbmd_str_seq("platforms.android.root-path", sbmd);
    auto platforms_android_gradle_gradle_path = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.gradle-path", sbmd);
+   auto platforms_android_gradle_rel_proj_path = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.rel-proj-path", sbmd);
    auto platforms_android_gradle_rel_units_path = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.rel-units-path", sbmd);
    auto android_gradle_path = info->proj_path / platforms_android_root_path[0] / platforms_android_gradle_gradle_path[0];
    auto gradle_file = pfm_file::get_inst(android_gradle_path.generic_string());
    auto gradle_file_txt = pfm::filesystem::load_res_as_string(gradle_file);
    auto& gf_txt = *gradle_file_txt;
-   auto paths_libs_boost_inc = sbmd_ops::get_sbmd_str_seq("paths.libs.boost.inc", sbmd);
-   auto paths_libs_boost_lib = sbmd_ops::get_sbmd_str_seq("paths.libs.boost.lib", sbmd);
-   auto platforms_android_gradle_cpp_lib_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-start", sbmd);
-   auto platforms_android_gradle_cpp_lib_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-end", sbmd);
-   auto platforms_android_gradle_cpp_src_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-start", sbmd);
-   auto platforms_android_gradle_cpp_src_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-end", sbmd);
-   std::string cpp_src_start = platforms_android_gradle_cpp_src_start[0];
-   std::string cpp_src_end = platforms_android_gradle_cpp_src_end[0];
-   auto idx_start = gf_txt.find(cpp_src_start);
+   bool update_cpp_lib = false;
+   bool update_cpp_src = false;
 
-   if (idx_start != std::string::npos)
+   if (uses_mod("boost"))
    {
-      auto idx_end = gf_txt.find(cpp_src_end, idx_start);
+      update_cpp_lib = true;
+      update_cpp_src = true;
+   }
 
-      if (idx_end != std::string::npos)
+   if (update_cpp_lib)
+   {
+      auto platforms_android_gradle_cpp_lib_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-start", sbmd);
+      auto platforms_android_gradle_cpp_lib_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-end", sbmd);
+      std::string cpp_lib_start = platforms_android_gradle_cpp_lib_start[0];
+      std::string cpp_lib_end = platforms_android_gradle_cpp_lib_end[0];
+      auto idx_start = gf_txt.find(cpp_lib_start);
+
+      if (idx_start != std::string::npos)
       {
-         std::string rel_units_path = platforms_android_gradle_rel_units_path[0];
-         std::string unit_list = "";
-         int idx_end2 = gf_txt.find_last_of('\n', idx_end);
-         int pos = idx_start + cpp_src_start.length() + 1;
-         int len = idx_end2 - pos + 1;
-         std::string indent = gf_txt.substr(idx_end2 + 1, idx_end - 1 - idx_end2);
+         auto idx_end = gf_txt.find(cpp_lib_end, idx_start);
 
-         for (auto& k : *unit_entry_map)
+         if (idx_end != std::string::npos)
          {
-            std::string unit_path = k.second->unit_path.generic_string();
-            unit_list += trs("{0}'{1}/{2}',\n",indent, rel_units_path, unit_path);
+            std::string inc_list = "";
+            int idx_end2 = gf_txt.find_last_of('\n', idx_end);
+            int pos = idx_start + cpp_lib_start.length() + 1;
+            int len = idx_end2 - pos + 1;
+            std::string indent = gf_txt.substr(idx_end2 + 1, idx_end - 1 - idx_end2);
+
+            if (uses_mod("boost"))
+            {
+               auto paths_libs_boost_inc = sbmd_ops::get_sbmd_str_seq("paths.libs.boost.inc", sbmd);
+               inc_list += trs("{0}'{1}/{2}',\n", indent, platforms_android_gradle_rel_proj_path[0], paths_libs_boost_inc[0]);
+            }
+
+            gf_txt.replace(pos, len, inc_list);
          }
-
-         gf_txt.replace(pos, len, unit_list);
-         gradle_file->io.open("wt");
-
-         auto rw = rw_file_sequence::new_inst(gradle_file);
-         rw->w.write_line(gf_txt, false);
+         else
+         {
+            trx("error[ cannot find cpp-lib-end tag ]");
+            return;
+         }
       }
+      else
+      {
+         trx("error[ cannot find cpp-lib-start tag ]");
+         return;
+      }
+
+   }
+
+   if (update_cpp_src)
+   {
+      auto platforms_android_gradle_cpp_src_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-start", sbmd);
+      auto platforms_android_gradle_cpp_src_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-end", sbmd);
+      std::string cpp_src_start = platforms_android_gradle_cpp_src_start[0];
+      std::string cpp_src_end = platforms_android_gradle_cpp_src_end[0];
+      auto idx_start = gf_txt.find(cpp_src_start);
+
+      if (idx_start != std::string::npos)
+      {
+         auto idx_end = gf_txt.find(cpp_src_end, idx_start);
+
+         if (idx_end != std::string::npos)
+         {
+            std::string rel_units_path = platforms_android_gradle_rel_units_path[0];
+            std::string unit_list = "";
+            int idx_end2 = gf_txt.find_last_of('\n', idx_end);
+            int pos = idx_start + cpp_src_start.length() + 1;
+            int len = idx_end2 - pos + 1;
+            std::string indent = gf_txt.substr(idx_end2 + 1, idx_end - 1 - idx_end2);
+
+            for (auto& k : *unit_entry_map)
+            {
+               std::string unit_path = k.second->unit_path.generic_string();
+               unit_list += trs("{0}'{1}/{2}',\n", indent, rel_units_path, unit_path);
+            }
+
+            if (uses_mod("boost"))
+            {
+               auto paths_libs_boost_lib = sbmd_ops::get_sbmd_str_seq("paths.libs.boost.lib", sbmd);
+               unit_list += trs("{0}'{1}/{2}',\n", indent, platforms_android_gradle_rel_proj_path[0], paths_libs_boost_lib[0]);
+            }
+
+            gf_txt.replace(pos, len, unit_list);
+         }
+         else
+         {
+            trx("error[ cannot find cpp-src-end tag ]");
+            return;
+         }
+      }
+      else
+      {
+         trx("error[ cannot find cpp-src-start tag ]");
+         return;
+      }
+   }
+
+   if (update_cpp_lib || update_cpp_src)
+   {
+      gradle_file->io.open("wt");
+
+      auto rw = rw_file_sequence::new_inst(gradle_file);
+      rw->w.write_line(gf_txt, false);
    }
 }
 

@@ -12,7 +12,6 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
-#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -123,12 +122,12 @@ void long_op_recursive_copy::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpRecursiveCopy: {} is not a directory", src_path));
+			throw ia_exception(trs("longOpRecursiveCopy: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpRecursiveCopy: {} does not exist", src_path));
+		throw ia_exception(trs("longOpRecursiveCopy: {} does not exist", src_path.string()));
 	}
 }
 
@@ -147,7 +146,7 @@ void rec_dir_op_copy::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-		throw ia_exception(trs("failed to create directory {}!", dst_path));
+		throw ia_exception(trs("failed to create directory {}!", dst_path.string()));
 	}
 
 	utrx(untr("copying files from directory [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));

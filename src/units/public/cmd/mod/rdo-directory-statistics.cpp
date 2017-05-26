@@ -13,7 +13,6 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
-#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -105,12 +104,12 @@ void long_op_dir_statistics::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpDirStatistics: {} is not a directory", src_path));
+			throw ia_exception(trs("longOpDirStatistics: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpDirStatistics: {} does not exist", src_path));
+		throw ia_exception(trs("longOpDirStatistics: {} does not exist", src_path.string()));
 	}
 }
 

@@ -13,7 +13,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
-#include <fmt/ostream.h>
 #include <exception>
 #include <string>
 #include <vector>
@@ -128,12 +127,12 @@ void long_op_ffmpeg::run()
 	{
 		if (!is_regular_file(process_path))
 		{
-			throw ia_exception(trs("longOpFfmpeg: {} is not a regular file", process_path));
+			throw ia_exception(trs("longOpFfmpeg: {} is not a regular file", process_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpFfmpeg: {} does not exist", process_path));
+		throw ia_exception(trs("longOpFfmpeg: {} does not exist", process_path.string()));
 	}
 
 	if (exists(src_path))
@@ -149,12 +148,12 @@ void long_op_ffmpeg::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpFfmpeg: {} is not a directory", src_path));
+			throw ia_exception(trs("longOpFfmpeg: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpFfmpeg: {} does not exist", src_path));
+		throw ia_exception(trs("longOpFfmpeg: {} does not exist", src_path.string()));
 	}
 }
 
@@ -176,7 +175,7 @@ void rec_dir_op_flac_to_mp3::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-		throw ia_exception(trs("failed to create directory {}!", dst_path));
+		throw ia_exception(trs("failed to create directory {}!", dst_path.string()));
 	}
 }
 
@@ -191,7 +190,7 @@ bool rec_dir_op_flac_to_mp3::on_entering_dir(shared_ptr<dir_node> dir)
 
 		if(!result && !exists(dst_path))
 		{
-			throw ia_exception(trs("failed to create directory {}!", tp));
+			throw ia_exception(trs("failed to create directory {}!", tp.string()));
 		}
 
 		return true;
@@ -227,7 +226,7 @@ void rec_dir_op_flac_to_mp3::apply_to_file(shared_ptr<file_node> file)
 
 		boost::algorithm::replace_all(exec, REPL_SOURCE_PATH, tss);
 		boost::algorithm::replace_all(exec, REPL_DESTINATION_PATH, tds);
-		exec = utrs(untr("{0} {1}"), process_path, exec);
+		exec = utrs(untr("{0} {1}"), process_path.native(), exec);
 		//utrx(exec);
 		trn();
 

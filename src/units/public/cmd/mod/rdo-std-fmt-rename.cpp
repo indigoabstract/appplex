@@ -13,7 +13,6 @@
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
-#include <fmt/ostream.h>
 #include <exception>
 #include <locale>
 #include <string>
@@ -144,12 +143,12 @@ void long_op_std_fmt_rename::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpStdFmtRename: {} is not a directory", dst_path));
+			throw ia_exception(trs("longOpStdFmtRename: {} is not a directory", dst_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpStdFmtRename: {} does not exist", dst_path));
+		throw ia_exception(trs("longOpStdFmtRename: {} does not exist", dst_path.string()));
 	}
 }
 
