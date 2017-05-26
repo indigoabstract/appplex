@@ -18,7 +18,7 @@ units
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
 	test-gl[ uses[ gfx ], platf[ all ], ],
-	gl-frag-shader-demo[ uses[ boost, gfx ], platf[ windows, android ], ],
+	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	test-shadow-map[ ],
 	test-kube-sphere[ ],
@@ -62,8 +62,9 @@ paths
 [
 	@@[ only relative paths (as text) ],
 	proj-rel-res-path[ 'res' ],
-	proj-rel-units-path[ "src/units" ],
-	proj-rel-appplex-conf-path[ "src/min" ],
+	proj-rel-src-path[ "src/app" ],
+	proj-rel-units-path[ "src/app/units" ],
+	proj-rel-appplex-conf-path[ "src/app/min" ],
 	appplex-conf-hpp-name[ "appplex-conf.hpp" ],
 	appplex-conf-cpp-name[ "appplex-conf.cpp" ],
 
@@ -87,7 +88,7 @@ paths
 			[
 				gradle-path[ 'app/build.gradle' ],
 				rel-proj-path[ '../../..' ],
-				rel-units-path[ '../../../src/units' ],
+				rel-units-path[ '../../../src/app/units' ],
 				java-src-start[ '// java-src[' ],
 				java-src-end[ '// java-src]' ],
 				cpp-lib-start[ '// cpp-lib[' ],

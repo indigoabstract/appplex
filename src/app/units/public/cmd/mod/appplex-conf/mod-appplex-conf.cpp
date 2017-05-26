@@ -33,17 +33,16 @@ namespace appplex_conf_ns
          info = std::make_shared<conf_info>();
          info->proj_path = iproj_path;
          info->src_path = info->proj_path;
-         info->src_path /= "src";
          info->exclude_path = iexclude_path;
 		}
 
 		void run()
 		{
-			if (exists(info->src_path))
+			if (exists(info->proj_path))
 			{
-				if (is_directory(info->src_path))
+				if (is_directory(info->proj_path))
 				{
-					utrx(untr("starting mod-appplex-conf in directory [{}]"), path2string(info->src_path));
+					utrx(untr("starting mod-appplex-conf in directory [{}]"), path2string(info->proj_path));
 
                auto appplex_conf_inst = std::make_shared<appplex_conf>(info);
                appplex_conf_inst->update();
@@ -58,12 +57,12 @@ namespace appplex_conf_ns
 				}
 				else
 				{
-					throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->src_path.string()));
+					throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->proj_path.string()));
 				}
 			}
 			else
 			{
-				throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->src_path.string()));
+				throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->proj_path.string()));
 			}
 		}
 

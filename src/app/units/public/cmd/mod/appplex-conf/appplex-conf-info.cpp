@@ -35,15 +35,7 @@ void appplex_conf::update()
 
    try
    {
-      trx("\nloading the source file tree.\n");
-
-      unit_entry_map = std::make_shared<unit_entry_map_type>();
-      unit_entry_map_android = std::make_shared<unit_entry_map_type>();
-      info->dir_tree = directory_tree::new_directory_tree(info->src_path, info->exclude_path);
-      info->rdo = std::make_shared<rec_dir_op_appplex_conf>(info->src_path, info->exclude_path, info->krt, unit_entry_map);
-      info->dir_tree->recursive_apply(*info->rdo);
-
-      trx("\nupdating appplex configuration.\n");
+      trx("\nloading appplex-conf.sbmd\n");
 
       info->appplex_conf_name = "appplex-conf.sbmd";
       bfs::path axc_path = info->proj_path / info->appplex_conf_name;
@@ -52,8 +44,21 @@ void appplex_conf::update()
       info->krt = std::make_shared<kx_krte>();
       info->krt->set_src(sgmd_txt);
       info->krt->run();
-
       auto sbmd = info->krt->kxb;
+      auto paths_proj_rel_src_path = sbmd_ops::get_sbmd_str_seq("paths.proj-rel-src-path", sbmd);
+
+      trx("\nloading the source file tree.\n");
+
+      info->src_path /= paths_proj_rel_src_path[0];
+      unit_entry_map = std::make_shared<unit_entry_map_type>();
+      unit_entry_map_android = std::make_shared<unit_entry_map_type>();
+      info->dir_tree = directory_tree::new_directory_tree(info->src_path, info->exclude_path);
+      info->rdo = std::make_shared<rec_dir_op_appplex_conf>(info->src_path, info->exclude_path, info->krt, unit_entry_map);
+      info->dir_tree->recursive_apply(*info->rdo);
+
+      trx("\nupdating appplex configuration.\n");
+
+
       std::vector<std::string> default_uses = sbmd_ops::get_sbmd_str_seq("default.uses", sbmd, { "gfx", "boost" });
       bool default_enabled = sbmd_ops::get_bool_from_list(sbmd_ops::get_sbmd_str_seq("default.enabled", sbmd, { "true" }));
       std::vector<std::string> start_unit_list = sbmd_ops::get_sbmd_str_seq("default.start.unit-list", sbmd, { "test" });
@@ -367,16 +372,7 @@ void android_studio_project_conf::update_project()
    auto gradle_file = pfm_file::get_inst(android_gradle_path.generic_string());
    auto gradle_file_txt = pfm::filesystem::load_res_as_string(gradle_file);
    auto& gf_txt = *gradle_file_txt;
-   bool update_cpp_lib = false;
-   bool update_cpp_src = false;
 
-   if (uses_mod("boost"))
-   {
-      update_cpp_lib = true;
-      update_cpp_src = true;
-   }
-
-   if (update_cpp_lib)
    {
       auto platforms_android_gradle_cpp_lib_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-start", sbmd);
       auto platforms_android_gradle_cpp_lib_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-lib-end", sbmd);
@@ -418,7 +414,6 @@ void android_studio_project_conf::update_project()
 
    }
 
-   if (update_cpp_src)
    {
       auto platforms_android_gradle_cpp_src_start = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-start", sbmd);
       auto platforms_android_gradle_cpp_src_end = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.cpp-src-end", sbmd);
@@ -466,13 +461,10 @@ void android_studio_project_conf::update_project()
       }
    }
 
-   if (update_cpp_lib || update_cpp_src)
-   {
-      gradle_file->io.open("wt");
+   gradle_file->io.open("wt");
 
-      auto rw = rw_file_sequence::new_inst(gradle_file);
-      rw->w.write_line(gf_txt, false);
-   }
+   auto rw = rw_file_sequence::new_inst(gradle_file);
+   rw->w.write_line(gf_txt, false);
 }
 
 
