@@ -13,7 +13,7 @@
 #include "mod/rdo-std-fmt-rename.hpp"
 #include "mod/rdo-add-stdafx-include.hpp"
 #include "mod/rdo-recursive-copy.hpp"
-#include "mod/mod-appplex-conf.hpp"
+#include "mod/appplex-conf/mod-appplex-conf.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/unordered_map.hpp>

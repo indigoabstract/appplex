@@ -67,19 +67,43 @@ paths
 	appplex-conf-hpp-name[ "appplex-conf.hpp" ],
 	appplex-conf-cpp-name[ "appplex-conf.cpp" ],
 
-	platform-android
+	libs
 	[
-		root-path[ 'pfm/android' ],
-		app-gradle-path[ 'app/build.gradle' ],
-		app-gradle-rel-units-path[ '../../../src/units' ],
-		asset-path[ 'app/src/main/assets' ],
+		boost
+		[
+			inc[ 'src-inc/boost' ],
+			lib[ 'src-lib/boost' ],
+		],
 	],
-	platform-ios
+
+	platforms
 	[
-		root-path[ 'pfm/ios' ],
-	],
-	platform-windows-pc
-	[
-		root-path[ 'pfm/msvc' ],
+		android
+		[
+			root-path[ 'pfm/android' ],
+			asset-path[ 'app/src/main/assets' ],
+
+			gradle
+			[
+				gradle-path[ 'app/build.gradle' ],
+				rel-units-path[ '../../../src/units' ],
+				java-src-start[ '// java-src[' ],
+				java-src-end[ '// java-src]' ],
+				cpp-lib-start[ '// cpp-lib[' ],
+				cpp-lib-end[ '// cpp-lib]' ],
+				cpp-src-start[ '// cpp-src[' ],
+				cpp-src-end[ '// cpp-src]' ],
+			],
+		],
+
+		ios
+		[
+			root-path[ 'pfm/ios' ],
+		],
+
+		windows-pc
+		[
+			root-path[ 'pfm/msvc' ],
+		],
 	],
 ],

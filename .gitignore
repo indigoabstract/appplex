@@ -1,5 +1,5 @@
 .svn
-cmd
+/cmd
 libs
 pfm/android/.idea
 pfm/android/.gradle
@@ -45,4 +45,6 @@ res/metrolife
 res/reliquus
 res/test-digital-krikits
 res/vorofract
+src/min/appplex-conf.hpp
+src/min/appplex-conf.cpp
 src/units/private
