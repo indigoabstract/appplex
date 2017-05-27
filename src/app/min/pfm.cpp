@@ -133,7 +133,63 @@ namespace pfm_impl
 {
 	umf_list res_files_map;
 
-	const std::string& get_res_path()
+   std::string get_concat_path(std::string iroot_path, ::string iname)
+   {
+      std::string p = iroot_path;
+
+      if (iname[0] == '/' || (pfm::get_platform_id() == platform_android))
+      {
+         p += iname;
+      }
+      else
+      {
+         p = p + "/" + iname;
+      }
+
+      return p;
+   }
+
+   const std::string& get_appplex_proj_path()
+   {
+      std::string p;
+
+      switch (pfm::get_platform_id())
+      {
+      case platform_android:
+      {
+         static std::string res_path = "";
+         return res_path;
+      }
+
+      case platform_ios:
+      {
+         static std::string res_path = "";
+         return res_path;
+      }
+
+      case platform_emscripten:
+      {
+         static std::string res_path = "";
+         return res_path;
+      }
+
+      case platform_qt_windows_pc:
+      {
+         static std::string res_path = "..";
+         return res_path;
+      }
+
+      case platform_windows_pc:
+      {
+         static std::string res_path = "../../..";
+         return res_path;
+      }
+      }
+
+      throw ia_exception("undefined platform");
+   }
+  
+   const std::string& get_res_path()
 	{
 		std::string p;
 
@@ -172,6 +228,16 @@ namespace pfm_impl
 
 		throw ia_exception("undefined platform");
 	}
+
+   //true if res is in the same dir as src
+   bool res_is_bundled_with_src()
+   {
+#if defined _DEBUG && defined PLATFORM_WINDOWS_PC
+      return true;
+#endif
+
+      return false;
+   }
 
 	shared_ptr<pfm_file> get_res_file(const std::string& ifilename)
 	{
@@ -834,33 +900,40 @@ std::string pfm::filesystem::get_writable_path(std::string iname)
 
 std::string pfm::filesystem::get_path(std::string iname)
 {
-	std::string p = pfm_impl::get_res_path();
-
-	if (iname[0] == '/' || (pfm::get_platform_id() == platform_android))
-	{
-		p += iname;
-	}
-	else
-	{
-		p = p + "/" + iname;
-	}
-
-	return p;
+   return pfm_impl::get_concat_path(pfm_impl::get_res_path(), iname);
 }
 
 void pfm::filesystem::load_res_file_map(shared_ptr<unit> iu)
 {
-	//if (!res_files_map)
-	{
-		pfm_impl::res_files_map = std::make_shared<umf_r>();
-		pfm_app_inst->get_directory_listing(pfm_impl::get_res_path(), pfm_impl::res_files_map, false);
-		pfm_app_inst->get_directory_listing(pfm::filesystem::get_path("common"), pfm_impl::res_files_map, true);
+   pfm_impl::res_files_map = std::make_shared<umf_r>();
+   pfm_app_inst->get_directory_listing(pfm_impl::get_res_path(), pfm_impl::res_files_map, false);
 
-		if (iu)
-		{
-			pfm_app_inst->get_directory_listing(pfm::filesystem::get_path(iu->get_name()), pfm_impl::res_files_map, true);
-		}
-	}
+   if (pfm_impl::res_is_bundled_with_src())
+   {
+      std::string common_res_path = pfm_impl::get_concat_path(pfm_impl::get_appplex_proj_path(), "src/res");
+      pfm_app_inst->get_directory_listing(common_res_path, pfm_impl::res_files_map, true);
+   }
+   else
+   {
+      pfm_app_inst->get_directory_listing(pfm::filesystem::get_path("res"), pfm_impl::res_files_map, true);
+   }
+
+   if (iu)
+   {
+      std::string res_path;
+
+      if (pfm_impl::res_is_bundled_with_src())
+      {
+         res_path = pfm_impl::get_concat_path(pfm_impl::get_appplex_proj_path(), iu->get_proj_rel_path());
+         res_path = pfm_impl::get_concat_path(res_path, "res");
+      }
+      else
+      {
+         res_path = pfm::filesystem::get_path(iu->get_name());
+      }
+
+      pfm_app_inst->get_directory_listing(res_path, pfm_impl::res_files_map, true);
+   }
 }
 
 shared_ptr<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(shared_ptr<pfm_file> ifile)

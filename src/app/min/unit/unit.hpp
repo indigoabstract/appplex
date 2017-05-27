@@ -61,7 +61,9 @@ public:
 	int get_height();
 	const std::string& get_name();
 	void set_name(std::string iname);
-	bool is_gfx_unit();
+   const std::string& get_proj_rel_path();
+   void set_proj_rel_path(std::string ipath);
+   bool is_gfx_unit();
 	std::shared_ptr<unit_preferences> get_preferences();
 	// true to exit app, false to continue
 	bool back();
@@ -116,7 +118,10 @@ private:
 	bool isInit();
 	void setInit(bool isInit0);
 
+   // unit name/id
 	std::string name;
+   // unit path, relative to project (appplex) path
+   std::string proj_rel_path;
 	std::weak_ptr<unit> parent;
 	bool initVal;
 	std::vector<std::function<void()> > operation_list;
@@ -165,7 +170,7 @@ private:
 
 	static void create_units(std::shared_ptr<unit_list> ul0);
 	static std::shared_ptr<unit_list> get_unit_list();
-	static void add_unit(std::shared_ptr<unit> u0, bool set_current = false);
+	static void add_unit(std::shared_ptr<unit> iu, std::string iunit_path, bool iset_current = false);
 
 	static std::weak_ptr<unit_list> ul;
 	static std::weak_ptr<unit> next_crt_unit;

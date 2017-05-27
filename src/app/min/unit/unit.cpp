@@ -77,6 +77,16 @@ void unit::set_name(string iname)
 	name = iname;
 }
 
+const std::string& unit::get_proj_rel_path()
+{
+   return proj_rel_path;
+}
+
+void unit::set_proj_rel_path(std::string ipath)
+{
+   proj_rel_path = ipath;
+}
+
 void unit::set_app_exit_on_next_run(bool iapp_exit_on_next_run)
 {
 	unit_ctrl::inst()->set_app_exit_on_next_run(iapp_exit_on_next_run);
@@ -730,15 +740,17 @@ shared_ptr<unit_list> app_units_setup::get_unit_list()
 	return ul.lock();
 }
 
-void app_units_setup::add_unit(shared_ptr<unit> u0, bool set_current)
+void app_units_setup::add_unit(std::shared_ptr<unit> iu, std::string iunit_path, bool iset_current)
 {
+   iu->set_proj_rel_path(iunit_path);
+
 	if (get_unit_list())
 	{
-		get_unit_list()->add(u0);
+		get_unit_list()->add(iu);
 
-		if (set_current)
+		if (iset_current)
 		{
-			next_crt_unit = u0;
+			next_crt_unit = iu;
 		}
 	}
 }

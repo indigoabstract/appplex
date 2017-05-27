@@ -34,7 +34,7 @@ public:
 shared_ptr<ux_font> ux_font::new_inst(float isize, const std::string& ifont_path)
 {
 	shared_ptr<ux_font> font(new ux_font());
-	std::string font_path = ifont_path.empty() ? "common/vera.ttf" : ifont_path;
+	std::string font_path = ifont_path.empty() ? "res/vera.ttf" : ifont_path;
 
 	font->p = shared_ptr<ux_font_impl>(new ux_font_impl(font, font_path));
 	font->p->size = isize;

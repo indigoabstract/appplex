@@ -301,7 +301,7 @@ public:
 	{
 		std::string active_shader = "Antialiasing";
 		active_shader = "";
-		shared_ptr<pfm_path> path = pfm_path::get_inst("", "shader-fx/fx-shaders");
+		shared_ptr<pfm_path> path = pfm_path::get_inst("", "gl-frag-shader-demo/fx-shaders");
 		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(true);
 		auto it = file_list->begin();
 
@@ -795,7 +795,7 @@ void unit_gl_frag_shader_demo::init_ux()
 
 unit_gl_frag_shader_demo::unit_gl_frag_shader_demo()
 {
-	set_name("shader-fx");
+	set_name("gl-frag-shader-demo");
 }
 
 shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::new_instance()

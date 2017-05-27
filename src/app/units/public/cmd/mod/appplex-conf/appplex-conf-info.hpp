@@ -38,6 +38,7 @@ public:
    std::string appplex_conf_name;
    bfs::path proj_path;
    bfs::path src_path;
+   bfs::path proj_rel_units_path;
    std::vector<unicodestring> exclude_path;
    shared_ptr<directory_tree> dir_tree;
    shared_ptr<rec_dir_op_appplex_conf> rdo;

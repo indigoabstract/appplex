@@ -46,10 +46,12 @@ void appplex_conf::update()
       info->krt->run();
       auto sbmd = info->krt->kxb;
       auto paths_proj_rel_src_path = sbmd_ops::get_sbmd_str_seq("paths.proj-rel-src-path", sbmd);
+      auto paths_proj_rel_units_path = sbmd_ops::get_sbmd_str_seq("paths.proj-rel-units-path", sbmd);
 
       trx("\nloading the source file tree.\n");
 
       info->src_path /= paths_proj_rel_src_path[0];
+      info->proj_rel_units_path = paths_proj_rel_units_path[0];
       unit_entry_map = std::make_shared<unit_entry_map_type>();
       unit_entry_map_android = std::make_shared<unit_entry_map_type>();
       info->dir_tree = directory_tree::new_directory_tree(info->src_path, info->exclude_path);
@@ -280,14 +282,15 @@ std::string appplex_conf::get_new_unit_line(shared_ptr<unit_entry> iue, const st
    std::string unit_name = "unit_" + def;
    std::transform(def.begin(), def.end(), def.begin(), ::toupper);
    def = "#ifdef UNIT_" + def;
+   bfs::path unit_path = info->proj_rel_units_path / iue->unit_path;
 
    if (is_selected)
    {
-      line = "\tadd_unit(" + unit_name + "::new_instance(), true);\n";
+      line = trs("\tadd_unit({0}::new_instance(), \"{1}\", true);\n", unit_name, unit_path.generic_string());
    }
    else
    {
-      line = "\tadd_unit(" + unit_name + "::new_instance());\n";
+      line = trs("\tadd_unit({0}::new_instance(), \"{1}\");\n", unit_name, unit_path.generic_string());
    }
 
    line = def + "\n" + line + "#endif\n\n";
