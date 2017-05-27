@@ -63,8 +63,6 @@
 
 #ifndef BOOST_HAS_PTHREADS
 #  define BOOST_HAS_WINTHREADS
-// ia
-#  define BOOST_THREAD_BUILD_DLL
 #endif
 
 //
@@ -78,6 +76,14 @@
 #  define BOOST_HAS_GETSYSTEMTIMEASFILETIME
 #  define BOOST_HAS_THREADEX
 #  define BOOST_HAS_GETSYSTEMTIMEASFILETIME
+#endif
+
+//
+// Windows Runtime
+//
+#if defined(WINAPI_FAMILY) && \
+  (WINAPI_FAMILY == WINAPI_FAMILY_APP || WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+#  define BOOST_NO_ANSI_APIS
 #endif
 
 #ifndef BOOST_DISABLE_WIN32
