@@ -6,7 +6,8 @@
 
 #include "start-process.hpp"
 #include "long-operation.hpp"
-#include <boost/thread.hpp>
+#include <chrono>
+#include <thread>
 #include <exception> 
 
 using std::vector;
@@ -127,12 +128,12 @@ void start_process::print_process_output(bp::child& c)
 
 	long_operation::run_on_separate_thread(lop);
 	// sleep a bit to let the process output thread finish
-	boost::this_thread::sleep(boost::posix_time::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	if(lop->is_active())
 		// something went wrong. the process output thread hasn't finished yet. give it more time
 	{
-		boost::this_thread::sleep(boost::posix_time::seconds(15));
+      std::this_thread::sleep_for(std::chrono::seconds(15));
 
 		if(!lop->is_active())
 			// the process output thread is done and we can join it

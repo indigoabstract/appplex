@@ -20,7 +20,7 @@ public:
 		std::vector<uint8>& r = *res;
 
 		trx("byte array resource");
-		trx("int resSize = %1%;") % res->size();
+		trx("int resSize = {};", res->size());
 		trx("uint8 res[] =\n{");
 
 		for(int k = 0; k < res->size(); k++)
@@ -29,11 +29,11 @@ public:
 
 			if((k + 1) % cols == 0)
 			{
-				trc("0x%02x,\n") % b;
+				trc("{:02:x},\n", b);
 			}
 			else
 			{
-				trc("0x%02x, ") % b;
+				trc("{:02:x}, ", b);
 			}
 		}
 

@@ -437,8 +437,8 @@ namespace unit_test_snd_generators_ns
 			{
 				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-				int x = ts->crt_state.pos.x;
-				int y = ts->crt_state.pos.y;
+				int x = ts->crt_state.te->points[0].x;
+				int y = ts->crt_state.te->points[0].y;
 
 				switch (ts->get_type())
 				{
@@ -462,7 +462,7 @@ namespace unit_test_snd_generators_ns
 					{
 						if (last_played_note)
 						{
-							show_note = trs("last played: %1% %2%") % last_played_note->get_full_name() % last_played_note->get_pitch();
+							show_note = trs("last played: {0} {1}", last_played_note->get_full_name(), last_played_note->get_pitch());
 							trx(show_note);
 						}
 						else

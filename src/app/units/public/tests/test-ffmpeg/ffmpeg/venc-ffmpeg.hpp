@@ -12,10 +12,10 @@ extern "C"
 	#endif
 	#include <stdint.h>
 
-	#include "libavcodec/avcodec.h"
-	#include "libavdevice/avdevice.h"
-	#include "libavutil/opt.h"
-	#include "libavutil/imgutils.h"
+	#include <ffmpeg/libavcodec/avcodec.h>
+	#include <ffmpeg/libavdevice/avdevice.h>
+	#include <ffmpeg/libavutil/opt.h>
+	#include <ffmpeg/libavutil/imgutils.h>
 }
 
 #include <string>

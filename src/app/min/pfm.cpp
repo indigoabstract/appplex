@@ -1012,6 +1012,11 @@ shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 }
 
 
+void trx(std::string msg)
+{
+   pfm::get_pfm_main_inst()->write_text_nl(msg.c_str());
+}
+
 void trx(const char* format, fmt::ArgList args)
 {
    std::string s = fmt::format(format, args);

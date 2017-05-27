@@ -8,7 +8,7 @@
 #include "com/ux/ux-com.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-state.hpp"
-#include <openvg.h>
+#include <VG/openvg.h>
 
 
 unit_gen_texture::unit_gen_texture()

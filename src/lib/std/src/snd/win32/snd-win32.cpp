@@ -10,6 +10,12 @@
 #include <fmod/fmod_errors.h>
 #pragma comment (lib, "fmodex_vc.lib")
 
+#ifdef MOD_STK
+
+#include <stk/Stk.h>
+
+#endif
+
 FMOD::System* fmodSystem = nullptr;
 // FMOD Callbacks
 static FMOD_RESULT F_CALLBACK PCMRead32(FMOD_SOUND *sound, void *data, unsigned int length);

@@ -158,8 +158,8 @@ namespace unit_texxed_ns
 			{
 				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-				float x = ts->crt_state.pos.x - uxr.x;
-				float y = ts->crt_state.pos.y - uxr.y;
+				float x = ts->crt_state.te->points[0].x - uxr.x;
+				float y = ts->crt_state.te->points[0].y - uxr.y;
 
 				switch (ts->get_type())
 				{
@@ -179,8 +179,8 @@ namespace unit_texxed_ns
 
 				case touch_sym_evt::TS_PRESS_AND_DRAG:
 				{
-					float dx = ts->crt_state.pos.x - ts->prev_state.pos.x;
-					float dy = ts->crt_state.pos.y - ts->prev_state.pos.y;
+					float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+					float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
 
 					if (ts->is_finished)
 					{

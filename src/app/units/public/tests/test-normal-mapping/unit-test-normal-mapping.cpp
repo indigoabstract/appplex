@@ -924,7 +924,7 @@ namespace ns_unit_test_normal_mapping
 			}
 		}
 
-		bool process_input(point2d& ipoint)
+		bool process_input(pfm_touch_event::touch_point& ipoint)
 		{
 			int width = get_unit()->get_width();
 			int height = get_unit()->get_height();
@@ -1363,7 +1363,7 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 		{
 		case touch_sym_evt::TS_RELEASED:
 			{
-				p->process_input(ts->crt_state.pos);
+				p->process_input(ts->crt_state.te->points[0]);
 				ts->process();
 
 				break;

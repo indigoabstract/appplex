@@ -40,7 +40,7 @@ void track::loadTrackData(char* track_name)
 {
 	tex = gfx::tex::new_tex_2d("square.png");
 
-	std::string fn = trs("abstract-racing/%1%") % track_name;
+	std::string fn = trs("abstract-racing/{}", track_name);
 	shared_ptr<std::vector<uint8> > res = pfm::filesystem::load_res_byte_vect(fn);
 	memory_data_sequence mds(begin_ptr(res), res->size());
 	data_sequence_reader_big_endian dsr(&mds);

@@ -115,7 +115,7 @@ public:
 		if(r < 0)
 		{
 			av_strerror(r, errbuf, sizeof(errbuf));
-			trx("vdec_ffmpeg::start_decoding: can't open file. error: %1%") % errbuf;
+			trx("vdec_ffmpeg::start_decoding: can't open file. error: {}", errbuf);
 
 			return -1;
 		}
@@ -334,7 +334,7 @@ private:
 
 					if (!(y_tex && y_tex->get_width() == w1 && y_tex->get_height() == h))
 					{
-						std::string tex_idx_str = trs("%1%") % tex_idx;
+						std::string tex_idx_str = trs("{}", tex_idx);
 
 						q2d = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 						//rt = nullptr;

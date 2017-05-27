@@ -184,10 +184,10 @@ void unit_exercise::init_ux()
 			fy = fh;
 
 			g->drawText("total", 10, fy += fh);
-			g->drawText(trs("exercitiul [1]   %1%x	[%2% m, %3% s]") % runCount1 % td1.minutes() % td1.seconds(), 10, fy += fh);
-			g->drawText(trs("exercitiul [2]   %1%x	[%2% m, %3% s]") % runCount2 % td2.minutes() % td2.seconds(), 10, fy += fh);
-			g->drawText(trs("exercitiul [3]   %1%x	[%2% m, %3% s]") % runCount3 % td3.minutes() % td3.seconds(), 10, fy += fh);
-			g->drawText(trs("toate exercitiile  [%1% m, %2% s]") % td.minutes() % td.seconds(), 10, fy += fh);
+			g->drawText(trs("exercitiul [1]   {0}x	[{1} m, {2} s]", runCount1, td1.minutes(), td1.seconds()), 10, fy += fh);
+			g->drawText(trs("exercitiul [2]   {0}x	[{1} m, {2} s]", runCount2, td2.minutes(), td2.seconds()), 10, fy += fh);
+			g->drawText(trs("exercitiul [3]   {0}x	[{1} m, {2} s]", runCount3, td3.minutes(), td3.seconds()), 10, fy += fh);
+			g->drawText(trs("toate exercitiile  [{0} m, {1} s]", td.minutes(), td.seconds()), 10, fy += fh);
 		}
 
 	private:
@@ -270,7 +270,7 @@ void unit_exercise::init_ux()
 				int ttduration[] = { 500, 2000, 500, 15000, 500 };
 				float lim[] = { 0, 0, 1, 1, 0, 0 };
 
-            for (int td, : ttduration)
+            for (int td : ttduration)
 				{
 					tduration.push_back(td);
 				}
@@ -466,9 +466,9 @@ void unit_exercise::init_ux()
 			fy = fh;
 
 			g->drawText(text, 10, fy += fh);
-			g->drawText(trs("numar de exercitii efectuate [%1%]") % runCount, 10, fy += fh);
-			g->drawText(trs("durata exercitiu curent [%1% s, %2% ms]") % d.seconds() % (d.total_milliseconds() % 1000), 10, fy += fh);
-			g->drawText(trs("durata totala [%1% m, %2% s]") % td.minutes() % td.seconds(), 10, fy += fh);
+			g->drawText(trs("numar de exercitii efectuate [{}]", runCount), 10, fy += fh);
+			g->drawText(trs("durata exercitiu curent [{0} s, {1} ms]", d.seconds(), (d.total_milliseconds() % 1000)), 10, fy += fh);
+			g->drawText(trs("durata totala [{0} m, {1} s]", td.minutes(), td.seconds()), 10, fy += fh);
 		}
 
 	private:
@@ -683,9 +683,9 @@ void unit_exercise::init_ux()
 			fy = fh;
 
 			g->drawText(text, 10, fy += fh);
-			g->drawText(trs("numar de exercitii efectuate [%1%]") % runCount, 10, fy += fh);
-			g->drawText(trs("durata exercitiu curent [%1% s, %2% ms]") % d.seconds() % (d.total_milliseconds() % 1000), 10, fy += fh);
-			g->drawText(trs("durata totala [%1% m, %2% s]") % td.minutes() % td.seconds(), 10, fy += fh);
+			g->drawText(trs("numar de exercitii efectuate [{}]", runCount), 10, fy += fh);
+			g->drawText(trs("durata exercitiu curent [{0} s, {1} ms]", d.seconds(), (d.total_milliseconds() % 1000)), 10, fy += fh);
+			g->drawText(trs("durata totala [{0} m, {1} s]", td.minutes(), td.seconds()), 10, fy += fh);
 		}
 
 	private:

@@ -55,7 +55,7 @@ int textWidth(shared_ptr<ux_camera> g, string& s)
 
 void text(shared_ptr<ux_camera> g, int num, float x, float y)
 {
-	g->drawText(trs("%1%") % num, x, y);
+	g->drawText(trs("{}", num), x, y);
 }
 
 void text(shared_ptr<ux_camera> g, string& name, float x, float y)
@@ -187,7 +187,7 @@ void kscroll2::gen_random_events(int n)
 		e.h = 5 + rng.nextInt(15);
 		e.x = rng.nextInt(hipx - (e.l*unitsize));
 		e.y = e.h + rng.nextInt(H - e.h);
-		e.name = trs("%1%") % i;
+		e.name = trs("{}", i);
 		e.col = color(rng.nextInt(255), rng.nextInt(255), rng.nextInt(255), rng.nextInt(100));
 		arrEvent[i] = e;
 	}
@@ -294,8 +294,8 @@ void unit_kinetic_scrolling::init_ux()
 			{
 				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-				int x = ts->crt_state.pos.x;
-				int y = ts->crt_state.pos.y;
+				int x = ts->crt_state.te->points[0].x;
+				int y = ts->crt_state.te->points[0].y;
 
 				switch (ts->get_type())
 				{

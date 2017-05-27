@@ -154,7 +154,7 @@ void unit_exercise::unload()
 		lop->join();
 	}
 
-	trx("elapse2 %1%") % el2.total_milliseconds();
+	trx("elapse2 {}", el2.total_milliseconds());
 }
 
 #endif
