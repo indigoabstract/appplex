@@ -72,8 +72,8 @@ paths
 	[
 		boost
 		[
-			inc[ 'src-inc/boost' ],
-			lib[ 'src-lib/boost' ],
+			inc[ 'src/lib/ext/inc/boost' ],
+			lib[ 'src/lib/ext/src/boost' ],
 		],
 	],
 
