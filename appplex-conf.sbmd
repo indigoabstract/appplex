@@ -61,10 +61,15 @@ units
 paths
 [
 	@@[ only relative paths (as text) ],
-	proj-rel-res-path[ 'res' ],
+	@@[ common resources dir location, relative to 'appplex' dir ],
+	proj-rel-res-path[ 'src/res' ],
+	@@[ source dir location, relative to 'appplex' dir ],
 	proj-rel-src-path[ "src/app" ],
+	@@[ units dir location, relative to 'appplex' dir ],
 	proj-rel-units-path[ "src/app/units" ],
+	@@[ appplex conf dir location, relative to 'appplex' dir ],
 	proj-rel-appplex-conf-path[ "src/app/min" ],
+
 	appplex-conf-hpp-name[ "appplex-conf.hpp" ],
 	appplex-conf-cpp-name[ "appplex-conf.cpp" ],
 
@@ -72,6 +77,7 @@ paths
 	[
 		boost
 		[
+			@@[ boost dirs location, relative to 'appplex' dir ],
 			inc[ 'src/lib/ext/inc/boost' ],
 			lib[ 'src/lib/ext/src/boost' ],
 		],
@@ -81,14 +87,21 @@ paths
 	[
 		android
 		[
+			@@[ all android projects directory location, relative to 'appplex' dir ],
 			root-path[ 'pfm/android' ],
+			@@[ location of the assets in an android project, relative to the android project ],
 			asset-path[ 'app/src/main/assets' ],
+			@@[ name of the default/generic android project ],
+			default-proj-name[ 'default' ],
 
 			gradle
 			[
+				@@[ location of the app gradle in an android project, relative to the android project ],
 				gradle-path[ 'app/build.gradle' ],
+				@@[ main project location ('appplex' dir), relative to all android projects directory root ('pfm/android') ],
 				rel-proj-path[ '../../..' ],
-				rel-units-path[ '../../../src/app/units' ],
+
+				@@[ search for these tags to include java, cpp libs and cpp sources in the gradle file ],
 				java-src-start[ '// java-src[' ],
 				java-src-end[ '// java-src]' ],
 				cpp-lib-start[ '// cpp-lib[' ],

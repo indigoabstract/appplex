@@ -10,6 +10,7 @@
 
 class directory_tree;
 class rec_dir_op_appplex_conf;
+class kx_block;
 class kx_krte;
 namespace bfs = ::boost::filesystem;
 
@@ -86,6 +87,9 @@ class android_studio_project_conf : public platform_project_conf
 public:
    android_studio_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map);
    virtual void update_project() override;
+
+private:
+   void update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> isbmd);
 };
 
 
