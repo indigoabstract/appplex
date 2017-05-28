@@ -228,7 +228,7 @@ public:
 		for (int k = 0; k < 4; k++)
 			// find the data for each channel
 		{
-			std::string channel = "iChannel" + std::to_string(k);
+			std::string channel = trs("iChannel{}", k);
 			std::string channel_id = channel + ":";
 			auto idx = ishader_src->find(channel_id);
 			bool invalid = true;
@@ -301,8 +301,8 @@ public:
 	{
 		std::string active_shader = "Antialiasing";
 		active_shader = "";
-		shared_ptr<pfm_path> path = pfm_path::get_inst("", "gl-frag-shader-demo/fx-shaders");
-		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(true);
+		std::shared_ptr<pfm_path> path = pfm_path::get_inst("", "fx-shaders");
+		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(unit.lock(), true);
 		auto it = file_list->begin();
 
 		shader_state_list.clear();
@@ -473,7 +473,7 @@ public:
 		for (int k = 0; k < ss->channel_list.size(); k++)
 		{
 			shared_ptr<shader_state::shader_channel> ch = ss->channel_list[k];
-			std::string name = "iChannel" + std::to_string(k);
+			std::string name = trs("iChannel{}", k);
 			std::string val = ch->get_uniform_value();
 
 			if (val.empty())

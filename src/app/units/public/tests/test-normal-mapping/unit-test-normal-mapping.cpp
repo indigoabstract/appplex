@@ -1208,7 +1208,7 @@ void unit_test_normal_mapping::load()
 	if (false)
 	{
 		shared_ptr<pfm_path> path = pfm_path::get_inst("", "png");
-		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(true);
+		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(get_smtp_instance(), true);
 		std::vector<std::string> spec_file_list;
 		std::vector<std::string> diff_file_list;
 		auto it = file_list->begin();

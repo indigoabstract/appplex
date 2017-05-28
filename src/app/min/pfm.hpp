@@ -139,18 +139,19 @@ public:
 class pfm_path
 {
 public:
-   static shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string iaux_root_dir = "");
+   static std::shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string iaux_root_dir = "");
    std::string get_full_path()const;
    const std::string& get_file_name()const;
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   shared_ptr<std::vector<shared_ptr<pfm_file> > > list_directory(bool recursive = false)const;
+   shared_ptr<std::vector<shared_ptr<pfm_file> > > list_directory(std::shared_ptr<unit> iu = nullptr, bool recursive = false)const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
    pfm_path() {}
    void make_standard_path();
+   void list_directory_impl(std::string ibase_dir, std::shared_ptr<std::vector<std::shared_ptr<pfm_file> > > ifile_list, bool irecursive) const;
 
    std::string filename;
    std::string aux_root_dir;
