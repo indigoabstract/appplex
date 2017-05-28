@@ -86,6 +86,7 @@ void rec_dir_op_appplex_conf::apply_to_file(shared_ptr<file_node> file)
       //trx("--------file [%1%]") % unit_name;
       auto ue = std::make_shared<unit_entry>();
       ue->unit_name = unit_name;
+      // extract the directories below 'units' and store as the unit path
       bfs::path tp1 = file->rel_file_path.parent_path();
       auto itp = tp1.begin();
       itp++;

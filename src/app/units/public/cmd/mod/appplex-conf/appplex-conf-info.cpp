@@ -368,6 +368,8 @@ void android_studio_project_conf::update_project()
    auto platforms_android_root_path = sbmd_ops::get_sbmd_str_seq("platforms.android.root-path", sbmd);
 
    int unit_count = unit_entry_map->size();
+   bfs::path and_proj_path_rel_to_appplex;
+   bfs::path appplex_path_rel_to_and_proj;
    bool use_default_project = true;
 
    // android project config/update policy:
@@ -375,14 +377,40 @@ void android_studio_project_conf::update_project()
    if (unit_count == 0)
    {
       trx("no units in the android build. project not updated.");
-      //return;
+      return;
    }
    // if we have exactly one unit, update the corresponding project, if it exists, otherwise update the default/generic project
    else if (unit_count == 1)
    {
       trx("one unit in the android build.");
 
-      use_default_project = true;
+      // check if there's a custom android project for this unit, otherwise use the default project
+      auto ue = unit_entry_map->begin()->second;
+      and_proj_path_rel_to_appplex = platforms_android_root_path[0] / ue->unit_path;
+      auto platforms_android_gradle_gradle_path = sbmd_ops::get_sbmd_str_seq("platforms.android.gradle.gradle-path", sbmd);
+      auto android_gradle_path = info->proj_path / and_proj_path_rel_to_appplex / platforms_android_gradle_gradle_path[0];
+      auto gradle_file = pfm_file::get_inst(android_gradle_path.generic_string());
+
+      if (gradle_file->exists())
+      {
+         auto platforms_android_rel_proj_path = sbmd_ops::get_sbmd_str_seq("platforms.android.rel-proj-path", sbmd);
+         appplex_path_rel_to_and_proj = platforms_android_rel_proj_path[0];
+         // find out how many parent dirs we have to go up until we arrive at the directory containing all the android projects
+         auto itp = ue->unit_path.begin();
+
+         while (itp != ue->unit_path.end())
+         {
+            appplex_path_rel_to_and_proj /= "..";
+            itp++;
+         }
+
+         use_default_project = false;
+         trx("using custom project with gradle file '{}'.", gradle_file->get_full_path());
+      }
+      else
+      {
+         trx("gradle file '{}' not found.", gradle_file->get_full_path());
+      }
    }
    // if we have more than one unit, only update the default/generic project.
    // it might not compile or have the desired behaviour, but there is no point in configuring multiple projects all at once,
@@ -390,14 +418,10 @@ void android_studio_project_conf::update_project()
    else
    {
       trx("{} units in the android build.", unit_count);
-
    }
 
    if (use_default_project)
    {
-      bfs::path and_proj_path_rel_to_appplex;
-      bfs::path appplex_path_rel_to_and_proj;
-
       auto platforms_android_default_proj_name = sbmd_ops::get_sbmd_str_seq("platforms.android.default-proj-name", sbmd);
       auto platforms_android_rel_proj_path = sbmd_ops::get_sbmd_str_seq("platforms.android.rel-proj-path", sbmd);
 
@@ -405,13 +429,10 @@ void android_studio_project_conf::update_project()
       and_proj_path_rel_to_appplex /= platforms_android_default_proj_name[0];
       appplex_path_rel_to_and_proj = platforms_android_rel_proj_path[0];
       appplex_path_rel_to_and_proj /= "..";
-
-      update_project_files(and_proj_path_rel_to_appplex, appplex_path_rel_to_and_proj, sbmd);
+      trx("using default android project.");
    }
-   else
-   {
 
-   }
+   update_project_files(and_proj_path_rel_to_appplex, appplex_path_rel_to_and_proj, sbmd);
 }
 
 void android_studio_project_conf::update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> isbmd)
