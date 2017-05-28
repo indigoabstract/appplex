@@ -42,7 +42,7 @@ units
 	test-audioengine[ uses[ boost, gfx, snd ], platf[ windows, android, ios ], ],
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
-	test-trail[ uses[ gfx ], ],
+	test-trail[ uses[ gfx ], platf[ windows ], ],
 
 	@@[ private units ],
 

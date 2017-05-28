@@ -175,7 +175,7 @@ public:
 
    void load_trail_data()
    {
-      auto file = pfm_file::get_inst("trail-points.data-12");
+      auto file = pfm_file::get_inst("trail-points-12.data");
 
       if (file->exists())
       {
