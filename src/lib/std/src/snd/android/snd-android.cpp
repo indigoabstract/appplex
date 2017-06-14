@@ -8,17 +8,22 @@
 #include "pfm.hpp"
 #include "min.hpp"
 #include "main.hpp"
-#include <stk/Guitar.h>
-#include <stk/Plucked.h>
 #include <snd/android/opensl-stream.h>
 #include <jni.h>
+
+#ifdef MOD_STK
+#include <stk/Guitar.h>
+#include <stk/Plucked.h>
+#endif
 
 
 void android_main::snd_init(int isample_rate, int ibuffer_size)
 {
 	sample_rate = isample_rate;
 	buffer_size = ibuffer_size;
+#ifdef MOD_STK
 	stk::Stk::setSampleRate(sample_rate);
+#endif
 }
 
 void android_main::snd_close()
@@ -26,6 +31,8 @@ void android_main::snd_close()
 	//opensl_close(ctx.os);
 }
 
+
+#ifdef MOD_STK
 
 // Audio processing callback; this is the heart and soul of this file.
 static void process(
@@ -193,6 +200,7 @@ void process(
 	}
 }
 
+#endif
 
 // snd code
 std::shared_ptr<snd> snd::inst;
