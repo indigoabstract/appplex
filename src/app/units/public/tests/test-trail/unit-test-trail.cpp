@@ -21,6 +21,215 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+namespace ns_test_trail
+{
+   class gesture_state
+   {
+   public:
+      /// gesture action codes
+      enum e_code
+      {
+         none = 0,
+         start = (1 << 0),
+         move = (1 << 1),
+         end = (1 << 2),
+         action = start | end,
+      };
+   };
+
+
+   class pinch_detector
+   {
+   public:
+      pinch_detector()
+      {
+         start_event = std::make_shared<pfm_touch_event>();
+      }
+
+      /// feed new touch event and return detected state
+      gesture_state::e_code detect(const std::shared_ptr<pfm_touch_event> newEvent);
+      /// reset the detector
+      void reset();
+
+      /// get position of first touch
+      glm::vec2 position0;
+      /// get position of second touch
+      glm::vec2 position1;
+      /// get start position of first touch
+      glm::vec2 start_position0;
+      /// get start position of second touch
+      glm::vec2 start_position1;
+
+      std::shared_ptr<pfm_touch_event> start_event;
+   };
+
+   void pinch_detector::reset()
+   {
+      if (start_event->type != pfm_touch_event::touch_invalid)
+      {
+         start_event = std::make_shared<pfm_touch_event>();
+      }
+   }
+
+   gesture_state::e_code pinch_detector::detect(const std::shared_ptr<pfm_touch_event> newEvent)
+   {
+      ia_assert(newEvent->touch_count > 0);
+
+      // check for cancelled event
+      if (newEvent->type == pfm_touch_event::touch_cancelled) {
+         reset();
+         return gesture_state::none;
+      }
+
+      // need 2 touches
+      if ((newEvent->type != pfm_touch_event::touch_ended) && (newEvent->touch_count != 2))
+      {
+         reset();
+         return gesture_state::none;
+      }
+
+      // check if touch identifiers are unchanged (number of touches and same touch ids)
+      if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*newEvent))
+      {
+         reset();
+         return gesture_state::none;
+      }
+
+      // check for gesture start, move and end
+      if (newEvent->type == pfm_touch_event::touch_began) {
+         start_event = newEvent;
+         start_position0 = newEvent->touch_pos(newEvent->points[0].identifier);
+         start_position1 = newEvent->touch_pos(newEvent->points[1].identifier);
+         position0 = start_position0;
+         position1 = start_position1;
+         return gesture_state::start;
+      }
+      else if (newEvent->type == pfm_touch_event::touch_moved) {
+         // cancel if start event is not valid
+         if (start_event->type == pfm_touch_event::touch_invalid) {
+            return gesture_state::none;
+         }
+
+         position0 = newEvent->touch_pos(start_event->points[0].identifier);
+         position1 = newEvent->touch_pos(start_event->points[1].identifier);
+         return gesture_state::move;
+      }
+      else if (newEvent->type == pfm_touch_event::touch_ended) {
+         if (start_event->type == pfm_touch_event::touch_invalid) {
+            return gesture_state::none;
+         }
+         position0 = newEvent->touch_pos(start_event->points[0].identifier);
+         position1 = newEvent->touch_pos(start_event->points[1].identifier);
+         reset();
+         return gesture_state::end;
+      }
+
+      return gesture_state::none;
+   }
+
+
+   class axis_roll_detector
+   {
+   public:
+      axis_roll_detector()
+      {
+         start_event = std::make_shared<pfm_touch_event>();
+      }
+
+      /// feed new touch event and return detected state
+      gesture_state::e_code detect(const std::shared_ptr<pfm_touch_event> newEvent)
+      {
+         ia_assert(newEvent->touch_count > 0);
+
+         // check for cancelled event
+         if (newEvent->type == pfm_touch_event::touch_cancelled) {
+            reset();
+            return gesture_state::none;
+         }
+
+         // need 2 touches
+         if ((newEvent->type != pfm_touch_event::touch_ended) && (newEvent->touch_count != 2))
+         {
+            reset();
+            return gesture_state::none;
+         }
+
+         // check if touch identifiers are unchanged (number of touches and same touch ids)
+         if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*newEvent))
+         {
+            reset();
+            return gesture_state::none;
+         }
+
+         // check for gesture start, move and end
+         if (newEvent->type == pfm_touch_event::touch_began)
+         {
+            start_event = newEvent;
+            start_position0 = newEvent->touch_pos(newEvent->points[0].identifier);
+            start_position1 = newEvent->touch_pos(newEvent->points[1].identifier);
+            position0 = start_position0;
+            position1 = start_position1;
+            return gesture_state::start;
+         }
+         else if (newEvent->type == pfm_touch_event::touch_moved)
+         {
+            // cancel if start event is not valid
+            if (start_event->type == pfm_touch_event::touch_invalid)
+            {
+               return gesture_state::none;
+            }
+
+            position0 = newEvent->touch_pos(start_event->points[0].identifier);
+            position1 = newEvent->touch_pos(start_event->points[1].identifier);
+
+            float dist = glm::distance(start_position0, position0);
+
+            if (dist > 50.f)
+            {
+               return gesture_state::none;
+            }
+
+            return gesture_state::move;
+         }
+         else if (newEvent->type == pfm_touch_event::touch_ended)
+         {
+            if (start_event->type == pfm_touch_event::touch_invalid)
+            {
+               return gesture_state::none;
+            }
+            position0 = newEvent->touch_pos(start_event->points[0].identifier);
+            position1 = newEvent->touch_pos(start_event->points[1].identifier);
+            reset();
+            return gesture_state::end;
+         }
+
+         return gesture_state::none;
+      }
+
+      /// reset the detector
+      void reset()
+      {
+         if (start_event->type != pfm_touch_event::touch_invalid)
+         {
+            start_event = std::make_shared<pfm_touch_event>();
+         }
+      }
+
+      /// get position of first touch
+      glm::vec2 position0;
+      /// get position of second touch
+      glm::vec2 position1;
+      /// get start position of first touch
+      glm::vec2 start_position0;
+      /// get start position of second touch
+      glm::vec2 start_position1;
+
+      std::shared_ptr<pfm_touch_event> start_event;
+   };
+}
+using namespace ns_test_trail;
+
+
 class gfx_tube : public gfx_vxo
 {
 public:
@@ -87,7 +296,7 @@ void gfx_tube::add_position(glm::vec3 ipos)
    for (int k = mPositions.size() - 1; k >= 0; k--)
    {
       glm::vec3 fwd_dir;
-      
+
       if (k == 0)
       {
          fwd_dir = mPositions[k] - mPositions[k + 1];
@@ -155,23 +364,24 @@ void gfx_tube::add_position(glm::vec3 ipos)
 class unit_test_trail_impl
 {
 public:
-	unit_test_trail_impl()
-	{
-		t = 0;
-		t2 = 0;
-		phi = 0;
-		theta = 0;
-		look_at_dir = glm::vec3(0.f, 0.f, -1.f);
-		up_dir = glm::vec3(0.f, 1.f, 0.f);
-		speed = 0;
-		sphere_radius = 7000;
-		trail_rot_angle_0 = 0;
-		trail_rot_angle_1 = 0;
+   unit_test_trail_impl()
+   {
+      t = 0;
+      t2 = 0;
+      phi = 0;
+      theta = 0;
+      look_at_dir = glm::vec3(0.f, 0.f, -1.f);
+      up_dir = glm::vec3(0.f, 1.f, 0.f);
+      speed = 0;
+      sphere_radius = 7000;
+      trail_rot_angle_0 = 0;
+      trail_rot_angle_1 = 0;
       trail_dist = 3900;
       tube_rot_angle_0 = 0;
       tube_rot_angle_1 = 0;
       tube_dist = 4900;
-	}
+      last_dist = 0;
+   }
 
    void load_trail_data()
    {
@@ -210,69 +420,74 @@ public:
    shared_ptr<gfx_trail> trail_mesh;
    shared_ptr<gfx_tube> tube_mesh;
    shared_ptr<gfx_camera> persp_cam;
-	float t;
-	float t2;
-	float phi;
-	float theta;
-	float trail_rot_angle_0;
-	float trail_rot_angle_1;
+   float t;
+   float t2;
+   float phi;
+   float theta;
+   float trail_rot_angle_0;
+   float trail_rot_angle_1;
    float trail_dist;
    float tube_rot_angle_0;
    float tube_rot_angle_1;
    float tube_dist;
    glm::vec3 look_at_dir;
-	glm::vec3 up_dir;
-	float speed;
-	float sphere_radius;
+   glm::vec3 up_dir;
+   float speed;
+   float sphere_radius;
    uint32 last_update_time;
    std::vector<glm::vec3> tube_pos;
    std::vector<int> tube_ts;
+
+   kinetic_scrolling ks;
+   pinch_detector pinch_gest_det;
+   axis_roll_detector axis_roll_gest_det;
+   float last_dist;
 };
 
 
 unit_test_trail::unit_test_trail()
 {
-	set_name("test-trail");
+   set_name("test-trail");
 }
 
 shared_ptr<unit_test_trail> unit_test_trail::new_instance()
 {
-	return shared_ptr<unit_test_trail>(new unit_test_trail());
+   return shared_ptr<unit_test_trail>(new unit_test_trail());
 }
 
 void unit_test_trail::init()
 {
-	//touch_ctrl->add_receiver(get_smtp_instance());
-	//key_ctrl->add_receiver(get_smtp_instance());
+   //touch_ctrl->add_receiver(get_smtp_instance());
+   //key_ctrl->add_receiver(get_smtp_instance());
 }
 
 void unit_test_trail::load()
 {
-	p = shared_ptr<unit_test_trail_impl>(new unit_test_trail_impl());
+   p = shared_ptr<unit_test_trail_impl>(new unit_test_trail_impl());
 
-	{
-		p->persp_cam = gfx_camera::new_inst();
-		p->persp_cam->name = "defcam";
-		p->persp_cam->camera_id = "default";
-		p->persp_cam->rendering_priority = 0;
-		p->persp_cam->near_clip_distance = 0.01f;
-		p->persp_cam->far_clip_distance = 50000.f;
-		p->persp_cam->fov_y_deg = 60.f;
-		p->persp_cam->clear_color = true;
-		p->persp_cam->clear_color_value = gfx_color::colors::black;
-		p->persp_cam->clear_depth = true;
-	}
+   {
+      p->persp_cam = gfx_camera::new_inst();
+      p->persp_cam->name = "defcam";
+      p->persp_cam->camera_id = "default";
+      p->persp_cam->rendering_priority = 0;
+      p->persp_cam->near_clip_distance = 0.01f;
+      p->persp_cam->far_clip_distance = 50000.f;
+      p->persp_cam->fov_y_deg = 60.f;
+      p->persp_cam->clear_color = true;
+      p->persp_cam->clear_color_value = gfx_color::colors::black;
+      p->persp_cam->clear_depth = true;
+   }
 
-	{
-		p->trail_mesh = shared_ptr<gfx_trail>(new gfx_trail());
-		gfx_trail& r_trail_mesh = *p->trail_mesh;
-		r_trail_mesh[MP_SHADER_NAME] = "trail";
-		r_trail_mesh[MP_CULL_BACK] = false;
-		r_trail_mesh[MP_CULL_FRONT] = false;
-		r_trail_mesh[MP_BLENDING] = MV_ALPHA;
-		r_trail_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
-		//r_trail_mesh[MP_WIREFRAME_MODE] = true;
-	}
+   {
+      p->trail_mesh = shared_ptr<gfx_trail>(new gfx_trail());
+      gfx_trail& r_trail_mesh = *p->trail_mesh;
+      r_trail_mesh[MP_SHADER_NAME] = "trail";
+      r_trail_mesh[MP_CULL_BACK] = false;
+      r_trail_mesh[MP_CULL_FRONT] = false;
+      r_trail_mesh[MP_BLENDING] = MV_ALPHA;
+      r_trail_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
+      //r_trail_mesh[MP_WIREFRAME_MODE] = true;
+   }
 
    {
       p->tube_mesh = shared_ptr<gfx_tube>(new gfx_tube());
@@ -285,11 +500,11 @@ void unit_test_trail::load()
       //r_tube_mesh[MP_WIREFRAME_MODE] = true;
    }
 
-	gfx_scene_inst->attach(p->persp_cam);
-	gfx_scene_inst->attach(p->trail_mesh);
+   gfx_scene_inst->attach(p->persp_cam);
+   gfx_scene_inst->attach(p->trail_mesh);
    gfx_scene_inst->attach(p->tube_mesh);
 
-	p->persp_cam->position = glm::vec3(0.f, 0.f, p->sphere_radius + 15.f);
+   p->persp_cam->position = glm::vec3(0.f, 0.f, p->sphere_radius + 15.f);
    p->last_update_time = pfm::time::get_time_millis();
    p->load_trail_data();
 
@@ -299,7 +514,7 @@ void unit_test_trail::load()
    //p->tube_mesh->add_position(glm::vec3(250.f,250,250) + p->tube_mesh->mTubeScale);
    //p->tube_mesh->add_position(glm::vec3(5750.f, 750.f, 750.f) + p->tube_mesh->mTubeScale);
 
-	gfx_util::check_gfx_error();
+   gfx_util::check_gfx_error();
 }
 bool update_started = false;
 int idx = 0;
@@ -315,18 +530,18 @@ bool unit_test_trail::update()
    }
 
    float t = p->t;
-	float t2 = p->t2;
-	//impl->t += 0.00005f;
-	//impl->t2 += 0.005f;
+   float t2 = p->t2;
+   //impl->t += 0.00005f;
+   //impl->t2 += 0.005f;
 
-	glm::vec3 trail_pos;
-	p->trail_rot_angle_0 += 0.009f;
-	p->trail_rot_angle_1 += 0.025f;
-	trail_pos.x = glm::cos(p->trail_rot_angle_0) * p->trail_dist;
-	trail_pos.y = glm::cos(p->trail_rot_angle_0) * glm::sin(p->trail_rot_angle_1) * p->trail_dist;
-	trail_pos.z = glm::sin(p->trail_rot_angle_0) * p->trail_dist;
-	p->trail_mesh->position = glm::vec3(0.f);
-	p->trail_mesh->add_position(trail_pos);
+   glm::vec3 trail_pos;
+   p->trail_rot_angle_0 += 0.009f;
+   p->trail_rot_angle_1 += 0.025f;
+   trail_pos.x = glm::cos(p->trail_rot_angle_0) * p->trail_dist;
+   trail_pos.y = glm::cos(p->trail_rot_angle_0) * glm::sin(p->trail_rot_angle_1) * p->trail_dist;
+   trail_pos.z = glm::sin(p->trail_rot_angle_0) * p->trail_dist;
+   p->trail_mesh->position = glm::vec3(0.f);
+   p->trail_mesh->add_position(trail_pos);
    p->trail_mesh->visible = false;
 
    uint32 diff = last_update_time - p->last_update_time;
@@ -368,149 +583,231 @@ bool unit_test_trail::update()
    //   p->tube_mesh->add_position(tube_pos);
    //   p->last_update_time = last_update_time;
    //}
-  
+
    p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(5000, 0, 0), glm::vec4(1, 0, 0.f, 1.f), 1.f);
-	p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(0, 5000, 0), glm::vec4(0, 1, 0.f, 1.f), 1.f);
-	p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(0, 0, 5000), glm::vec4(0, 0, 1.f, 1.f), 1.f);
+   p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(0, 5000, 0), glm::vec4(0, 1, 0.f, 1.f), 1.f);
+   p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(0, 0, 5000), glm::vec4(0, 0, 1.f, 1.f), 1.f);
 
-	p->persp_cam->position += p->look_at_dir * p->speed;
-	p->persp_cam->look_at(p->look_at_dir, p->up_dir);
+   p->persp_cam->position += p->look_at_dir * p->speed;
+   p->persp_cam->look_at(p->look_at_dir, p->up_dir);
 
-	glm::vec3 forward_dir = p->persp_cam->get_forward_dir();
+   glm::vec3 forward_dir = p->persp_cam->get_forward_dir();
 
-	gfx_util::check_gfx_error();
+   gfx_util::check_gfx_error();
 
-	return unit::update();
+   return unit::update();
 }
 
 void unit_test_trail::receive(shared_ptr<iadp> idp)
 {
-	if(!idp->is_processed())
-	{
-		if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-		{
-			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+   if (!idp->is_processed())
+   {
+      if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+      {
+         shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-			//vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
-			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
-			{
-				float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-				float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
-				float dx_rad = glm::radians(dx / 2);
-				float dy_rad = glm::radians(dy / 2);
+         switch (ts->get_type())
+         {
+         case touch_sym_evt::TS_PRESSED:
+         {
+            if (ts->crt_state.te->touch_count == 2)
+            {
+               p->ks.grab(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+            }
+            //ts->process();
+            break;
+         }
+         }
 
-				//impl->theta += glm::radians(dx / 10);
-				//impl->phi += glm::radians(-dy / 10);
-				//impl->theta = glm::mod(impl->theta, 2 * glm::pi<float>());
-				//impl->phi = glm::mod(impl->phi, 2 * glm::pi<float>());
-				//glm::vec3 axis(glm::sin(impl->theta) * glm::sin(impl->phi), glm::cos(impl->theta) * glm::sin(impl->phi), -glm::cos(impl->phi));
-				//axis = glm::normalize(axis);
-				//vprint("x %f, y %f\n", impl->theta, impl->phi);
-				//vprint("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
-				glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
-				glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
-				p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
+         if (ts->crt_state.te->is_multitouch())
+         {
+            if (ts->crt_state.te->touch_count == 2)
+            {
+               auto& axis_roll_gest_det = p->axis_roll_gest_det;
+               auto& pinch_gest_det = p->pinch_gest_det;
+               auto axis_roll_state = axis_roll_gest_det.detect(ts->crt_state.te);
+               auto pinch_state = pinch_gest_det.detect(ts->crt_state.te);
+               trx("geture state {0} {1}", pinch_state, axis_roll_state);
 
-				glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
-				ts->process();
-			}
-			else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
-			{
-				shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+               switch (axis_roll_state)
+               {
+               case gesture_state::start:
+               {
+                  break;
+               }
 
-				p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
-			}
-		}
-		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
-		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+               case gesture_state::move:
+               {
+                  float dx = ts->crt_state.te->points[1].x - ts->prev_state.te->points[1].x;
+                  float dy = ts->crt_state.te->points[1].y - ts->prev_state.te->points[1].y;
 
-			if(ke->get_type() != key_evt::KE_RELEASED)
-			{
-				bool isAction = true;
+                  if (ts->is_finished)
+                  {
+                     p->ks.start_slowdown();
+                  }
+                  else
+                  {
+                     p->ks.begin(ts->crt_state.te->points[1].x, ts->crt_state.te->points[1].y);
+                  }
 
-				switch(ke->get_key())
-				{
-				case KEY_Q:
-					{
-						p->persp_cam->position -= p->look_at_dir * 100.05f;
-						break;
-					}
+                  //arcball_cam->theta_deg += glm::radians(dx * 9.f);
+                  //arcball_cam->phi_deg -= glm::radians(dy * 5.f);
+                  //arcball_cam->clamp_angles();
+                  ts->process();
+                  //arcball_cam->movement_type = arcball_cam->e_roll_view_axis;
+                  break;
+               }
+               }
 
-				case KEY_E:
-					{
-						p->persp_cam->position += p->look_at_dir * 100.05f;
-						break;
-					}
+               if (axis_roll_state != gesture_state::move)
+               {
+                  switch (pinch_state)
+                  {
+                  case gesture_state::start:
+                  {
+                     p->last_dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
+                     break;
+                  }
 
-				case KEY_A:
-					{
-						glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), p->look_at_dir);
-						p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
-						break;
-					}
+                  case gesture_state::move:
+                  {
+                     float dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
+                     float delta = dist - p->last_dist;
 
-				case KEY_D:
-					{
-						glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), p->look_at_dir);
-						p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
-						break;
-					}
+                     p->last_dist = dist;
+                     p->persp_cam->position += p->look_at_dir * 5.f * delta;
+                     trx("geture dist {0} {1}", dist, delta);
+                     ts->process();
+                     break;
+                  }
+                  }
+               }
+            }
+         }
+         else
+         {
+            //vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
+            if (ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
+            {
+               float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+               float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+               float scale = 0.25f;
+               float dx_rad = glm::radians(dx * scale);
+               float dy_rad = glm::radians(dy * scale);
 
-				case KEY_Z:
-					{
-						p->speed -= 0.05f;
-						break;
-					}
+               //impl->theta += glm::radians(dx / 10);
+               //impl->phi += glm::radians(-dy / 10);
+               //impl->theta = glm::mod(impl->theta, 2 * glm::pi<float>());
+               //impl->phi = glm::mod(impl->phi, 2 * glm::pi<float>());
+               //glm::vec3 axis(glm::sin(impl->theta) * glm::sin(impl->phi), glm::cos(impl->theta) * glm::sin(impl->phi), -glm::cos(impl->phi));
+               //axis = glm::normalize(axis);
+               //vprint("x %f, y %f\n", impl->theta, impl->phi);
+               //vprint("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
+               glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
+               glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
+               p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
+               p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
 
-				case KEY_C:
-					{
-						p->speed += 0.05f;
-						break;
-					}
+               glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
+               p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
+               ts->process();
+            }
+            else if (ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
+            {
+               shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
-				default:
-					isAction = false;
-				}
+               p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
+            }
+         }
+      }
+      else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+      {
+         shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
 
-				if(!isAction && ke->get_type() != key_evt::KE_REPEATED)
-				{
-					isAction = true;
+         if (ke->get_type() != key_evt::KE_RELEASED)
+         {
+            bool isAction = true;
 
-					switch(ke->get_key())
-					{
-					case KEY_SPACE:
-					case KEY_F1:
-						//vdec->play_pause();
-						break;
+            switch (ke->get_key())
+            {
+            case KEY_Q:
+            {
+               p->persp_cam->position -= p->look_at_dir * 100.05f;
+               break;
+            }
 
-					case KEY_BACK:
-					case KEY_F2:
-						//vdec->stop();
-						break;
+            case KEY_E:
+            {
+               p->persp_cam->position += p->look_at_dir * 100.05f;
+               break;
+            }
 
-					case KEY_F6:
-						//unit_ctrl::inst()->set_app_exit_on_next_run(true);
-						break;
+            case KEY_A:
+            {
+               glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), p->look_at_dir);
+               p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
+               break;
+            }
 
-					case KEY_F11:
-						pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
-						break;
+            case KEY_D:
+            {
+               glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), p->look_at_dir);
+               p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
+               break;
+            }
 
-					default:
-						isAction = false;
-					}
-				}
+            case KEY_Z:
+            {
+               p->speed -= 0.05f;
+               break;
+            }
 
-				if(isAction)
-				{
-					ke->process();
-				}
-			}
-		}
-	}
+            case KEY_C:
+            {
+               p->speed += 0.05f;
+               break;
+            }
+
+            default:
+               isAction = false;
+            }
+
+            if (!isAction && ke->get_type() != key_evt::KE_REPEATED)
+            {
+               isAction = true;
+
+               switch (ke->get_key())
+               {
+               case KEY_SPACE:
+               case KEY_F1:
+                  //vdec->play_pause();
+                  break;
+
+               case KEY_BACK:
+               case KEY_F2:
+                  //vdec->stop();
+                  break;
+
+               case KEY_F6:
+                  //unit_ctrl::inst()->set_app_exit_on_next_run(true);
+                  break;
+
+               case KEY_F11:
+                  pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+                  break;
+
+               default:
+                  isAction = false;
+               }
+            }
+
+            if (isAction)
+            {
+               ke->process();
+            }
+         }
+      }
+   }
 }
 
 #endif
