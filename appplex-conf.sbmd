@@ -3,7 +3,7 @@
 
 default
 [
-	uses[ boost, gfx ], enabled[ true ], platf[ all ],
+	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
 	start[ unit-list[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
 ],
@@ -17,7 +17,7 @@ units
 	test-ffmpeg[ uses[ gfx, ffmpeg ], enabled[ true ], ],
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
-	test-gl[ uses[ gfx ], platf[ all ], ],
+	test-gl[ platf[ all ], ],
 	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	test-shadow-map[ ],
@@ -29,7 +29,7 @@ units
 	test-normal-mapping[ ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ ],
-	abstract-racing[ ],
+	abstract-racing[ platf[ windows, android ], ],
 	test-fmod[ uses[ boost, gfx, fmod ], ],
 	ux-test[ ],
 	texxed[ ],
@@ -42,7 +42,7 @@ units
 	test-audioengine[ uses[ boost, gfx, snd ], platf[ windows, android, ios ], ],
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
-	test-trail[ uses[ gfx ], platf[ windows ], ],
+	test-trail[ platf[ windows, android ], ],
 
 	@@[ private units ],
 
