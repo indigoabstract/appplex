@@ -76,8 +76,10 @@ namespace ns_test_trail
       ia_assert(newEvent->touch_count > 0);
 
       // check for cancelled event
-      if (newEvent->type == pfm_touch_event::touch_cancelled) {
+      if (newEvent->type == pfm_touch_event::touch_cancelled)
+      {
          reset();
+
          return gesture_state::none;
       }
 
@@ -85,6 +87,7 @@ namespace ns_test_trail
       if ((newEvent->type != pfm_touch_event::touch_ended) && (newEvent->touch_count != 2))
       {
          reset();
+
          return gesture_state::none;
       }
 
@@ -92,21 +95,26 @@ namespace ns_test_trail
       if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*newEvent))
       {
          reset();
+
          return gesture_state::none;
       }
 
       // check for gesture start, move and end
-      if (newEvent->type == pfm_touch_event::touch_began) {
+      if (newEvent->type == pfm_touch_event::touch_began)
+      {
          start_event = newEvent;
          start_position0 = newEvent->touch_pos(newEvent->points[0].identifier);
          start_position1 = newEvent->touch_pos(newEvent->points[1].identifier);
          position0 = start_position0;
          position1 = start_position1;
+
          return gesture_state::start;
       }
-      else if (newEvent->type == pfm_touch_event::touch_moved) {
+      else if (newEvent->type == pfm_touch_event::touch_moved)
+      {
          // cancel if start event is not valid
-         if (start_event->type == pfm_touch_event::touch_invalid) {
+         if (start_event->type == pfm_touch_event::touch_invalid)
+         {
             return gesture_state::none;
          }
 
@@ -114,13 +122,17 @@ namespace ns_test_trail
          position1 = newEvent->touch_pos(start_event->points[1].identifier);
          return gesture_state::move;
       }
-      else if (newEvent->type == pfm_touch_event::touch_ended) {
-         if (start_event->type == pfm_touch_event::touch_invalid) {
+      else if (newEvent->type == pfm_touch_event::touch_ended)
+      {
+         if (start_event->type == pfm_touch_event::touch_invalid)
+         {
             return gesture_state::none;
          }
+
          position0 = newEvent->touch_pos(start_event->points[0].identifier);
          position1 = newEvent->touch_pos(start_event->points[1].identifier);
          reset();
+
          return gesture_state::end;
       }
 
@@ -142,8 +154,10 @@ namespace ns_test_trail
          ia_assert(newEvent->touch_count > 0);
 
          // check for cancelled event
-         if (newEvent->type == pfm_touch_event::touch_cancelled) {
+         if (newEvent->type == pfm_touch_event::touch_cancelled)
+         {
             reset();
+
             return gesture_state::none;
          }
 
@@ -151,6 +165,7 @@ namespace ns_test_trail
          if ((newEvent->type != pfm_touch_event::touch_ended) && (newEvent->touch_count != 2))
          {
             reset();
+
             return gesture_state::none;
          }
 
@@ -158,6 +173,7 @@ namespace ns_test_trail
          if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*newEvent))
          {
             reset();
+
             return gesture_state::none;
          }
 
@@ -169,6 +185,7 @@ namespace ns_test_trail
             start_position1 = newEvent->touch_pos(newEvent->points[1].identifier);
             position0 = start_position0;
             position1 = start_position1;
+
             return gesture_state::start;
          }
          else if (newEvent->type == pfm_touch_event::touch_moved)
@@ -197,9 +214,11 @@ namespace ns_test_trail
             {
                return gesture_state::none;
             }
+
             position0 = newEvent->touch_pos(start_event->points[0].identifier);
             position1 = newEvent->touch_pos(start_event->points[1].identifier);
             reset();
+
             return gesture_state::end;
          }
 
@@ -638,8 +657,25 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
 
                case gesture_state::move:
                {
+                  int w = get_width();
+                  int h = get_height();
                   float dx = ts->crt_state.te->points[1].x - ts->prev_state.te->points[1].x;
                   float dy = ts->crt_state.te->points[1].y - ts->prev_state.te->points[1].y;
+                  float scale = 0.25f;
+                  float dx_rad = glm::radians(dx * scale);
+                  float dy_rad = glm::radians(-dy * scale);
+                  glm::vec3 screen_center(w * 0.5f, h * 0.5f, 0.f);
+                  glm::vec3 oriented_radius = glm::vec3(ts->prev_state.te->points[1].x, ts->prev_state.te->points[1].y, 0.f) - screen_center;
+                  glm::vec3 neg_z_axis(0.f, 0.f, -1.f);
+                  glm::vec3 circle_tangent = glm::cross(neg_z_axis, oriented_radius);
+                  circle_tangent = glm::normalize(circle_tangent);
+                  glm::vec3 touch_dir(dx, dy, 0.f);
+                  touch_dir = glm::normalize(touch_dir);
+                  float dot_prod = glm::dot(touch_dir, circle_tangent);
+                  float cos_alpha = dot_prod / (glm::length(touch_dir) * glm::length(circle_tangent));
+
+                  glm::quat rot_around_look_at_dir = glm::angleAxis(cos_alpha, p->look_at_dir);
+                  p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
 
                   if (ts->is_finished)
                   {
@@ -717,6 +753,7 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
                shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
                p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
+               ts->process();
             }
          }
       }
