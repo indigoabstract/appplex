@@ -4,10 +4,8 @@
 #ifdef MOD_SBMD
 
 #include "sbmd.hpp"
-#include "min.hpp"
 #include <sbmd/kx-krte.hpp>
 #include <sbmd/kx-elem.hpp>
-#include <boost/algorithm/string.hpp>
 
 
 std::vector<shared_ptr<kx_process> > sbmd_ops::get_process_list(const shared_ptr<kx_process> ikp)
@@ -79,11 +77,10 @@ bool sbmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 
 
 // ipath is like xxx.yyy.zzz
-boost::any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroot, boost::any default_val)
+ia_any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroot, ia_any default_val)
 {
 	std::vector<std::string> tokens;
-	auto pred = boost::is_any_of(".");
-	boost::split(tokens, ipath, pred, boost::token_compress_on);
+   tokens = str_split(ipath, ".");
 	shared_ptr<kx_process> xdb = iroot;
 
 	if (ipath == "units.kappaxx.platf")
@@ -101,7 +98,7 @@ boost::any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroo
 		}
 	}
 
-	boost::any result;
+	ia_any result;
 
 	if (xdb)
 	{
@@ -119,7 +116,7 @@ boost::any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroo
 std::vector<std::string> sbmd_ops::get_sbmd_str_seq(std::string ipath, shared_ptr<kx_block> iroot, std::vector<std::string> default_val)
 {
 	std::vector<std::string> seq;
-	boost::any val = get_sbmd_value(ipath, iroot);
+	ia_any val = get_sbmd_value(ipath, iroot);
 
 	if (!val.empty())
 	{
@@ -127,7 +124,7 @@ std::vector<std::string> sbmd_ops::get_sbmd_str_seq(std::string ipath, shared_pt
 		{
 			std::function<int(int)> is_quote = [](int c) { return c == '\'' || c == '"'; };
 
-			seq = boost::any_cast<std::vector<std::string>>(val);
+			seq = any_cast<std::vector<std::string>>(val);
 
 			// clear ' and " from the string
 			for (std::string& s : seq)

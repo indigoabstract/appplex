@@ -2,6 +2,8 @@
 
 #include "min.hpp"
 #include "unit-ctrl.hpp"
+#include <regex>
+#include <sstream>
 
 
 using std::string;
@@ -192,4 +194,74 @@ bool ends_with(const std::string& istr, const std::string& ifind)
 	}
 
 	return true;
+}
+
+
+template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1> & original, unary_operation mapping_function)
+{
+   std::vector<T2> mapped;
+
+   std::transform(begin(original), end(original), std::back_inserter(mapped), mapping_function);
+
+   return mapped;
+}
+
+std::string escape_char(char character)
+{
+   const std::unordered_map<char, std::string> escaped_special_characters =
+   {
+      { '.', "\\." },{ '|', "\\|" },{ '*', "\\*" },{ '?', "\\?" },
+      { '+', "\\+" },{ '(', "\\(" },{ ')', "\\)" },{ '{', "\\{" },
+      { '}', "\\}" },{ '[', "\\[" },{ ']', "\\]" },{ '^', "\\^" },
+      { '$', "\\$" },{ '\\', "\\\\" }
+   };
+
+   auto it = escaped_special_characters.find(character);
+
+   if (it == escaped_special_characters.end())
+   {
+      return std::string(1, character);
+   }
+
+   return it->second;
+}
+
+std::string escape_string(const std::string& str)
+{
+   std::stringstream stream;
+
+   std::for_each(begin(str), end(str), [&stream](const char character) { stream << escape_char(character); });
+
+   return stream.str();
+}
+
+std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters)
+{
+   return map<std::string>(delimiters, escape_string);
+}
+
+std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
+{
+   std::stringstream stream;
+
+   stream << tokens.front();
+   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string &elem) { stream << delimiter << elem; });
+
+   return stream.str();
+}
+
+std::vector<std::string> str_split(const std::string& str, const std::vector<std::string> & delimiters)
+{
+   std::regex rgx(str_join(escape_strings(delimiters), "|"));
+
+   std::sregex_token_iterator first{ begin(str), end(str), rgx, -1 }, last;
+
+   return{ first, last };
+}
+
+std::vector<std::string> str_split(const std::string& str, const std::string& delimiter)
+{
+   std::vector<std::string> delimiters = { delimiter };
+
+   return str_split(str, delimiters);
 }

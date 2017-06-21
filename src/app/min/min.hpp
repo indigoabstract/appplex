@@ -7,6 +7,7 @@
 #include <functional> 
 #include <locale>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -106,6 +107,58 @@ public:
 	virtual ~ia_node(){}
 };
 
+
+struct ia_any
+{
+   ia_any() = default;
+   template <typename T> ia_any(T const& v) : storage_ptr(new storage<T>(v)) {}
+   ia_any(ia_any const& other) : storage_ptr(other.storage_ptr ? std::move(other.storage_ptr->clone()) : nullptr) {}
+
+   void swap(ia_any& other) { storage_ptr.swap(other.storage_ptr); }
+   friend void swap(ia_any& a, ia_any& b) { a.swap(b); };
+   ia_any& operator=(ia_any other) { swap(other); return *this; }
+   bool empty() { return storage_ptr == nullptr; }
+
+private:
+   struct storage_base
+   {
+      virtual std::unique_ptr<storage_base> clone() = 0;
+      virtual ~storage_base() = default;
+   };
+
+   template <typename T> struct storage : storage_base
+   {
+      T value;
+      explicit storage(T const& v) : value(v) {}
+      std::unique_ptr<storage_base> clone() { return std::unique_ptr<storage_base>(new storage<T>(value)); }
+   };
+
+   std::unique_ptr<storage_base> storage_ptr;
+   template<typename T> friend T& any_cast(ia_any      &);
+   template<typename T> friend T const& any_cast(ia_any const&);
+};
+
+template <typename T> T& any_cast(ia_any& a)
+{
+   if (auto p = dynamic_cast<ia_any::storage<T>*>(a.storage_ptr.get()))
+   {
+      return p->value;
+   }
+
+   throw std::bad_cast();
+}
+
+template <typename T> T const& any_cast(ia_any const& a)
+{
+   if (auto p = dynamic_cast<ia_any::storage<T> const*>(a.storage_ptr.get()))
+   {
+      return p->value;
+   }
+
+   throw std::bad_cast();
+}
+
+
 #define int_vect_pass(name) name, sizeof(name) / sizeof(int)
 
 
@@ -148,3 +201,11 @@ inline std::string trim(const std::string& is)
 {
 	return ltrim(rtrim(is));
 }
+
+template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1>& original, unary_operation mapping_function);
+std::string escape_char(char character);
+std::string escape_string(const std::string& str);
+std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
+std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
+std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
+std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
