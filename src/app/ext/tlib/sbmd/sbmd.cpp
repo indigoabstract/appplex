@@ -133,7 +133,7 @@ std::vector<std::string> sbmd_ops::get_sbmd_str_seq(std::string ipath, shared_pt
 				s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(is_quote)).base(), s.end());
 			}
 		}
-		catch (boost::bad_any_cast& e)
+		catch (ia_bad_any_cast& e)
 		{
 			trx(e.what());
 		}

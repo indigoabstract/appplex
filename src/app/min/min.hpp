@@ -108,6 +108,16 @@ public:
 };
 
 
+class ia_bad_any_cast : public std::bad_cast
+{
+public:
+   virtual const char* what() const noexcept
+   {
+      return "ia_bad_any_cast: failed conversion using ia_any_cast";
+   }
+};
+
+
 struct ia_any
 {
    ia_any() = default;
@@ -145,7 +155,7 @@ template <typename T> T& any_cast(ia_any& a)
       return p->value;
    }
 
-   throw std::bad_cast();
+   throw ia_bad_any_cast();
 }
 
 template <typename T> T const& any_cast(ia_any const& a)
@@ -155,7 +165,7 @@ template <typename T> T const& any_cast(ia_any const& a)
       return p->value;
    }
 
-   throw std::bad_cast();
+   throw ia_bad_any_cast();
 }
 
 

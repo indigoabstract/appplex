@@ -51,7 +51,7 @@ units
 	reliquus[ ],
 	orbital-deathmatch[ ],
 	shipwrecked[ ],
-	vorofract[ uses[ boost, gfx, sbmd ] ],
+	vorofract[ uses[ gfx, sbmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
 	break-reminder[ uses[ gfx, notifications, snd ], platf[ windows, android ], ],
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
