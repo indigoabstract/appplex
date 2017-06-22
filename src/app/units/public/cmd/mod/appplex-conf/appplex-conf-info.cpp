@@ -12,9 +12,6 @@
 #include <sbmd/sbmd.hpp>
 #include <sbmd/kx-krte.hpp>
 #include <sbmd/kx-elem.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/find.hpp>
-#include <boost/any.hpp>
 
 
 std::unordered_map<std::string, std::string> platf_def_map =
@@ -57,8 +54,10 @@ void appplex_conf::update()
    info->proj_rel_units_path = paths_proj_rel_units_path[0];
    unit_entry_map = std::make_shared<unit_entry_map_type>();
    unit_entry_map_android = std::make_shared<unit_entry_map_type>();
+   trx("\nrecursive reading.\n");
    info->dir_tree = directory_tree::new_directory_tree(info->src_path, info->exclude_path);
    info->rdo = std::make_shared<rec_dir_op_appplex_conf>(info->src_path, info->exclude_path, info->krt, unit_entry_map);
+   trx("\nrecursive apply.\n");
    info->dir_tree->recursive_apply(*info->rdo);
 
    trx("\nupdating appplex configuration.\n");

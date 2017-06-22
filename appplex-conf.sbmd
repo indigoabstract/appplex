@@ -55,7 +55,7 @@ units
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
 	break-reminder[ uses[ gfx, notifications, snd ], platf[ windows, android ], ],
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
-	metrolife[ uses[ boost, gfx, ffmpeg, unit-texxed, unit-ffmpeg ], platf[ windows, android ], ],
+	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
 ],
 
 paths
