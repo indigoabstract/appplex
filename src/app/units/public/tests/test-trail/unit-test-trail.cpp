@@ -73,8 +73,6 @@ namespace ns_test_trail
 
    gesture_state::e_code pinch_detector::detect(const std::shared_ptr<pfm_touch_event> new_event)
    {
-      ia_assert(new_event->touch_count > 0);
-
       // check for cancelled event
       if (new_event->type == pfm_touch_event::touch_cancelled)
       {
@@ -102,6 +100,11 @@ namespace ns_test_trail
       // check for gesture start, move and end
       if (new_event->type == pfm_touch_event::touch_began)
       {
+         if (new_event->touch_count < 2)
+         {
+            return gesture_state::none;
+         }
+
          start_event = new_event;
          start_position0 = new_event->touch_pos(new_event->points[0].identifier);
          start_position1 = new_event->touch_pos(new_event->points[1].identifier);
@@ -113,7 +116,7 @@ namespace ns_test_trail
       else if (new_event->type == pfm_touch_event::touch_moved)
       {
          // cancel if start event is not valid
-         if (start_event->type == pfm_touch_event::touch_invalid)
+         if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
          {
             return gesture_state::none;
          }
@@ -125,7 +128,7 @@ namespace ns_test_trail
       }
       else if (new_event->type == pfm_touch_event::touch_ended)
       {
-         if (start_event->type == pfm_touch_event::touch_invalid)
+         if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
          {
             return gesture_state::none;
          }
@@ -152,8 +155,6 @@ namespace ns_test_trail
       /// feed new touch event and return detected state
       gesture_state::e_code detect(const std::shared_ptr<pfm_touch_event> new_event)
       {
-         ia_assert(new_event->touch_count > 0);
-
          // check for cancelled event
          if (new_event->type == pfm_touch_event::touch_cancelled)
          {
@@ -181,6 +182,11 @@ namespace ns_test_trail
          // check for gesture start, move and end
          if (new_event->type == pfm_touch_event::touch_began)
          {
+            if (new_event->touch_count < 2)
+            {
+               return gesture_state::none;
+            }
+
             start_event = new_event;
             start_position0 = new_event->touch_pos(new_event->points[0].identifier);
             start_position1 = new_event->touch_pos(new_event->points[1].identifier);
@@ -192,7 +198,7 @@ namespace ns_test_trail
          else if (new_event->type == pfm_touch_event::touch_moved)
          {
             // cancel if start event is not valid
-            if (start_event->type == pfm_touch_event::touch_invalid)
+            if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
             {
                return gesture_state::none;
             }
@@ -211,7 +217,7 @@ namespace ns_test_trail
          }
          else if (new_event->type == pfm_touch_event::touch_ended)
          {
-            if (start_event->type == pfm_touch_event::touch_invalid)
+            if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
             {
                return gesture_state::none;
             }
@@ -639,94 +645,91 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
          }
          }
 
-         if (ts->crt_state.te->is_multitouch())
          {
-            if (ts->crt_state.te->touch_count == 2)
-            {
-               auto& axis_roll_gest_det = p->axis_roll_gest_det;
-               auto& pinch_gest_det = p->pinch_gest_det;
-               auto axis_roll_state = axis_roll_gest_det.detect(ts->crt_state.te);
-               auto pinch_state = pinch_gest_det.detect(ts->crt_state.te);
-               trx("geture state {0} {1}", pinch_state, axis_roll_state);
+            auto& axis_roll_gest_det = p->axis_roll_gest_det;
+            auto& pinch_gest_det = p->pinch_gest_det;
+            auto axis_roll_state = axis_roll_gest_det.detect(ts->crt_state.te);
+            auto pinch_state = pinch_gest_det.detect(ts->crt_state.te);
+            trx("geture state {0} {1}", pinch_state, axis_roll_state);
 
-               switch (axis_roll_state)
+            switch (axis_roll_state)
+            {
+            case gesture_state::start:
+            {
+               break;
+            }
+
+            case gesture_state::move:
+            {
+               int w = get_width();
+               int h = get_height();
+               float dx = ts->crt_state.te->points[1].x - ts->prev_state.te->points[1].x;
+               float dy = ts->crt_state.te->points[1].y - ts->prev_state.te->points[1].y;
+
+               if (dx != 0 || dy != 0)
+               {
+                  float scale = 0.25f;
+                  //float dx_rad = glm::radians(dx * scale);
+                  //float dy_rad = glm::radians(-dy * scale);
+                  glm::vec3 screen_center(w * 0.5f, h * 0.5f, 0.f);
+                  glm::vec3 oriented_radius = glm::vec3(ts->prev_state.te->points[1].x, ts->prev_state.te->points[1].y, 0.f) - screen_center;
+                  glm::vec3 neg_z_axis(0.f, 0.f, -1.f);
+                  glm::vec3 circle_tangent = glm::cross(neg_z_axis, oriented_radius);
+                  circle_tangent = glm::normalize(circle_tangent);
+                  glm::vec3 touch_dir(dx, dy, 0.f);
+                  touch_dir = glm::normalize(touch_dir);
+                  float dot_prod = glm::dot(touch_dir, circle_tangent);
+                  float cos_alpha = dot_prod / (glm::length(touch_dir) * glm::length(circle_tangent));
+
+                  glm::quat rot_around_look_at_dir = glm::angleAxis(-cos_alpha * 0.1f, p->look_at_dir);
+                  p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
+
+                  if (ts->is_finished)
+                  {
+                     p->ks.start_slowdown();
+                  }
+                  else
+                  {
+                     p->ks.begin(ts->crt_state.te->points[1].x, ts->crt_state.te->points[1].y);
+                  }
+
+                  //arcball_cam->theta_deg += glm::radians(dx * 9.f);
+                  //arcball_cam->phi_deg -= glm::radians(dy * 5.f);
+                  //arcball_cam->clamp_angles();
+                  ts->process();
+                  //arcball_cam->movement_type = arcball_cam->e_roll_view_axis;
+               }
+               break;
+            }
+            }
+
+            //if (axis_roll_state != gesture_state::move)
+            if (!ts->is_processed())
+            {
+               switch (pinch_state)
                {
                case gesture_state::start:
                {
+                  p->last_dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
                   break;
                }
 
                case gesture_state::move:
                {
-                  int w = get_width();
-                  int h = get_height();
-                  float dx = ts->crt_state.te->points[1].x - ts->prev_state.te->points[1].x;
-                  float dy = ts->crt_state.te->points[1].y - ts->prev_state.te->points[1].y;
+                  float dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
+                  float delta = dist - p->last_dist;
 
-                  if (dx != 0 || dy != 0)
-                  {
-                     float scale = 0.25f;
-                     //float dx_rad = glm::radians(dx * scale);
-                     //float dy_rad = glm::radians(-dy * scale);
-                     glm::vec3 screen_center(w * 0.5f, h * 0.5f, 0.f);
-                     glm::vec3 oriented_radius = glm::vec3(ts->prev_state.te->points[1].x, ts->prev_state.te->points[1].y, 0.f) - screen_center;
-                     glm::vec3 neg_z_axis(0.f, 0.f, -1.f);
-                     glm::vec3 circle_tangent = glm::cross(neg_z_axis, oriented_radius);
-                     circle_tangent = glm::normalize(circle_tangent);
-                     glm::vec3 touch_dir(dx, dy, 0.f);
-                     touch_dir = glm::normalize(touch_dir);
-                     float dot_prod = glm::dot(touch_dir, circle_tangent);
-                     float cos_alpha = dot_prod / (glm::length(touch_dir) * glm::length(circle_tangent));
-
-                     glm::quat rot_around_look_at_dir = glm::angleAxis(-cos_alpha * 0.1f, p->look_at_dir);
-                     p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
-
-                     if (ts->is_finished)
-                     {
-                        p->ks.start_slowdown();
-                     }
-                     else
-                     {
-                        p->ks.begin(ts->crt_state.te->points[1].x, ts->crt_state.te->points[1].y);
-                     }
-
-                     //arcball_cam->theta_deg += glm::radians(dx * 9.f);
-                     //arcball_cam->phi_deg -= glm::radians(dy * 5.f);
-                     //arcball_cam->clamp_angles();
-                     ts->process();
-                     //arcball_cam->movement_type = arcball_cam->e_roll_view_axis;
-                  }
+                  p->last_dist = dist;
+                  p->persp_cam->position += p->look_at_dir * 5.f * delta;
+                  trx("geture dist {0} {1}", dist, delta);
+                  ts->process();
                   break;
                }
                }
-
-               //if (axis_roll_state != gesture_state::move)
-               if(!ts->is_processed())
-               {
-                  switch (pinch_state)
-                  {
-                  case gesture_state::start:
-                  {
-                     p->last_dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
-                     break;
-                  }
-
-                  case gesture_state::move:
-                  {
-                     float dist = glm::distance(pinch_gest_det.position0, pinch_gest_det.position1);
-                     float delta = dist - p->last_dist;
-
-                     p->last_dist = dist;
-                     p->persp_cam->position += p->look_at_dir * 5.f * delta;
-                     trx("geture dist {0} {1}", dist, delta);
-                     ts->process();
-                     break;
-                  }
-                  }
-               }
             }
          }
-         else
+
+         if (!ts->is_processed())
          {
             //vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
             if (ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)

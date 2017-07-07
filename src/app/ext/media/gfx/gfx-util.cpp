@@ -208,6 +208,31 @@ void gfx_util::check_gfx_error()
 	}
 }
 
+// http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
+// Build a unit quaternion representing the rotation from u to v. The input vectors need not be normalised.
+glm::quat gfx_util::quat_from_two_vectors(glm::vec3 u, glm::vec3 v)
+{
+   float norm_u_norm_v = glm::sqrt(glm::dot(u, u) * glm::dot(v, v));
+   float real_part = norm_u_norm_v + glm::dot(u, v);
+   glm::vec3 w;
+
+   if (real_part < 1.e-6f * norm_u_norm_v)
+   {
+      // If u and v are exactly opposite, rotate 180 degrees
+      // around an arbitrary orthogonal axis. Axis normalisation
+      // can happen later, when we normalise the quaternion.
+      real_part = 0.0f;
+      w = glm::abs(u.x) > glm::abs(u.z) ? glm::vec3(-u.y, u.x, 0.f) : glm::vec3(0.f, -u.z, u.y);
+   }
+   else
+   {
+      // Otherwise, build quaternion the standard way.
+      w = glm::cross(u, v);
+   }
+
+   return glm::normalize(glm::quat(real_part, w.x, w.y, w.z));
+}
+
 // Returns a quaternion that will make your object looking towards 'direction'.
 // Similar to RotationBetweenVectors, but also controls the vertical orientation.
 // This assumes that at rest, the object faces +Z.
@@ -222,7 +247,8 @@ glm::quat gfx_util::look_at(glm::vec3 direction, glm::vec3 desiredUp)
 
 	// Find the rotation between the front of the object (that we assume towards +Z,
 	// but this depends on your model) and the desired direction
-	glm::quat rot1 = glm::rotation(glm::vec3(0.0f, 0.0f, -1.0f), direction);
+	// glm::quat rot1 = glm::rotation(glm::vec3(0.0f, 0.0f, -1.0f), direction);
+   glm::quat rot1 = quat_from_two_vectors(glm::vec3(0.0f, 0.0f, -1.0f), direction);
 	// Because of the 1rst rotation, the up is probably completely screwed up. 
 	// Find the rotation between the "up" of the rotated object, and the desired up
 	glm::vec3 newUp = glm::normalize(rot1 * glm::vec3(0.0f, 1.0f, 0.0f));
