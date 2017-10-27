@@ -70,3 +70,24 @@ void gfx_trail::add_position(glm::vec3 ipos)
 	(*this)["u_v1_total_positions"] = (float)pos_vect.size();
 	(*this)["u_v1_line_thickness"] = line_thickness;
 }
+
+float gfx_trail::get_line_thickness()
+{
+   return line_thickness;
+}
+
+void gfx_trail::set_line_thickness(float iline_thickness)
+{
+   line_thickness = iline_thickness;
+   (*this)["u_v1_line_thickness"] = line_thickness;
+}
+
+int gfx_trail::get_max_positions()
+{
+   return max_positions;
+}
+
+void gfx_trail::set_max_positions(int imax_positions)
+{
+   max_positions = imax_positions;
+}

@@ -430,20 +430,31 @@ public class main extends Activity
 	 */
 	public static void schedule_notification(String message, int delayInSeconds, int tag){
 		Context ctx = inst();
-		AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
-		Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
+		AlarmManager alarm_manager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
+		Intent alarm_intent = new Intent(ctx, AlarmReceiver.class);
 
-		alarmIntent.putExtra("message", message);
-		alarmIntent.putExtra("tagId", tag);
+		alarm_intent.putExtra("message", message);
+		alarm_intent.putExtra("tagId", tag);
 
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, tag, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pending_intent = PendingIntent.getBroadcast(ctx, tag, alarm_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		Calendar alarmStartTime = Calendar.getInstance();
-		alarmStartTime.add(Calendar.MILLISECOND, delayInSeconds * 1000);
-		long millis = SystemClock.elapsedRealtime() + delayInSeconds * 1000;//alarmStartTime.getTimeInMillis();
+        long uptime_millis =  SystemClock.elapsedRealtime();
+		long millis = uptime_millis + delayInSeconds * 1000;
+        int alarm_type = AlarmManager.ELAPSED_REALTIME_WAKEUP;
 
-		alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, millis, pendingIntent);
-		//Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            alarm_manager.setExactAndAllowWhileIdle(alarm_type, millis, pending_intent);
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            alarm_manager.setExact(alarm_type, millis, pending_intent);
+        }
+        else
+        {
+            alarm_manager.set(alarm_type, millis, pending_intent);
+        }
+        //Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
 	}
 
 	/**

@@ -45,6 +45,7 @@ units
 	test-trail[ platf[ windows, android ], ],
 
 	@@[ private units ],
+	@@insert[ "src/app/units/private/units.sbmd", units ],
 
 	barnes-hut[ ],
 	kappaxx[ uses[ boost, gfx, sbmd ], platf[ windows ], ],
@@ -56,6 +57,8 @@ units
 	break-reminder[ uses[ gfx, notifications, snd ], platf[ windows, android ], ],
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
+	tangled-memories[ uses[ gfx ] ],
+	spacetime-sinkhole[ uses[ gfx ] ],
 ],
 
 paths

@@ -27,8 +27,15 @@ public:
 class gfx_plane : public gfx_vxo
 {
 public:
-	gfx_plane();
-	virtual void set_dimensions(float idx, float idy);
+   gfx_plane();
+   virtual void set_dimensions(float idx, float idy);
+};
+
+class gfx_grid : public gfx_vxo
+{
+public:
+   gfx_grid();
+   virtual void set_dimensions(int i_h_point_count, int i_v_point_count);
 };
 
 class gfx_box : public gfx_vxo

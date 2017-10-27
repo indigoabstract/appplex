@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
 
@@ -22,12 +23,20 @@ public:
     static void register_for_notifications();
     
     /**
-     * Schedules local notification
-     * @param message  Message should be shown in notification
-     * @param delayInSeconds The notification will be fired after this number of seconds have elapsed (since 'schedule()' is called).
-     * @param tag      Tag to specify notification
-     */
-    static void schedule(std::string message, int delay_in_seconds, int tag);
+    * Schedules a local notification
+    * @param message - message to be shown in notification
+    * @param time_point_date - the notification will be fired when system clock reaches the specified date.
+    * @param tag - tag to specify notification
+    */
+    static void schedule_by_date(std::string message, const std::chrono::system_clock::time_point& time_point_date, int tag);
+
+    /**
+    * Schedules a local notification
+    * @param message - message to be shown in notification
+    * @param delay_in_seconds - the notification will be fired after this number of seconds have elapsed (since 'schedule_by_delay()' is called).
+    * @param tag - tag to specify notification
+    */
+    static void schedule_by_delay(std::string message, int delay_in_seconds, int tag);
     
     /**
      * Check if notification specified by ID is active

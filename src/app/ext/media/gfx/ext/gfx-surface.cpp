@@ -92,6 +92,70 @@ void gfx_plane::set_dimensions(float idx, float idy)
 }
 
 
+gfx_grid::gfx_grid() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"))
+{
+}
+
+void gfx_grid::set_dimensions(int i_h_point_count, int i_v_point_count)
+{
+   static float p = 1.f;
+   static glm::vec3 vx[] =
+   {
+      glm::vec3(-p, p, 0), glm::vec3(-p, -p, 0), glm::vec3(p, -p, 0), glm::vec3(p, p, 0),
+   };
+   static glm::vec2 tx[] =
+   {
+      glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 0), glm::vec2(1, 1),
+   };
+   std::vector<vx_fmt_p3f_n3f_t2f> tvertices_data(i_h_point_count * i_v_point_count);
+   std::vector<gfx_indices_type> tindices_data;
+
+   for (int i = 0; i < i_v_point_count; i++)
+   {
+      float vf = i / float(i_v_point_count - 1);
+      glm::vec3 left_vx = glm::mix(vx[0], vx[1], vf);
+      glm::vec2 left_tx = glm::mix(tx[0], tx[1], vf);
+      glm::vec3 right_vx = glm::mix(vx[3], vx[2], vf);
+      glm::vec2 right_tx = glm::mix(tx[3], tx[2], vf);
+
+      for (int j = 0; j < i_h_point_count; j++)
+      {
+         float hf = j / float(i_h_point_count - 1);
+         glm::vec3 it_vx = glm::mix(left_vx, right_vx, hf);
+         glm::vec2 it_tx = glm::mix(left_tx, right_tx, hf);
+         auto& r = tvertices_data[i_h_point_count * i + j];
+
+         r.pos.set(it_vx);
+         r.nrm.set(glm::vec3(0, 0, -1));
+         r.tex.set(it_tx.x, it_tx.y);
+      }
+   }
+
+   for (int i = 1; i < i_v_point_count; i++)
+   {
+      for (int j = 1; j < i_h_point_count; j++)
+      {
+         int v = i_h_point_count * i;
+         int v_m1 = i_h_point_count * (i - 1);
+         int h = j;
+         int h_m1 = j - 1;
+
+         // lower left triangle: 1, 0, 2 in quad drawing
+         tindices_data.push_back(v + h_m1);
+         tindices_data.push_back(v_m1 + h_m1);
+         tindices_data.push_back(v + h);
+         // upper right triangle: 3, 2, 0 in quad drawing
+         tindices_data.push_back(v_m1 + h);
+         tindices_data.push_back(v + h);
+         tindices_data.push_back(v_m1 + h_m1);
+      }
+   }
+
+   set_mesh_data((const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f) * tvertices_data.size(),
+      tindices_data.data(), sizeof(gfx_indices_type) * tindices_data.size(), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+}
+
+
 gfx_box::gfx_box() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"))
 {
 }
