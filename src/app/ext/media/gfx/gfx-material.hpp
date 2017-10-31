@@ -33,7 +33,14 @@ const std::string MP_TEX_FILTER = "filter";
 const std::string MP_TEX_ADDRU = "addr-u";
 const std::string MP_TEX_ADDRV = "addr-v";
 const std::string MP_TRANSPARENT_SORTING = "transparent-sorting";
+
 const std::string MP_WIREFRAME_MODE = "wireframe-mode";
+enum wireframe_mode
+{
+   WF_MODE_NONE,
+   WF_MODE_OVERLAY,
+   WF_MODE_WIREFRAME_ONLY,
+};
 
 const std::string MV_NONE = "none";
 const std::string MV_ALPHA = "alpha";

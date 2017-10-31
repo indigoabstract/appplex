@@ -345,11 +345,11 @@ public:
 					switch (btn->state_id)
 					{
 					case 0:
-						r_cm[MP_WIREFRAME_MODE] = false;
+						r_cm[MP_WIREFRAME_MODE] = WF_MODE_NONE;
 						break;
 
 					case 1:
-						r_cm[MP_WIREFRAME_MODE] = true;
+						r_cm[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
 						break;
 					}
 					break;
@@ -490,7 +490,7 @@ void unit_test_dyn_geometry::load()
 	r_cm[MP_CULL_BACK] = false;
 	r_cm[MP_CULL_FRONT] = false;
 	r_cm["u_v4_color"] = glm::vec4(0.99, 1, 0.15, 1.f);
-	r_cm[MP_WIREFRAME_MODE] = false;
+	r_cm[MP_WIREFRAME_MODE] = WF_MODE_NONE;
 
 	p->texture_display = gfx::shader::new_program("basic_tex", "basic_tex.vsh", "basic_tex.fsh");
 	p->q2d = shared_ptr<gfx_plane>(new gfx_plane());

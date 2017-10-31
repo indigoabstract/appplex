@@ -295,7 +295,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
 	shared_ptr<gfx_shader> glp = mat.get_shader();
-	bool wireframe_mode = mat[MP_WIREFRAME_MODE].get_bool_value();
+	wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_int_value());
 	int offset = 0;
 	gfx_uint method = method_type[render_method];
 
@@ -340,7 +340,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 
 	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
 
-	if(wireframe_mode)
+	if(wf_mode == WF_MODE_OVERLAY)
 	{
 		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
 
@@ -374,7 +374,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
 	shared_ptr<gfx_shader> glp = mat.get_shader();
-	bool wireframe_mode = mat[MP_WIREFRAME_MODE].get_bool_value();
+   wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_int_value());
 	gfx_uint offset = 0;
 	gfx_uint method = method_type[render_method];
 
@@ -441,7 +441,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 
 	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, 0);
 
-	if(wireframe_mode)
+	if(wf_mode == WF_MODE_OVERLAY)
 	{
 		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
 

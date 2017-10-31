@@ -45,7 +45,7 @@ units
 	test-trail[ platf[ windows, android ], ],
 
 	@@[ private units ],
-	@@insert[ "src/app/units/private/units.sbmd", units ],
+	@@load-and-replace[ "src/app/units/private/units.sbmd", units ],
 
 	barnes-hut[ ],
 	kappaxx[ uses[ boost, gfx, sbmd ], platf[ windows ], ],

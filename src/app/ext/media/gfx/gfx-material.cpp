@@ -335,10 +335,6 @@ bool gfx_material_entry::get_bool_value()
 		{
 			return false;
 		}
-		else if (name == MP_WIREFRAME_MODE)
-		{
-			return false;
-		}
 
 		throw ia_exception("value is null");
 	}
@@ -365,6 +361,10 @@ int gfx_material_entry::get_int_value()
 		{
 			return gl::LESS_GL;
 		}
+      else if (name == MP_WIREFRAME_MODE)
+      {
+         return WF_MODE_NONE;
+      }
 
 		throw ia_exception("value is null");
 	}

@@ -512,7 +512,7 @@ void unit_test_trail::load()
       r_trail_mesh[MP_CULL_FRONT] = false;
       r_trail_mesh[MP_BLENDING] = MV_ALPHA;
       r_trail_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
-      //r_trail_mesh[MP_WIREFRAME_MODE] = true;
+      //r_trail_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
    }
 
    {
@@ -523,7 +523,7 @@ void unit_test_trail::load()
       r_tube_mesh[MP_CULL_FRONT] = false;
       r_tube_mesh[MP_BLENDING] = MV_ALPHA;
       r_tube_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
-      //r_tube_mesh[MP_WIREFRAME_MODE] = true;
+      //r_tube_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
    }
 
    gfx_scene_inst->attach(p->persp_cam);

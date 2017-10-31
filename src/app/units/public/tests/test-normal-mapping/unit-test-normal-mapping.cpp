@@ -1419,7 +1419,18 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 					for(int k = 0; k < mesh_list.size(); k++)
 					{
 						gfx_vxo& mesh = *mesh_list[k];
-						mesh[MP_WIREFRAME_MODE] = !mesh[MP_WIREFRAME_MODE].get_bool_value();
+                  wireframe_mode wf_mode = static_cast<wireframe_mode>(mesh[MP_WIREFRAME_MODE].get_int_value());
+
+                  if (wf_mode == WF_MODE_NONE)
+                  {
+                     wf_mode = WF_MODE_OVERLAY;
+                  }
+                  else
+                  {
+                     wf_mode = WF_MODE_NONE;
+                  }
+
+						mesh[MP_WIREFRAME_MODE] = wf_mode;
 					}
 					break;
 				}
