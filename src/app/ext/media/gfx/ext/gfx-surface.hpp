@@ -31,6 +31,12 @@ public:
    virtual void set_dimensions(float idx, float idy);
 };
 
+class gfx_billboard : public gfx_plane
+{
+public:
+   gfx_billboard();
+};
+
 class gfx_grid : public gfx_vxo
 {
 public:

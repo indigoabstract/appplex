@@ -6,7 +6,6 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include <glm/fwd.hpp>
 
 using std::enable_shared_from_this;
 using std::shared_ptr;
@@ -60,80 +59,6 @@ namespace pfm_impl
 {
    class pfm_file_impl;
 }
-
-
-class pfm_touch_event
-{
-public:
-   static const int MAX_TOUCH_POINTS = 8;
-
-   enum e_touch_type
-   {
-      touch_invalid,
-      touch_began,
-      touch_moved,
-      touch_ended,
-      touch_cancelled,
-      mouse_wheel,
-   };
-
-   struct touch_point
-   {
-      uint32 identifier = 0;
-      float x = 0.f;
-      float y = 0.f;
-      bool is_changed = false;
-   };
-
-   pfm_touch_event()
-   {
-      type = touch_invalid;
-      time = 0;
-      touch_count = 0;
-      mouse_wheel_delta = 0;
-   }
-
-   bool is_multitouch()
-   {
-      return touch_count > 1;
-   }
-
-   const touch_point* find_point(uint32 touch_id) const
-   {
-      for (uint32 i = 0; i < touch_count; i++)
-      {
-         if (this->points[i].identifier == touch_id)
-         {
-            return &(this->points[i]);
-         }
-      }
-
-      return nullptr;
-   }
-
-   bool same_touches(const pfm_touch_event& other) const
-   {
-      if (other.touch_count == this->touch_count) {
-         for (uint32 i = 0; i < this->touch_count; i++) {
-            if (nullptr == this->find_point(other.points[i].identifier)) {
-               return false;
-            }
-         }
-
-         return true;
-      }
-
-      return false;
-   }
-
-   glm::vec2 touch_pos(uint32 touch_id) const;
-
-   e_touch_type type = touch_invalid;
-   uint32 time;
-   uint32 touch_count = 0;
-   touch_point points[MAX_TOUCH_POINTS];
-   int32 mouse_wheel_delta;
-};
 
 
 class pfm_path

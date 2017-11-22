@@ -127,7 +127,7 @@ void unit_test_kube_sphere::load()
 	r_vpc_ks_mesh[MP_SHADER_NAME] = "dbg_l_d_o";
 	r_vpc_ks_mesh["u_s2d_tex"] = p->rt_tex->get_name();
 	r_vpc_ks_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
-	//r_vpc_ks_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+	//r_vpc_ks_mesh[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
 
 	p->ico_sphere = shared_ptr<icosphere>(new icosphere());
 	icosphere& r_ico_sphere = *p->ico_sphere;
@@ -137,7 +137,7 @@ void unit_test_kube_sphere::load()
 	r_ico_sphere["u_s2d_tex"] = p->rt_tex->get_name();
 	r_ico_sphere["u_v4_color"] = glm::vec4(1, 1, 1.f, 1.f);
 	r_ico_sphere["u_v3_light_dir"] = p->u_v3_light_dir;
-	//r_ico_sphere[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+	//r_ico_sphere[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
 	//r_ico_sphere[MP_CULL_BACK] = false;
 	//r_ico_sphere[MP_CULL_FRONT] = true;
 

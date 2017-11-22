@@ -6,14 +6,139 @@
 #include <atomic>
 #include <string>
 #include <vector>
+#include <glm/vec2.hpp>
+#include <glm/glm.hpp>
 
 class keyctrl;
 class touchctrl;
 
 
+class pointer_evt
+{
+public:
+   static const int MAX_TOUCH_POINTS = 8;
+
+   enum e_touch_type
+   {
+      touch_invalid,
+      touch_began,
+      touch_moved,
+      touch_ended,
+      touch_cancelled,
+      mouse_wheel,
+   };
+
+   struct touch_point
+   {
+      glm::vec2 get_position() const
+      {
+         return glm::vec2(x, y);
+      }
+
+      uint32 identifier = 0;
+      float x = 0.f;
+      float y = 0.f;
+      bool is_changed = false;
+   };
+
+   pointer_evt()
+   {
+      type = touch_invalid;
+      time = 0;
+      touch_count = 0;
+      mouse_wheel_delta = 0;
+   }
+
+   bool is_multitouch()
+   {
+      return touch_count > 1;
+   }
+
+   // pointer_down_count
+   // params:
+   // return:
+   //    return number of fingers currently pressed when this event was generated, and plus one if mouse button is down
+   int pointer_down_count()
+   {
+      int count = touch_count;
+
+      //if (mMousePressed)
+      //{
+      //   count++;
+      //}
+
+      return count;
+   }
+
+   // get_pointer_press_by_index
+   // params:
+   //    PointerIndex... pointer index
+   // return:
+   //    returns a touch point at PointerIndex if it exists, else if PointerIndex is 0 return mouse press if it exists, else return null
+   const touch_point* get_pointer_press_by_index(uint32 PointerIndex)
+   {
+      if (touch_count > PointerIndex)
+      {
+         return &points[PointerIndex];
+      }
+      //else if (PointerIndex == 0 && mMousePressed)
+      //{
+      //   return mMousePressed.get();
+      //}
+
+      return nullptr;
+   }
+
+   const touch_point* find_point(uint32 touch_id) const
+   {
+      for (uint32 i = 0; i < touch_count; i++)
+      {
+         if (this->points[i].identifier == touch_id)
+         {
+            return &(this->points[i]);
+         }
+      }
+
+      return nullptr;
+   }
+
+   bool same_touches(const pointer_evt& other) const
+   {
+      if (other.touch_count == this->touch_count)
+      {
+         for (uint32 i = 0; i < this->touch_count; i++)
+         {
+            if (nullptr == this->find_point(other.points[i].identifier))
+            {
+               return false;
+            }
+         }
+
+         return true;
+      }
+
+      return false;
+   }
+
+   glm::vec2 touch_pos(uint32 touch_id) const
+   {
+      const touch_point* p = this->find_point(touch_id);
+      ia_assert(p);
+
+      return glm::vec2(p->x, p->y);
+   }
+
+   e_touch_type type = touch_invalid;
+   uint32 time;
+   uint32 touch_count = 0;
+   touch_point points[MAX_TOUCH_POINTS];
+   int32 mouse_wheel_delta;
+};
+
+
 struct pointer_sample
 {
-	std::shared_ptr<pfm_touch_event> te;
+	std::shared_ptr<pointer_evt> te;
 	point2d vel;
 	point2d acc;
 	uint32 delta_pressed_time;
@@ -102,19 +227,19 @@ public:
 	bool is_pointer_released();
 	const std::vector<pointer_sample>& get_pointer_samples();
 	void update();
-	void enqueue_pointer_event(std::shared_ptr<pfm_touch_event> ite);
+	void enqueue_pointer_event(std::shared_ptr<pointer_evt> ite);
 
-	std::atomic<std::vector<std::shared_ptr<pfm_touch_event> >*> queue_ptr;
+	std::atomic<std::vector<std::shared_ptr<pointer_evt> >*> queue_ptr;
 
 private:
 	touchctrl();
 
 	virtual shared_ptr<ia_sender> sender_inst();
 
-	void on_pointer_action_pressed(std::shared_ptr<pfm_touch_event> pa);
-	void on_pointer_action_dragged(std::shared_ptr<pfm_touch_event> pa);
-	void on_pointer_action_released(std::shared_ptr<pfm_touch_event> pa);
-	void on_pointer_action_mouse_wheel(std::shared_ptr<pfm_touch_event> pa);
+	void on_pointer_action_pressed(std::shared_ptr<pointer_evt> pa);
+	void on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa);
+	void on_pointer_action_released(std::shared_ptr<pointer_evt> pa);
+	void on_pointer_action_mouse_wheel(std::shared_ptr<pointer_evt> pa);
 
 	void on_pointer_pressed_event(pointer_sample& ps);
 	void on_pointer_dragged_event(pointer_sample& ps);
@@ -122,7 +247,7 @@ private:
 	void new_touch_symbol_event(shared_ptr<touch_sym_evt> ts);
 
 	int queue_idx;
-	std::vector<std::vector<std::shared_ptr<pfm_touch_event> > > queue_tab;
+	std::vector<std::vector<std::shared_ptr<pointer_evt> > > queue_tab;
 
 	int TAP_PRESS_RELEASE_DELAY;
 	int TAP_NEXT_PRESS_DELAY;

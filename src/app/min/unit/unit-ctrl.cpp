@@ -204,7 +204,7 @@ void unit_ctrl::resize_app(int iwidth, int iheight)
    }
 }
 
-void unit_ctrl::pointer_action(std::shared_ptr<pfm_touch_event> ite)
+void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
 {
 	shared_ptr<unit> u = std::dynamic_pointer_cast<unit>(get_current_unit());
 

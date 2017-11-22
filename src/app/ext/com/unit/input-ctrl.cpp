@@ -129,7 +129,7 @@ const vector<pointer_sample>& touchctrl::get_pointer_samples()
 void touchctrl::update()
 {
 	// set the current input queue as the queue for processing the input
-	std::vector<std::shared_ptr<pfm_touch_event> >* input_queue_ptr = &queue_tab[queue_idx];
+	std::vector<std::shared_ptr<pointer_evt> >* input_queue_ptr = &queue_tab[queue_idx];
 
 	// switch queues, so the currently empty queue is used for taking input events
 	queue_idx = (queue_idx + 1) % 2;
@@ -142,19 +142,19 @@ void touchctrl::update()
 		{
 			switch (pa->type)
 			{
-			case pfm_touch_event::touch_began:
+			case pointer_evt::touch_began:
 				on_pointer_action_pressed(pa);
 				break;
 
-			case pfm_touch_event::touch_ended:
+			case pointer_evt::touch_ended:
 				on_pointer_action_released(pa);
 				break;
 
-			case pfm_touch_event::touch_moved:
+			case pointer_evt::touch_moved:
 				on_pointer_action_dragged(pa);
 				break;
 
-			case pfm_touch_event::mouse_wheel:
+			case pointer_evt::mouse_wheel:
 				on_pointer_action_mouse_wheel(pa);
 				break;
 			}
@@ -210,7 +210,7 @@ void touchctrl::update()
 	}
 }
 
-void touchctrl::enqueue_pointer_event(std::shared_ptr<pfm_touch_event> ite)
+void touchctrl::enqueue_pointer_event(std::shared_ptr<pointer_evt> ite)
 {
 	(*queue_ptr).push_back(ite);
 }
@@ -220,7 +220,7 @@ shared_ptr<ia_sender> touchctrl::sender_inst()
 	return get_instance();
 }
 
-void touchctrl::on_pointer_action_pressed(std::shared_ptr<pfm_touch_event> pa)
+void touchctrl::on_pointer_action_pressed(std::shared_ptr<pointer_evt> pa)
 {
 	pointer_press_time = pa->time;
 
@@ -240,7 +240,7 @@ void touchctrl::on_pointer_action_pressed(std::shared_ptr<pfm_touch_event> pa)
 	on_pointer_pressed_event(ps);
 }
 
-void touchctrl::on_pointer_action_dragged(std::shared_ptr<pfm_touch_event> pa)
+void touchctrl::on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa)
 {
 	if (is_pointer_down && pointer_samples.size() > 0)
 	{
@@ -271,7 +271,7 @@ void touchctrl::on_pointer_action_dragged(std::shared_ptr<pfm_touch_event> pa)
 	}
 }
 
-void touchctrl::on_pointer_action_released(std::shared_ptr<pfm_touch_event> pa)
+void touchctrl::on_pointer_action_released(std::shared_ptr<pointer_evt> pa)
 {
 	pointer_release_time = pa->time;
 	last_pointer_pos.set(pa->points[0].x, pa->points[0].y);
@@ -303,7 +303,7 @@ void touchctrl::on_pointer_action_released(std::shared_ptr<pfm_touch_event> pa)
 	}
 }
 
-void touchctrl::on_pointer_action_mouse_wheel(std::shared_ptr<pfm_touch_event> pa)
+void touchctrl::on_pointer_action_mouse_wheel(std::shared_ptr<pointer_evt> pa)
 {
 	shared_ptr<mouse_wheel_evt> ts(new mouse_wheel_evt());
 

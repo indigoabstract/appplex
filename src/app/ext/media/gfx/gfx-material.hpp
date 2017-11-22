@@ -37,9 +37,9 @@ const std::string MP_TRANSPARENT_SORTING = "transparent-sorting";
 const std::string MP_WIREFRAME_MODE = "wireframe-mode";
 enum wireframe_mode
 {
-   WF_MODE_NONE,
-   WF_MODE_OVERLAY,
-   WF_MODE_WIREFRAME_ONLY,
+   MV_WF_NONE,
+   MV_WF_OVERLAY,
+   MV_WF_WIREFRAME_ONLY,
 };
 
 const std::string MV_NONE = "none";

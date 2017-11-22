@@ -924,7 +924,7 @@ namespace ns_unit_test_normal_mapping
 			}
 		}
 
-		bool process_input(pfm_touch_event::touch_point& ipoint)
+		bool process_input(pointer_evt::touch_point& ipoint)
 		{
 			int width = get_unit()->get_width();
 			int height = get_unit()->get_height();
@@ -1421,13 +1421,13 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 						gfx_vxo& mesh = *mesh_list[k];
                   wireframe_mode wf_mode = static_cast<wireframe_mode>(mesh[MP_WIREFRAME_MODE].get_int_value());
 
-                  if (wf_mode == WF_MODE_NONE)
+                  if (wf_mode == MV_WF_NONE)
                   {
-                     wf_mode = WF_MODE_OVERLAY;
+                     wf_mode = MV_WF_OVERLAY;
                   }
                   else
                   {
-                     wf_mode = WF_MODE_NONE;
+                     wf_mode = MV_WF_NONE;
                   }
 
 						mesh[MP_WIREFRAME_MODE] = wf_mode;

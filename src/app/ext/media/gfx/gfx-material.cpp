@@ -363,7 +363,7 @@ int gfx_material_entry::get_int_value()
 		}
       else if (name == MP_WIREFRAME_MODE)
       {
-         return WF_MODE_NONE;
+         return MV_WF_NONE;
       }
 
 		throw ia_exception("value is null");

@@ -793,7 +793,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       offset_aux += at->get_aligned_size();
    }
 
-   if (wf_mode != WF_MODE_WIREFRAME_ONLY)
+   if (wf_mode != MV_WF_WIREFRAME_ONLY)
    {
       gfx_util::check_gfx_error();
       glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, 0);
@@ -802,7 +802,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    switch (wf_mode)
    {
-   case WF_MODE_OVERLAY:
+   case MV_WF_OVERLAY:
    {
       shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
 
@@ -822,7 +822,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       break;
    }
 
-   case WF_MODE_WIREFRAME_ONLY:
+   case MV_WF_WIREFRAME_ONLY:
    {
       if (is_submesh)
       {

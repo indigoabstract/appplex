@@ -92,6 +92,11 @@ void gfx_plane::set_dimensions(float idx, float idy)
 }
 
 
+gfx_billboard::gfx_billboard()
+{
+}
+
+
 gfx_grid::gfx_grid() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"))
 {
 }

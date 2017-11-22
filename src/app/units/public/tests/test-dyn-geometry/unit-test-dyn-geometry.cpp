@@ -345,11 +345,11 @@ public:
 					switch (btn->state_id)
 					{
 					case 0:
-						r_cm[MP_WIREFRAME_MODE] = WF_MODE_NONE;
+						r_cm[MP_WIREFRAME_MODE] = MV_WF_NONE;
 						break;
 
 					case 1:
-						r_cm[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+						r_cm[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
 						break;
 					}
 					break;
@@ -426,7 +426,7 @@ public:
 	std::vector<shared_ptr<ux_select_button> > button_list;
 	bool recalc_points;
 	shared_ptr<curve_mesh> cm;
-	std::vector<pfm_touch_event::touch_point> point_list;
+	std::vector<pointer_evt::touch_point> point_list;
 	shared_ptr<gfx_camera> persp_cam;
 	shared_ptr<ux_camera> ortho_cam;
 	shared_ptr<std::vector<glm::vec2> > poly;
@@ -490,7 +490,7 @@ void unit_test_dyn_geometry::load()
 	r_cm[MP_CULL_BACK] = false;
 	r_cm[MP_CULL_FRONT] = false;
 	r_cm["u_v4_color"] = glm::vec4(0.99, 1, 0.15, 1.f);
-	r_cm[MP_WIREFRAME_MODE] = WF_MODE_NONE;
+	r_cm[MP_WIREFRAME_MODE] = MV_WF_NONE;
 
 	p->texture_display = gfx::shader::new_program("basic_tex", "basic_tex.vsh", "basic_tex.fsh");
 	p->q2d = shared_ptr<gfx_plane>(new gfx_plane());

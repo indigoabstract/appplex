@@ -126,7 +126,7 @@ void unit_test_reflections::load()
 	//rs_mesh["u_s2d_clouds"] = "clouds_26Aug2011_8192.png";
 	rs_mesh["u_scm_skybox"] = "ocean";
 	rs_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
-	//rs_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+	//rs_mesh[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
 
 	gfx_scene_inst->attach(p->persp_cam);
 	//gfx_scene_inst->attach(p->s_mesh);

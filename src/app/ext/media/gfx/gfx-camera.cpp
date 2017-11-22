@@ -607,17 +607,21 @@ public:
 	void flush_commands(shared_ptr<gfx_camera> icam)
 	{
 		shared_ptr<rw_sequence> draw_ops = icam->draw_ops;
+      int size = draw_ops->get_size();
 
 		draw_ops->rewind();
 		icam->draw_ctx->cam = icam;
 
-		while (draw_ops->get_read_position() < draw_ops->get_size())
+      int read_pos = draw_ops->get_read_position();
+
+		while (read_pos < size)
 		{
 			draw_op* d_o = 0;
 
 			draw_ops->r.read_pointer(d_o);
 			d_o->read_data(draw_ops);
 			d_o->draw(icam->draw_ctx);
+         read_pos = draw_ops->get_read_position();
 		}
 
 		draw_ops->reset();

@@ -6,6 +6,7 @@
 
 class unit;
 class unit_list;
+class pointer_evt;
 
 
 class unit_ctrl
@@ -25,7 +26,7 @@ public:
 	void pause();
 	void resume();
     void resize_app(int iwidth, int iheight);
-	void pointer_action(std::shared_ptr<pfm_touch_event> ite);
+	void pointer_action(std::shared_ptr<pointer_evt> ite);
 	void key_action(key_actions iaction_type, int ikey);
     std::shared_ptr<unit> get_current_unit();
 	void set_next_unit(std::shared_ptr<unit> iunit);

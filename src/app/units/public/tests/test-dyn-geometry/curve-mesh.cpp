@@ -57,7 +57,7 @@ void curve_mesh::set_geometry_update_type(geometry_update_types iupdate_type)
 	}
 }
 
-void curve_mesh::calc_points(std::vector<pfm_touch_event::touch_point>& ipoint_list)
+void curve_mesh::calc_points(std::vector<pointer_evt::touch_point>& ipoint_list)
 {
 	if(!ipoint_list.empty() && &point_list != &ipoint_list)
 	{
@@ -195,18 +195,18 @@ void curve_mesh::calc_geometry()
 	drawing_mode_changed = true;
 }
 
-void curve_mesh::sample_touch_points(int istart_idx, int iend_idx, std::vector<pfm_touch_event::touch_point>& ipoint_list)
+void curve_mesh::sample_touch_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list)
 {
 	if(istart_idx < iend_idx && !ipoint_list.empty())
 	{
-		pfm_touch_event::touch_point& p = ipoint_list[istart_idx];
+		pointer_evt::touch_point& p = ipoint_list[istart_idx];
 
 		sampled_point_list.push_back(glm::vec3(p.x, p.y, 0));
 	}
 
 	for (int k = istart_idx + 1, idx = 1; k <= iend_idx; k++)
 	{
-		pfm_touch_event::touch_point& p = point_list[k];
+		pointer_evt::touch_point& p = point_list[k];
 
 		glm::vec3& p0 = sampled_point_list[idx - 1];
 		glm::vec3 p1(p.x, p.y, 0);
@@ -220,7 +220,7 @@ void curve_mesh::sample_touch_points(int istart_idx, int iend_idx, std::vector<p
 
 	if(istart_idx < iend_idx)
 	{
-		pfm_touch_event::touch_point& last_point = ipoint_list.back();
+		pointer_evt::touch_point& last_point = ipoint_list.back();
 		glm::vec3& last_point_s = sampled_point_list.back();
 
 		if(last_point.x != last_point_s.x || last_point.y != last_point_s.y)
@@ -230,18 +230,18 @@ void curve_mesh::sample_touch_points(int istart_idx, int iend_idx, std::vector<p
 	}
 }
 
-void curve_mesh::sample_ncs_points(int istart_idx, int iend_idx, std::vector<pfm_touch_event::touch_point>& ipoint_list)
+void curve_mesh::sample_ncs_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list)
 {
 	if(istart_idx < iend_idx && !ipoint_list.empty())
 	{
-		pfm_touch_event::touch_point& p = ipoint_list[istart_idx];
+		pointer_evt::touch_point& p = ipoint_list[istart_idx];
 
 		sampled_point_list.push_back(glm::vec3(p.x, p.y, 0));
 	}
 
 	for (int k = istart_idx + 1, idx = 0; k <= iend_idx; k++)
 	{
-		pfm_touch_event::touch_point& p = point_list[k];
+		pointer_evt::touch_point& p = point_list[k];
 
 		glm::vec3& p0 = sampled_point_list[idx];
 		glm::vec3 p1(p.x, p.y, 0);
@@ -255,7 +255,7 @@ void curve_mesh::sample_ncs_points(int istart_idx, int iend_idx, std::vector<pfm
 
 	if(istart_idx < iend_idx)
 	{
-		pfm_touch_event::touch_point& last_point = ipoint_list.back();
+		pointer_evt::touch_point& last_point = ipoint_list.back();
 		glm::vec3& last_point_s = sampled_point_list.back();
 
 		if(last_point.x != last_point_s.x || last_point.y != last_point_s.y)
@@ -340,7 +340,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 
 	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
 
-	if(wf_mode == WF_MODE_OVERLAY)
+	if(wf_mode == MV_WF_OVERLAY)
 	{
 		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
 
@@ -441,7 +441,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 
 	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, 0);
 
-	if(wf_mode == WF_MODE_OVERLAY)
+	if(wf_mode == MV_WF_OVERLAY)
 	{
 		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
 

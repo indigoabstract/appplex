@@ -43,11 +43,11 @@ namespace ns_test_trail
    public:
       pinch_detector()
       {
-         start_event = std::make_shared<pfm_touch_event>();
+         start_event = std::make_shared<pointer_evt>();
       }
 
       /// feed new touch event and return detected state
-      gesture_state::e_code detect(const std::shared_ptr<pfm_touch_event> newEvent);
+      gesture_state::e_code detect(const std::shared_ptr<pointer_evt> newEvent);
       /// reset the detector
       void reset();
 
@@ -60,21 +60,21 @@ namespace ns_test_trail
       /// get start position of second touch
       glm::vec2 start_position1;
 
-      std::shared_ptr<pfm_touch_event> start_event;
+      std::shared_ptr<pointer_evt> start_event;
    };
 
    void pinch_detector::reset()
    {
-      if (start_event->type != pfm_touch_event::touch_invalid)
+      if (start_event->type != pointer_evt::touch_invalid)
       {
-         start_event = std::make_shared<pfm_touch_event>();
+         start_event = std::make_shared<pointer_evt>();
       }
    }
 
-   gesture_state::e_code pinch_detector::detect(const std::shared_ptr<pfm_touch_event> new_event)
+   gesture_state::e_code pinch_detector::detect(const std::shared_ptr<pointer_evt> new_event)
    {
       // check for cancelled event
-      if (new_event->type == pfm_touch_event::touch_cancelled)
+      if (new_event->type == pointer_evt::touch_cancelled)
       {
          reset();
 
@@ -82,7 +82,7 @@ namespace ns_test_trail
       }
 
       // need 2 touches
-      if ((new_event->type != pfm_touch_event::touch_ended) && (new_event->touch_count != 2))
+      if ((new_event->type != pointer_evt::touch_ended) && (new_event->touch_count != 2))
       {
          reset();
 
@@ -90,7 +90,7 @@ namespace ns_test_trail
       }
 
       // check if touch identifiers are unchanged (number of touches and same touch ids)
-      if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*new_event))
+      if ((start_event->type != pointer_evt::touch_invalid) && !start_event->same_touches(*new_event))
       {
          reset();
 
@@ -98,7 +98,7 @@ namespace ns_test_trail
       }
 
       // check for gesture start, move and end
-      if (new_event->type == pfm_touch_event::touch_began)
+      if (new_event->type == pointer_evt::touch_began)
       {
          if (new_event->touch_count < 2)
          {
@@ -113,10 +113,10 @@ namespace ns_test_trail
 
          return gesture_state::start;
       }
-      else if (new_event->type == pfm_touch_event::touch_moved)
+      else if (new_event->type == pointer_evt::touch_moved)
       {
          // cancel if start event is not valid
-         if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
+         if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 2)
          {
             return gesture_state::none;
          }
@@ -126,9 +126,9 @@ namespace ns_test_trail
 
          return gesture_state::move;
       }
-      else if (new_event->type == pfm_touch_event::touch_ended)
+      else if (new_event->type == pointer_evt::touch_ended)
       {
-         if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
+         if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 2)
          {
             return gesture_state::none;
          }
@@ -149,14 +149,14 @@ namespace ns_test_trail
    public:
       axis_roll_detector()
       {
-         start_event = std::make_shared<pfm_touch_event>();
+         start_event = std::make_shared<pointer_evt>();
       }
 
       /// feed new touch event and return detected state
-      gesture_state::e_code detect(const std::shared_ptr<pfm_touch_event> new_event)
+      gesture_state::e_code detect(const std::shared_ptr<pointer_evt> new_event)
       {
          // check for cancelled event
-         if (new_event->type == pfm_touch_event::touch_cancelled)
+         if (new_event->type == pointer_evt::touch_cancelled)
          {
             reset();
 
@@ -164,7 +164,7 @@ namespace ns_test_trail
          }
 
          // need 2 touches
-         if ((new_event->type != pfm_touch_event::touch_ended) && (new_event->touch_count != 2))
+         if ((new_event->type != pointer_evt::touch_ended) && (new_event->touch_count != 2))
          {
             reset();
 
@@ -172,7 +172,7 @@ namespace ns_test_trail
          }
 
          // check if touch identifiers are unchanged (number of touches and same touch ids)
-         if ((start_event->type != pfm_touch_event::touch_invalid) && !start_event->same_touches(*new_event))
+         if ((start_event->type != pointer_evt::touch_invalid) && !start_event->same_touches(*new_event))
          {
             reset();
 
@@ -180,7 +180,7 @@ namespace ns_test_trail
          }
 
          // check for gesture start, move and end
-         if (new_event->type == pfm_touch_event::touch_began)
+         if (new_event->type == pointer_evt::touch_began)
          {
             if (new_event->touch_count < 2)
             {
@@ -195,10 +195,10 @@ namespace ns_test_trail
 
             return gesture_state::start;
          }
-         else if (new_event->type == pfm_touch_event::touch_moved)
+         else if (new_event->type == pointer_evt::touch_moved)
          {
             // cancel if start event is not valid
-            if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
+            if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 2)
             {
                return gesture_state::none;
             }
@@ -215,9 +215,9 @@ namespace ns_test_trail
 
             return gesture_state::move;
          }
-         else if (new_event->type == pfm_touch_event::touch_ended)
+         else if (new_event->type == pointer_evt::touch_ended)
          {
-            if (start_event->type == pfm_touch_event::touch_invalid || new_event->touch_count < 2)
+            if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 2)
             {
                return gesture_state::none;
             }
@@ -235,9 +235,9 @@ namespace ns_test_trail
       /// reset the detector
       void reset()
       {
-         if (start_event->type != pfm_touch_event::touch_invalid)
+         if (start_event->type != pointer_evt::touch_invalid)
          {
-            start_event = std::make_shared<pfm_touch_event>();
+            start_event = std::make_shared<pointer_evt>();
          }
       }
 
@@ -250,7 +250,7 @@ namespace ns_test_trail
       /// get start position of second touch
       glm::vec2 start_position1;
 
-      std::shared_ptr<pfm_touch_event> start_event;
+      std::shared_ptr<pointer_evt> start_event;
    };
 }
 using namespace ns_test_trail;
@@ -512,7 +512,7 @@ void unit_test_trail::load()
       r_trail_mesh[MP_CULL_FRONT] = false;
       r_trail_mesh[MP_BLENDING] = MV_ALPHA;
       r_trail_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
-      //r_trail_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+      //r_trail_mesh[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
    }
 
    {
@@ -523,7 +523,7 @@ void unit_test_trail::load()
       r_tube_mesh[MP_CULL_FRONT] = false;
       r_tube_mesh[MP_BLENDING] = MV_ALPHA;
       r_tube_mesh["u_v4_color"] = glm::vec4(0, 1, 0, 1);
-      //r_tube_mesh[MP_WIREFRAME_MODE] = WF_MODE_OVERLAY;
+      //r_tube_mesh[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
    }
 
    gfx_scene_inst->attach(p->persp_cam);

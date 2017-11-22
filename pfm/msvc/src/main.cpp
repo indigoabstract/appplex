@@ -8,6 +8,7 @@
 #include "pfmgl.h"
 #include "unit.hpp"
 #include "unit-ctrl.hpp"
+#include "com/unit/input-ctrl.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
@@ -1085,9 +1086,9 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 	case WM_LBUTTONDOWN:
 	{
-		auto pfm_te = std::make_shared<pfm_touch_event>();
+		auto pfm_te = std::make_shared<pointer_evt>();
 		POINT pointer_coord = get_pointer_coord(hwnd);
-		pfm_touch_event::touch_point& te = pfm_te->points[0];
+		pointer_evt::touch_point& te = pfm_te->points[0];
 
 		te.identifier = 0;
 		te.is_changed = false;
@@ -1095,7 +1096,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		te.y = (float)pointer_coord.y;
 		pfm_te->time = pfm::time::get_time_millis();
 		pfm_te->touch_count = 1;
-		pfm_te->type = pfm_touch_event::touch_began;
+		pfm_te->type = pointer_evt::touch_began;
 
 		unit_ctrl::inst()->pointer_action(pfm_te);
 
@@ -1104,9 +1105,9 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 	case WM_LBUTTONUP:
 	{
-		auto pfm_te = std::make_shared<pfm_touch_event>();
+		auto pfm_te = std::make_shared<pointer_evt>();
 		POINT pointer_coord = get_pointer_coord(hwnd);
-		pfm_touch_event::touch_point& te = pfm_te->points[0];
+		pointer_evt::touch_point& te = pfm_te->points[0];
 
 		te.identifier = 0;
 		te.is_changed = false;
@@ -1114,7 +1115,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		te.y = (float)pointer_coord.y;
 		pfm_te->time = pfm::time::get_time_millis();
 		pfm_te->touch_count = 1;
-		pfm_te->type = pfm_touch_event::touch_ended;
+		pfm_te->type = pointer_evt::touch_ended;
 
 		unit_ctrl::inst()->pointer_action(pfm_te);
 
@@ -1123,9 +1124,9 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 	case WM_MOUSEMOVE:
 	{
-		auto pfm_te = std::make_shared<pfm_touch_event>();
+		auto pfm_te = std::make_shared<pointer_evt>();
 		POINT pointer_coord = get_pointer_coord(hwnd);
-		pfm_touch_event::touch_point& te = pfm_te->points[0];
+		pointer_evt::touch_point& te = pfm_te->points[0];
 
 		te.identifier = 0;
 		te.is_changed = false;
@@ -1133,7 +1134,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		te.y = (float)pointer_coord.y;
 		pfm_te->time = pfm::time::get_time_millis();
 		pfm_te->touch_count = 1;
-		pfm_te->type = pfm_touch_event::touch_moved;
+		pfm_te->type = pointer_evt::touch_moved;
 
 		unit_ctrl::inst()->pointer_action(pfm_te);
 
@@ -1155,8 +1156,8 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 		if (pointer_coord.x >= 0 && pointer_coord.y >= 0 && pointer_coord.x < width && pointer_coord.y < height)
 		{
-			auto pfm_te = std::make_shared<pfm_touch_event>();
-			pfm_touch_event::touch_point& te = pfm_te->points[0];
+			auto pfm_te = std::make_shared<pointer_evt>();
+			pointer_evt::touch_point& te = pfm_te->points[0];
 
 			te.identifier = 0;
 			te.is_changed = false;
@@ -1164,7 +1165,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			te.y = (float)pointer_coord.y;
 			pfm_te->time = pfm::time::get_time_millis();
 			pfm_te->touch_count = 1;
-			pfm_te->type = pfm_touch_event::mouse_wheel;
+			pfm_te->type = pointer_evt::mouse_wheel;
 			pfm_te->mouse_wheel_delta = wheel_delta;
 
 			unit_ctrl::inst()->pointer_action(pfm_te);

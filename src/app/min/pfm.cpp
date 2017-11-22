@@ -5,7 +5,6 @@
 #include "unit.hpp"
 #include "unit-ctrl.hpp"
 #include "min.hpp"
-#include <glm/glm.hpp>
 
 #if defined MOD_BOOST
 #include <boost/date_time.hpp>
@@ -118,15 +117,6 @@ int arg_count = 0;
 unicodestring app_path;
 vector<unicodestring> arg_vector;
 //boost::posix_time::ptime time_start;
-
-
-glm::vec2 pfm_touch_event::touch_pos(uint32 touch_id) const
-{
-	const touch_point* p = this->find_point(touch_id);
-	ia_assert(p);
-
-	return glm::vec2(p->x, p->y);
-}
 
 
 namespace pfm_impl

@@ -85,7 +85,7 @@ public :
 		seek_proc  = _SeekProc;
 	}
 
-	void Reset()
+	void reset()
 	{
 		_cp = _start;
 	}
