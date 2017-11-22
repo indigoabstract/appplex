@@ -1,11 +1,15 @@
-# appplex
+# app-plex
 
-appplex (or app plex) is a C++ minimal/didactic engine for rapid prototyping of applications/games or some other quick test code.
+app-plex is a tool for rapid prototyping any type of applications in C++.
+It wants to help you keep all the apps/demos you accumulate in one place and immediately deployable on any supported platform. No more lost or misplaced works!
 
-It's supposed to deal with the problem of accumulating tens or hundreds of tests/prototypes/small apps used for trying out ideas during a programmer's life by having them all in one place :)
 
-Currently, the engine works on Windows and Android (graphics (Opengl ES 2/3), sounds, load files and png images).
+It includes a minimal 3D engine, OpenGL graphics, playing sounds and loading resources/images.
+Atm, it works on Windows and Android.
 
-# Contact
+# Getting Started
 
-appplex is a personal project, but in case anyone would like to use it and has some questions related to that, you cand drop me a line at indigo abstract (drop the space between the two prev words) at gmail dot com.
+# Future work:
+
+- Webgl support, to run apps in the browser
+- Public apps, so you can share them (with a link), or private apps, to keep them just for yourself.
