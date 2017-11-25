@@ -1,11 +1,10 @@
-@@[ square bracket markup document ],
-@@[ or square bracket meta-data ],
+@@[ kappaxx extensible meta-data ],
 
 default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit-list[ break-reminder ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit-list[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
@@ -13,12 +12,12 @@ units
 	@@[ public units ],
 
 	cmd[ uses[ boost, kxmd, kappaxx_bug ], platf[ windows ], ],
+	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
 	template[ enabled[ false ], ],
 	test-ffmpeg[ uses[ gfx, ffmpeg ], enabled[ true ], ],
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
 	test-gl[ platf[ all ], ],
-	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	test-shadow-map[ ],
 	test-kube-sphere[ ],
