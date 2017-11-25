@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "appplex-conf.hpp"
 
-#ifdef MOD_SBMD
+#ifdef MOD_KXMD
 
 #include "kx-elem.hpp"
 #include "min.hpp"

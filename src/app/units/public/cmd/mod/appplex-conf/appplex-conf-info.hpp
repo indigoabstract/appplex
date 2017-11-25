@@ -89,7 +89,7 @@ public:
    virtual void update_project() override;
 
 private:
-   void update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> isbmd);
+   void update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> ikxmd);
 };
 
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "appplex-conf.hpp"
 
-#ifdef MOD_SBMD
+#ifdef MOD_KXMD
 
 #include "kx-krte.hpp"
 #include "kx-elem.hpp"
@@ -32,11 +32,11 @@ void kx_krte::run()
 	name->name = "main-program";
 	kxb->name = name;
 
-	for(auto ke : kxb->list)
-	{
-		string s = ke->print();
-		trx("{}", s);
-	}
+	//for(auto ke : kxb->list)
+	//{
+	//	string s = ke->print();
+	//	trx("{}", s);
+	//}
 	
 	//trx("%1%") % kxb->print();
 	

@@ -10,14 +10,14 @@
 class unit_template : public unit
 {
 public:
-	static shared_ptr<unit_template> new_instance();
+   static shared_ptr<unit_template> new_instance();
 
-    void init() override;
-	void init_ux() override;
-    void load() override;
+   void init() override;
+   void init_ux() override;
+   void load() override;
 
 private:
-	unit_template();
+   unit_template();
 };
 
 #endif

@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "appplex-conf.hpp"
 
-#ifdef MOD_SBMD
+#ifdef MOD_KXMD
 
-#include "sbmd.hpp"
-#include <sbmd/kx-krte.hpp>
-#include <sbmd/kx-elem.hpp>
+#include "kxmd.hpp"
+#include <kxmd/kx-krte.hpp>
+#include <kxmd/kx-elem.hpp>
 
 
-std::vector<shared_ptr<kx_process> > sbmd_ops::get_process_list(const shared_ptr<kx_process> ikp)
+std::vector<shared_ptr<kx_process> > kxmd_ops::get_process_list(const shared_ptr<kx_process> ikp)
 {
 	std::vector<shared_ptr<kx_process> > list;
 
@@ -29,7 +29,7 @@ std::vector<shared_ptr<kx_process> > sbmd_ops::get_process_list(const shared_ptr
 }
 
 
-std::vector<std::string> sbmd_ops::get_process_name_list(const std::vector<shared_ptr<kx_process> >& ilist)
+std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<shared_ptr<kx_process> >& ilist)
 {
 	std::vector<std::string> list;
 
@@ -42,7 +42,7 @@ std::vector<std::string> sbmd_ops::get_process_name_list(const std::vector<share
 }
 
 
-std::vector<std::string> sbmd_ops::get_process_name_list(const shared_ptr<kx_process> ikp)
+std::vector<std::string> kxmd_ops::get_process_name_list(const shared_ptr<kx_process> ikp)
 {
 	std::vector<shared_ptr<kx_process> > l1 = get_process_list(ikp);
 	std::vector<std::string> l2;
@@ -56,7 +56,7 @@ std::vector<std::string> sbmd_ops::get_process_name_list(const shared_ptr<kx_pro
 }
 
 
-bool sbmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
+bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 {
 	if (ilist.empty())
 	{
@@ -77,7 +77,7 @@ bool sbmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 
 
 // ipath is like xxx.yyy.zzz
-ia_any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroot, ia_any default_val)
+ia_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, ia_any default_val)
 {
 	std::vector<std::string> tokens;
    tokens = str_split(ipath, ".");
@@ -113,10 +113,10 @@ ia_any sbmd_ops::get_sbmd_value(std::string ipath, shared_ptr<kx_block> iroot, i
 	return result;
 }
 
-std::vector<std::string> sbmd_ops::get_sbmd_str_seq(std::string ipath, shared_ptr<kx_block> iroot, std::vector<std::string> default_val)
+std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_ptr<kx_block> iroot, std::vector<std::string> default_val)
 {
 	std::vector<std::string> seq;
-	ia_any val = get_sbmd_value(ipath, iroot);
+	ia_any val = get_kxmd_value(ipath, iroot);
 
 	if (!val.empty())
 	{
@@ -149,7 +149,7 @@ std::vector<std::string> sbmd_ops::get_sbmd_str_seq(std::string ipath, shared_pt
 
 
 // ipath is like xxx.yyy.zzz
-bool sbmd_ops::sbmd_path_exists(std::string ipath, shared_ptr<kx_block> iroot)
+bool kxmd_ops::kxmd_path_exists(std::string ipath, shared_ptr<kx_block> iroot)
 {
 	std::size_t found = ipath.find_last_of(".");
 
@@ -157,7 +157,7 @@ bool sbmd_ops::sbmd_path_exists(std::string ipath, shared_ptr<kx_block> iroot)
 	{
 		std::string stem = ipath.substr(0, found);
 		std::string leaf = ipath.substr(found + 1, ipath.length() - found - 1);
-		auto seq = get_sbmd_str_seq(stem, iroot);
+		auto seq = get_kxmd_str_seq(stem, iroot);
 		auto idx = std::find(seq.begin(), seq.end(), leaf);
 
 		if (idx != seq.end())

@@ -5,14 +5,14 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit-list[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit-list[ break-reminder ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
 [
 	@@[ public units ],
 
-	cmd[ uses[ boost, sbmd, kappaxx_bug ], platf[ windows ], ],
+	cmd[ uses[ boost, kxmd, kappaxx_bug ], platf[ windows ], ],
 	template[ enabled[ false ], ],
 	test-ffmpeg[ uses[ gfx, ffmpeg ], enabled[ true ], ],
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
@@ -35,6 +35,9 @@ units
 	texxed[ ],
 	exercise[ ],
 	gen-texture[ ],
+
+	@@[ tests ],
+
 	test[ ],
 	test-freeimage[ uses[ boost, gfx, freeimage ], enabled[ false ], ],
 	test-openvg[ uses[ boost, gfx, openvg ], enabled[ false ], ],
@@ -45,20 +48,24 @@ units
 	test-trail[ platf[ windows, android ], ],
 
 	@@[ private units ],
-	@@load-and-replace[ "src/app/units/private/units.sbmd", units ],
+	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
 
 	barnes-hut[ ],
-	kappaxx[ uses[ boost, gfx, sbmd ], platf[ windows ], ],
+	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ ],
 	orbital-deathmatch[ ],
 	shipwrecked[ ],
-	vorofract[ uses[ gfx, sbmd ] ],
+	vorofract[ uses[ gfx, kxmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
-	break-reminder[ uses[ gfx, notifications, snd ], platf[ windows, android ], ],
-	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
+	break-reminder[ uses[ gfx, notifications, kxmd, snd ], platf[ windows, android ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
+
+	@@[ tests ],
+
+	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
+	text-extractor[ uses[ gfx ], platf[ windows ], ],
 ],
 
 paths

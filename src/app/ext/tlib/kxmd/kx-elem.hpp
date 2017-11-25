@@ -2,7 +2,7 @@
 
 #include "appplex-conf.hpp"
 
-#ifdef MOD_SBMD
+#ifdef MOD_KXMD
 
 #include "pfm.hpp"
 #include <string>

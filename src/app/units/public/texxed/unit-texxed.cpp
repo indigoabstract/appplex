@@ -276,11 +276,11 @@ namespace unit_texxed_ns
 			int w = get_unit()->get_width();
 			int h = get_unit()->get_height();
 
-			tx_res = pfm::filesystem::load_res_as_string("kappaxx-src.sbmd");
+			tx_res = pfm::filesystem::load_res_as_string("kappaxx-src.kxmd");
 
 			if (!tx_res)
 			{
-				trx("error: kappaxx-src.sbmd not found.");
+				trx("error: kappaxx-src.kxmd not found.");
 
 				return;
 			}

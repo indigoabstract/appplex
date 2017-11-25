@@ -197,6 +197,19 @@ bool ends_with(const std::string& istr, const std::string& ifind)
 }
 
 
+std::string replace_string(std::string subject, const std::string& search, const std::string& replace)
+{
+   size_t pos = 0;
+
+   while ((pos = subject.find(search, pos)) != std::string::npos)
+   {
+      subject.replace(pos, search.length(), replace);
+      pos += replace.length();
+   }
+
+   return subject;
+}
+
 template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1> & original, unary_operation mapping_function)
 {
    std::vector<T2> mapped;
