@@ -1,0 +1,10 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf-info.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-appplex-conf.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/rec-dir-op-appplex-conf.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf-info.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-appplex-conf.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/rec-dir-op-appplex-conf.hpp"
+)

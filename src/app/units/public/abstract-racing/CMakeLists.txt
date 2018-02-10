@@ -1,0 +1,10 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/spline.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/track.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-abstract-racing.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/spline.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/track.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-abstract-racing.hpp"
+)

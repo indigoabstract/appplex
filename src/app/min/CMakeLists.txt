@@ -1,0 +1,19 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/data-sequence.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/min.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pfm.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/stdafx.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/pfm-def.h"
+	"${CMAKE_CURRENT_LIST_DIR}/pfmgl.h"
+	"${CMAKE_CURRENT_LIST_DIR}/stdafx.h"
+	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/cpp-property.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/data-sequence.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/min.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/pfm.hpp"
+)
+
+include("${CMAKE_CURRENT_LIST_DIR}/unit/CMakeLists.txt")  

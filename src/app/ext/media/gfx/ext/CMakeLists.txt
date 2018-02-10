@@ -1,0 +1,10 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-param-surface.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-surface.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-trail.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-param-surface.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-surface.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-trail.hpp"
+)

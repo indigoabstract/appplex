@@ -1,0 +1,12 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kxmd.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kxmd.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.hpp"
+)

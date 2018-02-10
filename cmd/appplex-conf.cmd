@@ -1,3 +1,3 @@
 appplex.exe --module=appplex-conf ^
- --source-path="c:\data\devel\appplex" ^
+ --source-path="c:\dev\own\appplex" ^
  --exclude-path="ext\lib"

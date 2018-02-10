@@ -1,0 +1,33 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/gfx.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-camera.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-color.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-material.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-obj.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-quad-2d.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-rt.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-scene.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-shader.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-state.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-tex.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-util.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-vxo.cpp"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/gfx.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-camera.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-color.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-material.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-obj.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-quad-2d.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-rt.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-scene.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-shader.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-state.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-state-const.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-tex.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-util.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-vxo.hpp"
+)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ext/CMakeLists.txt")
