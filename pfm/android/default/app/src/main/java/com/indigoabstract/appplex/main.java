@@ -34,6 +34,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+// class Loader
+// {
+    // private static boolean done = false;
+
+    // protected static synchronized void load()
+	// {
+        // if (done)
+            // return;
+
+        // System.loadLibrary("library_name");
+
+        // done = true;
+    // }
+// }
 public class main extends Activity
 {
 	static

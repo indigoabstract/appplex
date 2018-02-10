@@ -2,6 +2,7 @@
 
 #include "min.hpp"
 #include "unit-ctrl.hpp"
+#include "com/unit/input-ctrl.hpp"
 #include "java-callbacks.h"
 #include "jni-helper.hpp"
 #include <zip/zip.h>
@@ -487,7 +488,7 @@ extern "C"
 			(JNIEnv*  env, jobject thiz, jint itouch_type, jint itouch_count, jintArray itouch_points_identifier,
 			 jbooleanArray itouch_points_is_changed, jfloatArray itouch_points_x, jfloatArray itouch_points_y)
 	{
-		auto pfm_te = std::make_shared<pfm_touch_event>();
+		auto pfm_te = std::make_shared<pointer_evt>();
 		jint* touch_points_identifier = env->GetIntArrayElements(itouch_points_identifier, NULL);
 		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(itouch_points_is_changed, NULL);
 		jfloat* touch_points_x = env->GetFloatArrayElements(itouch_points_x, NULL);
@@ -495,7 +496,7 @@ extern "C"
 
 		for (int k = 0; k < itouch_count; k++)
 		{
-			pfm_touch_event::touch_point& te = pfm_te->points[k];
+            auto& te = pfm_te->points[k];
 
 			te.identifier = touch_points_identifier[k];
 			te.is_changed = touch_points_is_changed[k];
@@ -510,7 +511,7 @@ extern "C"
 
 		pfm_te->time = pfm::time::get_time_millis();
 		pfm_te->touch_count = itouch_count;
-		pfm_te->type = (pfm_touch_event::e_touch_type)itouch_type;
+		pfm_te->type = (pointer_evt::e_touch_type)itouch_type;
 
 		unit_ctrl::inst()->pointer_action(pfm_te);
 	}
