@@ -1,6 +1,6 @@
 #pragma once
 
-#include "unit-settings.hpp"
+#include "appplex-conf.hpp"
 
 #ifdef UNIT_TEST_VPLAYER_IOS
 

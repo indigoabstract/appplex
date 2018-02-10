@@ -1,5 +1,6 @@
 #pragma once
 
+// mws - multi-widget-set (as in, opposed to, say, a one-widget-set :) )
 #include "pfm.hpp"
 #include "com/util/util.hpp"
 #include "com/unit/input-ctrl.hpp"

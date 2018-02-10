@@ -78,7 +78,7 @@ void rec_dir_op_appplex_conf::apply_to_file(shared_ptr<file_node> file)
    const std::string unit_sfx = ".hpp";
    std::string fname = file->rel_file_path.filename().generic_string();
 
-   if (is_inside_units_dir && starts_with(fname, unit_pfx) && ends_with(fname, unit_sfx))
+   if (is_inside_units_dir && mws_str::starts_with(fname, unit_pfx) && ends_with(fname, unit_sfx))
    {
       int start_pos = unit_pfx.length();
       int len = fname.length() - start_pos - unit_sfx.length();

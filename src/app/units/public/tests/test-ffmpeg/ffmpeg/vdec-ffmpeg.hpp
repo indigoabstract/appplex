@@ -8,6 +8,8 @@
 class gfx_camera;
 class gfx_tex;
 class vdec_ffmpeg_impl;
+class video_params_ffmpeg;
+struct AVFrame;
 
 
 enum vdec_state
@@ -38,6 +40,16 @@ private:
 };
 
 
+class vdec_ffmpeg_listener
+{
+public:
+   virtual void on_decoding_started(std::shared_ptr<video_params_ffmpeg> i_params) {}
+   virtual void on_frame_decoded(AVFrame* i_frame) {}
+   virtual void on_decoding_stopped() {}
+   virtual void on_decoding_finished() {}
+};
+
+
 class vdec_ffmpeg
 {
 public:
@@ -56,6 +68,7 @@ public:
 	void next_frame();
 	void prev_frame();
 	void set_frame_limit(float iframe_limit);
+   void set_listener(std::shared_ptr<vdec_ffmpeg_listener> listener);
 
 private:
 	std::shared_ptr<vdec_ffmpeg_impl> impl;

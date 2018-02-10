@@ -264,7 +264,7 @@ static SLresult openSLRecOpen(OPENSL_STREAM *p, SLuint32 sr)
 	SLDataLocator_IODevice loc_dev = { SL_DATALOCATOR_IODEVICE, SL_IODEVICE_AUDIOINPUT, SL_DEFAULTDEVICEID_AUDIOINPUT, NULL };
 	SLDataSource audioSrc = { &loc_dev, NULL };  // source: microphone
 
-	int mics;
+	SLuint32 mics;
 	if (p->inputChannels > 1)
 	{
 		// Yes, we're using speaker macros for mic config.  It's okay, really.
@@ -278,7 +278,7 @@ static SLresult openSLRecOpen(OPENSL_STREAM *p, SLuint32 sr)
 	SLDataLocator_AndroidSimpleBufferQueue loc_bq = { SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 1 };
 	SLDataFormat_PCM format_pcm =
 	{
-		SL_DATAFORMAT_PCM, p->inputChannels, sr, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, mics, SL_BYTEORDER_LITTLEENDIAN
+		SL_DATAFORMAT_PCM, (SLuint32)p->inputChannels, sr, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, mics, SL_BYTEORDER_LITTLEENDIAN
 	};
 	SLDataSink audioSnk = { &loc_bq, &format_pcm };  // sink: buffer queue
 
@@ -327,7 +327,7 @@ static SLresult openSLPlayOpen(OPENSL_STREAM *p, SLuint32 sr)
 
 	SLDataFormat_PCM format_pcm =
 	{
-		SL_DATAFORMAT_PCM, p->outputChannels, sr, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, speakers, SL_BYTEORDER_LITTLEENDIAN
+		SL_DATAFORMAT_PCM, (SLuint32)p->outputChannels, sr, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, (SLuint32)speakers, SL_BYTEORDER_LITTLEENDIAN
 	};
 	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = { SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, OUTPUT_BUFFERS };
 	SLDataSource audioSrc = { &loc_bufq, &format_pcm };  // source: buffer queue

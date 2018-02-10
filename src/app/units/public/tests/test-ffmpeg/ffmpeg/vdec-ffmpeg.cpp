@@ -5,6 +5,7 @@
 #ifdef MOD_FFMPEG
 
 #include "vdec-ffmpeg.hpp"
+#include "venc-ffmpeg.hpp"
 #include "gfx.hpp"
 #include "gfx-rt.hpp"
 #include "gfx-shader.hpp"
@@ -32,9 +33,9 @@ extern "C"
 #include "libavutil/imgutils.h"
 }
 
-#pragma comment (lib, "avformat.lib")
-#pragma comment(lib, "lib/ffmpeg/avcodec.lib")
-#pragma comment(lib, "lib/ffmpeg/avutil.lib")
+#pragma comment (lib, "ffmpeg/avformat.lib")
+#pragma comment(lib, "ffmpeg/avcodec.lib")
+#pragma comment(lib, "ffmpeg/avutil.lib")
 
 
 class vdec_ffmpeg_impl
@@ -42,8 +43,8 @@ class vdec_ffmpeg_impl
 public:
 	vdec_ffmpeg_impl()
 	{
-		av_log_set_callback(my_log_callback);
-		av_log_set_level(AV_LOG_VERBOSE);
+		//av_log_set_callback(my_log_callback);
+		//av_log_set_level(AV_LOG_VERBOSE);
 
 		codec_ctx = nullptr;
 		format_ctx = nullptr;
@@ -110,7 +111,7 @@ public:
 		AVDictionary* options = 0;
 		char errbuf[256];
 
-		r = avformat_open_input(&format_ctx, ivideo_path, NULL, &options);
+		r = avformat_open_input(&format_ctx, ivideo_path, nullptr, nullptr);
 
 		if(r < 0)
 		{
@@ -120,7 +121,7 @@ public:
 			return -1;
 		}
 
-		if(av_find_stream_info(format_ctx) < 0)
+		if(avformat_find_stream_info(format_ctx, nullptr) < 0)
 		{
 			trx("vdec_ffmpeg::start_decoding: can't find stream information");
 
@@ -131,7 +132,7 @@ public:
 		av_dump_format(format_ctx, 0, ivideo_path, 0);
 		video_stream = -1;
 
-		for(int i = 0; i < format_ctx->nb_streams; i++)
+		for(uint32 i = 0; i < format_ctx->nb_streams; i++)
 		{
 			if(format_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
 			{
@@ -167,7 +168,7 @@ public:
 			return -1;
 		}
 
-		av_frame = avcodec_alloc_frame();
+		av_frame = av_frame_alloc();
 
 		int w = codec_ctx->width;
 		int h = codec_ctx->height;
@@ -188,11 +189,26 @@ public:
 		return 0;
 	}
 
-	void stop_decoding()
-	{
-		clear_rt();
+   void finish_decoding()
+   {
+      clear_rt();
 
-		state = st_stopped;
+      state = st_stopped;
+
+      if (listener)
+      {
+         listener->on_decoding_finished();
+      }
+   }
+  
+   void stop_decoding()
+	{
+      if (listener)
+      {
+         listener->on_decoding_stopped();
+      }
+
+      finish_decoding();
 	}
 
 	void replay()
@@ -284,8 +300,8 @@ public:
 
 			if(r == 0)
 			{
-				stop_decoding();
-				break;
+            finish_decoding();
+            break;
 			}
 		}
 
@@ -308,6 +324,11 @@ public:
 	{
 		frame_limit = iframe_limit;
 	}
+
+   void set_listener(std::shared_ptr<vdec_ffmpeg_listener> i_listener)
+   {
+      listener = i_listener;
+   }
 
 	shared_ptr<media_info> mi;
 
@@ -384,12 +405,33 @@ private:
 
 					gfx_util::check_gfx_error();
 
+               if (listener)
+               {
+                  if (current_frame_idx == 0)
+                  {
+                     auto params = std::make_shared<video_params_ffmpeg>();
+
+                     params->bit_rate = codec_ctx->bit_rate;
+                     //params->codec_id = codec_ctx->codec_id;
+                     params->gop_size = codec_ctx->gop_size;
+                     params->width = codec_ctx->width;
+                     params->height = codec_ctx->height;
+                     params->max_b_frames = codec_ctx->max_b_frames;
+                     params->pix_fmt = codec_ctx->pix_fmt;
+                     params->ticks_per_frame = codec_ctx->ticks_per_frame;
+                     params->time_base = codec_ctx->time_base;
+                     listener->on_decoding_started(params);
+                  }
+
+                  listener->on_frame_decoded(av_frame);
+               }
+
 					//vprint("decode_frame counter %d\n", current_frame_idx);
 					current_frame_idx++;
 				}
 			}
 
-			av_free_packet(&av_packet);
+         av_packet_unref(&av_packet);
 
 			return 1;
 		}
@@ -417,7 +459,7 @@ private:
 		{
 			av_free(av_frame);
 			avcodec_close(codec_ctx);
-			av_close_input_file(format_ctx);
+         avformat_close_input(&format_ctx);
 
 			av_frame = nullptr;
 			codec_ctx = nullptr;
@@ -449,6 +491,7 @@ private:
 	int tex_idx;
 	float frame_limit;
 	uint32 last_frame_time;
+   std::shared_ptr<vdec_ffmpeg_listener> listener;
 };
 
 
@@ -599,6 +642,11 @@ void vdec_ffmpeg::prev_frame()
 void vdec_ffmpeg::set_frame_limit(float iframe_limit)
 {
 	impl->set_frame_limit(iframe_limit);
+}
+
+void vdec_ffmpeg::set_listener(std::shared_ptr<vdec_ffmpeg_listener> listener)
+{
+   impl->set_listener(listener);
 }
 
 #endif

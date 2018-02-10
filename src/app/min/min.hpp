@@ -18,6 +18,39 @@ class ia_sender;
 class ia_receiver;
 
 
+
+struct mws_str
+{
+   static bool starts_with(const std::string& istr, const std::string& ifind);
+   static bool ends_with(const std::string& istr, const std::string& ifind);
+   // trim from start
+   static std::string ltrim(const std::string& is);
+   // trim from end
+   static std::string rtrim(const std::string& is);
+   // trim from both ends
+   static std::string trim(const std::string& is);
+   static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
+   template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function);
+   static std::string escape_char(char character);
+   static std::string escape_string(const std::string& str);
+   static std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
+   static std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
+   static std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
+   static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+};
+
+
+class mws_util
+{
+public:
+   struct path
+   {
+      static std::string get_filename_from_path(const std::string& file_path);
+      static std::string get_filename_without_extension(const std::string& file_path);
+   };
+};
+
+
 class ia_exception : public std::exception
 {
 public:
@@ -182,12 +215,11 @@ template<typename T> T lerp(const T& start, const T& end, float t)
    return start * (1.f - t) + end * t;
 }
 
-inline bool is_inside_box(float x, float y, float boxx, float boxy, float boxWidth, float boxHeight)
+inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_width, float box_height)
 {
-   return (x >= boxx && x < (boxx + boxWidth)) && (y >= boxy && y < (boxy + boxHeight));
+   return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
 
-bool starts_with(const std::string& istr, const std::string& ifind);
 bool ends_with(const std::string& istr, const std::string& ifind);
 
 // trim from start

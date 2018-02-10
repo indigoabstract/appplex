@@ -9,16 +9,16 @@
 	#define WIN32_LEAN_AND_MEAN 1
 #endif
 
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <locale>
-#include <memory>
-#include <string>
-#include <vector>
+//#include <cmath>
+//#include <cstdio>
+//#include <cstdlib>
+//#include <cstring>
+//#include <exception>
+//#include <fstream>
+//#include <iostream>
+//#include <locale>
+//#include <memory>
+//#include <string>
+//#include <vector>
 
 #endif

@@ -217,7 +217,7 @@ void appplex_conf::update()
 
          std::transform(s.begin(), s.end(), s.begin(), ::toupper);
 
-         if (starts_with(s, "UNIT-"))
+         if (mws_str::starts_with(s, "UNIT-"))
          {
             std::replace(s.begin(), s.end(), '-', '_');
 
@@ -310,7 +310,7 @@ void appplex_conf::update_dependencies(shared_ptr<unit_entry> ue, std::vector<st
    {
       std::string s = iuses[k];
 
-      if (starts_with(s, "unit-"))
+      if (mws_str::starts_with(s, "unit-"))
       {
          std::string un = s.substr(5, s.length() - 5);
          auto ue2 = (*unit_entry_map)[un];

@@ -95,7 +95,7 @@ gfx_type_id pfm::get_gfx_type_id()
 	return gfx_type_opengl;
 }
 
-#include "../../pfm/msvc/src/main.hpp"
+#include "..\..\..\pfm\msvc\src\main.hpp"
 
 #define pfm_app_inst		msvc_main::get_instance()
 
@@ -719,7 +719,7 @@ shared_ptr<std::vector<shared_ptr<pfm_file> > > pfm_path::list_directory(std::sh
    std::string base_dir = aux_root_dir;
    std::replace(base_dir.begin(), base_dir.end(), '\\', '/');
 
-   if (starts_with(base_dir, pfm_impl::get_common_res_path()) || (iu && starts_with(base_dir, pfm_impl::get_unit_res_path(iu))))
+   if (mws_str::starts_with(base_dir, pfm_impl::get_common_res_path()) || (iu && mws_str::starts_with(base_dir, pfm_impl::get_unit_res_path(iu))))
    {
       list_directory_impl(base_dir, file_list, recursive);
    }
@@ -795,7 +795,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, std::shared_ptr<std::v
          shared_ptr<pfm_file> file = it->second;
          std::string rdir = file->get_root_directory();
 
-         if (starts_with(rdir, ibase_dir))
+         if (mws_str::starts_with(rdir, ibase_dir))
          {
             ifile_list->push_back(file);
          }

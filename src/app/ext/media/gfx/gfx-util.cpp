@@ -68,7 +68,7 @@ shared_ptr<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
 {
 	shared_ptr<vx_attribute> a;
 
-	if (!starts_with(iattribute, "a_"))
+	if (!mws_str::starts_with(iattribute, "a_"))
 	{
 		throw ia_exception("invalid iattribute");
 	}
@@ -129,7 +129,7 @@ shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
 {
 	shared_ptr<gfx_uniform> v;
 
-	if (!starts_with(iuniform, "u_"))
+	if (!mws_str::starts_with(iuniform, "u_"))
 	{
 		throw ia_exception("invalid uniform");
 	}

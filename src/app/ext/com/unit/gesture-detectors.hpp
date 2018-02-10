@@ -81,17 +81,17 @@ public:
          if (det_state == tap_detector_state::ST_READY)
          {
             start_event = new_event;
-            mFirstPressPos = new_event->get_pointer_press_by_index(0)->get_position();
+            first_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
             det_state = tap_detector_state::ST_PRESSED_0;
 
             return GS_START;
          }
          else if (det_state == tap_detector_state::ST_RELEASED_0)
          {
-            mSecondPressPos = new_event->get_pointer_press_by_index(0)->get_position();
+            second_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
             det_state = tap_detector_state::ST_PRESSED_1;
 
-            if (glm::distance(mSecondPressPos, mFirstPressPos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+            if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
             {
                return reset();
             }
@@ -112,7 +112,7 @@ public:
          {
             auto release = new_event->get_pointer_press_by_index(0);
 
-            if (glm::distance(release->get_position(), mFirstPressPos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+            if (glm::distance(release->get_position(), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
             {
                return reset();
             }
@@ -129,7 +129,7 @@ public:
          {
             auto press = new_event->get_pointer_press_by_index(0);
 
-            if (glm::distance(press->get_position(), mFirstPressPos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+            if (glm::distance(press->get_position(), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
             {
                return reset();
             }
@@ -169,20 +169,20 @@ private:
    // Member Variables
 
    // get start position of tap
-   glm::vec2 mFirstPressPos;
-   glm::vec2 mSecondPressPos;
+   glm::vec2 first_press_pos;
+   glm::vec2 second_press_pos;
 
    std::shared_ptr<pointer_evt> start_event;
    tap_detector_state det_state;
 };
 
 
-class PinchZoomDetector
+class pinch_zoom_detector
 {
 public:
    // Constructor
    // params:
-   PinchZoomDetector()
+   pinch_zoom_detector()
    {
       start_event = dummy_event;
    }

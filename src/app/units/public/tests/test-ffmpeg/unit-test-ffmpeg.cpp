@@ -8,6 +8,7 @@
 #include "com/unit/input-ctrl.hpp"
 #include "com/unit/update-ctrl.hpp"
 #include "ffmpeg/vdec-ffmpeg.hpp"
+#include "ffmpeg/venc-ffmpeg.hpp"
 #include "gfx.hpp"
 #include "gfx-rt.hpp"
 #include "gfx-shader.hpp"
@@ -24,8 +25,10 @@ using std::string;
 
 namespace test_ffmpeg
 {
-	shared_ptr<vdec_ffmpeg> vdec;
-	shared_ptr<gfx_quad_2d> q2d_tex;
+   shared_ptr<vdec_ffmpeg> vdec;
+   shared_ptr<venc_ffmpeg> venc;
+   shared_ptr<vdec_ffmpeg_listener> vdec_listener;
+   shared_ptr<gfx_quad_2d> q2d_tex;
 	shared_ptr<gfx_quad_2d> q2d_rt_tex;
 	shared_ptr<gfx_shader> texture_display;
 }
@@ -81,23 +84,52 @@ void unit_test_ffmpeg::load()
 	q_rt_tex.set_dimensions(2, 2);
 	q_rt_tex[MP_SHADER_NAME] = "basic_tex";
 
-	shared_ptr<pfm_file> raf = pfm_file::get_inst("giphy.mp4");
+   {
+      class vdec_ffmpeg_listener_impl : public vdec_ffmpeg_listener
+      {
+      public:
+         virtual void on_decoding_started(std::shared_ptr<video_params_ffmpeg> i_params) override
+         {
+            venc->start_encoding("test-vid.mp4", *i_params);
+         }
 
-	std::string fpath = raf->get_full_path();
-	vdec = shared_ptr<vdec_ffmpeg>(new vdec_ffmpeg());
-	vdec->start_decoding(fpath.c_str());
-	vdec->update(ux_cam);
+         virtual void on_frame_decoded(AVFrame* i_frame) override
+         {
+            venc->encode_frame(i_frame);
+         }
 
-	int fw = vdec->get_media_info()->get_width();
-	int tw = vdec->get_media_info()->get_total_width();
-	float hratio = float(fw) / tw;
-	q_tex.set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
-	q_rt_tex.set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
+         //virtual void on_decoding_stopped() {}
 
-	if (!raf->exists())
-	{
-		vprint("\nfile %s not found\n", raf->get_file_name().c_str());
-	}
+         virtual void on_decoding_finished() override
+         {
+            venc->stop_encoding();
+            vdec->set_listener(nullptr);
+         }
+      };
+
+      venc = shared_ptr<venc_ffmpeg>(new venc_ffmpeg());
+      vdec_listener = std::make_shared<vdec_ffmpeg_listener_impl>();
+   }
+   {
+      shared_ptr<pfm_file> raf = pfm_file::get_inst("video.mp4");
+
+      std::string fpath = raf->get_full_path();
+      vdec = shared_ptr<vdec_ffmpeg>(new vdec_ffmpeg());
+      vdec->set_listener(vdec_listener);
+      vdec->start_decoding(fpath.c_str());
+      vdec->update(ux_cam);
+
+      int fw = vdec->get_media_info()->get_width();
+      int tw = vdec->get_media_info()->get_total_width();
+      float hratio = float(fw) / tw;
+      q_tex.set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
+      q_rt_tex.set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
+
+      if (!raf->exists())
+      {
+         vprint("\nfile %s not found\n", raf->get_file_name().c_str());
+      }
+   }
 }
 
 bool unit_test_ffmpeg::update()
@@ -120,6 +152,7 @@ bool unit_test_ffmpeg::update()
 	shared_ptr<gfx_tex> tex = mi->get_current_frame();
 	float p = float(mi->get_current_frame_index()) / mi->get_frame_count();
 	float tw = mi->get_width();
+   auto fps_d = mi->get_frame_rate();
 
 	(*q2d_tex)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
 	q2d_tex->position = glm::vec3(50.f + tw * 0.5, 50.f + tex->get_height() * 0.5, 0.f);
@@ -152,12 +185,6 @@ void unit_test_ffmpeg::receive(shared_ptr<iadp> idp)
 		if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
 		{
 			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-
-			//if(ts->get_type() == touch_sym_evt::TS_BACKWARD_SWIPE)
-			//{
-			//	back();
-			//	ts->process();
-			//}
 		}
 		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{

@@ -1248,7 +1248,7 @@ void unit_test_normal_mapping::load()
 				shared_ptr<pfm_file> diff_file = *it2;
 				std::string diff_fname = diff_file->get_file_name();
 
-				if (starts_with(diff_fname, root) && !ends_with(diff_fname, "_S.png") && (std::find(diff_file_list.begin(), diff_file_list.end(), diff_fname) == diff_file_list.end()))
+				if (mws_str::starts_with(diff_fname, root) && !ends_with(diff_fname, "_S.png") && (std::find(diff_file_list.begin(), diff_file_list.end(), diff_fname) == diff_file_list.end()))
 				{
 					shared_ptr<pfm_file> specular_file = pfm_file::get_inst(fname);
 					//int idx = fname.length() - 6;
