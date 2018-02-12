@@ -27,7 +27,7 @@ public:
 	int get_width();
 	int get_height();
 	int get_current_frame_index();
-	int get_frame_count();
+	int64 get_frame_count();
 	double get_frame_rate();
 	unsigned long long get_duration_us();
 	std::shared_ptr<gfx_tex> get_current_frame();

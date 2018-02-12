@@ -24,6 +24,13 @@ extern "C"
 #include <string>
 
 
+enum class vid_enc_st
+{
+   e_st_encoding,
+   e_st_finished,
+};
+
+
 class video_params_ffmpeg
 {
 public:
@@ -85,11 +92,14 @@ public:
 class venc_ffmpeg
 {
 public:
-	venc_ffmpeg();
-	void start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params);
+   venc_ffmpeg();
+   vid_enc_st get_state() const;
+   bool is_encoding() const;
+   void start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params);
    void encode_frame(AVFrame* i_frame);
 	void encode_frame(const char* iframe_data, int iframe_data_length);
-	void stop_encoding();
+   void encode_yuv420_frame(const uint8* y_frame, const uint32* uv_frame);
+   void stop_encoding();
 
 private:
    void open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
@@ -111,6 +121,7 @@ private:
    output_stream_ffmpeg audio_st;
    AVCodec* audio_codec;
    AVCodec* video_codec;
+   vid_enc_st state;
 };
 
 #endif

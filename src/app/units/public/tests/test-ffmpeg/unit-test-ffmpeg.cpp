@@ -107,7 +107,7 @@ void unit_test_ffmpeg::load()
          }
       };
 
-      venc = shared_ptr<venc_ffmpeg>(new venc_ffmpeg());
+      venc = std::make_shared<venc_ffmpeg>();
       vdec_listener = std::make_shared<vdec_ffmpeg_listener_impl>();
    }
    {
@@ -115,7 +115,8 @@ void unit_test_ffmpeg::load()
 
       std::string fpath = raf->get_full_path();
       vdec = shared_ptr<vdec_ffmpeg>(new vdec_ffmpeg());
-      vdec->set_listener(vdec_listener);
+      // get notified when a frame is ready and then encode it
+      //vdec->set_listener(vdec_listener);
       vdec->start_decoding(fpath.c_str());
       vdec->update(ux_cam);
 
@@ -151,7 +152,7 @@ bool unit_test_ffmpeg::update()
 	shared_ptr<media_info> mi = vdec->get_media_info();
 	shared_ptr<gfx_tex> tex = mi->get_current_frame();
 	float p = float(mi->get_current_frame_index()) / mi->get_frame_count();
-	float tw = mi->get_width();
+	float tw = (float)mi->get_width();
    auto fps_d = mi->get_frame_rate();
 
 	(*q2d_tex)["u_s2d_tex"][MP_TEXTURE_INST] = tex;

@@ -7,6 +7,11 @@
 #include "venc-ffmpeg.hpp"
 #include "pfm.hpp"
 
+#pragma comment (lib, "ffmpeg/avformat.lib")
+#pragma comment(lib, "ffmpeg/avcodec.lib")
+#pragma comment(lib, "ffmpeg/avutil.lib")
+
+
 #define AV_CODEC_FLAG_GLOBAL_HEADER   (1 << 22)
 #define STREAM_DURATION   10.0
 #define STREAM_FRAME_RATE 25 /* 25 images/s */
@@ -56,6 +61,7 @@ static void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs
 
 venc_ffmpeg::venc_ffmpeg()
 {
+   state = vid_enc_st::e_st_finished;
    fmt = nullptr;
    opt = nullptr;
 	f = nullptr;
@@ -68,6 +74,9 @@ venc_ffmpeg::venc_ffmpeg()
    encode_video = encode_audio = false;
    audio_codec = nullptr;
    video_codec = nullptr;
+
+   trx("ffmpeg: avcodec_register_all - register all formats and codecs");
+   av_register_all();
 }
 
 
@@ -276,12 +285,23 @@ static void close_stream(AVFormatContext *oc, output_stream_ffmpeg *ost)
    //swr_free(&ost->swr_ctx);
 }
 
+vid_enc_st venc_ffmpeg::get_state() const
+{
+   return state;
+}
+
+bool venc_ffmpeg::is_encoding() const
+{
+   return state == vid_enc_st::e_st_encoding;
+}
+
 void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params)
 {
    int ret = 0;
    params = i_params;
    video_path = std::string(ivideo_path);
    vprint("Encode video file %s\n", ivideo_path);
+   pts_idx = 0;
 
 
  /* allocate the output media context */
@@ -362,6 +382,7 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
    //      encode_audio = !write_audio_frame(oc, &audio_st);
    //   }
    //}
+   state = vid_enc_st::e_st_encoding;
 }
 
 // encode 1 frame of video
@@ -406,6 +427,45 @@ void venc_ffmpeg::encode_frame(const char* iframe_data, int iframe_data_length)
    pts_idx++;
 }
 
+void venc_ffmpeg::encode_yuv420_frame(const uint8* y_frame, const uint32* uv_frame)
+{
+   int video_height = video_st.st->codec->height;
+   int video_width = video_st.st->codec->width;
+
+   // y channel
+   for (int y = 0, idx = 0; y < video_height; y++)
+   {
+      int ls0 = y * frame->linesize[0];
+
+      for (int x = 0; x < video_width; x++)
+      {
+         frame->data[0][ls0 + x] = y_frame[idx];
+         idx++;
+      }
+   }
+
+   const uint8* uv_frame_ptr = (const uint8*)uv_frame;
+
+   // uv channels
+   for (int y = 0, idx = 0; y < video_height / 2; y++)
+   {
+      int ls1 = y * frame->linesize[1];
+      int ls2 = y * frame->linesize[2];
+
+      for (int x = 0; x < video_width / 2; x++)
+      {
+         frame->data[1][ls1 + x] = uv_frame_ptr[idx];
+         idx++;
+         frame->data[2][ls2 + x] = uv_frame_ptr[idx];
+         idx += 3;
+      }
+   }
+
+   frame->pts = pts_idx;
+   write_video_frame(oc, &video_st, frame);
+   pts_idx++;
+}
+
 void venc_ffmpeg::stop_encoding()
 {
  /* Write the trailer, if any. The trailer must be written before you
@@ -433,6 +493,7 @@ void venc_ffmpeg::stop_encoding()
 
    /* free the stream */
    avformat_free_context(oc);
+   state = vid_enc_st::e_st_finished;
 }
 
 static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
@@ -715,8 +776,8 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
    {
       c->codec_id = params.codec_id;
 
-      //c->bit_rate = params.bit_rate;
-      c->bit_rate = 800 * 1000;
+      c->bit_rate = params.bit_rate;
+      //c->bit_rate = 800 * 1000;
       /* Resolution must be a multiple of two. */
       c->width = params.width;
       c->height = params.height;

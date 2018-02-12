@@ -638,6 +638,7 @@ public:
 	draw_plane_op d_plane;
 	draw_point_op d_point;
 	draw_mesh_op d_mesh;
+   std::weak_ptr<gfx_rt> last_rt;
 };
 
 
@@ -656,6 +657,15 @@ void gfx_camera::update()
 
 void gfx_camera::update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp)
 {
+   auto crt_rt = gfx::rt::get_current_render_target();
+   auto last_rt = p->last_rt.lock();
+
+   if (last_rt != crt_rt)
+   {
+      update_camera_state_impl();
+      p->last_rt = crt_rt;
+   }
+
 	if (!imesh->transform_mx.value_changed())
 	{
 		bool update_tf_mx = false;
@@ -807,73 +817,78 @@ void gfx_camera::load(shared_ptr<gfx_camera> inst)
 	camera_idx++;
 }
 
+void gfx_camera::update_camera_state_impl()
+{
+   if (projection_type == "perspective")
+   {
+      float aspect = gfx::rt::get_render_target_width() / float(gfx::rt::get_render_target_height());
+      projection = glm::perspective(glm::radians(fov_y_deg), aspect, near_clip_distance, far_clip_distance);
+   }
+   else if (projection_type == "orthographic")
+   {
+      float left = 0;
+      float right = gfx::rt::get_render_target_width();
+      float bottom = gfx::rt::get_render_target_height();
+      float top = 0;
+
+      projection = glm::ortho(left, right, bottom, top, near_clip_distance, far_clip_distance);
+   }
+
+   bool update_tf_mx = false;
+
+   if (transform_mx.value_changed())
+   {
+      const glm::mat4& mx = transform_mx.read();
+
+      glm::vec3 scale;
+      glm::quat rotation;
+      glm::vec3 translation;
+      glm::vec3 skew;
+      glm::vec4 perspective;
+
+      glm::decompose(mx, scale, rotation, translation, skew, perspective);
+      view_translation = glm::translate(translation);
+      view_rotation = glm::toMat4(rotation);
+      scaling_mx = glm::scale(scale);
+      update_tf_mx = true;
+   }
+   else
+   {
+      if (position.value_changed())
+      {
+         view_translation = glm::translate(position.read());
+         update_tf_mx = true;
+      }
+
+      if (orientation.value_changed())
+      {
+         view_rotation = glm::toMat4(orientation.read());
+         update_tf_mx = true;
+      }
+
+      if (scaling.value_changed())
+      {
+         scaling_mx = glm::scale(scaling.read());
+         update_tf_mx = true;
+      }
+   }
+
+   if (update_tf_mx)
+   {
+      camera = view_translation * view_rotation;
+      view = glm::inverse(camera);
+   }
+
+   //view_translation = glm::translate(position());
+   //view_rotation = glm::toMat4(orientation());
+   //camera = view_translation * view_rotation;
+   //view = glm::inverse(camera);
+
+}
+
 void gfx_camera::update_camera_state()
 {
-	if (projection_type == "perspective")
-	{
-		float aspect = gfx::rt::get_render_target_width() / float(gfx::rt::get_render_target_height());
-		projection = glm::perspective(glm::radians(fov_y_deg), aspect, near_clip_distance, far_clip_distance);
-	}
-	else if (projection_type == "orthographic")
-	{
-		float left = 0;
-		float right = gfx::rt::get_render_target_width();
-		float bottom = gfx::rt::get_render_target_height();
-		float top = 0;
-
-		projection = glm::ortho(left, right, bottom, top, near_clip_distance, far_clip_distance);
-	}
-
-	bool update_tf_mx = false;
-
-	if (transform_mx.value_changed())
-	{
-		const glm::mat4& mx = transform_mx.read();
-
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 translation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
-
-		glm::decompose(mx, scale, rotation, translation, skew, perspective);
-		view_translation = glm::translate(translation);
-		view_rotation = glm::toMat4(rotation);
-		scaling_mx = glm::scale(scale);
-		update_tf_mx = true;
-	}
-	else
-	{
-		if (position.value_changed())
-		{
-			view_translation = glm::translate(position.read());
-			update_tf_mx = true;
-		}
-
-		if (orientation.value_changed())
-		{
-			view_rotation = glm::toMat4(orientation.read());
-			update_tf_mx = true;
-		}
-
-		if (scaling.value_changed())
-		{
-			scaling_mx = glm::scale(scaling.read());
-			update_tf_mx = true;
-		}
-	}
-
-	if (update_tf_mx)
-	{
-		camera = view_translation * view_rotation;
-		view = glm::inverse(camera);
-	}
-
-	//view_translation = glm::translate(position());
-	//view_rotation = glm::toMat4(orientation());
-	//camera = view_translation * view_rotation;
-	//view = glm::inverse(camera);
-
+   update_camera_state_impl();
 	shared_ptr<gfx_camera> inst = static_pointer_cast<gfx_camera>(get_shared_ptr());
 
 	p->flush_commands(inst);

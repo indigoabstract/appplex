@@ -161,6 +161,7 @@ bool unit_test_reflections::update()
 void unit_test_reflections::receive(shared_ptr<iadp> idp)
 {
 	p->free_cam->update_input(idp);
+   unit::receive(idp);
 }
 
 #endif

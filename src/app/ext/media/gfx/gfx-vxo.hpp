@@ -38,6 +38,7 @@ public:
 		vertex_size = 0;
 		aux_vertex_size = 0;
 		has_tangent_basis = false;
+      uses_tangent_basis = false;
 	}
 
 	vx_info(std::string ivx_attr_list)
@@ -49,6 +50,7 @@ public:
 		vertex_size = 0;
 		aux_vertex_size = 0;
 		has_tangent_basis = false;
+      uses_tangent_basis = false;
 		vx_attr_vect = gfx_util::parse_attribute_list(ivx_attr_list);
 
 		for(std::vector<shared_ptr<vx_attribute> >::iterator it = vx_attr_vect.begin(); it != vx_attr_vect.end(); it++)
@@ -88,6 +90,7 @@ public:
 	}
 
 	bool has_tangent_basis;
+   bool uses_tangent_basis;
 	std::vector<shared_ptr<vx_attribute> > vx_attr_vect;
 	std::vector<shared_ptr<vx_attribute> > vx_aux_attr_vect;
 	int vertex_size;

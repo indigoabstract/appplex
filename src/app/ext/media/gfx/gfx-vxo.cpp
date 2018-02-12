@@ -95,7 +95,7 @@ void gfx_vxo::set_data(const std::vector<uint8>& ivertices_buffer, const std::ve
    indices_buffer = iindices_buffer;
    buffer_changed = true;
 
-   if (vxi.has_tangent_basis && setup_tangent_basis)
+   if (vxi.uses_tangent_basis && vxi.has_tangent_basis && setup_tangent_basis)
    {
       setup_tangent_basis = false;
       compute_tangent_basis();
@@ -106,7 +106,7 @@ void gfx_vxo::update_data()
 {
    buffer_changed = true;
 
-   if (vxi.has_tangent_basis && setup_tangent_basis)
+   if (vxi.uses_tangent_basis && vxi.has_tangent_basis && setup_tangent_basis)
    {
       setup_tangent_basis = false;
       compute_tangent_basis();

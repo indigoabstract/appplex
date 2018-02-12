@@ -392,7 +392,7 @@ namespace pfm_impl
 	{
 		check_state();
 
-		ibuffer->resize(length());
+		ibuffer->resize((size_t)length());
 
 		return read(begin_ptr(ibuffer), ibuffer->size());
 	}

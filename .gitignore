@@ -1,8 +1,9 @@
 /.svn
 /cmd
 /libs
-/pfm/android/default/.idea
 /pfm/android/default/.gradle
+/pfm/android/default/.idea
+/pfm/android/default/app/.externalNativeBuild
 /pfm/android/default/app/build
 /pfm/android/default/app/src/main/assets
 /pfm/android/default/build
@@ -43,3 +44,5 @@
 /src/app/min/appplex-conf.hpp
 /src/app/min/appplex-conf.cpp
 /src/app/units/private
+
+/pfm/msvc/proj

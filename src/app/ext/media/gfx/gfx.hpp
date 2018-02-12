@@ -29,7 +29,7 @@ public:
 		static int get_render_target_width();
 		static int get_render_target_height();
 		static shared_ptr<gfx_rt> get_current_render_target();
-		static void set_current_render_target(shared_ptr<gfx_rt> irdt);
+		static void set_current_render_target(shared_ptr<gfx_rt> irdt = nullptr);
 
 		template<typename T> static shared_ptr<std::vector<T> > get_render_target_pixels(shared_ptr<gfx_rt> irt = shared_ptr<gfx_rt>())
 		{

@@ -565,12 +565,27 @@ std::shared_ptr<keyctrl> key_evt::get_src()
 	return src.lock();
 }
 
-key_evt::key_evt_types key_evt::get_type()
+bool key_evt::is_pressed() const
+{
+   return type == KE_PRESSED;
+}
+
+bool key_evt::is_repeated() const
+{
+   return type == KE_REPEATED;
+}
+
+bool key_evt::is_released() const
+{
+   return type == KE_RELEASED;
+}
+
+key_evt::key_evt_types key_evt::get_type() const
 {
 	return type;
 }
 
-int key_evt::get_key()
+int key_evt::get_key() const
 {
 	return key;
 }

@@ -289,8 +289,11 @@ public:
 
 	static const std::string& get_type_name(key_evt_types tstype);
 	std::shared_ptr<keyctrl> get_src();
-	key_evt_types get_type();
-	int get_key();
+   bool is_pressed() const;
+   bool is_repeated() const;
+   bool is_released() const;
+   key_evt_types get_type()  const;
+	int get_key() const;
 	virtual void process();
 
 private:

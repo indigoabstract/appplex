@@ -184,8 +184,9 @@ protected:
 	friend class gfx_camera_impl;
 	gfx_camera();
 	virtual void load(shared_ptr<gfx_camera> inst);
-	virtual void update_camera_state();
-	shared_ptr<draw_context> draw_ctx;
+   virtual void update_camera_state();
+   virtual void update_camera_state_impl();
+   shared_ptr<draw_context> draw_ctx;
 	shared_ptr<rw_sequence> draw_ops;
 
 public:

@@ -184,7 +184,7 @@ public:
 		}
 
 		state = st_playing;
-		last_frame_time = pfm::time::get_time_millis() + 1000.f / (frame_limit + 1.f);
+		last_frame_time = uint32(pfm::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
 
 		return 0;
 	}
@@ -277,7 +277,7 @@ public:
 
 		if (frame_limit > 0.f)
 		{
-			float delta = crt_frame_time - last_frame_time;
+			float delta = float(crt_frame_time - last_frame_time);
 			float limit_dt = 1000.f / frame_limit;
 
 			if (delta < limit_dt)
@@ -510,7 +510,7 @@ int media_info::get_current_frame_index()
 	return impl.lock()->current_frame_idx;
 }
 
-int media_info::get_frame_count()
+int64 media_info::get_frame_count()
 {
 	return impl.lock()->av_stream->nb_frames;
 }
