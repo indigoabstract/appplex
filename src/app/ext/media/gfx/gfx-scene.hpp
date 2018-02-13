@@ -85,7 +85,8 @@ public:
 	std::shared_ptr<gfx_node> get_shared_ptr();
 	std::shared_ptr<gfx_node> get_parent();
 	std::shared_ptr<gfx_node> get_root();
-	virtual void add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list);
+   std::shared_ptr<gfx_scene> get_scene();
+   virtual void add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list);
 	virtual void update();
 	void attach(shared_ptr<gfx_node> inode);
 	void detach();

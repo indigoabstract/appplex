@@ -132,7 +132,7 @@ public:
       AddTextImpl(vbuffer, glyphs, Text, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), Fnt, 1.f);
    }
 
-   void add_text_3d(const std::string& Text, const glm::vec3& Position, const glm::vec3& HDir, const glm::vec3& VDir, std::shared_ptr<ux_font> Fnt)
+   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, std::shared_ptr<ux_font> Fnt)
    {
       auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
       glm::vec2 pen(0.f);
@@ -143,7 +143,7 @@ public:
          mIs3D = true;
       }
 
-      mPosition = Position;
+      mPosition = position;
       mFontHeight = Fnt->get_height();
       AddTextImpl(vbuffer, glyphs, Text, HDir, VDir, Fnt, 0.05f);
    }

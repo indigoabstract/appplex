@@ -113,7 +113,7 @@ public:
 	{
 		float scale = 100.f;
 		int ia0 = 0;
-		int ib0 = (b0 - a0) * scale;
+		int ib0 = int((b0 - a0) * scale);
 
 		return a0 + range(ia0, ib0) / scale;
 	}

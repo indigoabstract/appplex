@@ -477,7 +477,7 @@ namespace shivavg_tp2
 
 	void drawCover(int c)
 	{
-		/* Position image on stack */
+		/* position image on stack */
 		vgSeti(VG_MATRIX_MODE, VG_MATRIX_IMAGE_USER_TO_SURFACE);
 		vgLoadMatrix(coverStates[c].value);
 

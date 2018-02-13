@@ -21,6 +21,7 @@ units
 	texxed[ ],
 	exercise[ ],
 	gen-texture[ ],
+	global-flight-paths[ uses[ gfx ] ],
 
 	@@[ tests ],
 
@@ -32,7 +33,6 @@ units
 	test-shadow-map[ ],
 	test-kube-sphere[ ],
 	test-grid[ ],
-	test-reflections[ ],
 	test-dyn-geometry[ ],
 	test-freetype-gl[ ],
 	test-normal-mapping[ ],

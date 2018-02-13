@@ -89,12 +89,12 @@ inline void ParametricSurface::GenerateVertices(std::vector<float>& vertices, un
 	for (int j = 0; j < m_divisions.y; j++) {
 		for (int i = 0; i < m_divisions.x; i++) {
 
-			// Compute Position
+			// Compute position
 			glm::vec2 domain = ComputeDomain(i, j);
 			glm::vec3 range = Evaluate(domain);
 			//attribute = range.Write(attribute);
 
-			// Compute Normal
+			// Compute normal
 			if (flags & VertexFlagsNormals) {
 				float s = i, t = j;
 
@@ -436,8 +436,8 @@ void ObjSurface::GenerateVertices(std::vector<float>& floats, unsigned char flag
 	assert(flags == VertexFlagsNormals && "Unsupported flags.");
 
 	struct Vertex {
-		glm::vec3 Position;
-		glm::vec3 Normal;
+		glm::vec3 position;
+		glm::vec3 normal;
 	};
 
 	// Read in the vertex positions and initialize lighting normals to (0, 0, 0).
@@ -447,8 +447,8 @@ void ObjSurface::GenerateVertices(std::vector<float>& floats, unsigned char flag
 	while (objFile) {
 		char c = objFile.get();
 		if (c == 'v') {
-			vertex->Normal = glm::vec3(0, 0, 0);
-			glm::vec3& position = (vertex++)->Position;
+			vertex->normal = glm::vec3(0, 0, 0);
+			glm::vec3& position = (vertex++)->position;
 			objFile >> position.x >> position.y >> position.z;
 		}
 		objFile.ignore(MaxLineSize, '\n');
@@ -459,20 +459,20 @@ void ObjSurface::GenerateVertices(std::vector<float>& floats, unsigned char flag
 		glm::ivec3 face = m_faces[faceIndex];
 
 		// Compute the facet normal.
-		glm::vec3 a = vertex[face.x].Position;
-		glm::vec3 b = vertex[face.y].Position;
-		glm::vec3 c = vertex[face.z].Position;
+		glm::vec3 a = vertex[face.x].position;
+		glm::vec3 b = vertex[face.y].position;
+		glm::vec3 c = vertex[face.z].position;
 		glm::vec3 facetNormal = glm::cross(b - a, c - a);
 
 		// Add the facet normal to the lighting normal of each adjoining vertex.
-		vertex[face.x].Normal += facetNormal;
-		vertex[face.y].Normal += facetNormal;
-		vertex[face.z].Normal += facetNormal;
+		vertex[face.x].normal += facetNormal;
+		vertex[face.y].normal += facetNormal;
+		vertex[face.z].normal += facetNormal;
 	}
 
 	// Normalize the normals.
 	for (int v = 0; v < GetVertexCount(); ++v)
-		vertex[v].Normal = glm::normalize(vertex[v].Normal);
+		vertex[v].normal = glm::normalize(vertex[v].normal);
 }
 
 void ObjSurface::GenerateTriangleIndices(std::vector<unsigned short>& indices) const

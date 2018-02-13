@@ -67,7 +67,7 @@ void main()
 	float edge0 = 0.45;
 	float edge1 = 0.75;
 	float fff = fdf_i * 2.0;
-	float nf = smoothstep(edge0, edge1, f_diffuse_factor);
+	float nf = smoothstep(edge0, edge1, fdf_i);
 	float nf2 = smoothstep(-0.35, edge0, fdf);
 	nf2	+= color_night.a * (0.5 - 2.0 * fdf);
 	

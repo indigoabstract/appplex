@@ -60,6 +60,11 @@ std::shared_ptr<gfx_node> gfx_node::get_root()
 	return root.lock();
 }
 
+std::shared_ptr<gfx_scene> gfx_node::get_scene()
+{
+   return std::static_pointer_cast<gfx_scene>(root.lock());
+}
+
 void gfx_node::add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list)
 {
 }

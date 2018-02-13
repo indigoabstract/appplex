@@ -80,8 +80,14 @@ public:
    virtual unit_type get_unit_type();
    int get_width();
    int get_height();
+   // internal name (only used inside the engine for identification purposes). may be the same as external name
    const std::string& get_name();
-   void set_name(std::string iname);
+   void set_name(std::string i_name);
+
+   // external (display name). this is used for example, when setting the application name. may be the same as internal name
+   const std::string& get_external_name();
+   void set_external_name(std::string i_name);
+
    const std::string& get_proj_rel_path();
    void set_proj_rel_path(std::string ipath);
    bool is_gfx_unit();
@@ -142,6 +148,8 @@ private:
 
    // unit name/id
    std::string name;
+   // unit external/display name
+   std::string external_name;
    // unit path, relative to project (appplex) path
    std::string proj_rel_path;
    std::weak_ptr<unit> parent;

@@ -140,7 +140,7 @@ void gfx_vxo::set_material(shared_ptr<gfx_material> imaterial)
    material->set_mesh(static_pointer_cast<gfx_vxo>(get_shared_ptr()));
 }
 
-const vx_info& gfx_vxo::get_vx_info()
+vx_info& gfx_vxo::get_vx_info()
 {
    return vxi;
 }

@@ -50,7 +50,7 @@ public:
       if (!venc)
       {
          venc = std::make_shared<venc_ffmpeg>();
-         default_video_params.bit_rate = 1200 * 1000;
+         default_video_params.bit_rate = 2200 * 1000;
          default_video_params.width = 0;
          default_video_params.height = 0;
          // frames per second
@@ -425,9 +425,24 @@ const string& unit::get_name()
    return name;
 }
 
-void unit::set_name(string iname)
+void unit::set_name(string i_name)
 {
-   name = iname;
+   name = i_name;
+}
+
+const std::string& unit::get_external_name()
+{
+   if (external_name.empty())
+   {
+      return get_name();
+   }
+
+   return external_name;
+}
+
+void unit::set_external_name(std::string i_name)
+{
+   external_name = i_name;
 }
 
 const std::string& unit::get_proj_rel_path()

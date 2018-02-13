@@ -48,6 +48,11 @@ public:
       static std::string get_filename_from_path(const std::string& file_path);
       static std::string get_filename_without_extension(const std::string& file_path);
    };
+
+   struct time
+   {
+      static std::string get_current_date();
+   };
 };
 
 

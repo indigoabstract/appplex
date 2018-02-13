@@ -1167,13 +1167,15 @@ std::wstring wtrs(const wchar_t* format, fmt::ArgList args)
 }
 
 
+#if defined PLATFORM_WINDOWS_PC
+
 void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw()
 {
 	void* ptr = 0;
 
 	if (isize > 0)
 	{
-		ptr = malloc(isize);
+		ptr = _aligned_malloc(isize, 16);
 
 		ia_assert(ptr);
 
@@ -1192,7 +1194,7 @@ void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) thr
 
 	if (isize > 0)
 	{
-		ptr = malloc(isize);
+		ptr = _aligned_malloc(isize, 16);
 
 		ia_assert(ptr);
 
@@ -1207,10 +1209,12 @@ void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) thr
 
 void operator delete(void* iptr, const std::nothrow_t& nothrow_constant) throw()
 {
-	free(iptr);
+   _aligned_free(iptr);
 }
 
 void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant) throw()
 {
-	free(iptr);
+   _aligned_free(iptr);
 }
+
+#endif

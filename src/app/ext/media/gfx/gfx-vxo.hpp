@@ -174,7 +174,7 @@ public:
 	virtual gfx_material_entry& operator[](const std::string iname);
 	shared_ptr<gfx_material> get_material();
 	void set_material(shared_ptr<gfx_material> imaterial);
-	const vx_info& get_vx_info();
+	vx_info& get_vx_info();
 	virtual void add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list);
 	virtual void render_mesh(std::shared_ptr<gfx_camera> icamera);
 	void push_material_params();

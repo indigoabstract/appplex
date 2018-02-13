@@ -59,13 +59,13 @@ void free_camera::update_input(shared_ptr<iadp> idp)
 				{
 				case KEY_Q:
 					{
-						persp_cam->position -= look_at_dir * 0.05f;
+						persp_cam->position -= look_at_dir * mw_speed_factor * 1.5f;
 						break;
 					}
 
 				case KEY_E:
 					{
-						persp_cam->position += look_at_dir * 0.05f;
+						persp_cam->position += look_at_dir * mw_speed_factor * 1.5f;
 						break;
 					}
 
@@ -76,7 +76,13 @@ void free_camera::update_input(shared_ptr<iadp> idp)
 						break;
 					}
 
-				case KEY_D:
+            case KEY_S:
+            {
+               speed = 0.f;
+               break;
+            }
+
+            case KEY_D:
 					{
 						glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), look_at_dir);
 						up_dir = glm::normalize(up_dir * rot_around_look_at_dir);

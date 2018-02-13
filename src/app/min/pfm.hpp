@@ -13,11 +13,15 @@ using std::static_pointer_cast;
 using std::weak_ptr;
 
 
+#if defined PLATFORM_WINDOWS_PC
+
 void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw();
 void operator delete(void* iptr, const std::nothrow_t& nothrow_constant) throw();
 
 void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) throw();
 void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant) throw();
+
+#endif
 
 #if defined UNICODE_USING_STD_STRING
 

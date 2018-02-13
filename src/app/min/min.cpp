@@ -4,6 +4,8 @@
 #include "unit-ctrl.hpp"
 #include <regex>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
 
 
 using std::string;
@@ -49,6 +51,18 @@ std::string mws_util::path::get_filename_without_extension(const std::string& fi
    std::string stem = filename.substr(0, last_index);
 
    return stem;
+}
+std::string mws_util::time::get_current_date()
+{
+   std::time_t t = std::time(nullptr);
+   std::tm tm = *std::localtime(&t);
+   std::stringstream ss;
+
+   ss << std::put_time(&tm, "%a %b %d %H:%M:%S %Y");
+
+   auto s = ss.str();
+
+   return s;
 }
 
 
