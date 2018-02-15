@@ -52,17 +52,21 @@ public:
       if (!venc)
       {
          venc = std::make_shared<venc_ffmpeg>();
-         default_video_params.bit_rate = 2200 * 1000;
+         // prefer using a variable bit rate
+         default_video_params.bit_rate = 0;// 2200 * 1000;
          default_video_params.width = 0;
          default_video_params.height = 0;
          // frames per second
-         default_video_params.time_base = { 2, 50 };
+         default_video_params.time_base = { 2, 60 };
          default_video_params.ticks_per_frame = 2;
          // emit one intra frame every ten frames
          default_video_params.gop_size = 10;
          default_video_params.max_b_frames = 1;
          default_video_params.pix_fmt = AV_PIX_FMT_YUV420P;
          default_video_params.codec_id = AV_CODEC_ID_H264;
+         default_video_params.preset = "ultrafast";
+         default_video_params.tune = "film";
+         default_video_params.crf = 0;
 
          recording_fnt = ux_font::new_inst(20.f);
          recording_fnt->set_color(gfx_color::colors::red);
@@ -91,7 +95,8 @@ public:
          prm.min_filter = gfx_tex_params::e_tf_nearest;
          prm.mag_filter = gfx_tex_params::e_tf_nearest;
          pixels_y_tex.resize(video_width * video_height);
-         pixels_uv_tex.resize(video_width * video_height);
+         pixels_u_tex.resize(video_width * video_height / 4);
+         pixels_v_tex.resize(video_width * video_height / 4);
 
          // y rt
          {
@@ -114,23 +119,44 @@ public:
             }
          }
 
-         // uv rt
+         // u rt
          {
-            int rt_uv_width = video_width / 2;
-            int rt_uv_height = video_height / 2;
+            int rt_u_width = video_width / 2;
+            int rt_u_height = video_height / 2;
 
-            rt_uv_tex = gfx::tex::new_tex_2d("u_s2d_uv_tex", rt_uv_width, rt_uv_height, "RGBA8", &prm);
-            rt_uv = gfx::rt::new_rt();
-            rt_uv->set_color_attachment(rt_uv_tex);
-            rt_uv_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+            rt_u_tex = gfx::tex::new_tex_2d("u_s2d_u_tex", rt_u_width, rt_u_height, "R8", &prm);
+            rt_u = gfx::rt::new_rt();
+            rt_u->set_color_attachment(rt_u_tex);
+            rt_u_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
             {
-               auto& msh = *rt_uv_quad;
+               auto& msh = *rt_u_quad;
 
                msh.set_dimensions(1, 1);
-               msh.set_scale((float)rt_uv_width, (float)rt_uv_height);
+               msh.set_scale((float)rt_u_width, (float)rt_u_height);
                msh[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
-               msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-uv-420.fsh";
+               msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-u-420.fsh";
+               msh["u_s2d_tex"] = scr_mirror_tex->get_name();
+            }
+         }
+
+         // v rt
+         {
+            int rt_v_width = video_width / 2;
+            int rt_v_height = video_height / 2;
+
+            rt_v_tex = gfx::tex::new_tex_2d("u_s2d_v_tex", rt_v_width, rt_v_height, "R8", &prm);
+            rt_v = gfx::rt::new_rt();
+            rt_v->set_color_attachment(rt_v_tex);
+            rt_v_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+
+            {
+               auto& msh = *rt_v_quad;
+
+               msh.set_dimensions(1, 1);
+               msh.set_scale((float)rt_v_width, (float)rt_v_height);
+               msh[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
+               msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-v-420.fsh";
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
             }
          }
@@ -187,13 +213,19 @@ public:
       gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       gfx_util::check_gfx_error();
 
-      gfx::rt::set_current_render_target(rt_uv);
-      rt_uv_quad->render_mesh(ux_cam);
-      gfx::rt::get_render_target_pixels<uint32>(rt_uv, pixels_uv_tex);
+      gfx::rt::set_current_render_target(rt_u);
+      rt_u_quad->render_mesh(ux_cam);
+      gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
       gfx::rt::set_current_render_target();
       gfx_util::check_gfx_error();
 
-      venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_uv_tex.data());
+      gfx::rt::set_current_render_target(rt_v);
+      rt_v_quad->render_mesh(ux_cam);
+      gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
+      gfx::rt::set_current_render_target();
+      gfx_util::check_gfx_error();
+
+      venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
       rec_txt_slider.update();
 
 #endif
@@ -301,14 +333,19 @@ public:
    shared_ptr<gfx_rt> rt_y;
    shared_ptr<gfx_tex> rt_y_tex;
    shared_ptr<gfx_quad_2d> rt_y_quad;
-   shared_ptr<gfx_rt> rt_uv;
-   shared_ptr<gfx_tex> rt_uv_tex;
-   shared_ptr<gfx_quad_2d> rt_uv_quad;
+   shared_ptr<gfx_rt> rt_u;
+   shared_ptr<gfx_tex> rt_u_tex;
+   shared_ptr<gfx_quad_2d> rt_u_quad;
+   shared_ptr<gfx_rt> rt_v;
+   shared_ptr<gfx_tex> rt_v_tex;
+   shared_ptr<gfx_quad_2d> rt_v_quad;
+   std::vector<uint8> pixels_y_tex;
+   std::vector<uint8> pixels_u_tex;
+   std::vector<uint8> pixels_v_tex;
    bool pbo_supported;
+
    shared_ptr<venc_ffmpeg> venc;
    video_params_ffmpeg default_video_params;
-   std::vector<uint8> pixels_y_tex;
-   std::vector<uint32> pixels_uv_tex;
    shared_ptr<ux_font> date_fnt;
    shared_ptr<ux_font> recording_fnt;
    std::string recording_txt;

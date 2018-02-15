@@ -54,6 +54,10 @@ public:
    // Pixel format, see AV_PIX_FMT_xxx.
    enum AVPixelFormat pix_fmt;
    enum AVCodecID codec_id;
+   // see venc_ffmpeg::open_video or H.264 Video Encoding Guide for details
+   std::string preset;
+   std::string tune;
+   int crf;
 };
 
 
@@ -98,7 +102,7 @@ public:
    void start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params);
    void encode_frame(AVFrame* i_frame);
 	void encode_frame(const char* iframe_data, int iframe_data_length);
-   void encode_yuv420_frame(const uint8* y_frame, const uint32* uv_frame);
+   void encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame);
    void stop_encoding();
 
 private:

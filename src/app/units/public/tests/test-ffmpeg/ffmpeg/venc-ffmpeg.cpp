@@ -50,6 +50,9 @@ video_params_ffmpeg::video_params_ffmpeg()
    max_b_frames = 1;
    pix_fmt = AV_PIX_FMT_YUV420P;
    codec_id = AV_CODEC_ID_H264;
+   preset = "ultrafast";
+   tune = "film";
+   crf = 0;
 }
 
 
@@ -427,43 +430,25 @@ void venc_ffmpeg::encode_frame(const char* iframe_data, int iframe_data_length)
    pts_idx++;
 }
 
-void venc_ffmpeg::encode_yuv420_frame(const uint8* y_frame, const uint32* uv_frame)
+void venc_ffmpeg::encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
 {
-   int video_height = video_st.st->codec->height;
-   int video_width = video_st.st->codec->width;
+   uint8_t* p0 = &frame->data[0][0];
+   uint8_t* p1 = &frame->data[0][1];
+   uint8_t* p2 = &frame->data[0][2];
 
-   // y channel
-   for (int y = 0, idx = 0; y < video_height; y++)
-   {
-      int ls0 = y * frame->linesize[0];
-
-      for (int x = 0; x < video_width; x++)
-      {
-         frame->data[0][ls0 + x] = y_frame[idx];
-         idx++;
-      }
-   }
-
-   const uint8* uv_frame_ptr = (const uint8*)uv_frame;
-
-   // uv channels
-   for (int y = 0, idx = 0; y < video_height / 2; y++)
-   {
-      int ls1 = y * frame->linesize[1];
-      int ls2 = y * frame->linesize[2];
-
-      for (int x = 0; x < video_width / 2; x++)
-      {
-         frame->data[1][ls1 + x] = uv_frame_ptr[idx];
-         idx++;
-         frame->data[2][ls2 + x] = uv_frame_ptr[idx];
-         idx += 3;
-      }
-   }
+   // swap frame pointers to incoming data
+   frame->data[0] = (uint8_t*)y_frame;
+   frame->data[1] = (uint8_t*)u_frame;
+   frame->data[2] = (uint8_t*)v_frame;
 
    frame->pts = pts_idx;
    write_video_frame(oc, &video_st, frame);
    pts_idx++;
+
+   // swap frame pointers back to original data
+   frame->data[0] = p0;
+   frame->data[1] = p1;
+   frame->data[2] = p2;
 }
 
 void venc_ffmpeg::stop_encoding()
@@ -625,14 +610,42 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
    if (codec->id == AV_CODEC_ID_H264)
    {
       /*
+      Constant Rate Factor (CRF): Use this mode if you want to keep the best quality and don't care about the file size.
+      This method allows the encoder to attempt to achieve a certain output quality for the whole file when output file size is of less importance.
+      This provides maximum compression efficiency with a single pass. By adjusting the so-called quantizer for each frame, it gets the bitrate it needs to keep the requested quality level.
+      The downside is that you can't tell it to get a specific filesize or not go over a specific size or bitrate, which means that this method is not recommended for encoding videos for streaming.
+      Choose a CRF value: The range of the CRF scale is 0-51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.
+      A lower value generally leads to higher quality, and a subjectively sane range is 17-28.
+      Consider 17 or 18 to be visually lossless or nearly so; it should look the same or nearly the same as the input but it isn't technically lossless.
+      The range is exponential, so increasing the CRF value +6 results in roughly half the bitrate / file size, while -6 leads to roughly twice the bitrate.
+      Choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try a higher value. If it looks bad, choose a lower value.
+
       A preset is a collection of options that will provide a certain encoding speed to compression ratio.
       A slower preset will provide better compression(compression is quality per filesize).
       This means that, for example, if you target a certain file size or constant bit rate, you will achieve better quality with a slower preset.
       Similarly, for constant quality encoding, you will simply save bitrate by choosing a slower preset.
       Use the slowest preset that you have patience for.The available presets in descending order of speed are :
       ultrafast, superfast, veryfast, faster, fast, medium – default preset, slow, slower, veryslow
+
+      You can optionally use -tune to change settings based upon the specifics of your input. Current tunings include:
+      film – use for high quality movie content; lowers deblocking
+      animation – good for cartoons; uses higher deblocking and more reference frames
+      grain – preserves the grain structure in old, grainy film material
+      stillimage – good for slideshow-like content
+      fastdecode – allows faster decoding by disabling certain filters
+      zerolatency – good for fast encoding and low-latency streaming
+      psnr – ignore this as it is only used for codec development
+      ssim – ignore this as it is only used for codec development
+      For example, if your input is animation then use the animation tuning, or if you want to preserve grain in a film then use the grain tuning.
+      If you are unsure of what to use or your input does not match any of tunings then omit the -tune option.
+      You can see a list of current tunings with -tune help, and what settings they apply with x264 --fullhelp.
       */
-      av_opt_set(ost->st->codec->priv_data, "preset", "slow", 0);
+
+      auto ctx = ost->st->codec->priv_data;
+
+      av_opt_set(ctx, "preset", params.preset.c_str(), 0);
+      av_opt_set(ctx, "tune", params.tune.c_str(), 0);
+      av_opt_set_int(ctx, "crf", params.crf, 0);
    }
 
    /* open the codec */
