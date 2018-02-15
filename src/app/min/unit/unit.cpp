@@ -75,11 +75,13 @@ public:
          date_fnt = ux_font::new_inst(20.f);
          date_fnt->set_color(gfx_color::colors::cyan);
          pbo_supported = is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
+         y_pbo_ids = { 0, 0 };
+         u_pbo_ids = { 0, 0 };
+         v_pbo_ids = { 0, 0 };
       }
 
       default_video_params.width = gfx::rt::get_screen_width();
       default_video_params.height = gfx::rt::get_screen_height();
-      rec_txt_slider.start(0.95f);
 
       if (!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
       {
@@ -94,15 +96,13 @@ public:
 
          prm.min_filter = gfx_tex_params::e_tf_nearest;
          prm.mag_filter = gfx_tex_params::e_tf_nearest;
-         pixels_y_tex.resize(video_width * video_height);
-         pixels_u_tex.resize(video_width * video_height / 4);
-         pixels_v_tex.resize(video_width * video_height / 4);
 
          // y rt
          {
             int rt_y_width = video_width;
             int rt_y_height = video_height;
 
+            pixels_y_tex.resize(rt_y_width * rt_y_height);
             rt_y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8", &prm);
             rt_y = gfx::rt::new_rt();
             rt_y->set_color_attachment(rt_y_tex);
@@ -124,6 +124,7 @@ public:
             int rt_u_width = video_width / 2;
             int rt_u_height = video_height / 2;
 
+            pixels_u_tex.resize(rt_u_width * rt_u_height);
             rt_u_tex = gfx::tex::new_tex_2d("u_s2d_u_tex", rt_u_width, rt_u_height, "R8", &prm);
             rt_u = gfx::rt::new_rt();
             rt_u->set_color_attachment(rt_u_tex);
@@ -145,6 +146,7 @@ public:
             int rt_v_width = video_width / 2;
             int rt_v_height = video_height / 2;
 
+            pixels_v_tex.resize(rt_v_width * rt_v_height);
             rt_v_tex = gfx::tex::new_tex_2d("u_s2d_v_tex", rt_v_width, rt_v_height, "R8", &prm);
             rt_v = gfx::rt::new_rt();
             rt_v->set_color_attachment(rt_v_tex);
@@ -159,6 +161,29 @@ public:
                msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-v-420.fsh";
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
             }
+         }
+
+         if (pbo_supported)
+         {
+            std::vector<size_t> data_sizes = { pixels_y_tex.size(), pixels_u_tex.size(), pixels_v_tex.size() };
+            std::vector<std::vector<gfx_uint>* > pbos = { &y_pbo_ids, &u_pbo_ids, &v_pbo_ids };
+
+            for (size_t k = 0; k < pbos.size(); k++)
+            {
+               std::vector<gfx_uint>* p = pbos[k];
+               int size = p->size();
+               auto data_size = data_sizes[k];
+
+               glGenBuffers(size, p->data());
+
+               for (int l = 0; l < size; l++)
+               {
+                  glBindBuffer(GL_PIXEL_PACK_BUFFER, (*p)[l]);
+                  glBufferData(GL_PIXEL_PACK_BUFFER, data_size, 0, GL_STREAM_READ);
+               }
+            }
+
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
          }
       }
 
@@ -208,25 +233,79 @@ public:
       scr_mirror_tex->set_active(0);
       glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
 
+      struct helper
+      {
+         static void read_pixels_helper(bool pbo_supported, std::shared_ptr<gfx_tex> i_tex, gfx_uint pbo_id, gfx_uint pbo_next_id, std::vector<uint8>& i_data_dst)
+         {
+            const gfx_tex_params& tex_prm = i_tex->get_params();
+
+            glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+            // with PBO
+            if (pbo_supported)
+            {
+               // copy pixels from framebuffer to PBO and use offset instead of ponter.
+               // OpenGL should perform async DMA transfer, so glReadPixels() will return immediately.
+               glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id);
+               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.format, tex_prm.type, 0);
+
+               // map the PBO containing the framebuffer pixels before processing it
+               glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_next_id);
+
+               GLubyte* src = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+
+               if (src)
+               {
+                  std::memcpy(i_data_dst.data(), src, i_data_dst.size());
+                  // release pointer to the mapped buffer
+                  glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+               }
+
+               glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+            }
+            // without PBO
+            else
+            {
+               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.format, tex_prm.type, i_data_dst.data());
+            }
+         }
+      };
+
+      // increment current index first then get the next index
+      // pbo_index is used to read pixels from a framebuffer to a PBO
+      pbo_index = (pbo_index + 1) % 2;
+      // pbo_next_index is used to process pixels in the other PBO
+      int pbo_next_index = (pbo_index + 1) % 2;
+
       gfx::rt::set_current_render_target(rt_y);
       rt_y_quad->render_mesh(ux_cam);
-      gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
+      //gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
+      helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       gfx_util::check_gfx_error();
 
       gfx::rt::set_current_render_target(rt_u);
       rt_u_quad->render_mesh(ux_cam);
-      gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
+      //gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
+      helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
       gfx::rt::set_current_render_target();
       gfx_util::check_gfx_error();
 
       gfx::rt::set_current_render_target(rt_v);
       rt_v_quad->render_mesh(ux_cam);
-      gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
+      //gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
+      helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
       gfx::rt::set_current_render_target();
       gfx_util::check_gfx_error();
 
-      venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
+      // skip this on the first frame as the frame data isn't ready yet
+      // also skip on the second frame to avoid capturing the fps text (it's still in the backbuffer)
+      if (frame_index > 1)
+      {
+         venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
+      }
+
       rec_txt_slider.update();
+      frame_index++;
 
 #endif
    }
@@ -250,6 +329,9 @@ public:
       }
 
       setup_video_encoding(video_width, video_height);
+      rec_txt_slider.start(0.95f);
+      pbo_index = 0;
+      frame_index = 0;
 
 
       if (i_filename.empty())
@@ -286,7 +368,7 @@ public:
       vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
-      }
+   }
 
    bool is_recording_screen()
    {
@@ -324,30 +406,35 @@ public:
       vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
-      }
+   }
 
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
    // data for converting rgb to yuv420
-   shared_ptr<gfx_tex> scr_mirror_tex;
-   shared_ptr<gfx_rt> rt_y;
-   shared_ptr<gfx_tex> rt_y_tex;
-   shared_ptr<gfx_quad_2d> rt_y_quad;
-   shared_ptr<gfx_rt> rt_u;
-   shared_ptr<gfx_tex> rt_u_tex;
-   shared_ptr<gfx_quad_2d> rt_u_quad;
-   shared_ptr<gfx_rt> rt_v;
-   shared_ptr<gfx_tex> rt_v_tex;
-   shared_ptr<gfx_quad_2d> rt_v_quad;
+   std::shared_ptr<gfx_tex> scr_mirror_tex;
+   std::shared_ptr<gfx_rt> rt_y;
+   std::shared_ptr<gfx_tex> rt_y_tex;
+   std::shared_ptr<gfx_quad_2d> rt_y_quad;
+   std::shared_ptr<gfx_rt> rt_u;
+   std::shared_ptr<gfx_tex> rt_u_tex;
+   std::shared_ptr<gfx_quad_2d> rt_u_quad;
+   std::shared_ptr<gfx_rt> rt_v;
+   std::shared_ptr<gfx_tex> rt_v_tex;
+   std::shared_ptr<gfx_quad_2d> rt_v_quad;
    std::vector<uint8> pixels_y_tex;
    std::vector<uint8> pixels_u_tex;
    std::vector<uint8> pixels_v_tex;
    bool pbo_supported;
+   std::vector<gfx_uint> y_pbo_ids;
+   std::vector<gfx_uint> u_pbo_ids;
+   std::vector<gfx_uint> v_pbo_ids;
+   int frame_index;
+   int pbo_index;
 
-   shared_ptr<venc_ffmpeg> venc;
+   std::shared_ptr<venc_ffmpeg> venc;
    video_params_ffmpeg default_video_params;
-   shared_ptr<ux_font> date_fnt;
-   shared_ptr<ux_font> recording_fnt;
+   std::shared_ptr<ux_font> date_fnt;
+   std::shared_ptr<ux_font> recording_fnt;
    std::string recording_txt;
    glm::vec2 recording_txt_dim;
    ping_pong_time_slider rec_txt_slider;
@@ -485,13 +572,10 @@ int unit::unit_count = 0;
 
 unit::unit()
 {
-   char unit_name[256];
-
-   sprintf(unit_name, "unit#%d", unit_count);
-   unit_count++;
    initVal = false;
-   name = string(unit_name);
-   prefs = shared_ptr<unit_preferences>(new unit_preferences());
+   name = trs("unit#{}", unit_count);
+   unit_count++;
+   prefs = std::make_shared<unit_preferences>();
    game_time = 0;
 
    if (is_gfx_unit())
@@ -783,7 +867,7 @@ bool unit::rsk_was_hit(int x0, int y0)
    int dx = cx - x0;
    int dy = cy - y0;
 
-   if ((int)sqrtf(dx * dx + dy * dy) <= radius)
+   if ((int)sqrtf(float(dx * dx + dy * dy)) <= radius)
    {
       return true;
    }
@@ -953,11 +1037,7 @@ int unit_list::unit_list_count = 0;
 
 unit_list::unit_list()
 {
-   char unit_name[256];
-
-   sprintf(unit_name, "unit-list#%d", unit_list_count);
-   set_name(string(unit_name));
-
+   name = trs("unit-list#{}", unit_list_count);
    unit_list_count++;
 }
 
@@ -1065,7 +1145,7 @@ void unit_list::up_one_level()
          {
             ul->ulmodel.lock()->set_selected_elem(idx);
          }
-}
+      }
 
       unit_ctrl::inst()->set_next_unit(parent);// , get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
    }
