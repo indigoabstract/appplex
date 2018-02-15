@@ -12,6 +12,95 @@ using std::string;
 using std::wstring;
 
 
+ping_pong_time_slider::ping_pong_time_slider(float i_slide_time)
+{
+   slide_time = float_2_int_time(i_slide_time);
+   enabled = false;
+   forward = true;
+   start_time = 0;
+   slider = 0.f;
+}
+
+bool ping_pong_time_slider::is_enabled() const
+{
+   return enabled;
+}
+
+float ping_pong_time_slider::get_value() const
+{
+   return slider;
+}
+
+void ping_pong_time_slider::start(float i_slide_time)
+{
+   uint32 st = 0;
+
+   if (i_slide_time > 0.f)
+   {
+      st = float_2_int_time(i_slide_time);
+   }
+
+   start(st);
+}
+
+void ping_pong_time_slider::start(uint32 i_slide_time)
+{
+   if (i_slide_time > 0)
+   {
+      slide_time = i_slide_time;
+   }
+
+   forward = enabled = true;
+   start_time = pfm::time::get_time_millis();
+   last_start_delta = 0;
+   slider = 0.f;
+}
+
+void ping_pong_time_slider::stop()
+{
+   enabled = false;
+}
+
+void ping_pong_time_slider::update()
+{
+   if (!enabled)
+   {
+      return;
+   }
+
+   uint32 now = pfm::time::get_time_millis();
+   uint32 start_delta = (now - start_time) % slide_time;
+
+   if (start_delta < last_start_delta)
+   {
+      // reverse slider direction
+      forward = !forward;
+   }
+
+   if (forward)
+   {
+      slider = float(start_delta) / slide_time;
+   }
+   else
+   {
+      slider = float(slide_time - start_delta) / slide_time;
+   }
+
+   last_start_delta = start_delta;
+}
+
+uint32 ping_pong_time_slider::float_2_int_time(float i_seconds)
+{
+   float int_part = floor(i_seconds);
+   uint32 sec = int(int_part) * 1000;
+   float fract_part = i_seconds - int_part;
+   uint32 ms = int(fract_part * 1000.f);
+   uint32 total_time = sec + ms;
+
+   return total_time;
+}
+
+
 std::string mws_util::path::get_filename_from_path(const std::string& file_path)
 {
    auto pos_0 = file_path.find_last_of('\\');
@@ -35,7 +124,9 @@ std::string mws_util::path::get_filename_from_path(const std::string& file_path)
       pos = pos_1;
    }
 
-   return std::string(file_path.begin() + pos + 1, file_path.end());
+   size_t idx = size_t(pos + 1);
+
+   return std::string(file_path.begin() + idx, file_path.end());
 }
 
 std::string mws_util::path::get_filename_without_extension(const std::string& file_path)
@@ -217,12 +308,12 @@ ia_exception::ia_exception() throw()
 
 ia_exception::ia_exception(const char* msg) throw()
 {
-	exmsg = msg;
+   exmsg = msg;
 }
 
 ia_exception::ia_exception(std::string msg) throw()
 {
-	exmsg = msg;
+   exmsg = msg;
 }
 
 ia_exception::~ia_exception() throw()
@@ -231,150 +322,150 @@ ia_exception::~ia_exception() throw()
 
 const char* ia_exception::what() const throw()
 {
-	return exmsg.c_str();
+   return exmsg.c_str();
 }
 
 
 iadp::iadp(const std::string& iname)
 {
-	set_name(iname);
-	processed = false;
+   set_name(iname);
+   processed = false;
 }
 
 shared_ptr<iadp> iadp::new_instance(std::string iname)
 {
-	return shared_ptr<iadp>(new iadp(iname));
+   return shared_ptr<iadp>(new iadp(iname));
 }
 
 const std::string& iadp::get_name()
 {
-	return name;
+   return name;
 }
 
 bool iadp::is_type(const std::string& itype)
 {
-	return mws_str::starts_with(get_name(), itype);
+   return mws_str::starts_with(get_name(), itype);
 }
 
 bool iadp::is_processed()
 {
-	return processed;
+   return processed;
 }
 
 void iadp::process()
 {
-	if(processed)
-	{
-		throw ia_exception("datapacket is already processed");
-	}
+   if (processed)
+   {
+      throw ia_exception("datapacket is already processed");
+   }
 
-	processed = true;
+   processed = true;
 }
 
 shared_ptr<ia_sender> iadp::source()
 {
-	return src.lock();
+   return src.lock();
 }
 
 shared_ptr<ia_receiver> iadp::destination()
 {
-	return dst.lock();
+   return dst.lock();
 }
 
 void iadp::set_name(const std::string& iname)
 {
-	name = iname;
+   name = iname;
 }
 
 
 void ia_sender::send(shared_ptr<ia_receiver> dst, shared_ptr<iadp> idp)
 {
-	idp->src = sender_inst();
-	idp->dst = dst;
-	dst->receive(idp);
+   idp->src = sender_inst();
+   idp->dst = dst;
+   dst->receive(idp);
 }
 
 
 void ia_broadcaster::add_receiver(shared_ptr<ia_receiver> ir)
 {
-	bool exists = false;
-	int size = receivers.size();
+   bool exists = false;
+   int size = receivers.size();
 
-	for(int k = 0; k < size; k++)
-	{
-		shared_ptr<ia_receiver> sr = receivers[k].lock();
+   for (int k = 0; k < size; k++)
+   {
+      shared_ptr<ia_receiver> sr = receivers[k].lock();
 
-		if(sr == ir)
-		{
-			exists = true;
-			break;
-		}
-	}
+      if (sr == ir)
+      {
+         exists = true;
+         break;
+      }
+   }
 
-	if(!exists)
-	{
-		receivers.push_back(ir);
-	}
+   if (!exists)
+   {
+      receivers.push_back(ir);
+   }
 }
 
 void ia_broadcaster::remove_receiver(shared_ptr<ia_receiver> ir)
 {
-	int idx = -1;
-	int k = 0;
-	int size = receivers.size();
+   int idx = -1;
+   int k = 0;
+   int size = receivers.size();
 
-	for(int k = 0; k < size; k++)
-	{
-		shared_ptr<ia_receiver> sr = receivers[k].lock();
+   for (int k = 0; k < size; k++)
+   {
+      shared_ptr<ia_receiver> sr = receivers[k].lock();
 
-		if(sr == ir)
-		{
-			idx = k;
-			break;
-		}
-	}
+      if (sr == ir)
+      {
+         idx = k;
+         break;
+      }
+   }
 
-	if(idx >= 0)
-	{
-		receivers.erase(receivers.begin() + idx);
-	}
+   if (idx >= 0)
+   {
+      receivers.erase(receivers.begin() + idx);
+   }
 }
 
 void ia_broadcaster::broadcast(shared_ptr<ia_sender> src, shared_ptr<iadp> idp)
 {
-	int size = receivers.size();
+   int size = receivers.size();
 
-	for(int k = 0; k < size; k++)
-	{
-		shared_ptr<ia_receiver> dst = receivers[k].lock();
+   for (int k = 0; k < size; k++)
+   {
+      shared_ptr<ia_receiver> dst = receivers[k].lock();
 
-		if(dst)
-		{
-			send(dst, idp);
-		}
-	}
+      if (dst)
+      {
+         send(dst, idp);
+      }
+   }
 }
 
 
 bool ends_with(const std::string& istr, const std::string& ifind)
 {
-	int size = istr.length();
-	int size_find = ifind.length();
-	
-	if(size_find > size)
-	{
-		return false;
-	}
+   int size = istr.length();
+   int size_find = ifind.length();
 
-	for (int k = size - size_find, l = 0; k < size; k++, l++)
-	{
-		if(istr[k] != ifind[l])
-		{
-			return false;
-		}
-	}
+   if (size_find > size)
+   {
+      return false;
+   }
 
-	return true;
+   for (int k = size - size_find, l = 0; k < size; k++, l++)
+   {
+      if (istr[k] != ifind[l])
+      {
+         return false;
+      }
+   }
+
+   return true;
 }
 
 

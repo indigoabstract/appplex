@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pfm-def.h"
 #include <stdio.h>
 #include <algorithm> 
 #include <cctype>
@@ -17,6 +18,31 @@ using std::weak_ptr;
 class ia_sender;
 class ia_receiver;
 
+
+
+class ping_pong_time_slider
+{
+public:
+   ping_pong_time_slider(float i_slide_time = 5.f);
+
+   bool is_enabled() const;
+   float get_value() const;
+   void start(float i_slide_time = 0.f);
+   void start(uint32 i_slide_time);
+   void stop();
+   void update();
+
+private:
+
+   static uint32 float_2_int_time(float i_seconds);
+
+   bool enabled;
+   bool forward;
+   uint32 start_time;
+   uint32 last_start_delta;
+   uint32 slide_time;
+   float slider;
+};
 
 
 struct mws_str

@@ -94,9 +94,9 @@ public:
 };
 
 
-shared_ptr<ux_camera> ux_camera::new_inst()
+shared_ptr<ux_camera> ux_camera::new_inst(std::shared_ptr<gfx> i_gi)
 {
-	shared_ptr<ux_camera> inst(new ux_camera());
+	shared_ptr<ux_camera> inst(new ux_camera(i_gi));
 	inst->load(inst);
 	return inst;
 }
@@ -196,7 +196,7 @@ void ux_camera::translate(float tx, float ty)
 
 }
 
-ux_camera::ux_camera()
+ux_camera::ux_camera(std::shared_ptr<gfx> i_gi) : gfx_camera(i_gi)
 {
 }
 

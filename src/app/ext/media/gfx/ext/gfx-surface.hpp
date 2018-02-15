@@ -6,28 +6,28 @@
 class gfx_debug_vxo : public gfx_vxo
 {
 public:
-	gfx_debug_vxo(vx_info ivxi, bool iis_submesh = false);
+   gfx_debug_vxo(vx_info ivxi, bool iis_submesh = false);
 
-	virtual void render_mesh(shared_ptr<gfx_camera> icamera);
+   virtual void render_mesh(shared_ptr<gfx_camera> icamera);
 };
 
 
 class gfx_obj_vxo : public gfx_vxo
 {
 public:
-	gfx_obj_vxo();
-	void operator=(const std::string& imesh_name);
-	//virtual void render_mesh(shared_ptr<gl_camera> icamera);
+   gfx_obj_vxo();
+   void operator=(const std::string& imesh_name);
+   //virtual void render_mesh(shared_ptr<gl_camera> icamera);
 
-	//std::vector<shared_ptr<gl_mesh> > mesh_list;
-	bool is_loaded;
+   //std::vector<shared_ptr<gl_mesh> > mesh_list;
+   bool is_loaded;
 };
 
 
 class gfx_plane : public gfx_vxo
 {
 public:
-   gfx_plane();
+   gfx_plane(std::shared_ptr<gfx> i_gi = nullptr);
    virtual void set_dimensions(float idx, float idy);
 };
 
@@ -47,35 +47,35 @@ public:
 class gfx_box : public gfx_vxo
 {
 public:
-	gfx_box();
-	void set_dimensions(float idx, float idy, float idz);
+   gfx_box();
+   void set_dimensions(float idx, float idy, float idz);
 };
 
 class gfx_icosahedron : public gfx_vxo
 {
 public:
-	gfx_icosahedron();
-	void set_dimensions(float iradius);
+   gfx_icosahedron();
+   void set_dimensions(float iradius);
 };
 
 // variable polygon count
 class gfx_vpc_box : public gfx_vxo
 {
 public:
-	gfx_vpc_box();
-	void set_dimensions(float iradius, int isegments);
+   gfx_vpc_box();
+   void set_dimensions(float iradius, int isegments);
 };
 
 class gfx_vpc_kubic_sphere : public gfx_vxo
 {
 public:
-	gfx_vpc_kubic_sphere();
-	void set_dimensions(float iradius, int isegments);
+   gfx_vpc_kubic_sphere();
+   void set_dimensions(float iradius, int isegments);
 };
 
 class gfx_vpc_ring_sphere : public gfx_vxo
 {
 public:
-	gfx_vpc_ring_sphere();
-	void set_dimensions(float iradius, int igrid_point_count);
+   gfx_vpc_ring_sphere();
+   void set_dimensions(float iradius, int igrid_point_count);
 };

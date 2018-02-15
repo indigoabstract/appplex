@@ -2,6 +2,9 @@
 
 #include "pfm-def.h"
 
+int is_gl_extension_supported(const char* i_extension);
+
+
 #if defined PLATFORM_ANDROID
 
 	#define USES_OPENGL_ES

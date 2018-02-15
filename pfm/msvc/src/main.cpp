@@ -1302,4 +1302,12 @@ int get_key(int ikey)
 	return KEY_INVALID;
 }
 
+
+int is_gl_extension_supported(const char* i_extension)
+{
+   GLboolean is_supported = (glewIsSupported(i_extension) == 0) ? 0 : 1;
+
+   return is_supported;
+}
+
 #endif

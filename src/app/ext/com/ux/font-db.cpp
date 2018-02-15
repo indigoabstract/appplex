@@ -320,8 +320,12 @@ public:
 			if (!ext_tex_atlas_ref)
 			{
 				std::string name = trs("{0}-{1}", "texture-atlas", gfx_tex::gen_id());
+            gfx_tex_params prm;
 
-				ext_tex_atlas_ref = gfx::tex::new_external_tex_2d(name, tex_atlas->id, tex_atlas->width, tex_atlas->height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+            prm.internal_format = GL_R8;
+            prm.format = GL_RED;
+            prm.type = GL_UNSIGNED_BYTE;
+            ext_tex_atlas_ref = gfx::tex::new_external_tex_2d(name, tex_atlas->id, tex_atlas->width, tex_atlas->height, &prm);
 			}
 		}
 

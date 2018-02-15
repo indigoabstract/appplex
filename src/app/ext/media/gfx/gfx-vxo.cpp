@@ -17,10 +17,10 @@
 
 namespace gfx_vxo_util
 {
-   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, shared_ptr<gfx_vxo> imesh)
+   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, std::shared_ptr<gfx_vxo> imesh)
    {
-      shared_ptr<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
-      shared_ptr<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
+      std::shared_ptr<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
+      std::shared_ptr<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
 
       memcpy(begin_ptr(*vertices_data), tvertices_data, tvertices_data_size);
       memcpy(begin_ptr(*indices_data), tindices_data, tindices_data_size);
@@ -41,17 +41,37 @@ gfx_uint gfx_vxo::method_type[] =
 };
 
 
-gfx_vxo::gfx_vxo(vx_info ivxi, bool iis_submesh)
+gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 {
    vx_count = 0;
    idx_count = 0;
-   vxi = ivxi;
+   vxi = i_vxi;
    name_changed = false;
    setup_tangent_basis = vxi.has_tangent_basis;
    camera_id_list.push_back("default");
    scaling = glm::vec3(1.f);
    render_method = GLPT_TRIANGLES;
-   is_submesh = iis_submesh;
+   is_submesh = false;
+   array_buffer_id = elem_buffer_id = 0;
+   buffer_changed = false;
+
+   if (!is_submesh)
+   {
+      material = gfx_material::new_inst();
+   }
+}
+
+gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
+{
+   vx_count = 0;
+   idx_count = 0;
+   vxi = i_vxi;
+   name_changed = false;
+   setup_tangent_basis = vxi.has_tangent_basis;
+   camera_id_list.push_back("default");
+   scaling = glm::vec3(1.f);
+   render_method = GLPT_TRIANGLES;
+   is_submesh = i_is_submesh;
    array_buffer_id = elem_buffer_id = 0;
    buffer_changed = false;
 
@@ -66,6 +86,11 @@ gfx_vxo::~gfx_vxo()
    glDeleteBuffers(1, &array_buffer_id);
    glDeleteBuffers(1, &elem_buffer_id);
    array_buffer_id = elem_buffer_id = 0;
+}
+
+gfx_obj::e_gfx_obj_type gfx_vxo::get_type()const
+{
+   return e_gfx_vxo;
 }
 
 void gfx_vxo::set_mesh_name(const std::string& imesh_name)

@@ -5,11 +5,13 @@
 #include "com/ux/ux-camera.hpp"
 #include "com/ux/ux.hpp"
 #include "com/ux/ux-com.hpp"
+#include "com/ux/ux-font.hpp"
 #include "unit-ctrl.hpp"
 #include "min.hpp"
 #include "com/unit/input-ctrl.hpp"
 #include "com/unit/update-ctrl.hpp"
 #include "gfx.hpp"
+#include "gfx-tex.hpp"
 #include "gfx-scene.hpp"
 #include "gfx-state.hpp"
 #include "media/res-ld/res-ld.hpp"
@@ -61,21 +63,42 @@ public:
          default_video_params.max_b_frames = 1;
          default_video_params.pix_fmt = AV_PIX_FMT_YUV420P;
          default_video_params.codec_id = AV_CODEC_ID_H264;
+
+         recording_fnt = ux_font::new_inst(20.f);
+         recording_fnt->set_color(gfx_color::colors::red);
+         recording_txt = "[ recording ]";
+         recording_txt_dim = recording_fnt->get_text_dim(recording_txt);
+         date_fnt = ux_font::new_inst(20.f);
+         date_fnt->set_color(gfx_color::colors::cyan);
+         pbo_supported = is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
       }
 
       default_video_params.width = gfx::rt::get_screen_width();
       default_video_params.height = gfx::rt::get_screen_height();
+      rec_txt_slider.start(0.95f);
 
-      if(!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
+      if (!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
       {
-         scr_mirror_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
+         gfx_tex_params prm;
+
+         prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
+         prm.max_anisotropy = 0.f;
+         prm.min_filter = gfx_tex_params::e_tf_linear;
+         prm.mag_filter = gfx_tex_params::e_tf_linear;
+         prm.gen_mipmaps = false;
+         scr_mirror_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), gfx::rt::get_screen_width(), gfx::rt::get_screen_height(), &prm);
+
+         prm.min_filter = gfx_tex_params::e_tf_nearest;
+         prm.mag_filter = gfx_tex_params::e_tf_nearest;
+         pixels_y_tex.resize(video_width * video_height);
+         pixels_uv_tex.resize(video_width * video_height);
 
          // y rt
          {
             int rt_y_width = video_width;
             int rt_y_height = video_height;
 
-            rt_y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8");
+            rt_y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8", &prm);
             rt_y = gfx::rt::new_rt();
             rt_y->set_color_attachment(rt_y_tex);
             rt_y_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
@@ -96,7 +119,7 @@ public:
             int rt_uv_width = video_width / 2;
             int rt_uv_height = video_height / 2;
 
-            rt_uv_tex = gfx::tex::new_tex_2d("u_s2d_uv_tex", rt_uv_width, rt_uv_height, "RGBA8");
+            rt_uv_tex = gfx::tex::new_tex_2d("u_s2d_uv_tex", rt_uv_width, rt_uv_height, "RGBA8", &prm);
             rt_uv = gfx::rt::new_rt();
             rt_uv->set_color_attachment(rt_uv_tex);
             rt_uv_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
@@ -120,23 +143,58 @@ public:
    {
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
-      auto ux_cam = u.lock()->ux_cam;
       gfx_util::check_gfx_error();
+
+      auto unit = u.lock();
+      auto ux_cam = u.lock()->ux_cam;
+      int width = unit->get_width();
+      int height = unit->get_height();
+
+      // show recording text
+      {
+         float off = 10.f;
+         float px = off;
+         float py = height - recording_txt_dim.y - off;
+
+         const gfx_color& c = recording_fnt->get_color();
+         gfx_color c2 = c;
+         float sv = rec_txt_slider.get_value();
+         float v = sv;
+
+         v = 1.f - (1.f - v) * (1.f - v);
+         c2.a = uint8(v * 255);
+         recording_fnt->set_color(c2);
+         ux_cam->drawText(recording_txt, px, py, recording_fnt);
+         //vprint("slider: %f %f\n", sv, v);
+      }
+
+      // show date of recording
+      {
+         auto crt_date_str = mws_util::time::get_current_date();
+         auto txt_dim = date_fnt->get_text_dim(crt_date_str);
+         float px = width - txt_dim.x;
+         float py = height - txt_dim.y;
+
+         ux_cam->drawText(crt_date_str, px, py, date_fnt);
+      }
+
+      // blit screen to a texture
       scr_mirror_tex->set_active(0);
-      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
+      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
 
       gfx::rt::set_current_render_target(rt_y);
       rt_y_quad->render_mesh(ux_cam);
-      shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::rt::get_render_target_pixels<uint8>(rt_y);
+      gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       gfx_util::check_gfx_error();
 
       gfx::rt::set_current_render_target(rt_uv);
       rt_uv_quad->render_mesh(ux_cam);
-      shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::rt::get_render_target_pixels<uint32>(rt_uv);
+      gfx::rt::get_render_target_pixels<uint32>(rt_uv, pixels_uv_tex);
       gfx::rt::set_current_render_target();
       gfx_util::check_gfx_error();
 
-      venc->encode_yuv420_frame(pixels_y_tex->data(), pixels_uv_tex->data());
+      venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_uv_tex.data());
+      rec_txt_slider.update();
 
 #endif
    }
@@ -196,7 +254,7 @@ public:
       vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
-   }
+      }
 
    bool is_recording_screen()
    {
@@ -234,7 +292,7 @@ public:
       vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
-   }
+      }
 
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
@@ -246,13 +304,21 @@ public:
    shared_ptr<gfx_rt> rt_uv;
    shared_ptr<gfx_tex> rt_uv_tex;
    shared_ptr<gfx_quad_2d> rt_uv_quad;
+   bool pbo_supported;
    shared_ptr<venc_ffmpeg> venc;
    video_params_ffmpeg default_video_params;
+   std::vector<uint8> pixels_y_tex;
+   std::vector<uint32> pixels_uv_tex;
+   shared_ptr<ux_font> date_fnt;
+   shared_ptr<ux_font> recording_fnt;
+   std::string recording_txt;
+   glm::vec2 recording_txt_dim;
+   ping_pong_time_slider rec_txt_slider;
 
 #endif
 
    std::weak_ptr<unit> u;
-};
+   };
 
 
 unit::app_storage::app_storage()
@@ -369,7 +435,7 @@ void unit::app_storage::stop_recording_screen()
 
 bool unit::app_storage::is_recording_screen()
 {
-   return p->is_recording_screen();;
+   return p->is_recording_screen();
 }
 
 void unit::app_storage::toggle_screen_recording()
@@ -680,7 +746,7 @@ bool unit::rsk_was_hit(int x0, int y0)
    int dx = cx - x0;
    int dy = cy - y0;
 
-   if (sqrtf(dx * dx + dy * dy) <= radius)
+   if ((int)sqrtf(dx * dx + dy * dy) <= radius)
    {
       return true;
    }
@@ -820,10 +886,11 @@ void unit::update_view(int update_count)
    if (prefs->draw_touch_symbols_trail() && !touch_ctrl->is_pointer_released())
    {
       const vector<pointer_sample>& ps = touch_ctrl->get_pointer_samples();
+      int size = ps.size() - 1;
 
       gfx->setColor(0xff0000);
 
-      for (int k = 0; k < ps.size() - 1; k++)
+      for (int k = 0; k < size; k++)
       {
          const pointer_sample& p1 = ps[k];
          const pointer_sample& p2 = ps[k + 1];
@@ -832,12 +899,12 @@ void unit::update_view(int update_count)
       }
    }
 
-   if (fps > 0)
+   if (fps > 0 && !storage.is_recording_screen())
    {
       float ups = 1000.f / update_ctrl->getTimeStepDuration();
       string f = trs("uc {} u {:02.1f} f {:02.1f}", update_count, ups, fps);
 
-      gfx->drawText(f, get_width() - 220, 0);
+      gfx->drawText(f, get_width() - 220.f, 0.f);
    }
 
    //signal_opengl_error();
@@ -961,7 +1028,7 @@ void unit_list::up_one_level()
          {
             ul->ulmodel.lock()->set_selected_elem(idx);
          }
-      }
+}
 
       unit_ctrl::inst()->set_next_unit(parent);// , get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
    }

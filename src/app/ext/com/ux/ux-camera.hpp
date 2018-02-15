@@ -13,7 +13,7 @@ class gfx_tex;
 class ux_camera : public gfx_camera
 {
 public:
-	static shared_ptr<ux_camera> new_inst();
+	static shared_ptr<ux_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
 	void clearScreen(int iargb = 0);
 	void clear(int ix, int iy, int iwidth, int iheight, int iargb = 0);
 	void drawImage(shared_ptr<gfx_tex> img, float x, float y, float width = 0.f, float height = 0.f);
@@ -36,7 +36,7 @@ public:
 	//void fillAlphaGradientQuad(vxfmt_v2fc4b* iva);
 
 protected:
-	ux_camera();
+	ux_camera(std::shared_ptr<gfx> i_gi = nullptr);
 	virtual void load(shared_ptr<gfx_camera> inst);
 	virtual void update_camera_state();
 	shared_ptr<ux_camera_impl> p;

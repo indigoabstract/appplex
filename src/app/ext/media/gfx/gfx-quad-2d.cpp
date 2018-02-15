@@ -120,7 +120,7 @@ void gfx_quad_2d::set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::v
    set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
 }
 
-gfx_quad_2d::gfx_quad_2d()
+gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_plane(i_gi)
 {
    anchor_type = e_top_left;
    tx = ty = 0;

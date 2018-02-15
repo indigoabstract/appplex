@@ -822,7 +822,7 @@ namespace global_flight_paths_ns
          if (globe_hot_spot_list.empty())
          {
             RNG rng;
-            int hot_spot_chain_list_length = 3 + rng.nextInt(4);
+            int hot_spot_chain_list_length = 4 + rng.nextInt(4);
             bool default_hot_spot = false;
             auto scene = globe->get_scene();
 
@@ -924,7 +924,7 @@ namespace global_flight_paths_ns
          ux_page::init();
 
          t = 0;
-         free_cam = std::make_shared<free_camera>();
+         free_cam = std::make_shared<free_camera>(get_unit());
          persp_cam = gfx_camera::new_inst();
          persp_cam->camera_id = "default";
          persp_cam->rendering_priority = 0;
@@ -982,9 +982,7 @@ namespace global_flight_paths_ns
          persp_cam->position = glm::vec3(-100.f, 0.f, -200.f);
          free_cam->look_at_dir = -persp_cam->position();// glm::vec3(0.f, 0.25f, -1.f);
          free_cam->up_dir = glm::vec3(0.0f, 1.0f, 0.0f);
-
-         date_fnt = ux_font::new_inst(20.f);
-         date_fnt->set_color(gfx_color::colors::cyan);
+         free_cam->target_ref_point = r_vpc_rs_mesh.position;
 
          hot_spot_connex = std::make_shared<hot_spot_connector>(vpc_rs_mesh, globe_radius);
          std::vector<glm::vec2> hs_list;
@@ -996,39 +994,7 @@ namespace global_flight_paths_ns
 
       virtual void receive(shared_ptr<iadp> idp)
       {
-         if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-         {
-            shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-            bool ctrl_held = get_unit()->key_ctrl->key_is_held(KEY_CONTROL);
-
-            if (ctrl_held)
-            {
-               switch (ts->get_type())
-               {
-               case touch_sym_evt::TS_PRESS_AND_DRAG:
-               {
-                  // rotation about the camera's view/target axis.
-                  float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-                  float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
-                  static float theta_deg = 0;
-                  static float phi_deg = 0;
-
-                  theta_deg += glm::radians(dx * 1.f);
-                  phi_deg -= glm::radians(dy * 0.5f);
-                  persp_cam->position = glm::vec3(250 * glm::cos(theta_deg), 0, 250 * glm::sin(theta_deg));
-                  free_cam->look_at_dir = -persp_cam->position();
-                  persp_cam->look_at(free_cam->look_at_dir, glm::vec3(0.0f, 1.0f, 0.0f));
-
-                  ts->process();
-               }
-               }
-            }
-         }
-
-         if (!idp->is_processed())
-         {
-            free_cam->update_input(idp);
-         }
+         free_cam->update_input(idp);
 
          if (!idp->is_processed())
          {
@@ -1082,19 +1048,14 @@ namespace global_flight_paths_ns
          skybox->position = persp_cam->position;
          hot_spot_connex->update();
 
+         //persp_cam->draw_axes(vpc_rs_mesh->position, 5 * globe_radius, 1);
+
          gfx_util::check_gfx_error();
       }
 
       virtual void update_view(shared_ptr<ux_camera> g)
       {
          ux_page::update_view(g);
-
-         auto crt_date_str = mws_util::time::get_current_date();
-         auto txt_dim = date_fnt->get_text_dim(crt_date_str);
-         float px = get_unit()->get_width() - txt_dim.x;
-         float py = get_unit()->get_height() - txt_dim.y;
-
-         g->drawText(crt_date_str, px, py, date_fnt);
       }
 
       shared_ptr<gfx_box> skybox;
@@ -1106,7 +1067,6 @@ namespace global_flight_paths_ns
       float t;
       shared_ptr<free_camera> free_cam;
       std::shared_ptr<hot_spot_connector> hot_spot_connex;
-      shared_ptr<ux_font> date_fnt;
    };
 }
 using namespace global_flight_paths_ns;
