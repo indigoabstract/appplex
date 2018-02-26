@@ -9,6 +9,13 @@ Atm, it works on Windows and Android.
 
 # Getting Started
 
+I use CMake GUI, which builds a Visual Studio project.
+It looks like this:
+![CMake params](cmake-ss.jpg?raw=true "CMake params")
+
+Download CMake here:
+https://cmake.org/download/
+
 # Future work:
 
 - Webgl support, to run apps in the browser
