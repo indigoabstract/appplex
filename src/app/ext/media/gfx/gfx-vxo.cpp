@@ -242,6 +242,7 @@ void gfx_vxo::push_material_params()
       gfx_uint scissor_enabled = mat[MP_SCISSOR_ENABLED].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
 
       gfx_uint depth_test = mat[MP_DEPTH_TEST].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
+      gfx_uint depth_test_enabled = gl_st->is_enabled(gl::DEPTH_TEST) ? gl::TRUE_GL : gl::FALSE_GL;
       gfx_uint depth_write = mat[MP_DEPTH_WRITE].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
       gfx_uint depth_func = mat[MP_DEPTH_FUNCTION].get_int_value();
 
@@ -285,7 +286,7 @@ void gfx_vxo::push_material_params()
          plist.push_back({ gl::CULL_FACE, gl::FALSE_GL });
       }
 
-      if (depth_test != gl_st->is_enabled(gl::DEPTH_TEST))
+      if (depth_test != depth_test_enabled)
       {
          plist.push_back({ gl::DEPTH_TEST, depth_test });
       }
@@ -351,7 +352,7 @@ void gfx_vxo::push_material_params()
          if (obj_mesh && !obj_mesh->is_loaded)
          {
             std::vector<tinyobj::shape_t> shapes;
-            shared_ptr<pfm_file> f = pfm_file::get_inst(name);
+            shared_ptr<pfm_file> f = pfm_file::get_inst(mesh_name);
             std::string path = f->get_full_path();
 
             vprint("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
@@ -401,11 +402,11 @@ void gfx_vxo::push_material_params()
                std::string name;
             };
 
-            shared_ptr<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
+            shared_ptr<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
             membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
             std::istream in(&sbuf);
             //std::string err = tinyobj::LoadObj(shapes, f->get_full_path().c_str(), f->get_root_directory().c_str());
-            MaterialMemReader mr(name);
+            MaterialMemReader mr(mesh_name);
             std::string err = tinyobj::LoadObj(shapes, in, mr);
 
             if (err.empty())
@@ -423,7 +424,7 @@ void gfx_vxo::push_material_params()
                   {
                      trx("xxx");
                   }
-                  //vprint("shape[%ld].name = %s\n", i, shapes[i].name.c_str());
+                  //vprint("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
                   //vprint("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
                   //assert((shapes[i].mesh.indices.size() % 3) == 0);
 
@@ -437,7 +438,7 @@ void gfx_vxo::push_material_params()
                   //assert((shapes[i].mesh.positions.size() % 3) == 0);
                   int size = shapes[i].mesh.positions.size() / 3;
 
-                  for (size_t v = 0; v < size; v++)
+                  for (int v = 0; v < size; v++)
                   {
                      //vprint("  v[%ld] = (%f, %f, %f)\n", v,
                      //	shapes[i].mesh.positions[3*v+0],
@@ -451,8 +452,18 @@ void gfx_vxo::push_material_params()
                      vx.nrm.nx = shapes[i].mesh.normals[3 * v + 0];
                      vx.nrm.ny = shapes[i].mesh.normals[3 * v + 1];
                      vx.nrm.nz = shapes[i].mesh.normals[3 * v + 2];
-                     vx.tex.u = shapes[i].mesh.texcoords[2 * v + 0];
-                     vx.tex.v = 1.f - shapes[i].mesh.texcoords[2 * v + 1];
+
+                     if (!shapes[i].mesh.texcoords.empty())
+                     {
+                        vx.tex.u = shapes[i].mesh.texcoords[2 * v + 0];
+                        vx.tex.v = 1.f - shapes[i].mesh.texcoords[2 * v + 1];
+                     }
+                     else
+                     {
+                        vx.tex.u = 0;
+                        vx.tex.v = 0;
+                     }
+
                      ks_vertices_data.push_back(vx);
                   }
 

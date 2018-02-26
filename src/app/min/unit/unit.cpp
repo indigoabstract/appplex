@@ -201,24 +201,6 @@ public:
       int width = unit->get_width();
       int height = unit->get_height();
 
-      // show recording text
-      {
-         float off = 10.f;
-         float px = off;
-         float py = height - recording_txt_dim.y - off;
-
-         const gfx_color& c = recording_fnt->get_color();
-         gfx_color c2 = c;
-         float sv = rec_txt_slider.get_value();
-         float v = sv;
-
-         v = 1.f - (1.f - v) * (1.f - v);
-         c2.a = uint8(v * 255);
-         recording_fnt->set_color(c2);
-         ux_cam->drawText(recording_txt, px, py, recording_fnt);
-         //vprint("slider: %f %f\n", sv, v);
-      }
-
       // show date of recording
       {
          auto crt_date_str = mws_util::time::get_current_date();
@@ -302,6 +284,24 @@ public:
       if (frame_index > 1)
       {
          venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
+      }
+
+      // show recording text
+      {
+         float off = 10.f;
+         float px = off;
+         float py = height - recording_txt_dim.y - off;
+
+         const gfx_color& c = recording_fnt->get_color();
+         gfx_color c2 = c;
+         float sv = rec_txt_slider.get_value();
+         float v = sv;
+
+         v = 1.f - (1.f - v) * (1.f - v);
+         c2.a = uint8(v * 255);
+         recording_fnt->set_color(c2);
+         ux_cam->drawText(recording_txt, px, py, recording_fnt);
+         //vprint("slider: %f %f\n", sv, v);
       }
 
       rec_txt_slider.update();
