@@ -13,6 +13,7 @@ Atm, it works on Windows and Android.
 I use CMake GUI to build a Visual Studio project out of the source files.
 
 It looks like this:
+
 ![CMake params](cmake-ss.png?raw=true "CMake params")
 
 Download CMake here:
