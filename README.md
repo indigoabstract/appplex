@@ -7,14 +7,17 @@ It wants to help you keep all the apps/demos you accumulate in one place and imm
 It includes a minimal 3D engine, OpenGL graphics, playing sounds and loading resources/images.
 Atm, it works on Windows and Android.
 
+
 # Getting Started
 
-I use CMake GUI, which builds a Visual Studio project.
+I use CMake GUI to build a Visual Studio project out of the source files.
+
 It looks like this:
-![CMake params](cmake-ss.jpg?raw=true "CMake params")
+![CMake params](cmake-ss.png?raw=true "CMake params")
 
 Download CMake here:
 https://cmake.org/download/
+
 
 # Future work:
 
