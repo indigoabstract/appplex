@@ -12,6 +12,86 @@ using std::string;
 using std::wstring;
 
 
+basic_time_slider::basic_time_slider(float i_slide_time)
+{
+   slide_time = float_2_int_time(i_slide_time);
+   enabled = false;
+   start_time = 0;
+   slider = 0.f;
+}
+
+bool basic_time_slider::is_enabled() const
+{
+   return enabled;
+}
+
+float basic_time_slider::get_value() const
+{
+   return slider;
+}
+
+void basic_time_slider::start(float i_slide_time)
+{
+   uint32 st = 0;
+
+   if (i_slide_time > 0.f)
+   {
+      st = float_2_int_time(i_slide_time);
+   }
+
+   start(st);
+}
+
+void basic_time_slider::start(uint32 i_slide_time)
+{
+   if (i_slide_time > 0)
+   {
+      slide_time = i_slide_time;
+   }
+
+   enabled = true;
+   start_time = pfm::time::get_time_millis();
+   slider = 0.f;
+}
+
+void basic_time_slider::stop()
+{
+   enabled = false;
+}
+
+void basic_time_slider::update()
+{
+   if (!enabled)
+   {
+      return;
+   }
+
+   uint32 now = pfm::time::get_time_millis();
+   uint32 start_delta = now - start_time;
+
+   if (start_delta < slide_time)
+   {
+      slider = float(start_delta) / slide_time;
+   }
+   else
+   {
+      enabled = false;
+      slider = 1.f;
+   }
+}
+
+uint32 basic_time_slider::float_2_int_time(float i_seconds)
+{
+   float int_part = floor(i_seconds);
+   uint32 sec = int(int_part) * 1000;
+   float fract_part = i_seconds - int_part;
+   uint32 ms = int(fract_part * 1000.f);
+   uint32 total_time = sec + ms;
+
+   return total_time;
+}
+
+
 ping_pong_time_slider::ping_pong_time_slider(float i_slide_time)
 {
    slide_time = float_2_int_time(i_slide_time);
@@ -100,6 +180,32 @@ uint32 ping_pong_time_slider::float_2_int_time(float i_seconds)
    return total_time;
 }
 
+
+std::string mws_util::path::get_directory_from_path(const std::string& file_path)
+{
+   auto pos_0 = file_path.find_last_of('\\');
+   auto pos_1 = file_path.find_last_of('/');
+   int64 pos = -1;
+
+   if (pos_0 == std::string::npos && pos_1 == std::string::npos)
+   {
+      pos = -1;
+   }
+   else if (pos_0 != std::string::npos && pos_1 != std::string::npos)
+   {
+      pos = (pos_0 > pos_1) ? pos_0 : pos_1;
+   }
+   else if (pos_0 != std::string::npos)
+   {
+      pos = pos_0;
+   }
+   else if (pos_1 != std::string::npos)
+   {
+      pos = pos_1;
+   }
+
+   return std::string(file_path.begin(), file_path.begin() + (size_t)pos);
+}
 
 std::string mws_util::path::get_filename_from_path(const std::string& file_path)
 {

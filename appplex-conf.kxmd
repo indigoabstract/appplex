@@ -21,7 +21,7 @@ units
 	texxed[ ],
 	exercise[ ],
 	gen-texture[ ],
-	global-flight-paths[ uses[ gfx ] ],
+	global-flight-paths[ uses[ gfx, ffmpeg, unit-test-ffmpeg ] ],
 
 	@@[ tests ],
 
@@ -62,10 +62,15 @@ units
 	tangled-memories[ uses[ gfx ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 
+	@@[ npw ],
+	
+	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
+	
 	@@[ tests ],
 
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	text-extractor[ uses[ gfx ], platf[ windows ], ],
+	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 ],
 
 paths

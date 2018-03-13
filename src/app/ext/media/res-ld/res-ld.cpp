@@ -145,16 +145,16 @@ void process_file(void)
 }
 
 
-shared_ptr<RawImageData> get_raw_image_data_from_png(const void* png_data, const int png_data_size);
-void release_raw_image_data(const RawImageData* data);
+shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size);
+void release_raw_image_data(const raw_img_data* data);
 
 
-RawImageData::RawImageData()
+raw_img_data::raw_img_data()
 {
    data = 0;
 }
 
-RawImageData::~RawImageData()
+raw_img_data::~raw_img_data()
 {
    release_raw_image_data(this);
 }
@@ -176,16 +176,16 @@ shared_ptr<res_ld> res_ld::inst()
    return res_loader_inst;
 }
 
-shared_ptr<RawImageData> res_ld::load_image(shared_ptr<pfm_file> ifile)
+shared_ptr<raw_img_data> res_ld::load_image(shared_ptr<pfm_file> ifile)
 {
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(ifile);
-   shared_ptr<RawImageData> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
+   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
    vprint("loading img file [%s], size [%d]\n", ifile->get_file_name().c_str(), img_data->size());
 
    return rid;
 }
 
-shared_ptr<RawImageData> res_ld::load_image(std::string ifile_name)
+shared_ptr<raw_img_data> res_ld::load_image(std::string ifile_name)
 {
    std::string img_name = ifile_name;
 
@@ -195,7 +195,7 @@ shared_ptr<RawImageData> res_ld::load_image(std::string ifile_name)
    }
 
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(img_name);
-   shared_ptr<RawImageData> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
+   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
    vprint("loading img file [%s], size [%d]\n", ifile_name.c_str(), img_data->size());
 
    return rid;
@@ -235,7 +235,7 @@ static PngInfo read_and_update_info(const png_structp png_ptr, const png_infop i
 static DataHandle read_entire_png_image(const png_structp png_ptr, const png_infop info_ptr, const png_uint_32 height);
 static gfx_enum get_gl_color_format(const int png_color_format);
 
-shared_ptr<RawImageData> get_raw_image_data_from_png(const void* png_data, const int png_data_size)
+shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size)
 {
    assert(png_data != NULL && png_data_size > 8);
    assert(png_check_sig((png_const_bytep)png_data, 8));
@@ -259,7 +259,7 @@ shared_ptr<RawImageData> get_raw_image_data_from_png(const void* png_data, const
    png_read_end(png_ptr, info_ptr);
    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-   shared_ptr<RawImageData> rd(new RawImageData());
+   shared_ptr<raw_img_data> rd(new raw_img_data());
    rd->width = png_info.width;
    rd->height = png_info.height;
    rd->size = raw_image.size;
@@ -269,7 +269,7 @@ shared_ptr<RawImageData> get_raw_image_data_from_png(const void* png_data, const
    return rd;
 }
 
-void release_raw_image_data(const RawImageData* data)
+void release_raw_image_data(const raw_img_data* data)
 {
    assert(data != NULL);
    free((void*)data->data);

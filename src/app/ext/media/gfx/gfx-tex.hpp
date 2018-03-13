@@ -98,15 +98,16 @@ protected:
    void check_valid_state();
    void release();
 
-   bool	is_valid_state;
-   bool	is_external;
-   gfx_enum		gl_tex_target;
+   bool is_valid_state;
+   bool is_external;
+   gfx_enum gl_tex_target;
    std::string	tex_name;
    gfx_uint texture_gl_id;
-   int		width;
-   int		height;
+   int width;
+   int height;
    gfx_tex_types uni_tex_type;
    gfx_tex_params prm;
+   bool texture_updated;
 };
 
 

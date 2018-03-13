@@ -20,6 +20,29 @@ class ia_receiver;
 
 
 
+class basic_time_slider
+{
+public:
+   basic_time_slider(float i_slide_time = 5.f);
+
+   bool is_enabled() const;
+   float get_value() const;
+   void start(float i_slide_time = 0.f);
+   void start(uint32 i_slide_time);
+   void stop();
+   void update();
+
+private:
+
+   static uint32 float_2_int_time(float i_seconds);
+
+   bool enabled;
+   uint32 start_time;
+   uint32 slide_time;
+   float slider;
+};
+
+
 class ping_pong_time_slider
 {
 public:
@@ -71,6 +94,7 @@ class mws_util
 public:
    struct path
    {
+      static std::string get_directory_from_path(const std::string& file_path);
       static std::string get_filename_from_path(const std::string& file_path);
       static std::string get_filename_without_extension(const std::string& file_path);
    };

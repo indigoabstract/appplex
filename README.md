@@ -1,6 +1,6 @@
 # app-plex
 
-app-plex is a tool for rapid prototyping any type of applications in C++.
+app-plex is a general purpose tool for rapid prototyping any type of applications in C++.
 It helps you keep all the apps/demos you accumulate in one place and immediately deployable on any supported platform.
 
 

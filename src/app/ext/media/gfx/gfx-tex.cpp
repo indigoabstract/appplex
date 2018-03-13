@@ -243,10 +243,29 @@ void gfx_tex::set_active(int itex_unit_index)
    gfx_util::check_gfx_error();
    glBindTexture(gl_tex_target, texture_gl_id);
 
-   if (prm.regen_mipmaps && (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)))
+   if (texture_updated)
    {
-      glGenerateMipmap(gl_tex_target);
+      glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
+      glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
+      glTexParameteri(gl_tex_target, GL_TEXTURE_WRAP_S, prm.gl_wrap_s());
+      glTexParameteri(gl_tex_target, GL_TEXTURE_WRAP_T, prm.gl_wrap_t());
+
+      if (prm.anisotropy_enabled())
+      {
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, prm.max_anisotropy);
+      }
+
+      if (prm.gen_mipmaps && mipmaps_supported(prm.internal_format))
+      {
+         glGenerateMipmap(gl_tex_target);
+      }
+
+      texture_updated = false;
    }
+   //if (prm.regen_mipmaps && (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)))
+   //{
+   //   glGenerateMipmap(gl_tex_target);
+   //}
 
    gfx_util::check_gfx_error();
 }
@@ -326,6 +345,7 @@ gfx_tex::gfx_tex(const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_o
 {
    set_params(i_prm);
    is_external = false;
+   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
@@ -336,7 +356,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
    set_texture_name(itex_name);
 
    unsigned long iwith, iheight;
-   shared_ptr<RawImageData> rid = res_ld::inst()->load_image(tex_name);
+   shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
    iwith = rid->width;
    iheight = rid->height;
 
@@ -379,6 +399,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
 
    gfx_util::check_gfx_error();
    is_valid_state = true;
+   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
@@ -400,6 +421,7 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int iwith, int iheight,
 
    gfx_util::check_gfx_error();
    is_valid_state = true;
+   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
@@ -447,6 +469,7 @@ gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, gfx_tex_types iu
 
    gfx_util::check_gfx_error();
    is_valid_state = true;
+   texture_updated = false;
 }
 
 void gfx_tex::set_texture_name(std::string itex_name)
@@ -551,7 +574,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
    for (int k = 0; k < 6; k++)
    {
       std::string img_name = itex_name + "-" + ends[k] + ".png";
-      std::shared_ptr<RawImageData> rid = res_ld::inst()->load_image(img_name);
+      std::shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(img_name);
 
       if (!is_init)
       {

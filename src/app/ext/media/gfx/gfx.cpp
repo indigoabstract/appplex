@@ -253,6 +253,7 @@ void gfx::rt::set_current_render_target(shared_ptr<gfx_rt> irdt)
       if (active_rt)
       {
          glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer_id);
+         active_rt->color_att->texture_updated = true;
       }
 
       width = get_screen_width();

@@ -1025,9 +1025,9 @@ bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file
 		};
 	};
 
-	shared_ptr<RawImageData> diffmap = res_ld::inst()->load_image(idiff_file);
+	shared_ptr<raw_img_data> diffmap = res_ld::inst()->load_image(idiff_file);
 	color32* diffmap_ptr = (color32*)diffmap->data;
-	shared_ptr<RawImageData> specularmap = res_ld::inst()->load_image(ispec_file);
+	shared_ptr<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
 	color32* specularmap_ptr = (color32*)specularmap->data;
 
 	int width = diffmap->width;
@@ -1080,7 +1080,7 @@ void extract_alpha_channel()
 		};
 	};
 
-	shared_ptr<RawImageData> img = res_ld::inst()->load_image("trail.png");
+	shared_ptr<raw_img_data> img = res_ld::inst()->load_image("trail.png");
 	color32* img_ptr = (color32*)img->data;
 	int size = img->width * img->height;
 
@@ -1108,9 +1108,9 @@ void combine_lightmaps()
 		};
 	};
 
-	shared_ptr<RawImageData> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
-	shared_ptr<RawImageData> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
-	shared_ptr<RawImageData> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
+	shared_ptr<raw_img_data> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
+	shared_ptr<raw_img_data> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
+	shared_ptr<raw_img_data> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
 	color32* img_day_ptr = (color32*)img_day->data;
 	color32* img_night_ptr = (color32*)img_night->data;
 	color32* img_overcast_ptr = (color32*)img_overcast->data;
@@ -1144,8 +1144,8 @@ void combine_trail()
 		};
 	};
 
-	shared_ptr<RawImageData> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
-	shared_ptr<RawImageData> img_outline = res_ld::inst()->load_image("trail-outline.png");
+	shared_ptr<raw_img_data> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
+	shared_ptr<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
 	color32* img_alpha_ptr = (color32*)img_alpha->data;
 	color32* img_outline_ptr = (color32*)img_outline->data;
 	int size = img_alpha->width * img_alpha->height;
@@ -1293,9 +1293,9 @@ void unit_test_normal_mapping::load()
 	//	};
 	//};
 
-	//shared_ptr<RawImageData> diffmap = res_ld::inst()->load_image("earth_diffmap.png");
+	//shared_ptr<raw_img_data> diffmap = res_ld::inst()->load_image("earth_diffmap.png");
 	//color32* diffmap_ptr = (color32*)diffmap->data;
-	//shared_ptr<RawImageData> specularmap = res_ld::inst()->load_image("earth_flat_map_spec.png");
+	//shared_ptr<raw_img_data> specularmap = res_ld::inst()->load_image("earth_flat_map_spec.png");
 	//color32* specularmap_ptr = (color32*)specularmap->data;
 
 	//for (int k = 0; k < size; k++)

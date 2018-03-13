@@ -34,10 +34,10 @@ public:
 	void translate(float tx, float ty);
 	void fillAlphaRect(int x, int y, int w, int h, int color);
 	//void fillAlphaGradientQuad(vxfmt_v2fc4b* iva);
+   void update_camera_state() override;
 
 protected:
 	ux_camera(std::shared_ptr<gfx> i_gi = nullptr);
 	virtual void load(shared_ptr<gfx_camera> inst);
-	virtual void update_camera_state();
 	shared_ptr<ux_camera_impl> p;
 };

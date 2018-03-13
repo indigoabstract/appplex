@@ -6,11 +6,25 @@
 #pragma comment (lib, "zlib.lib")
 
 
-class RawImageData
+union rgba_32_fmt
+{
+   uint32 rgba;
+
+   struct
+   {
+      uint8 r;
+      uint8 g;
+      uint8 b;
+      uint8 a;
+   };
+};
+
+
+class raw_img_data
 {
 public:
-	RawImageData();
-	~RawImageData();
+	raw_img_data();
+	~raw_img_data();
 
 	int width;
 	int height;
@@ -32,8 +46,8 @@ public:
 
 	static shared_ptr<res_ld> inst();
 
-	shared_ptr<RawImageData> load_image(shared_ptr<pfm_file> ifile);
-	shared_ptr<RawImageData> load_image(std::string ifile_name);
+	shared_ptr<raw_img_data> load_image(shared_ptr<pfm_file> ifile);
+	shared_ptr<raw_img_data> load_image(std::string ifile_name);
 	bool save_image(shared_ptr<pfm_file> ifile, int iwidth, int iheight, uint8* ibuffer, uint32 iflip = e_no_flip);
 
 private:

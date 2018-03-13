@@ -165,6 +165,7 @@ public:
    void draw_sphere(glm::vec3 position, float radius, glm::quat orientation, const glm::vec4& color, float precision, float thickness);
    void draw_text_2d(glm::vec3 position, std::string text, const glm::vec4& color, glm::vec2 size, std::string fontName, glm::vec2 scale);
    void draw_mesh(shared_ptr<gfx_vxo> imesh);
+   virtual void update_camera_state();
 
    def_string_prop(gfx_camera, string_accessor) camera_id;
    std::vector<gfx_rt_info> rt_list;
@@ -185,7 +186,6 @@ protected:
    friend class gfx_camera_impl;
    gfx_camera(std::shared_ptr<gfx> i_gi = nullptr);
    virtual void load(shared_ptr<gfx_camera> inst);
-   virtual void update_camera_state();
    virtual void update_camera_state_impl();
    shared_ptr<draw_context> draw_ctx;
    shared_ptr<rw_sequence> draw_ops;
