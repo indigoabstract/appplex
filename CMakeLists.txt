@@ -46,7 +46,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(ADDITIONAL_LIBRARIES wsock32)
 	
 	find_library(GLEW_LIB glew32)
-	find_library(PNG_LIB libpng17)
+	find_library(PNG_LIB libpng16)
 	find_library(ZLIB_LIB zlib)
 	find_library(FMODEX_LIB fmodex_vc)
 	find_library(FREETYPE_LIB freetype.lib)
