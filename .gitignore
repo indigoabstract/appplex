@@ -15,20 +15,6 @@
 /pfm/android/default/local.properties
 /pfm/android/private
 /pfm/android.adt
-/pfm/msvc/msvc-2013/debug
-/pfm/msvc/msvc-2013/ipch
-/pfm/msvc/msvc-2013/appplex.opensdf
-/pfm/msvc/msvc-2013/appplex.sdf
-/pfm/msvc/msvc-2013/appplex.v12.suo
-/pfm/msvc/msvc-2015/.vs
-/pfm/msvc/msvc-2015/debug
-/pfm/msvc/msvc-2015/ipch
-/pfm/msvc/msvc-2015/appplex.opensdf
-/pfm/msvc/msvc-2015/appplex.sdf
-/pfm/msvc/msvc-2015/appplex.v12.suo
-/pfm/msvc/msvc-2015/appplex.VC.db
-/pfm/msvc/msvc-2015/appplex.VC.opendb
-/pfm/msvc/msvc-2015/appplex.VC.VC.opendb
 /pfm/msvc/msvc-2017
 /pfm/msvc/msvc-2017/.vs
 /pfm/msvc/msvc-2017/debug
@@ -44,5 +30,6 @@
 /src/app/min/appplex-conf.hpp
 /src/app/min/appplex-conf.cpp
 /src/app/units/private
+/src/app/units/public/layered-car-paint
 
 /pfm/msvc/proj
