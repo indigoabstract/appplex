@@ -4,7 +4,7 @@
 #include "gfx.hpp"
 #include "gfx-util.hpp"
 #include "min.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 
 
 gfx_rt::~gfx_rt()
@@ -56,7 +56,7 @@ void gfx_rt::set_color_attachment(std::shared_ptr<gfx_tex> icolor_att)
 void gfx_rt::reload()
 {
    glGenFramebuffers(1, &framebuffer);
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 
 void gfx_rt::check_valid_state()
@@ -72,7 +72,7 @@ gfx_rt::gfx_rt(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
    glGenFramebuffers(1, &framebuffer);
    is_valid_state = false;
    glGenRenderbuffers(1, &depth_buffer_id);
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 
 void gfx_rt::release()

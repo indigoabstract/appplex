@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #include "gfx-vxo.hpp"
-#include "pfmgl.h"
+#include "appplex-conf.hpp"
+#include "pfm-gl.h"
 #include "gfx.hpp"
 #include "gfx-util.hpp"
 #include "gfx-camera.hpp"
@@ -9,7 +10,9 @@
 #include "gfx-state.hpp"
 #include "gfx.hpp"
 #include "ext/gfx-surface.hpp"
+#if defined MOD_OBJ_LOADER
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
+#endif
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
@@ -43,6 +46,7 @@ gfx_uint gfx_vxo::method_type[] =
 
 gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 {
+   keep_geometry_data = false;
    vx_count = 0;
    idx_count = 0;
    vxi = i_vxi;
@@ -53,6 +57,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
    render_method = GLPT_TRIANGLES;
    is_submesh = false;
    array_buffer_id = elem_buffer_id = 0;
+   index_count = 0;
    buffer_changed = false;
 
    if (!is_submesh)
@@ -63,6 +68,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 
 gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 {
+   keep_geometry_data = false;
    vx_count = 0;
    idx_count = 0;
    vxi = i_vxi;
@@ -73,6 +79,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi) : 
    render_method = GLPT_TRIANGLES;
    is_submesh = i_is_submesh;
    array_buffer_id = elem_buffer_id = 0;
+   index_count = 0;
    buffer_changed = false;
 
    if (!is_submesh)
@@ -118,6 +125,7 @@ void gfx_vxo::set_data(const std::vector<uint8>& ivertices_buffer, const std::ve
 {
    vertices_buffer = ivertices_buffer;
    indices_buffer = iindices_buffer;
+   index_count = indices_buffer.size();
    buffer_changed = true;
 
    if (vxi.uses_tangent_basis && vxi.has_tangent_basis && setup_tangent_basis)
@@ -215,8 +223,8 @@ void gfx_vxo::push_material_params()
 
       gfx_uint culling_enabled = gl::FALSE_GL;
       gfx_uint culling_mode = gl::BACK_GL;
-      bool cull_back = mat[MP_CULL_BACK].get_bool_value();
-      bool cull_front = mat[MP_CULL_FRONT].get_bool_value();
+      bool cull_back = mat[MP_CULL_BACK].get_value<bool>();
+      bool cull_front = mat[MP_CULL_FRONT].get_value<bool>();
 
       if (cull_back && cull_front)
       {
@@ -239,18 +247,18 @@ void gfx_vxo::push_material_params()
          culling_enabled = gl::FALSE_GL;
       }
 
-      gfx_uint scissor_enabled = mat[MP_SCISSOR_ENABLED].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
+      gfx_uint scissor_enabled = mat[MP_SCISSOR_ENABLED].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
 
-      gfx_uint depth_test = mat[MP_DEPTH_TEST].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
+      gfx_uint depth_test = mat[MP_DEPTH_TEST].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
       gfx_uint depth_test_enabled = gl_st->is_enabled(gl::DEPTH_TEST) ? gl::TRUE_GL : gl::FALSE_GL;
-      gfx_uint depth_write = mat[MP_DEPTH_WRITE].get_bool_value() ? gl::TRUE_GL : gl::FALSE_GL;
-      gfx_uint depth_func = mat[MP_DEPTH_FUNCTION].get_int_value();
+      gfx_uint depth_write = mat[MP_DEPTH_WRITE].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
+      gfx_uint depth_func = mat[MP_DEPTH_FUNCTION].get_value<int>();
 
       gfx_uint blending_enabled = gl::TRUE_GL;
       gfx_uint blend_src = gl::SRC_ALPHA_GL;
       gfx_uint blend_dst = gl::ONE_MINUS_SRC_ALPHA_GL;
 
-      switch (mat[MP_BLENDING].get_int_value())
+      switch (mat[MP_BLENDING].get_value<int>())
       {
       case gfx_material::e_none:
          blending_enabled = gl::FALSE_GL;
@@ -330,7 +338,7 @@ void gfx_vxo::push_material_params()
 
          if (!mat[MP_SCISSOR_AREA].empty_value())
          {
-            sa = mat[MP_SCISSOR_AREA].get_vec4_value();
+            sa = mat[MP_SCISSOR_AREA].get_value<glm::vec4>();
             sa.y = gfx::rt::get_render_target_height() - (sa.y + sa.w);
          }
 
@@ -346,6 +354,8 @@ void gfx_vxo::push_material_params()
 
       if (name_changed && mesh_name.length() > 0)
       {
+#if defined MOD_OBJ_LOADER
+
          name_changed = false;
          shared_ptr<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_shared_ptr());
 
@@ -481,118 +491,22 @@ void gfx_vxo::push_material_params()
             }
          }
 
-         int x = 3;
+#else
+
+         vprint("error: MOD_OBJ_LOADER is not enabled\n");
+
+#endif
       }
 
       for (; it4 != mat.other_params.end(); it4++)
       {
          const std::string& uniform_name = it4->first;
          shared_ptr<gfx_material_entry> e = it4->second;
-         void* value = 0;
+         mws_any* value = e->get_any();
          gfx_input::e_data_type value_type = e->get_value_type();
 
          switch (value_type)
          {
-         case gfx_input::bvec1:
-         {
-            const bool& v = e->get_bool_value();
-            value = (void*)&v;
-            break;
-         }
-
-         case gfx_input::bvec2:
-         {
-            break;
-         }
-
-         case gfx_input::bvec3:
-         {
-            break;
-         }
-
-         case gfx_input::bvec4:
-         {
-            break;
-         }
-
-         case gfx_input::ivec1:
-         {
-            const int& v = e->get_int_value();
-            value = (void*)&v;
-            break;
-         }
-
-         case gfx_input::ivec2:
-         {
-            break;
-         }
-
-         case gfx_input::ivec3:
-         {
-            break;
-         }
-
-         case gfx_input::ivec4:
-         {
-            break;
-         }
-
-         case gfx_input::vec1:
-         {
-            const float& v = e->get_float_value();
-            value = (void*)&v;
-            break;
-         }
-
-         case gfx_input::vec2:
-         {
-            const glm::vec2& v = e->get_vec2_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
-         case gfx_input::vec3:
-         {
-            const glm::vec3& v = e->get_vec3_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
-         case gfx_input::vec3_array:
-         {
-            const std::vector<glm::vec3>* v = e->get_vec3_array_value();
-            value = (void*)v;
-            break;
-         }
-
-         case gfx_input::vec4:
-         {
-            const glm::vec4& v = e->get_vec4_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
-         case gfx_input::mat2:
-         {
-            const glm::mat2& v = e->get_mat2_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
-         case gfx_input::mat3:
-         {
-            const glm::mat3& v = e->get_mat3_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
-         case gfx_input::mat4:
-         {
-            const glm::mat4& v = e->get_mat4_value();
-            value = (void*)glm::value_ptr(v);
-            break;
-         }
-
          case gfx_input::s2d:
          {
             gfx_material_entry& e2 = mat[uniform_name][MP_TEXTURE_INST];
@@ -600,11 +514,11 @@ void gfx_vxo::push_material_params()
 
             if (!e2.empty_value())
             {
-               tex = e2.get_tex_value();
+               tex = e2.get_value<std::shared_ptr<gfx_tex> >();
             }
             else
             {
-               const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_text_value();
+               const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_value<std::string>();
                tex = gfx::tex::get_texture_by_name(tex_name);
 
                if (!tex)
@@ -623,12 +537,14 @@ void gfx_vxo::push_material_params()
             }
 
             tex->send_uniform(uniform_name, texture_unit_idx);
+            value = nullptr;
             texture_unit_idx++;
             break;
          }
 
          case gfx_input::s3d:
          {
+            value = nullptr;
             break;
          }
 
@@ -639,11 +555,11 @@ void gfx_vxo::push_material_params()
 
             if (!e2.empty_value())
             {
-               tex = e2.get_tex_value();
+               tex = e2.get_value<std::shared_ptr<gfx_tex> >();
             }
             else
             {
-               const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_text_value();
+               const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_value<std::string>();
                tex = gfx::tex::get_tex_cube_map(tex_name);
 
                if (tex)
@@ -657,17 +573,13 @@ void gfx_vxo::push_material_params()
             }
 
             tex->send_uniform(uniform_name, texture_unit_idx);
+            value = nullptr;
             texture_unit_idx++;
             break;
          }
-
-         case gfx_input::text:
-         {
-            break;
-         }
          }
 
-         if (value)
+         if (value && !value->empty())
          {
             shader->update_uniform(uniform_name, value);
          }
@@ -685,6 +597,7 @@ void gfx_vxo::set_size(int ivx_count, int iidx_count)
    idx_count = iidx_count;
    vertices_buffer.resize(vx_count * vxi.vertex_size);
    indices_buffer.resize(idx_count);
+   index_count = indices_buffer.size();
 }
 
 void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
@@ -707,13 +620,13 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), glp);
    }
 
-   if (vertices_buffer.empty() || indices_buffer.empty())
-   {
-      return;
-   }
-
    if (buffer_changed)
    {
+      if (vertices_buffer.empty() || indices_buffer.empty())
+      {
+         return;
+      }
+
       buffer_changed = false;
 
       if (array_buffer_id == 0)
@@ -726,7 +639,13 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       glBindBuffer(GL_ARRAY_BUFFER, array_buffer_id);
       glBufferData(GL_ARRAY_BUFFER, size, begin_ptr(vertices_buffer), GL_STATIC_DRAW);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elem_buffer_id);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * indices_buffer.size(), begin_ptr(indices_buffer), GL_STATIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * index_count, begin_ptr(indices_buffer), GL_STATIC_DRAW);
+
+      if (!keep_geometry_data)
+      {
+         vertices_buffer.clear();
+         indices_buffer.clear();
+      }
    }
    else if (array_buffer_id == 0)
    {
@@ -736,12 +655,12 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_id);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elem_buffer_id);
 
-   wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_int_value());
+   wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_value<int>());
 
    int offset = 0;
    gfx_uint method = method_type[render_method];
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
    {
@@ -786,7 +705,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       offset += at->get_aligned_size();
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    // aux vertex attribs
    int offset_aux = 0;
@@ -831,9 +750,9 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    if (wf_mode != MV_WF_WIREFRAME_ONLY)
    {
-      gfx_util::check_gfx_error();
-      glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, 0);
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
+      glDrawElements(method, index_count, GL_UNSIGNED_INT, 0);
+      mws_report_gfx_errs();
    }
 
    switch (wf_mode)
@@ -853,7 +772,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
          icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), p);
       }
 
-      glDrawElements(GL_LINES, indices_buffer.size(), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
       gfx::shader::set_current_program(glp);
       break;
    }
@@ -869,12 +788,12 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
          icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), glp);
       }
 
-      glDrawElements(GL_LINES, indices_buffer.size(), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
       break;
    }
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    // aux vertex attribs
    for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
@@ -899,7 +818,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 
 void gfx_vxo::compute_tangent_basis()
@@ -934,7 +853,7 @@ void gfx_vxo::compute_tangent_basis()
 
    total_size = offset;
    int vertex_count = vertices_buffer.size() / total_size;
-   int triangle_count = indices_buffer.size() / 3;
+   int triangle_count = index_count / 3;
 
    for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
    {

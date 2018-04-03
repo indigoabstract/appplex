@@ -180,7 +180,7 @@ public:
 		if (!conv_yuv420sp_2_rgb)
 		{
 			conv_yuv420sp_2_rgb = gfx::shader::new_program("conv_yuv420sp_2_rgb", "conv_yuv420sp_2_rgb.vsh", "conv_yuv420sp_2_rgb.fsh");
-			gfx_util::check_gfx_error();
+			mws_report_gfx_errs();
 		}
 
 		state = st_playing;
@@ -403,7 +403,7 @@ private:
 					v_tex->update(2, (const char*)av_frame->data[2]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
 					q2d->render_mesh(iux_cam);
 
-					gfx_util::check_gfx_error();
+					mws_report_gfx_errs();
 
                if (listener)
                {

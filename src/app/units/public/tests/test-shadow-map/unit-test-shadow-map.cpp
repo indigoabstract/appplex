@@ -221,7 +221,7 @@ void unit_test_shadow_map::load()
 		gfx_scene_inst->attach(p->obj_mesh[k]);
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_shadow_map::update()
@@ -251,7 +251,7 @@ bool unit_test_shadow_map::update()
 	//};
 	//gl_st->set_state(pl1);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }

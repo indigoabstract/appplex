@@ -46,7 +46,7 @@ using namespace test_gl;
 
 void unit_test_gl::load()
 {
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	{
 		rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
@@ -85,14 +85,14 @@ void unit_test_gl::load()
 	cc.from_float(0.5f, 0.f, 1.f, 1.f);
 	ux_cam->clear_color_value = cc;
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 void unit_test_gl::update_view(int update_count)
 {
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 	quad_mesh->render_mesh(ux_cam);
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	unit::update_view(update_count);
 }

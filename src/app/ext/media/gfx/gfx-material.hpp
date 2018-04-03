@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm.hpp"
+#include "min.hpp"
 #include "gfx-scene.hpp"
 #include "gfx-util.hpp"
 #include "gfx-tex.hpp"
@@ -12,6 +13,7 @@
 
 class gfx;
 class gfx_material;
+class mws_any;
 
 
 const std::string MP_BLENDING = "blending";
@@ -78,7 +80,6 @@ public:
    shared_ptr<gfx_material_entry> get_inst();
    gfx_material_entry& operator[] (const std::string iname);
 
-   //gl_material_entry& operator=(const bool ivalue);
    gfx_material_entry& operator=(const int ivalue);
    gfx_material_entry& operator=(const float ivalue);
    gfx_material_entry& operator=(const glm::vec2& ivalue);
@@ -95,35 +96,22 @@ public:
    shared_ptr<gfx_material> get_material();
    bool empty_value();
    gfx_input::e_data_type get_value_type();
-   bool get_bool_value();
-   int get_int_value();
-   float get_float_value();
-   const glm::vec2& get_vec2_value();
-   const glm::vec3& get_vec3_value();
-   const std::vector<glm::vec3>* get_vec3_array_value();
-   const glm::vec4& get_vec4_value();
-   const glm::mat2& get_mat2_value();
-   const glm::mat3& get_mat3_value();
-   const glm::mat4& get_mat4_value();
-   const shared_ptr<gfx_tex> get_tex_value();
-   const std::string& get_text_value();
+   template <typename T> T& get_value() { return mws_any_cast<T>(value); }
+   mws_any* get_any() { return &value; }
 
    void debug_print();
 
 protected:
    friend class gfx_material;
    static shared_ptr<gfx_material_entry> new_inst(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent);
-   gfx_material_entry();
    gfx_material_entry(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent);
-   void delete_value();
 
    weak_ptr<gfx_material> root;
    weak_ptr<gfx_material_entry> parent;
    bool enabled;
    std::string name;
    gfx_input::e_data_type value_type;
-   void* value;
-   shared_ptr<gfx_tex> s2d_val;
+   mws_any value;
    std::unordered_map<std::string, shared_ptr<gfx_material_entry> > entries;
 };
 

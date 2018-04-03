@@ -8,7 +8,7 @@
 #include "gfx-tex.hpp"
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 
 
 glm::vec3 gfx_transform::get_forward_dir()

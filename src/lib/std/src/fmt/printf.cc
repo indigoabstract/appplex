@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FORMAT
+
 /*
  Formatting library for C++
 
@@ -32,3 +36,5 @@ template void PrintfFormatter<wchar_t>::format(WCStringRef format);
 #endif  // FMT_HEADER_ONLY
 
 }  // namespace fmt
+
+#endif

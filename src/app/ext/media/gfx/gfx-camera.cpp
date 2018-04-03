@@ -7,7 +7,7 @@
 #include "gfx-shader.hpp"
 #include "gfx-state.hpp"
 #include "gfx-color.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -24,8 +24,8 @@ draw_context::draw_context(shared_ptr<gfx_camera> icam)
    (*line_mesh)[MP_DEPTH_WRITE] = true;
    (*line_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
    (*line_mesh)[MP_BLENDING] = MV_ALPHA;
-   //(*line_mesh)[MP_CULL_BACK] = false;
-   //(*line_mesh)[MP_CULL_FRONT] = false;
+   (*line_mesh)[MP_CULL_BACK] = false;
+   (*line_mesh)[MP_CULL_FRONT] = false;
    //line_mesh->render_method = GLPT_POINTS;
 
    img_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));

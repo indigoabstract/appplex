@@ -102,12 +102,11 @@ public:
 	void resize_db(int ipow_of_two);
 	shared_ptr<std::string> get_db_font_name(const std::string& ifont_name);
 	const std::vector<font_glyph>& get_glyph_vect(shared_ptr<ux_font> ifont, const std::string& itext);
-	const std::vector<font_glyph>& get_glyph_vect(shared_ptr<ux_font> ifont, const std::wstring& itext);
 	shared_ptr<gfx_tex> get_texture_atlas();
 	float get_ascender(shared_ptr<ux_font> ifont);
 	float get_descender(shared_ptr<ux_font> ifont);
 	float get_height(shared_ptr<ux_font> ifont);
-	glm::vec2 get_text_dim(shared_ptr<ux_font> ifont, const std::wstring& itext);
+	glm::vec2 get_text_dim(shared_ptr<ux_font> ifont, const std::string& itext);
 
 private:
 	friend class unit;

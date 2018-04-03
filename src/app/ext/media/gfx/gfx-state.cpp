@@ -2,7 +2,7 @@
 
 #include "gfx-state.hpp"
 #include "min.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 
 
 const unsigned int gl::FALSE_GL = GL_FALSE;

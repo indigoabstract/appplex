@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "pfm.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include "unit.hpp"
 #include "unit-ctrl.hpp"
 #include "min.hpp"
@@ -14,9 +14,10 @@
 boost::posix_time::ptime time_start;
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cstdarg>
 
 using std::string;
 using std::wstring;
@@ -27,6 +28,10 @@ using std::vector;
 // platform specific code
 #if defined PLATFORM_ANDROID
 
+
+#include "main.hpp"
+
+#define pfm_app_inst		android_main::get_instance()
 
 const std::string dir_separator = "/";
 
@@ -40,13 +45,11 @@ gfx_type_id pfm::get_gfx_type_id()
 	return gfx_type_opengl_es;
 }
 
-#include "main.hpp"
 #include <android/log.h>
 
 // trace
 #define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
 #define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
-#define pfm_app_inst		android_main::get_instance()
 
 #if !defined MOD_BOOST
 
@@ -67,14 +70,48 @@ uint32 pfm::time::get_time_millis()
 
 #elif defined PLATFORM_IOS
 
+
 const std::string dir_separator = "/";
+
 
 #elif defined PLATFORM_EMSCRIPTEN
 
+
+#include "main.hpp"
+
+#define pfm_app_inst emst_main::get_instance()
+
 const std::string dir_separator = "/";
+
+platform_id pfm::get_platform_id()
+{
+   return platform_emscripten;
+}
+
+gfx_type_id pfm::get_gfx_type_id()
+{
+   return gfx_type_opengl_es;
+}
+
+uint32 pfm::time::get_time_millis()
+{
+   struct timespec ts;
+
+   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+   {
+      pfm_app_inst->write_text_nl("error");
+   }
+
+   return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
 
 #elif defined PLATFORM_WINDOWS_PC
 
+
+#include "main.hpp"
+
+#define pfm_app_inst		msvc_main::get_instance()
 
 const std::string dir_separator = "\\";
 
@@ -94,10 +131,6 @@ gfx_type_id pfm::get_gfx_type_id()
 {
 	return gfx_type_opengl;
 }
-
-#include "..\..\..\pfm\msvc\src\main.hpp"
-
-#define pfm_app_inst		msvc_main::get_instance()
 
 #if !defined MOD_BOOST
 
@@ -122,6 +155,25 @@ vector<unicodestring> arg_vector;
 namespace pfm_impl
 {
 	umf_list res_files_map;
+
+   void print_type_sizes()
+   {
+      vprint("print type sizes\n");
+      vprint("sizeof int8 [%d]\n", sizeof(int8));
+      vprint("sizeof sint8 [%d]\n", sizeof(sint8));
+      vprint("sizeof uint8 [%d]\n", sizeof(uint8));
+      vprint("sizeof int16 [%d]\n", sizeof(int16));
+      vprint("sizeof sint16 [%d]\n", sizeof(sint16));
+      vprint("sizeof uint16 [%d]\n", sizeof(uint16));
+      vprint("sizeof int32 [%d]\n", sizeof(int32));
+      vprint("sizeof sint32 [%d]\n", sizeof(sint32));
+      vprint("sizeof uint32 [%d]\n", sizeof(uint32));
+      vprint("sizeof int64 [%d]\n", sizeof(int64));
+      vprint("sizeof sint64 [%d]\n", sizeof(sint64));
+      vprint("sizeof uint64 [%d]\n", sizeof(uint64));
+      vprint("sizeof real32 [%d]\n", sizeof(real32));
+      vprint("sizeof real64 [%d]\n", sizeof(real64));
+   }
 
    //true if res is in the same dir as src
    bool res_is_bundled_with_src()
@@ -446,7 +498,7 @@ namespace pfm_impl
 
 	void pfm_file_impl::seek_impl(uint64 ipos, int iseek_pos)
 	{
-		fseek((FILE*)file, ipos, iseek_pos);
+		fseek((FILE*)file, (long)ipos, iseek_pos);
 	}
 
 	uint64 pfm_file_impl::tell_impl()
@@ -834,6 +886,19 @@ pfm_data::pfm_data()
 pfm_data pfm::data;
 
 
+void pfm_main::init()
+{
+   //pfm_impl::print_type_sizes();
+}
+
+void pfm_main::start()
+{
+}
+
+void pfm_main::run()
+{
+}
+
 bool pfm_main::back_evt()
 {
 	return unit_ctrl::inst()->back_evt();
@@ -984,7 +1049,7 @@ shared_ptr<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(shared_ptr<p
 
 	if (ifile->io.open())
 	{
-		int size = ifile->length();
+		int size = (int)ifile->length();
 
 		res = shared_ptr<vector<uint8> >(new vector<uint8>(size));
 		ifile->io.read(begin_ptr(res), size);
@@ -1007,7 +1072,7 @@ shared_ptr<std::string> pfm::filesystem::load_res_as_string(shared_ptr<pfm_file>
 
 	if (ifile->io.open("rt"))
 	{
-		int size = ifile->length();
+		int size = (int)ifile->length();
 		auto res = std::make_shared<vector<uint8> >(size);
 		const char* res_bytes = (const char*)begin_ptr(res);
 		int text_size = ifile->io.read(begin_ptr(res), size);
@@ -1164,6 +1229,17 @@ std::string trs(const char* format, fmt::ArgList args)
 std::wstring wtrs(const wchar_t* format, fmt::ArgList args)
 {
    return fmt::format(format, args);
+}
+
+void mws_print_impl(const char* i_format, ...)
+{
+   char dest[1024 * 16];
+   va_list arg_ptr;
+
+   va_start(arg_ptr, i_format);
+   vsnprintf(dest, 1024 * 16 - 1, i_format, arg_ptr);
+   va_end(arg_ptr);
+   pfm::get_pfm_main_inst()->write_text(dest);
 }
 
 

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
 #include "gfx-tex.hpp"
 #include "gfx.hpp"
 #include "min.hpp"
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include "media/res-ld/res-ld.hpp"
 
 
@@ -76,7 +77,7 @@ gfx_int gfx_tex_params::gl_wrap_r()
    case e_twm_clamp_to_edge:
       return GL_CLAMP_TO_EDGE;
 
-   case e_twm_mirroed_repeat:
+   case e_twm_mirrored_repeat:
       return GL_MIRRORED_REPEAT;
 
    default:
@@ -94,7 +95,7 @@ gfx_int gfx_tex_params::gl_wrap_s()
    case e_twm_clamp_to_edge:
       return GL_CLAMP_TO_EDGE;
 
-   case e_twm_mirroed_repeat:
+   case e_twm_mirrored_repeat:
       return GL_MIRRORED_REPEAT;
 
    default:
@@ -112,7 +113,7 @@ gfx_int gfx_tex_params::gl_wrap_t()
    case e_twm_clamp_to_edge:
       return GL_CLAMP_TO_EDGE;
 
-   case e_twm_mirroed_repeat:
+   case e_twm_mirrored_repeat:
       return GL_MIRRORED_REPEAT;
 
    default:
@@ -227,20 +228,20 @@ void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_inde
 
    if (param_location != -1)
    {
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
       glUniform1i(param_location, iactive_tex_index);
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
       set_active(iactive_tex_index);
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
    }
 }
 
 void gfx_tex::set_active(int itex_unit_index)
 {
    check_valid_state();
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    glActiveTexture(GL_TEXTURE0 + itex_unit_index);
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    glBindTexture(gl_tex_target, texture_gl_id);
 
    if (texture_updated)
@@ -267,7 +268,7 @@ void gfx_tex::set_active(int itex_unit_index)
    //   glGenerateMipmap(gl_tex_target);
    //}
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 
 void gfx_tex::update(int iactive_tex_index, const char* ibb)
@@ -295,7 +296,7 @@ void gfx_tex::update(int iactive_tex_index, const char* ibb)
       }
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 
 void gfx_tex::reload()
@@ -316,10 +317,10 @@ void gfx_tex::reload()
          {
             int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
-            glTexStorage2D(gl_tex_target, mipmap_count, prm.internal_format, width, height);
+            mws_tex_img_2d(gl_tex_target, mipmap_count, prm.internal_format, width, height, 0, prm.format, prm.type, nullptr);
          }
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
 
          glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
          glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
@@ -336,7 +337,7 @@ void gfx_tex::reload()
             glGenerateMipmap(gl_tex_target);
          }
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
       }
    }
 }
@@ -355,12 +356,17 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
    uni_tex_type = TEX_2D;
    set_texture_name(itex_name);
 
-   unsigned long iwith, iheight;
-   shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
-   iwith = rid->width;
-   iheight = rid->height;
+#if defined MOD_PNG
 
-   init_dimensions(iwith, iheight);
+   shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
+
+#else
+
+   auto rid = std::make_shared<raw_img_data>(32, 32);
+
+#endif
+
+   init_dimensions(rid->width, rid->height);
 
    switch (uni_tex_type)
    {
@@ -376,11 +382,11 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
    {
       int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
-      glTexStorage2D(gl_tex_target, mipmap_count, prm.internal_format, width, height);
+      mws_tex_img_2d(gl_tex_target, mipmap_count, prm.internal_format, width, height, 0, prm.format, prm.type, nullptr);
       glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, prm.format, prm.type, rid->data);
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
    glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
@@ -397,7 +403,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
       glGenerateMipmap(gl_tex_target);
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    is_valid_state = true;
    texture_updated = false;
 }
@@ -419,7 +425,7 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int iwith, int iheight,
    texture_gl_id = itexture_id;
    init_dimensions(iwith, iheight);
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    is_valid_state = true;
    texture_updated = false;
 }
@@ -447,10 +453,10 @@ gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, gfx_tex_types iu
    {
       int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
-      glTexStorage2D(gl_tex_target, mipmap_count, prm.internal_format, width, height);
+      mws_tex_img_2d(gl_tex_target, mipmap_count, prm.internal_format, width, height, 0, prm.format, prm.type, nullptr);
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
    glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
@@ -467,7 +473,7 @@ gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, gfx_tex_types iu
       glGenerateMipmap(gl_tex_target);
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    is_valid_state = true;
    texture_updated = false;
 }
@@ -503,7 +509,7 @@ int gfx_tex::gen_texture_gl_id()
    glGenTextures(1, &tex_id);
 
    vprint("gfx-info gen_texture_gl_id [%d]\n", tex_id);
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    return tex_id;
 }
@@ -573,8 +579,16 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
 
    for (int k = 0; k < 6; k++)
    {
+#if defined MOD_PNG
+
       std::string img_name = itex_name + "-" + ends[k] + ".png";
       std::shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(img_name);
+
+#else
+
+      auto rid = std::make_shared<raw_img_data>(32, 32);
+
+#endif
 
       if (!is_init)
       {
@@ -582,13 +596,13 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
 
          is_init = true;
          init_dimensions(rid->width, rid->height);
-         glTexStorage2D(GL_TEXTURE_CUBE_MAP, mipmap_count, prm.internal_format, width, height);
+         mws_tex_img_2d(GL_TEXTURE_CUBE_MAP, mipmap_count, prm.internal_format, width, height, 0, prm.format, prm.type, nullptr);
       }
 
       glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + k, 0, 0, 0, width, height, prm.format, prm.type, rid->data);
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    if (mipmaps_supported(prm.internal_format))
    {
@@ -609,7 +623,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
    if (prm.anisotropy_enabled())glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, prm.max_anisotropy);
    if (prm.gen_mipmaps && mipmaps_supported(prm.internal_format))glGenerateMipmap(gl_tex_target);
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
    is_valid_state = true;
 }
 

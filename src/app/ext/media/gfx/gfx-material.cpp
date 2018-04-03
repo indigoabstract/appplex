@@ -7,7 +7,7 @@
 #include "gfx-camera.hpp"
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <glm/glm.hpp>
 
 static std::string depth_func_name_list[] = { MV_NEVER, MV_LESS, MV_EQUAL, MV_LESS_OR_EQUAL, MV_GREATER, MV_NOT_EQUAL, MV_GREATER_OR_EQUAL, MV_ALWAYS };
@@ -29,25 +29,69 @@ shared_ptr<gfx_material_entry> gfx_material_entry::get_inst()
    return shared_from_this();
 }
 
-gfx_material_entry::gfx_material_entry(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
+gfx_material_entry::gfx_material_entry(std::string i_name, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
 {
    root = imaterial_inst;
    parent = iparent;
    enabled = true;
-   name = iname;
-   value = 0;
+   name = i_name;
+   value.clear();
    value_type = gfx_input::e_invalid;
+
+   if (name == MP_COLOR_WRITE)
+   {
+      value = true;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_CULL_BACK)
+   {
+      value = true;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_CULL_FRONT)
+   {
+      value = false;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_DEPTH_TEST)
+   {
+      value = true;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_DEPTH_WRITE)
+   {
+      value = true;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_SCISSOR_ENABLED)
+   {
+      value = false;
+      value_type = gfx_input::bvec1;
+   }
+   else if (name == MP_BLENDING)
+   {
+      value = gfx_material::e_none;
+      value_type = gfx_input::ivec1;
+   }
+   else if (name == MP_DEPTH_FUNCTION)
+   {
+      value = gl::LESS_GL;
+      value_type = gfx_input::ivec1;
+   }
+   else if (name == MP_WIREFRAME_MODE)
+   {
+      value = MV_WF_NONE;
+      value_type = gfx_input::ivec1;
+   }
 }
 
 gfx_material_entry::~gfx_material_entry()
 {
-   delete_value();
+   value.clear();
 }
 
 gfx_material_entry& gfx_material_entry::operator[] (const std::string iname)
 {
-   //vprint("gl_material_entry::operator[] %s\n", iname.c_str());
-
    if (!entries[iname])
    {
       entries[iname] = new_inst(iname, get_material(), get_inst());
@@ -56,20 +100,10 @@ gfx_material_entry& gfx_material_entry::operator[] (const std::string iname)
    return *entries[iname];
 }
 
-//gl_material_entry& gl_material_entry::operator=(const bool ivalue)
-//{
-//	value_type = bvec1;
-//	delete_value();
-//	value = new bool(ivalue);
-//
-//	return *this;
-//}
-
 gfx_material_entry& gfx_material_entry::operator=(const int ivalue)
 {
    value_type = gfx_input::ivec1;
-   delete_value();
-   value = new int(ivalue);
+   value = (int)ivalue;
 
    return *this;
 }
@@ -77,8 +111,7 @@ gfx_material_entry& gfx_material_entry::operator=(const int ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const float ivalue)
 {
    value_type = gfx_input::vec1;
-   delete_value();
-   value = new float(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -86,8 +119,7 @@ gfx_material_entry& gfx_material_entry::operator=(const float ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const glm::vec2& ivalue)
 {
    value_type = gfx_input::vec2;
-   delete_value();
-   value = new glm::vec2(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -95,8 +127,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::vec2& ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const glm::vec3& ivalue)
 {
    value_type = gfx_input::vec3;
-   delete_value();
-   value = new glm::vec3(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -104,9 +135,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::vec3& ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const std::vector<glm::vec3>& ivalue)
 {
    value_type = gfx_input::vec3_array;
-   delete_value();
-   std::vector<glm::vec3>* v = new std::vector<glm::vec3>(ivalue);
-   value = v;
+   value = ivalue;
 
    return *this;
 }
@@ -114,8 +143,7 @@ gfx_material_entry& gfx_material_entry::operator=(const std::vector<glm::vec3>& 
 gfx_material_entry& gfx_material_entry::operator=(const glm::vec4& ivalue)
 {
    value_type = gfx_input::vec4;
-   delete_value();
-   value = new glm::vec4(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -123,8 +151,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::vec4& ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const glm::mat2& ivalue)
 {
    value_type = gfx_input::mat2;
-   delete_value();
-   value = new glm::mat2(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -132,8 +159,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::mat2& ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const glm::mat3& ivalue)
 {
    value_type = gfx_input::mat3;
-   delete_value();
-   value = new glm::mat3(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -141,8 +167,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::mat3& ivalue)
 gfx_material_entry& gfx_material_entry::operator=(const glm::mat4& ivalue)
 {
    value_type = gfx_input::mat4;
-   delete_value();
-   value = new glm::mat4(ivalue);
+   value = ivalue;
 
    return *this;
 }
@@ -151,8 +176,7 @@ gfx_material_entry& gfx_material_entry::operator=(const shared_ptr<gfx_tex> ival
 {
    parent.lock()->value_type = gfx_input::s2d;
    value_type = gfx_input::s2d;
-   delete_value();
-   s2d_val = ivalue;
+   value = ivalue;
 
    return *this;
 }
@@ -160,7 +184,7 @@ gfx_material_entry& gfx_material_entry::operator=(const shared_ptr<gfx_tex> ival
 gfx_material_entry& gfx_material_entry::operator=(shared_ptr<gfx_shader> ivalue)
 {
    value_type = gfx_input::e_invalid;
-   delete_value();
+   value = ivalue;
 
    if (name == MP_SHADER_INST)
    {
@@ -172,8 +196,7 @@ gfx_material_entry& gfx_material_entry::operator=(shared_ptr<gfx_shader> ivalue)
 
 gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
 {
-   delete_value();
-   value = new std::string(ivalue);
+   value = ivalue;
 
    if (gfx_material::is_std_param(name))
    {
@@ -197,7 +220,6 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
       }
       else if (name == MP_DEPTH_FUNCTION)
       {
-         delete_value();
          value_type = gfx_input::ivec1;
          int val = gl::LESS_GL;
 
@@ -210,11 +232,10 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
             }
          }
 
-         value = new int(val);
+         value = val;
       }
       else if (name == MP_BLENDING)
       {
-         delete_value();
          value_type = gfx_input::ivec1;
          int val = gfx_material::e_none;
 
@@ -227,7 +248,7 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
             }
          }
 
-         value = new int(val);
+         value = val;
       }
    }
    else
@@ -294,252 +315,14 @@ shared_ptr<gfx_material> gfx_material_entry::get_material()
 
 bool gfx_material_entry::empty_value()
 {
-   if (value_type == gfx_input::s2d && s2d_val)
-   {
-      return false;
-   }
+   bool empty = value.empty();
 
-   return value == 0;
+   return empty;
 }
 
 gfx_input::e_data_type gfx_material_entry::get_value_type()
 {
    return value_type;
-}
-
-bool gfx_material_entry::get_bool_value()
-{
-   if (value == 0)
-   {
-      if (name == MP_COLOR_WRITE)
-      {
-         return true;
-      }
-      else if (name == MP_CULL_BACK)
-      {
-         return true;
-      }
-      else if (name == MP_CULL_FRONT)
-      {
-         return false;
-      }
-      else if (name == MP_DEPTH_TEST)
-      {
-         return true;
-      }
-      else if (name == MP_DEPTH_WRITE)
-      {
-         return true;
-      }
-      else if (name == MP_SCISSOR_ENABLED)
-      {
-         return false;
-      }
-
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::ivec1 && value_type != gfx_input::bvec1)
-   {
-      throw ia_exception("value is null");
-   }
-
-   bool* v = (bool*)value;
-
-   return *v;
-}
-
-int gfx_material_entry::get_int_value()
-{
-   if (value == 0)
-   {
-      if (name == MP_BLENDING)
-      {
-         return gfx_material::e_none;
-      }
-      else if (name == MP_DEPTH_FUNCTION)
-      {
-         return gl::LESS_GL;
-      }
-      else if (name == MP_WIREFRAME_MODE)
-      {
-         return MV_WF_NONE;
-      }
-
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::ivec1)
-   {
-      throw ia_exception("value is null");
-   }
-
-   int* v = (int*)value;
-
-   return *v;
-}
-
-float gfx_material_entry::get_float_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::vec1)
-   {
-      throw ia_exception("value is null");
-   }
-
-   float* v = (float*)value;
-
-   return *v;
-}
-
-const glm::vec2& gfx_material_entry::get_vec2_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::vec2)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::vec2* v = (glm::vec2*)value;
-
-   return *v;
-}
-
-const glm::vec3& gfx_material_entry::get_vec3_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::vec3)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::vec3* v = (glm::vec3*)value;
-
-   return *v;
-}
-
-const std::vector<glm::vec3>* gfx_material_entry::get_vec3_array_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::vec3_array)
-   {
-      throw ia_exception("value is null");
-   }
-
-   std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)value;
-
-   return v;
-}
-
-const glm::vec4& gfx_material_entry::get_vec4_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::vec4)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::vec4* v = (glm::vec4*)value;
-
-   return *v;
-}
-
-const glm::mat2& gfx_material_entry::get_mat2_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::mat2)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::mat2* v = (glm::mat2*)value;
-
-   return *v;
-}
-
-const glm::mat3& gfx_material_entry::get_mat3_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::mat3)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::mat3* v = (glm::mat3*)value;
-
-   return *v;
-}
-
-const glm::mat4& gfx_material_entry::get_mat4_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::mat4)
-   {
-      throw ia_exception("value is null");
-   }
-
-   glm::mat4* v = (glm::mat4*)value;
-
-   return *v;
-}
-
-const shared_ptr<gfx_tex> gfx_material_entry::get_tex_value()
-{
-   if (value_type != gfx_input::s2d)
-   {
-      throw ia_exception("value is null");
-   }
-
-   return s2d_val;
-}
-
-const std::string& gfx_material_entry::get_text_value()
-{
-   if (value == 0)
-   {
-      throw ia_exception("value is null");
-   }
-
-   if (value_type != gfx_input::text)
-   {
-      throw ia_exception("value is null");
-   }
-
-   std::string* v = (std::string*)value;
-
-   return *v;
 }
 
 void gfx_material_entry::debug_print()
@@ -560,13 +343,15 @@ void gfx_material_entry::debug_print()
 
       if (value_type == gfx_input::text)
       {
-         std::string* s = (std::string*)value;
-         vprint(" text [%s]", s->c_str());
+         //std::string* s = (std::string*)value;
+         auto& s = get_value<std::string>();
+         vprint(" text [%s]", s.c_str());
       }
       else if (value_type == gfx_input::vec3)
       {
-         glm::vec3* v = (glm::vec3*)value;
-         vprint(" vec3 [%f, %f, %f]", v->x, v->y, v->z);
+         //glm::vec3* v = (glm::vec3*)value;
+         auto& v = get_value<glm::vec3>();
+         vprint(" vec3 [%f, %f, %f]", v.x, v.y, v.z);
       }
    }
    else
@@ -576,142 +361,6 @@ void gfx_material_entry::debug_print()
 
    vprint("]");
 }
-
-void gfx_material_entry::delete_value()
-{
-   if (value_type == 0)
-   {
-      return;
-   }
-
-   switch (value_type)
-   {
-   case gfx_input::bvec1:
-   {
-      bool* v = (bool*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::bvec2:
-   {
-      glm::bvec2* v = (glm::bvec2*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::bvec3:
-   {
-      glm::bvec3* v = (glm::bvec3*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::bvec4:
-   {
-      glm::bvec4* v = (glm::bvec4*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::ivec1:
-   {
-      int* v = (int*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::ivec2:
-   {
-      glm::ivec2* v = (glm::ivec2*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::ivec3:
-   {
-      glm::ivec3* v = (glm::ivec3*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::ivec4:
-   {
-      glm::ivec4* v = (glm::ivec4*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::vec1:
-   {
-      float* v = (float*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::vec2:
-   {
-      glm::vec2* v = (glm::vec2*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::vec3:
-   {
-      glm::vec3* v = (glm::vec3*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::vec3_array:
-   {
-      std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::vec4:
-   {
-      glm::vec4* v = (glm::vec4*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::mat2:
-   {
-      glm::mat2* v = (glm::mat2*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::mat3:
-   {
-      glm::mat3* v = (glm::mat3*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::mat4:
-   {
-      glm::mat4* v = (glm::mat4*)value;
-      delete v;
-      break;
-   }
-
-   case gfx_input::s2d:
-      break;
-
-   case gfx_input::text:
-   {
-      std::string* v = (std::string*)value;
-      delete v;
-      break;
-   }
-   }
-
-   value = 0;
-}
-
 
 std::unordered_map<std::string, shared_ptr<gfx_material_entry> > gfx_material::static_std_param;
 
@@ -740,12 +389,14 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
    if (is_std_param(iname))
       // if it's a standard parameter
    {
-      if (!std_params[iname])
+      shared_ptr<gfx_material_entry> me = std_params[iname];
+
+      if (!me)
       {
-         std_params[iname] = gfx_material_entry::new_inst(iname, get_inst(), nullptr);
+         me = std_params[iname] = gfx_material_entry::new_inst(iname, get_inst(), nullptr);
       }
 
-      return *std_params[iname];
+      return *me;
    }
 
    // this is a custom parameter. shader needs to be loaded to check for the parameter's type
@@ -800,13 +451,7 @@ bool gfx_material::is_std_param(const std::string& iparam_name)
 
 shared_ptr<gfx_shader> gfx_material::load_shader()
 {
-   if (shader)
-   {
-#if defined PLATFORM_WINDOWS_PC && defined _DEBUG
-      shader->reload_on_modifications();
-#endif
-   }
-   else
+   if (!shader)
    {
       gfx_material& inst = *this;
       gfx_material_entry& fsh = inst[MP_SHADER_NAME][MP_FSH_NAME];
@@ -814,8 +459,8 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
 
       if (!fsh.empty_value() && !vsh.empty_value())
       {
-         std::string fsh_name = fsh.get_text_value();
-         std::string vsh_name = vsh.get_text_value();
+         std::string fsh_name = fsh.get_value<std::string>();
+         std::string vsh_name = vsh.get_value<std::string>();
          std::string shader_id = gfx_shader::create_shader_id(vsh_name, fsh_name);
 
          shader = gfx::shader::get_program_by_shader_id(shader_id);
@@ -831,6 +476,12 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
          //vprint("gl_material::load_shader(): failed to load shader. switching to default\n");
          return gfx::shader::get_program_by_name("black_shader");
       }
+   }
+   else
+   {
+#if defined PLATFORM_WINDOWS_PC && defined _DEBUG
+      shader->reload_on_modifications();
+#endif
    }
 
    return shader;

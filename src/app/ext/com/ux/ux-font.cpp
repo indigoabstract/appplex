@@ -1,12 +1,15 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FONTS
+
 #include "ux-font.hpp"
 #include "font-db.hpp"
 #include "gfx-color.hpp"
 #include "min.hpp"
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
-#include "com/util/unicode/conversions-util.hpp"
 #include <glm/vec2.hpp>
 
 
@@ -30,6 +33,11 @@ public:
 	shared_ptr<gfx_color> color;
 };
 
+
+shared_ptr<ux_font> ux_font::new_inst(std::shared_ptr<ux_font> i_fnt)
+{
+   return new_inst(i_fnt->p->size, i_fnt->get_full_path());
+}
 
 shared_ptr<ux_font> ux_font::new_inst(float isize, const std::string& ifont_path)
 {
@@ -92,24 +100,14 @@ float ux_font::get_height()
 	return font_db::inst()->get_height(get_inst());
 }
 
-glm::vec2 ux_font::get_text_dim(const std::wstring& itext)
+glm::vec2 ux_font::get_text_dim(const std::string& itext)
 {
 	return font_db::inst()->get_text_dim(get_inst(), itext);
 }
 
-glm::vec2 ux_font::get_text_dim(const std::string& itext)
-{
-	return get_text_dim(string2wstring(itext));
-}
-
-float ux_font::get_text_width(const std::wstring& itext)
-{
-	return get_text_dim(itext).x;
-}
-
 float ux_font::get_text_width(const std::string& itext)
 {
-	return get_text_width(string2wstring(itext));
+	return get_text_dim(itext).x;
 }
 
 float ux_font::get_text_height(const std::string& itext)
@@ -154,3 +152,5 @@ ux_font::ux_font()
 	//m.strikethrough_color = black;
 	//m.font = 0;
 }
+
+#endif

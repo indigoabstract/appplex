@@ -516,7 +516,7 @@ void unit_test_dyn_geometry::load()
 
 	p->persp_cam->position = glm::vec3(0.f, 0.f, 200.f);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_dyn_geometry::update()
@@ -547,7 +547,7 @@ bool unit_test_dyn_geometry::update()
 	//p->ortho_cam->setColor(0xffff0000);
 	//p->ortho_cam->fillRect(50, 50, 150, 200);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }

@@ -34,7 +34,7 @@
 #ifndef __OPEN_GL_H__
 #define __OPEN_GL_H__
 
-#include "pfmgl.h"
+#include "pfm-gl.h"
 //#if defined(__APPLE__)
 //#  ifdef GL_ES_VERSION_2_0
 //#    include <OpenGLES/ES2/gl.h>

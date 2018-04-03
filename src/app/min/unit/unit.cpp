@@ -2,6 +2,7 @@
 
 #include "unit.hpp"
 #include "appplex-conf.hpp"
+#include "com/util/util.hpp"
 #include "com/ux/ux-camera.hpp"
 #include "com/ux/ux.hpp"
 #include "com/ux/ux-com.hpp"
@@ -30,7 +31,7 @@ namespace bfs = ::boost::filesystem;
 #include "gfx-quad-2d.hpp"
 #include "gfx-rt.hpp"
 #include "public/tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 
 #endif
 
@@ -74,7 +75,7 @@ public:
          recording_txt_dim = recording_fnt->get_text_dim(recording_txt);
          date_fnt = ux_font::new_inst(20.f);
          date_fnt->set_color(gfx_color::colors::cyan);
-         pbo_supported = is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
+         pbo_supported = mws_is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
          y_pbo_ids = { 0, 0 };
          u_pbo_ids = { 0, 0 };
          v_pbo_ids = { 0, 0 };
@@ -194,7 +195,7 @@ public:
    {
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
 
       auto unit = u.lock();
       auto ux_cam = u.lock()->ux_cam;
@@ -263,21 +264,21 @@ public:
       rt_y_quad->render_mesh(ux_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
 
       gfx::rt::set_current_render_target(rt_u);
       rt_u_quad->render_mesh(ux_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
       helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
       gfx::rt::set_current_render_target();
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
 
       gfx::rt::set_current_render_target(rt_v);
       rt_v_quad->render_mesh(ux_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
       helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
       gfx::rt::set_current_render_target();
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
 
       // skip this on the first frame as the frame data isn't ready yet
       // also skip on the second frame to avoid capturing the fps text (it's still in the backbuffer)
@@ -437,7 +438,7 @@ public:
    std::shared_ptr<ux_font> recording_fnt;
    std::string recording_txt;
    glm::vec2 recording_txt_dim;
-   ping_pong_time_slider rec_txt_slider;
+   ping_pong_time_slider<float> rec_txt_slider;
 
 #endif
 
@@ -975,34 +976,8 @@ void unit::setInit(bool isInit0)
 
 void unit::update_view(int update_count)
 {
-   //shared_ptr<ux_camera> gfx = gfx_openvg::get_instance();
-   //sprenderer r = renderer::get_instance();
-   //glm::mat4 cam, tm;
-   //cam = glm::ortho(0.f, (float)get_width(), (float)get_height(), 0.f, -1.f, 1000.f);
-   //r->mx.set_projection_matrix(cam);
-   //r->mx.set_view_matrix(tm);
-
-   //decl_scglpl(pl1)
-   //{
-   //	{gl::CULL_FACE, gl::FALSE_GL}, {gl::DEPTH_TEST, gl::FALSE_GL},
-   //	{gl::DEPTH_WRITEMASK, gl::FALSE_GL}, {gl::VERTEX_ARRAY, gl::TRUE_GL},
-   //	{gl::COLOR_ARRAY, gl::FALSE_GL}, {gl::NORMAL_ARRAY, gl::FALSE_GL}, 
-   //	{gl::TEXTURE_COORD_ARRAY, gl::FALSE_GL}, {gl::TEXTURE_2D, gl::FALSE_GL},
-   //	{},
-   //};
-   //r->st.set_state(pl1);
-
    shared_ptr<ux_camera> gfx = ux_cam;
-   //gfx->sync_with_openvg();
    uxroot->update_view(gfx);
-
-   //r->mx.set_projection_matrix(cam);
-   //r->mx.set_view_matrix(tm);
-
-   //if(prefs->show_onscreen_console())
-   //{
-   //	pfm::get_console()->draw(gfx);
-   //}
 
    if (prefs->draw_touch_symbols_trail() && !touch_ctrl->is_pointer_released())
    {
@@ -1020,15 +995,18 @@ void unit::update_view(int update_count)
       }
    }
 
+#ifdef MWS_DEBUG_BUILD
+
    if (fps > 0 && !storage.is_recording_screen())
    {
       float ups = 1000.f / update_ctrl->getTimeStepDuration();
       string f = trs("uc {} u {:02.1f} f {:02.1f}", update_count, ups, fps);
+      glm::vec2 txt_dim = gfx->get_font()->get_text_dim(f);
 
-      gfx->drawText(f, get_width() - 220.f, 0.f);
+      gfx->drawText(f, get_width() - txt_dim.x, 0.f);
    }
 
-   //signal_opengl_error();
+#endif // MWS_DEBUG_BUILD
 }
 
 

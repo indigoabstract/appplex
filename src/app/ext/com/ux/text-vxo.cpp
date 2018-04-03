@@ -1,9 +1,12 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_VECTOR_FONTS
+
 #include "text-vxo.hpp"
 #include "com/ux/ux-font.hpp"
 #include "com/ux/font-db.hpp"
-#include "com/util/unicode/conversions-util.hpp"
 #include "gfx.hpp"
 #include "gfx-color.hpp"
 #include "gfx-camera.hpp"
@@ -11,7 +14,7 @@
 #include "gfx-tex.hpp"
 #include "gfx-state.hpp"
 #include "gfx-vxo.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <freetype-gl/vertex-buffer.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,7 +48,7 @@ public:
 		vbuffer = vertex_buffer_new("vertex:3f,tex_coord:2f,color:4f,ashift:1f,agamma:1f");
       update_projection_mx();
       
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
 	}
 
 	~text_vxo_impl()
@@ -59,12 +62,12 @@ public:
 		vertex_buffer_clear(vbuffer);
 	}
 
-	void add_text(const std::wstring& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
+	void add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
 	{
 		auto& glyphs = font_db::inst()->get_glyph_vect(ifont->get_inst(), itext);
 		glm::vec2 pen(ipos.x, ipos.y + ifont->get_ascender());
 
-		add_text_2d_impl(vbuffer, glyphs, itext, pen, gfx::rt::get_render_target_height(), ifont);
+		add_text_2d_impl(vbuffer, glyphs, itext, pen, (float)gfx::rt::get_render_target_height(), ifont);
       //std::string text = wstring2string(itext);
       //add_text_2d(text, pen, ifont);
    }
@@ -114,7 +117,7 @@ public:
 			vertex_buffer_render(vbuffer, GL_TRIANGLES);
 		}
 
-		gfx_util::check_gfx_error();
+		mws_report_gfx_errs();
 	}
 
    void add_text_2d(const std::string& Text, const glm::vec2& Pos, const std::shared_ptr<ux_font> Fnt)
@@ -216,7 +219,7 @@ public:
       }
    }
    
-   void add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::wstring& text,
+   void add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::string& text,
 		const glm::vec2& ipen, float irt_height, const shared_ptr<ux_font> ifont)
 	{
 		int len = glm::min(text.length(), glyphs.size());
@@ -254,10 +257,10 @@ public:
 						kerning = glyph.get_kerning(text[i - 1]);
 					}
 					pen.x += kerning;
-					float x0 = (int)(pen.x + glyph.get_offset_x());
-					float y0 = (int)(irt_height - pen.y + glyph.get_offset_y());
-					float x1 = (int)(x0 + glyph.get_width());
-					float y1 = (int)(y0 - glyph.get_height());
+					float x0 = (float)(pen.x + glyph.get_offset_x());
+					float y0 = (float)(irt_height - pen.y + glyph.get_offset_y());
+					float x1 = (float)(x0 + glyph.get_width());
+					float y1 = (float)(y0 - glyph.get_height());
 					float s0 = glyph.get_s0();
 					float t0 = glyph.get_t0();
 					float s1 = glyph.get_s1();
@@ -280,9 +283,12 @@ public:
 
    void update_projection_mx()
    {
+      rt_width = gfx::rt::get_render_target_width();
+      rt_height = gfx::rt::get_render_target_height();
+
       float left = 0;
-      float right = rt_width = gfx::rt::get_render_target_width();
-      float bottom = rt_height = gfx::rt::get_render_target_height();
+      float right = (float)rt_width;
+      float bottom = (float)rt_height;
       float top = 0;
 
       projection = glm::ortho(left, right, top, bottom, -100.f, 100.f);
@@ -314,12 +320,6 @@ void text_vxo::clear_text()
 
 void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
 {
-	std::wstring tx = string2wstring(itext);
-	p->add_text(tx, ipos, ifont);
-}
-
-void text_vxo::add_text(const std::wstring& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
-{
 	p->add_text(itext, ipos, ifont);
 }
 
@@ -336,3 +336,5 @@ void text_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
 text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color, a_v1_shift, a_v1_gamma"))
 {
 }
+
+#endif

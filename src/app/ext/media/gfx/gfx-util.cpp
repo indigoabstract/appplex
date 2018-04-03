@@ -8,7 +8,7 @@
 #include "gfx-quad-2d.hpp"
 #include "gfx-tex.hpp"
 #include "ext/gfx-surface.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 
 
 std::unordered_map<std::string, gfx_input::e_data_type> gfx_types;
@@ -186,32 +186,7 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw
       q2d->render_mesh(shared_ptr<gfx_camera>());
 
       gfx::shader::set_current_program(current_program);
-      gfx_util::check_gfx_error();
-   }
-}
-
-void gfx_util::check_gfx_error()
-{
-   //if debug build
-   {
-      int error_code = glGetError();
-
-      if (error_code != 0)
-      {
-         if (gl_error_code_list.find(error_code) != gl_error_code_list.end())
-         {
-            std::string error_name = gl_error_code_list[error_code];
-            std::string error_desc = gl_error_list[error_name];
-
-            vprint("gl error %d / 0x%x: %s [%s]\n", error_code, error_code, error_name.c_str(), error_desc.c_str());
-         }
-         else
-         {
-            vprint("gl error %d / 0x%x\n", error_code, error_code);
-         }
-
-         ia_signal_error();
-      }
+      mws_report_gfx_errs();
    }
 }
 
@@ -281,4 +256,30 @@ uint32 gfx_util::next_power_of_2(uint32 in)
    in |= in >> 1;
 
    return in + 1;
+}
+
+void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line)
+{
+#if defined MWS_REPORT_GL_ERRORS
+
+   int error_code = glGetError();
+
+   if (error_code != 0)
+   {
+      if (gl_error_code_list.find(error_code) != gl_error_code_list.end())
+      {
+         std::string error_name = gl_error_code_list[error_code];
+         std::string error_desc = gl_error_list[error_name];
+
+         mws_print("gl error in file [%s] at line [%d] code [%d / 0x%x] name [%s] desc [%s]\n", i_file, i_line, error_code, error_code, error_name.c_str(), error_desc.c_str());
+      }
+      else
+      {
+         mws_print("gl error in file [%s] at line [%d] code [%d / 0x%x]\n", i_file, i_line, error_code, error_code);
+      }
+
+      ia_signal_error();
+   }
+
+#endif
 }

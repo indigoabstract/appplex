@@ -989,7 +989,7 @@ namespace global_flight_paths_ns
          hot_spot_connex->Sethot_spots(hs_list);
          hot_spot_connex->show();
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
       }
 
       virtual void receive(shared_ptr<iadp> idp)
@@ -1050,7 +1050,7 @@ namespace global_flight_paths_ns
 
          //persp_cam->draw_axes(vpc_rs_mesh->position, 5 * globe_radius, 1);
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
       }
 
       virtual void update_view(shared_ptr<ux_camera> g)

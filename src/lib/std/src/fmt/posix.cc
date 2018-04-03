@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FORMAT
+
 /*
  A C++ interface to POSIX functions.
 
@@ -238,3 +242,5 @@ long fmt::getpagesize() {
   return size;
 #endif
 }
+
+#endif

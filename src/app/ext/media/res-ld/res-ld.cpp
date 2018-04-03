@@ -1,6 +1,28 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
 #include "res-ld.hpp"
+
+
+raw_img_data::raw_img_data(int i_width, int i_height)
+{
+   width = i_width;
+   height = i_height;
+   size = width * height * 4;
+   gl_color_format = 1;
+   data = (uint8*)malloc(size);
+   memset(data, 0, size);
+}
+
+raw_img_data::~raw_img_data()
+{
+   free(data);
+   data = nullptr;
+}
+
+
+#if defined MOD_PNG
+
 #include "min.hpp"
 #include <libpng/png.h>
 
@@ -10,8 +32,19 @@ png_byte bit_depth = 8;
 
 png_structp png_ptr;
 png_infop info_ptr;
-png_bytep * row_pointers;
+png_bytep* row_pointers;
+png_voidp user_error_ptr;
 
+
+void user_error_fn(png_structp png_ptr, png_const_charp error_msg)
+{
+   vprint("libpng error msg [%s]\n", error_msg);
+}
+
+void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg)
+{
+   vprint("libpng warning msg [%s]\n", warning_msg);
+}
 
 void abort_(const char * s, ...)
 {
@@ -32,9 +65,9 @@ void write_png_file(shared_ptr<pfm_file> file_name, int iwidth, int iheight, uin
    if (!file_name->is_opened())
       abort_("[write_png_file] File %s could not be opened for writing", file_name->get_file_name().c_str());
 
-
    /* initialize stuff */
-   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, user_error_ptr, user_error_fn, user_warning_fn);
+   png_set_error_fn(png_ptr, user_error_ptr, user_error_fn, user_warning_fn);
 
    if (!png_ptr)
       abort_("[write_png_file] png_create_write_struct failed");
@@ -56,7 +89,7 @@ void write_png_file(shared_ptr<pfm_file> file_name, int iwidth, int iheight, uin
 
    png_set_IHDR(png_ptr, info_ptr, width, height,
       bit_depth, color_type, PNG_INTERLACE_NONE,
-      PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+      PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
    png_write_info(png_ptr, info_ptr);
 
@@ -145,18 +178,12 @@ void process_file(void)
 }
 
 
-shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size);
-void release_raw_image_data(const raw_img_data* data);
+shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename);
 
 
 raw_img_data::raw_img_data()
 {
-   data = 0;
-}
-
-raw_img_data::~raw_img_data()
-{
-   release_raw_image_data(this);
+   data = nullptr;
 }
 
 
@@ -178,16 +205,17 @@ shared_ptr<res_ld> res_ld::inst()
 
 shared_ptr<raw_img_data> res_ld::load_image(shared_ptr<pfm_file> ifile)
 {
+   auto filename = ifile->get_file_name().c_str();
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(ifile);
-   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
-   vprint("loading img file [%s], size [%d]\n", ifile->get_file_name().c_str(), img_data->size());
+   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), filename);
+   vprint("loading img file [%s], size [%d]\n", filename, img_data->size());
 
    return rid;
 }
 
-shared_ptr<raw_img_data> res_ld::load_image(std::string ifile_name)
+shared_ptr<raw_img_data> res_ld::load_image(std::string i_filename)
 {
-   std::string img_name = ifile_name;
+   std::string img_name = i_filename;
 
    if (!ends_with(img_name, ".png"))
    {
@@ -195,8 +223,8 @@ shared_ptr<raw_img_data> res_ld::load_image(std::string ifile_name)
    }
 
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(img_name);
-   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size());
-   vprint("loading img file [%s], size [%d]\n", ifile_name.c_str(), img_data->size());
+   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), img_name.c_str());
+   vprint("loading img file [%s], size [%d]\n", img_name.c_str(), img_data->size());
 
    return rid;
 }
@@ -235,12 +263,12 @@ static PngInfo read_and_update_info(const png_structp png_ptr, const png_infop i
 static DataHandle read_entire_png_image(const png_structp png_ptr, const png_infop info_ptr, const png_uint_32 height);
 static gfx_enum get_gl_color_format(const int png_color_format);
 
-shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size)
+shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename)
 {
    assert(png_data != NULL && png_data_size > 8);
    assert(png_check_sig((png_const_bytep)png_data, 8));
 
-   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, user_error_ptr, user_error_fn, user_warning_fn);
    assert(png_ptr != NULL);
    png_infop info_ptr = png_create_info_struct(png_ptr);
    assert(info_ptr != NULL);
@@ -250,7 +278,7 @@ shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const
 
    if (setjmp(png_jmpbuf(png_ptr)))
    {
-      trx("Error reading PNG file!");
+      vprint("Error reading PNG file [%s]!\n", i_filename);
    }
 
    const PngInfo png_info = read_and_update_info(png_ptr, info_ptr);
@@ -267,12 +295,6 @@ shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const
    rd->data = (uint8*)raw_image.data;
 
    return rd;
-}
-
-void release_raw_image_data(const raw_img_data* data)
-{
-   assert(data != NULL);
-   free((void*)data->data);
 }
 
 static void read_png_data_callback(png_structp png_ptr, png_byte* raw_data, png_size_t read_length)
@@ -363,3 +385,12 @@ static gfx_enum get_gl_color_format(const int png_color_format)
 
    return 0;
 }
+
+#else
+
+raw_img_data::raw_img_data()
+{
+   data = nullptr;
+}
+
+#endif

@@ -4,7 +4,7 @@
 #include "gfx.hpp"
 #include "pfm.hpp"
 #include "gfx-util.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include "min.hpp"
 
 
@@ -183,7 +183,7 @@ public:
       return ishader_src;
    }
 
-   void create_program(const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src, const std::string& ishader_id)
+   void create_program(const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src, const std::string& i_shader_id)
    {
       try
       {
@@ -201,9 +201,9 @@ public:
          fs_shader_src = add_platform_code(fs_shader_src);
 
          vertex_shader_id = compile_shader(GL_VERTEX_SHADER, vs_shader_src);
-         throw_if_false(vertex_shader_id != 0, "Error loading vertex shader");
+         throw_if_false(vertex_shader_id != 0, "Error loading vertex shader: " + i_shader_id);
          fragment_shader_id = compile_shader(GL_FRAGMENT_SHADER, fs_shader_src);
-         throw_if_false(fragment_shader_id != 0, "Error loading loading shader");
+         throw_if_false(fragment_shader_id != 0, "Error loading fragment shader: " + i_shader_id);
 
          if (fragment_shader_id == 0)
          {
@@ -213,7 +213,7 @@ public:
          }
 
          program_id = glCreateProgram();
-         throw_if_false(program_id != 0, "Error creating program");
+         throw_if_false(program_id != 0, "Error creating program " + i_shader_id);
 
          if (program_id == 0)
          {
@@ -233,9 +233,9 @@ public:
 
             std::vector<gfx_char> log(log_length);
             glGetProgramInfoLog(program_id, 10000, &log_length, &log[0]);
-            vprint("error linking the program\n%s\n", &log[0]);
+            vprint("error linking the program: %s\n%s\n", i_shader_id.c_str(), &log[0]);
             glDeleteProgram(program_id);
-            throw_if_false(linked != 0, "Error linking program");
+            throw_if_false(linked != 0, "Error linking program " + i_shader_id);
 
             return;
          }
@@ -244,7 +244,7 @@ public:
          glDeleteShader(fragment_shader_id);
          vertex_shader_id = fragment_shader_id = 0;
 
-         if (ishader_id.length() == 0)
+         if (i_shader_id.length() == 0)
          {
             char name[256];
 
@@ -267,8 +267,10 @@ public:
       }
       catch (ia_exception e)
       {
+#ifdef USES_EXCEPTIONS
          is_validated = false;
          vprint("%s\n", e.what());
+#endif
       }
    }
 
@@ -279,7 +281,7 @@ public:
 
       shader = glCreateShader(ishader_type);
       //ia_assert("Error creating " + shader_desc + " : " + shader_path, shader != 0);
-      throw_if_false(shader != 0, "Error creating shader");
+      throw_if_false(shader != 0, "Error creating shader: " + shader_id);
 
       int length = ishader_src->length();
       const char* shader_src_vect[1] = { ishader_src->c_str() };
@@ -311,7 +313,7 @@ public:
          vprint("error compiling [%s] shader\n%s\n", shader_name.c_str(), &log[0]);
          glDeleteShader(shader);
          //ia_assert("Error compiling " + shader_desc + " : " + shader_path, compiled != 0);
-         throw_if_false(compiled != 0, "Error compiling shader");
+         throw_if_false(compiled != 0, "Error compiling shader: " + shader_name);
       }
 
       return shader;
@@ -431,7 +433,7 @@ public:
          program_id = fragment_shader_id = vertex_shader_id = 0;
       }
 
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
    }
 
    void reload()
@@ -449,7 +451,7 @@ public:
          //}
       }
 
-      gfx_util::check_gfx_error();
+      mws_report_gfx_errs();
    }
 
    void reload_on_modifications()
@@ -611,24 +613,17 @@ unsigned int gfx_shader::get_program_id()
    return p->program_id;
 }
 
-void gfx_shader::update_uniform(std::string iuni_name, const void* ival)
+void gfx_shader::update_uniform(std::shared_ptr<gfx_input> i_input, const mws_any* i_val)
 {
-   if (!(p->is_validated && p->is_activated))
+   if (i_input && i_input->get_location() != -1)
    {
-      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
-      return;
-   }
+      mws_report_gfx_errs();
 
-   gfx_util::check_gfx_error();
+      gfx_int loc_idx = i_input->get_location();
+      gfx_int array_size = i_input->get_array_size();
+      gfx_input::e_data_type dt = i_input->get_data_type();
 
-   std::shared_ptr<gfx_input> input = get_param(iuni_name);
-
-   if (input && input->get_location() != -1)
-   {
-      gfx_int loc_idx = input->get_location();
-      gfx_int array_size = input->get_array_size();
-
-      switch (input->get_data_type())
+      switch (dt)
       {
       case gfx_input::bvec1:
       case gfx_input::bvec2:
@@ -642,47 +637,148 @@ void gfx_shader::update_uniform(std::string iuni_name, const void* ival)
          break;
 
       case gfx_input::vec1:
-         glUniform1fv(loc_idx, array_size, (gfx_float*)ival);
+         glUniform1fv(loc_idx, array_size, &mws_any_cast<float>(*i_val));
          break;
 
       case gfx_input::vec2:
-         glUniform2fv(loc_idx, array_size, (gfx_float*)ival);
+         glUniform2fv(loc_idx, array_size, &mws_any_cast<glm::vec2>(*i_val).x);
          break;
 
       case gfx_input::vec3:
-         glUniform3fv(loc_idx, array_size, (gfx_float*)ival);
+         glUniform3fv(loc_idx, array_size, &mws_any_cast<glm::vec3>(*i_val).x);
          break;
 
       case gfx_input::vec3_array:
       {
-         std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)ival;
+         const std::vector<glm::vec3>& v = mws_any_cast<std::vector<glm::vec3> >(*i_val);
+         glUniform3fv(loc_idx, v.size(), (gfx_float*)v.data());
+         break;
+      }
+
+      case gfx_input::vec4:
+         glUniform4fv(loc_idx, array_size, &mws_any_cast<glm::vec4>(*i_val).x);
+         break;
+
+      case gfx_input::mat2:
+         glUniformMatrix2fv(loc_idx, array_size, false, &mws_any_cast<glm::mat2>(*i_val)[0].x);
+         break;
+
+      case gfx_input::mat3:
+         glUniformMatrix3fv(loc_idx, array_size, false, &mws_any_cast<glm::mat3>(*i_val)[0].x);
+         break;
+
+      case gfx_input::mat4:
+         glUniformMatrix4fv(loc_idx, array_size, false, &mws_any_cast<glm::mat4>(*i_val)[0].x);
+         break;
+
+      case gfx_input::s2d:
+         glUniform1i(loc_idx, mws_any_cast<int>(*i_val));
+         break;
+      }
+
+      mws_report_gfx_errs();
+   }
+}
+
+void gfx_shader::update_uniform(gfx_std_uni i_std_uni, const mws_any* i_val)
+{
+   if (!(p->is_validated && p->is_activated))
+   {
+      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      return;
+   }
+
+   update_uniform(std::shared_ptr<gfx_input>(), i_val);
+}
+
+void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
+{
+   if (!(p->is_validated && p->is_activated))
+   {
+      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      return;
+   }
+
+
+   std::shared_ptr<gfx_input> input = get_param(i_uni_name);
+
+   if (input && input->get_location() != -1)
+   {
+      mws_report_gfx_errs();
+
+      gfx_int loc_idx = input->get_location();
+      gfx_int array_size = input->get_array_size();
+      gfx_input::e_data_type dt = input->get_data_type();
+
+      switch (dt)
+      {
+      case gfx_input::bvec1:
+      case gfx_input::bvec2:
+      case gfx_input::bvec3:
+      case gfx_input::bvec4:
+      case gfx_input::ivec1:
+      case gfx_input::ivec2:
+      case gfx_input::ivec3:
+      case gfx_input::ivec4:
+         throw ia_exception("glsl_program::update_uniform n/i");
+         break;
+
+      case gfx_input::vec1:
+         glUniform1fv(loc_idx, array_size, (gfx_float*)i_val);
+         break;
+
+      case gfx_input::vec2:
+         glUniform2fv(loc_idx, array_size, (gfx_float*)i_val);
+         break;
+
+      case gfx_input::vec3:
+         glUniform3fv(loc_idx, array_size, (gfx_float*)i_val);
+         break;
+
+      case gfx_input::vec3_array:
+      {
+         std::vector<glm::vec3>* v = (std::vector<glm::vec3>*)i_val;
          glUniform3fv(loc_idx, v->size(), (gfx_float*)v->data());
          break;
       }
 
       case gfx_input::vec4:
-         glUniform4fv(loc_idx, array_size, (gfx_float*)ival);
+         glUniform4fv(loc_idx, array_size, (gfx_float*)i_val);
          break;
 
       case gfx_input::mat2:
-         glUniformMatrix2fv(loc_idx, array_size, false, (gfx_float*)ival);
+         glUniformMatrix2fv(loc_idx, array_size, false, (gfx_float*)i_val);
          break;
 
       case gfx_input::mat3:
-         glUniformMatrix3fv(loc_idx, array_size, false, (gfx_float*)ival);
+         glUniformMatrix3fv(loc_idx, array_size, false, (gfx_float*)i_val);
          break;
 
       case gfx_input::mat4:
-         glUniformMatrix4fv(loc_idx, array_size, false, (gfx_float*)ival);
+         glUniformMatrix4fv(loc_idx, array_size, false, (gfx_float*)i_val);
          break;
 
       case gfx_input::s2d:
-         glUniform1i(loc_idx, *(gfx_int*)ival);
+         glUniform1i(loc_idx, *(gfx_int*)i_val);
          break;
       }
    }
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
+}
+
+void gfx_shader::update_uniform(std::string i_uni_name, const mws_any* i_val)
+{
+   if (!(p->is_validated && p->is_activated))
+   {
+      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      return;
+   }
+
+
+   std::shared_ptr<gfx_input> input = get_param(i_uni_name);
+
+   update_uniform(input, i_val);
 }
 
 std::shared_ptr<gfx_input> gfx_shader::get_param(std::string ikey)

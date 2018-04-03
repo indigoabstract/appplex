@@ -7,7 +7,7 @@ uniform mat4 u_m4_view_inv;
 
 uniform sampler2D u_s2d_base_normal_map;
 uniform sampler2D u_s2d_micro_flackes_normal_map;
-uniform samplerCube u_scm_cubemap;
+uniform samplerCube u_scm_skybox;
 
 uniform float u_v1_fresnel_exponent;
 uniform float u_v1_brightness_factor;
@@ -56,7 +56,7 @@ void main()
 	vec3 v3_spec_color = pow(max(0.0, v3_dot_half_view_normal), 50.0) * 10.0 * vec3(1.0);
 	float v3_dot_view_normal = dot(v3_cam_dir_ws, v3_normal_ws);
 	vec3 v3_reflection_ws = reflect(v3_cam_dir_ws, v3_normal_ws);
-	vec4 v4_refl_color = textureCube(u_scm_cubemap, v3_reflection_ws, 2.0);
+	vec4 v4_refl_color = textureCube(u_scm_skybox, v3_reflection_ws, 2.0);
 	float v1_intensity = (v4_refl_color.r + v4_refl_color.g + v4_refl_color.b) / 3.0;
 	float v1_refl_offset = v3_reflection_ws.y - 0.1;
 	

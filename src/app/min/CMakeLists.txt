@@ -7,7 +7,7 @@ target_sources(app_plex_main
 	"${CMAKE_CURRENT_LIST_DIR}/stdafx.cpp"
     PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/pfm-def.h"
-	"${CMAKE_CURRENT_LIST_DIR}/pfmgl.h"
+	"${CMAKE_CURRENT_LIST_DIR}/pfm-gl.h"
 	"${CMAKE_CURRENT_LIST_DIR}/stdafx.h"
 	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/cpp-property.hpp"

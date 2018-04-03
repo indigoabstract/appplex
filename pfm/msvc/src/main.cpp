@@ -5,7 +5,7 @@
 #if defined PLATFORM_WINDOWS_PC
 
 #include "pfm.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include "unit.hpp"
 #include "unit-ctrl.hpp"
 #include "com/unit/input-ctrl.hpp"
@@ -149,7 +149,7 @@ msvc_main::msvc_main()
 	hdc_window = 0;
 	console_handle = INVALID_HANDLE_VALUE;
 
-#if defined USES_OPENGL_ES
+#if defined MWS_USES_OPENGL_ES
 	egl_display	= 0;
 	egl_config	= 0;
 	egl_surface	= 0;
@@ -566,7 +566,7 @@ int msvc_main::win_main_loop()
 			{
 				if(!disable_paint)
 				{
-#if defined USES_OPENGL_ES
+#if defined MWS_USES_OPENGL_ES
 					eglSwapBuffers(egl_display, egl_surface);
 #else
 					SwapBuffers(hdc_window);
@@ -602,9 +602,9 @@ int msvc_main::win_main_loop()
 
 bool msvc_main::create_open_gl_context()
 {
-#if defined USES_OPENGL_ES
+#if defined MWS_USES_OPENGL_ES
 	return create_open_gl_es_ctx();
-#elif defined USES_OPENGL_GLEW
+#elif defined MWS_USES_OPENGL_GLEW
 	return create_open_gl_glew_ctx();
 #endif
 
@@ -613,7 +613,7 @@ bool msvc_main::create_open_gl_context()
 
 bool msvc_main::create_open_gl_es_ctx()
 {
-#if defined USES_OPENGL_ES
+#if defined MWS_USES_OPENGL_ES
 
 	class test_egl
 	{
@@ -772,7 +772,7 @@ bool msvc_main::create_open_gl_es_ctx()
 
 bool msvc_main::create_open_gl_glew_ctx()
 {
-#if defined USES_OPENGL_GLEW
+#if defined MWS_USES_OPENGL_GLEW
 
 	// set pixel format
 	PIXELFORMATDESCRIPTOR pfd = {0};
@@ -898,7 +898,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
 void msvc_main::destroy_open_gl_context()
 {
-#if defined USES_OPENGL_ES
+#if defined MWS_USES_OPENGL_ES
 
 	/*
 	Step 9 - Terminate OpenGL ES and destroy the window (if present).

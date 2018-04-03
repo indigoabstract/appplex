@@ -14,7 +14,7 @@ float sigmoid(float v, float vmax)
 	float vmid=vmax/2;
 	float i=vmax/3;
 	int j=80;
-	float r=100/( powf(j,((vmid+i/2-v)/i))) ;
+	float r=100.f / ( powf(j,((vmid+i/2.f-v)/i))) ;
 	return r;
 }
 
@@ -90,8 +90,9 @@ point2d kinetic_scrolling::update()
 		// if there is still some scrolling energy
 		if(decay > 0)
 		{
+         uint32 delta_t = pfm::time::get_time_millis() - decay_start;
 			//i tried a few slowing formulas
-			decay = 1 - inverse(pfm::time::get_time_millis() - decay_start, decay_maxmillis);
+			decay = 1.f - inverse(delta_t, decay_maxmillis);
 			
 			//decay = 1 - inverse(unit_ctrl::get_current_unit()->update_ctrl->getTime() - decay_start, decay_maxmillis);
 
@@ -271,14 +272,6 @@ void ia_console::add_line(const std::string& iline)
 	text_line line;
 
 	line.line = shared_ptr<string>(new string(iline));
-	//lines->push_back(line);
-}
-
-void ia_console::add_line(const std::wstring& iline)
-{
-	text_line line;
-
-	line.wline = shared_ptr<wstring>(new wstring(iline));
 	//lines->push_back(line);
 }
 

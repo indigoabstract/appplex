@@ -114,7 +114,6 @@ public:
    static std::shared_ptr<gfx_uniform> parse_uniform(std::string iuniform);
    static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity);
    static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity, float iw, float ih);
-   static void check_gfx_error();
    static glm::quat quat_from_two_vectors(glm::vec3 u, glm::vec3 v);
    static glm::quat look_at(glm::vec3 direction, glm::vec3 desiredUp);
    static int get_tex_2d_mipmap_count(int iwidth, int iheight);

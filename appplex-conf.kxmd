@@ -21,7 +21,8 @@ units
 	texxed[ ],
 	exercise[ ],
 	gen-texture[ ],
-	global-flight-paths[ uses[ gfx, ffmpeg, unit-test-ffmpeg ] ],
+	global-flight-paths[ uses[ gfx ] ],
+	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
 
 	@@[ tests ],
 
@@ -35,7 +36,7 @@ units
 	test-grid[ ],
 	test-dyn-geometry[ ],
 	test-freetype-gl[ ],
-	test-normal-mapping[ ],
+	test-normal-mapping[ uses[ gfx ], platf[ windows ], ],
 	test-fmod[ uses[ boost, gfx, fmod ], ],
 	ux-test[ ],
 	test-freeimage[ uses[ boost, gfx, freeimage ], enabled[ false ], ],

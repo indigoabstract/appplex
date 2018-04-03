@@ -34,11 +34,11 @@ void free_camera::update_input(shared_ptr<iadp> idp)
 
    if (ctrl_held)
    {
-      mov_type = e_roll_view_axis;
+      mov_type = e_translation;
    }
    else
    {
-      mov_type = e_translation;
+      mov_type = e_roll_view_axis;
    }
 
    if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
@@ -68,10 +68,36 @@ void free_camera::update_input(shared_ptr<iadp> idp)
          {
             float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
             float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+            float dx_rad = glm::radians(dx / 2);
+            float dy_rad = glm::radians(dy / 2);
+
+            glm::vec3 right_dir = glm::cross(look_at_dir, up_dir);
+            glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
+            look_at_dir = glm::normalize(look_at_dir * rot_around_right_dir);
+            up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
+
+            glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
+            look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
+            ts->process();
+         }
+         // translation movement.
+         else
+         {
+            float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+            float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
 
             if (ts->is_finished)
             {
-               ks->start_slowdown();
+               uint32 delta_t = ts->crt_state.te->time - ts->prev_state.te->time;
+
+               if (delta_t < 150)
+               {
+                  ks->start_slowdown();
+               }
+               else
+               {
+                  ks->reset();
+               }
             }
             else
             {
@@ -85,23 +111,6 @@ void free_camera::update_input(shared_ptr<iadp> idp)
             clamp_angles();
             //vprint("tdx %f pdx %f\n", theta_deg, phi_deg);
             mov_type = e_roll_view_axis;
-            ts->process();
-         }
-         // translation movement.
-         else
-         {
-            float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-            float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
-            float dx_rad = glm::radians(dx / 2);
-            float dy_rad = glm::radians(dy / 2);
-
-            glm::vec3 right_dir = glm::cross(look_at_dir, up_dir);
-            glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
-            look_at_dir = glm::normalize(look_at_dir * rot_around_right_dir);
-            up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
-
-            glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
-            look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
             ts->process();
          }
          break;
@@ -175,20 +184,20 @@ void free_camera::update_input(shared_ptr<iadp> idp)
             isAction = false;
          }
 
-         if (!isAction && !ke->is_repeated())
-         {
-            isAction = true;
+         //if (!isAction && !ke->is_repeated())
+         //{
+         //   isAction = true;
 
-            switch (ke->get_key())
-            {
-            case KEY_SPACE:
-            case KEY_F1:
-               break;
+         //   switch (ke->get_key())
+         //   {
+         //   case KEY_SPACE:
+         //   case KEY_F1:
+         //      break;
 
-            default:
-               isAction = false;
-            }
-         }
+         //   default:
+         //      isAction = false;
+         //   }
+         //}
 
          if (isAction)
          {

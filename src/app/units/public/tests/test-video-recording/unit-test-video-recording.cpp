@@ -16,7 +16,7 @@
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
 #include "com/ux/ux-camera.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -61,7 +61,7 @@ namespace test_video_recording
          }
 
          frame_idx = 0;
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
 
          {
             rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
@@ -184,41 +184,41 @@ namespace test_video_recording
             video_params.codec_id = AV_CODEC_ID_H264;
          }
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
       }
 
       void update_view(std::shared_ptr<ux_camera> ux_cam)
       {
          std::string frame_counter = trs("frame count: {}", frame_idx);
 
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
          quad_mesh->render_mesh(ux_cam);
          ux_cam->drawText(frame_counter, 50, 50);
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
       }
 
       void post_update_view(std::shared_ptr<ux_camera> ux_cam)
       {
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
          scr_mirror_tex->set_active(0);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
          scr_mirror_bg_mesh->render_mesh(ux_cam);
          //(*scr_mirror_mesh)["u_s2d_tex"] = rt_uv_tex->get_name();
          scr_mirror_mesh->render_mesh(ux_cam);
-         gfx_util::check_gfx_error();
+         mws_report_gfx_errs();
 
          if (venc->is_encoding())
          {
             gfx::rt::set_current_render_target(rt_y);
             rt_y_quad->render_mesh(ux_cam);
             shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::rt::get_render_target_pixels<uint8>(rt_y);
-            gfx_util::check_gfx_error();
+            mws_report_gfx_errs();
 
             gfx::rt::set_current_render_target(rt_uv);
             rt_uv_quad->render_mesh(ux_cam);
             shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::rt::get_render_target_pixels<uint32>(rt_uv);
             gfx::rt::set_current_render_target();
-            gfx_util::check_gfx_error();
+            mws_report_gfx_errs();
 
             venc->encode_yuv420_frame(pixels_y_tex->data(), pixels_uv_tex->data());
          }

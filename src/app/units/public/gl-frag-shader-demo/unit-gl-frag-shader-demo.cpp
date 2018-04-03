@@ -374,7 +374,7 @@ public:
 
 		set_fx(current_fx_index);
 
-		gfx_util::check_gfx_error();
+		mws_report_gfx_errs();
 	}
 
 	shared_ptr<shader_state> get_shader_state()
@@ -717,7 +717,7 @@ public:
 		screen_quad["u_s2d_tex"] = front_buffer->get_name();
 		gfx::rt::set_current_render_target(nullptr);
 
-		gfx_util::check_gfx_error();
+		mws_report_gfx_errs();
 
 		ux_page::update_state();
 	}
@@ -730,7 +730,7 @@ public:
 
 		g->drawText(ss->name, 10, 10);
 
-		gfx_util::check_gfx_error();
+		mws_report_gfx_errs();
 
 		ux_page::update_view(g);
 	}

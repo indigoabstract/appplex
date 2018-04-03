@@ -8,7 +8,7 @@
 #include "natural-cubic-spline.hpp"
 #include "gfx.hpp"
 #include "gfx-camera.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <glm/glm.hpp>
 
 
@@ -287,7 +287,7 @@ void curve_mesh::render_mesh(shared_ptr<gfx_camera> icamera)
 		break;
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 	drawing_mode_changed = false;
 }
 
@@ -295,7 +295,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
 	shared_ptr<gfx_shader> glp = mat.get_shader();
-	wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_int_value());
+	wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_value<int>());
 	int offset = 0;
 	gfx_uint method = method_type[render_method];
 
@@ -374,7 +374,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
 	shared_ptr<gfx_shader> glp = mat.get_shader();
-   wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_int_value());
+   wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_value<int>());
 	gfx_uint offset = 0;
 	gfx_uint method = method_type[render_method];
 

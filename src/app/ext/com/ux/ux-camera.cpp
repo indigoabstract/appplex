@@ -1,9 +1,12 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_UX
+
 #include "ux-camera.hpp"
 #include "ux-font.hpp"
 #include "text-vxo.hpp"
-#include "com/util/unicode/conversions-util.hpp"
 
 
 namespace ns_ux_camera
@@ -11,12 +14,14 @@ namespace ns_ux_camera
 	class draw_text_op : public draw_op
 	{
 	public:
-		draw_text_op()
+#if defined MOD_VECTOR_FONTS
+
+      draw_text_op()
 		{
 			tx_vxo = text_vxo::new_inst();
 		}
 
-		void push_data(shared_ptr<rw_sequence> seq, const std::wstring& text, float ix, float iy, const shared_ptr<ux_font> ifont)
+		void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<ux_font> ifont)
 		{
 			tx = text;
 			x = ix;
@@ -30,9 +35,9 @@ namespace ns_ux_camera
 		virtual void read_data(shared_ptr<rw_sequence> seq)
 		{
 			int length = seq->r.read_uint32();
-			std::vector<wchar_t> txt(length);
-			seq->r.read_int8((int8*)begin_ptr(txt), length * sizeof(wchar_t), 0);
-			tx = std::wstring(begin_ptr(txt), length);
+			std::vector<char> txt(length);
+			seq->r.read_int8((int8*)begin_ptr(txt), length * sizeof(char), 0);
+			tx = std::string(begin_ptr(txt), length);
 			x = seq_util::read_float(seq);
 			y = seq_util::read_float(seq);
 			font_idx = seq->r.read_uint32();
@@ -41,7 +46,7 @@ namespace ns_ux_camera
 		virtual void write_data(shared_ptr<rw_sequence> seq)
 		{
 			seq->w.write_uint32(tx.length());
-			seq->w.write_int8((int8*)tx.c_str(), tx.length() * sizeof(wchar_t), 0);
+			seq->w.write_int8((int8*)tx.c_str(), tx.length() * sizeof(char), 0);
 			seq_util::write_float(seq, x);
 			seq_util::write_float(seq, y);
 			seq->w.write_uint32(font_idx);
@@ -67,13 +72,25 @@ namespace ns_ux_camera
 			tx.clear();
 		}
 
-		shared_ptr<text_vxo> tx_vxo;
-		std::wstring tx;
-		float x;
-		float y;
-		int font_idx;
-		// hold refs to the fonts, so they don't get destroyed before they're used for drawing
-		std::vector<shared_ptr<ux_font> > fonts;
+      shared_ptr<text_vxo> tx_vxo;
+      std::string tx;
+      float x;
+      float y;
+      int font_idx;
+      // hold refs to the fonts, so they don't get destroyed before they're used for drawing
+      std::vector<shared_ptr<ux_font> > fonts;
+
+#elif defined MOD_BITMAP_FONTS
+
+      draw_text_op() {}
+      void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<ux_font> ifont) {}
+      virtual void read_data(shared_ptr<rw_sequence> seq) {}
+      virtual void write_data(shared_ptr<rw_sequence> seq) {}
+      void on_update_start(shared_ptr<draw_context> idc) {}
+      void draw(shared_ptr<draw_context> idc) {}
+      void on_update_end(shared_ptr<draw_context> idc) {}
+
+#endif
 	};
 }
 using namespace ns_ux_camera;
@@ -141,16 +158,6 @@ void ux_camera::drawText(const std::string& text, float x, float y, const shared
 {
 	if (enabled)
 	{
-		std::wstring wtx = string2wstring(text);
-		const shared_ptr<ux_font> fnt = (ifnt) ? ifnt : p->font;
-		p->d_text.push_data(draw_ops, wtx, x, y, fnt);
-	}
-}
-
-void ux_camera::drawText(const std::wstring& text, float x, float y, const shared_ptr<ux_font> ifnt)
-{
-	if (enabled)
-	{
 		const shared_ptr<ux_font> fnt = (ifnt) ? ifnt : p->font;
 		p->d_text.push_data(draw_ops, text, x, y, fnt);
 	}
@@ -214,3 +221,5 @@ void ux_camera::update_camera_state()
 	gfx_camera::update_camera_state();
 	p->d_text.on_update_end(draw_ctx);
 }
+
+#endif

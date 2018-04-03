@@ -29,7 +29,7 @@ public:
    {
       e_twm_repeat,
       e_twm_clamp_to_edge,
-      e_twm_mirroed_repeat
+      e_twm_mirrored_repeat
    };
 
    gfx_tex_params();

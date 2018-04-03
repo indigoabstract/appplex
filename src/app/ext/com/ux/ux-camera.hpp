@@ -23,7 +23,6 @@ public:
 	shared_ptr<ux_font> get_font()const;
 	void set_font(shared_ptr<ux_font> ifont);
 	void drawText(const std::string& text, float x, float y, const shared_ptr<ux_font> ifnt = shared_ptr<ux_font>());
-	void drawText(const std::wstring& text, float x, float y, const shared_ptr<ux_font> ifnt = shared_ptr<ux_font>());
 	void setColorf(float r, float g, float b, float a = 1.f);
 	void setColor(uint8 r, uint8 g, uint8 b, uint8 a = 0xFF);
 	void setColor(int argb);

@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_UX
+
 #include "ux.hpp"
 #include "ux-camera.hpp"
 #include "ux-font.hpp"
@@ -339,7 +343,7 @@ ux_page_tab::ux_page_tab(shared_ptr<unit> iu) : ux(), ss(550)
 	}
 
 	u = iu;
-	uxr.set(0, 0, iu->get_width(), iu->get_height());
+	uxr.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
 }
 
 shared_ptr<ux_page_tab> ux_page_tab::new_instance(shared_ptr<unit> iu)
@@ -682,9 +686,10 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 {
 	if (!is_empty())
 	{
+      int size = page_stack.size();
 		int c = 0;
 
-		for (int k = page_stack.size() - 1; k >= 0; k--)
+		for (int k = size - 1; k >= 0; k--)
 		{
 			if (page_stack[k]->is_opaque)
 			{
@@ -693,7 +698,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 			}
 		}
 
-		for (int k = c; k < page_stack.size(); k++)
+		for (int k = c; k < size; k++)
 		{
 			shared_ptr<ux_page> p = page_stack[k];
 
@@ -903,8 +908,8 @@ void ux_page_tab::show_vkeyboard()
 
 void ux_page_tab::on_resize()
 {
-	uxr.w = u.lock()->get_width();
-	uxr.h = u.lock()->get_height();
+	uxr.w = (float)u.lock()->get_width();
+	uxr.h = (float)u.lock()->get_height();
 
 	for(auto p : pages)
 	{
@@ -991,7 +996,7 @@ ux_page::ux_page(shared_ptr<ux_page_tab> iparent) : ux(iparent)
 {
 	shared_ptr<unit> tu = iparent->get_unit();
 
-	uxr.set(0, 0, tu->get_width(), tu->get_height());
+	uxr.set(0, 0, (float)tu->get_width(), (float)tu->get_height());
 
 	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = ux_page_transition::new_instance(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
 	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = ux_page_transition::new_instance(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
@@ -1354,3 +1359,5 @@ void ux_page_item::add_to_page()
 
 	page->add(inst);
 }
+
+#endif

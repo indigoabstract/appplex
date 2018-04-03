@@ -149,7 +149,7 @@ void unit_test_kube_sphere::load()
 
 	p->persp_cam->position = glm::vec3(0.f, 0.f, p->sphere_radius + 15.f);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_kube_sphere::update()
@@ -242,7 +242,7 @@ bool unit_test_kube_sphere::update()
 		}
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }

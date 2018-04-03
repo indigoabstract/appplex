@@ -201,6 +201,7 @@ protected:
    std::vector<uint8> vertices_buffer;
    std::vector<uint8> aux_vertices_buffer;
    std::vector<gfx_indices_type> indices_buffer;
+   uint32 index_count;
    int vx_count;
    int idx_count;
    gfx_uint array_buffer_id;
@@ -209,4 +210,5 @@ protected:
    bool is_submesh;
    std::vector<gfx_param> plist;
    static gfx_uint method_type[];
+   bool keep_geometry_data;
 };

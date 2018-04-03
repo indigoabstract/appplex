@@ -7,7 +7,7 @@
 #include "com/unit/input-ctrl.hpp"
 #include "min.hpp"
 #include "gfx.hpp"
-#include "snd.hpp"
+//#include "snd.hpp"
 #include <cstdlib>
 
 
@@ -206,7 +206,7 @@ void unit_ctrl::resize_app(int iwidth, int iheight)
 
 void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
 {
-	shared_ptr<unit> u = std::dynamic_pointer_cast<unit>(get_current_unit());
+	shared_ptr<unit> u = get_current_unit();
 
 	if(u)
 	{
@@ -216,7 +216,7 @@ void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
 
 void unit_ctrl::key_action(key_actions iaction_type, int ikey)
 {
-	shared_ptr<unit> u = std::dynamic_pointer_cast<unit>(get_current_unit());
+	shared_ptr<unit> u = get_current_unit();
 
 	if(u)
 	{

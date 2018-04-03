@@ -99,7 +99,7 @@ void unit_test_grid::load()
 
 	gfx_scene_inst->attach(p->persp_cam);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_grid::update()
@@ -123,7 +123,7 @@ bool unit_test_grid::update()
 		}
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	p->persp_cam->position += p->look_at_dir * p->speed;
 	p->persp_cam->look_at(p->look_at_dir, p->up_dir);

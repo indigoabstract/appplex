@@ -4,7 +4,7 @@
 #include "gfx.hpp"
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
-#include "pfmgl.h"
+#include "pfm-gl.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

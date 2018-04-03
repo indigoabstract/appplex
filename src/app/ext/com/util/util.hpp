@@ -3,6 +3,7 @@
 #include "pfm.hpp"
 #include <string>
 #include <vector>
+#include <cmath>
 
 
 class ms_linear_transition;
@@ -19,6 +20,222 @@ public:
 	float x;
 	float y;
 };
+
+
+template <typename T> class basic_time_slider
+{
+public:
+   basic_time_slider(T i_slide_time = 5.f);
+
+   bool is_enabled() const;
+   T get_value() const;
+   void start(T i_slide_time = 0.f);
+   void start_int(uint32 i_slide_time);
+   void stop();
+   void update();
+
+private:
+
+   static uint32 fp_2_int_time(T i_seconds);
+
+   bool enabled;
+   uint32 start_time;
+   uint32 slide_time;
+   T slider;
+};
+
+template <typename T> basic_time_slider<T>::basic_time_slider(T i_slide_time)
+{
+   slide_time = fp_2_int_time(i_slide_time);
+   enabled = false;
+   start_time = 0;
+   slider = 0.f;
+}
+
+template <typename T> bool basic_time_slider<T>::is_enabled() const
+{
+   return enabled;
+}
+
+template <typename T> T basic_time_slider<T>::get_value() const
+{
+   return slider;
+}
+
+template <typename T> void basic_time_slider<T>::start(T i_slide_time)
+{
+   uint32 st = 0;
+
+   if (i_slide_time > 0.f)
+   {
+      st = fp_2_int_time(i_slide_time);
+   }
+
+   start_int(st);
+}
+
+template <typename T> void basic_time_slider<T>::start_int(uint32 i_slide_time)
+{
+   if (i_slide_time > 0)
+   {
+      slide_time = i_slide_time;
+   }
+
+   enabled = true;
+   start_time = pfm::time::get_time_millis();
+   slider = 0.f;
+}
+
+template <typename T> void basic_time_slider<T>::stop()
+{
+   enabled = false;
+}
+
+template <typename T> void basic_time_slider<T>::update()
+{
+   if (!enabled)
+   {
+      return;
+   }
+
+   uint32 now = pfm::time::get_time_millis();
+   uint32 start_delta = now - start_time;
+
+   if (start_delta < slide_time)
+   {
+      slider = T(start_delta) / slide_time;
+   }
+   else
+   {
+      enabled = false;
+      slider = 1.f;
+   }
+}
+
+template <typename T> uint32 basic_time_slider<T>::fp_2_int_time(T i_seconds)
+{
+   T int_part = std::floor(i_seconds);
+   uint32 sec = int(int_part) * 1000;
+   T fract_part = i_seconds - int_part;
+   uint32 ms = int(fract_part * 1000.f);
+   uint32 total_time = sec + ms;
+
+   return total_time;
+}
+
+
+template <typename T> class ping_pong_time_slider
+{
+public:
+   ping_pong_time_slider(T i_slide_time = 5.f);
+
+   bool is_enabled() const;
+   T get_value() const;
+   void start(T i_slide_time = 0.f);
+   void start_int(uint32 i_slide_time);
+   void stop();
+   void update();
+
+private:
+
+   static uint32 fp_2_int_time(T i_seconds);
+
+   bool enabled;
+   bool forward;
+   uint32 start_time;
+   uint32 last_start_delta;
+   uint32 slide_time;
+   T slider;
+};
+
+template <typename T> ping_pong_time_slider<T>::ping_pong_time_slider(T i_slide_time)
+{
+   slide_time = fp_2_int_time(i_slide_time);
+   enabled = false;
+   forward = true;
+   start_time = 0;
+   slider = 0.f;
+}
+
+template <typename T> bool ping_pong_time_slider<T>::is_enabled() const
+{
+   return enabled;
+}
+
+template <typename T> T ping_pong_time_slider<T>::get_value() const
+{
+   return slider;
+}
+
+template <typename T> void ping_pong_time_slider<T>::start(T i_slide_time)
+{
+   uint32 st = 0;
+
+   if (i_slide_time > 0.f)
+   {
+      st = fp_2_int_time(i_slide_time);
+   }
+
+   start_int(st);
+}
+
+template <typename T> void ping_pong_time_slider<T>::start_int(uint32 i_slide_time)
+{
+   if (i_slide_time > 0)
+   {
+      slide_time = i_slide_time;
+   }
+
+   forward = enabled = true;
+   start_time = pfm::time::get_time_millis();
+   last_start_delta = 0;
+   slider = 0.f;
+}
+
+template <typename T> void ping_pong_time_slider<T>::stop()
+{
+   enabled = false;
+}
+
+template <typename T> void ping_pong_time_slider<T>::update()
+{
+   if (!enabled)
+   {
+      return;
+   }
+
+   uint32 now = pfm::time::get_time_millis();
+   uint32 start_delta = (now - start_time) % slide_time;
+
+   if (start_delta < last_start_delta)
+   {
+      // reverse slider direction
+      forward = !forward;
+   }
+
+   if (forward)
+   {
+      slider = T(start_delta) / slide_time;
+   }
+   else
+   {
+      slider = T(slide_time - start_delta) / slide_time;
+   }
+
+   last_start_delta = start_delta;
+}
+
+template <typename T> uint32 ping_pong_time_slider<T>::fp_2_int_time(T i_seconds)
+{
+   T int_part = std::floor(i_seconds);
+   uint32 sec = int(int_part) * 1000;
+   T fract_part = i_seconds - int_part;
+   uint32 ms = int(fract_part * 1000.f);
+   uint32 total_time = sec + ms;
+
+   return total_time;
+}
+
 
 class kinetic_scrolling
 {
@@ -39,7 +256,7 @@ private:
 	float startx;
 	float starty;
 	float decay;
-	float decay_start;
+	uint32 decay_start;
 	int decay_maxmillis;
 	bool active;
 };
@@ -82,14 +299,12 @@ public:
 	struct text_line
 	{
 		shared_ptr<std::string> line;
-		shared_ptr<std::wstring> wline;
 	};
 
 	ia_console();
 	virtual ~ia_console(){}
 
 	void add_line(const std::string& iline);
-	void add_line(const std::wstring& iline);
 	void clear();
 	//void draw(shared_ptr<ux_camera> g);
 

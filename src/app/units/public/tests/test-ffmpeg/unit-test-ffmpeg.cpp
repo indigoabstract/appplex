@@ -67,7 +67,7 @@ void unit_test_ffmpeg::load()
 	if (!texture_display)
 	{
 		texture_display = gfx::shader::new_program("texture_display", "basic_tex.vsh", "basic_tex.fsh");
-		gfx_util::check_gfx_error();
+		mws_report_gfx_errs();
 	}
 
 	gfx::shader::set_current_program(texture_display);
@@ -174,7 +174,7 @@ bool unit_test_ffmpeg::update()
 		vdec->update(ux_cam);
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }

@@ -540,7 +540,7 @@ void unit_test_trail::load()
    //p->tube_mesh->add_position(glm::vec3(250.f,250,250) + p->tube_mesh->mTubeScale);
    //p->tube_mesh->add_position(glm::vec3(5750.f, 750.f, 750.f) + p->tube_mesh->mTubeScale);
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 }
 bool update_started = false;
 int idx = 0;
@@ -619,7 +619,7 @@ bool unit_test_trail::update()
 
    glm::vec3 forward_dir = p->persp_cam->get_forward_dir();
 
-   gfx_util::check_gfx_error();
+   mws_report_gfx_errs();
 
    return unit::update();
 }

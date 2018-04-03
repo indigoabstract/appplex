@@ -19,55 +19,6 @@ class ia_sender;
 class ia_receiver;
 
 
-
-class basic_time_slider
-{
-public:
-   basic_time_slider(float i_slide_time = 5.f);
-
-   bool is_enabled() const;
-   float get_value() const;
-   void start(float i_slide_time = 0.f);
-   void start(uint32 i_slide_time);
-   void stop();
-   void update();
-
-private:
-
-   static uint32 float_2_int_time(float i_seconds);
-
-   bool enabled;
-   uint32 start_time;
-   uint32 slide_time;
-   float slider;
-};
-
-
-class ping_pong_time_slider
-{
-public:
-   ping_pong_time_slider(float i_slide_time = 5.f);
-
-   bool is_enabled() const;
-   float get_value() const;
-   void start(float i_slide_time = 0.f);
-   void start(uint32 i_slide_time);
-   void stop();
-   void update();
-
-private:
-
-   static uint32 float_2_int_time(float i_seconds);
-
-   bool enabled;
-   bool forward;
-   uint32 start_time;
-   uint32 last_start_delta;
-   uint32 slide_time;
-   float slider;
-};
-
-
 struct mws_str
 {
    static bool starts_with(const std::string& istr, const std::string& ifind);
@@ -106,7 +57,10 @@ public:
 };
 
 
-class ia_exception : public std::exception
+class ia_exception
+#ifdef MWS_USES_EXCEPTIONS
+   : public std::exception
+#endif
 {
 public:
    ia_exception() throw();
@@ -196,26 +150,31 @@ public:
 };
 
 
-class ia_bad_any_cast : public std::bad_cast
+class mws_bad_any_cast
+#ifdef MWS_USES_EXCEPTIONS
+   : public std::bad_cast
+#endif
 {
 public:
-   virtual const char* what() const noexcept
+   virtual const char* what() const throw()
    {
       return "ia_bad_any_cast: failed conversion using ia_any_cast";
    }
 };
 
 
-struct ia_any
+class mws_any
 {
-   ia_any() = default;
-   template <typename T> ia_any(T const& v) : storage_ptr(new storage<T>(v)) {}
-   ia_any(ia_any const& other) : storage_ptr(other.storage_ptr ? std::move(other.storage_ptr->clone()) : nullptr) {}
+public:
+   mws_any() = default;
+   template <typename T> mws_any(T const& v) : storage_ptr(new storage<T>(v)) {}
+   mws_any(mws_any const& other) : storage_ptr(other.storage_ptr ? std::move(other.storage_ptr->clone()) : nullptr) {}
 
-   void swap(ia_any& other) { storage_ptr.swap(other.storage_ptr); }
-   friend void swap(ia_any& a, ia_any& b) { a.swap(b); };
-   ia_any& operator=(ia_any other) { swap(other); return *this; }
+   void swap(mws_any& other) { storage_ptr.swap(other.storage_ptr); }
+   friend void swap(mws_any& a, mws_any& b) { a.swap(b); };
+   mws_any& operator=(mws_any other) { swap(other); return *this; }
    bool empty() { return storage_ptr == nullptr; }
+   void clear() { storage_ptr = nullptr; }
 
 private:
    struct storage_base
@@ -232,28 +191,32 @@ private:
    };
 
    std::unique_ptr<storage_base> storage_ptr;
-   template<typename T> friend T& any_cast(ia_any      &);
-   template<typename T> friend T const& any_cast(ia_any const&);
+   template<typename T> friend T& mws_any_cast(mws_any&);
+   template<typename T> friend T const& mws_any_cast(mws_any const&);
 };
 
-template <typename T> T& any_cast(ia_any& a)
+template <typename T> T& mws_any_cast(mws_any& a)
 {
-   if (auto p = dynamic_cast<ia_any::storage<T>*>(a.storage_ptr.get()))
-   {
-      return p->value;
-   }
+   //if (auto p = dynamic_cast<mws_any::storage<T>*>(a.storage_ptr.get()))
+   //{
+   //   return p->value;
+   //}
 
-   throw ia_bad_any_cast();
+   //throw mws_bad_any_cast();
+   auto p = (mws_any::storage<T>*)(a.storage_ptr.get());
+   return p->value;
 }
 
-template <typename T> T const& any_cast(ia_any const& a)
+template <typename T> T const& mws_any_cast(mws_any const& a)
 {
-   if (auto p = dynamic_cast<ia_any::storage<T> const*>(a.storage_ptr.get()))
-   {
-      return p->value;
-   }
+   //if (auto p = dynamic_cast<mws_any::storage<T> const*>(a.storage_ptr.get()))
+   //{
+   //   return p->value;
+   //}
 
-   throw ia_bad_any_cast();
+   //throw mws_bad_any_cast();
+   auto p = (mws_any::storage<T>*)(a.storage_ptr.get());
+   return p->value;
 }
 
 

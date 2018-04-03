@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_UX
+
 #include "ux-ext.hpp"
 
 
@@ -163,3 +167,5 @@ shared_ptr<ux_list_menu_model> ux_list_menu_page::get_list_menu_model()
 {
 	return static_pointer_cast<ux_list_menu_model>(item_list->get_model());
 }
+
+#endif

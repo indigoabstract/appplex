@@ -140,7 +140,7 @@ namespace ns_unit_test_normal_mapping
 			s_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
 			plane_mesh = shared_ptr<gfx_plane>(new gfx_plane());
 			persp_cam = gfx_camera::new_inst();
-			free_cam = shared_ptr<free_camera>(new free_camera());
+			free_cam = std::make_shared<free_camera>(iunit);
 			is_paused = false;
 			current_car_idx = 0;
 			draw_axis = false;
@@ -162,12 +162,12 @@ namespace ns_unit_test_normal_mapping
 
 			b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 0, "button-left"));
 			b->set_dim(0.01, y, 0.2, 0.1);
-			button_list.push_back(b);
+			//button_list.push_back(b);
 
 			b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 1, "button-right"));
 			y += off;
 			b->set_dim(0.01, y, 0.2, 0.1);
-			button_list.push_back(b);
+			//button_list.push_back(b);
 		}
 
 		shared_ptr<unit_test_normal_mapping> get_unit()
@@ -857,20 +857,20 @@ namespace ns_unit_test_normal_mapping
 
 			// mustang
 			{
-				const int DIM = 1;
+				const int DIM = 10;
 				const shared_ptr<gfx_material> mesh_materials[DIM] =
 				{
-					mat_car_body_3,/* mat_car_chassis, mat_car_headlights_glass,
+					mat_car_body_3, mat_car_chassis, mat_car_headlights_glass,
 					mat_car_headlights, mat_car_headlights, mat_car_interior,
 					mat_car_wheel_rims, mat_car_carbon_fiber, mat_car_tyres,
-					mat_car_windows,*/
+					mat_car_windows,
 				};
 				const char* mesh_names[DIM] =
 				{
-					"Mustang_Body_HD001.obj", /*"Mustang_Chassis_HD001.obj", "Mustang_Headlights_Glass_HD001.obj",
+					"Mustang_Body_HD001.obj", "Mustang_Chassis_HD001.obj", "Mustang_Headlights_Glass_HD001.obj",
 					"Mustang_Headlights_HD.obj", "Mustang_Headlights_HD001.obj", "Mustang_Interior_HD001.obj",
 					"Mustang_Metal_HD001.obj", "Mustang_Plastic_HD001.obj", "Mustang_Tyres_HD001.obj",
-					"Mustang_Windows_HD001.obj",*/
+					"Mustang_Windows_HD001.obj",
 				};
 				shared_ptr<gfx_obj_vxo> obj_mesh_tab[DIM];
 				std::vector<shared_ptr<gfx_vxo> > mesh_list;
@@ -884,6 +884,7 @@ namespace ns_unit_test_normal_mapping
 					r_obj_mesh.look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, 1));
 					r_obj_mesh.set_material(mesh_materials[k]);
 					r_obj_mesh = mesh_names[k];
+               r_obj_mesh.get_vx_info().uses_tangent_basis = true;
 					mesh_list.push_back(obj_mesh_tab[k]);
 				}
 
@@ -903,7 +904,7 @@ namespace ns_unit_test_normal_mapping
 			scene_idx_map[10] = "mustang";
 
 			car_count = scene_idx_map.size();
-			set_car_idx(6, gfx_scene_inst);
+			set_car_idx(10, gfx_scene_inst);
 
 			gfx_scene_inst->attach(persp_cam);
 			//gfx_scene_inst->attach(s_mesh);
@@ -1312,7 +1313,7 @@ void unit_test_normal_mapping::load()
 	p = shared_ptr<impl>(new impl(static_pointer_cast<unit_test_normal_mapping>(get_smtp_instance())));
 	p->init(gfx_scene_inst);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_normal_mapping::update()
@@ -1348,7 +1349,7 @@ bool unit_test_normal_mapping::update()
 		p->persp_cam->draw_line(glm::vec3(0.f), glm::vec3(0, 0, 5000), glm::vec4(0, 0, 1.f, 1.f), 1.f);
 	}
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }
@@ -1406,7 +1407,22 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 					break;
 				}
 
-			case KEY_Y:
+         case KEY_T:
+         {
+            if (p->current_car_idx == 10)
+            {
+               std::vector<shared_ptr<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
+               gfx_vxo& mesh = *mesh_list[0];
+               std::vector<std::shared_ptr<gfx_material> > mesh_materials = { p->mat_car_body_3, p->mat_car_body };
+               static int idx = 1;
+
+               mesh.set_material(mesh_materials[idx++]);
+               idx = (idx > 1) ? 0 : idx;
+            }
+            break;
+         }
+
+         case KEY_Y:
 				{
 					p->draw_axis = !p->draw_axis;
 					break;
@@ -1419,7 +1435,7 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 					for(int k = 0; k < mesh_list.size(); k++)
 					{
 						gfx_vxo& mesh = *mesh_list[k];
-                  wireframe_mode wf_mode = static_cast<wireframe_mode>(mesh[MP_WIREFRAME_MODE].get_int_value());
+                  wireframe_mode wf_mode = static_cast<wireframe_mode>(mesh[MP_WIREFRAME_MODE].get_value<int>());
 
                   if (wf_mode == MV_WF_NONE)
                   {
@@ -1447,6 +1463,11 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 	}
 
 	p->free_cam->update_input(idp);
+
+   if (!idp->is_processed())
+   {
+      unit::receive(idp);
+   }
 }
 
 #endif

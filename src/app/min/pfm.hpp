@@ -193,6 +193,9 @@ public:
 class pfm_main
 {
 public:
+   virtual void init();
+   virtual void start();
+   virtual void run();
    virtual int get_screen_dpi()const = 0;
    virtual void write_text(const char* text)const = 0;
    virtual void write_text_nl(const char* text)const = 0;
@@ -234,7 +237,7 @@ public:
    public:
       static std::string get_writable_path(std::string iname);
       static std::string get_path(std::string iname);
-      static void load_res_file_map(shared_ptr<unit> iu = 0);
+      static void load_res_file_map(shared_ptr<unit> iu = nullptr);
       //static shared_array<uint8> load_res_byte_array(std::string ifile_name, int& isize);
       static shared_ptr<std::vector<uint8> > load_res_byte_vect(shared_ptr<pfm_file> ifile);
       static shared_ptr<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);

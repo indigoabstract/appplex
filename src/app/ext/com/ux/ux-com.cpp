@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_UX
+
 #include "ux-com.hpp"
 #include "ux-camera.hpp"
 #include "ux-font.hpp"
@@ -295,7 +299,7 @@ void ux_tree::receive(shared_ptr<iadp> idp)
 {
 	if(idp->is_type(UX_EVT_MODEL_UPDATE))
 	{
-		float h = 25 + model->get_length() * 20;
+		float h = 25.f + model->get_length() * 20.f;
 		float w = 0;
 
 		if(model->get_root_node())
@@ -380,3 +384,5 @@ void ux_tree::draw_tree_elem(shared_ptr<ux_camera> g, const shared_ptr<ux_tree_m
 		}
 	}
 }
+
+#endif

@@ -73,7 +73,7 @@ void unit_test_freetype_gl::load()
 	rq2d.position = glm::vec3(850.f, 350.f, 0.f);
 	rq2d.scaling = glm::vec3(256, 256, 1.f);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 }
 
 bool unit_test_freetype_gl::update()
@@ -117,7 +117,7 @@ bool unit_test_freetype_gl::update()
 	ux_cam->drawText(p->tx, 50, 400, p->f);
 	ux_cam->drawRect(50, 400, dim.x, dim.y);
 
-	gfx_util::check_gfx_error();
+	mws_report_gfx_errs();
 
 	return unit::update();
 }

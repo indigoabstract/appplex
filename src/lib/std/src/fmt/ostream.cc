@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FORMAT
+
 /*
  Formatting library for C++ - std::ostream support
 
@@ -35,3 +39,5 @@ FMT_FUNC void print(std::ostream &os, CStringRef format_str, ArgList args) {
   internal::write(os, w);
 }
 }  // namespace fmt
+
+#endif

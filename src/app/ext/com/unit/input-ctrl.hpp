@@ -132,7 +132,7 @@ public:
    uint32 time;
    uint32 touch_count = 0;
    touch_point points[MAX_TOUCH_POINTS];
-   int32 mouse_wheel_delta;
+   real32 mouse_wheel_delta;
 };
 
 
