@@ -61,7 +61,7 @@ private:
 	void destroy_open_gl_context();
 
 	static shared_ptr<msvc_main> instance;
-	bool is_fullscreen;
+	bool is_full_screen;
 	RECT window_coord;
 	bool disable_paint;
 	lnk_subsystem subsys;

@@ -139,7 +139,7 @@ shared_ptr<msvc_main> msvc_main::instance;
 
 msvc_main::msvc_main()
 {
-	is_fullscreen = false;
+	is_full_screen = false;
 	disable_paint = false;
 	subsys = subsys_console;
 	app_has_window = false;
@@ -321,16 +321,35 @@ bool msvc_main::init_app(int argc, char** argv)
 		// create and show window
 		register_new_window_class(hinstance);
 
+      auto u = unit_ctrl::inst()->get_app_start_unit();
 		//int x = CW_USEDEFAULT;
 		int x = 0;
 		int y = 0;
 		int width = pfm::screen::get_width();
 		int height = pfm::screen::get_height();
+      bool start_full_screen = false;
+
+      if (u)
+      {
+         auto unit_pref = u->get_preferences();
+         int pref_width = unit_pref->get_preferred_screen_width();
+         int pref_height = unit_pref->get_preferred_screen_height();
+         start_full_screen = unit_pref->start_full_screen();
+
+         if (pref_width > 0 && pref_height > 0)
+         {
+            width = pref_width;
+            height = pref_height;
+         }
+      }
 
 #if defined _DEBUG
+
 		x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
 		y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+
 #endif
+
 		window_coord.left = x;
 		window_coord.right = x + width;
 		window_coord.top = y;
@@ -351,10 +370,10 @@ bool msvc_main::init_app(int argc, char** argv)
 			return false;
 		}
 
-		//if(prefs->start_fullscreen())
-		//{
-		//	set_full_screen_mode(true);
-		//}
+		if(start_full_screen)
+		{
+			set_full_screen_mode(true);
+		}
 
 		init_notify_icon_data();
 
@@ -437,16 +456,16 @@ void msvc_main::restore_window()
 
 bool msvc_main::is_full_screen_mode()
 {
-	return is_fullscreen;
+	return is_full_screen;
 }
 
 void msvc_main::set_full_screen_mode(bool ienabled)
 {
-	if(is_fullscreen != ienabled)
+	if(is_full_screen != ienabled)
 	{
 		long style = ienabled ? WS_POPUP : WS_OVERLAPPEDWINDOW;
 
-		if(!is_fullscreen)
+		if(!is_full_screen)
 		{
 			window_coord = get_window_coord();
 		}
@@ -470,7 +489,7 @@ void msvc_main::set_full_screen_mode(bool ienabled)
 			SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_NOREDRAW);
 		}
 
-		is_fullscreen = ienabled;
+		is_full_screen = ienabled;
 		disable_paint = true;
 	}
 }

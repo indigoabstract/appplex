@@ -65,13 +65,14 @@ units
 
 	@@[ npw ],
 	
+	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
+	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
+	video-editor[ uses[ gfx ], platf[ windows, ios ], ],
 	
 	@@[ tests ],
 
-	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	text-extractor[ uses[ gfx ], platf[ windows ], ],
-	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 ],
 
 paths

@@ -255,9 +255,11 @@ void unit_ctrl::start_app()
 
 shared_ptr<unit> unit_ctrl::get_app_start_unit()
 {
-	if(!app_units_setup::next_crt_unit.expired())
+   auto u = app_units_setup::next_crt_unit.lock();
+
+	if(u)
 	{
-		return app_units_setup::next_crt_unit.lock();
+		return u;
 	}
 
 	return ul;
