@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -168,3 +172,5 @@ vertex_attribute_enable( vertex_attribute_t *attr )
     glVertexAttribPointer( attr->index, attr->size, attr->type,
                            attr->normalized, attr->stride, attr->pointer );
 }
+
+#endif

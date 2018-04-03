@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -66,4 +70,6 @@ char *strndup( const char *s1, size_t n)
     memcpy( copy, s1, n );
     return copy;
 };
+#endif
+
 #endif

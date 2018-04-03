@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -284,3 +288,5 @@ font_manager_match_description( font_manager_t * self,
     return filename;
 #endif
 }
+
+#endif

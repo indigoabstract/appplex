@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /* =========================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -362,3 +366,5 @@ vector_sort( vector_t *self,
 
     qsort(self->items, self->size, self->item_size, cmp);
 }
+
+#endif

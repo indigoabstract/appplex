@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 // ----------------------------------------------------------------------------
 // OpenGL Anti-Grain Geometry (GL-AGG) - Version 0.1
 // A high quality OpenGL rendering engine for C
@@ -124,3 +128,5 @@ shader_load( const char * vert_filename,
     }
     return handle;
 }
+
+#endif

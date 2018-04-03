@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -340,8 +344,9 @@ texture_atlas_upload( texture_atlas_t * self )
     }
     else
     {
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, self->width, self->height,
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, self->width, self->height,
                       0, GL_RED, GL_UNSIGNED_BYTE, self->data );
     }
 }
 
+#endif

@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
+
+#if defined MOD_FREETYPE_GL
+
 /*
  * Copyright 2009 Stefan Gustavson (stefan.gustavson@gmail.com)
  * All rights reserved.
@@ -577,3 +581,5 @@ void edtaa3(double *img, double *gx, double *gy, int w, int h, short *distx, sho
   /* The transformation is completed. */
 
 }
+
+#endif
