@@ -5,11 +5,11 @@
 #ifdef UNIT_TEST_DYN_GEOMETRY
 
 #include "com/unit/input-ctrl.hpp"
-#include "com/ux/font-db.hpp"
+#include "com/mws/font-db.hpp"
 #include "gfx.hpp"
 #include "gfx-rt.hpp"
 #include "gfx-camera.hpp"
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-camera.hpp"
 #include "gfx-shader.hpp"
 #include "gfx-quad-2d.hpp"
 #include "gfx-tex.hpp"
@@ -138,10 +138,10 @@ shared_ptr<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, floa
 }
 
 
-class ux_select_button : public gfx_plane
+class mws_select_button : public gfx_plane
 {
 public:
-	ux_select_button(shared_ptr<unit_test_dyn_geometry> iunit, int ibutton_id, std::vector<std::string>& istate_list)
+	mws_select_button(shared_ptr<unit_test_dyn_geometry> iunit, int ibutton_id, std::vector<std::string>& istate_list)
 	{
 		unit = iunit;
 		button_id = ibutton_id;
@@ -194,7 +194,7 @@ public:
 
 	void next_state()
 	{
-		ux_select_button& inst = *static_pointer_cast<ux_select_button>(get_shared_ptr());
+		mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
 
 		state_id++;
 		state_id %= state_list.size();
@@ -206,7 +206,7 @@ public:
 		if (!is_init)
 		{
 			is_init = true;
-			ux_select_button& inst = *static_pointer_cast<ux_select_button>(get_shared_ptr());
+			mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
 
 			inst[MP_SHADER_NAME] = "basic_tex";
 			inst[MP_BLENDING] = MV_ALPHA;
@@ -235,21 +235,21 @@ public:
 		recalc_points = false;
 		cm = shared_ptr<curve_mesh>(new curve_mesh());
 
-		shared_ptr<ux_select_button> b;
+		shared_ptr<mws_select_button> b;
 		std::vector<std::string> state_list;
 		float y = 0.01;
 		float off = 0.14;
 
 		state_list.push_back("wireframe_off");
 		state_list.push_back("wireframe_on");
-		b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 0, state_list));
+		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 0, state_list));
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
 
 		state_list.clear();
 		state_list.push_back("touch_points");
 		state_list.push_back("ncs_points");
-		b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 1, state_list));
+		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 1, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -257,7 +257,7 @@ public:
 		state_list.clear();
 		state_list.push_back("mobile");
 		state_list.push_back("fixed");
-		b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 2, state_list));
+		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 2, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -266,7 +266,7 @@ public:
 		state_list.push_back("vertex-arrays");
 		state_list.push_back("vertex-buffer-objects");
 		state_list.push_back("unsynchronized");
-		b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 3, state_list));
+		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 3, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -331,7 +331,7 @@ public:
 
 		for (int k = 0; k < button_list.size(); k++)
 		{
-			shared_ptr<ux_select_button> btn = button_list[k];
+			shared_ptr<mws_select_button> btn = button_list[k];
 
 			if (btn->is_hit(ipoint.x, ipoint.y))
 			{
@@ -423,12 +423,12 @@ public:
 
 	shared_ptr<gfx_plane> q2d;
 	shared_ptr<gfx_shader> texture_display;
-	std::vector<shared_ptr<ux_select_button> > button_list;
+	std::vector<shared_ptr<mws_select_button> > button_list;
 	bool recalc_points;
 	shared_ptr<curve_mesh> cm;
 	std::vector<pointer_evt::touch_point> point_list;
 	shared_ptr<gfx_camera> persp_cam;
-	shared_ptr<ux_camera> ortho_cam;
+	shared_ptr<mws_camera> ortho_cam;
 	shared_ptr<std::vector<glm::vec2> > poly;
 	weak_ptr<unit_test_dyn_geometry> unit;
 };
@@ -473,7 +473,7 @@ void unit_test_dyn_geometry::load()
 	p->persp_cam->clear_depth = true;
 	p->persp_cam->position = glm::vec3(0.f, 0.f, 250.f);
 
-	p->ortho_cam = ux_camera::new_inst();
+	p->ortho_cam = mws_camera::new_inst();
 	p->ortho_cam->camera_id = "ortho_cam";
 	p->ortho_cam->rendering_priority = 1;
 	p->ortho_cam->projection_type = "orthographic";
@@ -532,7 +532,7 @@ bool unit_test_dyn_geometry::update()
 	if (atlas && atlas->is_valid())
 	{
 		//(*p->q2d)["u_s2d_tex"] = atlas->get_name();
-		//ux_cam->draw_mesh(p->q2d);
+		//mws_cam->draw_mesh(p->q2d);
 	}
 
 	std::vector<glm::vec2>& poly = *p->poly;

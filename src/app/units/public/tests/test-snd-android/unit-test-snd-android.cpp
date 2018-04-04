@@ -4,8 +4,8 @@
 
 #ifdef UNIT_TEST_SND_ANDROID
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "snd.hpp"
 //#include <audio/android/opensl_stream.h>
 //#include <audio/android/lowpass.h>
@@ -30,25 +30,25 @@ void unit_test_snd_android::init()
 
 namespace unit_test_snd_android_ns
 {
-	class main_page : public ux_page
+	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			player1 = std::make_shared<guitar_note_player>();
 			player2 = std::make_shared<guitar_note_player>();
 
-			struct b_toggle_ui : ux_button
+			struct b_toggle_ui : mws_button
 			{
-				b_toggle_ui(shared_ptr<ux_page> ip, std::shared_ptr<guitar_note_player> ipl) : p(ipl), snd_is_playing(false), ux_button(ip) {}
+				b_toggle_ui(shared_ptr<mws_page> ip, std::shared_ptr<guitar_note_player> ipl) : p(ipl), snd_is_playing(false), mws_button(ip) {}
 
-				virtual void init(ux_rect iuxr, int icolor)
+				virtual void init(mws_rect i_mwsr, int icolor)
 				{
-					ux_button::init(iuxr, icolor, "");
+					mws_button::init(i_mwsr, icolor, "");
 					update_visibility();
 				}
 
@@ -85,13 +85,13 @@ namespace unit_test_snd_android_ns
 
 			int w = 300;
 			int h = 200;
-			ux_rect toggle_ui_rect1 = ux_rect(100, get_unit()->get_height() - h - 100, w, h);
-			auto b1 = ux_button::new_shared_instance(new b_toggle_ui(get_ux_page_instance(), player1));
+			mws_rect toggle_ui_rect1 = mws_rect(100, get_unit()->get_height() - h - 100, w, h);
+			auto b1 = mws_button::new_shared_instance(new b_toggle_ui(get_mws_page_instance(), player1));
 			shared_ptr<b_toggle_ui> bui1 = std::static_pointer_cast<b_toggle_ui>(b1);
 			bui1->init(toggle_ui_rect1, 0x8200b4);
 
-			ux_rect toggle_ui_rect2 = ux_rect(500, get_unit()->get_height() - h - 100, w, h);
-			auto b2 = ux_button::new_shared_instance(new b_toggle_ui(get_ux_page_instance(), player2));
+			mws_rect toggle_ui_rect2 = mws_rect(500, get_unit()->get_height() - h - 100, w, h);
+			auto b2 = mws_button::new_shared_instance(new b_toggle_ui(get_mws_page_instance(), player2));
 			shared_ptr<b_toggle_ui> bui2 = std::static_pointer_cast<b_toggle_ui>(b2);
 			bui2->init(toggle_ui_rect2, 0x8200b4);
 
@@ -101,17 +101,17 @@ namespace unit_test_snd_android_ns
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			const std::string& text = get_unit()->get_name();
 
@@ -124,10 +124,10 @@ namespace unit_test_snd_android_ns
 }
 
 
-void unit_test_snd_android::init_ux()
+void unit_test_snd_android::init_mws()
 {
-	ux_page::new_shared_instance(new unit_test_snd_android_ns::main_page(uxroot));
-	ux_cam->clear_color = true;
+	mws_page::new_shared_instance(new unit_test_snd_android_ns::main_page(mws_root));
+	mws_cam->clear_color = true;
 }
 
 void unit_test_snd_android::load()

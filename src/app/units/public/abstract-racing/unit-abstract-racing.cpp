@@ -4,11 +4,11 @@
 
 #ifdef UNIT_ABSTRACT_RACING
 
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-camera.hpp"
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
 //#include "renderer-openvg.h"
-#include "com/ux/ux.hpp"
+#include "com/mws/mws.hpp"
 //#include "renderer.h"
 //#include "3d-objects.h"
 #include "track.hpp"
@@ -32,14 +32,14 @@ shared_ptr<unit_abstract_racing> unit_abstract_racing::new_instance()
 
 namespace unit_abstract_racing_main_page
 {
-	class mainpage : public ux_page
+	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			on_resize();
 
@@ -78,12 +78,12 @@ namespace unit_abstract_racing_main_page
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 
 			int segmentCrossTime = 250;
 			duringSegmentCrossing = false;
@@ -112,7 +112,7 @@ namespace unit_abstract_racing_main_page
 			}
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
 			/*
 			shared_ptr<unit_abstract_racing> u = ar_unit();
@@ -184,7 +184,7 @@ namespace unit_abstract_racing_main_page
 			r.mx.pop_projection_matrix();
 			r.mx.pop_view_matrix();
 
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 			const string& text = ar_unit()->get_name();
 			g->drawText(text, 10, 10);
 			*/
@@ -192,7 +192,7 @@ namespace unit_abstract_racing_main_page
 
 		virtual void on_resize()
 		{
-			ux_page::on_resize();
+			mws_page::on_resize();
 
 			float cnear = 1.f;
 			float cfar = 10000.0f;
@@ -218,9 +218,9 @@ namespace unit_abstract_racing_main_page
 }
 
 
-void unit_abstract_racing::init_ux()
+void unit_abstract_racing::init_mws()
 {
-	ux_page::new_shared_instance(new unit_abstract_racing_main_page::mainpage(uxroot));
+	mws_page::new_shared_instance(new unit_abstract_racing_main_page::mainpage(mws_root));
 }
 
 void unit_abstract_racing::init()

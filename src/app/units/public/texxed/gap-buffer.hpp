@@ -28,7 +28,7 @@
 #ifdef UNIT_TEXXED
 
 #include "pfm.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-com.hpp"
 #include <stdio.h>
 #include <string>
 

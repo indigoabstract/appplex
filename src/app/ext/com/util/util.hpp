@@ -7,7 +7,7 @@
 
 
 class ms_linear_transition;
-class ux_font;
+class mws_font;
 
 
 class point2d
@@ -306,7 +306,7 @@ public:
 
 	void add_line(const std::string& iline);
 	void clear();
-	//void draw(shared_ptr<ux_camera> g);
+	//void draw(shared_ptr<mws_camera> g);
 
 	//shared_ptr<boost::circular_buffer<text_line> > lines;
 };
@@ -321,6 +321,6 @@ inline float smooth_step(float x)
 }
 
 float interpolate_smooth_step(float intervalPosition, float start, float end, int octaveCount);
-//void draw_border_rect(shared_ptr<ux_camera> g, float x, float y, float w, float h, float borderSize, int borderColor);
-//void fill_border_rect(shared_ptr<ux_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
-//void draw_bar(shared_ptr<ux_camera> g, int x, int y, int w, int h, int color);
+//void draw_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor);
+//void fill_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
+//void draw_bar(shared_ptr<mws_camera> g, int x, int y, int w, int h, int color);

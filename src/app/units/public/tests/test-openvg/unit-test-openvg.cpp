@@ -27,7 +27,7 @@ void unit_test_openvg::on_destroy()
 	destroy_monkvg();
 }
 
-void unit_test_openvg::init_ux()
+void unit_test_openvg::init_mws()
 {
 	init_shivavg();
 	init_monkvg();

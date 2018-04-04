@@ -14,7 +14,7 @@ class unit_test_freetype_gl : public unit
 public:
 	static shared_ptr<unit_test_freetype_gl> new_instance();
 
-	void init_ux() override;
+	void init_mws() override;
 	void load() override;
 	bool update() override;
 

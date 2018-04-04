@@ -4,8 +4,8 @@
 
 #ifdef UNIT_EXERCISE
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "com/unit/transitions.hpp"
 
 using boost::posix_time::ptime;
@@ -15,7 +15,7 @@ using boost::posix_time::milliseconds;
 
 namespace unit_exercise_impl
 {
-	void draw_bar(shared_ptr<ux_camera> g, int x, int y, int w, int h, int color)
+	void draw_bar(shared_ptr<mws_camera> g, int x, int y, int w, int h, int color)
 	{
 		//gfx_ubyte ca[] = { 15, 255, 205, 0 };
 		//ia_color cl(color);
@@ -37,12 +37,12 @@ namespace unit_exercise_impl
 using namespace unit_exercise_impl;
 
 
-void unit_exercise::init_ux()
+void unit_exercise::init_mws()
 {
-	class expage : public ux_page
+	class expage : public mws_page
 	{
 	public:
-		expage(shared_ptr<ux_page_tab> iu) : ux_page(iu)
+		expage(shared_ptr<mws_page_tab> iu) : mws_page(iu)
 		{
 			d = total = milliseconds(0);
 			runCount = 0;
@@ -69,16 +69,16 @@ void unit_exercise::init_ux()
 	};
 
 
-	class mainpage : public ux_page
+	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<ux_page_tab> ipt) : ux_page(ipt){ is_init_pages = false; }
+		mainpage(shared_ptr<mws_page_tab> ipt) : mws_page(ipt){ is_init_pages = false; }
 
 		virtual void init()
 		{
-			struct breset : ux_button
+			struct breset : mws_button
 			{
-				breset(shared_ptr<ux_page> p) : ux_button(p){}
+				breset(shared_ptr<mws_page> p) : mws_button(p){}
 				void on_click()
 				{
 					mainpage* m = (mainpage*)get_parent().get();
@@ -86,8 +86,8 @@ void unit_exercise::init_ux()
 				}
 			};
 
-			shared_ptr<ux_button> b1 = ux_button::new_shared_instance(new breset(get_ux_page_instance()));
-			b1->init(ux_rect(100, 300, 200, 100), 0x8200b4, "reset");
+			shared_ptr<mws_button> b1 = mws_button::new_shared_instance(new breset(get_mws_page_instance()));
+			b1->init(mws_rect(100, 300, 200, 100), 0x8200b4, "reset");
 			reset();
 		}
 
@@ -144,12 +144,12 @@ void unit_exercise::init_ux()
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 
 			if (!is_init_pages)
 			{
@@ -157,9 +157,9 @@ void unit_exercise::init_ux()
 			}
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			int fh = 16;
 			int fy = 0;
@@ -200,7 +200,7 @@ void unit_exercise::init_ux()
 
 		void init_pages()
 		{
-			shared_ptr<ux_page_tab> ptab = get_ux_page_parent();
+			shared_ptr<mws_page_tab> ptab = get_mws_page_parent();
 			expage* ep1 = (expage*)ptab->get_page_at(1).get();
 			expage* ep2 = (expage*)ptab->get_page_at(2).get();
 			expage* ep3 = (expage*)ptab->get_page_at(3).get();
@@ -238,7 +238,7 @@ void unit_exercise::init_ux()
 	{
 	public:
 		enum extype{ type1, type2, };
-		ex1page(shared_ptr<ux_page_tab> iu, extype iExtype) : expage(iu), et(iExtype){}
+		ex1page(shared_ptr<mws_page_tab> iu, extype iExtype) : expage(iu), et(iExtype){}
 
 		virtual void init()
 		{
@@ -295,9 +295,9 @@ void unit_exercise::init_ux()
 
 			// ui
 
-			struct bstart : ux_button
+			struct bstart : mws_button
 			{
-				bstart(shared_ptr<ux_page> p) : ux_button(p){}
+				bstart(shared_ptr<mws_page> p) : mws_button(p){}
 
 				virtual void on_click()
 				{
@@ -319,7 +319,7 @@ void unit_exercise::init_ux()
 
 				virtual void receive(shared_ptr<iadp> idp)
 				{
-					ux_button::receive(idp);
+					mws_button::receive(idp);
 
 					if (idp->is_processed() || !idp->is_type(transition_evt::TRANSITION_EVT_TYPE))
 					{
@@ -346,9 +346,9 @@ void unit_exercise::init_ux()
 				bool active;
 			};
 
-			struct bpause : ux_button
+			struct bpause : mws_button
 			{
-				bpause(shared_ptr<ux_page> p) : ux_button(p){ enabled = false; }
+				bpause(shared_ptr<mws_page> p) : mws_button(p){ enabled = false; }
 
 				virtual void on_click()
 				{
@@ -366,7 +366,7 @@ void unit_exercise::init_ux()
 
 				virtual void receive(shared_ptr<iadp> idp)
 				{
-					ux_button::receive(idp);
+					mws_button::receive(idp);
 
 					if (idp->is_processed() || !idp->is_type(transition_evt::TRANSITION_EVT_TYPE))
 					{
@@ -396,9 +396,9 @@ void unit_exercise::init_ux()
 				bool isPaused;
 			};
 
-			struct breset : ux_button
+			struct breset : mws_button
 			{
-				breset(shared_ptr<ux_page> p) : ux_button(p){}
+				breset(shared_ptr<mws_page> p) : mws_button(p){}
 
 				void on_click()
 				{
@@ -410,18 +410,18 @@ void unit_exercise::init_ux()
 				}
 			};
 
-			shared_ptr<ux_button> b;
+			shared_ptr<mws_button> b;
 
-			b = ux_button::new_shared_instance(new bstart(get_ux_page_instance()));
-			b->init(ux_rect(100, 300, 200, 100), 0x8200b4, "start");
+			b = mws_button::new_shared_instance(new bstart(get_mws_page_instance()));
+			b->init(mws_rect(100, 300, 200, 100), 0x8200b4, "start");
 			mst->add_receiver(b);
 
-			b = ux_button::new_shared_instance(new bpause(get_ux_page_instance()));
-			b->init(ux_rect(get_unit()->get_width() - 250, 300, 200, 100), 0x8200b4, "n/a");
+			b = mws_button::new_shared_instance(new bpause(get_mws_page_instance()));
+			b->init(mws_rect(get_unit()->get_width() - 250, 300, 200, 100), 0x8200b4, "n/a");
 			mst->add_receiver(b);
 
-			b = ux_button::new_shared_instance(new breset(get_ux_page_instance()));
-			b->init(ux_rect(get_unit()->get_width() - 150, 50, 100, 50), 0x8200b4, "reset");
+			b = mws_button::new_shared_instance(new breset(get_mws_page_instance()));
+			b->init(mws_rect(get_unit()->get_width() - 150, 50, 100, 50), 0x8200b4, "reset");
 		}
 
 		virtual void update_state()
@@ -431,7 +431,7 @@ void unit_exercise::init_ux()
 			mst->update();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
 			expage::update_view(g);
 
@@ -480,7 +480,7 @@ void unit_exercise::init_ux()
 	class ex3page : public expage
 	{
 	public:
-		ex3page(shared_ptr<ux_page_tab> iu) : expage(iu){}
+		ex3page(shared_ptr<mws_page_tab> iu) : expage(iu){}
 
 		virtual void init()
 		{
@@ -511,9 +511,9 @@ void unit_exercise::init_ux()
 
 			// ui
 
-			struct bstart : ux_button
+			struct bstart : mws_button
 			{
-				bstart(shared_ptr<ux_page> p) : ux_button(p){}
+				bstart(shared_ptr<mws_page> p) : mws_button(p){}
 				virtual void on_click()
 				{
 					ex3page* p = (ex3page*)get_parent().get();
@@ -534,7 +534,7 @@ void unit_exercise::init_ux()
 
 				virtual void receive(shared_ptr<iadp> idp)
 				{
-					ux_button::receive(idp);
+					mws_button::receive(idp);
 
 					if (idp->is_processed() || !idp->is_type(transition_evt::TRANSITION_EVT_TYPE))
 					{
@@ -561,9 +561,9 @@ void unit_exercise::init_ux()
 				bool active;
 			};
 
-			struct bpause : ux_button
+			struct bpause : mws_button
 			{
-				bpause(shared_ptr<ux_page> p) : ux_button(p){ enabled = false; }
+				bpause(shared_ptr<mws_page> p) : mws_button(p){ enabled = false; }
 
 				virtual void on_click()
 				{
@@ -581,7 +581,7 @@ void unit_exercise::init_ux()
 
 				virtual void receive(shared_ptr<iadp> idp)
 				{
-					ux_button::receive(idp);
+					mws_button::receive(idp);
 
 					if (idp->is_processed() || !idp->is_type(transition_evt::TRANSITION_EVT_TYPE))
 					{
@@ -611,9 +611,9 @@ void unit_exercise::init_ux()
 				bool isPaused;
 			};
 
-			struct breset : ux_button
+			struct breset : mws_button
 			{
-				breset(shared_ptr<ux_page> p) : ux_button(p){}
+				breset(shared_ptr<mws_page> p) : mws_button(p){}
 
 				void on_click()
 				{
@@ -625,18 +625,18 @@ void unit_exercise::init_ux()
 				}
 			};
 
-			shared_ptr<ux_button> b;
+			shared_ptr<mws_button> b;
 
-			b = ux_button::new_shared_instance(new bstart(get_ux_page_instance()));
-			b->init(ux_rect(100, 300, 200, 100), 0x8200b4, "start");
+			b = mws_button::new_shared_instance(new bstart(get_mws_page_instance()));
+			b->init(mws_rect(100, 300, 200, 100), 0x8200b4, "start");
 			mst->add_receiver(b);
 
-			b = ux_button::new_shared_instance(new bpause(get_ux_page_instance()));
-			b->init(ux_rect(get_unit()->get_width() - 250, 300, 200, 100), 0x8200b4, "n/a");
+			b = mws_button::new_shared_instance(new bpause(get_mws_page_instance()));
+			b->init(mws_rect(get_unit()->get_width() - 250, 300, 200, 100), 0x8200b4, "n/a");
 			mst->add_receiver(b);
 
-			b = ux_button::new_shared_instance(new breset(get_ux_page_instance()));
-			b->init(ux_rect(get_unit()->get_width() - 150, 50, 100, 50), 0x8200b4, "reset");
+			b = mws_button::new_shared_instance(new breset(get_mws_page_instance()));
+			b->init(mws_rect(get_unit()->get_width() - 150, 50, 100, 50), 0x8200b4, "reset");
 		}
 
 		virtual void update_state()
@@ -646,7 +646,7 @@ void unit_exercise::init_ux()
 			mst->update();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
 			expage::update_view(g);
 
@@ -694,10 +694,10 @@ void unit_exercise::init_ux()
 	};
 
 
-	class astropage : public ux_page
+	class astropage : public mws_page
 	{
 	public:
-		astropage(shared_ptr<ux_page_tab> iu) : ux_page(iu){}
+		astropage(shared_ptr<mws_page_tab> iu) : mws_page(iu){}
 
 		virtual void init()
 		{
@@ -715,7 +715,7 @@ void unit_exercise::init_ux()
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 
 			if (mslt->is_finished())
 			{
@@ -725,9 +725,9 @@ void unit_exercise::init_ux()
 			mslt->update();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			g->drawText("astropage", 10, 10);
 
@@ -773,12 +773,12 @@ void unit_exercise::init_ux()
 	};
 
 
-	// ux-start
-	ux_page::new_shared_instance(new mainpage(uxroot));
-	ux_page::new_shared_instance(new ex1page(uxroot, ex1page::type1));
-	ux_page::new_shared_instance(new ex1page(uxroot, ex1page::type2));
-	ux_page::new_shared_instance(new ex3page(uxroot));
-	ux_page::new_shared_instance(new astropage(uxroot));
+	// mws-start
+	mws_page::new_shared_instance(new mainpage(mws_root));
+	mws_page::new_shared_instance(new ex1page(mws_root, ex1page::type1));
+	mws_page::new_shared_instance(new ex1page(mws_root, ex1page::type2));
+	mws_page::new_shared_instance(new ex3page(mws_root));
+	mws_page::new_shared_instance(new astropage(mws_root));
 }
 
 #endif

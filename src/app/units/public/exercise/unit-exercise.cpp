@@ -4,8 +4,8 @@
 
 #ifdef UNIT_EXERCISE
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "com/unit/transitions.hpp"
 #include "min.hpp"
 #include "public/cmd/start-process.hpp"

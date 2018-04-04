@@ -6,8 +6,8 @@
 
 #pragma comment (lib, "freeimage.lib")
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "ovg-obj.hpp"
 #include "cmd/recursive-dir.hpp"
 #include "gfx.hpp"
@@ -225,14 +225,14 @@ shared_ptr<gfx_tex> newImage(const char *filename, shared_ptr<vector<uint8> > dt
 
 namespace unit_freeimage_page1
 {
-	class main_page : public ux_page
+	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			string s = "openvg/test_img_guitar.png";
 			imgxxx = gfx::tex::new_tex_2d(s);
@@ -244,17 +244,17 @@ namespace unit_freeimage_page1
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			const string& text = get_unit()->get_name();
 
@@ -269,14 +269,14 @@ namespace unit_freeimage_page1
 
 namespace unit_freeimage_page2
 {
-	class main_page : public ux_page
+	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			bfs::path p("C:\\Users\\indigoabstract\\Desktop\\tmedia2");
 			dirtree = directory_tree::new_directory_tree(p);
@@ -331,17 +331,17 @@ namespace unit_freeimage_page2
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			const string& text = get_unit()->get_name();
 
@@ -365,10 +365,10 @@ namespace unit_freeimage_page2
 }
 
 
-void unit_test_freeimage::init_ux()
+void unit_test_freeimage::init_mws()
 {
-	ux_page::new_shared_instance(new unit_freeimage_page1::main_page(uxroot));
-	ux_page::new_shared_instance(new unit_freeimage_page2::main_page(uxroot));
+	mws_page::new_shared_instance(new unit_freeimage_page1::main_page(mws_root));
+	mws_page::new_shared_instance(new unit_freeimage_page2::main_page(mws_root));
 }
 
 void unit_test_freeimage::load()

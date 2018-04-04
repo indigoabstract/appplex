@@ -7,7 +7,7 @@
 //#define ENABLE_MONKVG
 #ifdef ENABLE_MONKVG
 
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-com.hpp"
 
 #include <MonkVG/openvg.h>
 #include <MonkVG/vgu.h>
@@ -213,14 +213,14 @@ namespace MonkVG
 	}
 
 
-	class monkvgpage : public ux_page
+	class monkvgpage : public mws_page
 	{
 	public:
-		monkvgpage(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		monkvgpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -230,17 +230,17 @@ namespace MonkVG
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 			testopenvgDraw();
 
 			g->drawText("monkvg", 10, 10);
@@ -258,7 +258,7 @@ void unit_test_openvg::init_monkvg()
 	// setup the OpenVG context
 	vgCreateContextSH(pfm::screen::get_width(), pfm::screen::get_height());
 
-	ux_page::new_shared_instance(new monkvgpage(uxroot));
+	mws_page::new_shared_instance(new monkvgpage(mws_root));
 #endif
 }
 

@@ -707,13 +707,13 @@ int pfm_file::io_op::write(const uint8* ibuffer, int isize)
 }
 
 
-std::shared_ptr<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string iaux_root_dir)
+std::shared_ptr<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string i_aux_root_dir)
 {
    struct make_shared_enabler : public pfm_path {};
 	auto inst = std::make_shared<make_shared_enabler>();
 
 	inst->filename = ifile_path;
-	inst->aux_root_dir = iaux_root_dir;
+	inst->aux_root_dir = i_aux_root_dir;
 	inst->make_standard_path();
 
 	return inst;

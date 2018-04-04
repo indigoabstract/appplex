@@ -25,10 +25,10 @@
 
 namespace ns_unit_test_normal_mapping
 {
-	class ux_select_button : public gfx_plane
+	class mws_select_button : public gfx_plane
 	{
 	public:
-		ux_select_button(shared_ptr<unit_test_normal_mapping> iunit, int ibutton_id, std::string itex_name)
+		mws_select_button(shared_ptr<unit_test_normal_mapping> iunit, int ibutton_id, std::string itex_name)
 		{
 			unit = iunit;
 			button_id = ibutton_id;
@@ -83,7 +83,7 @@ namespace ns_unit_test_normal_mapping
 			if(!is_init)
 			{
 				is_init = true;
-				ux_select_button& inst = *static_pointer_cast<ux_select_button>(get_shared_ptr());
+				mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
 
 				inst[MP_SHADER_NAME] = "basic_tex";
 				inst[MP_BLENDING] = MV_ALPHA;
@@ -156,15 +156,15 @@ namespace ns_unit_test_normal_mapping
 			mat_car_headlights = shared_ptr<gfx_material>(new gfx_material());
 			mat_car_headlights_glass = shared_ptr<gfx_material>(new gfx_material());
 
-			shared_ptr<ux_select_button> b;
+			shared_ptr<mws_select_button> b;
 			float y = 0.01;
 			float off = 0.14;
 
-			b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 0, "button-left"));
+			b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 0, "button-left"));
 			b->set_dim(0.01, y, 0.2, 0.1);
 			//button_list.push_back(b);
 
-			b = shared_ptr<ux_select_button>(new ux_select_button(iunit, 1, "button-right"));
+			b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 1, "button-right"));
 			y += off;
 			b->set_dim(0.01, y, 0.2, 0.1);
 			//button_list.push_back(b);
@@ -932,7 +932,7 @@ namespace ns_unit_test_normal_mapping
 
 			for(int k = 0; k < button_list.size(); k++)
 			{
-				shared_ptr<ux_select_button> btn = button_list[k];
+				shared_ptr<mws_select_button> btn = button_list[k];
 
 				if(btn->is_hit(ipoint.x, ipoint.y))
 				{
@@ -973,7 +973,7 @@ namespace ns_unit_test_normal_mapping
 		bool is_paused;
 		int current_car_idx;
 		int car_count;
-		std::vector<shared_ptr<ux_select_button> > button_list;
+		std::vector<shared_ptr<mws_select_button> > button_list;
 
 		shared_ptr<gfx_material> mat_car_windows;
 		shared_ptr<gfx_material> mat_car_tyres;

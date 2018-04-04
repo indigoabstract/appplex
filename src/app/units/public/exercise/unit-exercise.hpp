@@ -16,7 +16,7 @@ public:
 
 	virtual bool update();
 	virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
 	virtual void load();
 	virtual void unload();
 

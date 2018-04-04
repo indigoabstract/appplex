@@ -3,10 +3,10 @@
 #include "unit.hpp"
 #include "appplex-conf.hpp"
 #include "com/util/util.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux.hpp"
-#include "com/ux/ux-com.hpp"
-#include "com/ux/ux-font.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws.hpp"
+#include "com/mws/mws-com.hpp"
+#include "com/mws/mws-font.hpp"
 #include "unit-ctrl.hpp"
 #include "min.hpp"
 #include "com/unit/input-ctrl.hpp"
@@ -16,7 +16,7 @@
 #include "gfx-scene.hpp"
 #include "gfx-state.hpp"
 #include "media/res-ld/res-ld.hpp"
-#include "com/ux/font-db.hpp"
+#include "com/mws/font-db.hpp"
 #include <cstdio>
 
 #ifdef MOD_BOOST
@@ -69,11 +69,11 @@ public:
          default_video_params.tune = "film";
          default_video_params.crf = 0;
 
-         recording_fnt = ux_font::new_inst(20.f);
+         recording_fnt = mws_font::new_inst(20.f);
          recording_fnt->set_color(gfx_color::colors::red);
          recording_txt = "[ recording ]";
          recording_txt_dim = recording_fnt->get_text_dim(recording_txt);
-         date_fnt = ux_font::new_inst(20.f);
+         date_fnt = mws_font::new_inst(20.f);
          date_fnt->set_color(gfx_color::colors::cyan);
          pbo_supported = mws_is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
          y_pbo_ids = { 0, 0 };
@@ -198,7 +198,7 @@ public:
       mws_report_gfx_errs();
 
       auto unit = u.lock();
-      auto ux_cam = u.lock()->ux_cam;
+      auto mws_cam = u.lock()->mws_cam;
       int width = unit->get_width();
       int height = unit->get_height();
 
@@ -209,7 +209,7 @@ public:
          float px = width - txt_dim.x;
          float py = height - txt_dim.y;
 
-         ux_cam->drawText(crt_date_str, px, py, date_fnt);
+         mws_cam->drawText(crt_date_str, px, py, date_fnt);
       }
 
       // blit screen to a texture
@@ -261,20 +261,20 @@ public:
       int pbo_next_index = (pbo_index + 1) % 2;
 
       gfx::rt::set_current_render_target(rt_y);
-      rt_y_quad->render_mesh(ux_cam);
+      rt_y_quad->render_mesh(mws_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       mws_report_gfx_errs();
 
       gfx::rt::set_current_render_target(rt_u);
-      rt_u_quad->render_mesh(ux_cam);
+      rt_u_quad->render_mesh(mws_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
       helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
       gfx::rt::set_current_render_target();
       mws_report_gfx_errs();
 
       gfx::rt::set_current_render_target(rt_v);
-      rt_v_quad->render_mesh(ux_cam);
+      rt_v_quad->render_mesh(mws_cam);
       //gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
       helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
       gfx::rt::set_current_render_target();
@@ -301,7 +301,7 @@ public:
          v = 1.f - (1.f - v) * (1.f - v);
          c2.a = uint8(v * 255);
          recording_fnt->set_color(c2);
-         ux_cam->drawText(recording_txt, px, py, recording_fnt);
+         mws_cam->drawText(recording_txt, px, py, recording_fnt);
          //vprint("slider: %f %f\n", sv, v);
       }
 
@@ -434,8 +434,8 @@ public:
 
    std::shared_ptr<venc_ffmpeg> venc;
    video_params_ffmpeg default_video_params;
-   std::shared_ptr<ux_font> date_fnt;
-   std::shared_ptr<ux_font> recording_fnt;
+   std::shared_ptr<mws_font> date_fnt;
+   std::shared_ptr<mws_font> recording_fnt;
    std::string recording_txt;
    glm::vec2 recording_txt_dim;
    ping_pong_time_slider<float> rec_txt_slider;
@@ -670,7 +670,7 @@ bool unit::update()
    }
 
    gfx_scene_inst->update();
-   uxroot->update_state();
+   mws_root->update_state();
 
    gfx_scene_inst->draw();
    update_view(updateCount);
@@ -706,9 +706,9 @@ void unit::on_resize()
 
       gfx_st->set_state(pl1);
 
-      if (uxroot)
+      if (mws_root)
       {
-         uxroot->on_resize();
+         mws_root->on_resize();
       }
    }
 }
@@ -729,7 +729,7 @@ void unit::receive(shared_ptr<iadp> idp)
       auto pa = ts->crt_state.te;
       //trx("_mt2 %1% tt %2%") % pa->is_multitouch() % pa->type;
    }
-   send(uxroot, idp);
+   send(mws_root, idp);
 
    if (!idp->is_processed())
    {
@@ -806,19 +806,19 @@ void unit::iInit()
    {
       touch_ctrl->add_receiver(get_smtp_instance());
       key_ctrl->add_receiver(get_smtp_instance());
-      uxroot = ux_page_tab::new_instance(get_smtp_instance());
-      ux_cam = ux_camera::new_inst();
-      ux_cam->camera_id = "ux_cam";
-      ux_cam->projection_type = "orthographic";
-      ux_cam->near_clip_distance = -100;
-      ux_cam->far_clip_distance = 100;
-      ux_cam->clear_color = false;
-      ux_cam->clear_color_value = gfx_color::colors::black;
-      ux_cam->clear_depth = true;
-      gfx_scene_inst->attach(ux_cam);
+      mws_root = mws_page_tab::new_instance(get_smtp_instance());
+      mws_cam = mws_camera::new_inst();
+      mws_cam->camera_id = "mws_cam";
+      mws_cam->projection_type = "orthographic";
+      mws_cam->near_clip_distance = -100;
+      mws_cam->far_clip_distance = 100;
+      mws_cam->clear_color = false;
+      mws_cam->clear_color_value = gfx_color::colors::black;
+      mws_cam->clear_depth = true;
+      gfx_scene_inst->attach(mws_cam);
 
-      init_ux();
-      uxroot->init();
+      init_mws();
+      mws_root->init();
    }
 #endif // MOD_GFX
 }
@@ -837,11 +837,11 @@ void unit::on_destroy()
 {
    if (isInit())
    {
-      //uxroot->on_destroy();
+      //mws_root->on_destroy();
    }
 }
 
-void unit::init_ux()
+void unit::init_mws()
 {
 }
 
@@ -976,8 +976,8 @@ void unit::setInit(bool isInit0)
 
 void unit::update_view(int update_count)
 {
-   shared_ptr<ux_camera> gfx = ux_cam;
-   uxroot->update_view(gfx);
+   shared_ptr<mws_camera> gfx = mws_cam;
+   mws_root->update_view(gfx);
 
    if (prefs->draw_touch_symbols_trail() && !touch_ctrl->is_pointer_released())
    {
@@ -1135,9 +1135,9 @@ void unit_list::on_destroy()
    ulist.clear();
 }
 
-void unit_list::init_ux()
+void unit_list::init_mws()
 {
-   class lmodel : public ux_list_model
+   class lmodel : public mws_list_model
    {
    public:
       lmodel(shared_ptr<unit_list> iul) : ul(iul) {}
@@ -1171,14 +1171,14 @@ void unit_list::init_ux()
 
    shared_ptr<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
 
-   shared_ptr<ux_list_model> lm((ux_list_model*)new lmodel(ul));
-   shared_ptr<ux_page> p = ux_page::new_instance(uxroot);
-   shared_ptr<ux_list> l = ux_list::new_instance(p);
+   shared_ptr<mws_list_model> lm((mws_list_model*)new lmodel(ul));
+   shared_ptr<mws_page> p = mws_page::new_instance(mws_root);
+   shared_ptr<mws_list> l = mws_list::new_instance(p);
 
    ulmodel = lm;
    l->set_model(lm);
 
-   ux_cam->clear_color = true;
+   mws_cam->clear_color = true;
 }
 
 

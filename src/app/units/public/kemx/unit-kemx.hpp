@@ -9,8 +9,8 @@
 #include <vector>
 
 
-class ux_tree_model_node;
-class ux_page_tab;
+class mws_tree_model_node;
+class mws_page_tab;
 class node_info;
 
 
@@ -20,14 +20,14 @@ public:
 	static shared_ptr<unit_kemx> new_instance();
 
 	virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
 	virtual void load();
 	virtual void unload();
 
 private:
 	unit_kemx();
 
-	static void create_ux_tree_model(const std::vector<shared_ptr<node_info> >& list, shared_ptr<ux_tree_model_node> node, int& length);
+	static void create_mws_tree_model(const std::vector<shared_ptr<node_info> >& list, shared_ptr<mws_tree_model_node> node, int& length);
 
 	std::string data;
 	std::vector<shared_ptr<node_info> > node_list;

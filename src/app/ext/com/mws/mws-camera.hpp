@@ -4,25 +4,25 @@
 #include "gfx-camera.hpp"
 #include "gfx-color.hpp"
 
-class ux_font;
-class ux_camera;
-class ux_camera_impl;
+class mws_font;
+class mws_camera;
+class mws_camera_impl;
 class gfx_tex;
 
 
-class ux_camera : public gfx_camera
+class mws_camera : public gfx_camera
 {
 public:
-	static shared_ptr<ux_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
+	static shared_ptr<mws_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
 	void clearScreen(int iargb = 0);
 	void clear(int ix, int iy, int iwidth, int iheight, int iargb = 0);
 	void drawImage(shared_ptr<gfx_tex> img, float x, float y, float width = 0.f, float height = 0.f);
 	void drawLine(float i, float j, float k, float l);
 	void drawRect(float x, float y, float width, float height);
 	void fillRect(float x, float y, float width, float height);
-	shared_ptr<ux_font> get_font()const;
-	void set_font(shared_ptr<ux_font> ifont);
-	void drawText(const std::string& text, float x, float y, const shared_ptr<ux_font> ifnt = shared_ptr<ux_font>());
+	shared_ptr<mws_font> get_font()const;
+	void set_font(shared_ptr<mws_font> ifont);
+	void drawText(const std::string& text, float x, float y, const shared_ptr<mws_font> ifnt = shared_ptr<mws_font>());
 	void setColorf(float r, float g, float b, float a = 1.f);
 	void setColor(uint8 r, uint8 g, uint8 b, uint8 a = 0xFF);
 	void setColor(int argb);
@@ -36,7 +36,7 @@ public:
    void update_camera_state() override;
 
 protected:
-	ux_camera(std::shared_ptr<gfx> i_gi = nullptr);
+	mws_camera(std::shared_ptr<gfx> i_gi = nullptr);
 	virtual void load(shared_ptr<gfx_camera> inst);
-	shared_ptr<ux_camera_impl> p;
+	shared_ptr<mws_camera_impl> p;
 };

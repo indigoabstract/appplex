@@ -13,7 +13,7 @@ public:
 	static std::shared_ptr<unit_test_snd_generators> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 private:

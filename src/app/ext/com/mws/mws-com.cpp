@@ -2,11 +2,11 @@
 
 #include "appplex-conf.hpp"
 
-#if defined MOD_UX
+#if defined MOD_MWS
 
-#include "ux-com.hpp"
-#include "ux-camera.hpp"
-#include "ux-font.hpp"
+#include "mws-com.hpp"
+#include "mws-camera.hpp"
+#include "mws-font.hpp"
 #include "unit.hpp"
 #include "com/util/util.hpp"
 #include "com/unit/transitions.hpp"
@@ -17,37 +17,37 @@ using std::string;
 using std::vector;
 
 
-ux_button::ux_button(shared_ptr<ux_page> iparent) : ux_page_item(iparent)
+mws_button::mws_button(shared_ptr<mws_page> iparent) : mws_page_item(iparent)
 {
 	color = gfx_color::colors::black;
-	font = ux_font::new_inst(get_unit()->get_width() / 50.f);
+	font = mws_font::new_inst(get_unit()->get_width() / 50.f);
 	font->set_color(gfx_color::colors::white);
 	set_text("n/a");
 }
 
-shared_ptr<ux_button> ux_button::new_instance(shared_ptr<ux_page> iparent)
+shared_ptr<mws_button> mws_button::new_instance(shared_ptr<mws_page> iparent)
 {
-	shared_ptr<ux_button> u(new ux_button(iparent));
+	shared_ptr<mws_button> u(new mws_button(iparent));
 	u->add_to_page();
 	return u;
 }
 
-shared_ptr<ux_button> ux_button::new_shared_instance(ux_button* newButtonClassInstance)
+shared_ptr<mws_button> mws_button::new_shared_instance(mws_button* newButtonClassInstance)
 {
-	shared_ptr<ux_button> u(newButtonClassInstance);
+	shared_ptr<mws_button> u(newButtonClassInstance);
 	u->add_to_page();
 	return u;
 }
 
-void ux_button::init(ux_rect iuxr, int iColor, string iText)
+void mws_button::init(mws_rect i_mwsr, int iColor, string iText)
 {
-	uxr = iuxr;
+	mws_r = i_mwsr;
 	color = gfx_color(iColor);
 
 	set_text(iText);
 }
 
-void ux_button::receive(shared_ptr<iadp> idp)
+void mws_button::receive(shared_ptr<iadp> idp)
 {
 	if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
 	{
@@ -67,75 +67,75 @@ void ux_button::receive(shared_ptr<iadp> idp)
 	}
 }
 
-void ux_button::on_click(){}
-void ux_button::update_state(){}
+void mws_button::on_click(){}
+void mws_button::update_state(){}
 
-void ux_button::update_view(shared_ptr<ux_camera> g)
+void mws_button::update_view(shared_ptr<mws_camera> g)
 {
-	if(enabled && uxr.w > 0 && uxr.h > 0)
+	if(enabled && mws_r.w > 0 && mws_r.h > 0)
 	{
 		g->setColor(color.argb());
-		g->fillRect(uxr.x, uxr.y, uxr.w, uxr.h);
-		//draw_bar(g, uxr.x, uxr.y, uxr.w, uxr.h, color);
-		g->drawText(text, uxr.x + 10, uxr.y + uxr.h / 2 - 10, font);
+		g->fillRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+		//draw_bar(g, mws_r.x, mws_r.y, mws_r.w, mws_r.h, color);
+		g->drawText(text, mws_r.x + 10, mws_r.y + mws_r.h / 2 - 10, font);
 	}
 }
 
-void ux_button::set_color(const gfx_color& icolor)
+void mws_button::set_color(const gfx_color& icolor)
 {
 	color = icolor;
 }
 
-void ux_button::set_text(string iText)
+void mws_button::set_text(string iText)
 {
 	text = iText;
 }
 
 
-ux_list_model::ux_list_model()
+mws_list_model::mws_list_model()
 {
 	selected_elem = 0;
 }
 
-int ux_list_model::get_selected_elem()
+int mws_list_model::get_selected_elem()
 {
 	return selected_elem;
 }
 
-void ux_list_model::set_selected_elem(int iselectedElem)
+void mws_list_model::set_selected_elem(int iselectedElem)
 {
 	selected_elem = iselectedElem;
 }
 
 
-ux_list::ux_list(shared_ptr<ux_page> iparent) : ux_page_item(iparent)
+mws_list::mws_list(shared_ptr<mws_page> iparent) : mws_page_item(iparent)
 {
-	uxr.set(0, 0, iparent->get_pos().w, iparent->get_pos().h);
+	mws_r.set(0, 0, iparent->get_pos().w, iparent->get_pos().h);
 	item_height = 150;
 	vertical_space = 55;
-	item_w = uxr.w * 80 / 100;
-	item_x = (uxr.w - item_w) / 2;
+	item_w = mws_r.w * 80 / 100;
+	item_x = (mws_r.w - item_w) / 2;
 }
 
-shared_ptr<ux_list> ux_list::new_instance(shared_ptr<ux_page> iparent)
+shared_ptr<mws_list> mws_list::new_instance(shared_ptr<mws_page> iparent)
 {
-	shared_ptr<ux_list> u(new ux_list(iparent));
+	shared_ptr<mws_list> u(new mws_list(iparent));
 	u->add_to_page();
 	return u;
 }
 
-shared_ptr<ux_list> ux_list::new_shared_instance(ux_list* newListClassInstance)
+shared_ptr<mws_list> mws_list::new_shared_instance(mws_list* newListClassInstance)
 {
-	shared_ptr<ux_list> u(newListClassInstance);
+	shared_ptr<mws_list> u(newListClassInstance);
 	u->add_to_page();
 	return u;
 }
 
-void ux_list::init(){}
+void mws_list::init(){}
 
-void ux_list::receive(shared_ptr<iadp> idp)
+void mws_list::receive(shared_ptr<iadp> idp)
 {
-	if(idp->is_type(UX_EVT_MODEL_UPDATE))
+	if(idp->is_type(MWS_EVT_MODEL_UPDATE))
 	{
 		float listheight = 0;
 
@@ -149,7 +149,7 @@ void ux_list::receive(shared_ptr<iadp> idp)
 			listheight -= vertical_space;
 		}
 
-		uxr.h = listheight;
+		mws_r.h = listheight;
 	}
 	else if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
 	{
@@ -181,18 +181,18 @@ void ux_list::receive(shared_ptr<iadp> idp)
 	}
 }
 
-void ux_list::update_state()
+void mws_list::update_state()
 {
 }
 
-void ux_list::update_view(shared_ptr<ux_camera> g)
+void mws_list::update_view(shared_ptr<mws_camera> g)
 {
 	if(!model)
 	{
 		return;
 	}
 	
-	ux_rect pr = get_parent()->get_pos();
+	mws_rect pr = get_parent()->get_pos();
 	int size = model->get_length();
 	float vertOffset = pr.y;
 	int selectedElem = model->get_selected_elem();
@@ -214,18 +214,18 @@ void ux_list::update_view(shared_ptr<ux_camera> g)
 	}
 }
 
-void ux_list::set_model(shared_ptr<ux_list_model> imodel)
+void mws_list::set_model(shared_ptr<mws_list_model> imodel)
 {
 	model = imodel;
 	model->set_view(get_instance());
 }
 
-shared_ptr<ux_list_model> ux_list::get_model()
+shared_ptr<mws_list_model> mws_list::get_model()
 {
 	return model;
 }
 
-int ux_list::element_at(float x, float y)
+int mws_list::element_at(float x, float y)
 {
 	if(!is_hit(x, y))
 	{
@@ -248,78 +248,78 @@ int ux_list::element_at(float x, float y)
 }
 
 
-ux_tree_model::ux_tree_model()
+mws_tree_model::mws_tree_model()
 {
 	length = 0;
 }
 
-void ux_tree_model::set_length(int ilength)
+void mws_tree_model::set_length(int ilength)
 {
 	length = ilength;
 }
 
-int ux_tree_model::get_length()
+int mws_tree_model::get_length()
 {
 	return length;
 }
 
-void ux_tree_model::set_root_node(shared_ptr<ux_tree_model_node> iroot)
+void mws_tree_model::set_root_node(shared_ptr<mws_tree_model_node> iroot)
 {
 	root = iroot;
 }
 
-shared_ptr<ux_tree_model_node> ux_tree_model::get_root_node()
+shared_ptr<mws_tree_model_node> mws_tree_model::get_root_node()
 {
 	return root;
 }
 
-ux_tree::ux_tree(shared_ptr<ux_page> iparent) : ux_page_item(iparent)
+mws_tree::mws_tree(shared_ptr<mws_page> iparent) : mws_page_item(iparent)
 {
 }
 
-shared_ptr<ux_tree> ux_tree::new_instance(shared_ptr<ux_page> iparent)
+shared_ptr<mws_tree> mws_tree::new_instance(shared_ptr<mws_page> iparent)
 {
-	shared_ptr<ux_tree> u(new ux_tree(iparent));
+	shared_ptr<mws_tree> u(new mws_tree(iparent));
 	u->add_to_page();
 	return u;
 }
 
-shared_ptr<ux_tree> ux_tree::new_shared_instance(ux_tree* newTreeClassInstance)
+shared_ptr<mws_tree> mws_tree::new_shared_instance(mws_tree* newTreeClassInstance)
 {
-	shared_ptr<ux_tree> u(newTreeClassInstance);
+	shared_ptr<mws_tree> u(newTreeClassInstance);
 	u->add_to_page();
 	return u;
 }
 
-void ux_tree::init()
+void mws_tree::init()
 {
 }
 
-void ux_tree::receive(shared_ptr<iadp> idp)
+void mws_tree::receive(shared_ptr<iadp> idp)
 {
-	if(idp->is_type(UX_EVT_MODEL_UPDATE))
+	if(idp->is_type(MWS_EVT_MODEL_UPDATE))
 	{
 		float h = 25.f + model->get_length() * 20.f;
 		float w = 0;
 
 		if(model->get_root_node())
 		{
-			//shared_ptr<ux_font> f = gfx_openvg::get_instance()->getFont();
+			//shared_ptr<mws_font> f = gfx_openvg::get_instance()->getFont();
 			//get_max_width(f, model->get_root_node(), 0, w);
 		}
 
-		uxr.h = h;
-		uxr.w = w / 2;
+		mws_r.h = h;
+		mws_r.w = w / 2;
 	}
 }
 
-void ux_tree::update_state()
+void mws_tree::update_state()
 {
 }
 
-void ux_tree::update_view(shared_ptr<ux_camera> g)
+void mws_tree::update_view(shared_ptr<mws_camera> g)
 {
-	shared_ptr<ux_tree_model_node> node = model->get_root_node();
+	shared_ptr<mws_tree_model_node> node = model->get_root_node();
 
 	if(node->nodes.size() > 0)
 	{
@@ -329,24 +329,24 @@ void ux_tree::update_view(shared_ptr<ux_camera> g)
 	}
 }
 
-void ux_tree::set_model(shared_ptr<ux_tree_model> imodel)
+void mws_tree::set_model(shared_ptr<mws_tree_model> imodel)
 {
 	model = imodel;
 	model->set_view(get_instance());
 }
 
-shared_ptr<ux_tree_model> ux_tree::get_model()
+shared_ptr<mws_tree_model> mws_tree::get_model()
 {
 	return model;
 }
 
-void ux_tree::get_max_width(shared_ptr<ux_font> f, const shared_ptr<ux_tree_model_node> node, int level, float& maxWidth)
+void mws_tree::get_max_width(shared_ptr<mws_font> f, const shared_ptr<mws_tree_model_node> node, int level, float& maxWidth)
 {
 	int size = node->nodes.size();
 
 	for (int k = 0; k < size; k++)
 	{
-		shared_ptr<ux_tree_model_node> kv = node->nodes[k];
+		shared_ptr<mws_tree_model_node> kv = node->nodes[k];
 
 		float textWidth = 0;//get_text_width(f, kv->data);
 		float twidth = 25 + level * 20 + textWidth;
@@ -363,14 +363,14 @@ void ux_tree::get_max_width(shared_ptr<ux_font> f, const shared_ptr<ux_tree_mode
 	}
 }
 
-void ux_tree::draw_tree_elem(shared_ptr<ux_camera> g, const shared_ptr<ux_tree_model_node> node, int level, int& elemIdx)
+void mws_tree::draw_tree_elem(shared_ptr<mws_camera> g, const shared_ptr<mws_tree_model_node> node, int level, int& elemIdx)
 {
 	int size = node->nodes.size();
-	ux_rect r = get_parent()->get_pos();
+	mws_rect r = get_parent()->get_pos();
 
 	for (int k = 0; k < size; k++)
 	{
-		shared_ptr<ux_tree_model_node> kv = node->nodes[k];
+		shared_ptr<mws_tree_model_node> kv = node->nodes[k];
 		glm::vec2 dim = g->get_font()->get_text_dim(kv->data);
 
 		g->setColor(0xff00ff);

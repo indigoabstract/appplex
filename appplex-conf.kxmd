@@ -38,7 +38,7 @@ units
 	test-freetype-gl[ ],
 	test-normal-mapping[ uses[ gfx ], platf[ windows ], ],
 	test-fmod[ uses[ boost, gfx, fmod ], ],
-	ux-test[ ],
+	test-mws[ ],
 	test-freeimage[ uses[ boost, gfx, freeimage ], enabled[ false ], ],
 	test-openvg[ uses[ boost, gfx, openvg ], enabled[ false ], ],
 	test-stk[ uses[ boost, gfx, fmod, stk ], platf[ windows ], ],
@@ -68,11 +68,25 @@ units
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
-	video-editor[ uses[ gfx ], platf[ windows, ios ], ],
+	video-editor[ uses[ gfx, mws ], platf[ windows, ios ], ],
 	
 	@@[ tests ],
 
 	text-extractor[ uses[ gfx ], platf[ windows ], ],
+],
+
+mod
+[
+	3d-engine [ gfx, obj-loader, res-loader ],
+	bitmap-fonts[ png ],
+	gfx[ opengl ],
+	fonts[ vector-fonts, bitmap-fonts ],
+	freetype-gl[ freetype ],
+	mws [ gfx, fonts ],
+	obj-loader [ gfx ],
+	png [ zlib ],
+	res-loader [ gfx, png ],
+	vector-fonts[ freetype-gl ],
 ],
 
 paths

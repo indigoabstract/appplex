@@ -15,7 +15,7 @@ public:
 	static shared_ptr<unit_test_freeimage> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 	static void save_image(std::string ifilename, shared_ptr<std::vector<uint32> > ibgra);

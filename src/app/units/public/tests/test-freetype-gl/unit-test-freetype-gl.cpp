@@ -5,9 +5,9 @@
 #ifdef UNIT_TEST_FREETYPE_GL
 
 #include "com/unit/input-ctrl.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-font.hpp"
-#include "com/ux/font-db.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-font.hpp"
+#include "com/mws/font-db.hpp"
 #include "gfx.hpp"
 #include "gfx-rt.hpp"
 #include "gfx-camera.hpp"
@@ -34,7 +34,7 @@ public:
 	shared_ptr<gfx_plane> q2d;
 	shared_ptr<gfx_shader> texture_display;
 	uint32 last_time;
-	shared_ptr<ux_font> f;
+	shared_ptr<mws_font> f;
 	std::wstring tx;
 
 };
@@ -50,10 +50,10 @@ shared_ptr<unit_test_freetype_gl> unit_test_freetype_gl::new_instance()
 	return shared_ptr<unit_test_freetype_gl>(new unit_test_freetype_gl());
 }
 
-void unit_test_freetype_gl::init_ux()
+void unit_test_freetype_gl::init_mws()
 {
-	ux_cam->clear_color = true;
-	ux_cam->clear_color_value = gfx_color::colors::indigo;
+	mws_cam->clear_color = true;
+	mws_cam->clear_color_value = gfx_color::colors::indigo;
 	//touch_ctrl->add_receiver(get_smtp_instance());
 	//key_ctrl->add_receiver(get_smtp_instance());
 }
@@ -83,7 +83,7 @@ bool unit_test_freetype_gl::update()
 	if (atlas && atlas->is_valid())
 	{
 		(*p->q2d)["u_s2d_tex"] = atlas->get_name();
-		ux_cam->draw_mesh(p->q2d);
+		mws_cam->draw_mesh(p->q2d);
 	}
 
 	uint32 crt_time = pfm::time::get_time_millis();
@@ -95,7 +95,7 @@ bool unit_test_freetype_gl::update()
 		RNG rng;
 		float fnt_size = rng.range(7, 186);
 
-		p->f = ux_font::new_inst(fnt_size);
+		p->f = mws_font::new_inst(fnt_size);
 		p->f->set_color(gfx_color::colors::gold);
 		p->tx.clear();
 		int size = 5 + rng.nextInt(10);
@@ -108,14 +108,14 @@ bool unit_test_freetype_gl::update()
 
 	}
 
-	ux_cam->drawText("alg-xxxxxxxx", 100, 100, p->f);
+	mws_cam->drawText("alg-xxxxxxxx", 100, 100, p->f);
 	glm::vec2 dim = p->f->get_text_dim("alg-xxxxxxxx");
-	ux_cam->drawRect(100, 100, dim.x, dim.y);
-	ux_cam->drawText("test freetype-gl", 20, 50);
+	mws_cam->drawRect(100, 100, dim.x, dim.y);
+	mws_cam->drawText("test freetype-gl", 20, 50);
 
 	dim = p->f->get_text_dim(p->tx);
-	ux_cam->drawText(p->tx, 50, 400, p->f);
-	ux_cam->drawRect(50, 400, dim.x, dim.y);
+	mws_cam->drawText(p->tx, 50, 400, p->f);
+	mws_cam->drawRect(50, 400, dim.x, dim.y);
 
 	mws_report_gfx_errs();
 

@@ -13,7 +13,7 @@ public:
 	static shared_ptr<unit_test_snd_android> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 private:

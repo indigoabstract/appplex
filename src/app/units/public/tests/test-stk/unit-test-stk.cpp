@@ -4,8 +4,8 @@
 
 #ifdef UNIT_TEST_STK
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws.hpp"
 #include "snd.hpp"
 #include <rng/rng.hpp>
 #include <glm/gtc/constants.hpp>
@@ -240,12 +240,12 @@ void unit_test_stk::init()
 {
 }
 
-void unit_test_stk::init_ux()
+void unit_test_stk::init_mws()
 {
-	class mainpage : public ux_page
+	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -379,7 +379,7 @@ void unit_test_stk::init_ux()
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
@@ -387,9 +387,9 @@ void unit_test_stk::init_ux()
 			fmodSystem->update();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			g->drawText("test stk", 10, 10);
 			g->drawText(show_note, 10, 50);
@@ -405,8 +405,8 @@ void unit_test_stk::init_ux()
 		std::string show_note;
 	};
 
-	ux_page::new_shared_instance(new mainpage(uxroot));
-	ux_cam->clear_color = true;
+	mws_page::new_shared_instance(new mainpage(mws_root));
+	mws_cam->clear_color = true;
 }
 
 #endif

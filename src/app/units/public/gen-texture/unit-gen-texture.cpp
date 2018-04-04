@@ -4,8 +4,8 @@
 
 #ifdef UNIT_GEN_TEXTURE
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-state.hpp"
 #include <VG/openvg.h>
@@ -28,7 +28,7 @@ void unit_gen_texture::init()
 
 namespace unit_gen_texture_texture
 {
-	void draw_texture(shared_ptr<ux_camera> g, int iwidth, int iheight)
+	void draw_texture(shared_ptr<mws_camera> g, int iwidth, int iheight)
 	{
 		//spvg_path fg = vg_util::new_ellipse(0,0, 100, 60);
 		//VGfloat white[] = {0,0,1,1};
@@ -79,14 +79,14 @@ namespace unit_gen_texture_rtt_screen
 {
 	shared_ptr<gfx_tex> shvg_tex;
 
-	class page_rtt_screen : public ux_page
+	class page_rtt_screen : public mws_page
 	{
 	public:
-		page_rtt_screen(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		page_rtt_screen(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			//int width = 256;
 			//int height = 256;
@@ -104,17 +104,17 @@ namespace unit_gen_texture_rtt_screen
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			//shared_ptr<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
@@ -130,14 +130,14 @@ namespace unit_gen_texture_rtt_fbo
 {
 	shared_ptr<gfx_tex> shvg_tex;
 
-	class page_rtt_fbo : public ux_page
+	class page_rtt_fbo : public mws_page
 	{
 	public:
-		page_rtt_fbo(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		page_rtt_fbo(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			//int width = 64;
 			//int height = width;
@@ -158,17 +158,17 @@ namespace unit_gen_texture_rtt_fbo
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			//shared_ptr<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
@@ -182,29 +182,29 @@ namespace unit_gen_texture_rtt_fbo
 
 namespace unit_gen_texture_mainpage
 {
-	class mainpage : public ux_page
+	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 		}
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			//shared_ptr<renderer> r = renderer::get_instance();
 			////unitgentexture_texture::draw_texture(gfx_openvg::get_instance(), 256, 256);
@@ -237,11 +237,11 @@ namespace unit_gen_texture_mainpage
 }
 
 
-void unit_gen_texture::init_ux()
+void unit_gen_texture::init_mws()
 {
-	ux_page::new_shared_instance(new unit_gen_texture_mainpage::mainpage(uxroot));
-	ux_page::new_shared_instance(new unit_gen_texture_rtt_screen::page_rtt_screen(uxroot));
-	ux_page::new_shared_instance(new unit_gen_texture_rtt_fbo::page_rtt_fbo(uxroot));
+	mws_page::new_shared_instance(new unit_gen_texture_mainpage::mainpage(mws_root));
+	mws_page::new_shared_instance(new unit_gen_texture_rtt_screen::page_rtt_screen(mws_root));
+	mws_page::new_shared_instance(new unit_gen_texture_rtt_fbo::page_rtt_fbo(mws_root));
 }
 
 void unit_gen_texture::load()

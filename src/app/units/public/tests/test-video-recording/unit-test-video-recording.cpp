@@ -15,7 +15,7 @@
 #include "gfx-vxo.hpp"
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-camera.hpp"
 #include "pfm-gl.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -187,35 +187,35 @@ namespace test_video_recording
          mws_report_gfx_errs();
       }
 
-      void update_view(std::shared_ptr<ux_camera> ux_cam)
+      void update_view(std::shared_ptr<mws_camera> mws_cam)
       {
          std::string frame_counter = trs("frame count: {}", frame_idx);
 
          mws_report_gfx_errs();
-         quad_mesh->render_mesh(ux_cam);
-         ux_cam->drawText(frame_counter, 50, 50);
+         quad_mesh->render_mesh(mws_cam);
+         mws_cam->drawText(frame_counter, 50, 50);
          mws_report_gfx_errs();
       }
 
-      void post_update_view(std::shared_ptr<ux_camera> ux_cam)
+      void post_update_view(std::shared_ptr<mws_camera> mws_cam)
       {
          mws_report_gfx_errs();
          scr_mirror_tex->set_active(0);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
-         scr_mirror_bg_mesh->render_mesh(ux_cam);
+         scr_mirror_bg_mesh->render_mesh(mws_cam);
          //(*scr_mirror_mesh)["u_s2d_tex"] = rt_uv_tex->get_name();
-         scr_mirror_mesh->render_mesh(ux_cam);
+         scr_mirror_mesh->render_mesh(mws_cam);
          mws_report_gfx_errs();
 
          if (venc->is_encoding())
          {
             gfx::rt::set_current_render_target(rt_y);
-            rt_y_quad->render_mesh(ux_cam);
+            rt_y_quad->render_mesh(mws_cam);
             shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::rt::get_render_target_pixels<uint8>(rt_y);
             mws_report_gfx_errs();
 
             gfx::rt::set_current_render_target(rt_uv);
-            rt_uv_quad->render_mesh(ux_cam);
+            rt_uv_quad->render_mesh(mws_cam);
             shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::rt::get_render_target_pixels<uint32>(rt_uv);
             gfx::rt::set_current_render_target();
             mws_report_gfx_errs();
@@ -304,9 +304,9 @@ void unit_test_video_recording::load()
    auto i = static_cast<impl*>(p.get());
    gfx_color cc;
 
-   ux_cam->clear_color = true;
+   mws_cam->clear_color = true;
    cc.from_float(0.5f, 0.f, 1.f, 1.f);
-   ux_cam->clear_color_value = cc;
+   mws_cam->clear_color_value = cc;
 
    i->load();
 }
@@ -315,9 +315,9 @@ void unit_test_video_recording::update_view(int update_count)
 {
    auto i = static_cast<impl*>(p.get());
 
-   i->update_view(ux_cam);
+   i->update_view(mws_cam);
    unit::update_view(update_count);
-   i->post_update_view(ux_cam);
+   i->post_update_view(mws_cam);
 }
 
 void unit_test_video_recording::receive(shared_ptr<iadp> idp)

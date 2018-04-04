@@ -5,20 +5,20 @@
 #ifdef UNIT_TEXXED
 
 #include "gap-buffer.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
-#include "com/ux/ux-font.hpp"
-#include "com/ux/font-db.hpp"
-#include "com/ux/text-vxo.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
+#include "com/mws/mws-font.hpp"
+#include "com/mws/font-db.hpp"
+#include "com/mws/text-vxo.hpp"
 #include "min.hpp"
 
 
 namespace unit_texxed_ns
 {
-	class text_area_impl : public ux_page_item
+	class text_area_impl : public mws_page_item
 	{
 	public:
-		static shared_ptr<text_area_impl> new_inst(shared_ptr<ux_page> iparent)
+		static shared_ptr<text_area_impl> new_inst(shared_ptr<mws_page> iparent)
 		{
 			shared_ptr<text_area_impl> inst(new text_area_impl(iparent));
 			inst->add_to_page();
@@ -72,7 +72,7 @@ namespace unit_texxed_ns
 			dim = idim;
 			(*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
 			text_rows = dim.y / font->get_height() + 1;
-			uxr = ux_rect(pos.x, pos.y, dim.x, dim.y);
+			mws_r = mws_rect(pos.x, pos.y, dim.x, dim.y);
 		}
 
 		virtual void select_char_at(const glm::vec2& ipos)
@@ -141,7 +141,7 @@ namespace unit_texxed_ns
 			}
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
 			g->drawRect(pos.x, pos.y, dim.x, dim.y);
 			g->drawRect(select_char_rect.x + pos.x, select_char_rect.y + pos.y, select_char_rect.z, select_char_rect.w);
@@ -158,8 +158,8 @@ namespace unit_texxed_ns
 			{
 				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-				float x = ts->crt_state.te->points[0].x - uxr.x;
-				float y = ts->crt_state.te->points[0].y - uxr.y;
+				float x = ts->crt_state.te->points[0].x - mws_r.x;
+				float y = ts->crt_state.te->points[0].y - mws_r.y;
 
 				switch (ts->get_type())
 				{
@@ -238,22 +238,22 @@ namespace unit_texxed_ns
 				}
 			}
 
-			//ux_page::receive(idp);
+			//mws_page::receive(idp);
 		}
 
 	protected:
-		text_area_impl(shared_ptr<ux_page> iparent) : ux_page_item(iparent)
+		text_area_impl(shared_ptr<mws_page> iparent) : mws_page_item(iparent)
 		{
 			tx_vxo = text_vxo::new_inst();
 			iparent->get_unit()->gfx_scene_inst->attach(tx_vxo);
-			tx_vxo->camera_id_list.push_back(get_unit()->ux_cam->camera_id);
+			tx_vxo->camera_id_list.push_back(get_unit()->mws_cam->camera_id);
 			(*tx_vxo)[MP_SCISSOR_ENABLED] = true;
-			font = ux_font::new_inst(48);
+			font = mws_font::new_inst(48);
 		}
 
 		shared_ptr<text_area_model> tx_src;
 		shared_ptr<text_vxo> tx_vxo;
-		shared_ptr<ux_font> font;
+		shared_ptr<mws_font> font;
 		glm::vec2 pos;
 		glm::vec2 dim;
 		glm::vec2 text_offset;
@@ -264,14 +264,14 @@ namespace unit_texxed_ns
 	};
 
 
-	class main_page : public ux_page
+	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			int w = get_unit()->get_width();
 			int h = get_unit()->get_height();
@@ -285,14 +285,14 @@ namespace unit_texxed_ns
 				return;
 			}
 
-			ta = text_area_impl::new_inst(get_ux_page_instance());
+			ta = text_area_impl::new_inst(get_mws_page_instance());
 			ta->set_position(glm::vec2(50, 70));
 			ta->set_dimension(glm::vec2(w - 80, h - 130));
 			ta->set_text(*tx_res);
 
-			shared_ptr<ux_button> b;
-			b = ux_button::new_instance(get_ux_page_instance());
-			b->init(ux_rect(10, h - 50, 50, 20), 0x8200b4, "btn");
+			shared_ptr<mws_button> b;
+			b = mws_button::new_instance(get_mws_page_instance());
+			b->init(mws_rect(10, h - 50, 50, 20), 0x8200b4, "btn");
 		}
 
 		virtual void receive(shared_ptr<iadp> idp)
@@ -307,17 +307,17 @@ namespace unit_texxed_ns
 				ta->receive(idp);
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			std::string text = "texxed : texxt-editor";
 
@@ -344,11 +344,11 @@ void unit_texxed::init()
 {
 }
 
-void unit_texxed::init_ux()
+void unit_texxed::init_mws()
 {
-	ux_page::new_shared_instance(new unit_texxed_ns::main_page(uxroot));
-	ux_cam->clear_color = true;
-	//ux_cam->clear_color_value = gfx_color::colors::white;
+	mws_page::new_shared_instance(new unit_texxed_ns::main_page(mws_root));
+	mws_cam->clear_color = true;
+	//mws_cam->clear_color_value = gfx_color::colors::white;
 }
 
 void unit_texxed::load()

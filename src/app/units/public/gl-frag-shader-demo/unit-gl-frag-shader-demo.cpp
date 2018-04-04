@@ -4,8 +4,8 @@
 #ifdef UNIT_GL_FRAG_SHADER_DEMO
 
 #include "unit-gl-frag-shader-demo.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-ext.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-ext.hpp"
 #include "com/util/util.hpp"
 #include "gfx-camera.hpp"
 #include "gfx-vxo.hpp"
@@ -502,10 +502,10 @@ public:
 };
 
 
-class unit_gl_frag_shader_demo_page : public ux_page
+class unit_gl_frag_shader_demo_page : public mws_page
 {
 public:
-	unit_gl_frag_shader_demo_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){ set_id("gl-frag-shader-demo-page"); }
+	unit_gl_frag_shader_demo_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){ set_id("gl-frag-shader-demo-page"); }
 	virtual ~unit_gl_frag_shader_demo_page(){}
 
 	virtual void init()
@@ -520,7 +520,7 @@ public:
 
 	virtual void receive(shared_ptr<iadp> idp)
 	{
-		ux_page::update_input_subux(idp);
+		mws_page::update_input_sub_mws(idp);
 
 		if (idp->is_processed())
 		{
@@ -620,7 +620,7 @@ public:
 			}
 		}
 
-		ux_page::update_input_std_behaviour(idp);
+		mws_page::update_input_std_behaviour(idp);
 	}
 
 	void update_state() override
@@ -719,10 +719,10 @@ public:
 
 		mws_report_gfx_errs();
 
-		ux_page::update_state();
+		mws_page::update_state();
 	}
 
-	virtual void update_view(shared_ptr<ux_camera> g)
+	virtual void update_view(shared_ptr<mws_camera> g)
 	{
 		shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
 		shared_ptr<unit_gl_frag_shader_demo_impl> p = u->p;
@@ -732,7 +732,7 @@ public:
 
 		mws_report_gfx_errs();
 
-		ux_page::update_view(g);
+		mws_page::update_view(g);
 	}
 
 	void reset()
@@ -785,11 +785,11 @@ public:
 };
 
 
-void unit_gl_frag_shader_demo::init_ux()
+void unit_gl_frag_shader_demo::init_mws()
 {
-	ux_cam->clear_color = false;
-	shared_ptr<ux_page> page = ux_page::new_shared_instance(new unit_gl_frag_shader_demo_page(uxroot));
-	uxroot->set_first_page(page);
+	mws_cam->clear_color = false;
+	shared_ptr<mws_page> page = mws_page::new_shared_instance(new unit_gl_frag_shader_demo_page(mws_root));
+	mws_root->set_first_page(page);
 }
 
 
@@ -813,7 +813,7 @@ void unit_gl_frag_shader_demo::init()
 
 void unit_gl_frag_shader_demo::load()
 {
-	shared_ptr<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(uxroot->get_page_at(0));
+	shared_ptr<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(mws_root->get_page_at(0));
 
 	p->load(static_pointer_cast<unit_gl_frag_shader_demo>(get_smtp_instance()));
 	page->on_load();

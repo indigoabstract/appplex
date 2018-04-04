@@ -2,14 +2,14 @@
 
 #include "appplex-conf.hpp"
 
-#if defined MOD_UX
+#if defined MOD_MWS
 
-#include "ux-camera.hpp"
-#include "ux-font.hpp"
+#include "mws-camera.hpp"
+#include "mws-font.hpp"
 #include "text-vxo.hpp"
 
 
-namespace ns_ux_camera
+namespace ns_mws_camera
 {
 	class draw_text_op : public draw_op
 	{
@@ -21,7 +21,7 @@ namespace ns_ux_camera
 			tx_vxo = text_vxo::new_inst();
 		}
 
-		void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<ux_font> ifont)
+		void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<mws_font> ifont)
 		{
 			tx = text;
 			x = ix;
@@ -78,12 +78,12 @@ namespace ns_ux_camera
       float y;
       int font_idx;
       // hold refs to the fonts, so they don't get destroyed before they're used for drawing
-      std::vector<shared_ptr<ux_font> > fonts;
+      std::vector<shared_ptr<mws_font> > fonts;
 
 #elif defined MOD_BITMAP_FONTS
 
       draw_text_op() {}
-      void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<ux_font> ifont) {}
+      void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<mws_font> ifont) {}
       virtual void read_data(shared_ptr<rw_sequence> seq) {}
       virtual void write_data(shared_ptr<rw_sequence> seq) {}
       void on_update_start(shared_ptr<draw_context> idc) {}
@@ -93,42 +93,42 @@ namespace ns_ux_camera
 #endif
 	};
 }
-using namespace ns_ux_camera;
+using namespace ns_mws_camera;
 
 
-class ux_camera_impl
+class mws_camera_impl
 {
 public:
-	ux_camera_impl()
+	mws_camera_impl()
 	{
-		font = ux_font::new_inst(24);
+		font = mws_font::new_inst(24);
 		font->set_color(gfx_color::colors::yellow);
 	}
 
-	shared_ptr<ux_font> font;
+	shared_ptr<mws_font> font;
 	gfx_color color;
 	draw_text_op d_text;
 };
 
 
-shared_ptr<ux_camera> ux_camera::new_inst(std::shared_ptr<gfx> i_gi)
+shared_ptr<mws_camera> mws_camera::new_inst(std::shared_ptr<gfx> i_gi)
 {
-	shared_ptr<ux_camera> inst(new ux_camera(i_gi));
+	shared_ptr<mws_camera> inst(new mws_camera(i_gi));
 	inst->load(inst);
 	return inst;
 }
 
-void ux_camera::drawImage(shared_ptr<gfx_tex> img, float x, float y, float width, float height)
+void mws_camera::drawImage(shared_ptr<gfx_tex> img, float x, float y, float width, float height)
 {
 	draw_image(img, x, y, width, height);
 }
 
-void ux_camera::drawLine(float i, float j, float k, float l)
+void mws_camera::drawLine(float i, float j, float k, float l)
 {
 	draw_line(glm::vec3(i, j, 0.f), glm::vec3(k, l, 0.f), p->color.to_vec4(), 1.f);
 }
 
-void ux_camera::drawRect(float x, float y, float width, float height)
+void mws_camera::drawRect(float x, float y, float width, float height)
 {
 	draw_line(glm::vec3(x, y, 0.f), glm::vec3(x + width, y, 0.f), p->color.to_vec4(), 1.f);
 	draw_line(glm::vec3(x + width, y, 0.f), glm::vec3(x + width, y + height, 0.f), p->color.to_vec4(), 1.f);
@@ -136,7 +136,7 @@ void ux_camera::drawRect(float x, float y, float width, float height)
 	draw_line(glm::vec3(x, y + height, 0.f), glm::vec3(x, y, 0.f), p->color.to_vec4(), 1.f);
 }
 
-void ux_camera::fillRect(float x, float y, float width, float height)
+void mws_camera::fillRect(float x, float y, float width, float height)
 {
 	draw_plane(glm::vec3(x + width * 0.5, y + height * 0.5, 0.f), glm::vec3(0, 0, 1), glm::vec2(width, height), p->color.to_vec4());
 	//drawRect(x, y, width, height);
@@ -144,78 +144,78 @@ void ux_camera::fillRect(float x, float y, float width, float height)
 	//draw_line(glm::vec3(10, 50, 0.f), glm::vec3(100, 50, 0.f), ia_color::colors::blue.to_vec4(), 1.f);
 }
 
-shared_ptr<ux_font> ux_camera::get_font()const
+shared_ptr<mws_font> mws_camera::get_font()const
 {
 	return p->font;
 }
 
-void ux_camera::set_font(shared_ptr<ux_font> ifont)
+void mws_camera::set_font(shared_ptr<mws_font> ifont)
 {
 	p->font = ifont;
 }
 
-void ux_camera::drawText(const std::string& text, float x, float y, const shared_ptr<ux_font> ifnt)
+void mws_camera::drawText(const std::string& text, float x, float y, const shared_ptr<mws_font> ifnt)
 {
 	if (enabled)
 	{
-		const shared_ptr<ux_font> fnt = (ifnt) ? ifnt : p->font;
+		const shared_ptr<mws_font> fnt = (ifnt) ? ifnt : p->font;
 		p->d_text.push_data(draw_ops, text, x, y, fnt);
 	}
 }
 
-void ux_camera::setColorf(float r, float g, float b, float a)
+void mws_camera::setColorf(float r, float g, float b, float a)
 {
 	p->color.from_float(r, g, b, a);
 }
 
-void ux_camera::setColor(uint8 r, uint8 g, uint8 b, uint8 a)
+void mws_camera::setColor(uint8 r, uint8 g, uint8 b, uint8 a)
 {
 	p->color = gfx_color(r, g, b, a);
 }
 
-void ux_camera::setColor(int argb)
+void mws_camera::setColor(int argb)
 {
 	p->color = gfx_color(argb);
 }
 
-void ux_camera::push_transform_state()
+void mws_camera::push_transform_state()
 {
 
 }
 
-void ux_camera::pop_transform_state()
+void mws_camera::pop_transform_state()
 {
 
 }
 
-void ux_camera::rotate(float angle)
+void mws_camera::rotate(float angle)
 {
 
 }
 
-void ux_camera::scale(float sx, float sy)
+void mws_camera::scale(float sx, float sy)
 {
 
 }
 
-void ux_camera::translate(float tx, float ty)
+void mws_camera::translate(float tx, float ty)
 {
 
 }
 
-ux_camera::ux_camera(std::shared_ptr<gfx> i_gi) : gfx_camera(i_gi)
+mws_camera::mws_camera(std::shared_ptr<gfx> i_gi) : gfx_camera(i_gi)
 {
 }
 
-void ux_camera::load(shared_ptr<gfx_camera> inst)
+void mws_camera::load(shared_ptr<gfx_camera> inst)
 {
 	gfx_camera::load(inst);
-	p = shared_ptr<ux_camera_impl>(new ux_camera_impl());
+	p = shared_ptr<mws_camera_impl>(new mws_camera_impl());
 	projection_type = "orthographic";
 	rendering_priority = 0xffff;
 }
 
-void ux_camera::update_camera_state()
+void mws_camera::update_camera_state()
 {
 	p->d_text.on_update_start(draw_ctx);
 	gfx_camera::update_camera_state();

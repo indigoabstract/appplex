@@ -4,8 +4,8 @@
 
 #ifdef UNIT_KEMX
 
-#include "com/ux/ux-com.hpp"
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-com.hpp"
+#include "com/mws/mws-camera.hpp"
 #include "data-sequence.hpp"
 #include "node-info.hpp"
 #include <exception>
@@ -115,15 +115,15 @@ void unit_kemx::init()
 	//tracenl("load ds-test [%d, %d, %d, %d, %d, %u, %f %Lf]", s1, s2, s3, s4, s5, s6, s9, s10);
 }
 
-void unit_kemx::init_ux()
+void unit_kemx::init_mws()
 {
-	shared_ptr<ux_page> up = ux_page::new_instance(uxroot);
-	shared_ptr<ux_tree> tree = ux_tree::new_instance(up);
-	shared_ptr<ux_tree_model> uxtm(new ux_tree_model());
+	shared_ptr<mws_page> up = mws_page::new_instance(mws_root);
+	shared_ptr<mws_tree> tree = mws_tree::new_instance(up);
+	shared_ptr<mws_tree_model> mwstm(new mws_tree_model());
 
 	tree->set_id("kemxtree");
-	tree->set_model(uxtm);
-	ux_cam->clear_color = true;
+	tree->set_model(mwstm);
+	mws_cam->clear_color = true;
 }
 
 void unit_kemx::load()
@@ -140,12 +140,12 @@ void unit_kemx::load()
 		trn();
 		is_valid_expression = true;
 
-		shared_ptr<ux_tree_model_node> node(new ux_tree_model_node("root"));
+		shared_ptr<mws_tree_model_node> node(new mws_tree_model_node("root"));
 		int length = 0;
-		shared_ptr<ux_tree> tree = static_pointer_cast<ux_tree>(uxroot->find_by_id("kemxtree"));
-		shared_ptr<ux_tree_model> treemodel = tree->get_model();
+		shared_ptr<mws_tree> tree = static_pointer_cast<mws_tree>(mws_root->find_by_id("kemxtree"));
+		shared_ptr<mws_tree_model> treemodel = tree->get_model();
 
-		create_ux_tree_model(node_list, node, length);
+		create_mws_tree_model(node_list, node, length);
 		treemodel->set_length(length);
 		treemodel->set_root_node(node);
 		treemodel->notify_update();
@@ -161,21 +161,21 @@ void unit_kemx::unload()
 	node_list.clear();
 }
 
-void unit_kemx::create_ux_tree_model(const vector<shared_ptr<node_info> >& list, shared_ptr<ux_tree_model_node> node, int& length)
+void unit_kemx::create_mws_tree_model(const vector<shared_ptr<node_info> >& list, shared_ptr<mws_tree_model_node> node, int& length)
 {
 	int size = list.size();
 
 	for (int k = 0; k < size; k++)
 	{
 		shared_ptr<node_info> kv = list[k];
-		shared_ptr<ux_tree_model_node> nn(new ux_tree_model_node(kv->getName()));
+		shared_ptr<mws_tree_model_node> nn(new mws_tree_model_node(kv->getName()));
 
 		node->nodes.push_back(nn);
 		length++;
 
 		if (kv->getList().size() > 0)
 		{
-			create_ux_tree_model(kv->getList(), nn, length);
+			create_mws_tree_model(kv->getList(), nn, length);
 		}
 	}
 }

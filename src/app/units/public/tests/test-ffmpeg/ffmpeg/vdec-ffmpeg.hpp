@@ -59,7 +59,7 @@ public:
 	int start_decoding(const char* ivideo_path);
 	void stop();
 	vdec_state get_state();
-	void update(std::shared_ptr<gfx_camera> iux_cam);
+	void update(std::shared_ptr<gfx_camera> i_mws_cam);
 	void play();
 	void replay();
 	void pause();

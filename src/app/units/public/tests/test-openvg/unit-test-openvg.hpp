@@ -14,7 +14,7 @@ public:
 
     virtual void init();
 	virtual void on_destroy();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 private:

@@ -4,9 +4,9 @@
 
 #ifdef UNIT_GLOBAL_FLIGHT_PATHS
 
-#include "com/ux/ux-com.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-font.hpp"
+#include "com/mws/mws-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-font.hpp"
 #include "com/unit/input-ctrl.hpp"
 #include "cpp-property.hpp"
 #include "gfx.hpp"
@@ -914,14 +914,14 @@ namespace global_flight_paths_ns
    };
 
 
-   class main_page : public ux_page
+   class main_page : public mws_page
    {
    public:
-      main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent) {}
+      main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent) {}
 
       virtual void init()
       {
-         ux_page::init();
+         mws_page::init();
 
          t = 0;
          free_cam = std::make_shared<free_camera>(get_unit());
@@ -1034,12 +1034,12 @@ namespace global_flight_paths_ns
             }
          }
 
-         ux_page::receive(idp);
+         mws_page::receive(idp);
       }
 
       virtual void update_state()
       {
-         ux_page::update_state();
+         mws_page::update_state();
 
          vpc_rs_mesh->orientation = glm::quat(glm::vec3(0, t, 0));
          t += 0.001f;
@@ -1053,9 +1053,9 @@ namespace global_flight_paths_ns
          mws_report_gfx_errs();
       }
 
-      virtual void update_view(shared_ptr<ux_camera> g)
+      virtual void update_view(shared_ptr<mws_camera> g)
       {
-         ux_page::update_view(g);
+         mws_page::update_view(g);
       }
 
       shared_ptr<gfx_box> skybox;
@@ -1082,9 +1082,9 @@ shared_ptr<unit_global_flight_paths> unit_global_flight_paths::new_instance()
    return shared_ptr<unit_global_flight_paths>(new unit_global_flight_paths());
 }
 
-void unit_global_flight_paths::init_ux()
+void unit_global_flight_paths::init_mws()
 {
-   ux_page::new_shared_instance(new main_page(uxroot));
+   mws_page::new_shared_instance(new main_page(mws_root));
 }
 
 #endif

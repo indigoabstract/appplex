@@ -7,7 +7,7 @@
 class unit;
 struct texture_glyph_t;
 class gfx_tex;
-class ux_font;
+class mws_font;
 class font_db_impl;
 
 
@@ -101,12 +101,12 @@ public:
 	void clear_db();
 	void resize_db(int ipow_of_two);
 	shared_ptr<std::string> get_db_font_name(const std::string& ifont_name);
-	const std::vector<font_glyph>& get_glyph_vect(shared_ptr<ux_font> ifont, const std::string& itext);
+	const std::vector<font_glyph>& get_glyph_vect(shared_ptr<mws_font> ifont, const std::string& itext);
 	shared_ptr<gfx_tex> get_texture_atlas();
-	float get_ascender(shared_ptr<ux_font> ifont);
-	float get_descender(shared_ptr<ux_font> ifont);
-	float get_height(shared_ptr<ux_font> ifont);
-	glm::vec2 get_text_dim(shared_ptr<ux_font> ifont, const std::string& itext);
+	float get_ascender(shared_ptr<mws_font> ifont);
+	float get_descender(shared_ptr<mws_font> ifont);
+	float get_height(shared_ptr<mws_font> ifont);
+	glm::vec2 get_text_dim(shared_ptr<mws_font> ifont, const std::string& itext);
 
 private:
 	friend class unit;

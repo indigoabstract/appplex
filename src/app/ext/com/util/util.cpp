@@ -37,7 +37,7 @@ float interpolate_smooth_step(float intervalPosition, float start, float end, in
 	return (end * v) + (start * (1 - v));
 }
 
-//void draw_border_rect(shared_ptr<ux_camera> g, float x, float y, float w, float h, float borderSize, int borderColor)
+//void draw_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
@@ -58,7 +58,7 @@ float interpolate_smooth_step(float intervalPosition, float start, float end, in
 //	g->fillRect(x - hbs, y - hbs, w + borderSize, borderSize);
 //}
 //
-//void fill_border_rect(shared_ptr<ux_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
+//void fill_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
@@ -280,7 +280,7 @@ void ia_console::clear()
 	//lines->clear();
 }
 
-//void ia_console::draw(shared_ptr<ux_camera> g)
+//void ia_console::draw(shared_ptr<mws_camera> g)
 //{
 //	int size = lines->size();
 //	float text_dy = get_text_height(g->getFont(), "Mp");

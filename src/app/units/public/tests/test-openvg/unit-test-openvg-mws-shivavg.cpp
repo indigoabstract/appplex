@@ -4,8 +4,8 @@
 
 #ifdef UNIT_TEST_OPENVG
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-com.hpp"
 #include "ovg-obj.hpp"
 #include <openvg.h>
 #include <vgu.h>
@@ -259,14 +259,14 @@ namespace shivavg_tp1
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -277,20 +277,20 @@ namespace shivavg_tp1
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			uxr.w = 2000;
-			uxr.h = 1500;
-			ux_page::update_state();
+			mws_r.w = 2000;
+			mws_r.h = 1500;
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp1", 10, 10);
 		}
@@ -699,14 +699,14 @@ namespace shivavg_tp2
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testInit();
 			lastTime = pfm::time::get_time_millis();
 		}
@@ -727,17 +727,17 @@ namespace shivavg_tp2
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			uint32 now = pfm::time::get_time_millis();
 			display(now - lastTime);
@@ -826,14 +826,14 @@ namespace shivavg_tp3
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -844,18 +844,18 @@ namespace shivavg_tp3
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp3", 10, 10);
 		}
@@ -989,14 +989,14 @@ namespace shivavg_tp4
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -1016,18 +1016,18 @@ namespace shivavg_tp4
 				on_key_evt(key_evt::as_key_evt(idp));
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp4", 10, 10);
 			g->drawText(overlay, 10, 50);
@@ -1301,14 +1301,14 @@ namespace shivavg_tp5
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -1319,18 +1319,18 @@ namespace shivavg_tp5
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y, 0.03f);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y, 0.03f);
 
 			g->drawText("shivavg_tp5", 10, 10);
 		}
@@ -1542,14 +1542,14 @@ namespace shivavg_tp6
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -1569,18 +1569,18 @@ namespace shivavg_tp6
 				on_key_evt(key_evt::as_key_evt(idp));
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp6", 10, 10);
 			g->drawText(overlay, 10, 50);
@@ -1909,14 +1909,14 @@ namespace shivavg_tp7
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -1936,18 +1936,18 @@ namespace shivavg_tp7
 				on_key_evt(key_evt::as_key_evt(idp));
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp7", 10, 10);
 			g->drawText(overlay, 10, 50);
@@ -2291,14 +2291,14 @@ namespace shivavg_tp8
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -2318,18 +2318,18 @@ namespace shivavg_tp8
 				on_key_evt(key_evt::as_key_evt(idp));
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y);
 
 			g->drawText("shivavg_tp8", 10, 10);
 			g->drawText(overlay, 10, 50);
@@ -2642,14 +2642,14 @@ namespace shivavg_tp9
 	}
 
 
-	class shivavg_page : public ux_page
+	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 			testopenvgInit();
 		}
 
@@ -2669,18 +2669,18 @@ namespace shivavg_tp9
 				on_key_evt(key_evt::as_key_evt(idp));
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
-			testopenvgDraw(uxr.x, uxr.y, 0.01f);
+			mws_page::update_view(g);
+			testopenvgDraw(mws_r.x, mws_r.y, 0.01f);
 
 			g->drawText("shivavg_tp9", 10, 10);
 			g->drawText(overlay, 10, 50);
@@ -2801,15 +2801,15 @@ namespace shivavg_tp9
 
 void unit_test_openvg::init_shivavg()
 {
-	ux_page::new_shared_instance(new shivavg_tp1::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp2::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp3::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp4::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp5::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp6::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp7::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp8::shivavg_page(uxroot));
-	ux_page::new_shared_instance(new shivavg_tp9::shivavg_page(uxroot));
+	mws_page::new_shared_instance(new shivavg_tp1::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp2::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp3::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp4::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp5::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp6::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp7::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp8::shivavg_page(mws_root));
+	mws_page::new_shared_instance(new shivavg_tp9::shivavg_page(mws_root));
 }
 
 void unit_test_openvg::destroy_shivavg()

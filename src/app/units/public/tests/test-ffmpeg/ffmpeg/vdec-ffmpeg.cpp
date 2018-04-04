@@ -271,7 +271,7 @@ public:
 		state = istate;
 	}
 
-	void update(std::shared_ptr<gfx_camera> iux_cam)
+	void update(std::shared_ptr<gfx_camera> i_mws_cam)
 	{
 		uint32 crt_frame_time = pfm::time::get_time_millis();
 
@@ -296,7 +296,7 @@ public:
 
 		while(frame_is_complete == 0)
 		{
-			int r = decode_frame(iux_cam);
+			int r = decode_frame(i_mws_cam);
 
 			if(r == 0)
 			{
@@ -335,7 +335,7 @@ public:
 private:
 	friend class media_info;
 
-	int decode_frame(std::shared_ptr<gfx_camera> iux_cam)
+	int decode_frame(std::shared_ptr<gfx_camera> i_mws_cam)
 	{
 		int ret = 0;
 		ret = av_read_frame(format_ctx, &av_packet);
@@ -401,7 +401,7 @@ private:
 					y_tex->update(0, (const char*)av_frame->data[0]);// , codec_ctx->width * codec_ctx->height);
 					u_tex->update(1, (const char*)av_frame->data[1]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
 					v_tex->update(2, (const char*)av_frame->data[2]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
-					q2d->render_mesh(iux_cam);
+					q2d->render_mesh(i_mws_cam);
 
 					mws_report_gfx_errs();
 
@@ -573,7 +573,7 @@ vdec_state vdec_ffmpeg::get_state()
 	return impl->get_state();
 }
 
-void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> iux_cam)
+void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> i_mws_cam)
 {
 	switch(get_state())
 	{
@@ -582,7 +582,7 @@ void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> iux_cam)
 
 	case st_playing:
 		{
-			impl->update(iux_cam);
+			impl->update(i_mws_cam);
 			break;
 		}
 

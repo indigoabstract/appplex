@@ -18,7 +18,7 @@
 #include "gfx-util.hpp"
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-camera.hpp"
 
 using std::string;
 
@@ -54,8 +54,8 @@ void unit_test_ffmpeg::init()
 
 void unit_test_ffmpeg::load()
 {
-	ux_cam->clear_color = true;
-	ux_cam->clear_color_value = gfx_color::colors::blue;
+	mws_cam->clear_color = true;
+	mws_cam->clear_color_value = gfx_color::colors::blue;
 	q2d_tex = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 	q2d_rt_tex = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -118,7 +118,7 @@ void unit_test_ffmpeg::load()
       // get notified when a frame is ready and then encode it
       //vdec->set_listener(vdec_listener);
       vdec->start_decoding(fpath.c_str());
-      vdec->update(ux_cam);
+      vdec->update(mws_cam);
 
       int fw = vdec->get_media_info()->get_width();
       int tw = vdec->get_media_info()->get_total_width();
@@ -163,15 +163,15 @@ bool unit_test_ffmpeg::update()
 	q2d_rt_tex->position = glm::vec3(50.f + p * tw * 0.5, 20 * 0.5 + tex->get_height() + 100, 0.f);
 	q2d_rt_tex->scaling = glm::vec3(p * tw * 0.5, 20, 1.f);
 
-	ux_cam->draw_mesh(q2d_tex);
-	ux_cam->draw_mesh(q2d_rt_tex);
+	mws_cam->draw_mesh(q2d_tex);
+	mws_cam->draw_mesh(q2d_rt_tex);
 
-	vdec->update(ux_cam);
+	vdec->update(mws_cam);
 
 	if (vdec->get_state() == st_stopped)
 	{
 		vdec->replay();
-		vdec->update(ux_cam);
+		vdec->update(mws_cam);
 	}
 
 	mws_report_gfx_errs();

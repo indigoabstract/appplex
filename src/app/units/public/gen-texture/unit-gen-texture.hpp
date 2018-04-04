@@ -13,7 +13,7 @@ public:
 	static shared_ptr<unit_gen_texture> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 private:

@@ -4,9 +4,9 @@
 
 #ifdef UNIT_KINETIC_SCROLLING
 
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux.hpp"
-#include "com/ux/ux-font.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws.hpp"
+#include "com/mws/mws-font.hpp"
 #include "com/util/util.hpp"
 #include <rng/rng.hpp>
 #include <string>
@@ -23,22 +23,22 @@ void stroke(int s)
 {
 }
 
-void fill(shared_ptr<ux_camera> g, int f)
+void fill(shared_ptr<mws_camera> g, int f)
 {
 	g->setColor(f, f, f, 255);
 };
 
-void fill(shared_ptr<ux_camera> g, float x, float y, float z)
+void fill(shared_ptr<mws_camera> g, float x, float y, float z)
 {
 	g->setColor(x, y, z, 255);
 }
 
-void line(shared_ptr<ux_camera> g, float x1, float y1, float x2, float y2)
+void line(shared_ptr<mws_camera> g, float x1, float y1, float x2, float y2)
 {
 	g->drawLine(x1, y1, x2, y2);
 };
 
-void rect(shared_ptr<ux_camera> g, float x, float y, float w, float h)
+void rect(shared_ptr<mws_camera> g, float x, float y, float w, float h)
 {
 	g->fillRect(x, y, w, h);
 };
@@ -48,17 +48,17 @@ int color(int r, int g, int b, int a)
 	return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-int textWidth(shared_ptr<ux_camera> g, string& s)
+int textWidth(shared_ptr<mws_camera> g, string& s)
 {
 	return g->get_font()->get_text_width(s);
 }
 
-void text(shared_ptr<ux_camera> g, int num, float x, float y)
+void text(shared_ptr<mws_camera> g, int num, float x, float y)
 {
 	g->drawText(trs("{}", num), x, y);
 }
 
-void text(shared_ptr<ux_camera> g, string& name, float x, float y)
+void text(shared_ptr<mws_camera> g, string& name, float x, float y)
 {
 	g->drawText(name, x, y);
 }
@@ -100,8 +100,8 @@ public:
 	bool isAtStart();
 	void gen_random_events(int n);
 	void setup(int width, int height);
-	void draw(shared_ptr<ux_camera> g);
-	void draw_scale(shared_ptr<ux_camera> g);
+	void draw(shared_ptr<mws_camera> g);
+	void draw_scale(shared_ptr<mws_camera> g);
 	void mouseDragged(int iMouseX, int iMouseY);
 	void mousePressed(int iMouseX, int iMouseY);
 	void mouseReleased(int iMouseX, int iMouseY);
@@ -118,7 +118,7 @@ public:
 	int col;
 	string name;
 
-	void draw(kscroll2& ks, shared_ptr<ux_camera> g, int mouseX, int mouseY){
+	void draw(kscroll2& ks, shared_ptr<mws_camera> g, int mouseX, int mouseY){
 		int lpos = ks.lpos;
 
 		if (x > lpos - (l*ks.unitsize) && x<lpos + ks.W + (l*ks.unitsize))
@@ -201,7 +201,7 @@ void kscroll2::setup(int width, int height) {
 
 }
 
-void kscroll2::draw(shared_ptr<ux_camera> g) {
+void kscroll2::draw(shared_ptr<mws_camera> g) {
 	point2d p = scroller.update();
 	lpos = constrain(lpos - p.x, lopx, hipx - W);
 
@@ -214,7 +214,7 @@ void kscroll2::draw(shared_ptr<ux_camera> g) {
 	draw_scale(g);
 }
 
-void kscroll2::draw_scale(shared_ptr<ux_camera> g)
+void kscroll2::draw_scale(shared_ptr<mws_camera> g)
 {
 	stroke(255);
 	fill(g, 100);
@@ -276,12 +276,12 @@ void unit_kinetic_scrolling::init()
 	kscrollinst.setup(get_width(), get_height());
 }
 
-void unit_kinetic_scrolling::init_ux()
+void unit_kinetic_scrolling::init_mws()
 {
-	class mainpage : public ux_page
+	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
@@ -321,19 +321,19 @@ void unit_kinetic_scrolling::init_ux()
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			kscrollinst.draw(g);
 		}
 	};
 
-	ux_page::new_shared_instance(new mainpage(uxroot));
-	ux_cam->clear_color = true;
+	mws_page::new_shared_instance(new mainpage(mws_root));
+	mws_cam->clear_color = true;
 }
 
 #endif

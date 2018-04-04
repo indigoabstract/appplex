@@ -5,9 +5,9 @@
 
 #include "unit-test-snd-generators.hpp"
 #include "snd.hpp"
-#include "com/ux/ux-camera.hpp"
-#include "com/ux/ux-font.hpp"
-#include "com/ux/ux-com.hpp"
+#include "com/mws/mws-camera.hpp"
+#include "com/mws/mws-font.hpp"
+#include "com/mws/mws-com.hpp"
 #include "gfx-color.hpp"
 #include <rng/rng.hpp>
 #include <stk/Guitar.h>
@@ -348,16 +348,16 @@ namespace unit_test_snd_generators_ns
 	};
 
 
-	class main_page : public ux_page
+	class main_page : public mws_page
 	{
 	public:
 		std::vector<std::vector<colored_note> > note_tab;
 
-		main_page(shared_ptr<ux_page_tab> iparent) : ux_page(iparent){}
+		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
-			ux_page::init();
+			mws_page::init();
 
 			tuning =
 			{
@@ -422,7 +422,7 @@ namespace unit_test_snd_generators_ns
 
 			// Set up sound generator
 			generator = std::make_shared<Generator>(fmodSystem, generators[generatorId], frequency, sampleRate, channels, soundLengthSeconds, volume);
-			note_font = ux_font::new_inst(20.f);
+			note_font = mws_font::new_inst(20.f);
 			note_font->set_color(gfx_color::colors::black);
 		}
 
@@ -513,18 +513,18 @@ namespace unit_test_snd_generators_ns
 				}
 			}
 
-			ux_page::receive(idp);
+			mws_page::receive(idp);
 		}
 
 		virtual void update_state()
 		{
-			ux_page::update_state();
+			mws_page::update_state();
 			fmodSystem->update();
 		}
 
-		virtual void update_view(shared_ptr<ux_camera> g)
+		virtual void update_view(shared_ptr<mws_camera> g)
 		{
-			ux_page::update_view(g);
+			mws_page::update_view(g);
 
 			const std::string& text = get_unit()->get_name();
 
@@ -576,7 +576,7 @@ namespace unit_test_snd_generators_ns
 		shared_ptr<musical_note> last_played_note;
 		std::string show_note;
 		std::vector<shared_ptr<musical_note> > tuning;
-		shared_ptr<ux_font> note_font;
+		shared_ptr<mws_font> note_font;
 	};
 }
 
@@ -595,10 +595,10 @@ void unit_test_snd_generators::init()
 {
 }
 
-void unit_test_snd_generators::init_ux()
+void unit_test_snd_generators::init_mws()
 {
-	ux_page::new_shared_instance(new unit_test_snd_generators_ns::main_page(uxroot));
-	ux_cam->clear_color = true;
+	mws_page::new_shared_instance(new unit_test_snd_generators_ns::main_page(mws_root));
+	mws_cam->clear_color = true;
 }
 
 void unit_test_snd_generators::load()

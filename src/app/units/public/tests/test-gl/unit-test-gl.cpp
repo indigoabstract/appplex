@@ -13,7 +13,7 @@
 #include "gfx-vxo.hpp"
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
-#include "com/ux/ux-camera.hpp"
+#include "com/mws/mws-camera.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -81,9 +81,9 @@ void unit_test_gl::load()
 
 	gfx_color cc;
 
-	ux_cam->clear_color = true;
+	mws_cam->clear_color = true;
 	cc.from_float(0.5f, 0.f, 1.f, 1.f);
-	ux_cam->clear_color_value = cc;
+	mws_cam->clear_color_value = cc;
 
 	mws_report_gfx_errs();
 }
@@ -91,7 +91,7 @@ void unit_test_gl::load()
 void unit_test_gl::update_view(int update_count)
 {
 	mws_report_gfx_errs();
-	quad_mesh->render_mesh(ux_cam);
+	quad_mesh->render_mesh(mws_cam);
 	mws_report_gfx_errs();
 
 	unit::update_view(update_count);

@@ -5,8 +5,8 @@
 #if defined MOD_VECTOR_FONTS
 
 #include "text-vxo.hpp"
-#include "com/ux/ux-font.hpp"
-#include "com/ux/font-db.hpp"
+#include "com/mws/mws-font.hpp"
+#include "com/mws/font-db.hpp"
 #include "gfx.hpp"
 #include "gfx-color.hpp"
 #include "gfx-camera.hpp"
@@ -62,7 +62,7 @@ public:
 		vertex_buffer_clear(vbuffer);
 	}
 
-	void add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
+	void add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<mws_font> ifont)
 	{
 		auto& glyphs = font_db::inst()->get_glyph_vect(ifont->get_inst(), itext);
 		glm::vec2 pen(ipos.x, ipos.y + ifont->get_ascender());
@@ -120,7 +120,7 @@ public:
 		mws_report_gfx_errs();
 	}
 
-   void add_text_2d(const std::string& Text, const glm::vec2& Pos, const std::shared_ptr<ux_font> Fnt)
+   void add_text_2d(const std::string& Text, const glm::vec2& Pos, const std::shared_ptr<mws_font> Fnt)
    {
       auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
 
@@ -135,7 +135,7 @@ public:
       AddTextImpl(vbuffer, glyphs, Text, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), Fnt, 1.f);
    }
 
-   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, std::shared_ptr<ux_font> Fnt)
+   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, std::shared_ptr<mws_font> Fnt)
    {
       auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
       glm::vec2 pen(0.f);
@@ -152,7 +152,7 @@ public:
    }
 
    void AddTextImpl(vertex_buffer_t* Buffer, const std::vector<font_glyph>& Glyphs, const std::string& Text,
-      const glm::vec3& HDir, const glm::vec3& VDir, const std::shared_ptr<ux_font> Fnt, float Scale)
+      const glm::vec3& HDir, const glm::vec3& VDir, const std::shared_ptr<mws_font> Fnt, float Scale)
    {
       //auto crt_ctx = GraphicsContext::GetCurrentGraphicsContext();
       //UpdateParams(crt_ctx->GetWidth(), crt_ctx->GetHeight());
@@ -220,7 +220,7 @@ public:
    }
    
    void add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::string& text,
-		const glm::vec2& ipen, float irt_height, const shared_ptr<ux_font> ifont)
+		const glm::vec2& ipen, float irt_height, const shared_ptr<mws_font> ifont)
 	{
 		int len = glm::min(text.length(), glyphs.size());
 		glm::vec4 c = ifont->get_color().to_vec4();
@@ -318,7 +318,7 @@ void text_vxo::clear_text()
 	p->clear_text();
 }
 
-void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<ux_font> ifont)
+void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<mws_font> ifont)
 {
 	p->add_text(itext, ipos, ifont);
 }

@@ -10,14 +10,14 @@
 
 class unit_ctrl;
 class unit_list;
-class ux_page_tab;
+class mws_page_tab;
 class keyctrl;
 class touchctrl;
 class updatectrl;
 class gfx_scene;
-class ux_camera;
+class mws_camera;
 class pfm_file;
-class ux_list_model;
+class mws_list_model;
 class video_params_ffmpeg;
 
 
@@ -105,8 +105,8 @@ public:
    std::shared_ptr<touchctrl> touch_ctrl;
    std::shared_ptr<keyctrl> key_ctrl;
    std::shared_ptr<gfx_scene> gfx_scene_inst;
-   std::shared_ptr<ux_camera> ux_cam;
-   std::shared_ptr<ux_page_tab> uxroot;
+   std::shared_ptr<mws_camera> mws_cam;
+   std::shared_ptr<mws_page_tab> mws_root;
    app_storage storage;
 
 protected:
@@ -126,7 +126,7 @@ protected:
    virtual void iInit();
    virtual void init();
    virtual void on_destroy();
-   virtual void init_ux();
+   virtual void init_mws();
    virtual void load();
    virtual void unload();
    virtual std::shared_ptr<ia_sender> sender_inst();
@@ -182,14 +182,14 @@ protected:
    unit_list();
 
    virtual void on_destroy();
-   virtual void init_ux();
+   virtual void init_mws();
 
 private:
    friend class unit_ctrl;
    friend class unit_ctrl_ext;
 
    std::vector<std::shared_ptr<unit> > ulist;
-   weak_ptr<ux_list_model> ulmodel;
+   weak_ptr<mws_list_model> ulmodel;
    static int unit_list_count;
 };
 

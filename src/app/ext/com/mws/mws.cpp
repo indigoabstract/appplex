@@ -2,11 +2,11 @@
 
 #include "appplex-conf.hpp"
 
-#if defined MOD_UX
+#if defined MOD_MWS
 
-#include "ux.hpp"
-#include "ux-camera.hpp"
-#include "ux-font.hpp"
+#include "mws.hpp"
+#include "mws-camera.hpp"
+#include "mws-font.hpp"
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
 #include "unit.hpp"
@@ -38,48 +38,48 @@ slide_scrolling::scroll_dir get_scroll_dir(touch_sym_evt::touch_sym_evt_types sw
 }
 
 
-shared_ptr<ux_model> ux_model::get_instance()
+shared_ptr<mws_model> mws_model::get_instance()
 {
 	return shared_from_this();
 }
 
-void ux_model::receive(shared_ptr<iadp> idp)
+void mws_model::receive(shared_ptr<iadp> idp)
 {
 }
 
-void ux_model::set_view(shared_ptr<ux> iview)
+void mws_model::set_view(shared_ptr<mws> iview)
 {
 	view = iview;
 	notify_update();
 }
 
-void ux_model::notify_update()
+void mws_model::notify_update()
 {
 	if (get_view())
 	{
-		send(get_view(), iadp::new_instance(UX_EVT_MODEL_UPDATE));
+		send(get_view(), iadp::new_instance(MWS_EVT_MODEL_UPDATE));
 	}
 }
 
-shared_ptr<ux> ux_model::get_view()
+shared_ptr<mws> mws_model::get_view()
 {
 	return view.lock();
 }
 
-shared_ptr<ia_sender> ux_model::sender_inst()
+shared_ptr<ia_sender> mws_model::sender_inst()
 {
 	return get_instance();
 }
 
 
-ux::ux()
-// for rootless / parentless ux inst
+mws::mws()
+// for rootless / parentless mws inst
 {
 	enabled = true;
 	is_opaque = true;
 }
 
-ux::ux(shared_ptr<ux> iparent)
+mws::mws(shared_ptr<mws> iparent)
 {
 	enabled = true;
 	is_opaque = true;
@@ -98,97 +98,97 @@ ux::ux(shared_ptr<ux> iparent)
 	}
 }
 
-shared_ptr<ux> ux::get_instance()
+shared_ptr<mws> mws::get_instance()
 {
 	return shared_from_this();
 }
 
-void ux::set_visible(bool iis_visible)
+void mws::set_visible(bool iis_visible)
 {
 	enabled = iis_visible;
 }
 
-bool ux::is_visible()const
+bool mws::is_visible()const
 {
 	return enabled;
 }
 
-void ux::set_id(string iid)
+void mws::set_id(string iid)
 {
 	id = iid;
 }
 
-const string& ux::get_id()
+const string& mws::get_id()
 {
 	return id;
 }
 
-shared_ptr<ux> ux::find_by_id(const string& iid)
+shared_ptr<mws> mws::find_by_id(const string& iid)
 {
 	return root.lock()->contains_id(iid);
 }
 
-shared_ptr<ux> ux::contains_id(const string& iid)
+shared_ptr<mws> mws::contains_id(const string& iid)
 {
 	if (iid == id)
 	{
 		return get_instance();
 	}
 
-	return shared_ptr<ux>();
+	return shared_ptr<mws>();
 }
 
-bool ux::contains_ux(const shared_ptr<ux> iux)
+bool mws::contains_mws(const shared_ptr<mws> i_mws)
 {
-	return iux == get_instance();
+	return i_mws == get_instance();
 }
 
-shared_ptr<ux> ux::get_parent()
+shared_ptr<mws> mws::get_parent()
 {
 	return parent.lock();
 }
 
-shared_ptr<ux_page_tab> ux::get_root()
+shared_ptr<mws_page_tab> mws::get_root()
 {
 	return root.lock();
 }
 
-shared_ptr<unit> ux::get_unit()
+shared_ptr<unit> mws::get_unit()
 {
 	return static_pointer_cast<unit>(root.lock()->get_unit());
 }
 
-void ux::receive(shared_ptr<iadp> idp) {}
-void ux::update_state() {}
-void ux::update_view(shared_ptr<ux_camera> g) {}
+void mws::receive(shared_ptr<iadp> idp) {}
+void mws::update_state() {}
+void mws::update_view(shared_ptr<mws_camera> g) {}
 
-ux_rect ux::get_pos()
+mws_rect mws::get_pos()
 {
-	return uxr;
+	return mws_r;
 }
 
-bool ux::is_hit(float x, float y)
+bool mws::is_hit(float x, float y)
 {
-	return is_inside_box(x, y, uxr.x, uxr.y, uxr.w, uxr.h);
+	return is_inside_box(x, y, mws_r.x, mws_r.y, mws_r.w, mws_r.h);
 }
 
-shared_ptr<ia_sender> ux::sender_inst()
+shared_ptr<ia_sender> mws::sender_inst()
 {
 	return get_instance();
 }
 
 
-shared_ptr<ux_page_transition> ux_page_transition::new_instance(shared_ptr<ux_page> ipage)
+shared_ptr<mws_page_transition> mws_page_transition::new_instance(shared_ptr<mws_page> ipage)
 {
-	return shared_ptr<ux_page_transition>(new ux_page_transition(ipage));
+	return shared_ptr<mws_page_transition>(new mws_page_transition(ipage));
 }
 
-shared_ptr<ux_page_transition> ux_page_transition::new_instance(shared_ptr<ux_page_tab> iuxroot, string iid)
+shared_ptr<mws_page_transition> mws_page_transition::new_instance(shared_ptr<mws_page_tab> imws_root, string iid)
 {
-	return shared_ptr<ux_page_transition>(new ux_page_transition(iuxroot, iid));
+	return shared_ptr<mws_page_transition>(new mws_page_transition(imws_root, iid));
 }
 
-ux_page_transition::ux_page_transition(shared_ptr<ux_page> ipage) : iadp(UX_EVT_PAGE_TRANSITION)
+mws_page_transition::mws_page_transition(shared_ptr<mws_page> ipage) : iadp(MWS_EVT_PAGE_TRANSITION)
 {
 	page = ipage;
 	dir = slide_scrolling::SD_RIGHT_LEFT;
@@ -196,16 +196,16 @@ ux_page_transition::ux_page_transition(shared_ptr<ux_page> ipage) : iadp(UX_EVT_
 	pj_type = HISTORY_ADD_PAGE;
 }
 
-ux_page_transition::ux_page_transition(shared_ptr<ux_page_tab> iuxroot, string iid) : iadp(UX_EVT_PAGE_TRANSITION)
+mws_page_transition::mws_page_transition(shared_ptr<mws_page_tab> imws_root, string iid) : iadp(MWS_EVT_PAGE_TRANSITION)
 {
-	uxroot = iuxroot;
+	mws_root = imws_root;
 	id = iid;
 	dir = slide_scrolling::SD_RIGHT_LEFT;
 	pt_type = REPLACE_CURRENT_PAGE;
 	pj_type = HISTORY_ADD_PAGE;
 }
 
-shared_ptr<ux_page> ux_page_transition::get_target_page()
+shared_ptr<mws_page> mws_page_transition::get_target_page()
 {
 	if (!page.expired())
 	{
@@ -213,56 +213,56 @@ shared_ptr<ux_page> ux_page_transition::get_target_page()
 	}
 	else
 	{
-		shared_ptr<ux> u = uxroot.lock()->contains_id(id);
+		shared_ptr<mws> u = mws_root.lock()->contains_id(id);
 
 		if (u)
 		{
-			return static_pointer_cast<ux_page>(u);
+			return static_pointer_cast<mws_page>(u);
 		}
 	}
 
 	vprint("target page with id [%s] is not available\n", id.c_str());
 
-	return ux_page::PAGE_NONE;
+	return mws_page::PAGE_NONE;
 }
 
-slide_scrolling::scroll_dir ux_page_transition::get_scroll_dir()
+slide_scrolling::scroll_dir mws_page_transition::get_scroll_dir()
 {
 	return dir;
 }
 
-ux_page_transition::page_transition_types ux_page_transition::get_transition_type()
+mws_page_transition::page_transition_types mws_page_transition::get_transition_type()
 {
 	return pt_type;
 }
 
-ux_page_transition::page_jump_types ux_page_transition::get_jump_type()
+mws_page_transition::page_jump_types mws_page_transition::get_jump_type()
 {
 	return pj_type;
 }
 
-shared_ptr<ux_page_transition> ux_page_transition::set_scroll_dir(slide_scrolling::scroll_dir idir)
+shared_ptr<mws_page_transition> mws_page_transition::set_scroll_dir(slide_scrolling::scroll_dir idir)
 {
 	dir = idir;
 
 	return get_instance();
 }
 
-shared_ptr<ux_page_transition> ux_page_transition::set_transition_type(page_transition_types iptType)
+shared_ptr<mws_page_transition> mws_page_transition::set_transition_type(page_transition_types iptType)
 {
 	pt_type = iptType;
 
 	return get_instance();
 }
 
-shared_ptr<ux_page_transition> ux_page_transition::set_jump_type(page_jump_types ipjType)
+shared_ptr<mws_page_transition> mws_page_transition::set_jump_type(page_jump_types ipjType)
 {
 	pj_type = ipjType;
 
 	return get_instance();
 }
 
-shared_ptr<ux_page_transition> ux_page_transition::get_instance()
+shared_ptr<mws_page_transition> mws_page_transition::get_instance()
 {
 	return shared_from_this();
 }
@@ -271,15 +271,15 @@ shared_ptr<ux_page_transition> ux_page_transition::get_instance()
 static shared_ptr<gfx_tex> keyboardImg;
 
 
-class uxpagetab_vkeyboard_page : public ux_page
+class mwspagetab_vkeyboard_page : public mws_page
 {
 public:
-	uxpagetab_vkeyboard_page(shared_ptr<ux_page_tab> iparent, string iid) : ux_page(iparent)
+	mwspagetab_vkeyboard_page(shared_ptr<mws_page_tab> iparent, string iid) : mws_page(iparent)
 	{
 		set_id(iid);
-		tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = ux_page_transition::new_instance(ux_page::PREV_PAGE)
+		tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(mws_page::PREV_PAGE)
 			->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
-			->set_transition_type(ux_page_transition::POP_CURRENT_PAGE);
+			->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
 		tmap.erase(touch_sym_evt::TS_FORWARD_SWIPE);
 	}
 
@@ -294,23 +294,23 @@ public:
 				float x = ts->pressed.te->points[0].x;
 				float y = ts->pressed.te->points[0].y;
 
-				if (is_inside_box(x, y, uxr.x, uxr.h - 40, uxr.w, uxr.h))
+				if (is_inside_box(x, y, mws_r.x, mws_r.h - 40, mws_r.w, mws_r.h))
 				{
-					shared_ptr<ux_page_transition> upt = ux_page_transition::new_instance(ux_page::PREV_PAGE)
+					shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(mws_page::PREV_PAGE)
 						->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-						->set_transition_type(ux_page_transition::POP_CURRENT_PAGE);
+						->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
 
 					send(get_parent(), upt);
 				}
 			}
 		}
 
-		ux_page::receive(idp);
+		mws_page::receive(idp);
 	}
 
-	virtual void update_view(shared_ptr<ux_camera> g)
+	virtual void update_view(shared_ptr<mws_camera> g)
 	{
-		ux_page::update_view(g);
+		mws_page::update_view(g);
 
 		if (keyboardImg)
 		{
@@ -329,13 +329,13 @@ public:
 };
 
 
-const string ux_page_tab::VKEYBOARD_MAIN_PAGE = "vkeyboard-main-page";
-const string ux_page_tab::VKEYBOARD_UP_PAGE = "vkeyboard-up-page";
-const string ux_page_tab::VKEYBOARD_RIGHT_PAGE = "vkeyboard-right-page";
-const string ux_page_tab::VKEYBOARD_DOWN_PAGE = "vkeyboard-down-page";
+const string mws_page_tab::VKEYBOARD_MAIN_PAGE = "vkeyboard-main-page";
+const string mws_page_tab::VKEYBOARD_UP_PAGE = "vkeyboard-up-page";
+const string mws_page_tab::VKEYBOARD_RIGHT_PAGE = "vkeyboard-right-page";
+const string mws_page_tab::VKEYBOARD_DOWN_PAGE = "vkeyboard-down-page";
 
 
-ux_page_tab::ux_page_tab(shared_ptr<unit> iu) : ux(), ss(550)
+mws_page_tab::mws_page_tab(shared_ptr<unit> iu) : mws(), ss(550)
 {
 	if (!iu)
 	{
@@ -343,26 +343,26 @@ ux_page_tab::ux_page_tab(shared_ptr<unit> iu) : ux(), ss(550)
 	}
 
 	u = iu;
-	uxr.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
+	mws_r.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
 }
 
-shared_ptr<ux_page_tab> ux_page_tab::new_instance(shared_ptr<unit> iu)
+shared_ptr<mws_page_tab> mws_page_tab::new_instance(shared_ptr<unit> iu)
 {
-	shared_ptr<ux_page_tab> pt(new ux_page_tab(iu));
+	shared_ptr<mws_page_tab> pt(new mws_page_tab(iu));
 	pt->new_instance_helper();
 	return pt;
 }
 
-shared_ptr<ux_page_tab> ux_page_tab::new_shared_instance(ux_page_tab* inew_page_tab_class_instance)
+shared_ptr<mws_page_tab> mws_page_tab::new_shared_instance(mws_page_tab* inew_page_tab_class_instance)
 {
-	shared_ptr<ux_page_tab> pt(inew_page_tab_class_instance);
+	shared_ptr<mws_page_tab> pt(inew_page_tab_class_instance);
 	pt->new_instance_helper();
 	return pt;
 }
 
-void ux_page_tab::init()
+void mws_page_tab::init()
 {
-	root = get_ux_page_tab_instance();
+	root = get_mws_page_tab_instance();
 	ss.get_transition()->add_receiver(get_instance());
 
 	if (!is_empty())
@@ -378,7 +378,7 @@ void ux_page_tab::init()
 	}
 }
 
-void ux_page_tab::on_destroy()
+void mws_page_tab::on_destroy()
 {
 	for(auto p : pages)
 	{
@@ -386,7 +386,7 @@ void ux_page_tab::on_destroy()
 	}
 }
 
-shared_ptr<ux> ux_page_tab::contains_id(const string& iid)
+shared_ptr<mws> mws_page_tab::contains_id(const string& iid)
 {
 	if (iid.length() > 0)
 	{
@@ -397,7 +397,7 @@ shared_ptr<ux> ux_page_tab::contains_id(const string& iid)
 
 		for(auto p : pages)
 		{
-			shared_ptr<ux> u = p->contains_id(iid);
+			shared_ptr<mws> u = p->contains_id(iid);
 
 			if (u)
 			{
@@ -406,14 +406,14 @@ shared_ptr<ux> ux_page_tab::contains_id(const string& iid)
 		}
 	}
 
-	return shared_ptr<ux>();
+	return shared_ptr<mws>();
 }
 
-bool ux_page_tab::contains_ux(const shared_ptr<ux> iux)
+bool mws_page_tab::contains_mws(const shared_ptr<mws> i_mws)
 {
 	for(auto p : pages)
 	{
-		if (iux == p || p->contains_ux(iux))
+		if (i_mws == p || p->contains_mws(i_mws))
 		{
 			return true;
 		}
@@ -422,22 +422,22 @@ bool ux_page_tab::contains_ux(const shared_ptr<ux> iux)
 	return false;
 }
 
-shared_ptr<ux_page_tab> ux_page_tab::get_ux_page_tab_instance()
+shared_ptr<mws_page_tab> mws_page_tab::get_mws_page_tab_instance()
 {
-	return static_pointer_cast<ux_page_tab>(get_instance());
+	return static_pointer_cast<mws_page_tab>(get_instance());
 }
 
-shared_ptr<unit> ux_page_tab::get_unit()
+shared_ptr<unit> mws_page_tab::get_unit()
 {
 	return static_pointer_cast<unit>(u.lock());
 }
 
-bool ux_page_tab::is_empty()
+bool mws_page_tab::is_empty()
 {
 	return pages.size() <= 4;
 }
 
-void ux_page_tab::receive(shared_ptr<iadp> idp)
+void mws_page_tab::receive(shared_ptr<iadp> idp)
 {
 	if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
 	{
@@ -453,32 +453,32 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	shared_ptr<ia_sender> source = idp->source();
 	shared_ptr<ms_linear_transition> mst = ss.get_transition();
 
-	if (idp->is_type(UX_EVT_PAGE_TRANSITION))
+	if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
 	{
-		current_transition = static_pointer_cast<ux_page_transition>(idp);
-		shared_ptr<ux_page> targetPage = current_transition->get_target_page();
+		current_transition = static_pointer_cast<mws_page_transition>(idp);
+		shared_ptr<mws_page> targetPage = current_transition->get_target_page();
 
 		switch (current_transition->get_transition_type())
 		{
-		case ux_page_transition::REPLACE_CURRENT_PAGE:
+		case mws_page_transition::REPLACE_CURRENT_PAGE:
 			//current_page->on_visibility_changed(false);
 			//current_page = current_transition->get_target_page();
 			//page_stack.back() = current_page;
 			break;
 
-		case ux_page_transition::PUSH_CURRENT_PAGE:
+		case mws_page_transition::PUSH_CURRENT_PAGE:
 			current_page->on_visibility_changed(false);
 			current_page = current_transition->get_target_page();
 			page_stack.push_back(current_page);
 			break;
 
-		case ux_page_transition::POP_CURRENT_PAGE:
+		case mws_page_transition::POP_CURRENT_PAGE:
 			current_page->on_visibility_changed(false);
 			page_stack.erase(page_stack.end() - 1);
 			current_page = page_stack.back();
 			break;
 
-		case ux_page_transition::CLEAR_PAGE_STACK:
+		case mws_page_transition::CLEAR_PAGE_STACK:
 			break;
 		}
 
@@ -500,16 +500,16 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	//	last_page->on_hide_transition(mst);
 	//	current_page->on_show_transition(mst);
 	//}
-	//else if (idp->is_type(UX_EVT_PAGE_TRANSITION))
+	//else if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
 	//{
-	//	current_transition = static_pointer_cast<ux_page_transition>(idp);
-	//	shared_ptr<ux_page> targetPage = current_transition->get_target_page();
+	//	current_transition = static_pointer_cast<mws_page_transition>(idp);
+	//	shared_ptr<mws_page> targetPage = current_transition->get_target_page();
 	//	bool startTransition = false;
 
-	//	if (targetPage == ux_page::PAGE_NONE)
+	//	if (targetPage == mws_page::PAGE_NONE)
 	//	{
 	//	}
-	//	else if (targetPage == ux_page::PREV_PAGE)
+	//	else if (targetPage == mws_page::PREV_PAGE)
 	//	{
 	//		if (page_history.size() > 1)
 	//		{
@@ -523,7 +523,7 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	//			//get_unit()->back();
 	//		}
 	//	}
-	//	else if (targetPage == ux_page::NEXT_PAGE)
+	//	else if (targetPage == mws_page::NEXT_PAGE)
 	//	{
 	//		int idx = get_page_index(current_page);
 
@@ -549,13 +549,13 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 
 	//		switch (current_transition->get_jump_type())
 	//		{
-	//		case ux_page_transition::HISTORY_ADD_PAGE:
+	//		case mws_page_transition::HISTORY_ADD_PAGE:
 	//			page_history.push_back(current_page);
 	//			break;
 
-	//		case ux_page_transition::HISTORY_REWIND_TO_PAGE:
+	//		case mws_page_transition::HISTORY_REWIND_TO_PAGE:
 	//		{
-	//			vector<shared_ptr<ux_page> >::reverse_iterator it = std::find(page_history.rbegin(), page_history.rend(), targetPage);
+	//			vector<shared_ptr<mws_page> >::reverse_iterator it = std::find(page_history.rbegin(), page_history.rend(), targetPage);
 
 	//			if (it != page_history.rend())
 	//			{
@@ -570,7 +570,7 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	//			break;
 	//		}
 
-	//		case ux_page_transition::HISTORY_IGNORE_PAGE:
+	//		case mws_page_transition::HISTORY_IGNORE_PAGE:
 	//			break;
 	//		}
 
@@ -581,20 +581,20 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	//	{
 	//		switch (current_transition->get_transition_type())
 	//		{
-	//		case ux_page_transition::REPLACE_CURRENT_PAGE:
+	//		case mws_page_transition::REPLACE_CURRENT_PAGE:
 	//			page_stack.back() = current_page;
 	//			break;
 
-	//		case ux_page_transition::PUSH_CURRENT_PAGE:
+	//		case mws_page_transition::PUSH_CURRENT_PAGE:
 	//			page_stack.push_back(current_page);
 	//			break;
 
-	//		case ux_page_transition::POP_CURRENT_PAGE:
+	//		case mws_page_transition::POP_CURRENT_PAGE:
 	//			page_stack.erase(page_stack.end() - 1);
 	//			page_stack.back() = current_page;
 	//			break;
 
-	//		case ux_page_transition::CLEAR_PAGE_STACK:
+	//		case mws_page_transition::CLEAR_PAGE_STACK:
 	//			break;
 	//		}
 
@@ -610,7 +610,7 @@ void ux_page_tab::receive(shared_ptr<iadp> idp)
 	//}
 }
 
-void ux_page_tab::update_state()
+void mws_page_tab::update_state()
 {
 	if (!is_empty())
 	{
@@ -620,7 +620,7 @@ void ux_page_tab::update_state()
 
 			switch (current_transition->get_transition_type())
 			{
-			case ux_page_transition::REPLACE_CURRENT_PAGE:
+			case mws_page_transition::REPLACE_CURRENT_PAGE:
 				last_page->update_state();
 
 				for(auto p : page_stack)
@@ -630,7 +630,7 @@ void ux_page_tab::update_state()
 
 				break;
 
-			case ux_page_transition::PUSH_CURRENT_PAGE:
+			case mws_page_transition::PUSH_CURRENT_PAGE:
 				for(auto p : page_stack)
 				{
 					p->update_state();
@@ -638,7 +638,7 @@ void ux_page_tab::update_state()
 
 				break;
 
-			case ux_page_transition::POP_CURRENT_PAGE:
+			case mws_page_transition::POP_CURRENT_PAGE:
 				last_page->update_state();
 
 				for(auto p : page_stack)
@@ -648,7 +648,7 @@ void ux_page_tab::update_state()
 
 				break;
 
-			case ux_page_transition::CLEAR_PAGE_STACK:
+			case mws_page_transition::CLEAR_PAGE_STACK:
 				current_page->update_state();
 
 				for(auto p : page_stack)
@@ -663,7 +663,7 @@ void ux_page_tab::update_state()
 			{
 				last_page->on_visibility_changed(false);
 
-				if (current_transition->get_transition_type() == ux_page_transition::CLEAR_PAGE_STACK)
+				if (current_transition->get_transition_type() == mws_page_transition::CLEAR_PAGE_STACK)
 				{
 					page_stack.clear();
 					page_stack.push_back(current_page);
@@ -682,7 +682,7 @@ void ux_page_tab::update_state()
 	}
 }
 
-void ux_page_tab::update_view(shared_ptr<ux_camera> g)
+void mws_page_tab::update_view(shared_ptr<mws_camera> g)
 {
 	if (!is_empty())
 	{
@@ -700,10 +700,10 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 
 		for (int k = c; k < size; k++)
 		{
-			shared_ptr<ux_page> p = page_stack[k];
+			shared_ptr<mws_page> p = page_stack[k];
 
 			g->push_transform_state();
-			g->translate(p->uxr.x, p->uxr.y);
+			g->translate(p->mws_r.x, p->mws_r.y);
 			p->update_view(g);
 			g->pop_transform_state();
 		}
@@ -723,16 +723,16 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 
 	//		switch (current_transition->get_transition_type())
 	//		{
-	//		case ux_page_transition::REPLACE_CURRENT_PAGE:
+	//		case mws_page_transition::REPLACE_CURRENT_PAGE:
 	//		{
 	//			int size = page_stack.size() - 1;
 
 	//			for (int k = 0; k < size; k++)
 	//			{
-	//				shared_ptr<ux_page> p = page_stack[k];
+	//				shared_ptr<mws_page> p = page_stack[k];
 
 	//				g->push_transform_state();
-	//				g->translate(p->uxr.x, p->uxr.y);
+	//				g->translate(p->mws_r.x, p->mws_r.y);
 
 	//				p->update_view(g);
 
@@ -742,7 +742,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			g->push_transform_state();
 	//			g->translate(sx, sy);
 	//			g->push_transform_state();
-	//			g->translate(last_page->uxr.x, last_page->uxr.y);
+	//			g->translate(last_page->mws_r.x, last_page->mws_r.y);
 
 	//			last_page->update_view(g);
 
@@ -752,7 +752,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			g->push_transform_state();
 	//			g->translate(dx, dy);
 	//			g->push_transform_state();
-	//			g->translate(current_page->uxr.x, current_page->uxr.y);
+	//			g->translate(current_page->mws_r.x, current_page->mws_r.y);
 
 	//			current_page->update_view(g);
 
@@ -761,16 +761,16 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			break;
 	//		}
 
-	//		case ux_page_transition::PUSH_CURRENT_PAGE:
+	//		case mws_page_transition::PUSH_CURRENT_PAGE:
 	//		{
 	//			int size = page_stack.size() - 1;
 
 	//			for (int k = 0; k < size; k++)
 	//			{
-	//				shared_ptr<ux_page> p = page_stack[k];
+	//				shared_ptr<mws_page> p = page_stack[k];
 
 	//				g->push_transform_state();
-	//				g->translate(p->uxr.x, p->uxr.y);
+	//				g->translate(p->mws_r.x, p->mws_r.y);
 
 	//				p->update_view(g);
 
@@ -780,7 +780,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			g->push_transform_state();
 	//			g->translate(dx, dy);
 	//			g->push_transform_state();
-	//			g->translate(current_page->uxr.x, current_page->uxr.y);
+	//			g->translate(current_page->mws_r.x, current_page->mws_r.y);
 
 	//			current_page->update_view(g);
 
@@ -789,16 +789,16 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			break;
 	//		}
 
-	//		case ux_page_transition::POP_CURRENT_PAGE:
+	//		case mws_page_transition::POP_CURRENT_PAGE:
 	//		{
 	//			int size = page_stack.size();
 
 	//			for (int k = 0; k < size; k++)
 	//			{
-	//				shared_ptr<ux_page> p = page_stack[k];
+	//				shared_ptr<mws_page> p = page_stack[k];
 
 	//				g->push_transform_state();
-	//				g->translate(p->uxr.x, p->uxr.y);
+	//				g->translate(p->mws_r.x, p->mws_r.y);
 
 	//				p->update_view(g);
 
@@ -808,7 +808,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			g->push_transform_state();
 	//			g->translate(sx, sy);
 	//			g->push_transform_state();
-	//			g->translate(last_page->uxr.x, last_page->uxr.y);
+	//			g->translate(last_page->mws_r.x, last_page->mws_r.y);
 
 	//			last_page->update_view(g);
 
@@ -817,18 +817,18 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			break;
 	//		}
 
-	//		case ux_page_transition::CLEAR_PAGE_STACK:
+	//		case mws_page_transition::CLEAR_PAGE_STACK:
 	//		{
 	//			int size = page_stack.size();
 
 	//			for (int k = 0; k < size; k++)
 	//			{
-	//				shared_ptr<ux_page> p = page_stack[k];
+	//				shared_ptr<mws_page> p = page_stack[k];
 
 	//				g->push_transform_state();
 	//				g->translate(sx, sy);
 	//				g->push_transform_state();
-	//				g->translate(p->uxr.x, p->uxr.y);
+	//				g->translate(p->mws_r.x, p->mws_r.y);
 
 	//				p->update_view(g);
 
@@ -839,7 +839,7 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//			g->push_transform_state();
 	//			g->translate(dx, dy);
 	//			g->push_transform_state();
-	//			g->translate(current_page->uxr.x, current_page->uxr.y);
+	//			g->translate(current_page->mws_r.x, current_page->mws_r.y);
 
 	//			current_page->update_view(g);
 
@@ -864,10 +864,10 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 
 	//		for (int k = c; k < page_stack.size(); k++)
 	//		{
-	//			shared_ptr<ux_page> p = page_stack[k];
+	//			shared_ptr<mws_page> p = page_stack[k];
 
 	//			g->push_transform_state();
-	//			g->translate(p->uxr.x, p->uxr.y);
+	//			g->translate(p->mws_r.x, p->mws_r.y);
 	//			p->update_view(g);
 	//			g->pop_transform_state();
 	//		}
@@ -875,18 +875,18 @@ void ux_page_tab::update_view(shared_ptr<ux_camera> g)
 	//}
 }
 
-shared_ptr<ux_page> ux_page_tab::get_page_at(int idx)
+shared_ptr<mws_page> mws_page_tab::get_page_at(int idx)
 {
 	return pages[idx + 4];
 }
 
-void ux_page_tab::set_first_page(shared_ptr<ux_page> up)
+void mws_page_tab::set_first_page(shared_ptr<mws_page> up)
 {
 	int idx = get_page_index(up);
 
 	if (idx > 0)
 	{
-		shared_ptr<ux_page> swp = pages[idx];
+		shared_ptr<mws_page> swp = pages[idx];
 
 		pages.erase(pages.begin() + idx);
 		pages.insert(pages.begin() + 4, swp);
@@ -897,19 +897,19 @@ void ux_page_tab::set_first_page(shared_ptr<ux_page> up)
 	}
 }
 
-void ux_page_tab::show_vkeyboard()
+void mws_page_tab::show_vkeyboard()
 {
-	shared_ptr<ux_page_transition> upt = ux_page_transition::new_instance(get_ux_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
+	shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(get_mws_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-		->set_transition_type(ux_page_transition::PUSH_CURRENT_PAGE);
+		->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
 
 	send(get_instance(), upt);
 }
 
-void ux_page_tab::on_resize()
+void mws_page_tab::on_resize()
 {
-	uxr.w = (float)u.lock()->get_width();
-	uxr.h = (float)u.lock()->get_height();
+	mws_r.w = (float)u.lock()->get_width();
+	mws_r.h = (float)u.lock()->get_height();
 
 	for(auto p : pages)
 	{
@@ -917,9 +917,9 @@ void ux_page_tab::on_resize()
 	}
 }
 
-void ux_page_tab::add(shared_ptr<ux_page> p)
+void mws_page_tab::add(shared_ptr<mws_page> p)
 {
-	if (contains_ux(p))
+	if (contains_mws(p))
 	{
 		throw ia_exception();//trs("page with id [%1%] already exists") % p->get_id());
 	}
@@ -927,7 +927,7 @@ void ux_page_tab::add(shared_ptr<ux_page> p)
 	pages.push_back(p);
 }
 
-int ux_page_tab::get_page_index(shared_ptr<ux_page> ipage)
+int mws_page_tab::get_page_index(shared_ptr<mws_page> ipage)
 {
 	int k = 0;
 
@@ -944,82 +944,82 @@ int ux_page_tab::get_page_index(shared_ptr<ux_page> ipage)
 	return -1;
 }
 
-void ux_page_tab::new_instance_helper()
+void mws_page_tab::new_instance_helper()
 {
-	shared_ptr<ux_page_tab> uxroot = get_ux_page_tab_instance();
-	root = uxroot;
-	shared_ptr<ux_page> vkmainpage = ux_page::new_shared_instance(new uxpagetab_vkeyboard_page(uxroot, VKEYBOARD_MAIN_PAGE));
-	shared_ptr<ux_page> vkuppage = ux_page::new_shared_instance(new uxpagetab_vkeyboard_page(uxroot, VKEYBOARD_UP_PAGE));
-	shared_ptr<ux_page> vkrightpage = ux_page::new_shared_instance(new uxpagetab_vkeyboard_page(uxroot, VKEYBOARD_RIGHT_PAGE));
-	shared_ptr<ux_page> vkdownpage = ux_page::new_shared_instance(new uxpagetab_vkeyboard_page(uxroot, VKEYBOARD_DOWN_PAGE));
+	shared_ptr<mws_page_tab> mws_root = get_mws_page_tab_instance();
+	root = mws_root;
+	shared_ptr<mws_page> vkmainpage = mws_page::new_shared_instance(new mwspagetab_vkeyboard_page(mws_root, VKEYBOARD_MAIN_PAGE));
+	shared_ptr<mws_page> vkuppage = mws_page::new_shared_instance(new mwspagetab_vkeyboard_page(mws_root, VKEYBOARD_UP_PAGE));
+	shared_ptr<mws_page> vkrightpage = mws_page::new_shared_instance(new mwspagetab_vkeyboard_page(mws_root, VKEYBOARD_RIGHT_PAGE));
+	shared_ptr<mws_page> vkdownpage = mws_page::new_shared_instance(new mwspagetab_vkeyboard_page(mws_root, VKEYBOARD_DOWN_PAGE));
 
-	vkmainpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = ux_page_transition::new_instance(vkdownpage)
+	vkmainpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkdownpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
-	vkmainpage->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = ux_page_transition::new_instance(vkrightpage)
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
+	vkmainpage->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::new_instance(vkrightpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
-	vkmainpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = ux_page_transition::new_instance(vkuppage)
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
+	vkmainpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkuppage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-	vkuppage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = ux_page_transition::new_instance(vkdownpage)
+	vkuppage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkdownpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
-	vkuppage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = ux_page_transition::new_instance(vkmainpage)
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
+	vkuppage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-	vkrightpage->tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = ux_page_transition::new_instance(vkmainpage)
+	vkrightpage->tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-	vkdownpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = ux_page_transition::new_instance(vkuppage)
+	vkdownpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkuppage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
-	vkdownpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = ux_page_transition::new_instance(vkmainpage)
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
+	vkdownpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
 		->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-		->set_jump_type(ux_page_transition::HISTORY_IGNORE_PAGE);
+		->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 }
 
 
-const shared_ptr<ux_page> ux_page::PAGE_NONE = ux_page::new_standalone_instance();
-const shared_ptr<ux_page> ux_page::PREV_PAGE = ux_page::new_standalone_instance();
-const shared_ptr<ux_page> ux_page::NEXT_PAGE = ux_page::new_standalone_instance();
+const shared_ptr<mws_page> mws_page::PAGE_NONE = mws_page::new_standalone_instance();
+const shared_ptr<mws_page> mws_page::PREV_PAGE = mws_page::new_standalone_instance();
+const shared_ptr<mws_page> mws_page::NEXT_PAGE = mws_page::new_standalone_instance();
 
 
-ux_page::ux_page() : ux()
+mws_page::mws_page() : mws()
 {
 }
 
-ux_page::ux_page(shared_ptr<ux_page_tab> iparent) : ux(iparent)
+mws_page::mws_page(shared_ptr<mws_page_tab> iparent) : mws(iparent)
 {
 	shared_ptr<unit> tu = iparent->get_unit();
 
-	uxr.set(0, 0, (float)tu->get_width(), (float)tu->get_height());
+	mws_r.set(0, 0, (float)tu->get_width(), (float)tu->get_height());
 
-	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = ux_page_transition::new_instance(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
-	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = ux_page_transition::new_instance(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
+	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
+	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::new_instance(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
 }
 
-shared_ptr<ux_page> ux_page::new_instance(shared_ptr<ux_page_tab> iparent)
+shared_ptr<mws_page> mws_page::new_instance(shared_ptr<mws_page_tab> iparent)
 {
-	shared_ptr<ux_page> u(new ux_page(iparent));
+	shared_ptr<mws_page> u(new mws_page(iparent));
 	iparent->add(u);
 	return u;
 }
 
-shared_ptr<ux_page> ux_page::new_shared_instance(ux_page* inew_page_class_instance)
+shared_ptr<mws_page> mws_page::new_shared_instance(mws_page* inew_page_class_instance)
 {
-	shared_ptr<ux_page> u(inew_page_class_instance);
-	shared_ptr<ux_page_tab> pt = static_pointer_cast<ux_page_tab>(u->get_parent());
+	shared_ptr<mws_page> u(inew_page_class_instance);
+	shared_ptr<mws_page_tab> pt = static_pointer_cast<mws_page_tab>(u->get_parent());
 	pt->add(u);
 	return u;
 }
 
-void ux_page::init() {}
+void mws_page::init() {}
 
-void ux_page::on_destroy()
+void mws_page::on_destroy()
 {
 	for(auto p : mlist)
 	{
@@ -1027,7 +1027,7 @@ void ux_page::on_destroy()
 	}
 }
 
-shared_ptr<ux> ux_page::contains_id(const string& iid)
+shared_ptr<mws> mws_page::contains_id(const string& iid)
 {
 	if (iid.length() > 0)
 	{
@@ -1038,7 +1038,7 @@ shared_ptr<ux> ux_page::contains_id(const string& iid)
 
 		for(auto p : mlist)
 		{
-			shared_ptr<ux> u = p->contains_id(iid);
+			shared_ptr<mws> u = p->contains_id(iid);
 
 			if (u)
 			{
@@ -1047,14 +1047,14 @@ shared_ptr<ux> ux_page::contains_id(const string& iid)
 		}
 	}
 
-	return shared_ptr<ux>();
+	return shared_ptr<mws>();
 }
 
-bool ux_page::contains_ux(const shared_ptr<ux> iux)
+bool mws_page::contains_mws(const shared_ptr<mws> i_mws)
 {
 	for(auto p : mlist)
 	{
-		if (iux == p)
+		if (i_mws == p)
 		{
 			return true;
 		}
@@ -1063,27 +1063,27 @@ bool ux_page::contains_ux(const shared_ptr<ux> iux)
 	return false;
 }
 
-shared_ptr<ux_page> ux_page::get_ux_page_instance()
+shared_ptr<mws_page> mws_page::get_mws_page_instance()
 {
-	return static_pointer_cast<ux_page>(get_instance());
+	return static_pointer_cast<mws_page>(get_instance());
 }
 
-shared_ptr<ux_page_tab> ux_page::get_ux_page_parent()
+shared_ptr<mws_page_tab> mws_page::get_mws_page_parent()
 {
-	return static_pointer_cast<ux_page_tab>(get_parent());
+	return static_pointer_cast<mws_page_tab>(get_parent());
 }
 
-void ux_page::on_visibility_changed(bool iis_visible) {}
-void ux_page::on_show_transition(const shared_ptr<linear_transition> itransition) {}
-void ux_page::on_hide_transition(const shared_ptr<linear_transition> itransition) {}
+void mws_page::on_visibility_changed(bool iis_visible) {}
+void mws_page::on_show_transition(const shared_ptr<linear_transition> itransition) {}
+void mws_page::on_hide_transition(const shared_ptr<linear_transition> itransition) {}
 
-void ux_page::receive(shared_ptr<iadp> idp)
+void mws_page::receive(shared_ptr<iadp> idp)
 {
-	update_input_subux(idp);
+	update_input_sub_mws(idp);
 	update_input_std_behaviour(idp);
 }
 
-void ux_page::update_input_subux(shared_ptr<iadp> idp)
+void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
 {
 	if (idp->is_processed())
 	{
@@ -1112,7 +1112,7 @@ void ux_page::update_input_subux(shared_ptr<iadp> idp)
 	}
 }
 
-void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
+void mws_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 {
 	if (idp->is_processed())
 	{
@@ -1157,25 +1157,25 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 					ks.begin(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
 				}
 
-				uxr.x += ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-				uxr.y += ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+				mws_r.x += ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+				mws_r.y += ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
 
-				if (uxr.x > 0)
+				if (mws_r.x > 0)
 				{
-					uxr.x = 0;
+					mws_r.x = 0;
 				}
-				else if (uxr.x < -uxr.w + pfm::screen::get_width())
+				else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
 				{
-					uxr.x = -uxr.w + pfm::screen::get_width();
+					mws_r.x = -mws_r.w + pfm::screen::get_width();
 				}
 
-				if (uxr.y > 0)
+				if (mws_r.y > 0)
 				{
-					uxr.y = 0;
+					mws_r.y = 0;
 				}
-				else if (uxr.y < -uxr.h + pfm::screen::get_height())
+				else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
 				{
-					uxr.y = -uxr.h + pfm::screen::get_height();
+					mws_r.y = -mws_r.h + pfm::screen::get_height();
 				}
 
 				ts->process();
@@ -1189,15 +1189,15 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 		{
 			shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
-			uxr.y += float(mw->wheel_delta) * 50.f;
+			mws_r.y += float(mw->wheel_delta) * 50.f;
 
-			if (uxr.y > 0)
+			if (mws_r.y > 0)
 			{
-				uxr.y = 0;
+				mws_r.y = 0;
 			}
-			else if (uxr.y < -uxr.h + pfm::screen::get_height())
+			else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
 			{
-				uxr.y = -uxr.h + pfm::screen::get_height();
+				mws_r.y = -mws_r.h + pfm::screen::get_height();
 			}
 
 			ts->process();
@@ -1206,13 +1206,13 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
 		case touch_sym_evt::TS_BACKWARD_SWIPE:
 		{
-			if (uxr.x < 0)
+			if (mws_r.x < 0)
 			{
 				ts->process();
 			}
 			else if (tmap.find(touch_sym_evt::TS_BACKWARD_SWIPE) != tmap.end())
 			{
-				send(get_ux_page_parent(), tmap[touch_sym_evt::TS_BACKWARD_SWIPE]);
+				send(get_mws_page_parent(), tmap[touch_sym_evt::TS_BACKWARD_SWIPE]);
 				ts->process();
 			}
 
@@ -1221,13 +1221,13 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
 		case touch_sym_evt::TS_FORWARD_SWIPE:
 		{
-			if (uxr.x > -uxr.w + pfm::screen::get_width())
+			if (mws_r.x > -mws_r.w + pfm::screen::get_width())
 			{
 				ts->process();
 			}
 			else if (tmap.find(touch_sym_evt::TS_FORWARD_SWIPE) != tmap.end())
 			{
-				send(get_ux_page_parent(), tmap[touch_sym_evt::TS_FORWARD_SWIPE]);
+				send(get_mws_page_parent(), tmap[touch_sym_evt::TS_FORWARD_SWIPE]);
 				ts->process();
 			}
 
@@ -1236,13 +1236,13 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
 		case touch_sym_evt::TS_UPWARD_SWIPE:
 		{
-			if (uxr.y < 0)
+			if (mws_r.y < 0)
 			{
 				ts->process();
 			}
 			else if (tmap.find(touch_sym_evt::TS_UPWARD_SWIPE) != tmap.end())
 			{
-				send(get_ux_page_parent(), tmap[touch_sym_evt::TS_UPWARD_SWIPE]);
+				send(get_mws_page_parent(), tmap[touch_sym_evt::TS_UPWARD_SWIPE]);
 				ts->process();
 			}
 
@@ -1251,13 +1251,13 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
 		case touch_sym_evt::TS_DOWNWARD_SWIPE:
 		{
-			if (uxr.y > -uxr.h + pfm::screen::get_height())
+			if (mws_r.y > -mws_r.h + pfm::screen::get_height())
 			{
 				ts->process();
 			}
 			else if (tmap.find(touch_sym_evt::TS_DOWNWARD_SWIPE) != tmap.end())
 			{
-				send(get_ux_page_parent(), tmap[touch_sym_evt::TS_DOWNWARD_SWIPE]);
+				send(get_mws_page_parent(), tmap[touch_sym_evt::TS_DOWNWARD_SWIPE]);
 				ts->process();
 			}
 
@@ -1267,35 +1267,35 @@ void ux_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 	}
 }
 
-void ux_page::update_state()
+void mws_page::update_state()
 {
 	point2d p = ks.update();
 
-	uxr.x += p.x;
-	uxr.y += p.y;
+	mws_r.x += p.x;
+	mws_r.y += p.y;
 
 	for(auto b : mlist)
 	{
-		uxr.w = std::max(uxr.w, b->get_pos().w);
-		uxr.h = std::max(uxr.h, b->get_pos().h);
+		mws_r.w = std::max(mws_r.w, b->get_pos().w);
+		mws_r.h = std::max(mws_r.h, b->get_pos().h);
 	}
 
-	if (uxr.x > 0)
+	if (mws_r.x > 0)
 	{
-		uxr.x = 0;
+		mws_r.x = 0;
 	}
-	else if (uxr.x < -uxr.w + pfm::screen::get_width())
+	else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
 	{
-		uxr.x = -uxr.w + pfm::screen::get_width();
+		mws_r.x = -mws_r.w + pfm::screen::get_width();
 	}
 
-	if (uxr.y > 0)
+	if (mws_r.y > 0)
 	{
-		uxr.y = 0;
+		mws_r.y = 0;
 	}
-	else if (uxr.y < -uxr.h + pfm::screen::get_height())
+	else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
 	{
-		uxr.y = -uxr.h + pfm::screen::get_height();
+		mws_r.y = -mws_r.h + pfm::screen::get_height();
 	}
 
 	for(auto b : mlist)
@@ -1304,7 +1304,7 @@ void ux_page::update_state()
 	}
 }
 
-void ux_page::update_view(shared_ptr<ux_camera> g)
+void mws_page::update_view(shared_ptr<mws_camera> g)
 {
 	for(auto b : mlist)
 	{
@@ -1312,50 +1312,50 @@ void ux_page::update_view(shared_ptr<ux_camera> g)
 	}
 }
 
-shared_ptr<ux> ux_page::get_ux_at(int idx)
+shared_ptr<mws> mws_page::get_mws_at(int idx)
 {
 	return mlist[idx];
 }
 
-void ux_page::on_resize()
+void mws_page::on_resize()
 {
-	shared_ptr<ux_page_tab> parent = get_ux_page_parent();
+	shared_ptr<mws_page_tab> parent = get_mws_page_parent();
 
-	uxr.x = 0;
-	uxr.y = 0;
-	uxr.w = parent->uxr.w;
-	uxr.h = parent->uxr.h;
+	mws_r.x = 0;
+	mws_r.y = 0;
+	mws_r.w = parent->mws_r.w;
+	mws_r.h = parent->mws_r.h;
 }
 
-shared_ptr<ux_page> ux_page::new_standalone_instance()
+shared_ptr<mws_page> mws_page::new_standalone_instance()
 {
-	return shared_ptr<ux_page>(new ux_page());
+	return shared_ptr<mws_page>(new mws_page());
 }
 
-void ux_page::add(shared_ptr<ux_page_item> b)
+void mws_page::add(shared_ptr<mws_page_item> b)
 {
-	if (contains_ux(b))
+	if (contains_mws(b))
 	{
-		throw ia_exception();//trs("uxpageitem with id [%1%] already exists") % b->get_id());
+		throw ia_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
 	}
 
 	mlist.push_back(b);
 }
 
 
-ux_page_item::ux_page_item(shared_ptr<ux_page> iparent) : ux(iparent)
+mws_page_item::mws_page_item(shared_ptr<mws_page> iparent) : mws(iparent)
 {
 }
 
-shared_ptr<ux_page> ux_page_item::get_ux_page_item_parent()
+shared_ptr<mws_page> mws_page_item::get_mws_page_item_parent()
 {
-	return static_pointer_cast<ux_page>(get_parent());
+	return static_pointer_cast<mws_page>(get_parent());
 }
 
-void ux_page_item::add_to_page()
+void mws_page_item::add_to_page()
 {
-	shared_ptr<ux_page> page = static_pointer_cast<ux_page>(get_parent());
-	shared_ptr<ux_page_item> inst = static_pointer_cast<ux_page_item>(get_instance());
+	shared_ptr<mws_page> page = static_pointer_cast<mws_page>(get_parent());
+	shared_ptr<mws_page_item> inst = static_pointer_cast<mws_page_item>(get_instance());
 
 	page->add(inst);
 }

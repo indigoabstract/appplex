@@ -68,7 +68,7 @@ namespace pfm_impl
 class pfm_path
 {
 public:
-   static std::shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string iaux_root_dir = "");
+   static std::shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string i_aux_root_dir = "");
    std::string get_full_path()const;
    const std::string& get_file_name()const;
    std::string get_file_stem()const;

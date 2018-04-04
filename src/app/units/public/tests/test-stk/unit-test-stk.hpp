@@ -12,7 +12,7 @@ public:
 	static shared_ptr<unit_test_stk> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
 
 private:
 	unit_test_stk();

@@ -12,7 +12,7 @@ public:
 	static shared_ptr<unit_abstract_racing> new_instance();
 
     virtual void init();
-	virtual void init_ux();
+	virtual void init_mws();
     virtual void load();
 
 private:
