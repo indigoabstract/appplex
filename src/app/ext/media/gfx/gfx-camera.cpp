@@ -641,7 +641,22 @@ public:
    std::weak_ptr<gfx_rt> last_rt;
 };
 
+void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
+{
+   struct z_sort
+   {
+      bool operator() (mws_sp<gfx_vxo> a, mws_sp<gfx_vxo> b)
+      {
+         return (a->position().z < b->position().z);
+      }
+   };
+   z_sort inst;
 
+   std::sort(i_opaque.begin(), i_opaque.end(), inst);
+   std::sort(i_translucent.begin(), i_translucent.end(), inst);
+}
+
+std::function<void(mws_sp<gfx_camera>, std::vector<mws_sp<gfx_vxo> >&, std::vector<mws_sp<gfx_vxo> >&)> gfx_camera::z_order_sort_function = z_order_sort;
 int gfx_camera::camera_idx = 0;
 
 shared_ptr<gfx_camera> gfx_camera::new_inst(std::shared_ptr<gfx> i_gi)

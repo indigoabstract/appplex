@@ -180,6 +180,10 @@ public:
    gfx_color clear_color_value;
    bool clear_depth;
    bool clear_stencil;
+   std::vector<mws_sp<gfx_vxo> > opaque_obj_list;
+   std::vector<mws_sp<gfx_vxo> > translucent_obj_list;
+   std::function<void(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& opaque, std::vector<mws_sp<gfx_vxo> >& translucent)> sort_function;
+   static std::function<void(mws_sp<gfx_camera>, std::vector<mws_sp<gfx_vxo> >&, std::vector<mws_sp<gfx_vxo> >&)> z_order_sort_function;
 
 protected:
    friend class gfx_scene;

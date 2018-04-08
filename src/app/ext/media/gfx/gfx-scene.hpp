@@ -87,10 +87,12 @@ public:
    std::shared_ptr<gfx_node> get_parent();
    std::shared_ptr<gfx_node> get_root();
    std::shared_ptr<gfx_scene> get_scene();
-   virtual void add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list);
+   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void update();
-   void attach(shared_ptr<gfx_node> inode);
-   void detach();
+   virtual void attach(shared_ptr<gfx_node> inode);
+   virtual void detach();
+   virtual void on_attach();
+   virtual void on_detach();
    bool contains(const shared_ptr<gfx_node> inode);
    shared_ptr<gfx_node> find_node_by_name(const std::string& iname);
 
@@ -128,6 +130,7 @@ public:
    gfx_scene(std::shared_ptr<gfx> i_gi = nullptr);
    void init();
    void draw();
+   void post_draw();
    virtual void update();
 
 private:

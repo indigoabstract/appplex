@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -11,15 +11,17 @@ using std::enable_shared_from_this;
 using std::shared_ptr;
 using std::static_pointer_cast;
 using std::weak_ptr;
+template <typename T> using mws_sp = std::shared_ptr<T>;
+template <typename T> using mws_wp = std::weak_ptr<T>;
 
 
 #if defined PLATFORM_WINDOWS_PC
 
-void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw();
-void operator delete(void* iptr, const std::nothrow_t& nothrow_constant) throw();
+void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value);
+void operator delete(void* iptr, const std::nothrow_t& nothrow_constant);
 
-void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) throw();
-void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant) throw();
+void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value);
+void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant);
 
 #endif
 

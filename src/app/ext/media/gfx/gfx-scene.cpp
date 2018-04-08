@@ -70,7 +70,7 @@ std::shared_ptr<gfx_scene> gfx_node::get_scene()
    return std::static_pointer_cast<gfx_scene>(root.lock());
 }
 
-void gfx_node::add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list)
+void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
 }
 
@@ -101,6 +101,7 @@ void gfx_node::attach(shared_ptr<gfx_node> inode)
       children.push_back(inode);
       inode->parent = get_shared_ptr();
       inode->root = root;
+      inode->on_attach();
    }
 }
 
@@ -120,12 +121,17 @@ void gfx_node::detach()
       parent_node->children.erase(std::find(parent_node->children.begin(), parent_node->children.end(), get_shared_ptr()));
       parent = shared_ptr<gfx_node>();
       root = shared_ptr<gfx_scene>();
+      on_detach();
    }
    else
    {
       trx("this node is not part of a hierarchy");
    }
 }
+
+void gfx_node::on_attach() {}
+
+void gfx_node::on_detach() {}
 
 bool gfx_node::contains(const shared_ptr<gfx_node> inode)
 {
@@ -204,9 +210,8 @@ void gfx_scene::draw()
    gl_st->set_state(&plist[0], plist.size());
 
    std::sort(camera_list.begin(), camera_list.end(), pred());
-   std::vector<shared_ptr<gfx_camera> >::iterator it = camera_list.begin();
 
-   for (; it != camera_list.end(); it++)
+   for (auto it = camera_list.begin(); it != camera_list.end(); it++)
    {
       shared_ptr<gfx_camera> cam = *it;
 
@@ -247,39 +252,87 @@ void gfx_scene::draw()
          gl_st->set_state(&plist[0], plist.size());
       }
 
-      cam->update_camera_state();
+      auto& opaque_obj_list = cam->opaque_obj_list;
+      auto& translucent_obj_list = cam->translucent_obj_list;
 
-      std::vector<shared_ptr<gfx_vxo> > draw_list;
+      opaque_obj_list.clear();
+      translucent_obj_list.clear();
+      cam->update_camera_state();
 
       for (auto it = children.begin(); it != children.end(); it++)
       {
-         (*it)->add_to_draw_list(camera_id, draw_list);
+         (*it)->add_to_draw_list(camera_id, opaque_obj_list, translucent_obj_list);
       }
 
-      auto it3 = draw_list.begin();
-
-      for (; it3 != draw_list.end(); it3++)
+      if (cam->sort_function)
       {
-         shared_ptr<gfx_vxo> mesh = *it3;
+         cam->sort_function(cam, opaque_obj_list, translucent_obj_list);
+      }
 
-         if (!mesh->visible)
+      // draw opaque objects first
+      {
+         for (auto it = opaque_obj_list.begin(); it != opaque_obj_list.end(); it++)
          {
-            continue;
-         }
+            shared_ptr<gfx_vxo> mesh = *it;
 
-         gfx_material& mat = *mesh->get_material();
-         shared_ptr<gfx_shader> shader = mat.get_shader();
+            if (!mesh->visible)
+            {
+               continue;
+            }
 
-         if (shader)
-         {
-            //mesh->push_material_params();
-            mesh->render_mesh(cam);
-         }
-         else
-         {
-            vprint("mesh object at [%p] has null shader\n", mesh.get());
+            gfx_material& mat = *mesh->get_material();
+            shared_ptr<gfx_shader> shader = mat.get_shader();
+
+            if (shader)
+            {
+               mesh->render_mesh(cam);
+            }
+            else
+            {
+               vprint("mesh object at [%p] has null shader\n", mesh.get());
+            }
          }
       }
+
+      // draw translucent objects after opaque ones
+      {
+         for (auto it = translucent_obj_list.begin(); it != translucent_obj_list.end(); it++)
+         {
+            shared_ptr<gfx_vxo> mesh = *it;
+
+            if (!mesh->visible)
+            {
+               continue;
+            }
+
+            gfx_material& mat = *mesh->get_material();
+            shared_ptr<gfx_shader> shader = mat.get_shader();
+
+            if (shader)
+            {
+               mesh->render_mesh(cam);
+            }
+            else
+            {
+               vprint("mesh object at [%p] has null shader\n", mesh.get());
+            }
+         }
+      }
+   }
+}
+
+void gfx_scene::post_draw()
+{
+   for (auto it = camera_list.begin(); it != camera_list.end(); it++)
+   {
+      shared_ptr<gfx_camera> cam = *it;
+
+      if (!cam->enabled)
+      {
+         continue;
+      }
+
+      cam->update_camera_state();
    }
 }
 

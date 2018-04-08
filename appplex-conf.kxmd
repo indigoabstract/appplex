@@ -79,7 +79,7 @@ mod
 [
 	3d-engine [ gfx, obj-loader, res-loader ],
 	bitmap-fonts[ png ],
-	gfx[ opengl ],
+	gfx[ opengl, glm ],
 	fonts[ vector-fonts, bitmap-fonts ],
 	freetype-gl[ freetype ],
 	mws [ gfx, fonts ],

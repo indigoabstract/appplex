@@ -69,7 +69,6 @@ extern "C"
 #ifndef MWS_USES_EXCEPTIONS
 
 #define throw
-#define throw()
 #define try          if(true)
 #define catch(...)   if(false)
 

@@ -19,6 +19,7 @@ public:
 
    gfx_quad_2d(std::shared_ptr<gfx> i_gi = nullptr);
    void set_anchor(e_anchor_types ianchor_type);
+   virtual glm::vec2 get_translation();
    virtual void set_translation(float ix, float iy);
    virtual void set_rotation(float ia);
    virtual void set_scale(float ix, float iy);
@@ -30,6 +31,6 @@ protected:
    e_anchor_types anchor_type;
    float dx, dy;
    float a;
-   float tx, ty;
+   glm::vec2 tr;
    float sx, sy;
 };

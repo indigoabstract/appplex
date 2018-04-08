@@ -29,6 +29,11 @@ shared_ptr<unit_ctrl> unit_ctrl::inst()
 	return instance;
 }
 
+mws_sp<unit> unit_ctrl::get_app()
+{
+   return inst()->crt_unit.lock();
+}
+
 bool unit_ctrl::back_evt()
 {
 	auto u = crt_unit.lock();

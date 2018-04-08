@@ -13,6 +13,8 @@ class unit_ctrl
 {
 public:
    static std::shared_ptr<unit_ctrl> inst();
+   // returns a shared pointer to the current app
+   static mws_sp<unit> get_app();
    bool back_evt();
    bool app_uses_gfx();
    void exit_app(int exit_code = 0);

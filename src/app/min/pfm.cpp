@@ -1245,7 +1245,7 @@ void mws_print_impl(const char* i_format, ...)
 
 #if defined PLATFORM_WINDOWS_PC
 
-void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw()
+void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value)
 {
 	void* ptr = 0;
 
@@ -1264,7 +1264,7 @@ void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value) throw
 	return ptr;
 }
 
-void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) throw()
+void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value)
 {
 	void* ptr = 0;
 
@@ -1283,12 +1283,12 @@ void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value) thr
 	return ptr;
 }
 
-void operator delete(void* iptr, const std::nothrow_t& nothrow_constant) throw()
+void operator delete(void* iptr, const std::nothrow_t& nothrow_constant)
 {
    _aligned_free(iptr);
 }
 
-void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant) throw()
+void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant)
 {
    _aligned_free(iptr);
 }

@@ -63,13 +63,13 @@ class ia_exception
 #endif
 {
 public:
-   ia_exception() throw();
-   ia_exception(const char* msg) throw();
-   ia_exception(std::string msg) throw();
-   virtual ~ia_exception() throw();
+   ia_exception();
+   ia_exception(const char* msg);
+   ia_exception(std::string msg);
+   virtual ~ia_exception();
 
    // returns a C-style character string describing the general cause of the current error
-   virtual const char* what() const throw();
+   virtual const char* what() const;
 
 private:
    std::string exmsg;
@@ -156,7 +156,7 @@ class mws_bad_any_cast
 #endif
 {
 public:
-   virtual const char* what() const throw()
+   virtual const char* what() const
    {
       return "ia_bad_any_cast: failed conversion using ia_any_cast";
    }

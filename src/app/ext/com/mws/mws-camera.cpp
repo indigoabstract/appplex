@@ -205,6 +205,7 @@ void mws_camera::translate(float tx, float ty)
 
 mws_camera::mws_camera(std::shared_ptr<gfx> i_gi) : gfx_camera(i_gi)
 {
+   sort_function = z_order_sort_function;
 }
 
 void mws_camera::load(shared_ptr<gfx_camera> inst)

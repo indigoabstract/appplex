@@ -674,6 +674,7 @@ bool unit::update()
 
    gfx_scene_inst->draw();
    update_view(updateCount);
+   gfx_scene_inst->post_draw();
 
    // update fps
    frame_count++;
@@ -806,19 +807,24 @@ void unit::iInit()
    {
       touch_ctrl->add_receiver(get_smtp_instance());
       key_ctrl->add_receiver(get_smtp_instance());
+
+      {
+         mws_cam = mws_camera::new_inst();
+         mws_cam->camera_id = "mws_cam";
+         mws_cam->projection_type = "orthographic";
+         mws_cam->near_clip_distance = -100;
+         mws_cam->far_clip_distance = 100;
+         mws_cam->clear_color = false;
+         mws_cam->clear_color_value = gfx_color::colors::black;
+         mws_cam->clear_depth = true;
+      }
+
       mws_root = mws_page_tab::new_instance(get_smtp_instance());
-      mws_cam = mws_camera::new_inst();
-      mws_cam->camera_id = "mws_cam";
-      mws_cam->projection_type = "orthographic";
-      mws_cam->near_clip_distance = -100;
-      mws_cam->far_clip_distance = 100;
-      mws_cam->clear_color = false;
-      mws_cam->clear_color_value = gfx_color::colors::black;
-      mws_cam->clear_depth = true;
       gfx_scene_inst->attach(mws_cam);
 
       init_mws();
       mws_root->init();
+      gfx_scene_inst->attach(mws_root);
    }
 #endif // MOD_GFX
 }

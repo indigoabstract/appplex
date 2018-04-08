@@ -167,6 +167,7 @@ public:
    gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi = nullptr);
    virtual ~gfx_vxo();
    virtual e_gfx_obj_type get_type()const override;
+   bool is_translucent();
    virtual void set_mesh_name(const std::string& imesh_name);
    void operator=(const std::string& imesh_name);
    std::vector<uint8>& get_vx_buffer();
@@ -177,7 +178,7 @@ public:
    std::shared_ptr<gfx_material> get_material();
    void set_material(std::shared_ptr<gfx_material> imaterial);
    vx_info& get_vx_info();
-   virtual void add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list);
+   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void render_mesh(std::shared_ptr<gfx_camera> icamera);
    void push_material_params();
    void set_size(int ivx_count, int iidx_count);

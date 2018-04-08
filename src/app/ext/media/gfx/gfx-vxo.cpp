@@ -100,6 +100,19 @@ gfx_obj::e_gfx_obj_type gfx_vxo::get_type()const
    return e_gfx_vxo;
 }
 
+bool gfx_vxo::is_translucent()
+{
+   auto& mat = *get_material();
+   gfx_material::blending_modes bm = mat[MP_BLENDING].get_value<gfx_material::blending_modes>();
+
+   if (bm != gfx_material::e_none)
+   {
+      return true;
+   }
+
+   return false;
+}
+
 void gfx_vxo::set_mesh_name(const std::string& imesh_name)
 {
    mesh_name = imesh_name;
@@ -178,15 +191,22 @@ vx_info& gfx_vxo::get_vx_info()
    return vxi;
 }
 
-void gfx_vxo::add_to_draw_list(const std::string& icamera_id, std::vector<shared_ptr<gfx_vxo> >& idraw_list)
+void gfx_vxo::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
-   std::vector<std::string>::iterator it = std::find(camera_id_list.begin(), camera_id_list.end(), icamera_id);
+   std::vector<std::string>::iterator it = std::find(camera_id_list.begin(), camera_id_list.end(), i_camera_id);
 
    if (it != camera_id_list.end())
    {
       shared_ptr<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(get_shared_ptr());
 
-      idraw_list.push_back(mesh);
+      if (is_translucent())
+      {
+         i_translucent.push_back(mesh);
+      }
+      else
+      {
+         i_opaque.push_back(mesh);
+      }
    }
 }
 

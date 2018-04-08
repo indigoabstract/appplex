@@ -17,11 +17,11 @@ public:
 		msg = s;
 	}
 
-	~IllegalStateException() throw()
+	~IllegalStateException()
 	{
 	}
 
-	const char* what() const throw()
+	const char* what() const
 	{
 		return msg.c_str();
 	}

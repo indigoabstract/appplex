@@ -239,25 +239,25 @@ std::vector<std::string> mws_str::str_split(const std::string& str, const std::s
 }
 
 
-ia_exception::ia_exception() throw()
+ia_exception::ia_exception()
 {
 }
 
-ia_exception::ia_exception(const char* msg) throw()
-{
-   exmsg = msg;
-}
-
-ia_exception::ia_exception(std::string msg) throw()
+ia_exception::ia_exception(const char* msg)
 {
    exmsg = msg;
 }
 
-ia_exception::~ia_exception() throw()
+ia_exception::ia_exception(std::string msg)
+{
+   exmsg = msg;
+}
+
+ia_exception::~ia_exception()
 {
 }
 
-const char* ia_exception::what() const throw()
+const char* ia_exception::what() const
 {
    return exmsg.c_str();
 }

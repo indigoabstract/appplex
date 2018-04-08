@@ -10,10 +10,10 @@ std::shared_ptr<gfx_obj> gfx_obj::get_inst()
    return shared_from_this();
 }
 
-const std::string& gfx_obj::get_id()
-{
-   return oid;
-}
+//const std::string& gfx_obj::get_id()
+//{
+//   return oid;
+//}
 
 gfx_obj::gfx_obj(std::shared_ptr<gfx> i_gi)
 {

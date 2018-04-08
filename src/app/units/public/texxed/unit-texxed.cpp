@@ -242,7 +242,7 @@ namespace unit_texxed_ns
 		}
 
 	protected:
-		text_area_impl(shared_ptr<mws_page> iparent) : mws_page_item(iparent)
+		text_area_impl(shared_ptr<mws_page> iparent)
 		{
 			tx_vxo = text_vxo::new_inst();
 			iparent->get_unit()->gfx_scene_inst->attach(tx_vxo);

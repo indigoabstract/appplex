@@ -15,26 +15,30 @@ using gfx_vxo_util::set_mesh_data;
 void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
 {
    anchor_type = ianchor_type;
-   set_translation(tx, ty);
+   set_translation(tr.x, tr.y);
+}
+
+glm::vec2 gfx_quad_2d::get_translation()
+{
+   return tr;
 }
 
 void gfx_quad_2d::set_translation(float ix, float iy)
 {
-   tx = ix;
-   ty = iy;
+   tr = glm::vec2(ix, iy);
 
    switch (anchor_type)
    {
    case e_top_left:
-      position = glm::vec3(tx + sx / 2, ty + sy / 2, 0.f);
+      position = glm::vec3(tr.x + sx / 2, tr.y + sy / 2, position().z);
       break;
 
    case e_center:
-      position = glm::vec3(tx, ty, 0.f);
+      position = glm::vec3(tr.x, tr.y, position().z);
       break;
 
    case e_btm_center:
-      position = glm::vec3(tx, ty - sy / 2, 0.f);
+      position = glm::vec3(tr.x, tr.y - sy / 2, position().z);
       break;
    }
 }
@@ -49,7 +53,7 @@ void gfx_quad_2d::set_scale(float ix, float iy)
    sx = ix;
    sy = iy;
    scaling = glm::vec3(sx, sy, 1.f);
-   set_translation(tx, ty);
+   set_translation(tr.x, tr.y);
 }
 
 void gfx_quad_2d::set_v_flip(bool iv_flip)
@@ -123,7 +127,7 @@ void gfx_quad_2d::set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::v
 gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_plane(i_gi)
 {
    anchor_type = e_top_left;
-   tx = ty = 0;
+   tr = glm::vec2(0.f);
    a = 0;
    sx = sy = 1;
    (*material)[MP_DEPTH_TEST] = false;
