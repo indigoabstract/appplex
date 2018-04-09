@@ -3,6 +3,7 @@
 #include "mws.hpp"
 #include "gfx-color.hpp"
 
+class gfx_quad_2d;
 class mws_font;
 
 
@@ -12,9 +13,12 @@ public:
    static std::shared_ptr<mws_panel> nwi();
    virtual ~mws_panel() {}
    virtual void set_rect(const mws_rect& i_rect) override;
+   virtual mws_sp<gfx_quad_2d> get_vxo();
 
 protected:
    mws_panel() {}
+
+   mws_sp<gfx_quad_2d> vxo;
 };
 
 
@@ -28,11 +32,13 @@ public:
    virtual void receive(shared_ptr<iadp> idp) override;
    virtual void on_click();
    virtual void set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler);
+   virtual mws_sp<gfx_quad_2d> get_vxo();
 
 protected:
    mws_img_btn() {}
 
    std::function<void(mws_sp<mws_img_btn> i_img_btn)> on_click_handler;
+   mws_sp<gfx_quad_2d> vxo;
 };
 
 

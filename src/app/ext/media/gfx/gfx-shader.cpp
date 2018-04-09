@@ -565,7 +565,7 @@ std::string gfx_shader::create_shader_id(std::string ivertex_shader, std::string
 
 gfx_obj::e_gfx_obj_type gfx_shader::get_type()const
 {
-   return e_gfx_shader;
+   return e_shader;
 }
 
 bool gfx_shader::is_valid()const

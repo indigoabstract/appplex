@@ -49,7 +49,7 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
    glm::vec3 tr;
    glm::vec3 br;
 
-   if (cam->projection_type == "perspective")
+   if (cam->projection_type == gfx_camera::e_perspective_proj)
    {
       glm::vec3 start_cam_pos = start - cam->position();
       glm::vec3 finish_cam_pos = finish - cam->position();
@@ -63,7 +63,7 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
       tr = finish + plane_vect_finish * finish_thickness;
       br = finish - plane_vect_finish * finish_thickness;
    }
-   else if (cam->projection_type == "orthographic")
+   else if (cam->projection_type == gfx_camera::e_orthographic_proj)
    {
       glm::vec3 ortho_vect = glm::normalize(glm::cross(n, glm::vec3(0, 0, 1)));
 
@@ -423,10 +423,10 @@ public:
       glm::vec3 tr;
       glm::vec3 br;
 
-      if (cam->projection_type == "perspective")
+      if (cam->projection_type == gfx_camera::e_perspective_proj)
       {
       }
-      else if (cam->projection_type == "orthographic")
+      else if (cam->projection_type == gfx_camera::e_orthographic_proj)
       {
          float p = 0.5;
          float idx = size.x;
@@ -510,14 +510,14 @@ public:
       glm::vec3 tr;
       glm::vec3 br;
 
-      if (cam->projection_type == "perspective")
+      if (cam->projection_type == gfx_camera::e_perspective_proj)
       {
          glm::vec3 center_cam_pos = center - cam->position();
          up = glm::vec3(camera[1].x, camera[1].y, camera[1].z);
          right = glm::normalize(glm::cross(center_cam_pos, up));
          //thickness = thickness * glm::length(center_cam_pos) / 1500.f;
       }
-      else if (cam->projection_type == "orthographic")
+      else if (cam->projection_type == gfx_camera::e_orthographic_proj)
       {
          up = glm::vec3(camera[1].x, camera[1].y, camera[1].z);
          right = glm::vec3(camera[0].x, camera[0].y, camera[0].z);
@@ -668,7 +668,33 @@ shared_ptr<gfx_camera> gfx_camera::new_inst(std::shared_ptr<gfx> i_gi)
 
 gfx_obj::e_gfx_obj_type gfx_camera::get_type()const
 {
-   return e_gfx_cam;
+   return e_cam;
+}
+
+void gfx_camera::clear_buffers()
+{
+   gfx_bitfield bf = 0;
+
+   if (clear_color)
+   {
+      bf |= GL_COLOR_BUFFER_BIT;
+      glClearColor(clear_color_value.r, clear_color_value.g, clear_color_value.b, clear_color_value.a);
+   }
+
+   if (clear_depth)
+   {
+      bf |= GL_DEPTH_BUFFER_BIT;
+   }
+
+   if (clear_stencil)
+   {
+      bf |= GL_STENCIL_BUFFER_BIT;
+   }
+
+   if (bf != 0)
+   {
+      glClear(bf);
+   }
 }
 
 void gfx_camera::update()
@@ -814,7 +840,7 @@ void gfx_camera::load(shared_ptr<gfx_camera> inst)
    near_clip_distance = -100.f;
    far_clip_distance = 100.f;
    fov_y_deg = glm::radians(60.f);
-   projection_type = "perspective";
+   projection_type = e_perspective_proj;
    rendering_priority = 0;
    render_target = "";
    clear_color = false;
@@ -839,12 +865,12 @@ void gfx_camera::load(shared_ptr<gfx_camera> inst)
 
 void gfx_camera::update_camera_state_impl()
 {
-   if (projection_type == "perspective")
+   if (projection_type == e_perspective_proj)
    {
       float aspect = gfx::rt::get_render_target_width() / float(gfx::rt::get_render_target_height());
       projection = glm::perspective(glm::radians(fov_y_deg), aspect, near_clip_distance, far_clip_distance);
    }
-   else if (projection_type == "orthographic")
+   else if (projection_type == e_orthographic_proj)
    {
       float left = 0;
       float right = gfx::rt::get_render_target_width();

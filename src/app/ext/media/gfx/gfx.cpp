@@ -647,7 +647,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
 {
     switch (iobj->get_type())
     {
-    case gfx_obj::e_gfx_rt:
+    case gfx_obj::e_rt:
     {
         struct pred
         {
@@ -658,7 +658,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
         break;
     }
 
-    case gfx_obj::e_gfx_shader:
+    case gfx_obj::e_shader:
     {
         struct pred
         {
@@ -669,7 +669,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
         break;
     }
 
-    case gfx_obj::e_gfx_tex:
+    case gfx_obj::e_tex:
     {
         struct pred
         {

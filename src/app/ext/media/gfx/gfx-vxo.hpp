@@ -169,7 +169,7 @@ public:
    virtual e_gfx_obj_type get_type()const override;
    bool is_translucent();
    virtual void set_mesh_name(const std::string& imesh_name);
-   void operator=(const std::string& imesh_name);
+   virtual void operator=(const std::string& imesh_name);
    std::vector<uint8>& get_vx_buffer();
    std::vector<gfx_indices_type>& get_ix_buffer();
    virtual void set_data(const std::vector<uint8>& ivertices_buffer, const std::vector<gfx_indices_type>& iindices_buffer);

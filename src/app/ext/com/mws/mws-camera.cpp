@@ -212,7 +212,7 @@ void mws_camera::load(shared_ptr<gfx_camera> inst)
 {
 	gfx_camera::load(inst);
 	p = shared_ptr<mws_camera_impl>(new mws_camera_impl());
-	projection_type = "orthographic";
+	projection_type = gfx_camera::e_orthographic_proj;
 	rendering_priority = 0xffff;
 }
 

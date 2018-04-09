@@ -47,7 +47,7 @@ gfx_node::gfx_node(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi), name(this)
 
 gfx_obj::e_gfx_obj_type gfx_node::get_type()const
 {
-   return e_gfx_node;
+   return e_node;
 }
 
 std::shared_ptr<gfx_node> gfx_node::get_shared_ptr()

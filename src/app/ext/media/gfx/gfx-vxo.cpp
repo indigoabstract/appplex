@@ -97,7 +97,7 @@ gfx_vxo::~gfx_vxo()
 
 gfx_obj::e_gfx_obj_type gfx_vxo::get_type()const
 {
-   return e_gfx_vxo;
+   return e_vxo;
 }
 
 bool gfx_vxo::is_translucent()

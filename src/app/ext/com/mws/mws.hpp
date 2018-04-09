@@ -102,8 +102,6 @@ public:
    shared_ptr<mws> get_mws_parent();
    shared_ptr<mws_page_tab> get_mws_root();
    virtual shared_ptr<unit> get_unit();
-   virtual std::shared_ptr<gfx_vxo> get_vxo();
-   virtual void set_vxo(std::shared_ptr<gfx_vxo> i_vxo);
 
    virtual void receive(shared_ptr<iadp> idp);
    virtual void update_state();
@@ -115,6 +113,7 @@ public:
 
 protected:
    mws(std::shared_ptr<gfx> i_gi = nullptr);
+   virtual void add_vxo(std::shared_ptr<gfx_vxo> i_vxo);
 
    bool is_opaque;
    mws_rect mws_r;
@@ -126,7 +125,6 @@ private:
    virtual shared_ptr<ia_sender> sender_inst();
 
    std::string id;
-   std::shared_ptr<gfx_vxo> vxo;
 };
 
 
@@ -194,8 +192,8 @@ public:
    static shared_ptr<mws_page_tab> new_instance(shared_ptr<unit> iu);
    static shared_ptr<mws_page_tab> new_shared_instance(mws_page_tab* inew_page_tab_class_instance);
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
-   virtual void on_attach() override;
    virtual void init();
+   virtual void init_subobj();
    virtual void on_destroy();
 
    virtual shared_ptr<mws> contains_id(const std::string& iid);

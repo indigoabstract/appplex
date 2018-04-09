@@ -158,7 +158,7 @@ std::string gfx_tex::gen_id()
 
 gfx_obj::e_gfx_obj_type gfx_tex::get_type()const
 {
-   return e_gfx_tex;
+   return e_tex;
 }
 
 const gfx_tex_params& gfx_tex::get_params() const

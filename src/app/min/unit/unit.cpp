@@ -811,20 +811,22 @@ void unit::iInit()
       {
          mws_cam = mws_camera::new_inst();
          mws_cam->camera_id = "mws_cam";
-         mws_cam->projection_type = "orthographic";
+         mws_cam->projection_type = gfx_camera::e_orthographic_proj;
          mws_cam->near_clip_distance = -100;
          mws_cam->far_clip_distance = 100;
          mws_cam->clear_color = false;
          mws_cam->clear_color_value = gfx_color::colors::black;
          mws_cam->clear_depth = true;
+         gfx_scene_inst->attach(mws_cam);
       }
 
-      mws_root = mws_page_tab::new_instance(get_smtp_instance());
-      gfx_scene_inst->attach(mws_cam);
-
-      init_mws();
-      mws_root->init();
-      gfx_scene_inst->attach(mws_root);
+      {
+         mws_root = mws_page_tab::new_instance(get_smtp_instance());
+         gfx_scene_inst->attach(mws_root);
+         mws_root->init();
+         init_mws();
+         mws_root->init_subobj();
+      }
    }
 #endif // MOD_GFX
 }

@@ -88,7 +88,7 @@ shared_ptr<mws> mws::get_instance()
 
 gfx_obj::e_gfx_obj_type mws::get_type()const
 {
-   return gfx_obj::e_gfx_mws;
+   return gfx_obj::e_mws;
 }
 
 void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
@@ -123,7 +123,7 @@ void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
 {
    for (auto c : children)
    {
-      if (c->get_type() == gfx_obj::e_gfx_mws)
+      if (c->get_type() == gfx_obj::e_mws)
       {
          auto m = std::dynamic_pointer_cast<mws>(c);
 
@@ -188,23 +188,6 @@ shared_ptr<unit> mws::get_unit()
    return std::static_pointer_cast<unit>(mwsroot.lock()->get_unit());
 }
 
-std::shared_ptr<gfx_vxo> mws::get_vxo()
-{
-   return vxo;
-}
-
-void mws::set_vxo(std::shared_ptr<gfx_vxo> i_vxo)
-{
-   if (vxo)
-   {
-      vxo->detach();
-   }
-
-   vxo = i_vxo;
-   attach(vxo);
-   set_z(z_position);
-}
-
 void mws::receive(shared_ptr<iadp> idp) {}
 void mws::update_state() {}
 void mws::update_view(shared_ptr<mws_camera> g) {}
@@ -226,15 +209,35 @@ float mws::get_z()
 
 void mws::set_z(float i_z_position)
 {
-   auto vxo = get_vxo();
-
    z_position = i_z_position;
 
-   if (vxo)
+   for (auto c : children)
    {
-      vxo->position = glm::vec3(vxo->position().x, vxo->position().y, z_position);
+      switch (c->get_type())
+      {
+      case gfx_obj::e_vxo:
+      {
+         auto go = std::dynamic_pointer_cast<gfx_vxo>(c);
+         go->position = glm::vec3(go->position().x, go->position().y, z_position);
+         break;
+      }
+
+      case gfx_obj::e_mws:
+      {
+         auto go = std::dynamic_pointer_cast<mws>(c);
+         go->set_z(i_z_position);
+         break;
+      }
+      }
    }
 }
+
+void mws::add_vxo(std::shared_ptr<gfx_vxo> i_vxo)
+{
+   attach(i_vxo);
+   i_vxo->position = glm::vec3(i_vxo->position().x, i_vxo->position().y, z_position);
+}
+
 
 shared_ptr<ia_sender> mws::sender_inst()
 {
@@ -429,8 +432,21 @@ void mws_page_tab::add_to_draw_list(const std::string& i_camera_id, std::vector<
    mws::add_to_draw_list(i_camera_id, i_opaque, i_translucent);
 }
 
-void mws_page_tab::on_attach()
+void mws_page_tab::init()
 {
+   mwsroot = get_mws_page_tab_instance();
+   mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+   ss.get_transition()->add_receiver(get_instance());
+}
+void mws_page_tab::init_subobj()
+{
+   if (!is_empty())
+   {
+      current_page = pages[4];
+      page_history.push_back(current_page);
+      page_stack.push_back(current_page);
+   }
+
    struct z_sort
    {
       bool operator() (mws_sp<mws> a, mws_sp<mws> b)
@@ -442,28 +458,10 @@ void mws_page_tab::on_attach()
 
    for (auto p : pages)
    {
+      p->init();
       p->mws_subobj_list.clear();
       p->list_mws_children(p->mws_subobj_list);
       std::sort(p->mws_subobj_list.begin(), p->mws_subobj_list.end(), inst);
-   }
-}
-
-void mws_page_tab::init()
-{
-   mwsroot = get_mws_page_tab_instance();
-   mws_cam = mwsroot.lock()->get_unit()->mws_cam;
-   ss.get_transition()->add_receiver(get_instance());
-
-   if (!is_empty())
-   {
-      current_page = pages[4];
-      page_history.push_back(current_page);
-      page_stack.push_back(current_page);
-   }
-
-   for (auto p : pages)
-   {
-      p->init();
    }
 }
 

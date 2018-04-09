@@ -149,8 +149,16 @@ public:
 class gfx_camera : public gfx_node
 {
 public:
+   enum e_projection_type
+   {
+      e_orthographic_proj,
+      e_perspective_proj,
+      e_custom_proj
+   };
+
    static shared_ptr<gfx_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
    virtual e_gfx_obj_type get_type()const override;
+   void clear_buffers();
    virtual void update();
    void update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp);
    void draw_arc(glm::vec3 position, float radius, glm::quat orientation, float startAngle, float stopAngle, const glm::vec4& color, float precision, float thickness);
@@ -173,7 +181,7 @@ public:
    float near_clip_distance;
    float far_clip_distance;
    float fov_y_deg;
-   std::string projection_type;
+   e_projection_type projection_type;
    int rendering_priority;
    std::string render_target;
    bool clear_color;

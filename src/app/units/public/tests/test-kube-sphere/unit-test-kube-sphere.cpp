@@ -76,7 +76,7 @@ void unit_test_kube_sphere::load()
 	p->ortho_cam = gfx_camera::new_inst();
 	p->ortho_cam->camera_id = "ortho_camera";
 	p->ortho_cam->rendering_priority = 1;
-	p->ortho_cam->projection_type = "orthographic";
+	p->ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
 	p->ortho_cam->near_clip_distance = -5000;
 	p->ortho_cam->far_clip_distance = 5000;
 	p->ortho_cam->clear_depth = false;

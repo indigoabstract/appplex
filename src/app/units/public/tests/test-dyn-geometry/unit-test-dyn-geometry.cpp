@@ -476,7 +476,7 @@ void unit_test_dyn_geometry::load()
 	p->ortho_cam = mws_camera::new_inst();
 	p->ortho_cam->camera_id = "ortho_cam";
 	p->ortho_cam->rendering_priority = 1;
-	p->ortho_cam->projection_type = "orthographic";
+	p->ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
 	p->ortho_cam->near_clip_distance = -100;
 	p->ortho_cam->far_clip_distance = 100;
 	p->ortho_cam->clear_color = true;

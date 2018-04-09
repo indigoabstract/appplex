@@ -14,7 +14,7 @@ gfx_rt::~gfx_rt()
 
 gfx_obj::e_gfx_obj_type gfx_rt::get_type()const
 {
-   return e_gfx_rt;
+   return e_rt;
 }
 
 bool gfx_rt::is_valid()const

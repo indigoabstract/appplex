@@ -364,16 +364,16 @@ void gfx_material_entry::debug_print()
 
 std::unordered_map<std::string, shared_ptr<gfx_material_entry> > gfx_material::static_std_param;
 
-gfx_material::gfx_material()
+gfx_material::gfx_material(std::shared_ptr<gfx> i_gi)
 {
    shader_compile_time = 0;
    fsh_last_write = 0;
    vsh_last_write = 0;
 }
 
-shared_ptr<gfx_material> gfx_material::new_inst()
+shared_ptr<gfx_material> gfx_material::new_inst(std::shared_ptr<gfx> i_gi)
 {
-   shared_ptr<gfx_material> m(new gfx_material());
+   shared_ptr<gfx_material> m(new gfx_material(i_gi));
    gfx_material& inst = *m;
 
    return m;

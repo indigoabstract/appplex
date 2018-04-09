@@ -329,7 +329,7 @@ public:
 		ortho_cam = gfx_camera::new_inst();
 		ortho_cam->camera_id = "ortho_cam";
 		ortho_cam->rendering_priority = 1;
-		ortho_cam->projection_type = "orthographic";
+		ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
 		ortho_cam->near_clip_distance = -100;
 		ortho_cam->far_clip_distance = 100;
 		ortho_cam->clear_color = false;

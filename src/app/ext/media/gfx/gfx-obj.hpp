@@ -12,14 +12,14 @@ class gfx_obj : public std::enable_shared_from_this<gfx_obj>
 public:
    enum e_gfx_obj_type
    {
-      e_gfx_node,
-      e_gfx_cam,
-      e_gfx_mat,
-      e_gfx_rt,
-      e_gfx_shader,
-      e_gfx_tex,
-      e_gfx_vxo,
-      e_gfx_mws,
+      e_node,
+      e_cam,
+      e_mat,
+      e_rt,
+      e_shader,
+      e_tex,
+      e_vxo,
+      e_mws,
    };
 
    //const std::string& get_id();

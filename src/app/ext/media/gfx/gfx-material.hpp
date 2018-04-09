@@ -76,7 +76,7 @@ const std::string MV_ANISOTROPIC = "anisotropic";
 class gfx_material_entry : public std::enable_shared_from_this < gfx_material_entry >
 {
 public:
-   ~gfx_material_entry();
+   virtual ~gfx_material_entry();
    shared_ptr<gfx_material_entry> get_inst();
    gfx_material_entry& operator[] (const std::string iname);
 
@@ -127,8 +127,9 @@ public:
       e_multiply,
    };
 
-   gfx_material();
-   static shared_ptr<gfx_material> new_inst();
+   gfx_material(std::shared_ptr<gfx> i_gi = nullptr);
+   virtual ~gfx_material() {}
+   static shared_ptr<gfx_material> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
    shared_ptr<gfx_material> get_inst();
    gfx_material_entry& operator[] (const std::string iname);
    shared_ptr<gfx_shader> get_shader();

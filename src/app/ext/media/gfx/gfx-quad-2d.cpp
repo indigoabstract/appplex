@@ -18,19 +18,19 @@ void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
    set_translation(tr.x, tr.y);
 }
 
-glm::vec2 gfx_quad_2d::get_translation()
+glm::vec2 gfx_quad_2d::get_translation() const
 {
    return tr;
 }
 
-void gfx_quad_2d::set_translation(float ix, float iy)
+void gfx_quad_2d::set_translation(const glm::vec2& i_tr)
 {
-   tr = glm::vec2(ix, iy);
+   tr = i_tr;
 
    switch (anchor_type)
    {
    case e_top_left:
-      position = glm::vec3(tr.x + sx / 2, tr.y + sy / 2, position().z);
+      position = glm::vec3(tr.x + sc.x / 2, tr.y + sc.y / 2, position().z);
       break;
 
    case e_center:
@@ -38,9 +38,19 @@ void gfx_quad_2d::set_translation(float ix, float iy)
       break;
 
    case e_btm_center:
-      position = glm::vec3(tr.x, tr.y - sy / 2, position().z);
+      position = glm::vec3(tr.x, tr.y - sc.y / 2, position().z);
       break;
    }
+}
+
+void gfx_quad_2d::set_translation(float ix, float iy)
+{
+   set_translation(glm::vec2(ix, iy));
+}
+
+float gfx_quad_2d::get_rotation() const
+{
+   return a;
 }
 
 void gfx_quad_2d::set_rotation(float ia)
@@ -48,12 +58,21 @@ void gfx_quad_2d::set_rotation(float ia)
    a = ia;
 }
 
+glm::vec2 gfx_quad_2d::get_scale() const
+{
+   return sc;
+}
+
+void gfx_quad_2d::set_scale(const glm::vec2& i_sc)
+{
+   sc = i_sc;
+   scaling = glm::vec3(sc.x, sc.y, 1.f);
+   set_translation(tr.x, tr.y);
+}
+
 void gfx_quad_2d::set_scale(float ix, float iy)
 {
-   sx = ix;
-   sy = iy;
-   scaling = glm::vec3(sx, sy, 1.f);
-   set_translation(tr.x, tr.y);
+   set_scale(glm::vec2(ix, iy));
 }
 
 void gfx_quad_2d::set_v_flip(bool iv_flip)
@@ -129,7 +148,7 @@ gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_plane(i_gi)
    anchor_type = e_top_left;
    tr = glm::vec2(0.f);
    a = 0;
-   sx = sy = 1;
+   sc = glm::vec2(1.f);
    (*material)[MP_DEPTH_TEST] = false;
    (*material)[MP_DEPTH_WRITE] = false;
 }

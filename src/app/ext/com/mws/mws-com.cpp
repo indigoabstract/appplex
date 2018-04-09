@@ -22,11 +22,11 @@ using std::vector;
 shared_ptr<mws_panel> mws_panel::nwi()
 {
    auto inst = std::shared_ptr<mws_panel>(new mws_panel());
-   auto vxo = std::make_shared<gfx_quad_2d>();
-   inst->set_vxo(vxo);
+   inst->vxo = std::make_shared<gfx_quad_2d>();
+   inst->add_vxo(inst->vxo);
 
    {
-      auto& rvxo = *vxo;
+      auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
       rvxo[MP_SHADER_NAME] = "c_o";
@@ -41,26 +41,25 @@ shared_ptr<mws_panel> mws_panel::nwi()
 
 void mws_panel::set_rect(const mws_rect& i_rect)
 {
-   auto vxo = std::static_pointer_cast<gfx_quad_2d>(get_vxo());
-
-   if (vxo)
-   {
-      vxo->set_translation(i_rect.x, i_rect.y);
-      vxo->set_scale(i_rect.w, i_rect.h);
-   }
-
+   vxo->set_translation(i_rect.x, i_rect.y);
+   vxo->set_scale(i_rect.w, i_rect.h);
    mws_r = i_rect;
+}
+
+mws_sp<gfx_quad_2d> mws_panel::get_vxo()
+{
+   return vxo;
 }
 
 
 std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
 {
    auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
-   auto vxo = std::make_shared<gfx_quad_2d>();
-   inst->set_vxo(vxo);
+   inst->vxo = std::make_shared<gfx_quad_2d>();
+   inst->add_vxo(inst->vxo);
 
    {
-      auto& rvxo = *vxo;
+      auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
       rvxo[MP_SHADER_NAME] = "basic_tex";
@@ -77,14 +76,8 @@ std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
 
 void mws_img_btn::set_rect(const mws_rect& i_rect)
 {
-   auto vxo = std::static_pointer_cast<gfx_quad_2d>(get_vxo());
-
-   if (vxo)
-   {
-      vxo->set_translation(i_rect.x, i_rect.y);
-      vxo->set_scale(i_rect.w, i_rect.h);
-   }
-
+   vxo->set_translation(i_rect.x, i_rect.y);
+   vxo->set_scale(i_rect.w, i_rect.h);
    mws_r.x = i_rect.x - i_rect.w / 2;
    mws_r.y = i_rect.y - i_rect.h / 2;
    mws_r.w = i_rect.w;
@@ -93,7 +86,6 @@ void mws_img_btn::set_rect(const mws_rect& i_rect)
 
 void mws_img_btn::set_img_name(std::string i_img_name)
 {
-   auto& vxo = *std::static_pointer_cast<gfx_quad_2d>(get_vxo());
    //gfx_tex_params prm;
    //mws_sp<gfx_tex> tex;
 
@@ -106,7 +98,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    //prm.gen_mipmaps = false;
 
    //tex = gfx::tex::new_tex_2d(i_img_name, &prm);
-   vxo["u_s2d_tex"] = i_img_name;
+   (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
 void mws_img_btn::receive(shared_ptr<iadp> idp)
@@ -135,6 +127,11 @@ void mws_img_btn::on_click()
 void mws_img_btn::set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler)
 {
    on_click_handler = i_on_click_handler;
+}
+
+mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
+{
+   return vxo;
 }
 
 

@@ -35,7 +35,7 @@ public:
          return glm::vec2(x, y);
       }
 
-      uint32 identifier = 0;
+      uintptr_t identifier = 0;
       float x = 0.f;
       float y = 0.f;
       bool is_changed = false;
@@ -89,7 +89,7 @@ public:
       return nullptr;
    }
 
-   const touch_point* find_point(uint32 touch_id) const
+   const touch_point* find_point(uintptr_t touch_id) const
    {
       for (uint32 i = 0; i < touch_count; i++)
       {
@@ -120,7 +120,7 @@ public:
       return false;
    }
 
-   glm::vec2 touch_pos(uint32 touch_id) const
+   glm::vec2 touch_pos(uintptr_t touch_id) const
    {
       const touch_point* p = this->find_point(touch_id);
       ia_assert(p);
