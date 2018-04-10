@@ -23,15 +23,16 @@ shared_ptr<mws_panel> mws_panel::nwi()
 {
    auto inst = std::shared_ptr<mws_panel>(new mws_panel());
    inst->vxo = std::make_shared<gfx_quad_2d>();
-   inst->add_vxo(inst->vxo);
+   inst->attach(inst->vxo);
 
    {
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c_o";
+      rvxo[MP_SHADER_NAME] = "c-o";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(0, 1.f, 0, 1);
       rvxo.set_dimensions(1, 1);
    }
@@ -56,15 +57,16 @@ std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
 {
    auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
    inst->vxo = std::make_shared<gfx_quad_2d>();
-   inst->add_vxo(inst->vxo);
+   inst->attach(inst->vxo);
 
    {
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "basic_tex";
+      rvxo[MP_SHADER_NAME] = "basic-tex";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_s2d_tex"] = "";
       rvxo.set_dimensions(1, 1);
       rvxo.set_anchor(gfx_quad_2d::e_center);
@@ -106,6 +108,12 @@ void mws_img_btn::receive(shared_ptr<iadp> idp)
    if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
    {
       shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+
+      if (!is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+      {
+         return;
+      }
+
       auto type = ts->get_type();
 
       //mws_print("evt type [%d]\n", type);
@@ -121,7 +129,10 @@ void mws_img_btn::receive(shared_ptr<iadp> idp)
 
 void mws_img_btn::on_click()
 {
-   mws_print("btn clicked!\n");
+   if (on_click_handler)
+   {
+      on_click_handler(std::static_pointer_cast<mws_img_btn>(get_instance()));
+   }
 }
 
 void mws_img_btn::set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler)
@@ -175,6 +186,11 @@ void mws_button::receive(shared_ptr<iadp> idp)
    {
       shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
+      if (!is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+      {
+         return;
+      }
+
       switch (ts->get_type())
       {
       case touch_sym_evt::TS_PRESSED:
@@ -224,9 +240,10 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_bar);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c_o";
+      rvxo[MP_SHADER_NAME] = "c-o";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(0.75f);
       rvxo.set_dimensions(1, 1);
    }
@@ -236,12 +253,14 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_ball);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c_o";
+      rvxo[MP_SHADER_NAME] = "c-o";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 0.75f);
       rvxo[MP_BLENDING] = MV_ADD;
       rvxo.set_dimensions(1, 1);
+      rvxo.position = glm::vec3(0.f, 0.f, 0.1f);
    }
 
    return inst;
@@ -270,55 +289,67 @@ void mws_slider::receive(shared_ptr<iadp> idp)
       switch (type)
       {
       case touch_sym_evt::TS_PRESSED:
-         ts->process();
+         if (is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+         {
+            active = true;
+            ts->process();
+         }
+         break;
+
+      case touch_sym_evt::TS_RELEASED:
+         active = false;
          break;
 
       case touch_sym_evt::TS_PRESS_AND_DRAG:
-      {
-         auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
-         auto tr = s_ball->get_translation();
-         float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-         float tx = tr.x + dx;
-         float x_off = mws_r.x - mws_r.h / 2;
-         float t_val = 0.f;
+         if (active)
+         {
+            auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+            auto tr = s_ball->get_translation();
+            float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
+            float tx = tr.x + dx;
+            float x_off = mws_r.x - mws_r.h / 2;
+            float t_val = 0.f;
 
-         //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
-         if (tx < x_off)
-         {
-            tx = x_off;
-            t_val = 0.f;
-         }
-         else if (tx > (x_off + mws_r.w))
-         {
-            tx = x_off + mws_r.w;
-            t_val = 1.f;
-         }
-         else
-         {
-            t_val = (tx - x_off) / mws_r.w;
-         }
-
-         if (t_val != value)
-         {
-            value = t_val;
-            s_ball->set_translation(tx, tr.y);
-
-            if (on_drag_handler)
+            //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
+            if (tx < x_off)
             {
-               on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+               tx = x_off;
+               t_val = 0.f;
+            }
+            else if (tx > (x_off + mws_r.w))
+            {
+               tx = x_off + mws_r.w;
+               t_val = 1.f;
+            }
+            else
+            {
+               t_val = (tx - x_off) / mws_r.w;
+            }
+
+            if (t_val != value)
+            {
+               value = t_val;
+               s_ball->set_translation(tx, tr.y);
+
+               if (on_drag_handler)
+               {
+                  on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+               }
             }
          }
          break;
       }
-      }
    }
 }
 
-void mws_slider::set_z(float i_z_position)
+mws_sp<gfx_vxo> mws_slider::get_bar_vxo() const
 {
-   z_position = i_z_position;
-   slider_bar->position = glm::vec3(slider_bar->position().x, slider_bar->position().y, z_position);
-   slider_ball->position = glm::vec3(slider_ball->position().x, slider_ball->position().y, z_position + 0.1f);
+   return slider_bar;
+}
+
+mws_sp<gfx_vxo> mws_slider::get_ball_vxo() const
+{
+   return slider_ball;
 }
 
 void mws_slider::set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_img_btn)> i_on_drag_handler)
@@ -329,6 +360,7 @@ void mws_slider::set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_img
 mws_slider::mws_slider()
 {
    value = 0.f;
+   active = false;
 }
 
 

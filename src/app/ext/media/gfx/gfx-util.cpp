@@ -9,6 +9,7 @@
 #include "gfx-tex.hpp"
 #include "ext/gfx-surface.hpp"
 #include "pfm-gl.h"
+#include <glm/gtx/transform.hpp>
 
 
 std::unordered_map<std::string, gfx_input::e_data_type> gfx_types;
@@ -188,6 +189,16 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw
       gfx::shader::set_current_program(current_program);
       mws_report_gfx_errs();
    }
+}
+
+const glm::vec4& gfx_util::get_pos_from_tf_mx(const glm::mat4& i_tranform)
+{
+   return i_tranform[3];
+}
+
+glm::mat4 gfx_util::mat4_from_trs(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale)
+{
+   return glm::translate(translate) * glm::toMat4(rotate) * glm::scale(scale);
 }
 
 // http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final

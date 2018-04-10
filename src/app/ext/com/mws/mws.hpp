@@ -113,13 +113,11 @@ public:
 
 protected:
    mws(std::shared_ptr<gfx> i_gi = nullptr);
-   virtual void add_vxo(std::shared_ptr<gfx_vxo> i_vxo);
 
    bool is_opaque;
    mws_rect mws_r;
    weak_ptr<mws_page_tab> mwsroot;
    weak_ptr<mws_camera> mws_cam;
-   float z_position;
 
 private:
    virtual shared_ptr<ia_sender> sender_inst();
@@ -287,6 +285,7 @@ public:
    virtual ~mws_page_item() {}
 
    virtual void set_rect(const mws_rect& i_rect);
+   virtual void set_size(float i_width, float i_height);
    shared_ptr<mws_page> get_mws_page_item_parent();
 
 protected:

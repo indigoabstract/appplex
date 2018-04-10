@@ -75,7 +75,8 @@ public:
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp) override;
-   virtual void set_z(float i_z_position) override;
+   virtual mws_sp<gfx_vxo> get_bar_vxo() const;
+   virtual mws_sp<gfx_vxo> get_ball_vxo() const;
    virtual void set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_slider)> i_on_drag_handler);
 
 protected:
@@ -85,6 +86,7 @@ protected:
    std::function<void(mws_sp<mws_slider> i_slider)> on_drag_handler;
    mws_sp<gfx_vxo> slider_bar;
    mws_sp<gfx_vxo> slider_ball;
+   bool active;
 };
 
 

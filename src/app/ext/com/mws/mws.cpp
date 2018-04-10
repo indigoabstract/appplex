@@ -78,7 +78,6 @@ mws::mws(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 {
    visible = true;
    is_opaque = true;
-   z_position = 0.f;
 }
 
 shared_ptr<mws> mws::get_instance()
@@ -93,13 +92,16 @@ gfx_obj::e_gfx_obj_type mws::get_type()const
 
 void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
-   auto cam = mws_cam.lock();
-
-   if (cam->camera_id() == i_camera_id)
+   if (visible)
    {
-      for (auto it = children.begin(); it != children.end(); it++)
+      auto cam = mws_cam.lock();
+
+      if (cam->camera_id() == i_camera_id)
       {
-         (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+         for (auto it = children.begin(); it != children.end(); it++)
+         {
+            (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+         }
       }
    }
 }
@@ -108,15 +110,20 @@ void mws::attach(shared_ptr<gfx_node> i_node)
 {
    gfx_node::attach(i_node);
 
-   auto mws_ref = std::dynamic_pointer_cast<mws>(i_node);
-
-   if (mws_ref)
+   if (i_node->get_type() == gfx_obj::e_mws)
    {
       auto mws_ref = std::dynamic_pointer_cast<mws>(i_node);
 
-      mws_ref->mwsroot = mwsroot;
-      mws_ref->mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+      if (mws_ref)
+      {
+         auto mws_ref = std::dynamic_pointer_cast<mws>(i_node);
+
+         mws_ref->mwsroot = mwsroot;
+         mws_ref->mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+      }
    }
+
+   i_node->position = i_node->position() + glm::vec3(0.f, 0.f, 0.0001f);
 }
 
 void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
@@ -204,38 +211,12 @@ bool mws::is_hit(float x, float y)
 
 float mws::get_z()
 {
-   return z_position;
+   return position().z;
 }
 
 void mws::set_z(float i_z_position)
 {
-   z_position = i_z_position;
-
-   for (auto c : children)
-   {
-      switch (c->get_type())
-      {
-      case gfx_obj::e_vxo:
-      {
-         auto go = std::dynamic_pointer_cast<gfx_vxo>(c);
-         go->position = glm::vec3(go->position().x, go->position().y, z_position);
-         break;
-      }
-
-      case gfx_obj::e_mws:
-      {
-         auto go = std::dynamic_pointer_cast<mws>(c);
-         go->set_z(i_z_position);
-         break;
-      }
-      }
-   }
-}
-
-void mws::add_vxo(std::shared_ptr<gfx_vxo> i_vxo)
-{
-   attach(i_vxo);
-   i_vxo->position = glm::vec3(i_vxo->position().x, i_vxo->position().y, z_position);
+   position = glm::vec3(position().x, position().y, i_z_position);
 }
 
 
@@ -1191,7 +1172,7 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
       {
          auto w = mws_subobj_list[k];
 
-         if (w->visible && w->is_hit(x, y))
+         if (w->visible)
          {
             //mws_print("k [%d] name [%s]\n", k, idp->get_name().c_str());
             send(w, idp);
@@ -1441,6 +1422,11 @@ mws_page_item::mws_page_item() {}
 void mws_page_item::set_rect(const mws_rect& i_rect)
 {
    mws_r = i_rect;
+}
+void mws_page_item::set_size(float i_width, float i_height)
+{
+   mws_r.w = i_width;
+   mws_r.h = i_height;
 }
 
 shared_ptr<mws_page> mws_page_item::get_mws_page_item_parent()

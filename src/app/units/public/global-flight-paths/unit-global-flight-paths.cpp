@@ -713,7 +713,7 @@ namespace global_flight_paths_ns
                for (int j = 0; j < hot_spot_chain_list_length; j++)
                {
                   chain->hot_spot_link_list[j]->orientation = globe->orientation;
-                  //chain->hot_spot_link_list[j]->draw_link(nullptr, globe->transform_mx);
+                  //chain->hot_spot_link_list[j]->draw_link(nullptr, globe->get_global_tf_mx());
                }
 
                chain->update();

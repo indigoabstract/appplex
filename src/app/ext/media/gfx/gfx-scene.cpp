@@ -9,6 +9,9 @@
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
 #include "pfm-gl.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 
 glm::vec3 gfx_transform::get_forward_dir()
@@ -36,6 +39,11 @@ void gfx_transform::look_at_pos(glm::vec3 iposition, glm::vec3 desiredUp)
    glm::vec3 direction = iposition - position();
 
    orientation = gfx_util::look_at(direction, desiredUp);
+}
+
+const glm::mat4& gfx_transform::get_global_tf_mx() const
+{
+   return global_tf_mx;
 }
 
 
@@ -72,16 +80,6 @@ std::shared_ptr<gfx_scene> gfx_node::get_scene()
 
 void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
-}
-
-void gfx_node::update()
-{
-   std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
-
-   for (; it != children.end(); it++)
-   {
-      (*it)->update();
-   }
 }
 
 void gfx_node::attach(shared_ptr<gfx_node> inode)
@@ -177,6 +175,62 @@ shared_ptr<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
    return shared_ptr<gfx_node>();
 }
 
+void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
+{
+   if (!visible)
+   {
+      return;
+   }
+
+   bool update_tf_mx = false;
+
+   if (transform_mx.value_changed())
+   {
+      glm::vec3 skew;
+      glm::vec4 perspective;
+
+      glm::decompose(transform_mx(), (glm::vec3&)scaling(), (glm::quat&)orientation(), (glm::vec3&)position(), skew, perspective);
+      update_tf_mx = true;
+   }
+   else
+   {
+      if (position.value_changed())
+      {
+         translation_mx = glm::translate(position.read());
+         update_tf_mx = true;
+      }
+
+      if (orientation.value_changed())
+      {
+         rotation_mx = glm::toMat4(orientation.read());
+         update_tf_mx = true;
+      }
+
+      if (scaling.value_changed())
+      {
+         scaling_mx = glm::scale(scaling.read());
+         update_tf_mx = true;
+      }
+
+      if (update_tf_mx)
+      {
+         transform_mx = translation_mx * rotation_mx * scaling_mx;
+      }
+   }
+
+   i_update_global_mx = i_update_global_mx || update_tf_mx;
+
+   if (i_update_global_mx)
+   {
+      global_tf_mx = i_global_tf_mx * transform_mx.read();
+   }
+
+   for (auto c : children)
+   {
+      c->update_recursive(global_tf_mx, i_update_global_mx);
+   }
+}
+
 gfx_scene::gfx_scene(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 {
 }
@@ -184,6 +238,11 @@ gfx_scene::gfx_scene(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 void gfx_scene::init()
 {
    root = static_pointer_cast<gfx_scene>(get_shared_ptr());
+}
+
+void gfx_scene::update()
+{
+   update_recursive(global_tf_mx, false);
 }
 
 void gfx_scene::draw()
@@ -203,7 +262,6 @@ void gfx_scene::draw()
    plist.push_back({ gl::DEPTH_TEST, gl::FALSE_GL });
    plist.push_back({ gl::DEPTH_WRITEMASK, gl::TRUE_GL });
    plist.push_back({ gl::DITHER, gl::TRUE_GL });
-   //plist.push_back({ gl::MULTISAMPLE, gl::TRUE_GL });
    plist.push_back({ gl::POLYGON_OFFSET_FILL, gl::FALSE_GL });
    plist.push_back({ gl::SCISSOR_TEST, gl::FALSE_GL });
    plist.push_back({ gl::STENCIL_TEST, gl::FALSE_GL });
@@ -289,7 +347,7 @@ void gfx_scene::draw()
             }
             else
             {
-               vprint("mesh object at [%p] has null shader\n", mesh.get());
+               mws_print("mesh object at [%p] has null shader\n", mesh.get());
             }
          }
       }
@@ -314,7 +372,7 @@ void gfx_scene::draw()
             }
             else
             {
-               vprint("mesh object at [%p] has null shader\n", mesh.get());
+               mws_print("mesh object at [%p] has null shader\n", mesh.get());
             }
          }
       }
@@ -333,16 +391,6 @@ void gfx_scene::post_draw()
       }
 
       cam->update_camera_state();
-   }
-}
-
-void gfx_scene::update()
-{
-   std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
-
-   for (; it != children.end(); it++)
-   {
-      (*it)->update();
    }
 }
 

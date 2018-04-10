@@ -159,7 +159,6 @@ public:
    static shared_ptr<gfx_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
    virtual e_gfx_obj_type get_type()const override;
    void clear_buffers();
-   virtual void update();
    void update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp);
    void draw_arc(glm::vec3 position, float radius, glm::quat orientation, float startAngle, float stopAngle, const glm::vec4& color, float precision, float thickness);
    void draw_axes(const glm::vec3& istart, float length, float thickness);
@@ -197,17 +196,16 @@ protected:
    friend class gfx_scene;
    friend class gfx_camera_impl;
    gfx_camera(std::shared_ptr<gfx> i_gi = nullptr);
+   virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) override;
    virtual void load(shared_ptr<gfx_camera> inst);
    virtual void update_camera_state_impl();
    shared_ptr<draw_context> draw_ctx;
    shared_ptr<rw_sequence> draw_ops;
 
 public:
-   glm::mat4 view_translation;
-   glm::mat4 view_rotation;
-   glm::mat4 camera;
-   glm::mat4 view;
-   glm::mat4 projection;
+   glm::mat4 camera_mx;
+   glm::mat4 view_mx;
+   glm::mat4 projection_mx;
    shared_ptr<gfx_camera_impl> p;
 
    static int camera_idx;

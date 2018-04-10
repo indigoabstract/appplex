@@ -34,6 +34,7 @@ public:
    virtual bool requires_gfx() { return true; }
    virtual int get_preferred_screen_width() { return 0; }
    virtual int get_preferred_screen_height() { return 0; }
+   virtual double get_preferred_aspect_ratio() { return 0.; }
    virtual bool start_full_screen() { return false; }
    virtual bool draw_touch_symbols_trail() { return false; }
    virtual bool show_onscreen_console() { return false; }

@@ -61,11 +61,15 @@ public:
    glm::vec3 get_right_dir();
    void look_at(glm::vec3 direction, glm::vec3 desiredUp);
    void look_at_pos(glm::vec3 iposition, glm::vec3 desiredUp);
+   const glm::mat4& get_global_tf_mx() const;
 
    def_number_prop(gfx_transform, vec3_accessor) position;
    def_quat_prop(gfx_transform, quat_accessor) orientation;
    def_number_prop(gfx_transform, vec3_accessor) scaling;
    def_mat_prop(gfx_transform, mat4_accessor) transform_mx;
+
+protected:
+   glm::mat4 global_tf_mx;
    glm::mat4 translation_mx;
    glm::mat4 rotation_mx;
    glm::mat4 scaling_mx;
@@ -88,13 +92,14 @@ public:
    std::shared_ptr<gfx_node> get_root();
    std::shared_ptr<gfx_scene> get_scene();
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
-   virtual void update();
    virtual void attach(shared_ptr<gfx_node> inode);
    virtual void detach();
    virtual void on_attach();
    virtual void on_detach();
    bool contains(const shared_ptr<gfx_node> inode);
    shared_ptr<gfx_node> find_node_by_name(const std::string& iname);
+   // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
+   virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx);
 
 
    template <class host> class name_accessor : public string_accessor<host>
@@ -129,9 +134,9 @@ class gfx_scene : public gfx_node
 public:
    gfx_scene(std::shared_ptr<gfx> i_gi = nullptr);
    void init();
+   virtual void update();
    void draw();
    void post_draw();
-   virtual void update();
 
 private:
    friend class gfx_node;
