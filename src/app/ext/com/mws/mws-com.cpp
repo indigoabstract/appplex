@@ -12,6 +12,7 @@
 #include "com/unit/transitions.hpp"
 #include "gfx-quad-2d.hpp"
 #include "gfx.hpp"
+#include "gfx-util.hpp"
 #include "glm/vec2.hpp"
 #include <algorithm>
 
@@ -78,12 +79,10 @@ std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
 
 void mws_img_btn::set_rect(const mws_rect& i_rect)
 {
-   vxo->set_translation(i_rect.x, i_rect.y);
+   //vxo->set_translation(i_rect.x, i_rect.y);
+   position = glm::vec3(i_rect.x, i_rect.y, position().z);
    vxo->set_scale(i_rect.w, i_rect.h);
-   mws_r.x = i_rect.x - i_rect.w / 2;
-   mws_r.y = i_rect.y - i_rect.h / 2;
-   mws_r.w = i_rect.w;
-   mws_r.h = i_rect.h;
+   mws_r = i_rect;
 }
 
 void mws_img_btn::set_img_name(std::string i_img_name)
@@ -125,6 +124,17 @@ void mws_img_btn::receive(shared_ptr<iadp> idp)
          break;
       }
    }
+}
+
+bool mws_img_btn::is_hit(float x, float y)
+{
+   auto& tf = get_vxo()->get_global_tf_mx();
+   auto& pos = gfx_util::get_pos_from_tf_mx(tf);
+   //auto& scale = gfx_util::get_scale_from_tf_mx(tf);
+   //bool hit = is_inside_box(x, y, pos.x - scale.x / 2, pos.y - scale.y / 2, scale.x, scale.y);
+   bool hit = is_inside_box(x, y, pos.x - mws_r.w / 2, pos.y - mws_r.h / 2, mws_r.w, mws_r.h);
+
+   return hit;
 }
 
 void mws_img_btn::on_click()
@@ -199,6 +209,11 @@ void mws_button::receive(shared_ptr<iadp> idp)
          break;
       }
    }
+}
+
+bool mws_button::is_hit(float x, float y)
+{
+   return false;
 }
 
 void mws_button::on_click() {}
@@ -342,6 +357,20 @@ void mws_slider::receive(shared_ptr<iadp> idp)
    }
 }
 
+bool mws_slider::is_hit(float x, float y)
+{
+   auto& tf_bar = get_bar_vxo()->get_global_tf_mx();
+   auto& pos_bar = gfx_util::get_pos_from_tf_mx(tf_bar);
+   auto& scale_bar = gfx_util::get_scale_from_tf_mx(tf_bar);
+   auto& pos_ball = gfx_util::get_pos_from_tf_mx(get_ball_vxo()->get_global_tf_mx());
+   auto& scale_ball = gfx_util::get_scale_from_tf_mx(get_ball_vxo()->get_global_tf_mx());
+
+   bool hit = is_inside_box(x, y, pos_bar.x - scale_bar.x / 2, pos_bar.y - scale_bar.y / 2, scale_bar.x, scale_bar.y);
+   hit = hit || is_inside_box(x, y, pos_ball.x - scale_ball.x / 2, pos_ball.y - scale_ball.y / 2, scale_ball.x, scale_ball.y);
+
+   return hit;
+}
+
 mws_sp<gfx_vxo> mws_slider::get_bar_vxo() const
 {
    return slider_bar;
@@ -453,6 +482,11 @@ void mws_list::receive(shared_ptr<iadp> idp)
       }
       }
    }
+}
+
+bool mws_list::is_hit(float x, float y)
+{
+   return false;
 }
 
 void mws_list::update_state()

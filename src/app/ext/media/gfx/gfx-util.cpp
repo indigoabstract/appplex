@@ -196,6 +196,18 @@ const glm::vec4& gfx_util::get_pos_from_tf_mx(const glm::mat4& i_tranform)
    return i_tranform[3];
 }
 
+const glm::quat gfx_util::get_orientation_from_tf_mx(const glm::mat4& i_tranform)
+{
+   return glm::quat();
+}
+
+const glm::vec3 gfx_util::get_scale_from_tf_mx(const glm::mat4& i_tranform)
+{
+   glm::vec3 scale(i_tranform[0].x, i_tranform[1].y, i_tranform[2].z);
+
+   return glm::abs(scale);
+}
+
 glm::mat4 gfx_util::mat4_from_trs(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale)
 {
    return glm::translate(translate) * glm::toMat4(rotate) * glm::scale(scale);

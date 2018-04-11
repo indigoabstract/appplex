@@ -30,6 +30,7 @@ public:
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void set_img_name(std::string i_img_name);
    virtual void receive(shared_ptr<iadp> idp) override;
+   virtual bool is_hit(float x, float y);
    virtual void on_click();
    virtual void set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler);
    virtual mws_sp<gfx_quad_2d> get_vxo();
@@ -51,7 +52,7 @@ public:
    virtual void init(mws_rect i_mwsr, int icolor, std::string itext = "n/a");
 
    virtual void receive(shared_ptr<iadp> idp);
-
+   virtual bool is_hit(float x, float y);
    virtual void on_click();
    virtual void update_state();
    virtual void update_view(shared_ptr<mws_camera> g);
@@ -75,6 +76,7 @@ public:
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp) override;
+   virtual bool is_hit(float x, float y);
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
    virtual void set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_slider)> i_on_drag_handler);
@@ -116,6 +118,7 @@ public:
    virtual void init();
 
    virtual void receive(shared_ptr<iadp> idp);
+   virtual bool is_hit(float x, float y);
 
    virtual void update_state();
    virtual void update_view(shared_ptr<mws_camera> g);

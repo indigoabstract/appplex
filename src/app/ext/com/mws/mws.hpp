@@ -107,7 +107,6 @@ public:
    virtual void update_state();
    virtual void update_view(shared_ptr<mws_camera> g);
    mws_rect get_pos();
-   virtual bool is_hit(float x, float y);
    virtual float get_z();
    virtual void set_z(float i_z_position);
 

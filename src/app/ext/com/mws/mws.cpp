@@ -116,8 +116,6 @@ void mws::attach(shared_ptr<gfx_node> i_node)
 
       if (mws_ref)
       {
-         auto mws_ref = std::dynamic_pointer_cast<mws>(i_node);
-
          mws_ref->mwsroot = mwsroot;
          mws_ref->mws_cam = mwsroot.lock()->get_unit()->mws_cam;
       }
@@ -132,10 +130,10 @@ void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
    {
       if (c->get_type() == gfx_obj::e_mws)
       {
-         auto m = std::dynamic_pointer_cast<mws>(c);
+         auto w = std::dynamic_pointer_cast<mws>(c);
 
-         i_mws_subobj_list.push_back(m);
-         m->list_mws_children(i_mws_subobj_list);
+         i_mws_subobj_list.push_back(w);
+         w->list_mws_children(i_mws_subobj_list);
       }
    }
 }
@@ -195,18 +193,33 @@ shared_ptr<unit> mws::get_unit()
    return std::static_pointer_cast<unit>(mwsroot.lock()->get_unit());
 }
 
-void mws::receive(shared_ptr<iadp> idp) {}
+void mws::receive(shared_ptr<iadp> idp)
+{
+   for (auto& c : children)
+   {
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = std::dynamic_pointer_cast<mws>(c);
+
+         if (w && w->visible)
+         {
+            send(w, idp);
+
+            if (idp->is_processed())
+            {
+               break;
+            }
+         }
+      }
+   }
+}
+
 void mws::update_state() {}
 void mws::update_view(shared_ptr<mws_camera> g) {}
 
 mws_rect mws::get_pos()
 {
    return mws_r;
-}
-
-bool mws::is_hit(float x, float y)
-{
-   return is_inside_box(x, y, mws_r.x, mws_r.y, mws_r.w, mws_r.h);
 }
 
 float mws::get_z()
@@ -1164,22 +1177,20 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
    {
       shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-      float x = ts->crt_state.te->points[0].x;
-      float y = ts->crt_state.te->points[0].y;
-      int size = mws_subobj_list.size();
-
-      for (int k = 0; k < size; k++)
+      for (auto& c : children)
       {
-         auto w = mws_subobj_list[k];
-
-         if (w->visible)
+         if (c->get_type() == gfx_obj::e_mws)
          {
-            //mws_print("k [%d] name [%s]\n", k, idp->get_name().c_str());
-            send(w, idp);
+            auto w = std::dynamic_pointer_cast<mws>(c);
 
-            if (idp->is_processed())
+            if (w && w->visible)
             {
-               break;
+               send(w, idp);
+
+               if (idp->is_processed())
+               {
+                  break;
+               }
             }
          }
       }

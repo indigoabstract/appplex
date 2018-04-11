@@ -115,6 +115,8 @@ public:
    static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity);
    static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity, float iw, float ih);
    static const glm::vec4& get_pos_from_tf_mx(const glm::mat4& i_tranform);
+   static const glm::quat get_orientation_from_tf_mx(const glm::mat4& i_tranform);
+   static const glm::vec3 get_scale_from_tf_mx(const glm::mat4& i_tranform);
    static glm::mat4 mat4_from_trs(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale);
    static glm::quat quat_from_two_vectors(glm::vec3 u, glm::vec3 v);
    static glm::quat look_at(glm::vec3 direction, glm::vec3 desiredUp);
