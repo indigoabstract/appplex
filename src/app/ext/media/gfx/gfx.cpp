@@ -125,7 +125,7 @@ void gfx::init()
       glGetIntegerv(GL_MAJOR_VERSION, &gl_major_version);
       glGetIntegerv(GL_MINOR_VERSION, &gl_minor_version);
 
-      vprint("gl-version [%d.%d] / [%s]\ngl-renderer [%s]\ngl-vendor [%s]\n", gl_major_version, gl_minor_version, version, renderer, vendor);
+      mws_print("gl-version [%d.%d] / [%s]\ngl-renderer [%s]\ngl-vendor [%s]\n", gl_major_version, gl_minor_version, version, renderer, vendor);
 
 #ifdef USES_GL_STRINGI
 
@@ -133,7 +133,7 @@ void gfx::init()
       {
          std::vector<const gfx_ubyte*> extensions;
 
-         vprint("[%d] gl-extensions found.\n", gl_extension_count);
+         mws_print("[%d] gl-extensions found.\n", gl_extension_count);
 
          if (print_extensions)
          {
@@ -142,11 +142,11 @@ void gfx::init()
             for (int k = 0; k < gl_extension_count; k++)
             {
                extensions[k] = glGetStringi(GL_EXTENSIONS, k);
-               vprint("%s\n", extensions[k]);
+               mws_print("%s\n", extensions[k]);
             }
          }
 
-         vprint("\n");
+         mws_print("\n");
       }
 
 #else
@@ -154,7 +154,7 @@ void gfx::init()
       if (print_extensions)
       {
          const GLubyte* extensions = glGetString(GL_EXTENSIONS);
-         vprint("gl-extensions: %s\n", extensions);
+         mws_print("gl-extensions: %s\n", extensions);
       }
 
 #endif
@@ -175,7 +175,7 @@ void gfx::init()
          glGetIntegerv(GL_DEPTH_BITS, &depth_bits);
          glGetIntegerv(GL_STENCIL_BITS, &stencil_bits);
 
-         vprint("red_bits [%d] green_bits [%d] blue_bits [%d] alpha_bits [%d] depth_bits [%d] stencil_bits [%d]\n",
+         mws_print("red_bits [%d] green_bits [%d] blue_bits [%d] alpha_bits [%d] depth_bits [%d] stencil_bits [%d]\n",
             red_bits, green_bits, blue_bits, alpha_bits, depth_bits, stencil_bits);
       }
 
@@ -184,7 +184,7 @@ void gfx::init()
          GLint samples = 0, max_samples = 0;
          glGetIntegerv(GL_SAMPLES, &samples);
          glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-         vprint("sample coverage: %d, max samples: %d\n", samples, max_samples);
+         mws_print("sample coverage: %d, max samples: %d\n", samples, max_samples);
       }
 
       inst = shared_ptr<gfx>(new gfx());
@@ -205,11 +205,11 @@ void gfx::init()
       //if (err != GL_NO_ERROR)
       //{
       //   bool MultisampleSupported = false;
-      //   vprint("MultisampleSupported %d false\n", ms);
+      //   mws_print("MultisampleSupported %d false\n", ms);
       //}
       //else
       //{
-      //   vprint("MultisampleSupported %d true\n", ms);
+      //   mws_print("MultisampleSupported %d true\n", ms);
       //}
 
       gfx_state_inst = shared_ptr<gfx_state>(new gfx_state());
@@ -221,10 +221,10 @@ void gfx::init()
    }
    else
    {
-      vprint("gl_ctrl::init: this method must only be called once\n");
+      mws_print("gl_ctrl::init: this method must only be called once\n");
       //reload();
       glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
-      //throw ia_exception("this method must only be called once");
+      //mws_throw ia_exception("this method must only be called once");
    }
 }
 
@@ -466,7 +466,7 @@ void gfx::shader::set_current_program(shared_ptr<gfx_shader> iglp)
    else
    {
       trx("gl_ctrl::set_current_program - trying to set an invalid program");
-      ia_signal_error();
+      mws_signal_error();
    }
 
    mws_report_gfx_errs();
@@ -479,7 +479,7 @@ shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, const gfx_te
 
    if (tex)
    {
-      throw ia_exception("texture name already exists");
+      mws_throw ia_exception("texture name already exists");
    }
 
    tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, i_prm));
@@ -495,7 +495,7 @@ shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, int iwith, i
 
    if (tex)
    {
-      throw ia_exception("texture name already exists");
+      mws_throw ia_exception("texture name already exists");
    }
 
    tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, i_prm));
@@ -511,7 +511,7 @@ shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, int iwith, i
 
    if (tex)
    {
-      throw ia_exception("texture name already exists");
+      mws_throw ia_exception("texture name already exists");
    }
 
    tex_info* ti = tex_info_ht[iformat];
@@ -538,7 +538,7 @@ shared_ptr<gfx_tex> gfx::tex::new_external_tex_2d(std::string iuni_tex_name, int
 
    if (tex)
    {
-      throw ia_exception("texture name already exists");
+      mws_throw ia_exception("texture name already exists");
    }
 
    tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, itexture_id, iwith, iheight, gfx_tex::TEX_2D, i_prm));
@@ -613,7 +613,7 @@ void gfx::check_init()
 {
    if (!inst)
    {
-      throw ia_exception("gl context is not yet created!");
+      mws_throw ia_exception("gl context is not yet created!");
    }
 
    mws_report_gfx_errs();

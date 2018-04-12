@@ -363,7 +363,7 @@ public:
       }
       }
 
-      //vprint("zf %f tc: %d\n", zoom_factor, evt->touch_count);
+      //mws_print("zf %f tc: %d\n", zoom_factor, evt->touch_count);
       return gesture_detected;
    }
 
@@ -422,7 +422,7 @@ public:
                   float dist_1 = glm::distance(start_position_1, position_0);
                   float dist_1_0 = glm::distance(start_position_1, position_1);
 
-                  //vprint("dist: %f %f\n", dist_0, dist_1);
+                  //mws_print("dist: %f %f\n", dist_0, dist_1);
                   if (dist_0 < ROTATION_MAX_POINTER_DEVIATION || dist_0_1 < ROTATION_MAX_POINTER_DEVIATION ||
                      dist_1 < ROTATION_MAX_POINTER_DEVIATION || dist_1_0 < ROTATION_MAX_POINTER_DEVIATION)
                   {
@@ -650,15 +650,15 @@ public:
             float dot_prod = glm::dot(touch_dir, circle_tangent);
             float cos_alpha = dot_prod / (glm::length(touch_dir) * glm::length(circle_tangent)) * scale;
             rotation_angle = -cos_alpha;
-            //vprint("ca: %f\n", cos_alpha);
+            //mws_print("ca: %f\n", cos_alpha);
             gesture_detected = true;
          }
          break;
       }
       }
 
-      //vprint("ps: %d\n", pinch_state);
-      //vprint("zf %f tc: %d\n", zoom_factor, evt->touch_count);
+      //mws_print("ps: %d\n", pinch_state);
+      //mws_print("zf %f tc: %d\n", zoom_factor, evt->touch_count);
       return gesture_detected;
    }
 

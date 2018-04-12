@@ -107,7 +107,7 @@ public :
 
 	static unsigned DLL_CALLCONV _WriteProc(void *buffer, unsigned size, unsigned count, fi_handle handle)
 	{
-		ia_signal_error();
+		mws_signal_error();
 		return size;
 	}
 
@@ -175,7 +175,7 @@ shared_ptr<gfx_tex> newImage(const char *filename, shared_ptr<vector<uint8> > dt
 	FREE_IMAGE_FORMAT fif = FreeImage_GetFileTypeFromHandle(&memIO, (fi_handle)&memIO, dSize);
 
 	if(fif == FIF_UNKNOWN)
-		//if unknown, try to guess the file format from the file extension
+		//if unknown, try_ to guess the file format from the file extension
 	{
 		fif = FreeImage_GetFIFFromFilename(filename);
 	}

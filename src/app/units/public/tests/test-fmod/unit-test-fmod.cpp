@@ -36,7 +36,7 @@ namespace unit_test_fmod_ns
 	{
 		if (result != FMOD_OK)
 		{
-			vprint("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
+			mws_print("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
 		}
 	}
 
@@ -184,7 +184,7 @@ namespace unit_test_fmod_ns
 	// We must fill "length" bytes in the buffer provided by "data"
 	FMOD_RESULT Generator::PCMRead32(FMOD_SOUND *sound, void *data, unsigned int length)
 	{
-		//vprint("PCMRead %d\n", length);
+		//mws_print("PCMRead %d\n", length);
 		// Get the object we are using
 		// Note that FMOD_Sound * must be cast to FMOD::Sound * to access it
 		Generator *me;

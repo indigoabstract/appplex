@@ -86,9 +86,9 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 			int vb_idx = vertex_map[get_key(vb)];
 			int vc_idx = vertex_map[get_key(vc)];
 
-			//vprint("va (%f, %f, %f) ", va.x, va.y, va.z);
-			//vprint("vb (%f, %f, %f) ", vb.x, vb.y, vb.z);
-			//vprint("vc (%f, %f, %f)\n", vc.x, vc.y, vc.z);
+			//mws_print("va (%f, %f, %f) ", va.x, va.y, va.z);
+			//mws_print("vb (%f, %f, %f) ", vb.x, vb.y, vb.z);
+			//mws_print("vc (%f, %f, %f)\n", vc.x, vc.y, vc.z);
 			glm::vec3 ab = glm::vec3(va.x + vb.x, va.y + vb.y, va.z + vb.z) * 0.5f;
 			glm::vec3 cb = glm::vec3(vc.x + vb.x, vc.y + vb.y, vc.z + vb.z) * 0.5f;
 			glm::vec3 ac = glm::vec3(va.x + vc.x, va.y + vc.y, va.z + vc.z) * 0.5f;
@@ -108,9 +108,9 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 			int vcb_idx = -1;
 			int vac_idx = -1;
 
-			ia_assert(r1 != r2);
-			ia_assert(r1 != r3);
-			ia_assert(r2 != r3);
+			mws_assert(r1 != r2);
+			mws_assert(r1 != r3);
+			mws_assert(r2 != r3);
 
 			if (vertex_map.find(r1) == vertex_map.end())
 			{
@@ -164,8 +164,8 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 
 		int limit = check_numbers[i];
 
-		ia_assert(vertex_map.size() == limit);
-		ia_assert(vx_data.size() == limit);
+		mws_assert(vertex_map.size() == limit);
+		mws_assert(vx_data.size() == limit);
 		ind_data = ind_data_new;
 	}
 

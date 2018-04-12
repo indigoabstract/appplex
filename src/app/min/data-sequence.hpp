@@ -281,7 +281,7 @@ inline std::string data_sequence_reader::read_string()
 inline std::string data_sequence_reader::read_line()
 {
    std::string text;
-   throw std::exception();
+   mws_throw std::exception();
 
    return text;
 }

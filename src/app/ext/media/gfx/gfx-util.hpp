@@ -69,7 +69,7 @@ public:
          break;
 
       default:
-         throw ia_exception("unknown value");
+         mws_throw ia_exception("unknown value");
       }
    }
 

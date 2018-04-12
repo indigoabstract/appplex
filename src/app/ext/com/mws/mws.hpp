@@ -6,9 +6,11 @@
 #include "com/unit/input-ctrl.hpp"
 #include "media/gfx/gfx-scene.hpp"
 #include <unordered_map>
-#include <exception>
 #include <string>
 #include <vector>
+#ifdef MWS_USES_EXCEPTIONS
+#include <exception>
+#endif
 
 
 class unitctrl;

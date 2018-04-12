@@ -158,27 +158,27 @@ namespace pfm_impl
 
    void print_type_sizes()
    {
-      vprint("print type sizes\n");
-      vprint("sizeof int8 [%d]\n", sizeof(int8));
-      vprint("sizeof sint8 [%d]\n", sizeof(sint8));
-      vprint("sizeof uint8 [%d]\n", sizeof(uint8));
-      vprint("sizeof int16 [%d]\n", sizeof(int16));
-      vprint("sizeof sint16 [%d]\n", sizeof(sint16));
-      vprint("sizeof uint16 [%d]\n", sizeof(uint16));
-      vprint("sizeof int32 [%d]\n", sizeof(int32));
-      vprint("sizeof sint32 [%d]\n", sizeof(sint32));
-      vprint("sizeof uint32 [%d]\n", sizeof(uint32));
-      vprint("sizeof int64 [%d]\n", sizeof(int64));
-      vprint("sizeof sint64 [%d]\n", sizeof(sint64));
-      vprint("sizeof uint64 [%d]\n", sizeof(uint64));
-      vprint("sizeof real32 [%d]\n", sizeof(real32));
-      vprint("sizeof real64 [%d]\n", sizeof(real64));
+      mws_print("print type sizes\n");
+      mws_print("sizeof int8 [%d]\n", sizeof(int8));
+      mws_print("sizeof sint8 [%d]\n", sizeof(sint8));
+      mws_print("sizeof uint8 [%d]\n", sizeof(uint8));
+      mws_print("sizeof int16 [%d]\n", sizeof(int16));
+      mws_print("sizeof sint16 [%d]\n", sizeof(sint16));
+      mws_print("sizeof uint16 [%d]\n", sizeof(uint16));
+      mws_print("sizeof int32 [%d]\n", sizeof(int32));
+      mws_print("sizeof sint32 [%d]\n", sizeof(sint32));
+      mws_print("sizeof uint32 [%d]\n", sizeof(uint32));
+      mws_print("sizeof int64 [%d]\n", sizeof(int64));
+      mws_print("sizeof sint64 [%d]\n", sizeof(sint64));
+      mws_print("sizeof uint64 [%d]\n", sizeof(uint64));
+      mws_print("sizeof real32 [%d]\n", sizeof(real32));
+      mws_print("sizeof real64 [%d]\n", sizeof(real64));
    }
 
    //true if res is in the same dir as src
    bool res_is_bundled_with_src()
    {
-#if defined _DEBUG && defined PLATFORM_WINDOWS_PC
+#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
       return true;
 #endif
 
@@ -238,7 +238,7 @@ namespace pfm_impl
       }
       }
 
-      throw ia_exception("undefined platform");
+      mws_throw ia_exception("undefined platform");
    }
   
    const std::string& get_common_res_path()
@@ -284,7 +284,7 @@ namespace pfm_impl
 		}
 		}
 
-		throw ia_exception("undefined platform");
+		mws_throw ia_exception("undefined platform");
 	}
 
    const std::string& get_unit_res_path(std::shared_ptr<unit> iu)
@@ -329,7 +329,7 @@ namespace pfm_impl
       }
       }
 
-      throw ia_exception("undefined platform");
+      mws_throw ia_exception("undefined platform");
    }
   
    shared_ptr<pfm_file> get_res_file(const std::string& ifilename)
@@ -364,7 +364,7 @@ namespace pfm_impl
 		{
 			std::string msg = "duplicate filename: " + it->first;
 
-			throw ia_exception(msg);
+			mws_throw ia_exception(msg.c_str());
 		}
 
 		(*res_files_map)[ifilename] = ifile;
@@ -480,7 +480,7 @@ namespace pfm_impl
 		{
 			std::string msg = "file " + ppath.filename + " is not open";
 
-			throw ia_exception(msg);
+			mws_throw ia_exception(msg.c_str());
 		}
 	}
 
@@ -583,7 +583,7 @@ shared_ptr<pfm_file> pfm_file::get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimp
 
 bool pfm_file::remove()
 {
-	throw ia_exception("not implemented");
+	mws_throw ia_exception("not implemented");
 
 	return false;
 }
@@ -670,7 +670,7 @@ bool pfm_file::io_op::open(std::string iopen_mode)
 
 	if (!file_opened)
 	{
-		vprint("warning - file [%s] not found/opened\n", impl->ppath.get_file_name().c_str());
+		mws_print("warning - file [%s] not found/opened\n", impl->ppath.get_file_name().c_str());
 	}
 
 	return file_opened;
@@ -1253,7 +1253,7 @@ void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value)
 	{
 		ptr = _aligned_malloc(isize, 16);
 
-		ia_assert(ptr);
+		mws_assert(ptr);
 
 		if (ptr)
 		{
@@ -1272,7 +1272,7 @@ void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value)
 	{
 		ptr = _aligned_malloc(isize, 16);
 
-		ia_assert(ptr);
+		mws_assert(ptr);
 
 		if (ptr)
 		{

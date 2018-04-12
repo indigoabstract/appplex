@@ -243,12 +243,12 @@ ia_exception::ia_exception()
 {
 }
 
-ia_exception::ia_exception(const char* msg)
+ia_exception::ia_exception(const std::string& msg)
 {
    exmsg = msg;
 }
 
-ia_exception::ia_exception(std::string msg)
+ia_exception::ia_exception(const char* msg)
 {
    exmsg = msg;
 }
@@ -293,7 +293,7 @@ void iadp::process()
 {
    if (processed)
    {
-      throw ia_exception("datapacket is already processed");
+      mws_throw ia_exception("datapacket is already processed");
    }
 
    processed = true;

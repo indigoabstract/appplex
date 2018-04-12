@@ -298,14 +298,13 @@ FMT_VARIADIC(std::string, trs, const char*)
 std::wstring wtrs(const wchar_t* format, fmt::ArgList args);
 FMT_VARIADIC_W(std::wstring, wtrs, const wchar_t*)
 
-#define vprint(iformat, ...)		pfm::get_pfm_main_inst()->write_text_v(iformat, ##__VA_ARGS__)
 
 // assert
 #include <assert.h>
 
-inline void ia_signal_error(const char* imessage = 0)
+inline void mws_signal_error(const char* imessage = 0)
 {
-#if defined _DEBUG
+#if defined MWS_DEBUG_BUILD
    if (imessage)
    {
       trx(imessage);
@@ -319,19 +318,19 @@ inline void ia_signal_error(const char* imessage = 0)
 #endif
 }
 
-inline void ia_assert(bool icondition, const char* imessage)
+inline void mws_assert(bool icondition, const char* imessage)
 {
-#if defined _DEBUG
+#if defined MWS_DEBUG_BUILD
    if (icondition == false)
    {
-      ia_signal_error(imessage);
+      mws_signal_error(imessage);
    }
 #endif
 }
 
-inline void ia_assert(bool icondition)
+inline void mws_assert(bool icondition)
 {
-#if defined _DEBUG
-   ia_assert(icondition, "assertion failed");
+#if defined MWS_DEBUG_BUILD
+   mws_assert(icondition, "assertion failed");
 #endif
 }

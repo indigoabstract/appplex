@@ -45,7 +45,7 @@ void free_camera::update_input(shared_ptr<iadp> idp)
    {
       shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-      //vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
+      //mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
       switch (ts->get_type())
       {
       case touch_sym_evt::TS_PRESSED:
@@ -109,7 +109,7 @@ void free_camera::update_input(shared_ptr<iadp> idp)
             theta_deg -= dx * camera_radius * 0.00045f;
             phi_deg -= dy * camera_radius * 0.00045f;
             clamp_angles();
-            //vprint("tdx %f pdx %f\n", theta_deg, phi_deg);
+            //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
             mov_type = e_roll_view_axis;
             ts->process();
          }
@@ -231,14 +231,14 @@ void free_camera::update()
    {
       float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
 
-      //vprint("td0 %f pd0 %f", theta_deg, phi_deg);
+      //mws_print("td0 %f pd0 %f", theta_deg, phi_deg);
       if (ks->is_active())
       {
          theta_deg -= scroll_pos.x * 0.1f;
          phi_deg -= scroll_pos.y * 0.1f;
          clamp_angles();
       }
-      //vprint("td1 %f pd1 %f\n", theta_deg, phi_deg);
+      //mws_print("td1 %f pd1 %f\n", theta_deg, phi_deg);
 
       float sin_phi = glm::sin(glm::radians(phi_deg));
       float cos_phi = glm::cos(glm::radians(phi_deg));
@@ -255,7 +255,7 @@ void free_camera::update()
       glm::vec3 right_dir = glm::normalize(glm::cross(look_at_dir, up_dir));
       up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
       persp_cam->look_at_pos(target_ref_point, up_dir);
-      //vprint("td %f\n", theta_deg);
+      //mws_print("td %f\n", theta_deg);
       break;
    }
    }

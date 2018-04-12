@@ -385,7 +385,7 @@ void gfx_vxo::push_material_params()
             shared_ptr<pfm_file> f = pfm_file::get_inst(mesh_name);
             std::string path = f->get_full_path();
 
-            vprint("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
+            mws_print("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
 
             struct membuf : std::streambuf
             {
@@ -441,7 +441,7 @@ void gfx_vxo::push_material_params()
 
             if (err.empty())
             {
-               vprint("... ");
+               mws_print("... ");
                //vx_info vxi("a_v3_position, a_v3_normal, a_v2_tex_coord");
 
                for (size_t i = 0; i < 1/*shapes.size()*/; i++)
@@ -454,23 +454,23 @@ void gfx_vxo::push_material_params()
                   {
                      trx("xxx");
                   }
-                  //vprint("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
-                  //vprint("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
+                  //mws_print("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
+                  //mws_print("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
                   //assert((shapes[i].mesh.indices.size() % 3) == 0);
 
                   for (size_t f = 0; f < shapes[i].mesh.indices.size(); f++)
                   {
                      ks_indices_data.push_back((gfx_indices_type)shapes[i].mesh.indices[f]);
-                     //vprint("  idx[%ld] = %d\n", f, shapes[i].mesh.indices[f]);
+                     //mws_print("  idx[%ld] = %d\n", f, shapes[i].mesh.indices[f]);
                   }
 
-                  //vprint("shape[%ld].vertices: %ld\n", i, shapes[i].mesh.positions.size());
+                  //mws_print("shape[%ld].vertices: %ld\n", i, shapes[i].mesh.positions.size());
                   //assert((shapes[i].mesh.positions.size() % 3) == 0);
                   int size = shapes[i].mesh.positions.size() / 3;
 
                   for (int v = 0; v < size; v++)
                   {
-                     //vprint("  v[%ld] = (%f, %f, %f)\n", v,
+                     //mws_print("  v[%ld] = (%f, %f, %f)\n", v,
                      //	shapes[i].mesh.positions[3*v+0],
                      //	shapes[i].mesh.positions[3*v+1],
                      //	shapes[i].mesh.positions[3*v+2]);
@@ -501,19 +501,19 @@ void gfx_vxo::push_material_params()
                   int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
                   gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, obj_mesh);
                   //obj_mesh->mesh_list.push_back(mesh);
-                  vprint("done\n");
+                  mws_print("done\n");
                   obj_mesh->is_loaded = true;
                }
             }
             else
             {
-               vprint("error loading %s. error msg: %s", f->get_full_path().c_str(), err.c_str());
+               mws_print("error loading %s. error msg: %s", f->get_full_path().c_str(), err.c_str());
             }
          }
 
 #else
 
-         vprint("error: MOD_OBJ_LOADER is not enabled\n");
+         mws_print("error: MOD_OBJ_LOADER is not enabled\n");
 
 #endif
       }
@@ -552,7 +552,7 @@ void gfx_vxo::push_material_params()
                }
                else
                {
-                  vprint("failed to load 2d tex [%s]\n", tex_name.c_str());
+                  mws_print("failed to load 2d tex [%s]\n", tex_name.c_str());
                }
             }
 
@@ -588,7 +588,7 @@ void gfx_vxo::push_material_params()
                }
                else
                {
-                  vprint("failed to load cubemap [%s]\n", tex_name.c_str());
+                  mws_print("failed to load cubemap [%s]\n", tex_name.c_str());
                }
             }
 
@@ -607,7 +607,7 @@ void gfx_vxo::push_material_params()
    }
    else
    {
-      vprint("mesh object at [%p] has null shader\n", get_shared_ptr().get());
+      mws_print("mesh object at [%p] has null shader\n", get_shared_ptr().get());
    }
 }
 
@@ -716,7 +716,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
             break;
 
          default:
-            throw ia_exception("unknown value");
+            mws_throw ia_exception("unknown value");
          }
 
          glEnableVertexAttribArray(loc_idx);
@@ -758,7 +758,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
             break;
 
          default:
-            throw ia_exception("unknown value");
+            mws_throw ia_exception("unknown value");
          }
 
          glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.aux_vertex_size, (const void*)offset_aux);

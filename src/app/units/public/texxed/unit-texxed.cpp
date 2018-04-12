@@ -120,7 +120,7 @@ namespace unit_texxed_ns
 			if (k < text.length())
 			{
 				char c = text[k];
-				vprint("%c %d %d\n", c, row_idx, k);
+				mws_print("%c %d %d\n", c, row_idx, k);
 				select_char_rect.x = x_off;
 				select_char_rect.y = row_idx * font->get_height() - rem;
 				select_char_rect.z = (glyphs.size() > k) ? glyphs[k].get_advance_x() : 0;

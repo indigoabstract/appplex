@@ -38,12 +38,12 @@ png_voidp user_error_ptr;
 
 void user_error_fn(png_structp png_ptr, png_const_charp error_msg)
 {
-   vprint("libpng error msg [%s]\n", error_msg);
+   mws_print("libpng error msg [%s]\n", error_msg);
 }
 
 void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg)
 {
-   vprint("libpng warning msg [%s]\n", warning_msg);
+   mws_print("libpng warning msg [%s]\n", warning_msg);
 }
 
 void abort_(const char * s, ...)
@@ -208,7 +208,7 @@ shared_ptr<raw_img_data> res_ld::load_image(shared_ptr<pfm_file> ifile)
    auto filename = ifile->get_file_name().c_str();
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(ifile);
    shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), filename);
-   vprint("loading img file [%s], size [%d]\n", filename, img_data->size());
+   mws_print("loading img file1 [%s], size [%d]\n", filename, img_data->size());
 
    return rid;
 }
@@ -224,7 +224,7 @@ shared_ptr<raw_img_data> res_ld::load_image(std::string i_filename)
 
    shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(img_name);
    shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), img_name.c_str());
-   vprint("loading img file [%s], size [%d]\n", img_name.c_str(), img_data->size());
+   mws_print("loading img file2 [%s], size [%d]\n", img_name.c_str(), img_data->size());
 
    return rid;
 }
@@ -278,7 +278,7 @@ shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const
 
    if (setjmp(png_jmpbuf(png_ptr)))
    {
-      vprint("Error reading PNG file [%s]!\n", i_filename);
+      mws_print("Error reading PNG file [%s]!\n", i_filename);
    }
 
    const PngInfo png_info = read_and_update_info(png_ptr, info_ptr);

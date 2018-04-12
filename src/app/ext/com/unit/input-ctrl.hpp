@@ -123,7 +123,7 @@ public:
    glm::vec2 touch_pos(uintptr_t touch_id) const
    {
       const touch_point* p = this->find_point(touch_id);
-      ia_assert(p);
+      mws_assert(p);
 
       return glm::vec2(p->x, p->y);
    }

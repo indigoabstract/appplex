@@ -263,12 +263,12 @@ namespace test_video_recording
          if (venc->is_encoding())
          {
             venc->stop_encoding();
-            vprint("stop_encoding\n");
+            mws_print("stop_encoding\n");
          }
          else
          {
             venc->start_encoding(video_path.c_str(), video_params);
-            vprint("start_encoding\n");
+            mws_print("start_encoding\n");
          }
       }
 

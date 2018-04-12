@@ -108,7 +108,7 @@ shared_ptr<directory_tree> directory_tree::new_directory_tree(path& iroot_path, 
 		}
 		else
 		{
-			throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), iroot_path.string()));
+         mws_throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), iroot_path.string()));
 		}
 	}
 

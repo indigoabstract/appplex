@@ -92,7 +92,7 @@ int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >&
 	if (exp.at(idxLeft) != '[')
 	{
 		string tstr = "parse error. expected '[' " + exp;
-		throw IllegalStateException(tstr);
+      mws_throw IllegalStateException(tstr);
 	}
 
 	int idxRight = -1;
@@ -114,7 +114,7 @@ int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >&
 
 			//if (name.length() == 0)
 			//{
-			//	throw new IllegalStateException("invalid name: " + exp);
+			//	mws_throw new IllegalStateException("invalid name: " + exp);
 			//}
 
 			shared_ptr<node_info> kv(new node_info());
@@ -139,7 +139,7 @@ int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >&
 	if (!endFound)
 	{
 		string tstr = "parse error. unclosed exp " + exp;
-		throw IllegalStateException(tstr);
+      mws_throw IllegalStateException(tstr);
 	}
 
 	string s;
@@ -184,7 +184,7 @@ void node_info::printList(vector<shared_ptr<node_info> >& list, int ilevel)
 		if (kv->name.length() > 0)
 		{
 			print_level_offset(ilevel);
-			vprint("%s", kv->name.c_str());
+			mws_print("%s", kv->name.c_str());
 		}
 
 		if (new_line_block)

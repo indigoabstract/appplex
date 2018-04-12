@@ -26,7 +26,7 @@ void fmod_error_check(FMOD_RESULT result)
 {
    if (result != FMOD_OK)
    {
-      vprint("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
+      mws_print("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
    }
 }
 
@@ -167,7 +167,7 @@ public:
 
 FMOD_RESULT F_CALLBACK PCMRead32(FMOD_SOUND *sound, void *data, unsigned int length)
 {
-	//vprint("PCMRead %d\n", length);
+	//mws_print("PCMRead %d\n", length);
 	// Get the object we are using
 	// Note that FMOD_Sound * must be cast to FMOD::Sound * to access it
 	snd_context *ctx = nullptr;
@@ -189,7 +189,7 @@ FMOD_RESULT F_CALLBACK PCMRead32(FMOD_SOUND *sound, void *data, unsigned int len
 		stk::StkFloat* srcp = &src;
 		int size = frm2.size() * sizeof(stk::StkFloat);
 
-		ia_assert(size == length);
+		mws_assert(size == length);
 		memcpy(stereo32BitBuffer, srcp, size);
 	}
 
@@ -261,9 +261,9 @@ void snd::init()
 	}
 	else
 	{
-		vprint("gl_ctrl::init: this method must only be called once\n");
+		mws_print("gl_ctrl::init: this method must only be called once\n");
 
-		throw ia_exception("this method must only be called once");
+      mws_throw ia_exception("this method must only be called once");
 	}
 }
 

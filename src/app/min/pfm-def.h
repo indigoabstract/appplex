@@ -17,6 +17,7 @@ extern "C"
 #else
 
 #define MWS_RELEASE_BUILD
+#define MWS_PRODUCTION_BUILD
 #define mws_report_gfx_errs()
 #define mws_print(i_format, ...)
 
@@ -66,11 +67,30 @@ extern "C"
 #endif
 
 
-#ifndef MWS_USES_EXCEPTIONS
+#ifdef MWS_USES_EXCEPTIONS
 
-#define throw
-#define try          if(true)
-#define catch(...)   if(false)
+#define mws_throw throw
+#define mws_try try
+#define mws_catch(arg) catch(arg)
+
+#else
+
+#define mws_throw
+#define mws_try if(true)
+#define mws_catch(arg) if(false)
+
+#endif
+
+
+#ifdef MWS_USES_RTTI
+
+#define mws_dynamic_cast std::dynamic_cast
+#define mws_dynamic_pointer_cast std::dynamic_pointer_cast
+
+#else
+
+#define mws_dynamic_cast std::static_cast
+#define mws_dynamic_pointer_cast std::static_pointer_cast
 
 #endif
 
@@ -130,7 +150,7 @@ extern "C"
 
 #define _USE_MATH_DEFINES
 
-#if defined PLATFORM_WINDOWS_PC && defined _DEBUG
+#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
    //#define USE_VLD
 #endif
 

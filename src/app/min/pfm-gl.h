@@ -124,8 +124,8 @@ extern "C"
 
 #elif (MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_2_0) && !defined GL_RGBA8
 
-#define glReadBuffer(target) vprint("glReadBuffer N/A!\n")
-#define glVertexAttribIPointer(index, size, type, stride, pointer) vprint("glVertexAttribIPointer N/A!\n")
+#define glReadBuffer(target) mws_print("glReadBuffer N/A!\n")
+#define glVertexAttribIPointer(index, size, type, stride, pointer) mws_print("glVertexAttribIPointer N/A!\n")
 
 #define GL_HALF_FLOAT 0x140B
 

@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <algorithm> 
 #include <cctype>
-#include <exception>
 #include <functional> 
 #include <locale>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#ifdef MWS_USES_EXCEPTIONS
+#include <exception>
+#endif
 
 using std::shared_ptr;
 using std::weak_ptr;
@@ -64,8 +66,8 @@ class ia_exception
 {
 public:
    ia_exception();
+   ia_exception(const std::string& msg);
    ia_exception(const char* msg);
-   ia_exception(std::string msg);
    virtual ~ia_exception();
 
    // returns a C-style character string describing the general cause of the current error
@@ -197,24 +199,24 @@ private:
 
 template <typename T> T& mws_any_cast(mws_any& a)
 {
-   //if (auto p = dynamic_cast<mws_any::storage<T>*>(a.storage_ptr.get()))
+   //if (auto p = mws_dynamic_cast<mws_any::storage<T>*>(a.storage_ptr.get()))
    //{
    //   return p->value;
    //}
 
-   //throw mws_bad_any_cast();
+   //mws_throw mws_bad_any_cast();
    auto p = (mws_any::storage<T>*)(a.storage_ptr.get());
    return p->value;
 }
 
 template <typename T> T const& mws_any_cast(mws_any const& a)
 {
-   //if (auto p = dynamic_cast<mws_any::storage<T> const*>(a.storage_ptr.get()))
+   //if (auto p = mws_dynamic_cast<mws_any::storage<T> const*>(a.storage_ptr.get()))
    //{
    //   return p->value;
    //}
 
-   //throw mws_bad_any_cast();
+   //mws_throw mws_bad_any_cast();
    auto p = (mws_any::storage<T>*)(a.storage_ptr.get());
    return p->value;
 }

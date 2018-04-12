@@ -560,7 +560,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 		{
 			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-			//vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
+			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			switch (ts->get_type())
 			{
 			case touch_sym_evt::TS_PRESS_AND_DRAG:
@@ -568,7 +568,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 				p->point_list.push_back(ts->crt_state.te->points[0]);
 				p->recalc_points = true;
 				ts->process();
-				//vprint("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
+				//mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
 
 				break;
 			}

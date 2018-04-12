@@ -116,7 +116,7 @@ public:
       ));
 
       wireframe_shader = gfx::shader::new_program_from_src("wireframe_shader", vsh, fsh);
-      //vprint("fsh %s\n", fsh.c_str());
+      //mws_print("fsh %s\n", fsh.c_str());
    }
 
    void load(const std::shared_ptr<std::string> ivs_shader_src = nullptr, const std::shared_ptr<std::string> ifs_shader_src = nullptr)
@@ -185,7 +185,7 @@ public:
 
    void create_program(const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src, const std::string& i_shader_id)
    {
-      try
+      mws_try
       {
          int linked = 0;
          std::shared_ptr<std::string> vs_shader_src = ivs_shader_src;
@@ -233,7 +233,7 @@ public:
 
             std::vector<gfx_char> log(log_length);
             glGetProgramInfoLog(program_id, 10000, &log_length, &log[0]);
-            vprint("error linking the program: %s\n%s\n", i_shader_id.c_str(), &log[0]);
+            mws_print("error linking the program: %s\n%s\n", i_shader_id.c_str(), &log[0]);
             glDeleteProgram(program_id);
             throw_if_false(linked != 0, "Error linking program " + i_shader_id);
 
@@ -258,19 +258,17 @@ public:
 
          if (fsh_file_name.length() > 0)
          {
-            vprint("shader [%s, %s] compiled.\n", vsh_name.c_str(), fsh_name.c_str());
+            mws_print("shader [%s, %s] compiled.\n", vsh_name.c_str(), fsh_name.c_str());
          }
          else
          {
-            vprint("shader [%s] compiled.\n", program_name.c_str());
+            mws_print("shader [%s] compiled.\n", program_name.c_str());
          }
       }
-      catch (ia_exception e)
+         mws_catch(ia_exception e)
       {
-#ifdef USES_EXCEPTIONS
          is_validated = false;
-         vprint("%s\n", e.what());
-#endif
+         mws_print("%s\n", e.what());
       }
    }
 
@@ -280,7 +278,7 @@ public:
       int compiled;
 
       shader = glCreateShader(ishader_type);
-      //ia_assert("Error creating " + shader_desc + " : " + shader_path, shader != 0);
+      //mws_assert("Error creating " + shader_desc + " : " + shader_path, shader != 0);
       throw_if_false(shader != 0, "Error creating shader: " + shader_id);
 
       int length = ishader_src->length();
@@ -310,9 +308,9 @@ public:
 
          std::vector<gfx_char> log(log_length);
          glGetShaderInfoLog(shader, 10000, &log_length, &log[0]);
-         vprint("error compiling [%s] shader\n%s\n", shader_name.c_str(), &log[0]);
+         mws_print("error compiling [%s] shader\n%s\n", shader_name.c_str(), &log[0]);
          glDeleteShader(shader);
-         //ia_assert("Error compiling " + shader_desc + " : " + shader_path, compiled != 0);
+         //mws_assert("Error compiling " + shader_desc + " : " + shader_path, compiled != 0);
          throw_if_false(compiled != 0, "Error compiling shader: " + shader_name);
       }
 
@@ -329,13 +327,13 @@ public:
 
       if (!vs_shader_src)
       {
-         vprint("fragment shader file [%s] not found", fsh_file_name.c_str());
+         mws_print("fragment shader file [%s] not found", fsh_file_name.c_str());
          return;
       }
 
       if (!fs_shader_src)
       {
-         vprint("vertex shader file [%s] not found", vsh_file_name.c_str());
+         mws_print("vertex shader file [%s] not found", vsh_file_name.c_str());
          return;
       }
 
@@ -343,8 +341,8 @@ public:
       fsh_last_write = pfm_file::get_inst(fsh_file_name)->last_write_time();
       last_compile_time = pfm::time::get_time_millis();
 
-      //vprint("vshder %s %s", vsh_file_name.c_str(), vs_shader_src.c_str());
-      //vprint("fshder %s %s", fsh_file_name.c_str(), fs_shader_src.c_str());
+      //mws_print("vshder %s %s", vsh_file_name.c_str(), vs_shader_src.c_str());
+      //mws_print("fshder %s %s", fsh_file_name.c_str(), fs_shader_src.c_str());
 
       shader_id = gfx_shader::create_shader_id(vsh_file_name, fsh_file_name);
       create_program(vs_shader_src, fs_shader_src, shader_id);
@@ -368,7 +366,7 @@ public:
 
       //if (fsh_name == "Subsurface")
       //{
-      //	ia_signal_error();
+      //	mws_signal_error();
       //}
 
       for (int idx = 0; idx < active_attrib_count; ++idx)
@@ -413,14 +411,14 @@ public:
          input_list[name] = input;
       }
 
-      //vprint("shader_name [%s] : [%d] active attributes and [%d] active uniforms\n", program_name.c_str(), active_attrib_count, active_uniform_count);
+      //mws_print("shader_name [%s] : [%d] active attributes and [%d] active uniforms\n", program_name.c_str(), active_attrib_count, active_uniform_count);
    }
 
    void throw_if_false(bool icondition, std::string msg)
    {
       if (!icondition)
       {
-         throw ia_exception(msg);
+         mws_throw ia_exception(msg);
       }
    }
 
@@ -633,7 +631,7 @@ void gfx_shader::update_uniform(std::shared_ptr<gfx_input> i_input, const mws_an
       case gfx_input::ivec2:
       case gfx_input::ivec3:
       case gfx_input::ivec4:
-         throw ia_exception("glsl_program::update_uniform n/i");
+         mws_throw ia_exception("glsl_program::update_uniform n/i");
          break;
 
       case gfx_input::vec1:
@@ -650,7 +648,7 @@ void gfx_shader::update_uniform(std::shared_ptr<gfx_input> i_input, const mws_an
 
       case gfx_input::vec3_array:
       {
-         const std::vector<glm::vec3>& v = mws_any_cast<std::vector<glm::vec3> >(*i_val);
+         const std::vector<glm::vec3>& v = mws_any_cast<std::vector<glm::vec3>>(*i_val);
          glUniform3fv(loc_idx, v.size(), (gfx_float*)v.data());
          break;
       }
@@ -684,7 +682,7 @@ void gfx_shader::update_uniform(gfx_std_uni i_std_uni, const mws_any* i_val)
 {
    if (!(p->is_validated && p->is_activated))
    {
-      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      //mws_print("can't update uniform for [%s]\n", get_program_name().c_str());
       return;
    }
 
@@ -695,7 +693,7 @@ void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
 {
    if (!(p->is_validated && p->is_activated))
    {
-      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      //mws_print("can't update uniform for [%s]\n", get_program_name().c_str());
       return;
    }
 
@@ -720,7 +718,7 @@ void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
       case gfx_input::ivec2:
       case gfx_input::ivec3:
       case gfx_input::ivec4:
-         throw ia_exception("glsl_program::update_uniform n/i");
+         mws_throw ia_exception("glsl_program::update_uniform n/i");
          break;
 
       case gfx_input::vec1:
@@ -771,7 +769,7 @@ void gfx_shader::update_uniform(std::string i_uni_name, const mws_any* i_val)
 {
    if (!(p->is_validated && p->is_activated))
    {
-      //vprint("can't update uniform for [%s]\n", get_program_name().c_str());
+      //mws_print("can't update uniform for [%s]\n", get_program_name().c_str());
       return;
    }
 

@@ -1037,7 +1037,7 @@ bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file
 
 	if (specularmap->width != width || specularmap->height != height)
 	{
-		vprint("specularmap size != diffmap size [%s, %s]", ispec_file->get_file_name().c_str(), idiff_file->get_file_name().c_str());
+		mws_print("specularmap size != diffmap size [%s, %s]", ispec_file->get_file_name().c_str(), idiff_file->get_file_name().c_str());
 
 		return false;
 	}

@@ -58,7 +58,7 @@ video_params_ffmpeg::video_params_ffmpeg()
 
 static void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
-	vprint("ffmpeg encoding error log %s", fmt);
+	mws_print("ffmpeg encoding error log %s", fmt);
 }
 
 
@@ -162,7 +162,7 @@ static int write_audio_frame(AVFormatContext *oc, output_stream_ffmpeg *ost)
       /* compute destination number of samples */
       dst_nb_samples = (int)av_rescale_rnd(swr_get_delay(ost->swr_ctx, c->sample_rate) + frame->nb_samples,
          c->sample_rate, c->sample_rate, AV_ROUND_UP);
-      ia_assert(dst_nb_samples == frame->nb_samples);
+      mws_assert(dst_nb_samples == frame->nb_samples);
 
       /* when we pass a frame to the encoder, it may keep a reference to it
       * internally;
@@ -180,7 +180,7 @@ static int write_audio_frame(AVFormatContext *oc, output_stream_ffmpeg *ost)
 
       if (ret < 0)
       {
-         vprint("Error while converting\n");
+         mws_print("Error while converting\n");
          exit(1);
       }
 
@@ -195,7 +195,7 @@ static int write_audio_frame(AVFormatContext *oc, output_stream_ffmpeg *ost)
 
    if (ret < 0)
    {
-      vprint("Error encoding audio frame: %s\n", get_av_error_string(ret).c_str());
+      mws_print("Error encoding audio frame: %s\n", get_av_error_string(ret).c_str());
       exit(1);
    }
 
@@ -205,7 +205,7 @@ static int write_audio_frame(AVFormatContext *oc, output_stream_ffmpeg *ost)
 
       if (ret < 0)
       {
-         vprint("Error while writing audio frame: %s\n", get_av_error_string(ret).c_str());
+         mws_print("Error while writing audio frame: %s\n", get_av_error_string(ret).c_str());
          exit(1);
       }
    }
@@ -256,7 +256,7 @@ static int write_video_frame(AVFormatContext *oc, output_stream_ffmpeg *ost, AVF
 
       if (ret < 0)
       {
-         vprint("Error encoding video frame: %s\n", get_av_error_string(ret).c_str());
+         mws_print("Error encoding video frame: %s\n", get_av_error_string(ret).c_str());
          exit(1);
       }
 
@@ -272,7 +272,7 @@ static int write_video_frame(AVFormatContext *oc, output_stream_ffmpeg *ost, AVF
 
    if (ret < 0)
    {
-      vprint("Error while writing video frame: %s\n", get_av_error_string(ret).c_str());
+      mws_print("Error while writing video frame: %s\n", get_av_error_string(ret).c_str());
       exit(1);
    }
 
@@ -303,7 +303,7 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
    int ret = 0;
    params = i_params;
    video_path = std::string(ivideo_path);
-   vprint("Encode video file %s\n", ivideo_path);
+   mws_print("Encode video file %s\n", ivideo_path);
    pts_idx = 0;
 
 
@@ -360,7 +360,7 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
 
       if (ret < 0)
       {
-         vprint("Could not open '%s': %s\n", ivideo_path, get_av_error_string(ret).c_str());
+         mws_print("Could not open '%s': %s\n", ivideo_path, get_av_error_string(ret).c_str());
          exit(1);
       }
    }
@@ -370,7 +370,7 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
 
    if (ret < 0)
    {
-      vprint("Error occurred when opening output file: %s\n", get_av_error_string(ret).c_str());
+      mws_print("Error occurred when opening output file: %s\n", get_av_error_string(ret).c_str());
       exit(1);
    }
 
@@ -455,7 +455,7 @@ void venc_ffmpeg::stop_encoding()
 {
  /* Write the trailer, if any. The trailer must be written before you
  * close the CodecContexts open when you wrote the header; otherwise
- * av_write_trailer() may try to use memory that was freed on
+ * av_write_trailer() may try_ to use memory that was freed on
  * av_codec_close(). */
    av_write_trailer(oc);
 
@@ -502,7 +502,7 @@ static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
 
    if (ret < 0)
    {
-      vprint("Could not allocate frame data.\n");
+      mws_print("Could not allocate frame data.\n");
       exit(1);
    }
 
@@ -516,7 +516,7 @@ static AVFrame* alloc_audio_frame(enum AVSampleFormat sample_fmt, uint64_t chann
 
    if (!frame)
    {
-      vprint("Error allocating an audio frame\n");
+      mws_print("Error allocating an audio frame\n");
       exit(1);
    }
 
@@ -531,7 +531,7 @@ static AVFrame* alloc_audio_frame(enum AVSampleFormat sample_fmt, uint64_t chann
 
       if (ret < 0)
       {
-         vprint("Error allocating an audio buffer\n");
+         mws_print("Error allocating an audio buffer\n");
          exit(1);
       }
    }
@@ -555,7 +555,7 @@ void venc_ffmpeg::open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (ret < 0)
    {
-      vprint("Could not open audio codec: %s\n", get_av_error_string(ret).c_str());
+      mws_print("Could not open audio codec: %s\n", get_av_error_string(ret).c_str());
       exit(1);
    }
 
@@ -580,7 +580,7 @@ void venc_ffmpeg::open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_
    /* create resampler context */
    //ost->swr_ctx = swr_alloc();
    //if (!ost->swr_ctx) {
-   //   vprint("Could not allocate resampler context\n");
+   //   mws_print("Could not allocate resampler context\n");
    //   exit(1);
    //}
 
@@ -594,7 +594,7 @@ void venc_ffmpeg::open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    /* initialize the resampling context */
    //if ((ret = swr_init(ost->swr_ctx)) < 0) {
-   //   vprint("Failed to initialize the resampling context\n");
+   //   mws_print("Failed to initialize the resampling context\n");
    //   exit(1);
    //}
 }
@@ -618,7 +618,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
       A lower value generally leads to higher quality, and a subjectively sane range is 17-28.
       Consider 17 or 18 to be visually lossless or nearly so; it should look the same or nearly the same as the input but it isn't technically lossless.
       The range is exponential, so increasing the CRF value +6 results in roughly half the bitrate / file size, while -6 leads to roughly twice the bitrate.
-      Choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try a higher value. If it looks bad, choose a lower value.
+      Choose the highest CRF value that still provides an acceptable quality. If the output looks good, then try_ a higher value. If it looks bad, choose a lower value.
 
       A preset is a collection of options that will provide a certain encoding speed to compression ratio.
       A slower preset will provide better compression(compression is quality per filesize).
@@ -656,7 +656,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
    {
       char 	errbuf[1000];
       int x = av_strerror(ret, errbuf, 1000);
-      vprint("Could not open video codec: %s\n%s\n", errbuf, get_av_error_string(ret).c_str());
+      mws_print("Could not open video codec: %s\n%s\n", errbuf, get_av_error_string(ret).c_str());
       exit(1);
    }
 
@@ -665,7 +665,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (!ost->frame)
    {
-      vprint("Could not allocate video frame\n");
+      mws_print("Could not allocate video frame\n");
       exit(1);
    }
 
@@ -680,7 +680,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
       if (!ost->tmp_frame)
       {
-         vprint("Could not allocate temporary picture\n");
+         mws_print("Could not allocate temporary picture\n");
          exit(1);
       }
    }
@@ -690,7 +690,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (!frame)
    {
-   	vprint("Could not allocate video frame\n");
+   	mws_print("Could not allocate video frame\n");
    	exit(1);
    }
 
@@ -704,7 +704,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (ret < 0)
    {
-   	vprint("Could not allocate raw picture buffer\n");
+   	mws_print("Could not allocate raw picture buffer\n");
    	exit(1);
    }
 }
@@ -719,7 +719,7 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
    *codec = avcodec_find_encoder(codec_id);
    if (!(*codec))
    {
-      vprint("Could not find encoder for '%s'\n", avcodec_get_name(codec_id));
+      mws_print("Could not find encoder for '%s'\n", avcodec_get_name(codec_id));
       exit(1);
    }
 
@@ -727,7 +727,7 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
 
    if (!ost->st)
    {
-      vprint("Could not allocate stream\n");
+      mws_print("Could not allocate stream\n");
       exit(1);
    }
 
@@ -736,7 +736,7 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
 
    if (!c)
    {
-      vprint("Could not alloc an encoding context\n");
+      mws_print("Could not alloc an encoding context\n");
       exit(1);
    }
 

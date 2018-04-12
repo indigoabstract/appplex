@@ -238,7 +238,7 @@ bool unit_test_kube_sphere::update()
 			{
 				face->gen_geometry(0);
 			}
-			//vprint("dist %f\n", d);
+			//mws_print("dist %f\n", d);
 		}
 	}
 
@@ -255,7 +255,7 @@ void unit_test_kube_sphere::receive(shared_ptr<iadp> idp)
 		{
 			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
 
-			//vprint("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
+			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
 			{
 				float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
@@ -269,8 +269,8 @@ void unit_test_kube_sphere::receive(shared_ptr<iadp> idp)
 				//impl->phi = glm::mod(impl->phi, 2 * glm::pi<float>());
 				//glm::vec3 axis(glm::sin(impl->theta) * glm::sin(impl->phi), glm::cos(impl->theta) * glm::sin(impl->phi), -glm::cos(impl->phi));
 				//axis = glm::normalize(axis);
-				//vprint("x %f, y %f\n", impl->theta, impl->phi);
-				//vprint("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
+				//mws_print("x %f, y %f\n", impl->theta, impl->phi);
+				//mws_print("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
 				glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
 				glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
 				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);

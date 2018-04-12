@@ -38,7 +38,7 @@ namespace appplex_conf_ns
 
       void run()
       {
-         try
+         mws_try
          {
             if (exists(info->proj_path))
             {
@@ -59,15 +59,15 @@ namespace appplex_conf_ns
                }
                else
                {
-                  throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->proj_path.string()));
+                  mws_throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->proj_path.string()));
                }
             }
             else
             {
-               throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->proj_path.string()));
+               mws_throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->proj_path.string()));
             }
          }
-         catch (ia_exception& e)
+            mws_catch(ia_exception& e)
          {
             trx("exception {}", e.what());
          }

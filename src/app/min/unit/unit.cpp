@@ -302,7 +302,7 @@ public:
          c2.a = uint8(v * 255);
          recording_fnt->set_color(c2);
          mws_cam->drawText(recording_txt, px, py, recording_fnt);
-         //vprint("slider: %f %f\n", sv, v);
+         //mws_print("slider: %f %f\n", sv, v);
       }
 
       rec_txt_slider.update();
@@ -346,7 +346,7 @@ public:
 
 #else
 
-      vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
+      mws_print("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
    }
@@ -361,12 +361,12 @@ public:
       }
       else
       {
-         vprint("not recording screen video\n");
+         mws_print("not recording screen video\n");
       }
 
 #else
 
-      vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
+      mws_print("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
    }
@@ -404,7 +404,7 @@ public:
 
 #else
 
-      vprint("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
+      mws_print("you need to enable MOD_FFMPEG and UNIT_TEST_FFMPEG to record screen video\n");
 
 #endif
    }
@@ -1039,7 +1039,7 @@ unit::unit_type unit_list::get_unit_type()
 
 void unit_list::add(shared_ptr<unit> iunit)
 {
-   ia_assert(iunit != shared_ptr<unit>(), "IllegalArgumentException");
+   mws_assert(iunit != shared_ptr<unit>(), "IllegalArgumentException");
 
    iunit->parent = get_smtp_instance();
    ulist.push_back(iunit);

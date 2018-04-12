@@ -201,7 +201,7 @@ void gfx_tex::set_texture_gl_id(int itexture_id)
 
    if (!is_external)
    {
-      throw ia_exception("only available for external textures!");
+      mws_throw ia_exception("only available for external textures!");
    }
 
    texture_gl_id = itexture_id;
@@ -487,7 +487,7 @@ void gfx_tex::init_dimensions(int iwidth, int iheight)
 {
    if (iwidth <= 0 || iheight <= 0)
    {
-      throw ia_exception("width and height must be > 0");
+      mws_throw ia_exception("width and height must be > 0");
    }
 
    width = iwidth;
@@ -508,7 +508,7 @@ int gfx_tex::gen_texture_gl_id()
 
    glGenTextures(1, &tex_id);
 
-   vprint("gfx-info gen_texture_gl_id [%d]\n", tex_id);
+   mws_print("gfx-info gen_texture_gl_id [%d]\n", tex_id);
    mws_report_gfx_errs();
 
    return tex_id;
@@ -518,7 +518,7 @@ void gfx_tex::check_valid_state()
 {
    if (!is_valid_state)
    {
-      throw ia_exception("the texture is not in a valid state");
+      mws_throw ia_exception("the texture is not in a valid state");
    }
 }
 
@@ -532,7 +532,7 @@ void gfx_tex::release()
       {
          glDeleteTextures(1, &texture_gl_id);
 
-         vprint("gfx-info del-tex GlTex2D.release tex-id[%d]\n", texture_gl_id);
+         mws_print("gfx-info del-tex GlTex2D.release tex-id[%d]\n", texture_gl_id);
       }
 
       gfx::remove_gfx_obj(this);

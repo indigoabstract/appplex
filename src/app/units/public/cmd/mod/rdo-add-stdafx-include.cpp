@@ -113,12 +113,12 @@ void long_op_add_stdafx_include::run()
 		}
 		else
 		{
-			throw ia_exception(trs("longOpAddStdafxInclude: {} is not a directory", src_path.string()));
+         mws_throw ia_exception(trs("longOpAddStdafxInclude: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-		throw ia_exception(trs("longOpAddStdafxInclude: {} does not exist", src_path.string()));
+      mws_throw ia_exception(trs("longOpAddStdafxInclude: {} does not exist", src_path.string()));
 	}
 }
 
@@ -135,7 +135,7 @@ rec_dir_op_add_stdafx_include::rec_dir_op_add_stdafx_include(path iSrcPath, vect
 
 		if(!p.is_relative())
 		{
-			throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), src_path.string()));
+         mws_throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.string(), src_path.string()));
 		}
 
 		utrx(untr("{0} {1}"), k, s);

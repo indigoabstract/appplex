@@ -272,7 +272,7 @@ public:
 		state->needs_update = true;
 
 		shared_ptr<std::string> src = shared_ptr<std::string>(new std::string(fsh));
-		//vprint("%s\n", src->c_str());
+		//mws_print("%s\n", src->c_str());
 
 		return src;
 	}
@@ -647,7 +647,7 @@ public:
 
 			glm::vec2 dim = tex_size;
 			float time = (pfm::time::get_time_millis() - ss->start_time - ss->pause_time) / 1000.f;
-			//vprint("timeee %f\n", time / 5.f);
+			//mws_print("timeee %f\n", time / 5.f);
 			glm::vec2 mouse(pointer_position / tex_size);
 
 			glm::vec3 iResolution(tex_size, 0.f);

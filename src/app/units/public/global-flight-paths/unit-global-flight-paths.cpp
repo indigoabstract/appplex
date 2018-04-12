@@ -826,7 +826,7 @@ namespace global_flight_paths_ns
             bool default_hot_spot = false;
             auto scene = globe->get_scene();
 
-            vprint("hot_spot_chain_list_length: [%d]\n", hot_spot_chain_list_length);
+            mws_print("hot_spot_chain_list_length: [%d]\n", hot_spot_chain_list_length);
 
             for (int i = 0; i < hot_spot_chain_list_length; i++)
             {
@@ -862,7 +862,7 @@ namespace global_flight_paths_ns
                   hot_spot_link_list.push_back(link);
                }
 
-               vprint("hs idx[%d] hot_spot_list_length: [%d]\n", i, hot_spot_list_length);
+               mws_print("hs idx[%d] hot_spot_list_length: [%d]\n", i, hot_spot_list_length);
                hot_spot_chain_list[i]->set_hot_spot_link_list(hot_spot_link_list);
             }
          }

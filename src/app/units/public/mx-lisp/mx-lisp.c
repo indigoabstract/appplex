@@ -11,8 +11,8 @@
 	#define bool int
 	#define false 0
 	#define true 1
-	#define ia_assert(cond)
-	#define ia_signal_error()
+	#define mws_assert(cond)
+	#define mws_signal_error()
 #else
 	#include "pfm.hpp"
 #endif
@@ -1781,7 +1781,7 @@ void mx_signal_error(const char* ierror_msg)
 	mx_print_text(ierror_msg);
 	mx_print_text("\n");
 
-	ia_signal_error();
+	mws_signal_error();
 }
 
 void mx_read_text_line()
@@ -1816,7 +1816,7 @@ void mx_print_text(const char* itext)
 	//);
 	fputs(itext,stdout);
 #else
-	vprint(itext);
+	mws_print(itext);
 #endif
 }
 
@@ -1836,13 +1836,13 @@ void mx_print_indent(int ilevel)
 
 void mx_mem_init_ctx()
 {
-	ia_assert(MX_CTX_ELEM_SIZE >= MIN_ELEM_SIZE);
-	ia_assert(MIN_ELEM_SIZE % 8 == 0);
+	mws_assert(MX_CTX_ELEM_SIZE >= MIN_ELEM_SIZE);
+	mws_assert(MIN_ELEM_SIZE % 8 == 0);
 	mxmc_inst.elem_size = MX_CTX_ELEM_SIZE;
-	ia_assert(MX_CTX_ELEM_COUNT > 0 && MX_CTX_ELEM_COUNT < MAX_ELEM_COUNT);
+	mws_assert(MX_CTX_ELEM_COUNT > 0 && MX_CTX_ELEM_COUNT < MAX_ELEM_COUNT);
 	mxmc_inst.elem_count = MX_CTX_ELEM_COUNT;
 	mxmc_inst.total_size = mxmc_inst.elem_size * mxmc_inst.elem_count;
-	ia_assert(mxmc_inst.total_size % 8 == 0);
+	mws_assert(mxmc_inst.total_size % 8 == 0);
 	// align on 64 bits
 	mxmc_inst.mem_start = heap_mem;
 
@@ -1850,7 +1850,7 @@ void mx_mem_init_ctx()
 	mx_mem_clear(mxmc_inst.mem_start, mxmc_inst.elem_size * mxmc_inst.elem_count);
 
 	// align on 64 bits
-	ia_assert((mxmc_inst.elem_count * sizeof(struct mx_mem_block)) % 8 == 0);
+	mws_assert((mxmc_inst.elem_count * sizeof(struct mx_mem_block)) % 8 == 0);
 	struct mx_mem_block* block_list = (struct mx_mem_block*)block_list_mem;
 	mxmc_inst.block_list = block_list;
 	block_list->type = FREE_BLOCK;
@@ -2073,7 +2073,7 @@ void mx_mem_free(const void* iaddress)
 
 void mx_mem_copy(const void* isrc, void* idst, int isize)
 {
-	ia_assert((isrc != 0) && (idst != 0));
+	mws_assert((isrc != 0) && (idst != 0));
 
 	char* src = (char*)isrc;
 	char* dst = (char*)idst;
@@ -2086,8 +2086,8 @@ void mx_mem_copy(const void* isrc, void* idst, int isize)
 
 void mx_mem_clear(void* idst, int isize)
 {
-	ia_assert(idst != 0);
-	ia_assert(isize % 8 == 0);
+	mws_assert(idst != 0);
+	mws_assert(isize % 8 == 0);
 
 	int size = isize / 8;
 
@@ -2222,7 +2222,7 @@ int mx_char_length(const char* itext)
 
 char* mx_char_copy_abc(const char* isrc, char* idst, int imax_length)
 {
-	ia_assert((isrc != 0) && (idst != 0));
+	mws_assert((isrc != 0) && (idst != 0));
 
 	char* str = idst;
 	int idx = 0;
@@ -2239,7 +2239,7 @@ char* mx_char_copy_abc(const char* isrc, char* idst, int imax_length)
 
 char* mx_char_copy(const char* isrc, char* idst)
 {
-	ia_assert((isrc != 0) && (idst != 0));
+	mws_assert((isrc != 0) && (idst != 0));
 
 	char* str = idst;
 
@@ -2250,7 +2250,7 @@ char* mx_char_copy(const char* isrc, char* idst)
 
 char* mx_char_clone_ab(const char* isrc, int imax_length)
 {
-	ia_assert(isrc != 0);
+	mws_assert(isrc != 0);
 
 	int isrc_length = mx_char_length(isrc);
 	int length = imax_length;
@@ -2269,7 +2269,7 @@ char* mx_char_clone_ab(const char* isrc, int imax_length)
 
 char* mx_char_clone(const char* isrc)
 {
-	ia_assert(isrc != 0);
+	mws_assert(isrc != 0);
 
 	char* clone = (char*)mx_mem_alloc(mx_char_length(isrc) + 1);
 
@@ -2281,7 +2281,7 @@ char* mx_char_clone(const char* isrc)
 
 int mx_char_compare(const char* itext_left, const char* itext_right)
 {
-	ia_assert((itext_left != 0) && (itext_right != 0));
+	mws_assert((itext_left != 0) && (itext_right != 0));
 
 	while ((*itext_left != 0 && *itext_right != 0) && (*itext_left == *itext_right))
 	{
@@ -2374,7 +2374,7 @@ int mx_text_length(const mx_text* itext)
 
 char mx_text_char_at(const mx_text* itext, int iidx)
 {
-	ia_assert(iidx < mx_text_length(itext));
+	mws_assert(iidx < mx_text_length(itext));
 
 	return itext->text[iidx];
 }
@@ -2520,7 +2520,7 @@ int size_of_mx_vect()
 
 mx_vect* mx_vect_ctor(int iinitial_capacity, int icapacity_increment)
 {
-	ia_assert(iinitial_capacity > 0);
+	mws_assert(iinitial_capacity > 0);
 
 	mx_vect* iv = (mx_vect*)mx_mem_alloc(size_of_mx_vect());
 

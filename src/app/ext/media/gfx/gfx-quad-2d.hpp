@@ -114,7 +114,7 @@ public:
       }
 
       update_coord();
-      //vprint("pos: %f, %f\n", position.x, position.y);
+      //mws_print("pos: %f, %f\n", position.x, position.y);
    }
 
    void set_rotation(float ia) override
@@ -130,7 +130,7 @@ public:
       {
          a = a - 2 * pi;
       }
-      //vprint("rot: %f\n", a);
+      //mws_print("rot: %f\n", a);
 
       orientation = glm::rotate(glm::quat(), a, glm::vec3(0, 0, 1));
       update_coord();

@@ -336,7 +336,7 @@ void touchctrl::on_pointer_pressed_event(pointer_sample& ps)
 
 void touchctrl::on_pointer_dragged_event(pointer_sample& ps)
 {
-	ia_assert(!tap_sym_events.empty());
+	mws_assert(!tap_sym_events.empty());
 
 	if(tap_sym_events.empty())
 	{
@@ -383,7 +383,7 @@ void touchctrl::on_pointer_dragged_event(pointer_sample& ps)
 
 void touchctrl::on_pointer_released_event(pointer_sample& ps)
 {
-	ia_assert(!tap_sym_events.empty());
+	mws_assert(!tap_sym_events.empty());
 
 	if(tap_sym_events.empty())
 	{
@@ -689,14 +689,14 @@ void keyctrl::update()
 
 bool keyctrl::key_is_held(key_types ikey)
 {
-	ia_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+	mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
 
 	return key_status[ikey] != KEY_IDLE;
 }
 
 void keyctrl::key_pressed(int ikey)
 {
-	ia_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+	mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
 	events_pending = true;
 
 	if(key_status[ikey] != KEY_FIRST_PRESSED && key_status[ikey] != KEY_REPEATED)
@@ -708,7 +708,7 @@ void keyctrl::key_pressed(int ikey)
 
 void keyctrl::key_released(int ikey)
 {
-	ia_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+	mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
 	events_pending = true;
 	key_status[ikey] = KEY_RELEASED;
 }

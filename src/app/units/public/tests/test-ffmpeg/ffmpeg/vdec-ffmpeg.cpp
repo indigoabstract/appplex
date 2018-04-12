@@ -89,15 +89,15 @@ public:
 
 		// create the actual message
 		vsnprintf(message, sizeof(message), fmt, vargs);
-		vprint("ffmpeg lvl: %d. ", level);
+		mws_print("ffmpeg lvl: %d. ", level);
 
 		// print the message
 		if (module)
 		{
-			vprint("module: %s. ", module);
+			mws_print("module: %s. ", module);
 		}
 
-		vprint("msg: %s\n", message);
+		mws_print("msg: %s\n", message);
 	}
 
 	int start_decoding(const char* ivideo_path)
@@ -426,7 +426,7 @@ private:
                   listener->on_frame_decoded(av_frame);
                }
 
-					//vprint("decode_frame counter %d\n", current_frame_idx);
+					//mws_print("decode_frame counter %d\n", current_frame_idx);
 					current_frame_idx++;
 				}
 			}

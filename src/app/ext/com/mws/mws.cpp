@@ -35,7 +35,7 @@ slide_scrolling::scroll_dir get_scroll_dir(touch_sym_evt::touch_sym_evt_types sw
       return slide_scrolling::SD_UP_DOWN;
    }
 
-   throw ia_exception("not a swipe type");
+   mws_throw ia_exception("not a swipe type");
 }
 
 
@@ -112,7 +112,7 @@ void mws::attach(shared_ptr<gfx_node> i_node)
 
    if (i_node->get_type() == gfx_obj::e_mws)
    {
-      auto mws_ref = std::dynamic_pointer_cast<mws>(i_node);
+      auto mws_ref = mws_dynamic_pointer_cast<mws>(i_node);
 
       if (mws_ref)
       {
@@ -130,7 +130,7 @@ void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
    {
       if (c->get_type() == gfx_obj::e_mws)
       {
-         auto w = std::dynamic_pointer_cast<mws>(c);
+         auto w = mws_dynamic_pointer_cast<mws>(c);
 
          i_mws_subobj_list.push_back(w);
          w->list_mws_children(i_mws_subobj_list);
@@ -180,7 +180,7 @@ bool mws::contains_mws(const shared_ptr<mws> i_mws)
 
 shared_ptr<mws> mws::get_mws_parent()
 {
-   return std::dynamic_pointer_cast<mws>(get_parent());
+   return mws_dynamic_pointer_cast<mws>(get_parent());
 }
 
 shared_ptr<mws_page_tab> mws::get_mws_root()
@@ -199,7 +199,7 @@ void mws::receive(shared_ptr<iadp> idp)
    {
       if (c->get_type() == gfx_obj::e_mws)
       {
-         auto w = std::dynamic_pointer_cast<mws>(c);
+         auto w = mws_dynamic_pointer_cast<mws>(c);
 
          if (w && w->visible)
          {
@@ -282,7 +282,7 @@ shared_ptr<mws_page> mws_page_transition::get_target_page()
       }
    }
 
-   vprint("target page with id [%s] is not available\n", id.c_str());
+   mws_print("target page with id [%s] is not available\n", id.c_str());
 
    return mws_page::PAGE_NONE;
 }
@@ -400,7 +400,7 @@ mws_page_tab::mws_page_tab(shared_ptr<unit> iu) : mws(), ss(550)
 {
    if (!iu)
    {
-      throw ia_exception("unit cannot be null");
+      mws_throw ia_exception("unit cannot be null");
    }
 
    u = iu;
@@ -622,7 +622,7 @@ void mws_page_tab::receive(shared_ptr<iadp> idp)
 
    //		if (idx < 0)
    //		{
-   //			throw ia_exception("target page cannot be found");
+   //			mws_throw ia_exception("target page cannot be found");
    //		}
 
    //		last_page = current_page;
@@ -974,7 +974,7 @@ void mws_page_tab::set_first_page(shared_ptr<mws_page> up)
    }
    else if (idx == -1)
    {
-      throw ia_exception("page is not a member of this container");
+      mws_throw ia_exception("page is not a member of this container");
    }
 }
 
@@ -1002,7 +1002,7 @@ void mws_page_tab::add(shared_ptr<mws_page> p)
 {
    if (contains_mws(p))
    {
-      throw ia_exception();//trs("page with id [%1%] already exists") % p->get_id());
+      mws_throw ia_exception();//trs("page with id [%1%] already exists") % p->get_id());
    }
 
    pages.push_back(p);
@@ -1181,7 +1181,7 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
       {
          if (c->get_type() == gfx_obj::e_mws)
          {
-            auto w = std::dynamic_pointer_cast<mws>(c);
+            auto w = mws_dynamic_pointer_cast<mws>(c);
 
             if (w && w->visible)
             {
@@ -1421,7 +1421,7 @@ void mws_page::add(shared_ptr<mws_page_item> b)
 {
    if (contains_mws(b))
    {
-      throw ia_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
+      mws_throw ia_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
    }
 
    mlist.push_back(b);

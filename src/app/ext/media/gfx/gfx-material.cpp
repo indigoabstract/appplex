@@ -282,7 +282,7 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
          case gfx_input::s3d:
          {
             value_type = gfx_input::s3d;
-            throw ia_exception("s3d not implemented");
+            mws_throw ia_exception("s3d not implemented");
             break;
          }
 
@@ -329,37 +329,37 @@ void gfx_material_entry::debug_print()
 {
    std::unordered_map<std::string, shared_ptr<gfx_material_entry> >::iterator it = entries.begin();
 
-   vprint("[");
+   mws_print("[");
    for (; it != entries.end(); it++)
    {
-      vprint("[name[%s] ", it->first.c_str());
+      mws_print("[name[%s] ", it->first.c_str());
       it->second->debug_print();
-      vprint("], ");
+      mws_print("], ");
    }
 
    if (value_type != -1)
    {
-      vprint(" vt %d", value_type);
+      mws_print(" vt %d", value_type);
 
       if (value_type == gfx_input::text)
       {
          //std::string* s = (std::string*)value;
          auto& s = get_value<std::string>();
-         vprint(" text [%s]", s.c_str());
+         mws_print(" text [%s]", s.c_str());
       }
       else if (value_type == gfx_input::vec3)
       {
          //glm::vec3* v = (glm::vec3*)value;
          auto& v = get_value<glm::vec3>();
-         vprint(" vec3 [%f, %f, %f]", v.x, v.y, v.z);
+         mws_print(" vec3 [%f, %f, %f]", v.x, v.y, v.z);
       }
    }
    else
    {
-      vprint(" null");
+      mws_print(" null");
    }
 
-   vprint("]");
+   mws_print("]");
 }
 
 std::unordered_map<std::string, shared_ptr<gfx_material_entry> > gfx_material::static_std_param;
@@ -432,16 +432,16 @@ void gfx_material::debug_print()
 {
    std::unordered_map<std::string, shared_ptr<gfx_material_entry> >::iterator it = other_params.begin();
 
-   vprint("[\n");
+   mws_print("[\n");
 
    for (; it != other_params.end(); it++)
    {
-      vprint("[%s\t", it->first.c_str());
+      mws_print("[%s\t", it->first.c_str());
       it->second->debug_print();
-      vprint("]\n");
+      mws_print("]\n");
    }
 
-   vprint("\n]");
+   mws_print("\n]");
 }
 
 bool gfx_material::is_std_param(const std::string& iparam_name)
@@ -473,13 +473,13 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
       }
       else
       {
-         //vprint("gl_material::load_shader(): failed to load shader. switching to default\n");
+         //mws_print("gl_material::load_shader(): failed to load shader. switching to default\n");
          return gfx::shader::get_program_by_name("black_shader");
       }
    }
    else
    {
-#if defined PLATFORM_WINDOWS_PC && defined _DEBUG
+#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
       shader->reload_on_modifications();
 #endif
    }

@@ -328,7 +328,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 				break;
 
 			default:
-				throw ia_exception("unknown value");
+            mws_throw ia_exception("unknown value");
 			}
 
 			glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, begin_ptr(vertices_buffer) + offset);
@@ -429,7 +429,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 				break;
 
 			default:
-				throw ia_exception("unknown value");
+            mws_throw ia_exception("unknown value");
 			}
 
 			glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, (const void*)offset);

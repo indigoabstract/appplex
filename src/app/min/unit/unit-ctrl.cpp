@@ -150,7 +150,7 @@ bool unit_ctrl::update()
 #endif // MOD_SND
 
 	shared_ptr<unit> u = get_current_unit();
-	ia_assert(u != shared_ptr<unit>());
+	mws_assert(u != shared_ptr<unit>());
 
 #ifndef SINGLE_UNIT_BUILD
 

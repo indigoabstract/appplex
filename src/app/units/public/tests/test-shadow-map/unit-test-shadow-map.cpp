@@ -95,7 +95,7 @@ void unit_test_shadow_map::load()
 	//mat["depth-function"] = "greater";
 	//mat["u_v3_light_dir"] = glm::vec3(1.f, 2.f, 3.f);
 	////mat["material"] = material;
-	//vprint("\n\nxxx\n");
+	//mws_print("\n\nxxx\n");
 	//mat.debug_print();
 
 	p->rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
