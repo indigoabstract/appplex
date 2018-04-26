@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit-list[ gl-frag-shader-demo ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit-list[ test-touch-input ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
@@ -47,6 +47,7 @@ units
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
 	test-trail[ platf[ windows, android ], ],
 	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
+	test-touch-input[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, zlib ], platf[ windows, android, ios ], ],
 
 	@@[ private units ],
 	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
