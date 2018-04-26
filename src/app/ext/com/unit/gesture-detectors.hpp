@@ -218,14 +218,14 @@ public:
          {
             start_event = new_event;
             first_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
-            det_state = tap_detector_state::ST_PRESSED_0;
+            set_detector_state(tap_detector_state::ST_PRESSED_0);
 
             return GS_START;
          }
          else if (det_state == tap_detector_state::ST_RELEASED_0)
          {
             second_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
-            det_state = tap_detector_state::ST_PRESSED_1;
+            set_detector_state(tap_detector_state::ST_PRESSED_1);
 
             if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
             {
@@ -240,7 +240,7 @@ public:
       case pointer_evt::touch_ended:
          if (det_state == tap_detector_state::ST_PRESSED_0)
          {
-            det_state = tap_detector_state::ST_RELEASED_0;
+            set_detector_state(tap_detector_state::ST_RELEASED_0);
 
             return GS_START;
          }
@@ -284,7 +284,7 @@ public:
    gesture_state reset()
    {
       start_event = dummy_event;
-      det_state = tap_detector_state::ST_READY;
+      set_detector_state(tap_detector_state::ST_READY);
 
       return GS_NONE;
    }
@@ -301,6 +301,11 @@ private:
       ST_RELEASED_0,
       ST_PRESSED_1,
    };
+
+   void set_detector_state(tap_detector_state i_st)
+   {
+      det_state = i_st;
+   }
 
    // Member Variables
 

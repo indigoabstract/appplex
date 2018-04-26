@@ -302,35 +302,44 @@ FMT_VARIADIC_W(std::wstring, wtrs, const wchar_t*)
 // assert
 #include <assert.h>
 
-inline void mws_signal_error(const char* imessage = 0)
+inline void mws_signal_error(const char* i_message = 0)
 {
 #if defined MWS_DEBUG_BUILD
-   if (imessage)
+
+   if (i_message)
    {
-      trx(imessage);
+      mws_print("%d\n", i_message);
    }
 
 #if defined PLATFORM_WINDOWS_PC
+
    _asm int 3;
+
 #else
-   assert(icondition);
+
+   assert(false);
+
 #endif
 #endif
 }
 
-inline void mws_assert(bool icondition, const char* imessage)
+inline void mws_assert(bool i_condition, const char* imessage)
 {
 #if defined MWS_DEBUG_BUILD
-   if (icondition == false)
+
+   if (!i_condition)
    {
       mws_signal_error(imessage);
    }
+
 #endif
 }
 
-inline void mws_assert(bool icondition)
+inline void mws_assert(bool i_condition)
 {
 #if defined MWS_DEBUG_BUILD
-   mws_assert(icondition, "assertion failed");
+
+   mws_assert(i_condition, "assertion failed");
+
 #endif
 }

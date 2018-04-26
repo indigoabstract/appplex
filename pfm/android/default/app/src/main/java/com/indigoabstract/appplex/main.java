@@ -56,7 +56,7 @@ public class main extends Activity
 		System.loadLibrary("png_renamed");
 		System.loadLibrary("freetype2-static");
 		System.loadLibrary("ffmpeg");
-		System.loadLibrary("appplex");
+		System.loadLibrary("app_plex_main");
 	}
 
     private static final Pattern DIR_SEPORATOR = Pattern.compile("/");

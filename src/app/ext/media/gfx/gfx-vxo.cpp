@@ -227,9 +227,9 @@ void gfx_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
    }
 }
 
-void gfx_vxo::push_material_params()
+void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 {
-   gfx_material& mat = *get_material();
+   gfx_material& mat = *i_mat;
    shared_ptr<gfx_shader> shader = mat.get_shader();
 
    if (shader)
@@ -627,7 +627,8 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       return;
    }
 
-   gfx_material& mat = *get_material();
+   mws_sp<gfx_material> mat_sp = (icamera->overriding_mat) ? icamera->overriding_mat : get_material();
+   gfx_material& mat = *mat_sp;
    shared_ptr<gfx_shader> glp = mat.get_shader();
 
    if (is_submesh)
@@ -636,7 +637,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    }
    else
    {
-      push_material_params();
+      push_material_params(mat_sp);
       icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), glp);
    }
 

@@ -86,7 +86,7 @@ void gfx_node::attach(shared_ptr<gfx_node> inode)
 {
    if (inode->parent.lock())
    {
-      trx("this node is already part of a hierarchy");
+      mws_signal_error("this node is already part of a hierarchy");
    }
    else
    {
@@ -123,7 +123,7 @@ void gfx_node::detach()
    }
    else
    {
-      trx("this node is not part of a hierarchy");
+      mws_signal_error("this node is not part of a hierarchy");
    }
 }
 

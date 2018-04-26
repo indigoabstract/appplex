@@ -16,6 +16,7 @@ class gfx_vxo;
 class gfx_shader;
 class gfx_camera;
 class gfx_camera_impl;
+class gfx_material;
 
 
 namespace seq_util
@@ -174,6 +175,9 @@ public:
    void draw_mesh(shared_ptr<gfx_vxo> imesh);
    virtual void update_camera_state();
 
+   // if set, use this material for rendering, instead of each object's material
+   mws_sp<gfx_material> overriding_mat;
+   bool update_rt_cam_state;
    def_string_prop(gfx_camera, string_accessor) camera_id;
    std::vector<gfx_rt_info> rt_list;
    bool enabled;

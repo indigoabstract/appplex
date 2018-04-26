@@ -87,7 +87,7 @@ public:
 			shared_ptr<gfx_shader> shader = mat.get_shader();
 
 			mat["texture"][MP_TEXTURE_INST] = atlas;
-			inst->push_material_params();
+			inst->push_material_params(inst->get_material());
 			icamera->update_glp_params(inst, shader);
 
          //model[3][0] = ipos.x;

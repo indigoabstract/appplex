@@ -112,7 +112,7 @@ public:
 			// external path
 			FILE* file = fopen(path.c_str(), iopen_mode.c_str());
 			is_external = true;
-			vprint("open_impl: opening external file %s\n", path.c_str());
+			mws_print("open_impl: opening external file %s\n", path.c_str());
 //			fseek( file, 0, SEEK_END );
 //			uint64 len = ftell((FILE*)file);
 //			fseek(file, 0, SEEK_SET );
@@ -121,7 +121,7 @@ public:
 		}
 
 		AAsset* asset = AAssetManager_open(asset_manager, path.c_str(), 0);
-		vprint("open_impl: opening asset file %s\n", path.c_str());
+		mws_print("open_impl: opening asset file %s\n", path.c_str());
 
 		return asset;
 	}
@@ -253,7 +253,7 @@ void android_main::write_text_v(const char* iformat, ...)const
 	va_list arg_list;
 
 	va_start(arg_list, iformat);
-	__android_log_vprint(ANDROID_LOG_VERBOSE, APPNAME, iformat, arg_list);
+    __android_log_vprint(ANDROID_LOG_VERBOSE, APPNAME, iformat, arg_list);
 	va_end(arg_list);
 }
 
@@ -266,7 +266,7 @@ void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)
 {
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{
-		vprint("android_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
+		mws_print("android_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
 		throw ia_exception("duplicate filename: " + ifile->get_full_path());
 	}
 
@@ -281,7 +281,7 @@ umf_list android_main::get_directory_listing(const std::string& idirectory, umf_
 		{
 			for (auto& e : apk_file_list)
 			{
-				if (starts_with(e->get_root_directory(), idirectory))
+				if (mws_str::starts_with(e->get_root_directory(), idirectory))
 				{
 					get_directory_listing_helper(iplist, e);
 				}
@@ -317,7 +317,7 @@ void android_main::load_apk_file_list()
 	std::string assets_pfx = "assets/";
 	zip* apk_archive = zip_open(g_apk_path.c_str(), 0, nullptr);
 	int file_count = zip_get_num_files(apk_archive);
-	//vprint("android_main::load_apk_file_list zip %s %d", g_apk_path.c_str(), file_count);
+	//mws_print("android_main::load_apk_file_list zip %s %d", g_apk_path.c_str(), file_count);
 
 	for (int i = 0; i < file_count; i++)
 	{
@@ -325,7 +325,7 @@ void android_main::load_apk_file_list()
 
 		if (name == nullptr)
 		{
-			vprint("Error reading zip file name at index %i : %s", i, zip_strerror(apk_archive));
+			mws_print("Error reading zip file name at index %i : %s", i, zip_strerror(apk_archive));
 
 			return;
 		}
@@ -333,7 +333,7 @@ void android_main::load_apk_file_list()
 		{
 			std::string full_path(name);
 
-			if (starts_with(full_path, assets_pfx))
+			if (mws_str::starts_with(full_path, assets_pfx))
 			{
 				std::string path = full_path.substr(assets_pfx.length(), std::string::npos);
 				std::size_t dir_delim_idx = path.find_last_of('/');
@@ -354,12 +354,12 @@ void android_main::load_apk_file_list()
 				auto p_file = pfm_file::get_inst(file_impl);
 
 				apk_file_list.push_back(p_file);
-				//vprint("file %i : %s\n", i, p_file->get_full_path().c_str());
+				//mws_print("file %i : %s\n", i, p_file->get_full_path().c_str());
 			}
 		}
 	}
 
-	//vprint("android_main::load_apk_file_list 2");
+	//mws_print("android_main::load_apk_file_list 2");
 	zip_close(apk_archive);
 }
 

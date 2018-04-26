@@ -93,8 +93,6 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
    gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
    (*line_mesh)["u_v4_color"] = color;
-   //line_mesh->push_material_params();
-   //draw_mesh(line_mesh);
    line_mesh->render_mesh(cam);
 }
 
@@ -459,8 +457,6 @@ public:
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
-      //line_mesh->push_material_params();
-      //draw_mesh(line_mesh);
       line_mesh->render_mesh(cam);
    }
 
@@ -545,8 +541,6 @@ public:
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
-      //line_mesh->push_material_params();
-      //draw_mesh(line_mesh);
       line_mesh->render_mesh(cam);
    }
 
@@ -641,20 +635,16 @@ public:
 
 void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
-   struct z_sort
+   static auto z_sort = [](mws_sp<gfx_vxo> a, mws_sp<gfx_vxo> b)
    {
-      bool operator() (mws_sp<gfx_vxo> a, mws_sp<gfx_vxo> b)
-      {
-         auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
-         auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());
+      auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
+      auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());
 
-         return (pos_0.z < pos_1.z);
-      }
+      return (pos_0.z < pos_1.z);
    };
-   z_sort inst;
 
-   std::sort(i_opaque.begin(), i_opaque.end(), inst);
-   std::sort(i_translucent.begin(), i_translucent.end(), inst);
+   std::sort(i_opaque.begin(), i_opaque.end(), z_sort);
+   std::sort(i_translucent.begin(), i_translucent.end(), z_sort);
 }
 
 std::function<void(mws_sp<gfx_camera>, std::vector<mws_sp<gfx_vxo> >&, std::vector<mws_sp<gfx_vxo> >&)> gfx_camera::z_order_sort_function = z_order_sort;
@@ -700,13 +690,16 @@ void gfx_camera::clear_buffers()
 
 void gfx_camera::update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp)
 {
-   auto crt_rt = gfx::rt::get_current_render_target();
-   auto last_rt = p->last_rt.lock();
-
-   if (last_rt != crt_rt)
+   if (update_rt_cam_state)
    {
-      update_camera_state_impl();
-      p->last_rt = crt_rt;
+      auto crt_rt = gfx::rt::get_current_render_target();
+      auto last_rt = p->last_rt.lock();
+
+      if (last_rt != crt_rt)
+      {
+         update_camera_state_impl();
+         p->last_rt = crt_rt;
+      }
    }
 
    auto& tf_mx = imesh->get_global_tf_mx();
@@ -789,7 +782,7 @@ void gfx_camera::draw_mesh(shared_ptr<gfx_vxo> imesh)
    //imesh->render_mesh(static_pointer_cast<gfx_camera>(get_shared_ptr()));
 }
 
-gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this) {}
+gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this), update_rt_cam_state(true) {}
 
 void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
 {

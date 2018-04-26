@@ -441,21 +441,17 @@ void mws_page_tab::init_subobj()
       page_stack.push_back(current_page);
    }
 
-   struct z_sort
+   static auto z_sort = [](mws_sp<mws> a, mws_sp<mws> b)
    {
-      bool operator() (mws_sp<mws> a, mws_sp<mws> b)
-      {
-         return (a->get_z() > b->get_z());
-      }
+      return (a->get_z() > b->get_z());
    };
-   z_sort inst;
 
    for (auto p : pages)
    {
       p->init();
       p->mws_subobj_list.clear();
       p->list_mws_children(p->mws_subobj_list);
-      std::sort(p->mws_subobj_list.begin(), p->mws_subobj_list.end(), inst);
+      std::sort(p->mws_subobj_list.begin(), p->mws_subobj_list.end(), z_sort);
    }
 }
 

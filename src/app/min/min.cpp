@@ -257,7 +257,7 @@ ia_exception::~ia_exception()
 {
 }
 
-const char* ia_exception::what() const
+const char* ia_exception::what() const noexcept
 {
    return exmsg.c_str();
 }

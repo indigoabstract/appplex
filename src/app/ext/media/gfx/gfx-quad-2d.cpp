@@ -18,6 +18,16 @@ void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
    set_translation(tr.x, tr.y);
 }
 
+float gfx_quad_2d::get_z() const
+{
+   return position().z;
+}
+
+void gfx_quad_2d::set_z(float i_z_position)
+{
+   position = glm::vec3(position().x, position().y, i_z_position);
+}
+
 glm::vec2 gfx_quad_2d::get_translation() const
 {
    return tr;

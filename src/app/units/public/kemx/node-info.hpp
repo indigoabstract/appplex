@@ -21,7 +21,7 @@ public:
 	{
 	}
 
-	const char* what() const
+	const char* what() const noexcept
 	{
 		return msg.c_str();
 	}

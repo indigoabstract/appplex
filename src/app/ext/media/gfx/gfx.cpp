@@ -311,12 +311,16 @@ void gfx::rt::set_current_render_target(shared_ptr<gfx_rt> irdt)
       width = irdt->color_att->get_width();
       height = irdt->color_att->get_height();
 
+#ifdef MWS_REPORT_GL_ERRORS
+
       if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       {
          trx("glerror - gl frame buffer status != frame buffer complete");
       }
 
       mws_report_gfx_errs();
+
+#endif // MWS_REPORT_GL_ERRORS
    }
    else
    {

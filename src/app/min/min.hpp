@@ -71,7 +71,7 @@ public:
    virtual ~ia_exception();
 
    // returns a C-style character string describing the general cause of the current error
-   virtual const char* what() const;
+   virtual const char* what() const noexcept;
 
 private:
    std::string exmsg;
@@ -158,7 +158,7 @@ class mws_bad_any_cast
 #endif
 {
 public:
-   virtual const char* what() const
+   virtual const char* what() const noexcept
    {
       return "ia_bad_any_cast: failed conversion using ia_any_cast";
    }

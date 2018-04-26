@@ -19,6 +19,8 @@ public:
 
    gfx_quad_2d(std::shared_ptr<gfx> i_gi = nullptr);
    void set_anchor(e_anchor_types ianchor_type);
+   virtual float get_z() const;
+   virtual void set_z(float i_z_position);
    virtual glm::vec2 get_translation() const;
    virtual void set_translation(const glm::vec2& i_tr);
    virtual void set_translation(float ix, float iy);

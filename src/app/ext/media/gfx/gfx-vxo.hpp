@@ -180,7 +180,7 @@ public:
    vx_info& get_vx_info();
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void render_mesh(std::shared_ptr<gfx_camera> icamera);
-   void push_material_params();
+   void push_material_params(mws_sp<gfx_material> i_mat);
    void set_size(int ivx_count, int iidx_count);
 
    std::vector<std::string> camera_id_list;
