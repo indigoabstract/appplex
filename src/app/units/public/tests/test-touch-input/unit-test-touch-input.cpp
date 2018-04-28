@@ -366,6 +366,8 @@ namespace unit_test_touch_input_ns
 
             if (picking_dgb_q2d && picking_dgb_q2d->visible)
             {
+               //picking_dgb_q2d->update_recursive(glm::mat4(), true);
+               //picking_dgb_q2d->render_mesh(g);
                auto tr = picking_dgb_q2d->get_translation();
                g->draw_point(glm::vec3(tr.x + map_click_x, tr.y + map_click_y, picking_dgb_q2d->get_z() + 1.f), glm::vec4(1., 1, 1, 1.), 5.f);
             }
@@ -394,7 +396,7 @@ namespace unit_test_touch_input_ns
          glReadPixels(0, 0, picking_tex->get_width(), picking_tex->get_height(), tex_prm.format, tex_prm.type, 0);
 
          mws_report_gfx_errs();
-         if (frame_idx >= PBO_COUNT - 1)
+         if ((frame_idx >= PBO_COUNT - 1) && last_click.x >= 0.f)
          {
             // pbo_next_index is used to process pixels in the other PBO
             int pbo_next_index = (pbo_index + 1) % PBO_COUNT;
@@ -405,7 +407,7 @@ namespace unit_test_touch_input_ns
             GLubyte* src = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, pbo_data_size, GL_MAP_READ_BIT);
 
             mws_report_gfx_errs();
-            if (src && last_click.x >= 0.f)
+            if (src)
             {
                if (g->projection_type == g->e_perspective_proj)
                {
@@ -419,7 +421,6 @@ namespace unit_test_touch_input_ns
                }
                else if (g->projection_type == g->e_orthographic_proj)
                {
-                  float screen_aspect_ratio = gfx::rt::get_screen_width() / float(gfx::rt::get_screen_height());
                   float tf_x = picking_tex->get_width() / float(gfx::rt::get_screen_width());
                   float tf_y = picking_tex->get_height() / float(gfx::rt::get_screen_height());
                   map_click_x = int(last_click.x * tf_x);
