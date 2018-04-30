@@ -299,6 +299,44 @@ void mws_slider::receive(shared_ptr<iadp> idp)
    {
       shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
       auto type = ts->get_type();
+      bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te);
+      bool process = false;
+
+      if (dragging_detected && active)
+      {
+         auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+         auto tr = s_ball->get_translation();
+         float tx = tr.x + dragging_dt.drag_diff.x;
+         float x_off = mws_r.x - mws_r.h / 2;
+         float t_val = 0.f;
+
+         //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
+         if (tx < x_off)
+         {
+            tx = x_off;
+            t_val = 0.f;
+         }
+         else if (tx >(x_off + mws_r.w))
+         {
+            tx = x_off + mws_r.w;
+            t_val = 1.f;
+         }
+         else
+         {
+            t_val = (tx - x_off) / mws_r.w;
+         }
+
+         if (t_val != value)
+         {
+            value = t_val;
+            s_ball->set_translation(tx, tr.y);
+
+            if (on_drag_handler)
+            {
+               on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+            }
+         }
+      }
 
       //mws_print("evt type [%d]\n", type);
       switch (type)
@@ -307,52 +345,19 @@ void mws_slider::receive(shared_ptr<iadp> idp)
          if (is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
          {
             active = true;
-            ts->process();
+            process = true;
          }
          break;
 
       case touch_sym_evt::TS_RELEASED:
          active = false;
+         process = true;
          break;
+      }
 
-      case touch_sym_evt::TS_PRESS_AND_DRAG:
-         if (active)
-         {
-            auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
-            auto tr = s_ball->get_translation();
-            float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-            float tx = tr.x + dx;
-            float x_off = mws_r.x - mws_r.h / 2;
-            float t_val = 0.f;
-
-            //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
-            if (tx < x_off)
-            {
-               tx = x_off;
-               t_val = 0.f;
-            }
-            else if (tx > (x_off + mws_r.w))
-            {
-               tx = x_off + mws_r.w;
-               t_val = 1.f;
-            }
-            else
-            {
-               t_val = (tx - x_off) / mws_r.w;
-            }
-
-            if (t_val != value)
-            {
-               value = t_val;
-               s_ball->set_translation(tx, tr.y);
-
-               if (on_drag_handler)
-               {
-                  on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
-               }
-            }
-         }
-         break;
+      if (!ts->is_processed() && process)
+      {
+         ts->process();
       }
    }
 }

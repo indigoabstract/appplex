@@ -47,12 +47,12 @@ public:
    //    dragging_delta... calculate the diff from last pointer position
    // return:
    //    returns true if pinch zoom is detected
-   bool detect_helper(std::shared_ptr<pointer_evt> evt, glm::vec2& dragging_delta)
+   bool detect_helper(std::shared_ptr<pointer_evt> evt)
    {
       bool gesture_detected = false;
       auto dragging_state = detect(evt);
 
-      dragging_delta = glm::vec2(0.f);
+      drag_diff = glm::vec2(0.f);
 
       switch (dragging_state)
       {
@@ -60,7 +60,7 @@ public:
       {
          last_move_pos_bak = pointer_pos;
          pointer_pos = evt->get_pointer_press_by_index(0)->get_position();
-         dragging_delta = pointer_pos - last_move_pos;
+         drag_diff = pointer_pos - last_move_pos;
          last_move_pos = pointer_pos;
          gesture_detected = true;
          break;
@@ -69,7 +69,7 @@ public:
       case GS_END:
       {
          pointer_pos = evt->get_pointer_press_by_index(0)->get_position();
-         dragging_delta = pointer_pos - last_move_pos;
+         drag_diff = pointer_pos - last_move_pos;
          gesture_detected = true;
          break;
       }
@@ -157,6 +157,7 @@ public:
 
    // Member Variables
 
+   glm::vec2 drag_diff;
    glm::vec2 press_pos;
    glm::vec2 pointer_pos;
    glm::vec2 last_move_pos;

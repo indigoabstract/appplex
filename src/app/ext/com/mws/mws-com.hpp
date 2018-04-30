@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mws.hpp"
+#include "com/unit/gesture-detectors.hpp"
 #include "gfx-color.hpp"
 
 class gfx_quad_2d;
@@ -89,6 +90,7 @@ protected:
    mws_sp<gfx_vxo> slider_bar;
    mws_sp<gfx_vxo> slider_ball;
    bool active;
+   dragging_detector dragging_dt;
 };
 
 

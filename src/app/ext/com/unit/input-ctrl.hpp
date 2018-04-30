@@ -152,7 +152,8 @@ public:
 	enum touch_sym_evt_types
 	{
 		TS_PRESSED,
-		TS_RELEASED,
+      TS_DRAGGED,
+      TS_RELEASED,
 		TS_FIRST_TAP,
 		TS_TAP,
 		TS_DOUBLE_TAP,
