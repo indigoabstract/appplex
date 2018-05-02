@@ -159,7 +159,7 @@ mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
 mws_button::mws_button(shared_ptr<mws_page> iparent)
 {
    color = gfx_color::colors::black;
-   font = mws_font::new_inst(get_unit()->get_width() / 50.f);
+   font = mws_font::new_inst(24.f);
    font->set_color(gfx_color::colors::white);
    set_text("n/a");
 }

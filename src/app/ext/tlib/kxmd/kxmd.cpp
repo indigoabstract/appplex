@@ -77,7 +77,7 @@ bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 
 
 // ipath is like xxx.yyy.zzz
-ia_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, ia_any default_val)
+mws_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, mws_any default_val)
 {
    std::vector<std::string> tokens;
    tokens = str_split(ipath, ".");
@@ -98,7 +98,7 @@ ia_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, i
       }
    }
 
-   ia_any result;
+   mws_any result;
 
    if (xdb)
    {
@@ -116,7 +116,7 @@ ia_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, i
 std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_ptr<kx_block> iroot, std::vector<std::string> default_val)
 {
    std::vector<std::string> seq;
-   ia_any val = get_kxmd_value(ipath, iroot);
+   mws_any val = get_kxmd_value(ipath, iroot);
 
    if (!val.empty())
    {
@@ -124,7 +124,7 @@ std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_pt
       {
          std::function<int(int)> is_quote = [](int c) { return c == '\'' || c == '"'; };
 
-         seq = any_cast<std::vector<std::string>>(val);
+         seq = mws_any_cast<std::vector<std::string>>(val);
 
          // clear ' and " from the string
          for (std::string& s : seq)
@@ -133,7 +133,7 @@ std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_pt
             s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(is_quote)).base(), s.end());
          }
       }
-         mws_catch(ia_bad_any_cast& e)
+         mws_catch(mws_bad_any_cast& e)
       {
          trx(e.what());
       }

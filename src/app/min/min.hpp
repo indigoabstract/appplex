@@ -160,7 +160,7 @@ class mws_bad_any_cast
 public:
    virtual const char* what() const noexcept
    {
-      return "ia_bad_any_cast: failed conversion using ia_any_cast";
+      return "ia_bad_any_cast: failed conversion using mws_any_cast";
    }
 };
 

@@ -57,7 +57,7 @@ units
 	reliquus[ ],
 	orbital-deathmatch[ ],
 	shipwrecked[ ],
-	vorofract[ uses[ gfx, kxmd ] ],
+	vorofract[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, zlib, kxmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
 	break-reminder[ uses[ gfx, notifications, kxmd, snd ], platf[ windows, android ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
