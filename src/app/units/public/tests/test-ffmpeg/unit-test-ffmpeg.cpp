@@ -62,27 +62,21 @@ void unit_test_ffmpeg::load()
 	gfx_quad_2d& q_tex = *q2d_tex;
 	gfx_quad_2d& q_rt_tex = *q2d_rt_tex;
 
-	texture_display = gfx::shader::get_program_by_name("texture_display");
+	texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
 
-	if (!texture_display)
-	{
-		texture_display = gfx::shader::new_program("texture_display", "basic_tex.vsh", "basic_tex.fsh");
-		mws_report_gfx_errs();
-	}
-
-	gfx::shader::set_current_program(texture_display);
+	gfx::i()->shader.set_current_program(texture_display);
 
 	q_tex[MP_CULL_BACK] = false;
 	q_tex[MP_CULL_FRONT] = false;
 	q_tex[MP_DEPTH_TEST] = false;
 	q_tex.set_dimensions(2, 2);
-	q_tex[MP_SHADER_NAME] = "basic_tex";
+	q_tex[MP_SHADER_NAME] = "basic-tex-shader";
 
 	q_rt_tex[MP_CULL_BACK] = false;
 	q_rt_tex[MP_CULL_FRONT] = false;
 	q_rt_tex[MP_DEPTH_TEST] = false;
 	q_rt_tex.set_dimensions(2, 2);
-	q_rt_tex[MP_SHADER_NAME] = "basic_tex";
+	q_rt_tex[MP_SHADER_NAME] = "basic-tex-shader";
 
    {
       class vdec_ffmpeg_listener_impl : public vdec_ffmpeg_listener

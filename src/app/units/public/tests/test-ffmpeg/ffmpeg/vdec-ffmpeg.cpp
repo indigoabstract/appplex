@@ -175,11 +175,11 @@ public:
 		int cw = codec_ctx->coded_width;
 		int ch = codec_ctx->coded_height;
 
-		conv_yuv420sp_2_rgb = gfx::shader::get_program_by_name("conv_yuv420sp_2_rgb");
+		conv_yuv420sp_2_rgb = gfx::i()->shader.get_program_by_name("conv_yuv420sp_2_rgb");
 
 		if (!conv_yuv420sp_2_rgb)
 		{
-			conv_yuv420sp_2_rgb = gfx::shader::new_program("conv_yuv420sp_2_rgb", "conv_yuv420sp_2_rgb.vsh", "conv_yuv420sp_2_rgb.fsh");
+			conv_yuv420sp_2_rgb = gfx::i()->shader.new_program("conv_yuv420sp_2_rgb", "conv_yuv420sp_2_rgb.vsh", "conv_yuv420sp_2_rgb.fsh");
 			mws_report_gfx_errs();
 		}
 
@@ -288,10 +288,10 @@ public:
 			last_frame_time = crt_frame_time;
 		}
 
-		shared_ptr<gfx_rt> current_rt = gfx::rt::get_current_render_target();
-		shared_ptr<gfx_shader> current_program = gfx::shader::get_current_program();
+		shared_ptr<gfx_rt> current_rt = gfx::i()->rt.get_current_render_target();
+		shared_ptr<gfx_shader> current_program = gfx::i()->shader.get_current_program();
 
-		gfx::rt::set_current_render_target(rt);
+		gfx::i()->rt.set_current_render_target(rt);
 		frame_is_complete = 0;
 
 		while(frame_is_complete == 0)
@@ -305,7 +305,7 @@ public:
 			}
 		}
 
-		gfx::rt::set_current_render_target(current_rt);
+		gfx::i()->rt.set_current_render_target(current_rt);
 	}
 
 	void goto_frame(int iframe_idx)
@@ -361,9 +361,9 @@ private:
 						//rt = nullptr;
 						//rt_tex = y_tex = u_tex = v_tex = nullptr;
 
-						y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex" + tex_idx_str, w1, h, "R8");
-						u_tex = gfx::tex::new_tex_2d("u_s2d_u_tex" + tex_idx_str, w2, h / 2, "R8");
-						v_tex = gfx::tex::new_tex_2d("u_s2d_v_tex" + tex_idx_str, w2, h / 2, "R8");
+						y_tex = gfx::i()->tex.new_tex_2d("u_s2d_y_tex" + tex_idx_str, w1, h, "R8");
+						u_tex = gfx::i()->tex.new_tex_2d("u_s2d_u_tex" + tex_idx_str, w2, h / 2, "R8");
+						v_tex = gfx::i()->tex.new_tex_2d("u_s2d_v_tex" + tex_idx_str, w2, h / 2, "R8");
 						yt.resize(w1 * h);
 						ut.resize(w2 * h / 2);
 						vt.resize(w2 * h / 2);
@@ -379,19 +379,19 @@ private:
 						q_tex["u_s2d_v_tex"][MP_TEXTURE_INST] = v_tex;
 						q_tex.scaling = glm::vec3(w1, h, 1.f);
 						//q2d->set_v_flip(true);
-						rt_tex = gfx::tex::new_tex_2d("u_s2d_tex" + tex_idx_str, w1, h);
-						rt = gfx::rt::new_rt();
+						rt_tex = gfx::i()->tex.new_tex_2d("u_s2d_tex" + tex_idx_str, w1, h);
+						rt = gfx::i()->rt.new_rt();
 						rt->set_color_attachment(rt_tex);
 						clear_rt();
 						tex_idx++;
 					}
 
-					shared_ptr<gfx_shader> active_shader = gfx::shader::get_current_program();
+					shared_ptr<gfx_shader> active_shader = gfx::i()->shader.get_current_program();
 
 					if (!active_shader)
 					{
-						active_shader = gfx::shader::get_program_by_name("black_shader");
-						gfx::shader::set_current_program(active_shader);
+						active_shader = gfx::i()->shader.get_program_by_name("black-shader");
+						gfx::i()->shader.set_current_program(active_shader);
 					}
 
 					y_tex->send_uniform("u_s2d_y_tex", 0);
@@ -441,8 +441,8 @@ private:
 
 	void clear_rt()
 	{
-		gfx::rt::set_current_render_target(rt);
-		shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+		gfx::i()->rt.set_current_render_target(rt);
+		shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
 		decl_scgfxpl(pl1)
 		{
 			{gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f},
@@ -450,7 +450,7 @@ private:
 			{},
 		};
 		gl_st->set_state(pl1);
-		gfx::rt::set_current_render_target(shared_ptr<gfx_rt>());
+		gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
 	}
 
 	void free_memory()

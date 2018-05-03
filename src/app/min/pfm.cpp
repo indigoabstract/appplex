@@ -18,11 +18,43 @@ boost::posix_time::ptime time_start;
 #include <cstdlib>
 #include <cstring>
 #include <cstdarg>
+#include <cassert>
 
 using std::string;
 using std::wstring;
 using std::vector;
 
+
+void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message)
+{
+#if defined MWS_DEBUG_BUILD
+
+   char* msg = (i_message) ? i_message : "signal error";
+   mws_print("[%s] at file [%s], line [%d]\n", msg, i_file, i_line);
+
+#if defined PLATFORM_WINDOWS_PC
+
+   _asm int 3;
+
+#else
+
+   assert(false);
+
+#endif
+#endif
+}
+
+void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition)
+{
+#if defined MWS_DEBUG_BUILD
+
+   if (!i_condition)
+   {
+      mws_signal_error_impl(i_file, i_line, "assertion failed");
+   }
+
+#endif
+}
 
 
 // platform specific code

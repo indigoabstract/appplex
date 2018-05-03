@@ -49,13 +49,13 @@ void unit_test_gl::load()
 	mws_report_gfx_errs();
 
 	{
-		rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
-		rt = gfx::rt::new_rt();
+		rt_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), 256, 256);
+		rt = gfx::i()->rt.new_rt();
 		rt->set_color_attachment(rt_tex);
 
-		shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+		shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
-		gfx::rt::set_current_render_target(rt);
+		gfx::i()->rt.set_current_render_target(rt);
 		decl_scgfxpl(pl1)
 		{
 			{gl::COLOR_CLEAR_VALUE, 1.f, 1.f, 1.f, 0.7f},
@@ -63,7 +63,7 @@ void unit_test_gl::load()
 			{},
 		};
 		gl_st->set_state(pl1);
-		gfx::rt::set_current_render_target(shared_ptr<gfx_rt>());
+		gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
 	}
 
 	quad_mesh = shared_ptr<gfx_plane>(new gfx_plane());
@@ -75,7 +75,7 @@ void unit_test_gl::load()
 	qm.set_dimensions(1, 1);
 	qm.scaling = glm::vec3(sx, sy, sz);
 	qm.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-	qm[MP_SHADER_NAME] = "basic_tex";
+	qm[MP_SHADER_NAME] = "basic-tex-shader";
 	qm[MP_BLENDING] = MV_ALPHA;
 	qm["u_s2d_tex"] = rt_tex->get_name();
 

@@ -30,7 +30,7 @@ shared_ptr<mws_panel> mws_panel::nwi()
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o";
+      rvxo[MP_SHADER_NAME] = "c-o-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -64,7 +64,7 @@ std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "basic-tex";
+      rvxo[MP_SHADER_NAME] = "basic-tex-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -98,7 +98,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    //prm.mag_filter = gfx_tex_params::e_tf_linear;
    //prm.gen_mipmaps = false;
 
-   //tex = gfx::tex::new_tex_2d(i_img_name, &prm);
+   //tex = gi()->tex.new_tex_2d(i_img_name, &prm);
    (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
@@ -255,7 +255,7 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_bar);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o";
+      rvxo[MP_SHADER_NAME] = "c-o-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -268,7 +268,7 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_ball);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o";
+      rvxo[MP_SHADER_NAME] = "c-o-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;

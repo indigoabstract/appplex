@@ -12,99 +12,122 @@ class gfx_tex_params;
 class gfx_tex;
 class gfx_tex_cube_map;
 class gfx_state;
+class unit_ctrl;
 
 
 class gfx
 {
 public:
-   static bool is_init();
-   static void init();
-   static shared_ptr<gfx_state> get_gfx_state();
-   static void reload();
+   static std::shared_ptr<gfx> new_inst();
+   static mws_sp<gfx> i() { return main_instance; }
+   shared_ptr<gfx_state> get_gfx_state();
+   void reload();
 
-   struct rt
+   struct ic_rt
    {
-      static shared_ptr<gfx_rt> new_rt();
-      static int get_screen_width();
-      static int get_screen_height();
-      static int get_render_target_width();
-      static int get_render_target_height();
-      static shared_ptr<gfx_rt> get_current_render_target();
-      static void set_current_render_target(shared_ptr<gfx_rt> irdt = nullptr);
+      mws_sp<gfx> gi() { return g.lock(); }
+      std::shared_ptr<gfx_rt> new_rt();
+      int get_screen_width();
+      int get_screen_height();
+      int get_render_target_width();
+      int get_render_target_height();
+      std::shared_ptr<gfx_rt> get_current_render_target();
+      void set_current_render_target(std::shared_ptr<gfx_rt> irdt = nullptr);
 
-      template<typename T> static shared_ptr<std::vector<T> > get_render_target_pixels(shared_ptr<gfx_rt> irt = nullptr)
+      template<typename T> shared_ptr<std::vector<T> > get_render_target_pixels(shared_ptr<gfx_rt> irt = nullptr)
       {
          std::shared_ptr<std::vector<T> > vect(new std::vector<T>(get_render_target_width() * get_render_target_height()));
 
-         get_render_target_pixels<T>(irt, *vect);
+         get_render_target_pixels<T>(irt, vect);
 
          return vect;
       }
 
-      template<typename T> static void get_render_target_pixels(shared_ptr<gfx_rt> irt, std::vector<T>& i_vect)
+      template<typename T> void get_render_target_pixels(std::shared_ptr<gfx_rt> irt, std::shared_ptr<std::vector<T> > ivect)
       {
-         get_render_target_pixels_impl(irt, begin_ptr(i_vect));
+         g.lock()->get_render_target_pixels_impl(irt, begin_ptr(ivect));
       }
-   };
 
-   struct shader
+   private:
+      friend class gfx;
+      std::weak_ptr<gfx> g;
+   };
+   ic_rt rt;
+
+   struct ic_shader
    {
-      static bool reload_shader_on_modify();
-      static shared_ptr<gfx_shader> new_program_from_src
+      mws_sp<gfx> gi() { return g.lock(); }
+      bool reload_shader_on_modify();
+      std::shared_ptr<gfx_shader> new_program_from_src
       (
-         const std::string& iprg_name, shared_ptr<std::string> ivs_shader_src, shared_ptr<std::string> ifs_shader_src,
-         shared_ptr<gfx_shader_listener> ilistener = nullptr
+         const std::string& iprg_name, std::shared_ptr<std::string> ivs_shader_src, std::shared_ptr<std::string> ifs_shader_src,
+         std::shared_ptr<gfx_shader_listener> ilistener = nullptr
       );
-      static shared_ptr<gfx_shader> new_program(const std::string& ishader_name, shared_ptr<gfx_shader_listener> ilistener = nullptr);
-      static shared_ptr<gfx_shader> new_program
+      std::shared_ptr<gfx_shader> new_program(const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener = nullptr);
+      std::shared_ptr<gfx_shader> new_program
       (
-         const std::string& iprg_name, const std::string& ishader_name, shared_ptr<gfx_shader_listener> ilistener = nullptr
+         const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener = nullptr
       );
-      static shared_ptr<gfx_shader> new_program
+      std::shared_ptr<gfx_shader> new_program
       (
          const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
-         shared_ptr<gfx_shader_listener> ilistener = nullptr
+         std::shared_ptr<gfx_shader_listener> ilistener = nullptr
       );
-      static shared_ptr<gfx_shader> get_program_by_shader_id(std::string ishader_id);
-      static shared_ptr<gfx_shader> get_program_by_name(std::string iprg_name);
-      static shared_ptr<gfx_shader> get_current_program();
-      static void set_current_program(shared_ptr<gfx_shader> iglp);
-   };
+      std::shared_ptr<gfx_shader> get_program_by_shader_id(std::string ishader_id);
+      std::shared_ptr<gfx_shader> get_program_by_name(std::string iprg_name);
+      std::shared_ptr<gfx_shader> get_current_program();
+      void set_current_program(std::shared_ptr<gfx_shader> iglp, bool force = false);
 
-   struct tex
+   private:
+      friend class gfx;
+      std::weak_ptr<gfx> g;
+   };
+   ic_shader shader;
+
+   struct ic_tex
    {
-      static shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr);
-      static shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
-      static shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm = nullptr);
-      static shared_ptr<gfx_tex> new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
+      mws_sp<gfx> gi() { return g.lock(); }
+      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr);
+      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
+      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm = nullptr);
+      shared_ptr<gfx_tex> new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
 
       /**
       expects to find in the resources 6 same size images named like this:
       [itex_name-posx.png, itex_name-negx.png, itex_name-posy.png, itex_name-negy.png, itex_name-posz.png, itex_name-negz.png]
       */
-      static shared_ptr<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
-      static shared_ptr<gfx_tex_cube_map> new_tex_cube_map(uint32 isize);
-      static shared_ptr<gfx_tex> get_texture_by_name(std::string iname);
+      shared_ptr<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
+      shared_ptr<gfx_tex_cube_map> new_tex_cube_map(uint32 isize);
+      shared_ptr<gfx_tex> get_texture_by_name(std::string iname);
+
+   private:
+      friend class gfx;
+      std::weak_ptr<gfx> g;
    };
+   ic_tex tex;
 
 private:
    friend class gfx_rt;
    friend class gfx_shader;
    friend class gfx_tex;
+   friend class unit_ctrl;
 
-   static void check_init();
-   static void get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect);
-   static void remove_gfx_obj(const gfx_obj* iobj);
+   static void global_init();
+   void init(mws_sp<gfx> i_new_inst);
+   void get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect);
+   void remove_gfx_obj(const gfx_obj* iobj);
    gfx();
 
+   static mws_sp<gfx> main_instance;
    static gfx_int default_framebuffer_id;
-   static shared_ptr<gfx_shader> active_shader;
-   static shared_ptr<gfx_rt> active_rt;
-   static shared_ptr<gfx_state> gfx_state_inst;
-   static int screen_width;
-   static int screen_height;
-   static std::vector<weak_ptr<gfx_rt> > rt_list;
-   static std::vector<weak_ptr<gfx_shader> > shader_list;
-   static std::vector<weak_ptr<gfx_tex> > tex_list;
-   static shared_ptr<gfx> inst;
+   std::shared_ptr<gfx_shader> active_shader;
+   std::shared_ptr<gfx_rt> active_rt;
+   std::shared_ptr<gfx_state> gfx_state_inst;
+   std::shared_ptr<gfx_shader> black_shader;
+   std::shared_ptr<gfx_shader> wireframe_shader;
+   std::shared_ptr<gfx_shader> basic_tex_shader;
+   std::shared_ptr<gfx_shader> c_o_shader;
+   std::vector<std::weak_ptr<gfx_rt> > rt_list;
+   std::vector<std::weak_ptr<gfx_shader> > shader_list;
+   std::vector<std::weak_ptr<gfx_tex> > tex_list;
 };

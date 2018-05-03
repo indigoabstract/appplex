@@ -81,8 +81,8 @@ public:
          v_pbo_ids = { 0, 0 };
       }
 
-      default_video_params.width = gfx::rt::get_screen_width();
-      default_video_params.height = gfx::rt::get_screen_height();
+      default_video_params.width = gfx::i()->rt.get_screen_width();
+      default_video_params.height = gfx::i()->rt.get_screen_height();
 
       if (!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
       {
@@ -93,7 +93,7 @@ public:
          prm.min_filter = gfx_tex_params::e_tf_linear;
          prm.mag_filter = gfx_tex_params::e_tf_linear;
          prm.gen_mipmaps = false;
-         scr_mirror_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), gfx::rt::get_screen_width(), gfx::rt::get_screen_height(), &prm);
+         scr_mirror_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height(), &prm);
 
          prm.min_filter = gfx_tex_params::e_tf_nearest;
          prm.mag_filter = gfx_tex_params::e_tf_nearest;
@@ -104,8 +104,8 @@ public:
             int rt_y_height = video_height;
 
             pixels_y_tex.resize(rt_y_width * rt_y_height);
-            rt_y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8", &prm);
-            rt_y = gfx::rt::new_rt();
+            rt_y_tex = gfx::i()->tex.new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8", &prm);
+            rt_y = gfx::i()->rt.new_rt();
             rt_y->set_color_attachment(rt_y_tex);
             rt_y_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -126,8 +126,8 @@ public:
             int rt_u_height = video_height / 2;
 
             pixels_u_tex.resize(rt_u_width * rt_u_height);
-            rt_u_tex = gfx::tex::new_tex_2d("u_s2d_u_tex", rt_u_width, rt_u_height, "R8", &prm);
-            rt_u = gfx::rt::new_rt();
+            rt_u_tex = gfx::i()->tex.new_tex_2d("u_s2d_u_tex", rt_u_width, rt_u_height, "R8", &prm);
+            rt_u = gfx::i()->rt.new_rt();
             rt_u->set_color_attachment(rt_u_tex);
             rt_u_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -148,8 +148,8 @@ public:
             int rt_v_height = video_height / 2;
 
             pixels_v_tex.resize(rt_v_width * rt_v_height);
-            rt_v_tex = gfx::tex::new_tex_2d("u_s2d_v_tex", rt_v_width, rt_v_height, "R8", &prm);
-            rt_v = gfx::rt::new_rt();
+            rt_v_tex = gfx::i()->tex.new_tex_2d("u_s2d_v_tex", rt_v_width, rt_v_height, "R8", &prm);
+            rt_v = gfx::i()->rt.new_rt();
             rt_v->set_color_attachment(rt_v_tex);
             rt_v_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -260,24 +260,24 @@ public:
       // pbo_next_index is used to process pixels in the other PBO
       int pbo_next_index = (pbo_index + 1) % 2;
 
-      gfx::rt::set_current_render_target(rt_y);
+      gfx::i()->rt.set_current_render_target(rt_y);
       rt_y_quad->render_mesh(mws_cam);
-      //gfx::rt::get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       mws_report_gfx_errs();
 
-      gfx::rt::set_current_render_target(rt_u);
+      gfx::i()->rt.set_current_render_target(rt_u);
       rt_u_quad->render_mesh(mws_cam);
-      //gfx::rt::get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
       helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
-      gfx::rt::set_current_render_target();
+      gfx::i()->rt.set_current_render_target();
       mws_report_gfx_errs();
 
-      gfx::rt::set_current_render_target(rt_v);
+      gfx::i()->rt.set_current_render_target(rt_v);
       rt_v_quad->render_mesh(mws_cam);
-      //gfx::rt::get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
       helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
-      gfx::rt::set_current_render_target();
+      gfx::i()->rt.set_current_render_target();
       mws_report_gfx_errs();
 
       // skip this on the first frame as the frame data isn't ready yet
@@ -315,8 +315,8 @@ public:
    {
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
-      int video_width = gfx::rt::get_screen_width();
-      int video_height = gfx::rt::get_screen_height();
+      int video_width = gfx::i()->rt.get_screen_width();
+      int video_height = gfx::i()->rt.get_screen_height();
 
       if (venc && venc->is_encoding())
       {
@@ -484,7 +484,7 @@ void unit::app_storage::save_screenshot(std::string ifilename)
       return;
    }
 
-   shared_ptr<std::vector<uint32> > pixels = gfx::rt::get_render_target_pixels<uint32>();
+   shared_ptr<std::vector<uint32> > pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
    shared_ptr<pfm_file> screenshot_file;
 
    if (ifilename.empty())
@@ -543,7 +543,7 @@ void unit::app_storage::save_screenshot(std::string ifilename)
       screenshot_file = pfm_file::get_inst(ifilename);
    }
 
-   res_ld::inst()->save_image(screenshot_file, gfx::rt::get_screen_width(), gfx::rt::get_screen_height(), (uint8*)begin_ptr(pixels), res_ld::e_vertical_flip);
+   res_ld::inst()->save_image(screenshot_file, gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height(), (uint8*)begin_ptr(pixels), res_ld::e_vertical_flip);
 #endif
 }
 
@@ -578,15 +578,6 @@ unit::unit()
    unit_count++;
    prefs = std::make_shared<unit_preferences>();
    game_time = 0;
-
-   if (is_gfx_unit())
-   {
-      update_ctrl = updatectrl::new_instance();
-      touch_ctrl = touchctrl::new_instance();
-      key_ctrl = keyctrl::new_instance();
-      gfx_scene_inst = shared_ptr<gfx_scene>(new gfx_scene());
-      gfx_scene_inst->init();
-   }
 }
 
 unit::~unit()
@@ -693,9 +684,9 @@ bool unit::update()
 
 void unit::on_resize()
 {
-   if (is_gfx_unit() && gfx::is_init())
+   if (is_gfx_unit() && gfx::i())
    {
-      shared_ptr<gfx_state> gfx_st = gfx::get_gfx_state();
+      shared_ptr<gfx_state> gfx_st = gfx::i()->get_gfx_state();
       int w = get_width();
       int h = get_height();
 
@@ -798,6 +789,15 @@ void unit::receive(shared_ptr<iadp> idp)
 
 void unit::iInit()
 {
+   if (is_gfx_unit())
+   {
+      update_ctrl = updatectrl::new_instance();
+      touch_ctrl = touchctrl::new_instance();
+      key_ctrl = keyctrl::new_instance();
+      gfx_scene_inst = shared_ptr<gfx_scene>(new gfx_scene());
+      gfx_scene_inst->init();
+   }
+
    init();
    storage.p->u = get_smtp_instance();
 

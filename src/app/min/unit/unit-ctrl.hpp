@@ -7,6 +7,7 @@
 class unit;
 class unit_list;
 class pointer_evt;
+class gfx;
 
 
 class unit_ctrl

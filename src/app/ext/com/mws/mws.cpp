@@ -284,7 +284,8 @@ shared_ptr<mws_page> mws_page_transition::get_target_page()
 
    mws_print("target page with id [%s] is not available\n", id.c_str());
 
-   return mws_page::PAGE_NONE;
+   //return mws_page::PAGE_NONE;
+   return nullptr;
 }
 
 slide_scrolling::scroll_dir mws_page_transition::get_scroll_dir()
@@ -338,9 +339,9 @@ public:
    mwspagetab_vkeyboard_page(string iid)
    {
       set_id(iid);
-      tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(mws_page::PREV_PAGE)
-         ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
-         ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
+      //tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(mws_page::PREV_PAGE)
+      //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
+      //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
       tmap.erase(touch_sym_evt::TS_FORWARD_SWIPE);
    }
 
@@ -357,11 +358,11 @@ public:
 
             if (is_inside_box(x, y, mws_r.x, mws_r.h - 40, mws_r.w, mws_r.h))
             {
-               shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(mws_page::PREV_PAGE)
-                  ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-                  ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
+               //shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(mws_page::PREV_PAGE)
+               //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
+               //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
 
-               send(get_mws_parent(), upt);
+               //send(get_mws_parent(), upt);
             }
          }
       }
@@ -1061,9 +1062,9 @@ void mws_page_tab::new_instance_helper()
 }
 
 
-const shared_ptr<mws_page> mws_page::PAGE_NONE = mws_page::new_standalone_instance();
-const shared_ptr<mws_page> mws_page::PREV_PAGE = mws_page::new_standalone_instance();
-const shared_ptr<mws_page> mws_page::NEXT_PAGE = mws_page::new_standalone_instance();
+//const shared_ptr<mws_page> mws_page::PAGE_NONE = mws_page::new_standalone_instance();
+//const shared_ptr<mws_page> mws_page::PREV_PAGE = mws_page::new_standalone_instance();
+//const shared_ptr<mws_page> mws_page::NEXT_PAGE = mws_page::new_standalone_instance();
 
 
 mws_page::mws_page()

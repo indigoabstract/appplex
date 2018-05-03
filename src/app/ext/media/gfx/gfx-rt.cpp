@@ -91,5 +91,5 @@ void gfx_rt::release()
       depth_buffer_id = 0;
    }
 
-   gfx::remove_gfx_obj(this);
+   gi()->remove_gfx_obj(this);
 }

@@ -18,7 +18,7 @@ draw_context::draw_context(shared_ptr<gfx_camera> icam)
 {
    cam = icam;
    line_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-   (*line_mesh)[MP_SHADER_NAME] = "c_o";
+   (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
    (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
    (*line_mesh)[MP_DEPTH_TEST] = true;
    (*line_mesh)[MP_DEPTH_WRITE] = true;
@@ -29,7 +29,7 @@ draw_context::draw_context(shared_ptr<gfx_camera> icam)
    //line_mesh->render_method = GLPT_POINTS;
 
    img_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-   (*img_mesh)[MP_SHADER_NAME] = "basic_tex";
+   (*img_mesh)[MP_SHADER_NAME] = "basic-tex-shader";
    (*img_mesh)["u_s2d_tex"] = "";
    (*img_mesh)[MP_DEPTH_TEST] = true;
    (*img_mesh)[MP_DEPTH_WRITE] = true;
@@ -98,7 +98,7 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
 
 void draw_context::draw_texture(std::string tex_name, float ix, float iy, float iwidth, float iheight)
 {
-   auto tex = gfx::tex::get_texture_by_name(tex_name);
+   auto tex = cam.lock()->gi()->tex.get_texture_by_name(tex_name);
 
    if (tex)
    {
@@ -585,7 +585,7 @@ public:
    gfx_camera_impl()
    {
       line_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-      (*line_mesh)[MP_SHADER_NAME] = "c_o";
+      (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
       (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
       (*line_mesh)[MP_DEPTH_TEST] = true;
       (*line_mesh)[MP_DEPTH_WRITE] = true;
@@ -692,7 +692,7 @@ void gfx_camera::update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_sha
 {
    if (update_rt_cam_state)
    {
-      auto crt_rt = gfx::rt::get_current_render_target();
+      auto crt_rt = gi()->rt.get_current_render_target();
       auto last_rt = p->last_rt.lock();
 
       if (last_rt != crt_rt)
@@ -877,14 +877,14 @@ void gfx_camera::update_camera_state_impl()
 {
    if (projection_type == e_perspective_proj)
    {
-      float aspect = gfx::rt::get_render_target_width() / float(gfx::rt::get_render_target_height());
+      float aspect = gi()->rt.get_render_target_width() / float(gi()->rt.get_render_target_height());
       projection_mx = glm::perspective(glm::radians(fov_y_deg), aspect, near_clip_distance, far_clip_distance);
    }
    else if (projection_type == e_orthographic_proj)
    {
       float left = 0;
-      float right = gfx::rt::get_render_target_width();
-      float bottom = gfx::rt::get_render_target_height();
+      float right = gi()->rt.get_render_target_width();
+      float bottom = gi()->rt.get_render_target_height();
       float top = 0;
 
       projection_mx = glm::ortho(left, right, bottom, top, near_clip_distance, far_clip_distance);

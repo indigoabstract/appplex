@@ -223,7 +223,7 @@ void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_inde
 {
    check_valid_state();
 
-   shared_ptr<gfx_shader> glp = gfx::shader::get_current_program();
+   shared_ptr<gfx_shader> glp = gi()->shader.get_current_program();
    gfx_int param_location = glp->get_param_location(iuniform_name);
 
    if (param_location != -1)
@@ -535,7 +535,7 @@ void gfx_tex::release()
          mws_print("gfx-info del-tex GlTex2D.release tex-id[%d]\n", texture_gl_id);
       }
 
-      gfx::remove_gfx_obj(this);
+      gi()->remove_gfx_obj(this);
    }
 }
 

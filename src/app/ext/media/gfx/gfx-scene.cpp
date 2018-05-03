@@ -247,7 +247,7 @@ void gfx_scene::update()
 
 void gfx_scene::draw()
 {
-   shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+   shared_ptr<gfx_state> gl_st = gi()->get_gfx_state();
    struct pred
    {
       bool operator()(const shared_ptr<gfx_camera> a, const shared_ptr<gfx_camera> b) const

@@ -343,7 +343,7 @@ public:
             prm.internal_format = GL_R8;
             prm.format = GL_RED;
             prm.type = GL_UNSIGNED_BYTE;
-            ext_tex_atlas_ref = gfx::tex::new_external_tex_2d(name, tex_atlas->id, tex_atlas->width, tex_atlas->height, &prm);
+            ext_tex_atlas_ref = gfx::i()->tex.new_external_tex_2d(name, tex_atlas->id, tex_atlas->width, tex_atlas->height, &prm);
          }
       }
 

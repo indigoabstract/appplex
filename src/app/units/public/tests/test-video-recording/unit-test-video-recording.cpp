@@ -46,8 +46,8 @@ namespace test_video_recording
       void load()
       {
          video_scale = 1.f;
-         int video_width = int(gfx::rt::get_screen_width() * video_scale);
-         int video_height = int(gfx::rt::get_screen_height() * video_scale);
+         int video_width = int(gfx::i()->rt.get_screen_width() * video_scale);
+         int video_height = int(gfx::i()->rt.get_screen_height() * video_scale);
 
          // video width & height must be multiple of 2
          if (video_width % 2 != 0)
@@ -64,13 +64,13 @@ namespace test_video_recording
          mws_report_gfx_errs();
 
          {
-            rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
-            rt = gfx::rt::new_rt();
+            rt_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), 256, 256);
+            rt = gfx::i()->rt.new_rt();
             rt->set_color_attachment(rt_tex);
 
-            shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+            shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
-            gfx::rt::set_current_render_target(rt);
+            gfx::i()->rt.set_current_render_target(rt);
             decl_scgfxpl(pl1)
             {
                {gl::COLOR_CLEAR_VALUE, 1.f, 1.f, 1.f, 0.7f},
@@ -78,7 +78,7 @@ namespace test_video_recording
                {},
             };
             gl_st->set_state(pl1);
-            gfx::rt::set_current_render_target();
+            gfx::i()->rt.set_current_render_target();
          }
 
          {
@@ -91,17 +91,17 @@ namespace test_video_recording
             qm.set_dimensions(1, 1);
             qm.scaling = glm::vec3(sx, sy, sz);
             qm.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-            qm[MP_SHADER_NAME] = "basic_tex";
+            qm[MP_SHADER_NAME] = "basic-tex-shader";
             qm[MP_BLENDING] = MV_ALPHA;
             qm["u_s2d_tex"] = rt_tex->get_name();
          }
 
          {
-            scr_mirror_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
+            scr_mirror_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height());
             scr_mirror_mesh = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
             scr_mirror_bg_mesh = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
-            float aspect_ratio = (float)gfx::rt::get_screen_width() / gfx::rt::get_screen_height();
+            float aspect_ratio = (float)gfx::i()->rt.get_screen_width() / gfx::i()->rt.get_screen_height();
             float sx = 512;
             float sy = sx / aspect_ratio, sz = 1;
             float tx = 600, ty = 250, tz = 0;
@@ -112,7 +112,7 @@ namespace test_video_recording
                msh.set_dimensions(1, 1);
                msh.scaling = glm::vec3(sx, sy, sz);
                msh.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-               msh[MP_SHADER_NAME] = "basic_tex";
+               msh[MP_SHADER_NAME] = "basic-tex-shader";
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
                msh.set_v_flip(true);
             }
@@ -125,7 +125,7 @@ namespace test_video_recording
                msh.set_dimensions(1, 1);
                msh.scaling = glm::vec3(sx2, sy2, sz2);
                msh.position = glm::vec3(sx2 / 2 + tx2, sy2 / 2 + ty2, tz2);
-               msh[MP_SHADER_NAME] = "c_o";
+               msh[MP_SHADER_NAME] = "c-o-shader";
                msh["u_v4_color"] = gfx_color::colors::black.to_vec4();
             }
          }
@@ -135,8 +135,8 @@ namespace test_video_recording
             int rt_y_width = video_width;
             int rt_y_height = video_height;
 
-            rt_y_tex = gfx::tex::new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8");
-            rt_y = gfx::rt::new_rt();
+            rt_y_tex = gfx::i()->tex.new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8");
+            rt_y = gfx::i()->rt.new_rt();
             rt_y->set_color_attachment(rt_y_tex);
             rt_y_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -154,8 +154,8 @@ namespace test_video_recording
             int rt_uv_width = video_width / 2;
             int rt_uv_height = video_height / 2;
 
-            rt_uv_tex = gfx::tex::new_tex_2d("u_s2d_uv_tex", rt_uv_width, rt_uv_height, "RGBA8");
-            rt_uv = gfx::rt::new_rt();
+            rt_uv_tex = gfx::i()->tex.new_tex_2d("u_s2d_uv_tex", rt_uv_width, rt_uv_height, "RGBA8");
+            rt_uv = gfx::i()->rt.new_rt();
             rt_uv->set_color_attachment(rt_uv_tex);
             rt_uv_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 
@@ -201,7 +201,7 @@ namespace test_video_recording
       {
          mws_report_gfx_errs();
          scr_mirror_tex->set_active(0);
-         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
+         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height());
          scr_mirror_bg_mesh->render_mesh(mws_cam);
          //(*scr_mirror_mesh)["u_s2d_tex"] = rt_uv_tex->get_name();
          scr_mirror_mesh->render_mesh(mws_cam);
@@ -209,15 +209,15 @@ namespace test_video_recording
 
          if (venc->is_encoding())
          {
-            gfx::rt::set_current_render_target(rt_y);
+            gfx::i()->rt.set_current_render_target(rt_y);
             rt_y_quad->render_mesh(mws_cam);
-            shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::rt::get_render_target_pixels<uint8>(rt_y);
+            shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_y);
             mws_report_gfx_errs();
 
-            gfx::rt::set_current_render_target(rt_uv);
+            gfx::i()->rt.set_current_render_target(rt_uv);
             rt_uv_quad->render_mesh(mws_cam);
-            shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::rt::get_render_target_pixels<uint32>(rt_uv);
-            gfx::rt::set_current_render_target();
+            shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::i()->rt.get_render_target_pixels<uint32>(rt_uv);
+            gfx::i()->rt.set_current_render_target();
             mws_report_gfx_errs();
 
             venc->encode_yuv420_frame(pixels_y_tex->data(), pixels_uv_tex->data());

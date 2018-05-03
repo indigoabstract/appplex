@@ -163,7 +163,7 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity)
 
 void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw, float ih)
 {
-   shared_ptr<gfx_shader> tex_dsp = gfx::shader::get_program_by_name("texture_display");
+   shared_ptr<gfx_shader> tex_dsp = gfx::i()->shader.get_program_by_name("basic-tex-shader");
 
    if (tex_dsp)
    {
@@ -175,9 +175,9 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw
 
       int iw = itex->get_width(), ih = itex->get_height();
       shared_ptr<gfx_plane> q2d(new gfx_plane());
-      shared_ptr<gfx_shader> current_program = gfx::shader::get_current_program();
-      gfx::shader::set_current_program(tex_dsp);
-      shared_ptr<gfx_tex> u_s2d_tex = gfx::tex::new_external_tex_2d("u_s2d_tex", itex->get_texture_gl_id(), iw, ih, &prm);
+      shared_ptr<gfx_shader> current_program = gfx::i()->shader.get_current_program();
+      gfx::i()->shader.set_current_program(tex_dsp);
+      shared_ptr<gfx_tex> u_s2d_tex = gfx::i()->tex.new_external_tex_2d("u_s2d_tex", itex->get_texture_gl_id(), iw, ih, &prm);
 
       u_s2d_tex->set_active(0);
       u_s2d_tex->send_uniform(u_s2d_tex->get_name(), 0);
@@ -186,7 +186,7 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw
       q2d->position = glm::vec3(itx, ity, 0.f);
       q2d->render_mesh(shared_ptr<gfx_camera>());
 
-      gfx::shader::set_current_program(current_program);
+      gfx::i()->shader.set_current_program(current_program);
       mws_report_gfx_errs();
    }
 }
@@ -301,7 +301,7 @@ void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line)
          mws_print("gl error in file [%s] at line [%d] code [%d / 0x%x]\n", i_file, i_line, error_code, error_code);
       }
 
-      mws_signal_error();
+      mws_signal_error("gl-error");
    }
 
 #endif

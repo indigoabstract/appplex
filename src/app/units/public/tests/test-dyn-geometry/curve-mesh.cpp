@@ -342,9 +342,9 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
+		shared_ptr<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
 
-		gfx::shader::set_current_program(p);
+		gfx::i()->shader.set_current_program(p);
 
 		if(is_submesh)
 		{
@@ -356,7 +356,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 		}
 
 		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
-		gfx::shader::set_current_program(glp);
+		gfx::i()->shader.set_current_program(glp);
 	}
 
 	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
@@ -443,9 +443,9 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
+		shared_ptr<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
 
-		gfx::shader::set_current_program(p);
+		gfx::i()->shader.set_current_program(p);
 
 		if(is_submesh)
 		{
@@ -457,7 +457,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 		}
 
 		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, 0);
-		gfx::shader::set_current_program(glp);
+		gfx::i()->shader.set_current_program(glp);
 	}
 
 	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)

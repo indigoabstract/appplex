@@ -74,7 +74,7 @@ namespace unit_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, -50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq["u_s2d_tex"] = "logo-0.png";
          }
 
@@ -85,7 +85,7 @@ namespace unit_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn);
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq["u_s2d_tex"] = "logo-1.png";
          }
 
@@ -96,7 +96,7 @@ namespace unit_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, 50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq["u_s2d_tex"] = "logo-2.png";
          }
 
@@ -107,7 +107,7 @@ namespace unit_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, 50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq["u_s2d_tex"] = "logo-3.png";
          }
 
@@ -118,7 +118,7 @@ namespace unit_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, -50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq["u_s2d_tex"] = "logo-4.png";
          }
 
@@ -127,9 +127,9 @@ namespace unit_test_touch_input_ns
             gfx_quad_2d& mq = *(picking_dgb_q2d = std::make_shared<gfx_quad_2d>());
             //picking_tex_dim = glm::vec2(256, 512);
             picking_tex_dim = glm::vec2(128, 256);
-            //picking_tex_dim = glm::vec2(gfx::rt::get_screen_width(), gfx::rt::get_screen_height());
+            //picking_tex_dim = glm::vec2(gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height());
 
-            if (gfx::rt::get_screen_width() > gfx::rt::get_screen_height())
+            if (gfx::i()->rt.get_screen_width() > gfx::i()->rt.get_screen_height())
             {
                picking_tex_dim = glm::vec2(picking_tex_dim.y, picking_tex_dim.x);
             }
@@ -139,7 +139,7 @@ namespace unit_test_touch_input_ns
             mq.set_translation(50, 50);
             mq[MP_DEPTH_TEST] = true;
             mq[MP_DEPTH_WRITE] = true;
-            mq[MP_SHADER_NAME] = "basic-tex";
+            mq[MP_SHADER_NAME] = "basic-tex-shader";
             mq.camera_id_list.clear();
             mq.camera_id_list.push_back(get_unit()->mws_cam->camera_id());
             mq.set_v_flip(true);
@@ -302,8 +302,8 @@ namespace unit_test_touch_input_ns
                prm.gen_mipmaps = false;
                prm.max_anisotropy = 0.f;
 
-               picking_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), int(picking_tex_dim.x), int(picking_tex_dim.y), "R8", &prm);
-               picking_rt = gfx::rt::new_rt();
+               picking_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), int(picking_tex_dim.x), int(picking_tex_dim.y), "R8", &prm);
+               picking_rt = gfx::i()->rt.new_rt();
                picking_rt->set_color_attachment(picking_tex);
 
                pbo_id_vect.resize(PBO_COUNT);
@@ -316,15 +316,15 @@ namespace unit_test_touch_input_ns
                   glBufferData(GL_PIXEL_PACK_BUFFER, pbo_data_size, 0, GL_STREAM_READ);
                }
 
-               picking_shader = gfx::shader::new_program("tex-picking", "tex-picking");
+               picking_shader = gfx::i()->shader.new_program("tex-picking", "tex-picking");
                (*picking_dgb_q2d)["u_s2d_tex"] = picking_tex->get_name();
                gpu_readback_init = true;
             }
 
-            gfx::rt::set_current_render_target(picking_rt);
+            gfx::i()->rt.set_current_render_target(picking_rt);
 
             mws_report_gfx_errs();
-            shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+            shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
             decl_scgfxpl(plist)
             {
                { gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f }, { gl::CLEAR_MASK, gl::COLOR_BUFFER_BIT_GL | gl::DEPTH_BUFFER_BIT_GL }, {},
@@ -347,7 +347,7 @@ namespace unit_test_touch_input_ns
                (*m)[MP_BLENDING] = MV_NONE;
                (*m)["u_v1_z_pos"] = z_pos;
                m->render_mesh(g);
-               (*m)[MP_SHADER_NAME] = "basic-tex";
+               (*m)[MP_SHADER_NAME] = "basic-tex-shader";
                (*m)[MP_DEPTH_TEST] = true;
                (*m)[MP_BLENDING] = MV_ALPHA;
             }
@@ -362,7 +362,7 @@ namespace unit_test_touch_input_ns
             }
 
             mws_report_gfx_errs();
-            gfx::rt::set_current_render_target(nullptr);
+            gfx::i()->rt.set_current_render_target(nullptr);
 
             if (picking_dgb_q2d && picking_dgb_q2d->visible)
             {
@@ -411,18 +411,18 @@ namespace unit_test_touch_input_ns
             {
                if (g->projection_type == g->e_perspective_proj)
                {
-                  float screen_aspect_ratio = gfx::rt::get_screen_width() / float(gfx::rt::get_screen_height());
+                  float screen_aspect_ratio = gfx::i()->rt.get_screen_width() / float(gfx::i()->rt.get_screen_height());
                   float new_hs_tex_width = picking_tex->get_height() * screen_aspect_ratio;
                   float hs_tex_width_delta = picking_tex->get_width() - new_hs_tex_width;
-                  float tf_x = new_hs_tex_width / float(gfx::rt::get_screen_width());
-                  float tf_y = picking_tex->get_height() / float(gfx::rt::get_screen_height());
+                  float tf_x = new_hs_tex_width / float(gfx::i()->rt.get_screen_width());
+                  float tf_y = picking_tex->get_height() / float(gfx::i()->rt.get_screen_height());
                   map_click_x = int(hs_tex_width_delta / 2.f + last_click.x * tf_x);
                   map_click_y = int(last_click.y * tf_y);
                }
                else if (g->projection_type == g->e_orthographic_proj)
                {
-                  float tf_x = picking_tex->get_width() / float(gfx::rt::get_screen_width());
-                  float tf_y = picking_tex->get_height() / float(gfx::rt::get_screen_height());
+                  float tf_x = picking_tex->get_width() / float(gfx::i()->rt.get_screen_width());
+                  float tf_y = picking_tex->get_height() / float(gfx::i()->rt.get_screen_height());
                   map_click_x = int(last_click.x * tf_x);
                   map_click_y = int(last_click.y * tf_y);
                }

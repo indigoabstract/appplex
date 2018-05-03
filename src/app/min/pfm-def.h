@@ -10,6 +10,10 @@ extern "C"
 #if !defined NDEBUG || defined _DEBUG
 
 #define MWS_DEBUG_BUILD
+
+#define mws_signal_error(i_message) mws_signal_error_impl(__FILE__, __LINE__, i_message)
+#define mws_assert(i_condition) mws_assert_impl(__FILE__, __LINE__, i_condition)
+
 #define MWS_REPORT_GL_ERRORS
 #define mws_report_gfx_errs() mws_report_gfx_errs_impl(__FILE__, __LINE__)
 #define mws_print(i_format, ...) mws_print_impl(i_format, ##__VA_ARGS__)
@@ -18,6 +22,10 @@ extern "C"
 
 #define MWS_RELEASE_BUILD
 #define MWS_PRODUCTION_BUILD
+
+#define mws_signal_error(i_message)
+#define mws_assert(i_condition)
+
 #define mws_report_gfx_errs()
 #define mws_print(i_format, ...)
 
@@ -113,6 +121,9 @@ extern "C"
    };
 
 
+#ifndef __cplusplus
+   typedef enum { false, true } bool;
+#endif 
    typedef char int8;
    typedef signed char sint8;
    typedef unsigned char uint8;
@@ -155,6 +166,8 @@ extern "C"
 #endif
 
 
+   void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message);
+   void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition);
    void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line);
    void mws_print_impl(const char* i_format, ...);
 

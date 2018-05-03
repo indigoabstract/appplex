@@ -73,50 +73,7 @@ class gfx_shader_impl
 public:
    gfx_shader_impl(std::shared_ptr<gfx> i_gi)
    {
-   }
-
-   static void init()
-   {
-      shared_ptr<std::string> vsh(new std::string(GLSL_SRC(uniform mat4 u_m4_model_view_proj;
-      attribute vec3 a_v3_position;
-
-      void main()
-      {
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-      }
-      )));
-
-      shared_ptr<std::string> fsh(new std::string(
-         "#ifdef GL_ES\n\
-			precision lowp float;\n\
-         #endif\n\
-			void main()\n\
-         { gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); }"
-      ));
-
-      black_shader = gfx::shader::new_program_from_src("black_shader", vsh, fsh);
-
-
-      vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(uniform mat4 u_m4_model_view_proj;
-      attribute vec3 a_v3_position;
-
-      void main()
-      {
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-         gl_Position.z -= 0.001;
-      }
-      )));
-
-      fsh = shared_ptr<std::string>(new std::string(
-         "#ifdef GL_ES\n\
-      precision lowp float;\n\
-      #endif\n\
-      void main()\n\
-      { gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0); }"
-      ));
-
-      wireframe_shader = gfx::shader::new_program_from_src("wireframe_shader", vsh, fsh);
-      //mws_print("fsh %s\n", fsh.c_str());
+      g = i_gi;
    }
 
    void load(const std::shared_ptr<std::string> ivs_shader_src = nullptr, const std::shared_ptr<std::string> ifs_shader_src = nullptr)
@@ -327,13 +284,13 @@ public:
 
       if (!vs_shader_src)
       {
-         mws_print("fragment shader file [%s] not found", fsh_file_name.c_str());
+         mws_print("fragment shader file [%s] not found\n", fsh_file_name.c_str());
          return;
       }
 
       if (!fs_shader_src)
       {
-         mws_print("vertex shader file [%s] not found", vsh_file_name.c_str());
+         mws_print("vertex shader file [%s] not found\n", vsh_file_name.c_str());
          return;
       }
 
@@ -474,6 +431,9 @@ public:
       }
    }
 
+   mws_sp<gfx> gi() { return g.lock(); }
+
+   mws_wp<gfx> g;
    weak_ptr<gfx_shader> parent;
    bool is_activated;
    bool is_validated;
@@ -501,8 +461,6 @@ public:
 
 int gfx_shader_impl::shader_idx = 0;
 uint32 gfx_shader_impl::wait_for_modifications_interval = 3000;
-std::shared_ptr<gfx_shader> gfx_shader_impl::black_shader;
-std::shared_ptr<gfx_shader> gfx_shader_impl::wireframe_shader;
 
 
 gfx_shader::~gfx_shader()
@@ -808,7 +766,7 @@ gfx_int gfx_shader::get_param_location(std::string ikey)
    if (!p->is_validated)
       // redirect to black shader
    {
-      auto bs = gfx::shader::get_program_by_name("black_shader");
+      auto bs = gi()->shader.get_program_by_name("black-shader");
       return bs->get_param_location(ikey);
    }
 
@@ -834,7 +792,7 @@ void gfx_shader::reload()
 
 void gfx_shader::reload_on_modifications()
 {
-   if (gfx::shader::reload_shader_on_modify())
+   if (gi()->shader.reload_shader_on_modify())
    {
       p->reload_on_modifications();
    }
@@ -856,7 +814,7 @@ gfx_shader::gfx_shader(const std::string& iprg_name, std::shared_ptr<gfx> i_gi) 
 void gfx_shader::release()
 {
    p->release();
-   gfx::remove_gfx_obj(this);
+   gi()->remove_gfx_obj(this);
 }
 
 bool gfx_shader::make_current()
@@ -871,16 +829,11 @@ bool gfx_shader::make_current()
    }
    else
    {
-      auto bs = gfx::shader::get_program_by_name("black_shader");
+      auto bs = gi()->shader.get_program_by_name("black-shader");
       id = bs->get_program_id();
    }
 
    glUseProgram(id);
 
    return is_active;
-}
-
-void gfx_shader::init()
-{
-   gfx_shader_impl::init();
 }

@@ -92,13 +92,13 @@ void unit_test_kube_sphere::load()
 	p->persp_cam->clear_color_value = gfx_color::colors::black;
 	p->persp_cam->clear_depth = true;
 
-	p->rt_tex = gfx::tex::new_tex_2d(gfx_tex::gen_id(), 256, 256);
-	p->rt = gfx::rt::new_rt();
+	p->rt_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), 256, 256);
+	p->rt = gfx::i()->rt.new_rt();
 	p->rt->set_color_attachment(p->rt_tex);
 
-	shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+	shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
-	gfx::rt::set_current_render_target(p->rt);
+	gfx::i()->rt.set_current_render_target(p->rt);
 	decl_scgfxpl(pl1)
 	{
 		{gl::COLOR_CLEAR_VALUE, 0.35f, 0.35f, 0.65f, 0.09f},
@@ -107,7 +107,7 @@ void unit_test_kube_sphere::load()
 	};
 	gl_st->set_state(pl1);
 
-	gfx::rt::set_current_render_target(shared_ptr<gfx_rt>());
+	gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
 
 	p->u_v3_light_dir = -glm::vec3(-1.f, 1.f, 1.f);
 

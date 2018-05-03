@@ -461,20 +461,28 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
       {
          std::string fsh_name = fsh.get_value<std::string>();
          std::string vsh_name = vsh.get_value<std::string>();
-         std::string shader_id = gfx_shader::create_shader_id(vsh_name, fsh_name);
+         std::string shader_id;
 
-         shader = gfx::shader::get_program_by_shader_id(shader_id);
+         if (fsh_name == vsh_name)
+         {
+            shader = mesh.lock()->gi()->shader.get_program_by_name(vsh_name);
+         }
+         else
+         {
+            shader_id = gfx_shader::create_shader_id(vsh_name, fsh_name);
+            shader = mesh.lock()->gi()->shader.get_program_by_shader_id(shader_id);
+         }
 
          if (!shader)
          {
-            shader = gfx::shader::new_program(shader_id, vsh_name, fsh_name);
+            shader = mesh.lock()->gi()->shader.new_program(shader_id, vsh_name, fsh_name);
             shader_compile_time = pfm::time::get_time_millis();
          }
       }
       else
       {
          //mws_print("gl_material::load_shader(): failed to load shader. switching to default\n");
-         return gfx::shader::get_program_by_name("black_shader");
+         return mesh.lock()->gi()->shader.get_program_by_name("black-shader");
       }
    }
    else

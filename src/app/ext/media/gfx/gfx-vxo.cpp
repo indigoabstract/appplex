@@ -234,12 +234,12 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
    if (shader)
    {
-      shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+      shared_ptr<gfx_state> gl_st = gi()->get_gfx_state();
       auto it4 = mat.other_params.begin();
       int texture_unit_idx = 0;
 
       plist.clear();
-      gfx::shader::set_current_program(shader);
+      gi()->shader.set_current_program(shader);
 
       gfx_uint culling_enabled = gl::FALSE_GL;
       gfx_uint culling_mode = gl::BACK_GL;
@@ -359,7 +359,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
          if (!mat[MP_SCISSOR_AREA].empty_value())
          {
             sa = mat[MP_SCISSOR_AREA].get_value<glm::vec4>();
-            sa.y = gfx::rt::get_render_target_height() - (sa.y + sa.w);
+            sa.y = gi()->rt.get_render_target_height() - (sa.y + sa.w);
          }
 
          plist.push_back({ gl::SCISSOR_BOX, (int)sa.x, (int)sa.y, (int)sa.z, (int)sa.w });
@@ -539,11 +539,11 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
             else
             {
                const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_value<std::string>();
-               tex = gfx::tex::get_texture_by_name(tex_name);
+               tex = gi()->tex.get_texture_by_name(tex_name);
 
                if (!tex)
                {
-                  tex = gfx::tex::new_tex_2d(tex_name);
+                  tex = gi()->tex.new_tex_2d(tex_name);
                }
 
                if (tex)
@@ -580,7 +580,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
             else
             {
                const std::string& tex_name = mat[uniform_name][MP_TEXTURE_NAME].get_value<std::string>();
-               tex = gfx::tex::get_tex_cube_map(tex_name);
+               tex = gi()->tex.get_tex_cube_map(tex_name);
 
                if (tex)
                {
@@ -780,9 +780,9 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    {
    case MV_WF_OVERLAY:
    {
-      shared_ptr<gfx_shader> p = gfx::shader::get_program_by_name("wireframe_shader");
+      shared_ptr<gfx_shader> p = gi()->shader.get_program_by_name("wireframe-shader");
 
-      gfx::shader::set_current_program(p);
+      gi()->shader.set_current_program(p);
 
       if (is_submesh)
       {
@@ -794,7 +794,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       }
 
       glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
-      gfx::shader::set_current_program(glp);
+      gi()->shader.set_current_program(glp);
       break;
    }
 

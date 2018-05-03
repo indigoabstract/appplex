@@ -342,17 +342,17 @@ public:
 		tex_height = u->get_height() * scale;
 		current_rt_index = 0;
 
-		texture_display = gfx::shader::new_program("texture_display", "basic_tex_fx");
+		texture_display = gfx::i()->shader.new_program("texture_display", "basic_tex_fx");
 
 		for (int k = 0; k < 2; k++)
 		{
-			rt_tex_vect[k] = gfx::tex::new_tex_2d(gfx_tex::gen_id(), tex_width, tex_height);
-			rt_vect[k] = gfx::rt::new_rt();
+			rt_tex_vect[k] = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), tex_width, tex_height);
+			rt_vect[k] = gfx::i()->rt.new_rt();
 			rt_vect[k]->set_color_attachment(rt_tex_vect[k]);
-			gfx::rt::set_current_render_target(rt_vect[k]);
+			gfx::i()->rt.set_current_render_target(rt_vect[k]);
 		}
 
-		gfx::rt::set_current_render_target(nullptr);
+		gfx::i()->rt.set_current_render_target(nullptr);
 		fx_quad = shared_ptr<gfx_plane>(new gfx_plane());
 		screen_quad = shared_ptr<gfx_plane>(new gfx_plane());
 
@@ -406,11 +406,11 @@ public:
 		shared_ptr<shader_state> ss = get_shader_state();
 		const std::string& shader_name = ss->name;
 
-		fx_glsl = gfx::shader::get_program_by_name(shader_name);
+		fx_glsl = gfx::i()->shader.get_program_by_name(shader_name);
 
 		if (!fx_glsl)
 		{
-			fx_glsl = gfx::shader::new_program(shader_name, "fx", shader_name, add_header_uniforms::new_inst(ss));
+			fx_glsl = gfx::i()->shader.new_program(shader_name, "fx", shader_name, add_header_uniforms::new_inst(ss));
 		}
 
 		uint32 crt_time = pfm::time::get_time_millis();
@@ -636,7 +636,7 @@ public:
 			back_buffer = p->rt_tex_vect[next_rt_index];
 			front_buffer = p->rt_tex_vect[rt_index];
 
-			gfx::shader::set_current_program(p->fx_glsl);
+			gfx::i()->shader.set_current_program(p->fx_glsl);
 
 			// update uniforms
 			glm::vec2 screen_size((float)u->get_width(), (float)u->get_height());
@@ -702,9 +702,9 @@ public:
 			fx_quad["iSampleRate"] = iSampleRate;
 			//fx_quad["iChannelResolution[0]"] = iResolution;
 
-			gfx::rt::set_current_render_target(p->rt_vect[rt_index]);
+			gfx::i()->rt.set_current_render_target(p->rt_vect[rt_index]);
 			// draw into the frontbuffer
-			shared_ptr<gfx_state> gl_st = gfx::get_gfx_state();
+			shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
 			decl_scgfxpl(plist)
 			{
 				{ gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f }, { gl::CLEAR_MASK, gl::COLOR_BUFFER_BIT_GL }, {},
@@ -715,7 +715,7 @@ public:
 
 		gfx_plane& screen_quad = *p->screen_quad;
 		screen_quad["u_s2d_tex"] = front_buffer->get_name();
-		gfx::rt::set_current_render_target(nullptr);
+		gfx::i()->rt.set_current_render_target(nullptr);
 
 		mws_report_gfx_errs();
 

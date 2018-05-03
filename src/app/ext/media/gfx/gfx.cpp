@@ -14,13 +14,8 @@
 
 
 gfx_int gfx::default_framebuffer_id = 0;
-shared_ptr<gfx_shader> gfx::active_shader;
-shared_ptr<gfx_rt> gfx::active_rt;
-shared_ptr<gfx_state> gfx::gfx_state_inst;
-std::vector<weak_ptr<gfx_rt> > gfx::rt_list;
-std::vector<weak_ptr<gfx_shader> > gfx::shader_list;
-std::vector<weak_ptr<gfx_tex> > gfx::tex_list;
-shared_ptr<gfx> gfx::inst;
+mws_sp<gfx> gfx::main_instance;
+
 
 struct tex_info
 {
@@ -104,128 +99,131 @@ void mws_tex_img_2d(GLenum target, GLint mipmap_count, GLint internalformat, GLs
 #endif
 }
 
-bool gfx::is_init()
+
+void gfx::global_init()
 {
-   return inst != shared_ptr<gfx>();
-}
-
-void gfx::init()
-{
-   if (!is_init())
-   {
-      bool print_extensions = false;
-      int gl_extension_count = -1;
-      int gl_major_version = -1;
-      int gl_minor_version = -1;
-      const gfx_ubyte* version = glGetString(GL_VERSION);
-      const gfx_ubyte* renderer = glGetString(GL_RENDERER);
-      const gfx_ubyte* vendor = glGetString(GL_VENDOR);
-
-      glGetIntegerv(GL_NUM_EXTENSIONS, &gl_extension_count);
-      glGetIntegerv(GL_MAJOR_VERSION, &gl_major_version);
-      glGetIntegerv(GL_MINOR_VERSION, &gl_minor_version);
-
-      mws_print("gl-version [%d.%d] / [%s]\ngl-renderer [%s]\ngl-vendor [%s]\n", gl_major_version, gl_minor_version, version, renderer, vendor);
-
-#ifdef USES_GL_STRINGI
-
-      if (gl_extension_count > 0)
-      {
-         std::vector<const gfx_ubyte*> extensions;
-
-         mws_print("[%d] gl-extensions found.\n", gl_extension_count);
-
-         if (print_extensions)
-         {
-            extensions.resize(gl_extension_count);
-
-            for (int k = 0; k < gl_extension_count; k++)
-            {
-               extensions[k] = glGetStringi(GL_EXTENSIONS, k);
-               mws_print("%s\n", extensions[k]);
-            }
-         }
-
-         mws_print("\n");
-      }
-
-#else
-
-      if (print_extensions)
-      {
-         const GLubyte* extensions = glGetString(GL_EXTENSIONS);
-         mws_print("gl-extensions: %s\n", extensions);
-      }
-
-#endif
-
-      // color/depth/stencil buffer info
-      {
-         GLint red_bits = 0;
-         GLint green_bits = 0;
-         GLint blue_bits = 0;
-         GLint alpha_bits = 0;
-         GLint depth_bits = 0;
-         GLint stencil_bits = 0;
-
-         glGetIntegerv(GL_RED_BITS, &red_bits);
-         glGetIntegerv(GL_GREEN_BITS, &green_bits);
-         glGetIntegerv(GL_BLUE_BITS, &blue_bits);
-         glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
-         glGetIntegerv(GL_DEPTH_BITS, &depth_bits);
-         glGetIntegerv(GL_STENCIL_BITS, &stencil_bits);
-
-         mws_print("red_bits [%d] green_bits [%d] blue_bits [%d] alpha_bits [%d] depth_bits [%d] stencil_bits [%d]\n",
-            red_bits, green_bits, blue_bits, alpha_bits, depth_bits, stencil_bits);
-      }
-
-      // samples
-      {
-         GLint samples = 0, max_samples = 0;
-         glGetIntegerv(GL_SAMPLES, &samples);
-         glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-         mws_print("sample coverage: %d, max samples: %d\n", samples, max_samples);
-      }
-
-      inst = shared_ptr<gfx>(new gfx());
-
-      for (int k = 0; k < tex_info_tab_length; k++)
-      {
-         tex_info& e = tex_info_tab[k];
-         tex_info_ht[e.id] = &e;
-      }
-
-      //int ms = 8;
-      //GLuint mTextureFramebuffer = 0;
-      //glGenRenderbuffers(1, &mTextureFramebuffer);
-      //glBindRenderbuffer(GL_RENDERBUFFER, mTextureFramebuffer);
-      //glRenderbufferStorageMultisample(GL_RENDERBUFFER, /* Number of samples */ ms, GL_R8, rt::get_screen_width(), rt::get_screen_height());
-      //GLenum err = glGetError();
-
-      //if (err != GL_NO_ERROR)
-      //{
-      //   bool MultisampleSupported = false;
-      //   mws_print("MultisampleSupported %d false\n", ms);
-      //}
-      //else
-      //{
-      //   mws_print("MultisampleSupported %d true\n", ms);
-      //}
-
-      gfx_state_inst = shared_ptr<gfx_state>(new gfx_state());
-      gfx_util::init();
-      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
-      gfx_shader::init();
-      gfx_material::init();
-      rt::set_current_render_target(shared_ptr<gfx_rt>());
-   }
-   else
+   if (main_instance)
    {
       mws_print("gl_ctrl::init: this method must only be called once\n");
       //reload();
       glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
-      //mws_throw ia_exception("this method must only be called once");
+      //throw mws_exception("this method must only be called once");
+      return;
    }
+
+   bool print_extensions = false;
+   int gl_extension_count = -1;
+   int gl_major_version = -1;
+   int gl_minor_version = -1;
+   const gfx_ubyte* version = glGetString(GL_VERSION);
+   const gfx_ubyte* renderer = glGetString(GL_RENDERER);
+   const gfx_ubyte* vendor = glGetString(GL_VENDOR);
+
+   glGetIntegerv(GL_NUM_EXTENSIONS, &gl_extension_count);
+   glGetIntegerv(GL_MAJOR_VERSION, &gl_major_version);
+   glGetIntegerv(GL_MINOR_VERSION, &gl_minor_version);
+
+   mws_print("gl-version [%d.%d] / [%s]\ngl-renderer [%s]\ngl-vendor [%s]\n", gl_major_version, gl_minor_version, version, renderer, vendor);
+
+#ifdef USES_GL_STRINGI
+
+   if (gl_extension_count > 0)
+   {
+      std::vector<const gfx_ubyte*> extensions;
+
+      mws_print("[%d] gl-extensions found.\n", gl_extension_count);
+
+      if (print_extensions)
+      {
+         extensions.resize(gl_extension_count);
+
+         for (int k = 0; k < gl_extension_count; k++)
+         {
+            extensions[k] = glGetStringi(GL_EXTENSIONS, k);
+            mws_print("%s\n", extensions[k]);
+         }
+      }
+
+      mws_print("\n");
+   }
+
+#else
+
+   if (print_extensions)
+   {
+      const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+      mws_print("gl-extensions: %s\n", extensions);
+   }
+
+#endif
+
+   // color/depth/stencil buffer info
+   {
+      GLint red_bits = 0;
+      GLint green_bits = 0;
+      GLint blue_bits = 0;
+      GLint alpha_bits = 0;
+      GLint depth_bits = 0;
+      GLint stencil_bits = 0;
+
+      glGetIntegerv(GL_RED_BITS, &red_bits);
+      glGetIntegerv(GL_GREEN_BITS, &green_bits);
+      glGetIntegerv(GL_BLUE_BITS, &blue_bits);
+      glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
+      glGetIntegerv(GL_DEPTH_BITS, &depth_bits);
+      glGetIntegerv(GL_STENCIL_BITS, &stencil_bits);
+
+      mws_print("red_bits [%d] green_bits [%d] blue_bits [%d] alpha_bits [%d] depth_bits [%d] stencil_bits [%d]\n",
+         red_bits, green_bits, blue_bits, alpha_bits, depth_bits, stencil_bits);
+   }
+
+   // samples
+   {
+      GLint samples = 0, max_samples = 0;
+      glGetIntegerv(GL_SAMPLES, &samples);
+      glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+      mws_print("sample coverage: %d, max samples: %d\n", samples, max_samples);
+   }
+
+   //inst = shared_ptr<gfx>(new gfx());
+
+   for (int k = 0; k < tex_info_tab_length; k++)
+   {
+      tex_info& e = tex_info_tab[k];
+      tex_info_ht[e.id] = &e;
+   }
+
+   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
+
+   //int ms = 8;
+   //GLuint mTextureFramebuffer = 0;
+   //glGenRenderbuffers(1, &mTextureFramebuffer);
+   //glBindRenderbuffer(GL_RENDERBUFFER, mTextureFramebuffer);
+   //glRenderbufferStorageMultisample(GL_RENDERBUFFER, /* Number of samples */ ms, GL_R8, rt::get_screen_width(), rt::get_screen_height());
+   //GLenum err = glGetError();
+
+   //if (err != GL_NO_ERROR)
+   //{
+   //   bool MultisampleSupported = false;
+   //   mws_print("MultisampleSupported %d false\n", ms);
+   //}
+   //else
+   //{
+   //   mws_print("MultisampleSupported %d true\n", ms);
+   //}
+
+   gfx_util::init();
+   gfx_material::init();
+
+   main_instance = std::shared_ptr<gfx>(new gfx());
+   main_instance->init(main_instance);
+}
+
+std::shared_ptr<gfx> gfx::new_inst()
+{
+   auto inst = std::shared_ptr<gfx>(new gfx());
+   inst->init(inst);
+   return inst;
 }
 
 shared_ptr<gfx_state> gfx::get_gfx_state()
@@ -235,68 +233,64 @@ shared_ptr<gfx_state> gfx::get_gfx_state()
 
 void gfx::reload()
 {
-   if (inst)
+   for (auto it = rt_list.begin(); it != rt_list.end(); it++)
    {
-      for (auto it = rt_list.begin(); it != rt_list.end(); it++)
-      {
-         shared_ptr<gfx_rt> rt = it->lock();
+      shared_ptr<gfx_rt> rt = it->lock();
 
-         rt->reload();
-      }
-
-      for (auto it = shader_list.begin(); it != shader_list.end(); it++)
-      {
-         shared_ptr<gfx_shader> prg = it->lock();
-
-         prg->reload();
-      }
-
-      for (auto it = tex_list.begin(); it != tex_list.end(); it++)
-      {
-         shared_ptr<gfx_tex> tex = it->lock();
-
-         tex->reload();
-      }
-
-      mws_report_gfx_errs();
+      rt->reload();
    }
+
+   for (auto it = shader_list.begin(); it != shader_list.end(); it++)
+   {
+      shared_ptr<gfx_shader> prg = it->lock();
+
+      prg->reload();
+   }
+
+   for (auto it = tex_list.begin(); it != tex_list.end(); it++)
+   {
+      shared_ptr<gfx_tex> tex = it->lock();
+
+      tex->reload();
+   }
+
+   mws_report_gfx_errs();
 }
 
-shared_ptr<gfx_rt> gfx::rt::new_rt()
+std::shared_ptr<gfx_rt> gfx::ic_rt::new_rt()
 {
-   check_init();
-   shared_ptr<gfx_rt> rt = shared_ptr<gfx_rt>(new gfx_rt());
-   rt_list.push_back(rt);
+   std::shared_ptr<gfx_rt> rt = std::shared_ptr<gfx_rt>(new gfx_rt(gi()));
+   gi()->rt_list.push_back(rt);
 
    return rt;
 }
 
-int gfx::rt::get_screen_width()
+int gfx::ic_rt::get_screen_width()
 {
    return pfm::screen::get_width();
 }
 
-int gfx::rt::get_screen_height()
+int gfx::ic_rt::get_screen_height()
 {
    return pfm::screen::get_height();
 }
 
-int gfx::rt::get_render_target_width()
+int gfx::ic_rt::get_render_target_width()
 {
-   return (active_rt) ? active_rt->get_width() : get_screen_width();
+   return (gi()->active_rt) ? gi()->active_rt->get_width() : get_screen_width();
 }
 
-int gfx::rt::get_render_target_height()
+int gfx::ic_rt::get_render_target_height()
 {
-   return (active_rt) ? active_rt->get_height() : get_screen_height();
+   return (gi()->active_rt) ? gi()->active_rt->get_height() : get_screen_height();
 }
 
-shared_ptr<gfx_rt> gfx::rt::get_current_render_target()
+std::shared_ptr<gfx_rt> gfx::ic_rt::get_current_render_target()
 {
-   return active_rt;
+   return gi()->active_rt;
 }
 
-void gfx::rt::set_current_render_target(shared_ptr<gfx_rt> irdt)
+void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
 {
    int width = 0, height = 0;
 
@@ -324,10 +318,10 @@ void gfx::rt::set_current_render_target(shared_ptr<gfx_rt> irdt)
    }
    else
    {
-      if (active_rt)
+      if (gi()->active_rt)
       {
          glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer_id);
-         active_rt->color_att->texture_updated = true;
+         gi()->active_rt->color_att->texture_updated = true;
       }
 
       width = get_screen_width();
@@ -335,82 +329,77 @@ void gfx::rt::set_current_render_target(shared_ptr<gfx_rt> irdt)
       mws_report_gfx_errs();
    }
 
-   active_rt = irdt;
+   gi()->active_rt = irdt;
    glViewport(0, 0, width, height);
    mws_report_gfx_errs();
 }
 
-bool gfx::shader::reload_shader_on_modify()
+bool gfx::ic_shader::reload_shader_on_modify()
 {
    return true;
 }
 
-shared_ptr<gfx_shader> gfx::shader::new_program_from_src
+std::shared_ptr<gfx_shader> gfx::ic_shader::new_program_from_src
 (
-   const std::string& iprg_name, shared_ptr<std::string> ivs_shader_src, shared_ptr<std::string> ifs_shader_src, shared_ptr<gfx_shader_listener> ilistener
+   const std::string& iprg_name, std::shared_ptr<std::string> ivs_shader_src, std::shared_ptr<std::string> ifs_shader_src, std::shared_ptr<gfx_shader_listener> ilistener
 )
 {
-   check_init();
-   shared_ptr<gfx_shader> prg = get_program_by_name(iprg_name);
+   std::shared_ptr<gfx_shader> prg = get_program_by_name(iprg_name);
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst_inline(iprg_name, ivs_shader_src, ifs_shader_src, ilistener);
-      shader_list.push_back(prg);
+      prg = gfx_shader::new_inst_inline(iprg_name, ivs_shader_src, ifs_shader_src, ilistener, gi());
+      gi()->shader_list.push_back(prg);
    }
 
    return prg;
 }
 
-shared_ptr<gfx_shader> gfx::shader::new_program(const std::string& ishader_name, shared_ptr<gfx_shader_listener> ilistener)
+std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener)
 {
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
 
-   return gfx::shader::new_program(shader_id, ishader_name, ilistener);
+   return gi()->shader.new_program(shader_id, ishader_name, ilistener);
 }
 
-shared_ptr<gfx_shader> gfx::shader::new_program(const std::string& iprg_name, const std::string& ishader_name, shared_ptr<gfx_shader_listener> ilistener)
+std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener)
 {
-   check_init();
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
-   shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
+   std::shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst(iprg_name, ishader_name, ilistener);
-      shader_list.push_back(prg);
+      prg = gfx_shader::new_inst(iprg_name, ishader_name, ilistener, gi());
+      gi()->shader_list.push_back(prg);
    }
 
    return prg;
 }
 
-shared_ptr<gfx_shader> gfx::shader::new_program
+std::shared_ptr<gfx_shader> gfx::ic_shader::new_program
 (
-   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader, shared_ptr<gfx_shader_listener> ilistener
+   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader, std::shared_ptr<gfx_shader_listener> ilistener
 )
 {
-   check_init();
    std::string shader_id = gfx_shader::create_shader_id(ivertex_shader, ifragment_shader);
-   shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
+   std::shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst(iprg_name, ivertex_shader, ifragment_shader, ilistener);
-      shader_list.push_back(prg);
+      prg = gfx_shader::new_inst(iprg_name, ivertex_shader, ifragment_shader, ilistener, gi());
+      gi()->shader_list.push_back(prg);
    }
 
    return prg;
 }
 
-shared_ptr<gfx_shader> gfx::shader::get_program_by_shader_id(std::string ishader_id)
+std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_id)
 {
-   shared_ptr<gfx_shader> glp;
+   std::shared_ptr<gfx_shader> glp;
 
-   check_init();
-
-   for (auto it = shader_list.begin(); it != shader_list.end(); it++)
+   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
    {
-      shared_ptr<gfx_shader> prg = it->lock();
+      std::shared_ptr<gfx_shader> prg = it->lock();
 
       if (prg->get_shader_id() == ishader_id)
       {
@@ -422,15 +411,13 @@ shared_ptr<gfx_shader> gfx::shader::get_program_by_shader_id(std::string ishader
    return glp;
 }
 
-shared_ptr<gfx_shader> gfx::shader::get_program_by_name(std::string iprg_name)
+std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
 {
-   shared_ptr<gfx_shader> glp;
+   std::shared_ptr<gfx_shader> glp;
 
-   check_init();
-
-   for (auto it = shader_list.begin(); it != shader_list.end(); it++)
+   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
    {
-      shared_ptr<gfx_shader> prg = it->lock();
+      std::shared_ptr<gfx_shader> prg = it->lock();
 
       if (prg->get_program_name() == iprg_name)
       {
@@ -442,76 +429,72 @@ shared_ptr<gfx_shader> gfx::shader::get_program_by_name(std::string iprg_name)
    return glp;
 }
 
-shared_ptr<gfx_shader> gfx::shader::get_current_program()
+std::shared_ptr<gfx_shader> gfx::ic_shader::get_current_program()
 {
-   return active_shader;
+   return gi()->active_shader;
 }
 
-void gfx::shader::set_current_program(shared_ptr<gfx_shader> iglp)
+void gfx::ic_shader::set_current_program(std::shared_ptr<gfx_shader> iglp, bool force)
 {
    mws_report_gfx_errs();
 
    if (iglp)
    {
-      bool change = !active_shader || (active_shader->get_program_id() != iglp->get_program_id());
+      bool change = !gi()->active_shader || (gi()->active_shader->get_program_id() != iglp->get_program_id()) || force;
 
       if (change)
       {
          if (iglp->make_current())
          {
-            active_shader = iglp;
+            gi()->active_shader = iglp;
          }
          else
          {
-            active_shader = get_program_by_name("black_shader");
+            gi()->active_shader = get_program_by_name("black-shader");
          }
       }
    }
    else
    {
-      trx("gl_ctrl::set_current_program - trying to set an invalid program");
-      mws_signal_error();
+      mws_signal_error("gl_ctrl::set_current_program - trying to set an invalid program");
    }
 
    mws_report_gfx_errs();
 }
 
-shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm)
+std::shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm)
 {
-   check_init();
-   shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
 
    if (tex)
    {
       mws_throw ia_exception("texture name already exists");
    }
 
-   tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, i_prm));
-   tex_list.push_back(tex);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, i_prm, gi()));
+   gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm)
+std::shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm)
 {
-   check_init();
-   shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
 
    if (tex)
    {
       mws_throw ia_exception("texture name already exists");
    }
 
-   tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, i_prm));
-   tex_list.push_back(tex);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, i_prm, gi()));
+   gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm)
+shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm)
 {
-   check_init();
-   shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
 
    if (tex)
    {
@@ -529,31 +512,29 @@ shared_ptr<gfx_tex> gfx::tex::new_tex_2d(std::string iuni_tex_name, int iwith, i
    prm.internal_format = ti->internal_format;
    prm.format = ti->format;
    prm.type = ti->type;
-   tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, &prm));
-   tex_list.push_back(tex);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, &prm, gi()));
+   gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex> gfx::tex::new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm)
+std::shared_ptr<gfx_tex> gfx::ic_tex::new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm)
 {
-   check_init();
-   shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
 
    if (tex)
    {
       mws_throw ia_exception("texture name already exists");
    }
 
-   tex = shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, itexture_id, iwith, iheight, gfx_tex::TEX_2D, i_prm));
-   tex_list.push_back(tex);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, itexture_id, iwith, iheight, gfx_tex::TEX_2D, i_prm, gi()));
+   gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex_cube_map> gfx::tex::get_tex_cube_map(std::string itex_name, bool iforce_new_inst)
+shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bool iforce_new_inst)
 {
-   check_init();
    shared_ptr<gfx_tex> tex = get_texture_by_name(itex_name);
    shared_ptr<gfx_tex_cube_map> tex_cube_map;
    bool new_inst = false;
@@ -577,31 +558,28 @@ shared_ptr<gfx_tex_cube_map> gfx::tex::get_tex_cube_map(std::string itex_name, b
    if (new_inst)
    {
       tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
-      tex_list.push_back(tex_cube_map);
+      gi()->tex_list.push_back(tex_cube_map);
    }
 
    return tex_cube_map;
 }
 
-shared_ptr<gfx_tex_cube_map> gfx::tex::new_tex_cube_map(uint32 isize)
+shared_ptr<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 isize)
 {
-   check_init();
    shared_ptr<gfx_tex_cube_map> tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(isize));
 
-   tex_list.push_back(tex_cube_map);
+   gi()->tex_list.push_back(tex_cube_map);
 
    return tex_cube_map;
 }
 
-shared_ptr<gfx_tex> gfx::tex::get_texture_by_name(std::string iname)
+std::shared_ptr<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
 {
-   shared_ptr<gfx_tex> tex;
+   std::shared_ptr<gfx_tex> tex;
 
-   check_init();
-
-   for (auto it = tex_list.begin(); it != tex_list.end(); it++)
+   for (auto it = gi()->tex_list.begin(); it != gi()->tex_list.end(); it++)
    {
-      shared_ptr<gfx_tex> t = it->lock();
+      std::shared_ptr<gfx_tex> t = it->lock();
 
       if (t->get_name() == iname)
       {
@@ -613,19 +591,135 @@ shared_ptr<gfx_tex> gfx::tex::get_texture_by_name(std::string iname)
    return tex;
 }
 
-void gfx::check_init()
+void gfx::init(mws_sp<gfx> i_new_inst)
 {
-   if (!inst)
+   rt.g = i_new_inst;
+   shader.g = i_new_inst;
+   tex.g = i_new_inst;
+
+   gfx_state_inst = shared_ptr<gfx_state>(new gfx_state());
+   rt.set_current_render_target(nullptr);
+
+   // black shader
    {
-      mws_throw ia_exception("gl context is not yet created!");
+      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+         uniform mat4 u_m4_model_view_proj;
+      attribute vec3 a_v3_position;
+
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )));
+
+      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+#ifdef GL_ES\n
+         precision lowp float; \n
+#endif\n
+         void main()
+      {
+         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      }
+      )));
+
+      black_shader = shader.new_program_from_src("black-shader", vsh, fsh);
+      //vprint("fsh %s\n", fsh.c_str());
    }
 
-   mws_report_gfx_errs();
+   // wireframe shader
+   {
+      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+         uniform mat4 u_m4_model_view_proj;
+      attribute vec3 a_v3_position;
+
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+         gl_Position.z -= 0.001;
+      }
+      )));
+
+      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+#ifdef GL_ES\n
+         precision lowp float; \n
+#endif\n
+         void main()
+      {
+         gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0);
+      }
+      )));
+
+      wireframe_shader = shader.new_program_from_src("wireframe-shader", vsh, fsh);
+   }
+
+   // basic-tex shader
+   {
+      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+         attribute vec3 a_v3_position;
+      attribute vec2 a_v2_tex_coord;
+
+      uniform mat4 u_m4_model_view_proj;
+
+      varying vec2 v_v2_tex_coord;
+
+      void main()
+      {
+         v_v2_tex_coord = a_v2_tex_coord;
+
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )));
+
+      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+#ifdef GL_ES\n
+         precision lowp float; \n
+#endif\n
+
+         varying vec2 v_v2_tex_coord;
+      uniform sampler2D u_s2d_tex;
+
+      void main()
+      {
+         gl_FragColor = texture2D(u_s2d_tex, v_v2_tex_coord);
+      }
+      )));
+
+      basic_tex_shader = shader.new_program_from_src("basic-tex-shader", vsh, fsh);
+   }
+
+   // c-o shader
+   {
+      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+         attribute vec3 a_v3_position;
+
+      uniform mat4 u_m4_model_view_proj;
+
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )));
+
+      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
+#ifdef GL_ES\n
+         precision lowp float; \n
+#endif\n
+
+         uniform vec4 u_v4_color;
+
+      void main()
+      {
+         gl_FragColor = u_v4_color;
+      }
+      )));
+
+      c_o_shader = shader.new_program_from_src("c-o-shader", vsh, fsh);
+   }
 }
 
 void gfx::get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect)
 {
-   if (irt && rt::get_current_render_target())
+   if (irt && rt.get_current_render_target())
    {
       glReadBuffer(GL_COLOR_ATTACHMENT0);
    }
@@ -634,56 +728,56 @@ void gfx::get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect)
       glReadBuffer(GL_NONE);
    }
 
-   if (rt::get_current_render_target())
+   if (rt.get_current_render_target())
    {
-      shared_ptr<gfx_tex> att = rt::get_current_render_target()->color_att;
+      shared_ptr<gfx_tex> att = rt.get_current_render_target()->color_att;
       auto& prm = att->get_params();
 
-      glReadPixels(0, 0, rt::get_render_target_width(), rt::get_render_target_height(), prm.format, prm.type, ivect);
+      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), prm.format, prm.type, ivect);
    }
    else
    {
-      glReadPixels(0, 0, rt::get_render_target_width(), rt::get_render_target_height(), GL_RGBA, GL_UNSIGNED_BYTE, ivect);
+      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), GL_RGBA, GL_UNSIGNED_BYTE, ivect);
    }
 }
 
 void gfx::remove_gfx_obj(const gfx_obj* iobj)
 {
-    switch (iobj->get_type())
-    {
-    case gfx_obj::e_rt:
-    {
-        struct pred
-        {
-            bool operator()(std::weak_ptr<gfx_rt> wp) { return wp.expired(); }
-        };
-        auto it = std::find_if(rt_list.begin(), rt_list.end(), pred());
-        rt_list.erase(it);
-        break;
-    }
+   switch (iobj->get_type())
+   {
+   case gfx_obj::e_rt:
+   {
+      struct pred
+      {
+         bool operator()(std::weak_ptr<gfx_rt> wp) { return wp.expired(); }
+      };
+      auto it = std::find_if(rt_list.begin(), rt_list.end(), pred());
+      rt_list.erase(it);
+      break;
+   }
 
-    case gfx_obj::e_shader:
-    {
-        struct pred
-        {
-            bool operator()(std::weak_ptr<gfx_shader> wp) { return wp.expired(); }
-        };
-        auto it = std::find_if(shader_list.begin(), shader_list.end(), pred());
-        shader_list.erase(it);
-        break;
-    }
+   case gfx_obj::e_shader:
+   {
+      struct pred
+      {
+         bool operator()(std::weak_ptr<gfx_shader> wp) { return wp.expired(); }
+      };
+      auto it = std::find_if(shader_list.begin(), shader_list.end(), pred());
+      shader_list.erase(it);
+      break;
+   }
 
-    case gfx_obj::e_tex:
-    {
-        struct pred
-        {
-            bool operator()(std::weak_ptr<gfx_tex> wp) { return wp.expired(); }
-        };
-        auto it = std::find_if(tex_list.begin(), tex_list.end(), pred());
-        tex_list.erase(it);
-        break;
-    }
-    }
+   case gfx_obj::e_tex:
+   {
+      struct pred
+      {
+         bool operator()(std::weak_ptr<gfx_tex> wp) { return wp.expired(); }
+      };
+      auto it = std::find_if(tex_list.begin(), tex_list.end(), pred());
+      tex_list.erase(it);
+      break;
+   }
+   }
 }
 
 gfx::gfx()

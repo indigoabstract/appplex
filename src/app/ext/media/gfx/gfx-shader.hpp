@@ -189,7 +189,6 @@ private:
    void release();
    bool make_current();
    void update_uniform(std::shared_ptr<gfx_input> i_input, const mws_any* i_val);
-   static void init();
 
    std::shared_ptr<gfx_shader_impl> p;
 };

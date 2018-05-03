@@ -25,7 +25,7 @@ public:
    //const std::string& get_id();
    virtual e_gfx_obj_type get_type()const = 0;
    virtual bool is_valid()const { return true; }
-   std::shared_ptr<gfx> gfx_ref();
+   std::shared_ptr<gfx> gi();
 
 protected:
    gfx_obj(std::shared_ptr<gfx> i_gi);

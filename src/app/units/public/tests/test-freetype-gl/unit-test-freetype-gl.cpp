@@ -62,14 +62,14 @@ void unit_test_freetype_gl::load()
 {
 	p = shared_ptr<unit_test_freetype_gl_impl>(new unit_test_freetype_gl_impl());
 
-	p->texture_display = gfx::shader::new_program("basic_tex", "basic_tex.vsh", "basic_tex.fsh");
+	p->texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
 	p->q2d = shared_ptr<gfx_plane>(new gfx_plane());
 	gfx_plane& rq2d = *p->q2d;
 	rq2d.set_dimensions(2, 2);
 	rq2d[MP_CULL_BACK] = false;
 	rq2d[MP_DEPTH_TEST] = false;
 	rq2d[MP_BLENDING] = MV_ALPHA;
-	rq2d[MP_SHADER_NAME] = "basic_tex";
+	rq2d[MP_SHADER_NAME] = "basic-tex-shader";
 	rq2d.position = glm::vec3(850.f, 350.f, 0.f);
 	rq2d.scaling = glm::vec3(256, 256, 1.f);
 
