@@ -13,7 +13,7 @@ unit_template::unit_template()
    set_name("template");
 }
 
-shared_ptr<unit_template> unit_template::new_instance()
+shared_ptr<unit_template> unit_template::nwi()
 {
    return shared_ptr<unit_template>(new unit_template());
 }

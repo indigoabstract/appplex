@@ -146,8 +146,8 @@ public:
    };
 
    virtual ~mws_page_transition() {}
-   static shared_ptr<mws_page_transition> new_instance(shared_ptr<mws_page> ipage);
-   static shared_ptr<mws_page_transition> new_instance(shared_ptr<mws_page_tab> imws_root, std::string iid);
+   static shared_ptr<mws_page_transition> nwi(shared_ptr<mws_page> ipage);
+   static shared_ptr<mws_page_transition> nwi(shared_ptr<mws_page_tab> imws_root, std::string iid);
 
    shared_ptr<mws_page> get_target_page();
    slide_scrolling::scroll_dir get_scroll_dir();
@@ -188,7 +188,7 @@ public:
    static const std::string VKEYBOARD_DOWN_PAGE;
 
    virtual ~mws_page_tab() {}
-   static shared_ptr<mws_page_tab> new_instance(shared_ptr<unit> iu);
+   static shared_ptr<mws_page_tab> nwi(shared_ptr<unit> iu);
    static shared_ptr<mws_page_tab> new_shared_instance(mws_page_tab* inew_page_tab_class_instance);
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
    virtual void init();
@@ -239,7 +239,7 @@ public:
    static const shared_ptr<mws_page> NEXT_PAGE;
 
    virtual ~mws_page() {}
-   static shared_ptr<mws_page> new_instance(shared_ptr<mws_page_tab> iparent);
+   static shared_ptr<mws_page> nwi(shared_ptr<mws_page_tab> iparent);
    static shared_ptr<mws_page> new_shared_instance(shared_ptr<mws_page_tab> i_page_tab, mws_page* inew_page_class_instance);
    virtual void init();
    virtual void on_destroy();

@@ -12,7 +12,7 @@
 class unit_test_freeimage : public unit
 {
 public:
-	static shared_ptr<unit_test_freeimage> new_instance();
+	static shared_ptr<unit_test_freeimage> nwi();
 
     virtual void init();
 	virtual void init_mws();

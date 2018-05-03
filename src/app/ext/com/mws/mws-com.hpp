@@ -48,7 +48,7 @@ class mws_button : public mws_page_item
 {
 public:
    virtual ~mws_button() {}
-   static shared_ptr<mws_button> new_instance(shared_ptr<mws_page> iparent);
+   static shared_ptr<mws_button> nwi(shared_ptr<mws_page> iparent);
    static shared_ptr<mws_button> new_shared_instance(mws_button* newButtonClassInstance);
    virtual void init(mws_rect i_mwsr, int icolor, std::string itext = "n/a");
 
@@ -115,7 +115,7 @@ class mws_list : public mws_page_item
 {
 public:
    virtual ~mws_list() {}
-   static shared_ptr<mws_list> new_instance(shared_ptr<mws_page> iparent);
+   static shared_ptr<mws_list> nwi(shared_ptr<mws_page> iparent);
    static shared_ptr<mws_list> new_shared_instance(shared_ptr<mws_page> i_parent, mws_list* new_instance);
    virtual void init();
 
@@ -172,7 +172,7 @@ class mws_tree : public mws_page_item
 {
 public:
    virtual ~mws_tree() {}
-   static shared_ptr<mws_tree> new_instance(shared_ptr<mws_page> iparent);
+   static shared_ptr<mws_tree> nwi(shared_ptr<mws_page> iparent);
    static shared_ptr<mws_tree> new_shared_instance(mws_tree* newTreeClassInstance);
    virtual void init();
 

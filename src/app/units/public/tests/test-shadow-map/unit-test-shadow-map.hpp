@@ -12,7 +12,7 @@ class unit_test_shadow_map_impl;
 class unit_test_shadow_map : public unit
 {
 public:
-	static shared_ptr<unit_test_shadow_map> new_instance();
+	static shared_ptr<unit_test_shadow_map> nwi();
 
     virtual void init();
     virtual void load();

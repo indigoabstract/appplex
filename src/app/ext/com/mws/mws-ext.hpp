@@ -47,7 +47,7 @@ class mws_list_menu_page : public mws_page
 {
 public:
    virtual ~mws_list_menu_page() {}
-   static shared_ptr<mws_list_menu_page> new_instance(shared_ptr<mws_page_tab> iparent, std::string iid);
+   static shared_ptr<mws_list_menu_page> nwi(shared_ptr<mws_page_tab> iparent, std::string iid);
 
    virtual void receive(shared_ptr<iadp> idp);
    shared_ptr<mws_list_menu_model> get_list_menu_model();

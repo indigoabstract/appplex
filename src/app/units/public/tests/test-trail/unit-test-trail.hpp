@@ -12,7 +12,7 @@ class unit_test_trail_impl;
 class unit_test_trail : public unit
 {
 public:
-	static shared_ptr<unit_test_trail> new_instance();
+	static shared_ptr<unit_test_trail> nwi();
 
     virtual void init();
     virtual void load();

@@ -45,7 +45,7 @@ unit_test_freetype_gl::unit_test_freetype_gl()
 	set_name("test-freetype-gl");
 }
 
-shared_ptr<unit_test_freetype_gl> unit_test_freetype_gl::new_instance()
+shared_ptr<unit_test_freetype_gl> unit_test_freetype_gl::nwi()
 {
 	return shared_ptr<unit_test_freetype_gl>(new unit_test_freetype_gl());
 }
@@ -95,7 +95,7 @@ bool unit_test_freetype_gl::update()
 		RNG rng;
 		float fnt_size = rng.range(7, 186);
 
-		p->f = mws_font::new_inst(fnt_size);
+		p->f = mws_font::nwi(fnt_size);
 		p->f->set_color(gfx_color::colors::gold);
 		p->tx.clear();
 		int size = 5 + rng.nextInt(10);

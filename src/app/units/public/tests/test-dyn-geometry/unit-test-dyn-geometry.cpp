@@ -439,7 +439,7 @@ unit_test_dyn_geometry::unit_test_dyn_geometry()
 	set_name("test-dyn-geometry");
 }
 
-shared_ptr<unit_test_dyn_geometry> unit_test_dyn_geometry::new_instance()
+shared_ptr<unit_test_dyn_geometry> unit_test_dyn_geometry::nwi()
 {
 	return shared_ptr<unit_test_dyn_geometry>(new unit_test_dyn_geometry());
 }
@@ -462,7 +462,7 @@ void unit_test_dyn_geometry::load()
 	int numVerts = 6;
 	p->poly = generatePolygon(ctrX, ctrY, aveRadius, irregularity, spikeyness, numVerts);
 
-	p->persp_cam = gfx_camera::new_inst();
+	p->persp_cam = gfx_camera::nwi();
 	p->persp_cam->camera_id = "default";
 	p->persp_cam->rendering_priority = 0;
 	p->persp_cam->near_clip_distance = 0.01f;
@@ -473,7 +473,7 @@ void unit_test_dyn_geometry::load()
 	p->persp_cam->clear_depth = true;
 	p->persp_cam->position = glm::vec3(0.f, 0.f, 250.f);
 
-	p->ortho_cam = mws_camera::new_inst();
+	p->ortho_cam = mws_camera::nwi();
 	p->ortho_cam->camera_id = "ortho_cam";
 	p->ortho_cam->rendering_priority = 1;
 	p->ortho_cam->projection_type = gfx_camera::e_orthographic_proj;

@@ -62,7 +62,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 
    if (!is_submesh)
    {
-      material = gfx_material::new_inst();
+      material = gfx_material::nwi();
    }
 }
 
@@ -84,7 +84,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi) : 
 
    if (!is_submesh)
    {
-      material = gfx_material::new_inst();
+      material = gfx_material::nwi();
    }
 }
 

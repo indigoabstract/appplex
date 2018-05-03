@@ -34,7 +34,7 @@ unit_test_touch_input::unit_test_touch_input()
    prefs = mws_sp<unit_preferences>(new unit_test_touch_input_ns::unit_preferences_detail());
 }
 
-mws_sp<unit_test_touch_input> unit_test_touch_input::new_instance()
+mws_sp<unit_test_touch_input> unit_test_touch_input::nwi()
 {
    return mws_sp<unit_test_touch_input>(new unit_test_touch_input());
 }

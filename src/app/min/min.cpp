@@ -269,7 +269,7 @@ iadp::iadp(const std::string& iname)
    processed = false;
 }
 
-shared_ptr<iadp> iadp::new_instance(std::string iname)
+shared_ptr<iadp> iadp::nwi(std::string iname)
 {
    return shared_ptr<iadp>(new iadp(iname));
 }

@@ -143,12 +143,12 @@ class gfx_shader : public gfx_obj
 {
 public:
    ~gfx_shader();
-   static std::shared_ptr<gfx_shader> new_inst
+   static std::shared_ptr<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ishader_name,
       std::shared_ptr<gfx_shader_listener> ilistener = nullptr, std::shared_ptr<gfx> i_gi = nullptr
    );
-   static std::shared_ptr<gfx_shader> new_inst
+   static std::shared_ptr<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name,
       std::shared_ptr<gfx_shader_listener> ilistener = nullptr, std::shared_ptr<gfx> i_gi = nullptr

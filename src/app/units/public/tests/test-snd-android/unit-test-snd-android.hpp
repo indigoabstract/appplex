@@ -10,7 +10,7 @@
 class unit_test_snd_android : public unit
 {
 public:
-	static shared_ptr<unit_test_snd_android> new_instance();
+	static shared_ptr<unit_test_snd_android> nwi();
 
     virtual void init();
 	virtual void init_mws();

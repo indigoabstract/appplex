@@ -10,7 +10,7 @@
 class unit_test_openvg : public unit
 {
 public:
-	static shared_ptr<unit_test_openvg> new_instance();
+	static shared_ptr<unit_test_openvg> nwi();
 
     virtual void init();
 	virtual void on_destroy();

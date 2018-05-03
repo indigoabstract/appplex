@@ -31,7 +31,7 @@ unit_cmd::unit_cmd()
    prefs = shared_ptr<unit_preferences>(new unit_cmd_pref::unit_preferences_detail());
 }
 
-shared_ptr<unit_cmd> unit_cmd::new_instance()
+shared_ptr<unit_cmd> unit_cmd::nwi()
 {
    return shared_ptr<unit_cmd>(new unit_cmd());
 }

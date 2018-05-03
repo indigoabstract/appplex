@@ -34,12 +34,12 @@ public:
 };
 
 
-shared_ptr<mws_font> mws_font::new_inst(std::shared_ptr<mws_font> i_fnt)
+shared_ptr<mws_font> mws_font::nwi(std::shared_ptr<mws_font> i_fnt)
 {
-   return new_inst(i_fnt->p->size, i_fnt->get_full_path());
+   return nwi(i_fnt->p->size, i_fnt->get_full_path());
 }
 
-shared_ptr<mws_font> mws_font::new_inst(float isize, const std::string& ifont_path)
+shared_ptr<mws_font> mws_font::nwi(float isize, const std::string& ifont_path)
 {
 	shared_ptr<mws_font> font(new mws_font());
 	std::string font_path = ifont_path.empty() ? "vera.ttf" : ifont_path;

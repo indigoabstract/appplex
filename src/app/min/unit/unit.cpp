@@ -69,11 +69,11 @@ public:
          default_video_params.tune = "film";
          default_video_params.crf = 0;
 
-         recording_fnt = mws_font::new_inst(20.f);
+         recording_fnt = mws_font::nwi(20.f);
          recording_fnt->set_color(gfx_color::colors::red);
          recording_txt = "[ recording ]";
          recording_txt_dim = recording_fnt->get_text_dim(recording_txt);
-         date_fnt = mws_font::new_inst(20.f);
+         date_fnt = mws_font::nwi(20.f);
          date_fnt->set_color(gfx_color::colors::cyan);
          pbo_supported = mws_is_gl_extension_supported("GL_ARB_pixel_buffer_object") != 0;
          y_pbo_ids = { 0, 0 };
@@ -791,9 +791,9 @@ void unit::iInit()
 {
    if (is_gfx_unit())
    {
-      update_ctrl = updatectrl::new_instance();
-      touch_ctrl = touchctrl::new_instance();
-      key_ctrl = keyctrl::new_instance();
+      update_ctrl = updatectrl::nwi();
+      touch_ctrl = touchctrl::nwi();
+      key_ctrl = keyctrl::nwi();
       gfx_scene_inst = shared_ptr<gfx_scene>(new gfx_scene());
       gfx_scene_inst->init();
    }
@@ -809,7 +809,7 @@ void unit::iInit()
       key_ctrl->add_receiver(get_smtp_instance());
 
       {
-         mws_cam = mws_camera::new_inst();
+         mws_cam = mws_camera::nwi();
          mws_cam->camera_id = "mws_cam";
          mws_cam->projection_type = gfx_camera::e_orthographic_proj;
          mws_cam->near_clip_distance = -100;
@@ -821,7 +821,7 @@ void unit::iInit()
       }
 
       {
-         mws_root = mws_page_tab::new_instance(get_smtp_instance());
+         mws_root = mws_page_tab::nwi(get_smtp_instance());
          gfx_scene_inst->attach(mws_root);
          mws_root->init();
          init_mws();
@@ -1027,7 +1027,7 @@ unit_list::unit_list()
    unit_list_count++;
 }
 
-shared_ptr<unit_list> unit_list::new_instance()
+shared_ptr<unit_list> unit_list::nwi()
 {
    return shared_ptr<unit_list>(new unit_list());
 }
@@ -1180,8 +1180,8 @@ void unit_list::init_mws()
    shared_ptr<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
 
    shared_ptr<mws_list_model> lm((mws_list_model*)new lmodel(ul));
-   shared_ptr<mws_page> p = mws_page::new_instance(mws_root);
-   shared_ptr<mws_list> l = mws_list::new_instance(p);
+   shared_ptr<mws_page> p = mws_page::nwi(mws_root);
+   shared_ptr<mws_list> l = mws_list::nwi(p);
 
    ulmodel = lm;
    l->set_model(lm);

@@ -48,7 +48,7 @@ private:
 class vg_path
 {
 public:
-	static spvg_path new_instance();
+	static spvg_path nwi();
 	virtual ~vg_path();
 	vg_path_handle handle();
 
@@ -76,7 +76,7 @@ private:
 class vg_paint
 {
 public:
-	static shared_ptr<vg_paint> new_instance();
+	static shared_ptr<vg_paint> nwi();
 	virtual ~vg_paint();
 	vg_paint_handle handle();
 
@@ -103,8 +103,8 @@ private:
 class vg_image
 {
 public:
-	static shared_ptr<vg_image> new_instance(int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
-	static shared_ptr<vg_image> new_instance(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
+	static shared_ptr<vg_image> nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
+	static shared_ptr<vg_image> nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
 	virtual ~vg_image();
 	vg_image_handle handle();
 

@@ -10,7 +10,7 @@
 class unit_global_flight_paths : public unit
 {
 public:
-   static shared_ptr<unit_global_flight_paths> new_instance();
+   static shared_ptr<unit_global_flight_paths> nwi();
 
    virtual void init_mws() override;
 

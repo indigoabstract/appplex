@@ -139,7 +139,7 @@ namespace ns_unit_test_normal_mapping
 			skybox = shared_ptr<gfx_box>(new gfx_box());
 			s_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
 			plane_mesh = shared_ptr<gfx_plane>(new gfx_plane());
-			persp_cam = gfx_camera::new_inst();
+			persp_cam = gfx_camera::nwi();
 			free_cam = std::make_shared<free_camera>(iunit);
 			is_paused = false;
 			current_car_idx = 0;
@@ -714,7 +714,7 @@ namespace ns_unit_test_normal_mapping
 			free_cam->persp_cam = persp_cam;
 			u_v3_light_dir = glm::normalize(-glm::vec3(1.f, 0.5f, 0.5f));
 
-			ortho_cam = gfx_camera::new_inst();
+			ortho_cam = gfx_camera::nwi();
 			ortho_cam->camera_id = "ortho_cam";
 			ortho_cam->rendering_priority = 1;
 			ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
@@ -1001,7 +1001,7 @@ unit_test_normal_mapping::unit_test_normal_mapping()
 	set_name("test-normal-mapping");
 }
 
-shared_ptr<unit_test_normal_mapping> unit_test_normal_mapping::new_instance()
+shared_ptr<unit_test_normal_mapping> unit_test_normal_mapping::nwi()
 {
 	return shared_ptr<unit_test_normal_mapping>(new unit_test_normal_mapping());
 }

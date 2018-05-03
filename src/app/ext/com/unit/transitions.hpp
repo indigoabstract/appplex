@@ -29,7 +29,7 @@ public:
 	static const std::string TRANSITION_UPDATE;
 	static const std::string TRANSITION_INTERVAL_CHANGED;
 
-	static shared_ptr<transition_evt> new_instance(transition_evt_types itype);
+	static shared_ptr<transition_evt> nwi(transition_evt_types itype);
 	static const std::string& get_type_name(transition_evt_types itype);
 	transition_evt_types get_type();
 
@@ -120,7 +120,7 @@ class ms_linear_transition : public linear_transition, public ia_broadcaster, pu
 	// multi-step fixed-time transition, in milliseconds
 {
 public:
-	static shared_ptr<ms_linear_transition> new_instance(shared_ptr<ms_transition_data> td);
+	static shared_ptr<ms_linear_transition> nwi(shared_ptr<ms_transition_data> td);
 	shared_ptr<ms_linear_transition> get_instance();
 
 	transition_type get_transition_type()const;

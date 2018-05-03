@@ -13,7 +13,7 @@ class unit_gl_frag_shader_demo_page;
 class unit_gl_frag_shader_demo : public unit
 {
 public:
-	static shared_ptr<unit_gl_frag_shader_demo> new_instance();
+	static shared_ptr<unit_gl_frag_shader_demo> nwi();
 
     virtual void init();
 	virtual void init_mws();

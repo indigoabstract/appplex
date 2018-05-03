@@ -12,7 +12,7 @@ unit_test_vplayer_android::unit_test_vplayer_android()
 	set_name("test-vplayer-android");
 }
 
-shared_ptr<unit_test_vplayer_android> unit_test_vplayer_android::new_instance()
+shared_ptr<unit_test_vplayer_android> unit_test_vplayer_android::nwi()
 {
 	return shared_ptr<unit_test_vplayer_android>(new unit_test_vplayer_android());
 }

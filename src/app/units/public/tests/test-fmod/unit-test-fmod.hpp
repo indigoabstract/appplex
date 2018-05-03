@@ -9,7 +9,7 @@
 class unit_test_fmod : public unit
 {
 public:
-	static shared_ptr<unit_test_fmod> new_instance();
+	static shared_ptr<unit_test_fmod> nwi();
 
     virtual void init();
 	virtual void init_mws();

@@ -13,7 +13,7 @@ unit_test_mws::unit_test_mws()
 	set_name("mws-test");
 }
 
-shared_ptr<unit_test_mws> unit_test_mws::new_instance()
+shared_ptr<unit_test_mws> unit_test_mws::nwi()
 {
 	return shared_ptr<unit_test_mws>(new unit_test_mws());
 }
@@ -24,7 +24,7 @@ void unit_test_mws::init_mws()
 	shared_ptr<mws_list_menu_model> ulmm;
 
 	{
-		up = mws_list_menu_page::new_instance(mws_root, "p0");
+		up = mws_list_menu_page::nwi(mws_root, "p0");
 		mws_list_menu_item lmt[] = 
 		{
 			mws_list_menu_item("menu-item-1", "p1"),
@@ -38,7 +38,7 @@ void unit_test_mws::init_mws()
 	}
 
 	{
-		up = mws_list_menu_page::new_instance(mws_root, "p1");
+		up = mws_list_menu_page::nwi(mws_root, "p1");
 		mws_list_menu_item lmt[] = 
 		{
 			mws_list_menu_item("xp2", "p2"),
@@ -75,7 +75,7 @@ void unit_test_mws::init_mws()
 			mws_list_menu_item("menu-x-3"),
 		};
 
-		up = mws_list_menu_page::new_instance(mws_root, "p2");
+		up = mws_list_menu_page::nwi(mws_root, "p2");
 		ulmm = up->get_list_menu_model();
 		ulmm->set_data(xlmdata(lmt));
 	}

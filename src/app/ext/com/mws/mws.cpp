@@ -58,7 +58,7 @@ void mws_model::notify_update()
 {
    if (get_view())
    {
-      send(get_view(), iadp::new_instance(MWS_EVT_MODEL_UPDATE));
+      send(get_view(), iadp::nwi(MWS_EVT_MODEL_UPDATE));
    }
 }
 
@@ -239,12 +239,12 @@ shared_ptr<ia_sender> mws::sender_inst()
 }
 
 
-shared_ptr<mws_page_transition> mws_page_transition::new_instance(shared_ptr<mws_page> ipage)
+shared_ptr<mws_page_transition> mws_page_transition::nwi(shared_ptr<mws_page> ipage)
 {
    return shared_ptr<mws_page_transition>(new mws_page_transition(ipage));
 }
 
-shared_ptr<mws_page_transition> mws_page_transition::new_instance(shared_ptr<mws_page_tab> imws_root, string iid)
+shared_ptr<mws_page_transition> mws_page_transition::nwi(shared_ptr<mws_page_tab> imws_root, string iid)
 {
    return shared_ptr<mws_page_transition>(new mws_page_transition(imws_root, iid));
 }
@@ -339,7 +339,7 @@ public:
    mwspagetab_vkeyboard_page(string iid)
    {
       set_id(iid);
-      //tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(mws_page::PREV_PAGE)
+      //tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(mws_page::PREV_PAGE)
       //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
       //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
       tmap.erase(touch_sym_evt::TS_FORWARD_SWIPE);
@@ -358,7 +358,7 @@ public:
 
             if (is_inside_box(x, y, mws_r.x, mws_r.h - 40, mws_r.w, mws_r.h))
             {
-               //shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(mws_page::PREV_PAGE)
+               //shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(mws_page::PREV_PAGE)
                //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
                //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
 
@@ -408,7 +408,7 @@ mws_page_tab::mws_page_tab(shared_ptr<unit> iu) : mws(), ss(550)
    mws_r.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
 }
 
-shared_ptr<mws_page_tab> mws_page_tab::new_instance(shared_ptr<unit> iu)
+shared_ptr<mws_page_tab> mws_page_tab::nwi(shared_ptr<unit> iu)
 {
    shared_ptr<mws_page_tab> pt(new mws_page_tab(iu));
    pt->new_instance_helper();
@@ -977,7 +977,7 @@ void mws_page_tab::set_first_page(shared_ptr<mws_page> up)
 
 void mws_page_tab::show_vkeyboard()
 {
-   shared_ptr<mws_page_transition> upt = mws_page_transition::new_instance(get_mws_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
+   shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(get_mws_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
       ->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
 
@@ -1032,31 +1032,31 @@ void mws_page_tab::new_instance_helper()
    shared_ptr<mws_page> vkrightpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_RIGHT_PAGE));
    shared_ptr<mws_page> vkdownpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_DOWN_PAGE));
 
-   vkmainpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkdownpage)
+   vkmainpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkdownpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkmainpage->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::new_instance(vkrightpage)
+   vkmainpage->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::nwi(vkrightpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkmainpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkuppage)
+   vkmainpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkuppage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-   vkuppage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkdownpage)
+   vkuppage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkdownpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkuppage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
+   vkuppage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-   vkrightpage->tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
+   vkrightpage->tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 
-   vkdownpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::new_instance(vkuppage)
+   vkdownpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkuppage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkdownpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::new_instance(vkmainpage)
+   vkdownpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
       ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
       ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 }
@@ -1077,11 +1077,11 @@ mws_page::mws_page()
 //
 //	mws_r.set(0, 0, (float)tu->get_width(), (float)tu->get_height());
 //
-//	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::new_instance(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
-//	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::new_instance(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
+//	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
+//	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::nwi(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
 //}
 
-shared_ptr<mws_page> mws_page::new_instance(shared_ptr<mws_page_tab> i_parent)
+shared_ptr<mws_page> mws_page::nwi(shared_ptr<mws_page_tab> i_parent)
 {
    shared_ptr<mws_page> u(new mws_page());
    i_parent->attach(u);

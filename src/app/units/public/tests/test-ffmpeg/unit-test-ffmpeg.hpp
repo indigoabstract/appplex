@@ -10,7 +10,7 @@
 class unit_test_ffmpeg : public unit
 {
 public:
-	static shared_ptr<unit_test_ffmpeg> new_instance();
+	static shared_ptr<unit_test_ffmpeg> nwi();
 
     virtual void init();
     virtual void load();

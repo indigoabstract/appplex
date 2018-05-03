@@ -21,7 +21,7 @@ transition_evt::transition_evt(transition_evt_types itype) : iadp(get_type_name(
 	set_type(itype);
 }
 
-shared_ptr<transition_evt> transition_evt::new_instance(transition_evt_types itype)
+shared_ptr<transition_evt> transition_evt::nwi(transition_evt_types itype)
 {
 	return shared_ptr<transition_evt>(new transition_evt(itype));
 }
@@ -170,7 +170,7 @@ void linear_transition::start(uint32 offset)
 
 ms_linear_transition::ms_linear_transition() : linear_transition(1){}
 
-shared_ptr<ms_linear_transition> ms_linear_transition::new_instance(shared_ptr<ms_transition_data> td)
+shared_ptr<ms_linear_transition> ms_linear_transition::nwi(shared_ptr<ms_transition_data> td)
 {
 	shared_ptr<ms_linear_transition> mslt(new ms_linear_transition());
 
@@ -214,28 +214,28 @@ void ms_linear_transition::start()
 {
 	linear_transition::start();
 	transitions[interval_idx]->start();
-	broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_STARTED));
+	broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_STARTED));
 }
 
 void ms_linear_transition::stop()
 {
 	linear_transition::stop();
 	transitions[interval_idx]->stop();
-	broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_STOPPED));
+	broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_STOPPED));
 }
 
 void ms_linear_transition::pause()
 {
 	linear_transition::pause();
 	transitions[interval_idx]->pause();
-	broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_PAUSED));
+	broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_PAUSED));
 }
 
 void ms_linear_transition::resume()
 {
 	linear_transition::resume();
 	transitions[interval_idx]->resume();
-	broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_RESUMED));
+	broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_RESUMED));
 }
 
 void ms_linear_transition::update()
@@ -278,12 +278,12 @@ void ms_linear_transition::update()
 	if(finished)
 	{
 		position = 1;
-		broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_FINISHED));
+		broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_FINISHED));
 	}
 	else
 	{
 		position = tms / float(duration);
-		broadcast(get_instance(), transition_evt::new_instance(transition_evt::TR_UPDATE));
+		broadcast(get_instance(), transition_evt::nwi(transition_evt::TR_UPDATE));
 	}
 }
 

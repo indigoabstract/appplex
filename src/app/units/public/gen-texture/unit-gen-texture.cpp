@@ -16,7 +16,7 @@ unit_gen_texture::unit_gen_texture()
 	set_name("gen-texture");
 }
 
-shared_ptr<unit_gen_texture> unit_gen_texture::new_instance()
+shared_ptr<unit_gen_texture> unit_gen_texture::nwi()
 {
 	return shared_ptr<unit_gen_texture>(new unit_gen_texture());
 }
@@ -34,8 +34,8 @@ namespace unit_gen_texture_texture
 		//VGfloat white[] = {0,0,1,1};
 		//VGfloat dashes[] = {4.0f, 2.0f};
 
-		//spvg_paint strokePaint = vg_paint::new_instance();
-		//spvg_paint fillPaint = vg_paint::new_instance();
+		//spvg_paint strokePaint = vg_paint::nwi();
+		//spvg_paint fillPaint = vg_paint::nwi();
 		//strokePaint->set_color_rgba_ub(0x000000ff);
 		//fillPaint->set_color_rgba_ub(0xffff00ff);
 
@@ -90,7 +90,7 @@ namespace unit_gen_texture_rtt_screen
 
 			//int width = 256;
 			//int height = 256;
-			//shvg_tex = vg_image::new_instance(width, height);
+			//shvg_tex = vg_image::nwi(width, height);
 			//shared_ptr<renderer> r = renderer::get_instance();
 
 			//r->rtt.start_rtt_screen_from_image(shvg_tex);
@@ -141,7 +141,7 @@ namespace unit_gen_texture_rtt_fbo
 
 			//int width = 64;
 			//int height = width;
-			//shvg_tex = vg_image::new_instance(width, height);
+			//shvg_tex = vg_image::nwi(width, height);
 			//float d = 0.25;
 			//shared_ptr<renderer> r = renderer::get_instance();
 

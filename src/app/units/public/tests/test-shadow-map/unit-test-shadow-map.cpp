@@ -48,7 +48,7 @@ unit_test_shadow_map::unit_test_shadow_map()
 	set_name("test-shadow-map");
 }
 
-shared_ptr<unit_test_shadow_map> unit_test_shadow_map::new_instance()
+shared_ptr<unit_test_shadow_map> unit_test_shadow_map::nwi()
 {
 	return shared_ptr<unit_test_shadow_map>(new unit_test_shadow_map());
 }
@@ -61,7 +61,7 @@ void unit_test_shadow_map::init()
 void unit_test_shadow_map::load()
 {
 	p = shared_ptr<unit_test_shadow_map_impl>(new unit_test_shadow_map_impl());
-	p->ortho_cam = gfx_camera::new_inst();
+	p->ortho_cam = gfx_camera::nwi();
 	p->ortho_cam->camera_id = "ortho_camera";
 	p->ortho_cam->rendering_priority = 1;
 	p->ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
@@ -70,7 +70,7 @@ void unit_test_shadow_map::load()
 	//sm_inst->ortho_cam->clear_color = true;
 	//sm_inst->ortho_cam->clear_color_value = glm::vec4(0.f, 0.f, 1.f, 1.f);
 
-	p->persp_cam = gfx_camera::new_inst();
+	p->persp_cam = gfx_camera::nwi();
 	p->persp_cam->camera_id = "default";
 	p->persp_cam->rendering_priority = 0;
 	p->persp_cam->near_clip_distance = 0.1f;

@@ -167,7 +167,7 @@ private:
 class unit_list : public unit
 {
 public:
-   static std::shared_ptr<unit_list> new_instance();
+   static std::shared_ptr<unit_list> nwi();
 
    unit_type get_unit_type();
    void add(std::shared_ptr<unit> unit0);

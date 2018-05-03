@@ -12,7 +12,7 @@ unit_test_vplayer_ios::unit_test_vplayer_ios()
 	set_name("test-vplayer-ios");
 }
 
-shared_ptr<unit_test_vplayer_ios> unit_test_vplayer_ios::new_instance()
+shared_ptr<unit_test_vplayer_ios> unit_test_vplayer_ios::nwi()
 {
 	return shared_ptr<unit_test_vplayer_ios>(new unit_test_vplayer_ios());
 }

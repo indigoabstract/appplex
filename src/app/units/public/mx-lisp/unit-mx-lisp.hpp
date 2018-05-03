@@ -10,7 +10,7 @@
 class unit_mx_lisp : public unit
 {
 public:
-	static shared_ptr<unit_mx_lisp> new_instance();
+	static shared_ptr<unit_mx_lisp> nwi();
 
     virtual bool update();
 

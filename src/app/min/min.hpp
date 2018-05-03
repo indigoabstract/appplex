@@ -82,7 +82,7 @@ class iadp
 {
 public:
    virtual ~iadp() {}
-   static shared_ptr<iadp> new_instance(std::string iname);
+   static shared_ptr<iadp> nwi(std::string iname);
 
    virtual const std::string& get_name();
    virtual bool is_type(const std::string& itype);

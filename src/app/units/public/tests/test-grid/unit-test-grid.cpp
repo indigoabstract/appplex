@@ -69,7 +69,7 @@ unit_test_grid::unit_test_grid()
 	set_name("test-grid");
 }
 
-shared_ptr<unit_test_grid> unit_test_grid::new_instance()
+shared_ptr<unit_test_grid> unit_test_grid::nwi()
 {
 	return shared_ptr<unit_test_grid>(new unit_test_grid());
 }
@@ -84,7 +84,7 @@ void unit_test_grid::load()
 {
 	p = shared_ptr<unit_test_grid_impl>(new unit_test_grid_impl());
 
-	p->persp_cam = gfx_camera::new_inst();
+	p->persp_cam = gfx_camera::nwi();
 	p->persp_cam->camera_id = "default";
 	p->persp_cam->rendering_priority = 0;
 	p->persp_cam->near_clip_distance = 5.1f;

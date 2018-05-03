@@ -18,7 +18,7 @@ namespace ns_mws_camera
 
       draw_text_op()
 		{
-			tx_vxo = text_vxo::new_inst();
+			tx_vxo = text_vxo::nwi();
 		}
 
 		void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<mws_font> ifont)
@@ -101,7 +101,7 @@ class mws_camera_impl
 public:
 	mws_camera_impl()
 	{
-		font = mws_font::new_inst(24);
+		font = mws_font::nwi(24);
 		font->set_color(gfx_color::colors::yellow);
 	}
 
@@ -111,7 +111,7 @@ public:
 };
 
 
-shared_ptr<mws_camera> mws_camera::new_inst(std::shared_ptr<gfx> i_gi)
+shared_ptr<mws_camera> mws_camera::nwi(std::shared_ptr<gfx> i_gi)
 {
 	shared_ptr<mws_camera> inst(new mws_camera(i_gi));
 	inst->load(inst);

@@ -925,7 +925,7 @@ namespace global_flight_paths_ns
 
          t = 0;
          free_cam = std::make_shared<free_camera>(get_unit());
-         persp_cam = gfx_camera::new_inst();
+         persp_cam = gfx_camera::nwi();
          persp_cam->camera_id = "default";
          persp_cam->rendering_priority = 0;
          persp_cam->near_clip_distance = 0.1f;
@@ -1077,7 +1077,7 @@ unit_global_flight_paths::unit_global_flight_paths()
    set_name("global-flight-paths");
 }
 
-shared_ptr<unit_global_flight_paths> unit_global_flight_paths::new_instance()
+shared_ptr<unit_global_flight_paths> unit_global_flight_paths::nwi()
 {
    return shared_ptr<unit_global_flight_paths>(new unit_global_flight_paths());
 }

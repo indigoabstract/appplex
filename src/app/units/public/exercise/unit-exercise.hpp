@@ -12,7 +12,7 @@ class long_operation;
 class unit_exercise : public unit
 {
 public:
-	static shared_ptr<unit_exercise> new_instance();
+	static shared_ptr<unit_exercise> nwi();
 
 	virtual bool update();
 	virtual void init();

@@ -286,11 +286,11 @@ void unit_exercise::init_mws()
 
 			for (int k = 0; k < 5; k++)
 			{
-				shared_ptr<linear_transition> tt = ms_linear_transition::new_instance(ms_transition_data::new_duration_data(tduration));
+				shared_ptr<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration));
 				tr.push_back(tt);
 			}
 
-			mst = ms_linear_transition::new_instance(ms_transition_data::new_transition_data(tr));
+			mst = ms_linear_transition::nwi(ms_transition_data::new_transition_data(tr));
 
 
 			// ui
@@ -493,11 +493,11 @@ void unit_exercise::init_mws()
 
 			for (int k = 0; k < 5; k++)
 			{
-				shared_ptr<linear_transition> tt = ms_linear_transition::new_instance(ms_transition_data::new_duration_data(tduration, tdurationLength));
+				shared_ptr<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration, tdurationLength));
 				tr.push_back(tt);
 			}
 
-			mst = ms_linear_transition::new_instance(ms_transition_data::new_transition_data(tr));
+			mst = ms_linear_transition::nwi(ms_transition_data::new_transition_data(tr));
 
          for (float tl : t1lim)
 			{
@@ -705,7 +705,7 @@ void unit_exercise::init_mws()
 			int tdurationLength = sizeof(tduration) / sizeof(int);
 			float lim[] = { 0, 1.f / 3, 2.f / 3, 1, 1 };
 
-			mslt = ms_linear_transition::new_instance(ms_transition_data::new_duration_data(tduration, tdurationLength));
+			mslt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration, tdurationLength));
 
          for (float tl : lim)
 			{

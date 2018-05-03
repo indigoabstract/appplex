@@ -468,12 +468,12 @@ gfx_shader::~gfx_shader()
    release();
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::new_inst(const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst)
+std::shared_ptr<gfx_shader> gfx_shader::nwi(const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst)
 {
-   return new_inst(iprg_name, ishader_name, ishader_name, nullptr, gfx_inst);
+   return nwi(iprg_name, ishader_name, ishader_name, nullptr, gfx_inst);
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::new_inst
+std::shared_ptr<gfx_shader> gfx_shader::nwi
 (
    const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name, std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst
 )

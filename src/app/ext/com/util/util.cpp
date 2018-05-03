@@ -168,7 +168,7 @@ slide_scrolling::slide_scrolling(int transitionms)
 {
 	int tduration[] = {transitionms};
 
-	mslt = ms_linear_transition::new_instance(ms_transition_data::new_duration_data(tduration, 1));
+	mslt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration, 1));
 	set_scroll_dir(SD_LEFT_RIGHT);
 }
 

@@ -82,8 +82,8 @@ void appplex_conf::update()
    hpp->io.open("w+t");
    cpp->io.open("w+t");
 
-   auto rw_hpp = rw_file_sequence::new_inst(hpp);
-   auto rw_cpp = rw_file_sequence::new_inst(cpp);
+   auto rw_hpp = rw_file_sequence::nwi(hpp);
+   auto rw_cpp = rw_file_sequence::nwi(cpp);
 
    {
       auto px_names = kxmd_ops::get_kxmd_str_seq("units", kxmd);
@@ -283,11 +283,11 @@ std::string appplex_conf::get_new_unit_line(shared_ptr<unit_entry> iue, const st
 
    if (is_selected)
    {
-      line = trs("\tadd_unit({0}::new_instance(), \"{1}\", true);\n", unit_name, unit_path.generic_string());
+      line = trs("\tadd_unit({0}::nwi(), \"{1}\", true);\n", unit_name, unit_path.generic_string());
    }
    else
    {
-      line = trs("\tadd_unit({0}::new_instance(), \"{1}\");\n", unit_name, unit_path.generic_string());
+      line = trs("\tadd_unit({0}::nwi(), \"{1}\");\n", unit_name, unit_path.generic_string());
    }
 
    line = def + "\n" + line + "#endif\n\n";
@@ -540,7 +540,7 @@ void android_studio_project_conf::update_project_files(const bfs::path& and_proj
 
    gradle_file->io.open("wt");
 
-   auto rw = rw_file_sequence::new_inst(gradle_file);
+   auto rw = rw_file_sequence::nwi(gradle_file);
    rw->w.write_line(*gf_txt, false);
 }
 

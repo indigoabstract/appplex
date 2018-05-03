@@ -60,7 +60,7 @@ protected:
 class kx_whitespace : public kx_elem
 {
 public:
-	static shared_ptr<kx_whitespace> new_instance();
+	static shared_ptr<kx_whitespace> nwi();
 	virtual ~kx_whitespace(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -75,7 +75,7 @@ private:
 class kx_comma : public kx_elem
 {
 public:
-	static shared_ptr<kx_comma> new_instance();
+	static shared_ptr<kx_comma> nwi();
 	virtual ~kx_comma(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -94,7 +94,7 @@ public:
 		afl_right,
 	};
 
-	static shared_ptr<kx_async_flowop> new_instance();
+	static shared_ptr<kx_async_flowop> nwi();
 	virtual ~kx_async_flowop(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -121,7 +121,7 @@ public:
 		fl_right,
 	};
 
-	static shared_ptr<kx_flowop> new_instance();
+	static shared_ptr<kx_flowop> nwi();
 	virtual ~kx_flowop(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -163,7 +163,7 @@ protected:
 class kx_symbol : public kx_process
 {
 public:
-	static shared_ptr<kx_symbol> new_instance();
+	static shared_ptr<kx_symbol> nwi();
 	virtual ~kx_symbol(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -180,7 +180,7 @@ private:
 class kx_text : public kx_process
 {
 public:
-	static shared_ptr<kx_text> new_instance();
+	static shared_ptr<kx_text> nwi();
 	virtual ~kx_text(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -197,7 +197,7 @@ private:
 class kx_block : public kx_process
 {
 public:
-	static shared_ptr<kx_block> new_instance();
+	static shared_ptr<kx_block> nwi();
 	virtual ~kx_block(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -220,7 +220,7 @@ protected:
 class kx_ignore_block : public kx_process
 {
 public:
-	static shared_ptr<kx_ignore_block> new_instance();
+	static shared_ptr<kx_ignore_block> nwi();
 	virtual ~kx_ignore_block(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -237,7 +237,7 @@ private:
 class kx_match_block : public kx_process
 {
 public:
-	static shared_ptr<kx_match_block> new_instance();
+	static shared_ptr<kx_match_block> nwi();
 	virtual ~kx_match_block(){}
 
 	virtual std::string print(int ilevel = 0);
@@ -254,7 +254,7 @@ private:
 class kx_meta_block : public kx_process
 {
 public:
-	static shared_ptr<kx_meta_block> new_instance();
+	static shared_ptr<kx_meta_block> nwi();
 	virtual ~kx_meta_block(){}
 
 	virtual std::string print(int ilevel = 0);

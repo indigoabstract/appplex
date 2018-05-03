@@ -96,7 +96,7 @@ unit_exercise::unit_exercise()
 	prefs = shared_ptr<unit_preferences>(new unit_exercise_pref::unit_preferences_detail());
 }
 
-shared_ptr<unit_exercise> unit_exercise::new_instance()
+shared_ptr<unit_exercise> unit_exercise::nwi()
 {
 	return shared_ptr<unit_exercise>(new unit_exercise());
 }

@@ -10,7 +10,7 @@
 class unit_test_snd_generators : public unit
 {
 public:
-	static std::shared_ptr<unit_test_snd_generators> new_instance();
+	static std::shared_ptr<unit_test_snd_generators> nwi();
 
     virtual void init();
 	virtual void init_mws();

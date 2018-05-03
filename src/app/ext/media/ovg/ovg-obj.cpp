@@ -175,7 +175,7 @@ vg_path::vg_path()
 	//vghandle = vgCreatePath(VG_PATH_FORMAT_STANDARD, VG_PATH_DATATYPE_F, 1, 0, 0, 0, VG_PATH_CAPABILITY_ALL);
 }
 
-spvg_path vg_path::new_instance()
+spvg_path vg_path::nwi()
 {
 	return spvg_path(new vg_path());
 }
@@ -265,7 +265,7 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	vghandle = vgCreatePaint();
 //}
 //
-//shared_ptr<vg_paint> vg_paint::new_instance()
+//shared_ptr<vg_paint> vg_paint::nwi()
 //{
 //	return shared_ptr<vg_paint>(new vg_paint());
 //}
@@ -314,12 +314,12 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	vghandle = vgCreateImage((VGImageFormat)iimg_format, iwidth, iheight, VG_IMAGE_QUALITY_BETTER);
 //}
 //
-//shared_ptr<vg_image> vg_image::new_instance(int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
+//shared_ptr<vg_image> vg_image::nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
 //{
 //	return shared_ptr<vg_image>(new vg_image(iwidth, iheight, iimg_format));
 //}
 //
-//shared_ptr<vg_image> vg_image::new_instance(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
+//shared_ptr<vg_image> vg_image::nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
 //{
 //	shared_ptr<vg_image> img(new vg_image(iwidth, iheight, iimg_format));
 //	unsigned int dbpp = 4;
@@ -381,7 +381,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 		//vg::image_format::e_image_format rgbaFormat = vg::image_format::sABGR_8888;
 		//VGubyte* data2 = begin_ptr(rgb);
 
-		//img = vg_image::new_instance(width, height, rgbaFormat);
+		//img = vg_image::nwi(width, height, rgbaFormat);
 		//vgImageSubData(img->handle(), data2, dstride, (VGImageFormat)rgbaFormat, 0, 0, width, height);
 	}
 
@@ -392,7 +392,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 // vg_util
 //spvg_path vg_util::new_line(gfx_float ix0, gfx_float iy0, gfx_float ix1, gfx_float iy1)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguLine(p->handle(), ix0, iy0, ix1, iy1);
 //
@@ -401,7 +401,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 //
 //spvg_path vg_util::new_polygon(const gfx_float* ipoints, gfx_int icount, gfx_boolean iclosed)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguPolygon(p->handle(), ipoints, icount, (VGboolean)iclosed);
 //
@@ -410,7 +410,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 //
 //spvg_path vg_util::new_rect(gfx_float ix, gfx_float iy, gfx_float iwidth, gfx_float iheight)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguRect(p->handle(), ix, iy, iwidth, iheight);
 //
@@ -419,7 +419,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 //
 //spvg_path vg_util::new_roundRect(gfx_float ix, gfx_float iy, gfx_float iwidth, gfx_float iheight, gfx_float iarc_width, gfx_float iarc_height)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguRoundRect(p->handle(), ix, iy, iwidth, iheight, iarc_width, iarc_height);
 //
@@ -428,7 +428,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 //
 //spvg_path vg_util::new_ellipse(gfx_float icx, gfx_float icy, gfx_float iwidth, gfx_float iheight)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguEllipse(p->handle(), icx, icy, iwidth, iheight);
 //
@@ -437,7 +437,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 //
 //spvg_path vg_util::new_arc(gfx_float ix, gfx_float iy, gfx_float iwidth, gfx_float iheight, gfx_float istart_angle, gfx_float iangle_extent, vg::arc_type::e_arc_type iarc_type)
 //{
-//	spvg_path p = vg_path::new_instance();
+//	spvg_path p = vg_path::nwi();
 //
 //	vguArc(p->handle(), ix, iy, iwidth, iheight, istart_angle, iangle_extent, (VGUArcType)iarc_type);
 //

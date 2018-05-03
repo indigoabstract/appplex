@@ -25,7 +25,7 @@ unit_test_freeimage::unit_test_freeimage()
 	set_name("test-freeimage");
 }
 
-shared_ptr<unit_test_freeimage> unit_test_freeimage::new_instance()
+shared_ptr<unit_test_freeimage> unit_test_freeimage::nwi()
 {
 	return shared_ptr<unit_test_freeimage>(new unit_test_freeimage());
 }
@@ -214,7 +214,7 @@ shared_ptr<gfx_tex> newImage(const char *filename, shared_ptr<vector<uint8> > dt
 		}
 
 		data = FreeImage_GetBits(fbmp);
-		//img = vg_image::new_instance(data, width, height, rgbaFormat);
+		//img = vg_image::nwi(data, width, height, rgbaFormat);
 	}
 
 	FreeImage_Unload(fbmp);

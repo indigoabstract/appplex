@@ -422,7 +422,7 @@ namespace unit_test_snd_generators_ns
 
 			// Set up sound generator
 			generator = std::make_shared<Generator>(fmodSystem, generators[generatorId], frequency, sampleRate, channels, soundLengthSeconds, volume);
-			note_font = mws_font::new_inst(20.f);
+			note_font = mws_font::nwi(20.f);
 			note_font->set_color(gfx_color::colors::black);
 		}
 
@@ -586,7 +586,7 @@ unit_test_snd_generators::unit_test_snd_generators()
 	set_name("test sound generators");
 }
 
-shared_ptr<unit_test_snd_generators> unit_test_snd_generators::new_instance()
+shared_ptr<unit_test_snd_generators> unit_test_snd_generators::nwi()
 {
 	return shared_ptr<unit_test_snd_generators>(new unit_test_snd_generators());
 }

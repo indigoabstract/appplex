@@ -12,7 +12,7 @@ class unit_test_kube_sphere_impl;
 class unit_test_kube_sphere : public unit
 {
 public:
-	static shared_ptr<unit_test_kube_sphere> new_instance();
+	static shared_ptr<unit_test_kube_sphere> nwi();
 
     virtual void init();
     virtual void load();

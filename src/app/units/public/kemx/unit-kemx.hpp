@@ -17,7 +17,7 @@ class node_info;
 class unit_kemx : public unit
 {
 public:
-	static shared_ptr<unit_kemx> new_instance();
+	static shared_ptr<unit_kemx> nwi();
 
 	virtual void init();
 	virtual void init_mws();

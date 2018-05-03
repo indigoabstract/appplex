@@ -12,7 +12,7 @@ class long_operation;
 class unit_cmd : public unit
 {
 public:
-	static shared_ptr<unit_cmd> new_instance();
+	static shared_ptr<unit_cmd> nwi();
 
     virtual bool update();
     virtual void load();

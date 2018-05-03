@@ -18,7 +18,7 @@ namespace unit_texxed_ns
 	class text_area_impl : public mws_page_item
 	{
 	public:
-		static shared_ptr<text_area_impl> new_inst(shared_ptr<mws_page> iparent)
+		static shared_ptr<text_area_impl> nwi(shared_ptr<mws_page> iparent)
 		{
 			shared_ptr<text_area_impl> inst(new text_area_impl(iparent));
 			inst->add_to_page();
@@ -244,11 +244,11 @@ namespace unit_texxed_ns
 	protected:
 		text_area_impl(shared_ptr<mws_page> iparent)
 		{
-			tx_vxo = text_vxo::new_inst();
+			tx_vxo = text_vxo::nwi();
 			iparent->get_unit()->gfx_scene_inst->attach(tx_vxo);
 			tx_vxo->camera_id_list.push_back(get_unit()->mws_cam->camera_id);
 			(*tx_vxo)[MP_SCISSOR_ENABLED] = true;
-			font = mws_font::new_inst(48);
+			font = mws_font::nwi(48);
 		}
 
 		shared_ptr<text_area_model> tx_src;
@@ -285,13 +285,13 @@ namespace unit_texxed_ns
 				return;
 			}
 
-			ta = text_area_impl::new_inst(get_mws_page_instance());
+			ta = text_area_impl::nwi(get_mws_page_instance());
 			ta->set_position(glm::vec2(50, 70));
 			ta->set_dimension(glm::vec2(w - 80, h - 130));
 			ta->set_text(*tx_res);
 
 			shared_ptr<mws_button> b;
-			b = mws_button::new_instance(get_mws_page_instance());
+			b = mws_button::nwi(get_mws_page_instance());
 			b->init(mws_rect(10, h - 50, 50, 20), 0x8200b4, "btn");
 		}
 
@@ -335,7 +335,7 @@ unit_texxed::unit_texxed()
 	set_name("texxed");
 }
 
-shared_ptr<unit_texxed> unit_texxed::new_instance()
+shared_ptr<unit_texxed> unit_texxed::nwi()
 {
 	return shared_ptr<unit_texxed>(new unit_texxed());
 }

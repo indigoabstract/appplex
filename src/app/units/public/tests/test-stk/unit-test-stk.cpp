@@ -231,7 +231,7 @@ unit_test_stk::unit_test_stk()
 	set_name("test-stk");
 }
 
-shared_ptr<unit_test_stk> unit_test_stk::new_instance()
+shared_ptr<unit_test_stk> unit_test_stk::nwi()
 {
 	return shared_ptr<unit_test_stk>(new unit_test_stk());
 }

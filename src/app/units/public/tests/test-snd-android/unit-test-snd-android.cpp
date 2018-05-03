@@ -18,7 +18,7 @@ unit_test_snd_android::unit_test_snd_android()
 	set_name("test-snd-android");
 }
 
-shared_ptr<unit_test_snd_android> unit_test_snd_android::new_instance()
+shared_ptr<unit_test_snd_android> unit_test_snd_android::nwi()
 {
 	return shared_ptr<unit_test_snd_android>(new unit_test_snd_android());
 }

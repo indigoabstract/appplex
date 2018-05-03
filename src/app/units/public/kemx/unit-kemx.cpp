@@ -39,7 +39,7 @@ unit_kemx::unit_kemx()
    is_valid_expression = false;
 }
 
-shared_ptr<unit_kemx> unit_kemx::new_instance()
+shared_ptr<unit_kemx> unit_kemx::nwi()
 {
    return shared_ptr<unit_kemx>(new unit_kemx());
 }
@@ -117,8 +117,8 @@ void unit_kemx::init()
 
 void unit_kemx::init_mws()
 {
-   shared_ptr<mws_page> up = mws_page::new_instance(mws_root);
-   shared_ptr<mws_tree> tree = mws_tree::new_instance(up);
+   shared_ptr<mws_page> up = mws_page::nwi(mws_root);
+   shared_ptr<mws_tree> tree = mws_tree::nwi(up);
    shared_ptr<mws_tree_model> mwstm(new mws_tree_model());
 
    tree->set_id("kemxtree");

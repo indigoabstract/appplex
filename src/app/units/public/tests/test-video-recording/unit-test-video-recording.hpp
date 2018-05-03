@@ -9,7 +9,7 @@
 class unit_test_video_recording : public unit
 {
 public:
-   static std::shared_ptr<unit_test_video_recording> new_instance();
+   static std::shared_ptr<unit_test_video_recording> nwi();
 
    void init() override;
    void load() override;

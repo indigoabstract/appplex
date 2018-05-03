@@ -10,7 +10,7 @@ unit_test_openvg::unit_test_openvg()
 	set_name("test-openvg");
 }
 
-shared_ptr<unit_test_openvg> unit_test_openvg::new_instance()
+shared_ptr<unit_test_openvg> unit_test_openvg::nwi()
 {
 	return shared_ptr<unit_test_openvg>(new unit_test_openvg());
 }

@@ -9,7 +9,7 @@ updatectrl::updatectrl()
 	state = GAME_STOPPED;
 }
 
-shared_ptr<updatectrl> updatectrl::new_instance()
+shared_ptr<updatectrl> updatectrl::nwi()
 {
 	return shared_ptr<updatectrl>(new updatectrl());
 }

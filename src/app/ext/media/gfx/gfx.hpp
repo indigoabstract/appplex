@@ -18,7 +18,7 @@ class unit_ctrl;
 class gfx
 {
 public:
-   static std::shared_ptr<gfx> new_inst();
+   static std::shared_ptr<gfx> nwi();
    static mws_sp<gfx> i() { return main_instance; }
    shared_ptr<gfx_state> get_gfx_state();
    void reload();

@@ -106,7 +106,7 @@ touchctrl::touchctrl()
 	queue_ptr = &queue_tab[queue_idx];
 }
 
-shared_ptr<touchctrl> touchctrl::new_instance()
+shared_ptr<touchctrl> touchctrl::nwi()
 {
 	return shared_ptr<touchctrl>(new touchctrl());
 }
@@ -570,7 +570,7 @@ shared_ptr<key_evt> key_evt::as_key_evt(shared_ptr<iadp> idp)
 	return static_pointer_cast<key_evt>(idp);
 }
 
-shared_ptr<key_evt> key_evt::new_instance(std::weak_ptr<keyctrl> isrc, key_evt::key_evt_types itype, int ikey)
+shared_ptr<key_evt> key_evt::nwi(std::weak_ptr<keyctrl> isrc, key_evt::key_evt_types itype, int ikey)
 {
 	return shared_ptr<key_evt>(new key_evt(isrc, itype, ikey));
 }
@@ -654,7 +654,7 @@ keyctrl::keyctrl()
 	events_pending = false;
 }
 
-shared_ptr<keyctrl> keyctrl::new_instance()
+shared_ptr<keyctrl> keyctrl::nwi()
 {
 	return shared_ptr<keyctrl>(new keyctrl());
 }
@@ -677,7 +677,7 @@ void keyctrl::update()
 			switch (key_status[k])
 			{
 			case KEY_PRESSED:
-				new_key_event(key_evt::new_instance(inst, key_evt::KE_PRESSED, k));
+				new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, k));
 				key_status[k] = KEY_FIRST_PRESSED;
 				events_still_pending = true;
 				break;
@@ -685,7 +685,7 @@ void keyctrl::update()
 			case KEY_FIRST_PRESSED:
 				if (crtTime - key_status_time[k] > 400)
 				{
-					new_key_event(key_evt::new_instance(inst, key_evt::KE_REPEATED, k));
+					new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, k));
 					key_status[k] = KEY_REPEATED;
 					key_status_time[k] = crtTime;
 				}
@@ -696,7 +696,7 @@ void keyctrl::update()
 			case KEY_REPEATED:
 				if (crtTime - key_status_time[k] > 25)
 				{
-					new_key_event(key_evt::new_instance(inst, key_evt::KE_REPEATED, k));
+					new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, k));
 					key_status_time[k] = crtTime;
 				}
 
@@ -705,7 +705,7 @@ void keyctrl::update()
 
 			case KEY_RELEASED:
 				key_status[k] = KEY_RELEASED_IDLE;
-				new_key_event(key_evt::new_instance(inst, key_evt::KE_RELEASED, k));
+				new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, k));
 				events_still_pending = true;
 				break;
 

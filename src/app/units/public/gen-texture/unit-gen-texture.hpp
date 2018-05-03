@@ -10,7 +10,7 @@
 class unit_gen_texture : public unit
 {
 public:
-	static shared_ptr<unit_gen_texture> new_instance();
+	static shared_ptr<unit_gen_texture> nwi();
 
     virtual void init();
 	virtual void init_mws();

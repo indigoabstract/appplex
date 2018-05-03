@@ -476,7 +476,7 @@ unit_test_trail::unit_test_trail()
    set_name("test-trail");
 }
 
-shared_ptr<unit_test_trail> unit_test_trail::new_instance()
+shared_ptr<unit_test_trail> unit_test_trail::nwi()
 {
    return shared_ptr<unit_test_trail>(new unit_test_trail());
 }
@@ -492,7 +492,7 @@ void unit_test_trail::load()
    p = shared_ptr<unit_test_trail_impl>(new unit_test_trail_impl());
 
    {
-      p->persp_cam = gfx_camera::new_inst();
+      p->persp_cam = gfx_camera::nwi();
       p->persp_cam->name = "defcam";
       p->persp_cam->camera_id = "default";
       p->persp_cam->rendering_priority = 0;

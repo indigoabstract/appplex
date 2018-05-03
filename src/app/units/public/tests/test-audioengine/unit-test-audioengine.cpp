@@ -13,7 +13,7 @@ unit_test_audioengine::unit_test_audioengine()
 	set_name("test_audioengine");
 }
 
-shared_ptr<unit_test_audioengine> unit_test_audioengine::new_instance()
+shared_ptr<unit_test_audioengine> unit_test_audioengine::nwi()
 {
 	return shared_ptr<unit_test_audioengine>(new unit_test_audioengine());
 }

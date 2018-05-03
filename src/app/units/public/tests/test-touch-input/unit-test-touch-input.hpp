@@ -11,7 +11,7 @@
 class unit_test_touch_input : public unit
 {
 public:
-   static mws_sp<unit_test_touch_input> new_instance();
+   static mws_sp<unit_test_touch_input> nwi();
 
    virtual void init_mws() override;
 

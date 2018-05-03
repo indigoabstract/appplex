@@ -25,7 +25,7 @@ unit_abstract_racing::unit_abstract_racing()
 	set_name("abstract-racing");
 }
 
-shared_ptr<unit_abstract_racing> unit_abstract_racing::new_instance()
+shared_ptr<unit_abstract_racing> unit_abstract_racing::nwi()
 {
 	return shared_ptr<unit_abstract_racing>(new unit_abstract_racing());
 }

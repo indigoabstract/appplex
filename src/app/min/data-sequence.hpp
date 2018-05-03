@@ -166,7 +166,7 @@ class rw_sequence : public memory_data_sequence
 public:
    ~rw_sequence() {}
 
-   static shared_ptr<rw_sequence> new_inst()
+   static shared_ptr<rw_sequence> nwi()
    {
       shared_ptr<rw_sequence> inst(new rw_sequence());
       inst->r.set_data_sequence(inst);
@@ -187,7 +187,7 @@ class rw_file_sequence : public file_data_sequence
 public:
    ~rw_file_sequence() {}
 
-   static shared_ptr<rw_file_sequence> new_inst(shared_ptr<pfm_file> ifile)
+   static shared_ptr<rw_file_sequence> nwi(shared_ptr<pfm_file> ifile)
    {
       shared_ptr<rw_file_sequence> inst(new rw_file_sequence(ifile));
       inst->r.set_data_sequence(inst);

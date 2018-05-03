@@ -24,17 +24,17 @@ class kx_scn_block;
 class kx_scn_main;
 
 
-shared_ptr<kx_whitespace> kx_whitespace::new_instance(){ return shared_ptr<kx_whitespace>(new kx_whitespace()); }
+shared_ptr<kx_whitespace> kx_whitespace::nwi(){ return shared_ptr<kx_whitespace>(new kx_whitespace()); }
 
 string kx_whitespace::print(int ilevel){ return data; }
 
 
-shared_ptr<kx_comma> kx_comma::new_instance(){ return shared_ptr<kx_comma>(new kx_comma()); }
+shared_ptr<kx_comma> kx_comma::nwi(){ return shared_ptr<kx_comma>(new kx_comma()); }
 
 string kx_comma::print(int ilevel){ return ", "; }
 
 
-shared_ptr<kx_async_flowop> kx_async_flowop::new_instance(){ return shared_ptr<kx_async_flowop>(new kx_async_flowop()); }
+shared_ptr<kx_async_flowop> kx_async_flowop::nwi(){ return shared_ptr<kx_async_flowop>(new kx_async_flowop()); }
 
 string kx_async_flowop::print(int ilevel)
 {
@@ -48,7 +48,7 @@ string kx_async_flowop::print(int ilevel)
 	return s;
 }
 
-shared_ptr<kx_flowop> kx_flowop::new_instance(){ return shared_ptr<kx_flowop>(new kx_flowop()); }
+shared_ptr<kx_flowop> kx_flowop::nwi(){ return shared_ptr<kx_flowop>(new kx_flowop()); }
 
 string kx_flowop::print(int ilevel)
 {
@@ -78,7 +78,7 @@ shared_ptr<kx_process> kx_process::find_by_name(const std::string& iname)
 }
 
 
-shared_ptr<kx_symbol> kx_symbol::new_instance(){ return shared_ptr<kx_symbol>(new kx_symbol()); }
+shared_ptr<kx_symbol> kx_symbol::nwi(){ return shared_ptr<kx_symbol>(new kx_symbol()); }
 
 string kx_symbol::print(int ilevel){ return name; }
 
@@ -88,7 +88,7 @@ void kx_symbol::eval()
 }
 
 
-shared_ptr<kx_text> kx_text::new_instance(){ return shared_ptr<kx_text>(new kx_text()); }
+shared_ptr<kx_text> kx_text::nwi(){ return shared_ptr<kx_text>(new kx_text()); }
 
 std::string kx_text::print(int ilevel){ return data; }
 
@@ -98,7 +98,7 @@ void kx_text::eval()
 }
 
 
-shared_ptr<kx_block> kx_block::new_instance(){ return shared_ptr<kx_block>(new kx_block()); }
+shared_ptr<kx_block> kx_block::nwi(){ return shared_ptr<kx_block>(new kx_block()); }
 
 string kx_block::print(int ilevel)
 {
@@ -160,7 +160,7 @@ shared_ptr<kx_process> kx_block::find_by_name(const std::string& iname)
 }
 
 
-shared_ptr<kx_ignore_block> kx_ignore_block::new_instance(){ return shared_ptr<kx_ignore_block>(new kx_ignore_block()); }
+shared_ptr<kx_ignore_block> kx_ignore_block::nwi(){ return shared_ptr<kx_ignore_block>(new kx_ignore_block()); }
 
 string kx_ignore_block::print(int ilevel)
 {
@@ -182,7 +182,7 @@ string kx_ignore_block::print(int ilevel)
 }
 
 
-shared_ptr<kx_match_block> kx_match_block::new_instance(){ return shared_ptr<kx_match_block>(new kx_match_block()); }
+shared_ptr<kx_match_block> kx_match_block::nwi(){ return shared_ptr<kx_match_block>(new kx_match_block()); }
 
 string kx_match_block::print(int ilevel)
 {
@@ -205,7 +205,7 @@ string kx_match_block::print(int ilevel)
 }
 
 
-shared_ptr<kx_meta_block> kx_meta_block::new_instance(){ return shared_ptr<kx_meta_block>(new kx_meta_block()); }
+shared_ptr<kx_meta_block> kx_meta_block::nwi(){ return shared_ptr<kx_meta_block>(new kx_meta_block()); }
 
 std::string kx_meta_block::print(int ilevel)
 {

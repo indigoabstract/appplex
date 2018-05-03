@@ -25,7 +25,7 @@ unit_test_gl::unit_test_gl()
 	set_name("test-gl");
 }
 
-shared_ptr<unit_test_gl> unit_test_gl::new_instance()
+shared_ptr<unit_test_gl> unit_test_gl::nwi()
 {
 	return shared_ptr<unit_test_gl>(new unit_test_gl());
 }

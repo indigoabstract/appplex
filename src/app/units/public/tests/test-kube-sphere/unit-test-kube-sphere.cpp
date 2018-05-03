@@ -59,7 +59,7 @@ unit_test_kube_sphere::unit_test_kube_sphere()
 	set_name("test-kube-sphere");
 }
 
-shared_ptr<unit_test_kube_sphere> unit_test_kube_sphere::new_instance()
+shared_ptr<unit_test_kube_sphere> unit_test_kube_sphere::nwi()
 {
 	return shared_ptr<unit_test_kube_sphere>(new unit_test_kube_sphere());
 }
@@ -73,7 +73,7 @@ void unit_test_kube_sphere::init()
 void unit_test_kube_sphere::load()
 {
 	p = shared_ptr<unit_test_kube_sphere_impl>(new unit_test_kube_sphere_impl());
-	p->ortho_cam = gfx_camera::new_inst();
+	p->ortho_cam = gfx_camera::nwi();
 	p->ortho_cam->camera_id = "ortho_camera";
 	p->ortho_cam->rendering_priority = 1;
 	p->ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
@@ -81,7 +81,7 @@ void unit_test_kube_sphere::load()
 	p->ortho_cam->far_clip_distance = 5000;
 	p->ortho_cam->clear_depth = false;
 
-	p->persp_cam = gfx_camera::new_inst();
+	p->persp_cam = gfx_camera::nwi();
 	p->persp_cam->name = "defcam";
 	p->persp_cam->camera_id = "default";
 	p->persp_cam->rendering_priority = 0;

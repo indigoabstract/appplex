@@ -100,7 +100,7 @@ void unit_ctrl::pre_init_app()
 
    if (!ul)
    {
-      ul = unit_list::new_instance();
+      ul = unit_list::nwi();
       ul->set_name("app-unit-list");
       app_units_setup::next_crt_unit = crt_unit = ul;
 

@@ -159,12 +159,12 @@ mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
 mws_button::mws_button(shared_ptr<mws_page> iparent)
 {
    color = gfx_color::colors::black;
-   font = mws_font::new_inst(24.f);
+   font = mws_font::nwi(24.f);
    font->set_color(gfx_color::colors::white);
    set_text("n/a");
 }
 
-shared_ptr<mws_button> mws_button::new_instance(shared_ptr<mws_page> iparent)
+shared_ptr<mws_button> mws_button::nwi(shared_ptr<mws_page> iparent)
 {
    shared_ptr<mws_button> u(new mws_button(iparent));
    u->add_to_page();
@@ -423,7 +423,7 @@ mws_list::mws_list(shared_ptr<mws_page> iparent)
    item_x = (mws_r.w - item_w) / 2;
 }
 
-shared_ptr<mws_list> mws_list::new_instance(shared_ptr<mws_page> i_parent)
+shared_ptr<mws_list> mws_list::nwi(shared_ptr<mws_page> i_parent)
 {
    shared_ptr<mws_list> u(new mws_list(i_parent));
    i_parent->attach(u);
@@ -590,7 +590,7 @@ mws_tree::mws_tree(shared_ptr<mws_page> iparent)
 {
 }
 
-shared_ptr<mws_tree> mws_tree::new_instance(shared_ptr<mws_page> iparent)
+shared_ptr<mws_tree> mws_tree::nwi(shared_ptr<mws_page> iparent)
 {
    shared_ptr<mws_tree> u(new mws_tree(iparent));
    u->add_to_page();

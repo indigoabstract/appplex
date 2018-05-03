@@ -248,7 +248,7 @@ unit_test_fmod::unit_test_fmod()
 	set_name("test-fmod");
 }
 
-shared_ptr<unit_test_fmod> unit_test_fmod::new_instance()
+shared_ptr<unit_test_fmod> unit_test_fmod::nwi()
 {
 	return shared_ptr<unit_test_fmod>(new unit_test_fmod());
 }

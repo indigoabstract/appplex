@@ -12,7 +12,7 @@ class unit_test_dyn_geometry_impl;
 class unit_test_dyn_geometry : public unit
 {
 public:
-	static shared_ptr<unit_test_dyn_geometry> new_instance();
+	static shared_ptr<unit_test_dyn_geometry> nwi();
 
     virtual void init();
     virtual void load();

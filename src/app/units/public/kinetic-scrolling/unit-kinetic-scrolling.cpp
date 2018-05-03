@@ -266,7 +266,7 @@ unit_kinetic_scrolling::unit_kinetic_scrolling()
 	set_name("kinetic-scrolling");
 }
 
-shared_ptr<unit_kinetic_scrolling> unit_kinetic_scrolling::new_instance()
+shared_ptr<unit_kinetic_scrolling> unit_kinetic_scrolling::nwi()
 {
 	return shared_ptr<unit_kinetic_scrolling>(new unit_kinetic_scrolling());
 }

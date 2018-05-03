@@ -10,7 +10,7 @@
 class unit_test_mws : public unit
 {
 public:
-	static shared_ptr<unit_test_mws> new_instance();
+	static shared_ptr<unit_test_mws> nwi();
 
 	virtual void init_mws();
 

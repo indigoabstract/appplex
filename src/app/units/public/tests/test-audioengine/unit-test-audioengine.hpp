@@ -10,7 +10,7 @@
 class unit_test_audioengine : public unit
 {
 public:
-	static shared_ptr<unit_test_audioengine> new_instance();
+	static shared_ptr<unit_test_audioengine> nwi();
 
     virtual void init();
 	virtual void init_mws();

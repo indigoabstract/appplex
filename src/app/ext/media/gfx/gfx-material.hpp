@@ -103,7 +103,7 @@ public:
 
 protected:
    friend class gfx_material;
-   static shared_ptr<gfx_material_entry> new_inst(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent);
+   static shared_ptr<gfx_material_entry> nwi(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent);
    gfx_material_entry(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent);
 
    weak_ptr<gfx_material> root;
@@ -129,7 +129,7 @@ public:
 
    gfx_material(std::shared_ptr<gfx> i_gi = nullptr);
    virtual ~gfx_material() {}
-   static shared_ptr<gfx_material> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
+   static shared_ptr<gfx_material> nwi(std::shared_ptr<gfx> i_gi = nullptr);
    shared_ptr<gfx_material> get_inst();
    gfx_material_entry& operator[] (const std::string iname);
    shared_ptr<gfx_shader> get_shader();

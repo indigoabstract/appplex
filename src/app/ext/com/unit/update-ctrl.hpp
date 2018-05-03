@@ -13,7 +13,7 @@ public:
 		GAME_PAUSED,
 	};
 
-	static shared_ptr<updatectrl> new_instance();
+	static shared_ptr<updatectrl> nwi();
 	shared_ptr<updatectrl> getInst();
 
 	int update();

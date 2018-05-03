@@ -157,7 +157,7 @@ public:
       e_custom_proj
    };
 
-   static shared_ptr<gfx_camera> new_inst(std::shared_ptr<gfx> i_gi = nullptr);
+   static shared_ptr<gfx_camera> nwi(std::shared_ptr<gfx> i_gi = nullptr);
    virtual e_gfx_obj_type get_type()const override;
    void clear_buffers();
    void update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp);

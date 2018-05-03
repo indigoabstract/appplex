@@ -306,7 +306,7 @@ public:
 };
 
 
-shared_ptr<text_vxo> text_vxo::new_inst()
+shared_ptr<text_vxo> text_vxo::nwi()
 {
 	shared_ptr<text_vxo> inst(new text_vxo());
 	inst->p = std::make_shared<text_vxo_impl>(inst);

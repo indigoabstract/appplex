@@ -19,7 +19,7 @@ static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha,
 static int blending_list_length = sizeof(blending_list) / sizeof(gfx_uint);
 
 
-shared_ptr<gfx_material_entry> gfx_material_entry::new_inst(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
+shared_ptr<gfx_material_entry> gfx_material_entry::nwi(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
 {
    return shared_ptr<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, iparent));
 }
@@ -94,7 +94,7 @@ gfx_material_entry& gfx_material_entry::operator[] (const std::string iname)
 {
    if (!entries[iname])
    {
-      entries[iname] = new_inst(iname, get_material(), get_inst());
+      entries[iname] = nwi(iname, get_material(), get_inst());
    }
 
    return *entries[iname];
@@ -203,8 +203,8 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
       value_type = gfx_input::text;
       if (name == MP_SHADER_NAME)
       {
-         entries[MP_FSH_NAME] = new_inst(MP_FSH_NAME, get_material(), get_inst());
-         entries[MP_VSH_NAME] = new_inst(MP_VSH_NAME, get_material(), get_inst());
+         entries[MP_FSH_NAME] = nwi(MP_FSH_NAME, get_material(), get_inst());
+         entries[MP_VSH_NAME] = nwi(MP_VSH_NAME, get_material(), get_inst());
          *entries[MP_FSH_NAME] = ivalue;
          *entries[MP_VSH_NAME] = ivalue;
 
@@ -266,12 +266,12 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
          case gfx_input::s2d:
          {
             value_type = gfx_input::s2d;
-            entries[MP_TEXTURE_NAME] = new_inst(MP_TEXTURE_NAME, get_material(), get_inst());
+            entries[MP_TEXTURE_NAME] = nwi(MP_TEXTURE_NAME, get_material(), get_inst());
             // the texture will be loaded by the scene 'update' method
-            entries[MP_TEXTURE_INST] = new_inst(MP_TEXTURE_INST, get_material(), get_inst());
-            entries[MP_TEX_FILTER] = new_inst(MP_TEX_FILTER, get_material(), get_inst());
-            entries[MP_TEX_ADDRU] = new_inst(MP_TEX_ADDRU, get_material(), get_inst());
-            entries[MP_TEX_ADDRV] = new_inst(MP_TEX_ADDRV, get_material(), get_inst());
+            entries[MP_TEXTURE_INST] = nwi(MP_TEXTURE_INST, get_material(), get_inst());
+            entries[MP_TEX_FILTER] = nwi(MP_TEX_FILTER, get_material(), get_inst());
+            entries[MP_TEX_ADDRU] = nwi(MP_TEX_ADDRU, get_material(), get_inst());
+            entries[MP_TEX_ADDRV] = nwi(MP_TEX_ADDRV, get_material(), get_inst());
             *entries[MP_TEXTURE_NAME] = ivalue;
             *entries[MP_TEX_FILTER] = MV_MIN_MAG_MIP_LINEAR;
             *entries[MP_TEX_ADDRU] = MV_WRAP;
@@ -289,12 +289,12 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
          case gfx_input::scm:
          {
             value_type = gfx_input::scm;
-            entries[MP_TEXTURE_NAME] = new_inst(MP_TEXTURE_NAME, get_material(), get_inst());
+            entries[MP_TEXTURE_NAME] = nwi(MP_TEXTURE_NAME, get_material(), get_inst());
             // the texture will be loaded by the scene 'update' method
-            entries[MP_TEXTURE_INST] = new_inst(MP_TEXTURE_INST, get_material(), get_inst());
-            entries[MP_TEX_FILTER] = new_inst(MP_TEX_FILTER, get_material(), get_inst());
-            entries[MP_TEX_ADDRU] = new_inst(MP_TEX_ADDRU, get_material(), get_inst());
-            entries[MP_TEX_ADDRV] = new_inst(MP_TEX_ADDRV, get_material(), get_inst());
+            entries[MP_TEXTURE_INST] = nwi(MP_TEXTURE_INST, get_material(), get_inst());
+            entries[MP_TEX_FILTER] = nwi(MP_TEX_FILTER, get_material(), get_inst());
+            entries[MP_TEX_ADDRU] = nwi(MP_TEX_ADDRU, get_material(), get_inst());
+            entries[MP_TEX_ADDRV] = nwi(MP_TEX_ADDRV, get_material(), get_inst());
             *entries[MP_TEXTURE_NAME] = ivalue;
             *entries[MP_TEX_FILTER] = MV_MIN_MAG_MIP_LINEAR;
             *entries[MP_TEX_ADDRU] = MV_WRAP;
@@ -371,7 +371,7 @@ gfx_material::gfx_material(std::shared_ptr<gfx> i_gi)
    vsh_last_write = 0;
 }
 
-shared_ptr<gfx_material> gfx_material::new_inst(std::shared_ptr<gfx> i_gi)
+shared_ptr<gfx_material> gfx_material::nwi(std::shared_ptr<gfx> i_gi)
 {
    shared_ptr<gfx_material> m(new gfx_material(i_gi));
    gfx_material& inst = *m;
@@ -393,7 +393,7 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
 
       if (!me)
       {
-         me = std_params[iname] = gfx_material_entry::new_inst(iname, get_inst(), nullptr);
+         me = std_params[iname] = gfx_material_entry::nwi(iname, get_inst(), nullptr);
       }
 
       return *me;
@@ -407,7 +407,7 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
 
    if (!other_params[iname])
    {
-      other_params[iname] = gfx_material_entry::new_inst(iname, get_inst(), nullptr);
+      other_params[iname] = gfx_material_entry::nwi(iname, get_inst(), nullptr);
    }
 
    return *other_params[iname];
@@ -499,24 +499,24 @@ void gfx_material::init()
 {
    shared_ptr<gfx_material> mi;
 
-   static_std_param[MP_BLENDING] = gfx_material_entry::new_inst(MP_BLENDING, mi, nullptr);
-   static_std_param[MP_COLOR_WRITE] = gfx_material_entry::new_inst(MP_COLOR_WRITE, mi, nullptr);
-   static_std_param[MP_CULL_BACK] = gfx_material_entry::new_inst(MP_CULL_BACK, mi, nullptr);
-   static_std_param[MP_CULL_FRONT] = gfx_material_entry::new_inst(MP_CULL_FRONT, mi, nullptr);
-   static_std_param[MP_DEPTH_FUNCTION] = gfx_material_entry::new_inst(MP_DEPTH_FUNCTION, mi, nullptr);
-   static_std_param[MP_DEPTH_TEST] = gfx_material_entry::new_inst(MP_DEPTH_TEST, mi, nullptr);
-   static_std_param[MP_DEPTH_WRITE] = gfx_material_entry::new_inst(MP_DEPTH_WRITE, mi, nullptr);
-   static_std_param[MP_SHADER_INST] = gfx_material_entry::new_inst(MP_SHADER_INST, mi, nullptr);
-   static_std_param[MP_SHADER_NAME] = gfx_material_entry::new_inst(MP_SHADER_NAME, mi, nullptr);
-   static_std_param[MP_FSH_NAME] = gfx_material_entry::new_inst(MP_FSH_NAME, mi, nullptr);
-   static_std_param[MP_VSH_NAME] = gfx_material_entry::new_inst(MP_VSH_NAME, mi, nullptr);
-   static_std_param[MP_SCISSOR_ENABLED] = gfx_material_entry::new_inst(MP_SCISSOR_ENABLED, mi, nullptr);
-   static_std_param[MP_SCISSOR_AREA] = gfx_material_entry::new_inst(MP_SCISSOR_AREA, mi, nullptr);
-   static_std_param[MP_TEXTURE_INST] = gfx_material_entry::new_inst(MP_TEXTURE_INST, mi, nullptr);
-   static_std_param[MP_TEXTURE_NAME] = gfx_material_entry::new_inst(MP_TEXTURE_NAME, mi, nullptr);
-   static_std_param[MP_TEX_FILTER] = gfx_material_entry::new_inst(MP_TEX_FILTER, mi, nullptr);
-   static_std_param[MP_TEX_ADDRU] = gfx_material_entry::new_inst(MP_TEX_ADDRU, mi, nullptr);
-   static_std_param[MP_TEX_ADDRV] = gfx_material_entry::new_inst(MP_TEX_ADDRV, mi, nullptr);
-   static_std_param[MP_TRANSPARENT_SORTING] = gfx_material_entry::new_inst(MP_TRANSPARENT_SORTING, mi, nullptr);
-   static_std_param[MP_WIREFRAME_MODE] = gfx_material_entry::new_inst(MP_WIREFRAME_MODE, mi, nullptr);
+   static_std_param[MP_BLENDING] = gfx_material_entry::nwi(MP_BLENDING, mi, nullptr);
+   static_std_param[MP_COLOR_WRITE] = gfx_material_entry::nwi(MP_COLOR_WRITE, mi, nullptr);
+   static_std_param[MP_CULL_BACK] = gfx_material_entry::nwi(MP_CULL_BACK, mi, nullptr);
+   static_std_param[MP_CULL_FRONT] = gfx_material_entry::nwi(MP_CULL_FRONT, mi, nullptr);
+   static_std_param[MP_DEPTH_FUNCTION] = gfx_material_entry::nwi(MP_DEPTH_FUNCTION, mi, nullptr);
+   static_std_param[MP_DEPTH_TEST] = gfx_material_entry::nwi(MP_DEPTH_TEST, mi, nullptr);
+   static_std_param[MP_DEPTH_WRITE] = gfx_material_entry::nwi(MP_DEPTH_WRITE, mi, nullptr);
+   static_std_param[MP_SHADER_INST] = gfx_material_entry::nwi(MP_SHADER_INST, mi, nullptr);
+   static_std_param[MP_SHADER_NAME] = gfx_material_entry::nwi(MP_SHADER_NAME, mi, nullptr);
+   static_std_param[MP_FSH_NAME] = gfx_material_entry::nwi(MP_FSH_NAME, mi, nullptr);
+   static_std_param[MP_VSH_NAME] = gfx_material_entry::nwi(MP_VSH_NAME, mi, nullptr);
+   static_std_param[MP_SCISSOR_ENABLED] = gfx_material_entry::nwi(MP_SCISSOR_ENABLED, mi, nullptr);
+   static_std_param[MP_SCISSOR_AREA] = gfx_material_entry::nwi(MP_SCISSOR_AREA, mi, nullptr);
+   static_std_param[MP_TEXTURE_INST] = gfx_material_entry::nwi(MP_TEXTURE_INST, mi, nullptr);
+   static_std_param[MP_TEXTURE_NAME] = gfx_material_entry::nwi(MP_TEXTURE_NAME, mi, nullptr);
+   static_std_param[MP_TEX_FILTER] = gfx_material_entry::nwi(MP_TEX_FILTER, mi, nullptr);
+   static_std_param[MP_TEX_ADDRU] = gfx_material_entry::nwi(MP_TEX_ADDRU, mi, nullptr);
+   static_std_param[MP_TEX_ADDRV] = gfx_material_entry::nwi(MP_TEX_ADDRV, mi, nullptr);
+   static_std_param[MP_TRANSPARENT_SORTING] = gfx_material_entry::nwi(MP_TRANSPARENT_SORTING, mi, nullptr);
+   static_std_param[MP_WIREFRAME_MODE] = gfx_material_entry::nwi(MP_WIREFRAME_MODE, mi, nullptr);
 }

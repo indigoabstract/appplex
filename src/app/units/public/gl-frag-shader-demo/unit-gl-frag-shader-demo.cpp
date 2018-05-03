@@ -47,12 +47,12 @@ public:
 	class shader_channel
 	{
 	public:
-		static shared_ptr<shader_channel> new_inst()
+		static shared_ptr<shader_channel> nwi()
 		{
 			return shared_ptr<shader_channel>(new shader_channel("", e_no_input));
 		}
 
-		static shared_ptr<shader_channel> new_inst(std::string iinput_name, e_input_type iinput_type)
+		static shared_ptr<shader_channel> nwi(std::string iinput_name, e_input_type iinput_type)
 		{
 			return shared_ptr<shader_channel>(new shader_channel(iinput_name, iinput_type));
 		}
@@ -110,7 +110,7 @@ public:
 
 		for (int k = 0; k < 4; k++)
 		{
-			channel_list.push_back(shader_channel::new_inst());
+			channel_list.push_back(shader_channel::nwi());
 		}
 	}
 
@@ -138,7 +138,7 @@ public:
 		}
 		else
 		{
-			channel_list[ichannel_idx] = shader_channel::new_inst(iname, channel_list[ichannel_idx]->input_type);
+			channel_list[ichannel_idx] = shader_channel::nwi(iname, channel_list[ichannel_idx]->input_type);
 		}
 	}
 
@@ -149,41 +149,41 @@ private:
 	static void init()
 	{
 		// no iput
-		input_list["ni"] = shader_channel::new_inst("ni", e_no_input);
+		input_list["ni"] = shader_channel::nwi("ni", e_no_input);
 		// keyboard
-		input_list["kb"] = shader_channel::new_inst("kb", e_keyboard);
+		input_list["kb"] = shader_channel::nwi("kb", e_keyboard);
 		// 2d textures
-		input_list["t0"] = shader_channel::new_inst("tex00", e_texture_2d);
-		input_list["t1"] = shader_channel::new_inst("tex01", e_texture_2d);
-		input_list["t2"] = shader_channel::new_inst("tex02", e_texture_2d);
-		input_list["t3"] = shader_channel::new_inst("tex03", e_texture_2d);
-		input_list["t4"] = shader_channel::new_inst("tex04", e_texture_2d);
-		input_list["t5"] = shader_channel::new_inst("tex05", e_texture_2d);
-		input_list["t6"] = shader_channel::new_inst("tex06", e_texture_2d);
-		input_list["t7"] = shader_channel::new_inst("tex07", e_texture_2d);
-		input_list["t8"] = shader_channel::new_inst("tex08", e_texture_2d);
-		input_list["t9"] = shader_channel::new_inst("tex09", e_texture_2d);
-		input_list["t10"] = shader_channel::new_inst("tex10", e_texture_2d);
-		input_list["t11"] = shader_channel::new_inst("tex11", e_texture_2d);
-		input_list["t12"] = shader_channel::new_inst("tex12", e_texture_2d);
-		input_list["t13"] = shader_channel::new_inst("tex15", e_texture_2d);
-		input_list["t14"] = shader_channel::new_inst("tex16", e_texture_2d);
-		input_list["t15"] = shader_channel::new_inst("tex14", e_texture_2d);
+		input_list["t0"] = shader_channel::nwi("tex00", e_texture_2d);
+		input_list["t1"] = shader_channel::nwi("tex01", e_texture_2d);
+		input_list["t2"] = shader_channel::nwi("tex02", e_texture_2d);
+		input_list["t3"] = shader_channel::nwi("tex03", e_texture_2d);
+		input_list["t4"] = shader_channel::nwi("tex04", e_texture_2d);
+		input_list["t5"] = shader_channel::nwi("tex05", e_texture_2d);
+		input_list["t6"] = shader_channel::nwi("tex06", e_texture_2d);
+		input_list["t7"] = shader_channel::nwi("tex07", e_texture_2d);
+		input_list["t8"] = shader_channel::nwi("tex08", e_texture_2d);
+		input_list["t9"] = shader_channel::nwi("tex09", e_texture_2d);
+		input_list["t10"] = shader_channel::nwi("tex10", e_texture_2d);
+		input_list["t11"] = shader_channel::nwi("tex11", e_texture_2d);
+		input_list["t12"] = shader_channel::nwi("tex12", e_texture_2d);
+		input_list["t13"] = shader_channel::nwi("tex15", e_texture_2d);
+		input_list["t14"] = shader_channel::nwi("tex16", e_texture_2d);
+		input_list["t15"] = shader_channel::nwi("tex14", e_texture_2d);
 		// cube maps
-		input_list["c0"] = shader_channel::new_inst("cube00", e_cube_map);
-		input_list["c1"] = shader_channel::new_inst("cube01", e_cube_map);
-		input_list["c2"] = shader_channel::new_inst("cube02", e_cube_map);
-		input_list["c3"] = shader_channel::new_inst("cube03", e_cube_map);
-		input_list["c4"] = shader_channel::new_inst("cube04", e_cube_map);
-		input_list["c5"] = shader_channel::new_inst("cube05", e_cube_map);
+		input_list["c0"] = shader_channel::nwi("cube00", e_cube_map);
+		input_list["c1"] = shader_channel::nwi("cube01", e_cube_map);
+		input_list["c2"] = shader_channel::nwi("cube02", e_cube_map);
+		input_list["c3"] = shader_channel::nwi("cube03", e_cube_map);
+		input_list["c4"] = shader_channel::nwi("cube04", e_cube_map);
+		input_list["c5"] = shader_channel::nwi("cube05", e_cube_map);
 		// music
-		input_list["m0"] = shader_channel::new_inst("electronebulae", e_music);
-		input_list["m1"] = shader_channel::new_inst("experiment", e_music);
-		input_list["m2"] = shader_channel::new_inst("8 bit mentality", e_music);
-		input_list["m3"] = shader_channel::new_inst("X'TrackTure", e_music);
-		input_list["m4"] = shader_channel::new_inst("ourpithyator", e_music);
-		input_list["m5"] = shader_channel::new_inst("Tropical Beeper", e_music);
-		input_list["m6"] = shader_channel::new_inst("Most Geometric Person", e_music);
+		input_list["m0"] = shader_channel::nwi("electronebulae", e_music);
+		input_list["m1"] = shader_channel::nwi("experiment", e_music);
+		input_list["m2"] = shader_channel::nwi("8 bit mentality", e_music);
+		input_list["m3"] = shader_channel::nwi("X'TrackTure", e_music);
+		input_list["m4"] = shader_channel::nwi("ourpithyator", e_music);
+		input_list["m5"] = shader_channel::nwi("Tropical Beeper", e_music);
+		input_list["m6"] = shader_channel::nwi("Most Geometric Person", e_music);
 	}
 };
 
@@ -193,7 +193,7 @@ std::unordered_map<std::string, shared_ptr<shader_state::shader_channel> > shade
 class add_header_uniforms : public gfx_shader_listener
 {
 public:
-	static shared_ptr<add_header_uniforms> new_inst(shared_ptr<shader_state> istate)
+	static shared_ptr<add_header_uniforms> nwi(shared_ptr<shader_state> istate)
 	{
 		return shared_ptr<add_header_uniforms>(new add_header_uniforms(istate));
 	}
@@ -326,7 +326,7 @@ public:
 			}
 		}
 
-		ortho_cam = gfx_camera::new_inst();
+		ortho_cam = gfx_camera::nwi();
 		ortho_cam->camera_id = "ortho_cam";
 		ortho_cam->rendering_priority = 1;
 		ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
@@ -410,7 +410,7 @@ public:
 
 		if (!fx_glsl)
 		{
-			fx_glsl = gfx::i()->shader.new_program(shader_name, "fx", shader_name, add_header_uniforms::new_inst(ss));
+			fx_glsl = gfx::i()->shader.new_program(shader_name, "fx", shader_name, add_header_uniforms::nwi(ss));
 		}
 
 		uint32 crt_time = pfm::time::get_time_millis();
@@ -798,7 +798,7 @@ unit_gl_frag_shader_demo::unit_gl_frag_shader_demo()
 	set_name("gl-frag-shader-demo");
 }
 
-shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::new_instance()
+shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::nwi()
 {
 	shared_ptr<unit_gl_frag_shader_demo> inst(new unit_gl_frag_shader_demo());
 	inst->p = shared_ptr<unit_gl_frag_shader_demo_impl>(new unit_gl_frag_shader_demo_impl(inst));

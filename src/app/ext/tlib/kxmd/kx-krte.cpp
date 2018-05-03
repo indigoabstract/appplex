@@ -28,7 +28,7 @@ void kx_krte::run()
 
 	kxb = static_pointer_cast<kx_block>(kxe);
 
-	shared_ptr<kx_symbol> name(kx_symbol::new_instance());
+	shared_ptr<kx_symbol> name(kx_symbol::nwi());
 	name->name = "main-program";
 	kxb->name = name;
 

@@ -650,7 +650,7 @@ void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opa
 std::function<void(mws_sp<gfx_camera>, std::vector<mws_sp<gfx_vxo> >&, std::vector<mws_sp<gfx_vxo> >&)> gfx_camera::z_order_sort_function = z_order_sort;
 int gfx_camera::camera_idx = 0;
 
-shared_ptr<gfx_camera> gfx_camera::new_inst(std::shared_ptr<gfx> i_gi)
+shared_ptr<gfx_camera> gfx_camera::nwi(std::shared_ptr<gfx> i_gi)
 {
    shared_ptr<gfx_camera> inst(new gfx_camera(i_gi));
    inst->load(inst);
@@ -840,7 +840,7 @@ void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update
 void gfx_camera::load(shared_ptr<gfx_camera> inst)
 {
    draw_ctx = shared_ptr<draw_context>(new draw_context(shared_ptr<gfx_camera>()));
-   draw_ops = rw_sequence::new_inst();
+   draw_ops = rw_sequence::nwi();
 
    p = shared_ptr<gfx_camera_impl>(new gfx_camera_impl());
    p->camera = inst;

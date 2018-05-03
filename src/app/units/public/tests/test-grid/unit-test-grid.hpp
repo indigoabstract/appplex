@@ -12,7 +12,7 @@ class unit_test_grid_impl;
 class unit_test_grid : public unit
 {
 public:
-	static shared_ptr<unit_test_grid> new_instance();
+	static shared_ptr<unit_test_grid> nwi();
 
     virtual void init();
     virtual void load();

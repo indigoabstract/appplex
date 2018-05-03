@@ -48,7 +48,7 @@ unit_test::unit_test()
     texInit = false;
 }
 
-shared_ptr<unit_test> unit_test::new_instance()
+shared_ptr<unit_test> unit_test::nwi()
 {
 	return shared_ptr<unit_test>(new unit_test());
 }

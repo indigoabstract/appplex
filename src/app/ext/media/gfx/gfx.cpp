@@ -219,7 +219,7 @@ void gfx::global_init()
    main_instance->init(main_instance);
 }
 
-std::shared_ptr<gfx> gfx::new_inst()
+std::shared_ptr<gfx> gfx::nwi()
 {
    auto inst = std::shared_ptr<gfx>(new gfx());
    inst->init(inst);
@@ -369,7 +369,7 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst(iprg_name, ishader_name, ilistener, gi());
+      prg = gfx_shader::nwi(iprg_name, ishader_name, ilistener, gi());
       gi()->shader_list.push_back(prg);
    }
 
@@ -386,7 +386,7 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::new_program
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst(iprg_name, ivertex_shader, ifragment_shader, ilistener, gi());
+      prg = gfx_shader::nwi(iprg_name, ivertex_shader, ifragment_shader, ilistener, gi());
       gi()->shader_list.push_back(prg);
    }
 
@@ -537,13 +537,13 @@ shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name
 {
    shared_ptr<gfx_tex> tex = get_texture_by_name(itex_name);
    shared_ptr<gfx_tex_cube_map> tex_cube_map;
-   bool new_inst = false;
+   bool nwi = false;
 
    if (tex)
    {
       if (iforce_new_inst || (tex->get_tex_type() != gfx_tex::TEX_CUBE_MAP))
       {
-         new_inst = true;
+         nwi = true;
       }
       else
       {
@@ -552,10 +552,10 @@ shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name
    }
    else
    {
-      new_inst = true;
+      nwi = true;
    }
 
-   if (new_inst)
+   if (nwi)
    {
       tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
       gi()->tex_list.push_back(tex_cube_map);

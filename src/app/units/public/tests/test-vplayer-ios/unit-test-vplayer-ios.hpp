@@ -10,7 +10,7 @@
 class unit_test_vplayer_ios : public unit
 {
 public:
-	static shared_ptr<unit_test_vplayer_ios> new_instance(){ return shared_ptr<unit_test_vplayer_ios>(); }
+	static shared_ptr<unit_test_vplayer_ios> nwi(){ return shared_ptr<unit_test_vplayer_ios>(); }
 
     virtual void init();
     virtual void load();

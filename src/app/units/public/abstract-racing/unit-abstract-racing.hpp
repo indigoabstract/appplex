@@ -9,7 +9,7 @@
 class unit_abstract_racing : public unit
 {
 public:
-	static shared_ptr<unit_abstract_racing> new_instance();
+	static shared_ptr<unit_abstract_racing> nwi();
 
     virtual void init();
 	virtual void init_mws();

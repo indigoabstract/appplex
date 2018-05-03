@@ -222,7 +222,7 @@ public:
 class touchctrl : public enable_shared_from_this<touchctrl>, public ia_broadcaster
 {
 public:
-	static shared_ptr<touchctrl> new_instance();
+	static shared_ptr<touchctrl> nwi();
 	shared_ptr<touchctrl> get_instance();
 
 	bool is_pointer_released();
@@ -285,7 +285,7 @@ public:
 	static const std::string KEYEVT_RELEASED;
 
 	static shared_ptr<key_evt> as_key_evt(shared_ptr<iadp> idp);
-	static shared_ptr<key_evt> new_instance(std::weak_ptr<keyctrl> isrc, key_evt_types itype, int ikey);
+	static shared_ptr<key_evt> nwi(std::weak_ptr<keyctrl> isrc, key_evt_types itype, int ikey);
 	shared_ptr<key_evt> get_instance();
 
 	static const std::string& get_type_name(key_evt_types tstype);
@@ -310,7 +310,7 @@ private:
 class keyctrl : public enable_shared_from_this<keyctrl>, public ia_broadcaster
 {
 public:
-	static shared_ptr<keyctrl> new_instance();
+	static shared_ptr<keyctrl> nwi();
 	shared_ptr<keyctrl> get_instance();
 
 	void update();

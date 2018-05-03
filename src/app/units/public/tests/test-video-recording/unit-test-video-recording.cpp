@@ -28,7 +28,7 @@ unit_test_video_recording::unit_test_video_recording()
    set_name("test-video-recording");
 }
 
-shared_ptr<unit_test_video_recording> unit_test_video_recording::new_instance()
+shared_ptr<unit_test_video_recording> unit_test_video_recording::nwi()
 {
    return shared_ptr<unit_test_video_recording>(new unit_test_video_recording());
 }

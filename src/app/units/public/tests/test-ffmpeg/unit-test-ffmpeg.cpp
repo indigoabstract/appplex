@@ -40,7 +40,7 @@ unit_test_ffmpeg::unit_test_ffmpeg()
 	set_name("test-ffmpeg");
 }
 
-shared_ptr<unit_test_ffmpeg> unit_test_ffmpeg::new_instance()
+shared_ptr<unit_test_ffmpeg> unit_test_ffmpeg::nwi()
 {
 	return shared_ptr<unit_test_ffmpeg>(new unit_test_ffmpeg());
 }
