@@ -285,6 +285,7 @@ private:
 #define trn() pfm::get_pfm_main_inst()->write_text_nl("")
 #define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
 void trx(std::string msg);
+std::string mws_to_str(const char* i_format, ...);
 void trx(const char* format, fmt::ArgList args);
 FMT_VARIADIC(void, trx, const char*)
 void wtrx(const wchar_t* format, fmt::ArgList args);

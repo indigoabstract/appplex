@@ -309,7 +309,7 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
 
       if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       {
-         trx("glerror - gl frame buffer status != frame buffer complete");
+         mws_print("glerror - gl frame buffer status != frame buffer complete");
       }
 
       mws_report_gfx_errs();
@@ -537,13 +537,13 @@ shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name
 {
    shared_ptr<gfx_tex> tex = get_texture_by_name(itex_name);
    shared_ptr<gfx_tex_cube_map> tex_cube_map;
-   bool nwi = false;
+   bool new_tex = false;
 
    if (tex)
    {
       if (iforce_new_inst || (tex->get_tex_type() != gfx_tex::TEX_CUBE_MAP))
       {
-         nwi = true;
+         new_tex = true;
       }
       else
       {
@@ -552,10 +552,10 @@ shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name
    }
    else
    {
-      nwi = true;
+      new_tex = true;
    }
 
-   if (nwi)
+   if (new_tex)
    {
       tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
       gi()->tex_list.push_back(tex_cube_map);

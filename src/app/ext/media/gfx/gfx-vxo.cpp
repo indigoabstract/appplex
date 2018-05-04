@@ -452,7 +452,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                   if (shapes[i].mesh.positions.size() != shapes[i].mesh.normals.size() || shapes[i].mesh.positions.size() / 3 != shapes[i].mesh.texcoords.size() / 2)
                   {
-                     trx("xxx");
+                     mws_print("xxx");
                   }
                   //mws_print("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
                   //mws_print("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());

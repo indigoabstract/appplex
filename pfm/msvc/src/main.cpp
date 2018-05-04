@@ -866,7 +866,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
       if (!twglChoosePixelFormatARB)
       {
-         trx("Could not load function pointer for 'wglChoosePixelFormatARB'.  Is your driver properly installed?");
+         mws_print("Could not load function pointer for 'wglChoosePixelFormatARB'.  Is your driver properly installed?");
          return false;
       }
 
@@ -894,7 +894,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
       if (sampleBufferCount > 0)
       {
-         trx("MSAA samples per pixel count: {}", sampleCount);
+         mws_print("MSAA samples per pixel count: {}", sampleCount);
       }
    }
 
@@ -907,7 +907,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
    if (GL_VERSION_4_2)
    {
-      trx("GLEW_VERSION_4_2 supported");
+      mws_print("GLEW_VERSION_4_2 supported");
    }
 
    //if (glewIsSupported("GL_VERSION_4_2"))
@@ -1037,7 +1037,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
    shared_ptr<msvc_main> app = msvc_main::get_instance();
 
-   //trx("message 0x%04x") % message;
+   //mws_print("message 0x%04x") % message;
 
    if (message == app->get_taskbar_created_msg() && !IsWindowVisible(app->get_hwnd()))
    {
@@ -1206,7 +1206,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          pfm_te->mouse_wheel_delta = wheel_delta;
 
          unit_ctrl::inst()->pointer_action(pfm_te);
-         //trx("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
+         //mws_print("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
       }
 
       return 0;

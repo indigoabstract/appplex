@@ -337,7 +337,7 @@ public:
 
       if (i_filename.empty())
       {
-         i_filename = trs("app-{}-screen-capture.mp4", u.lock()->get_name());
+         i_filename = mws_to_str("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
       }
 
       const video_params_ffmpeg* video_params = (i_params) ? i_params : &default_video_params;
@@ -489,13 +489,13 @@ void unit::app_storage::save_screenshot(std::string ifilename)
 
    if (ifilename.empty())
    {
-      string file_root = trs("{}-", p->u.lock()->get_name());
+      string file_root = mws_to_str("%s-", p->u.lock()->get_name().c_str());
       string img_ext = ".png";
       string zeroes[] =
       {
          "00", "0"
       };
-      std::string dir_name = trs("f:\\data\\media\\work\\screens\\{}", p->u.lock()->get_name());
+      std::string dir_name = mws_to_str("f:\\data\\media\\work\\screens\\%s", p->u.lock()->get_name().c_str());
       //shared_ptr<pfm_file> dir = pfm_file::get_inst(dir_name);
       bfs::path dst_dir(dir_name);
       //bfs::path screenshot_file;
@@ -523,15 +523,15 @@ void unit::app_storage::save_screenshot(std::string ifilename)
          // assign a zero prefix.
          if (digits < 2)
          {
-            idx_nr = trs("{0}{1}{2}", file_root, zeroes[digits], screenshot_idx);
+            idx_nr = mws_to_str("%s%s%d", file_root.c_str(), zeroes[digits].c_str(), screenshot_idx);
          }
          else
          {
-            idx_nr = trs("{0}{1}", file_root, screenshot_idx);
+            idx_nr = mws_to_str("%s%d", file_root.c_str(), screenshot_idx);
          }
 
          //screenshot_file = dst_dir / bfs::path(trs("%1%%2%") % idx_nr % img_ext);
-         std::string file_name = trs("{0}{1}", idx_nr, img_ext);
+         std::string file_name = mws_to_str("%s%s", idx_nr.c_str(), img_ext.c_str());
          screenshot_file = pfm_file::get_inst(dir_name + "\\" + file_name);
          screenshot_idx++;
       }
@@ -574,7 +574,7 @@ int unit::unit_count = 0;
 unit::unit()
 {
    initVal = false;
-   name = trs("unit#{}", unit_count);
+   name = mws_to_str("unit#%d", unit_count);
    unit_count++;
    prefs = std::make_shared<unit_preferences>();
    game_time = 0;
@@ -1008,7 +1008,7 @@ void unit::update_view(int update_count)
    if (fps > 0 && !storage.is_recording_screen())
    {
       float ups = 1000.f / update_ctrl->getTimeStepDuration();
-      string f = trs("uc {} u {:02.1f} f {:02.1f}", update_count, ups, fps);
+      string f = mws_to_str("uc %d u %02.1f f %02.1f", update_count, ups, fps);
       glm::vec2 txt_dim = gfx->get_font()->get_text_dim(f);
 
       gfx->drawText(f, get_width() - txt_dim.x, 0.f);
@@ -1023,7 +1023,7 @@ int unit_list::unit_list_count = 0;
 
 unit_list::unit_list()
 {
-   name = trs("unit-list#{}", unit_list_count);
+   name = mws_to_str("unit-list#%d", unit_list_count);
    unit_list_count++;
 }
 
@@ -1039,7 +1039,7 @@ unit::unit_type unit_list::get_unit_type()
 
 void unit_list::add(shared_ptr<unit> iunit)
 {
-   mws_assert(iunit != shared_ptr<unit>(), "IllegalArgumentException");
+   mws_assert(iunit != shared_ptr<unit>());
 
    iunit->parent = get_smtp_instance();
    ulist.push_back(iunit);

@@ -47,7 +47,8 @@ units
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
 	test-trail[ platf[ windows, android ], ],
 	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
-	test-touch-input[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, zlib ], platf[ windows, android, ios ], ],
+	test-touch-input[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, vector_fonts, zlib ], platf[ windows, android, ios ], ],
+	test-gl-uniform-blocks[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 
 	@@[ private units ],
 	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
@@ -69,7 +70,7 @@ units
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
-	video-editor[ uses[ bitmap-fonts, gfx, fonts, format, mws, png, zlib ], platf[ windows, android, ios ], ],
+	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
 

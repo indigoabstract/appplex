@@ -204,7 +204,7 @@ public:
       tex_atlas = texture_atlas_new(size, size, 1);
       ext_tex_atlas_ref = nullptr;
       reload_atlas = false;
-      trx("font texture atlas size: [{}].", size);
+      mws_print("font texture atlas size: [%d].", size);
    }
 
    uint64 get_key(shared_ptr<mws_font> ifont)
@@ -254,7 +254,7 @@ public:
 
             if (!res)
             {
-               trx("cannot load font {}", fn);
+               mws_print("cannot load font [%s]", fn.c_str());
             }
             else
             {
@@ -337,7 +337,7 @@ public:
 
          if (!ext_tex_atlas_ref)
          {
-            std::string name = trs("{0}-{1}", "texture-atlas", gfx_tex::gen_id());
+            std::string name = mws_to_str("texture-atlas-%s", gfx_tex::gen_id().c_str());
             gfx_tex_params prm;
 
             prm.internal_format = GL_R8;

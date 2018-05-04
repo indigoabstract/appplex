@@ -807,7 +807,7 @@ shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::nwi()
 
 void unit_gl_frag_shader_demo::init()
 {
-	trx("init frag shader demo...");
+   mws_print("init frag shader demo...");
 	shader_state::init();
 }
 

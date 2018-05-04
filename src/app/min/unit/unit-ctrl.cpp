@@ -297,6 +297,6 @@ void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
    }
    else
    {
-      trx("warning: tried to make current a null unit");
+      mws_print("warning: tried to make current a null unit");
    }
 }
