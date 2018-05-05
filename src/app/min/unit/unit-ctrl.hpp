@@ -25,7 +25,7 @@ public:
    void init_app();
    const unicodestring& get_app_name();
    const unicodestring& get_app_description();
-   bool update();
+   void update();
    void pause();
    void resume();
    void resize_app(int iwidth, int iheight);

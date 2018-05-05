@@ -651,6 +651,8 @@ shared_ptr<unit> unit::get_smtp_instance()
 
 bool unit::update()
 {
+#ifdef MOD_GFX
+
    int updateCount = 1;//update_ctrl->update();
 
    for (int k = 0; k < updateCount; k++)
@@ -667,6 +669,10 @@ bool unit::update()
    update_view(updateCount);
    gfx_scene_inst->post_draw();
 
+#endif
+
+#ifdef MWS_DEBUG_BUILD
+
    // update fps
    frame_count++;
    uint32 now = pfm::time::get_time_millis();
@@ -678,6 +684,8 @@ bool unit::update()
       last_frame_time = now;
       frame_count = 0;
    }
+
+#endif
 
    return true;
 }
@@ -787,8 +795,10 @@ void unit::receive(shared_ptr<iadp> idp)
    }
 }
 
-void unit::iInit()
+void unit::base_init()
 {
+#ifdef MOD_GFX
+
    if (is_gfx_unit())
    {
       update_ctrl = updatectrl::nwi();
@@ -798,10 +808,13 @@ void unit::iInit()
       gfx_scene_inst->init();
    }
 
+#endif
+
    init();
    storage.p->u = get_smtp_instance();
 
 #ifdef MOD_GFX
+
    // getInst() doesn't work in the constructor
    if (is_gfx_unit())
    {
@@ -828,6 +841,7 @@ void unit::iInit()
          mws_root->init_subobj();
       }
    }
+
 #endif // MOD_GFX
 }
 
@@ -929,9 +943,13 @@ shared_ptr<ia_sender> unit::sender_inst()
    return get_smtp_instance();
 }
 
-bool unit::iRunFrame()
+void unit::run_step()
 {
+#if defined MOD_FONTS
+
    font_db::inst()->on_frame_start();
+
+#endif
 
    if (!operation_list.empty())
    {
@@ -947,7 +965,7 @@ bool unit::iRunFrame()
       }
    }
 
-   bool drawFrame = update();
+   update();
 
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
@@ -957,11 +975,9 @@ bool unit::iRunFrame()
    }
 
 #endif
-
-   return drawFrame;
 }
 
-void unit::iLoad()
+void unit::base_load()
 {
    fps = 0;
    frame_count = 0;
@@ -971,7 +987,7 @@ void unit::iLoad()
    //update_ctrl->started();
 }
 
-void unit::iUnload()
+void unit::base_unload()
 {
    unload();
    //update_ctrl->stopped();
@@ -984,6 +1000,8 @@ void unit::setInit(bool isInit0)
 
 void unit::update_view(int update_count)
 {
+#if defined MOD_GFX
+
    shared_ptr<mws_camera> gfx = mws_cam;
    mws_root->update_view(gfx);
 
@@ -1015,6 +1033,8 @@ void unit::update_view(int update_count)
    }
 
 #endif // MWS_DEBUG_BUILD
+
+#endif
 }
 
 
@@ -1145,6 +1165,8 @@ void unit_list::on_destroy()
 
 void unit_list::init_mws()
 {
+#ifdef MOD_MWS
+
    class lmodel : public mws_list_model
    {
    public:
@@ -1187,6 +1209,8 @@ void unit_list::init_mws()
    l->set_model(lm);
 
    mws_cam->clear_color = true;
+
+#endif
 }
 
 

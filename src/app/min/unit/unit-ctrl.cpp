@@ -55,6 +55,8 @@ bool unit_ctrl::back_evt()
 
 bool unit_ctrl::app_uses_gfx()
 {
+#ifdef MOD_GFX
+
    bool req_gfx = false;
    int unit_count = ul->get_unit_count();
 
@@ -71,6 +73,12 @@ bool unit_ctrl::app_uses_gfx()
    }
 
    return req_gfx;
+
+#else
+
+   return false;
+
+#endif
 }
 
 void unit_ctrl::exit_app(int exit_code)
@@ -111,10 +119,12 @@ void unit_ctrl::pre_init_app()
 void unit_ctrl::init_app()
 {
 #ifdef MOD_GFX
+
    if (pfm::data.gfx_available)
    {
       gfx::global_init();
    }
+
 #endif // MOD_GFX
 
 #ifdef MOD_SND
@@ -123,8 +133,8 @@ void unit_ctrl::init_app()
 
    if (ul)
    {
-      ul->iInit();
-      ul->iLoad();
+      ul->base_init();
+      ul->base_load();
       ul->setInit(true);
    }
 }
@@ -143,14 +153,14 @@ const unicodestring& unit_ctrl::get_app_description()
    return name;
 }
 
-bool unit_ctrl::update()
+void unit_ctrl::update()
 {
 #ifdef MOD_SND
    snd::update();
 #endif // MOD_SND
 
    shared_ptr<unit> u = get_current_unit();
-   mws_assert(u != shared_ptr<unit>());
+   mws_assert(u != nullptr);
 
 #ifndef SINGLE_UNIT_BUILD
 
@@ -164,9 +174,7 @@ bool unit_ctrl::update()
 
 #endif
 
-   bool showFrame = u->iRunFrame();
-
-   return showFrame;
+   u->run_step();
 }
 
 void unit_ctrl::pause()
@@ -191,6 +199,8 @@ void unit_ctrl::resume()
 
 void unit_ctrl::resize_app(int iwidth, int iheight)
 {
+#ifdef MOD_GFX
+
    pfm::data.screen_width = iwidth;
    pfm::data.screen_height = iheight;
 
@@ -207,16 +217,22 @@ void unit_ctrl::resize_app(int iwidth, int iheight)
          u->on_resize();
       }
    }
+
+#endif
 }
 
 void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
 {
+#ifdef MOD_GFX
+
    shared_ptr<unit> u = get_current_unit();
 
    if (u)
    {
       u->touch_ctrl->enqueue_pointer_event(ite);
    }
+
+#endif
 }
 
 void unit_ctrl::key_action(key_actions iaction_type, int ikey)
@@ -281,7 +297,7 @@ void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
    {
       if (!crt_unit.expired())
       {
-         crt_unit.lock()->iUnload();
+         crt_unit.lock()->base_unload();
       }
 
       crt_unit = unit0;
@@ -289,14 +305,14 @@ void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
 
       if (!unit0->isInit())
       {
-         unit0->iInit();
+         unit0->base_init();
          unit0->setInit(true);
       }
 
-      unit0->iLoad();
+      unit0->base_load();
    }
    else
    {
-      mws_print("warning: tried to make current a null unit");
+      mws_signal_error("warning: tried to make current a null unit");
    }
 }

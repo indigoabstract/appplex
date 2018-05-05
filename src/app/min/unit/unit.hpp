@@ -31,7 +31,15 @@ protected:
 class unit_preferences
 {
 public:
-   virtual bool requires_gfx() { return true; }
+   virtual bool requires_gfx()
+   {
+#ifdef MOD_GFX
+      return true;
+#else
+      return false;
+#endif
+   }
+
    virtual int get_preferred_screen_width() { return 0; }
    virtual int get_preferred_screen_height() { return 0; }
    virtual double get_preferred_aspect_ratio() { return 0.; }
@@ -124,7 +132,7 @@ protected:
    virtual void on_resume();
    virtual void receive(std::shared_ptr<iadp> idp);
    // finish-constructor. here you can use things that won't work in the constructor, ie shared_from_this(), etc
-   virtual void iInit();
+   virtual void base_init();
    virtual void init();
    virtual void on_destroy();
    virtual void init_mws();
@@ -143,9 +151,9 @@ private:
    friend class unit_ctrl;
    friend class unit_list;
 
-   bool iRunFrame();
-   void iLoad();
-   void iUnload();
+   void run_step();
+   void base_load();
+   void base_unload();
    bool isInit();
    void setInit(bool isInit0);
 
