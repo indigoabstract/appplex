@@ -16,9 +16,9 @@
 #include "mod/appplex-conf/mod-appplex-conf.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fmt/ostream.h>
+#include <unordered_map>
 
 using namespace boost::program_options;
 using std::string;

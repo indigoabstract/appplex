@@ -31,15 +31,7 @@ protected:
 class unit_preferences
 {
 public:
-   virtual bool requires_gfx()
-   {
-#ifdef MOD_GFX
-      return true;
-#else
-      return false;
-#endif
-   }
-
+   virtual bool requires_gfx();
    virtual int get_preferred_screen_width() { return 0; }
    virtual int get_preferred_screen_height() { return 0; }
    virtual double get_preferred_aspect_ratio() { return 0.; }

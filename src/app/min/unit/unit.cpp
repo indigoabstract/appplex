@@ -39,6 +39,15 @@ using std::string;
 using std::vector;
 
 
+bool unit_preferences::requires_gfx()
+{
+#ifdef MOD_GFX
+   return true;
+#else
+   return false;
+#endif
+}
+
 class unit::app_storage_impl
 {
 public:
@@ -443,7 +452,7 @@ public:
 #endif
 
    std::weak_ptr<unit> u;
-   };
+};
 
 
 unit::app_storage::app_storage()
@@ -478,7 +487,7 @@ shared_ptr<pfm_file> unit::app_storage::random_access(std::string name)
 
 void unit::app_storage::save_screenshot(std::string ifilename)
 {
-#ifdef MOD_BOOST
+#if defined MODE_GFX && defined MOD_BOOST
    if (!p->u.lock()->is_gfx_unit())
    {
       return;

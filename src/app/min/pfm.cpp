@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "appplex-conf.hpp"
 #include "pfm.hpp"
 #include "pfm-gl.h"
 #include "unit.hpp"
@@ -1208,7 +1209,7 @@ shared_ptr<pfm_file> pfm::filesystem::random_access(shared_ptr<unit> iu, std::st
 
 uint32 pfm::time::get_time_millis()
 {
-   return (boost::posix_time::microsec_clock::local_time() - time_start).total_milliseconds();
+   return uint32((boost::posix_time::microsec_clock::local_time() - time_start).total_milliseconds());
 }
 
 #endif

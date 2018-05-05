@@ -53,6 +53,7 @@ units
 	@@[ private units ],
 	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
 
+	appplexx-conf[ uses[ boost, format, kxmd ], platf[ windows ], ],
 	barnes-hut[ ],
 	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ ],

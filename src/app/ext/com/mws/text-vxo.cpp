@@ -67,7 +67,7 @@ public:
 		auto& glyphs = font_db::inst()->get_glyph_vect(ifont->get_inst(), itext);
 		glm::vec2 pen(ipos.x, ipos.y + ifont->get_ascender());
 
-		add_text_2d_impl(vbuffer, glyphs, itext, pen, (float)gi()->rt.get_render_target_height(), ifont);
+		add_text_2d_impl(vbuffer, glyphs, itext, pen, (float)gfx::i()->rt.get_render_target_height(), ifont);
       //std::string text = wstring2string(itext);
       //add_text_2d(text, pen, ifont);
    }
@@ -105,7 +105,7 @@ public:
             model[3][1] = -ipos.y;// gi()->rt.get_render_target_height() - mPosition.y;// -mFontHeight;
          }
 
-         if (rt_width != gi()->rt.get_render_target_width() || rt_height != gi()->rt.get_render_target_height())
+         if (rt_width != inst->gi()->rt.get_render_target_width() || rt_height != inst->gi()->rt.get_render_target_height())
          {
             update_projection_mx();
          }
@@ -283,8 +283,8 @@ public:
 
    void update_projection_mx()
    {
-      rt_width = gi()->rt.get_render_target_width();
-      rt_height = gi()->rt.get_render_target_height();
+      rt_width = gfx::i()->rt.get_render_target_width();
+      rt_height = gfx::i()->rt.get_render_target_height();
 
       float left = 0;
       float right = (float)rt_width;

@@ -169,9 +169,8 @@ namespace unit_test_touch_input_ns
          if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
          {
             shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-            glm::vec2 dragging_delta;
             float zoom_factor;
-            bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te, dragging_delta);
+            bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te);
             bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts->crt_state.te, zoom_factor);
             auto double_tap_gs = double_tap_dt.detect(ts->crt_state.te);
 
@@ -189,7 +188,7 @@ namespace unit_test_touch_input_ns
                {
                   auto& obj = obj_vect[obj_index];
 
-                  obj->set_translation(obj->get_translation() + dragging_delta);
+                  obj->set_translation(obj->get_translation() + dragging_dt.drag_diff);
                }
             }
 
