@@ -5,19 +5,14 @@
 #ifdef UNIT_TEST_GL
 
 #include "gfx.hpp"
+#include "gfx-camera.hpp"
+#include "gfx-color.hpp"
 #include "gfx-rt.hpp"
 #include "gfx-shader.hpp"
 #include "gfx-quad-2d.hpp"
 #include "gfx-tex.hpp"
-#include "gfx-util.hpp"
-#include "gfx-vxo.hpp"
 #include "gfx-state.hpp"
-#include "ext/gfx-surface.hpp"
-#include "com/mws/mws-camera.hpp"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
 
 
 unit_test_gl::unit_test_gl()
@@ -32,20 +27,35 @@ shared_ptr<unit_test_gl> unit_test_gl::nwi()
 
 void unit_test_gl::init()
 {
-	trx("test-gl...");
+	mws_print("test-gl...\n");
 }
 
 namespace test_gl
 {
-	shared_ptr<gfx_rt> rt;
+   shared_ptr<gfx_camera> ortho_cam;
+   shared_ptr<gfx_rt> rt;
 	shared_ptr<gfx_tex> rt_tex;
-	shared_ptr<gfx_plane> quad_mesh;
+	shared_ptr<gfx_quad_2d> quad_mesh;
 }
 
 using namespace test_gl;
 
 void unit_test_gl::load()
 {
+   {
+      gfx_color cc;
+
+      ortho_cam = gfx_camera::nwi();
+      ortho_cam->camera_id = "ortho_cam";
+      ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
+      ortho_cam->near_clip_distance = -100;
+      ortho_cam->far_clip_distance = 100;
+      ortho_cam->clear_color = true;
+      cc.from_float(0.5f, 0.f, 1.f, 1.f);
+      ortho_cam->clear_color_value = cc;
+
+   }
+
 	mws_report_gfx_errs();
 
 	{
@@ -66,32 +76,30 @@ void unit_test_gl::load()
 		gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
 	}
 
-	quad_mesh = shared_ptr<gfx_plane>(new gfx_plane());
-
-	float sx = 512, sy = 256, sz = 1;
-	float tx = 50, ty = 100, tz = 0;
+	quad_mesh = std::make_shared<gfx_quad_2d>();
 	auto& qm = *quad_mesh;
 
-	qm.set_dimensions(1, 1);
-	qm.scaling = glm::vec3(sx, sy, sz);
-	qm.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-	qm[MP_SHADER_NAME] = "basic-tex-shader";
-	qm[MP_BLENDING] = MV_ALPHA;
-	qm["u_s2d_tex"] = rt_tex->get_name();
-
-	gfx_color cc;
-
-	mws_cam->clear_color = true;
-	cc.from_float(0.5f, 0.f, 1.f, 1.f);
-	mws_cam->clear_color_value = cc;
+   qm.set_dimensions(1, 1);
+   qm.set_scale(512, 256);
+   qm.set_translation(50, 100.f);
+   //qm[MP_CULL_FRONT] = false;
+   qm[MP_CULL_BACK] = false;
+   //qm[MP_DEPTH_TEST] = false;
+   qm[MP_BLENDING] = MV_ALPHA;
+   qm[MP_SHADER_NAME] = "basic-tex-shader";
+   qm["u_s2d_tex"] = rt_tex->get_name();
+   qm.camera_id_list.clear();
+   qm.camera_id_list.push_back(ortho_cam->camera_id());
 
 	mws_report_gfx_errs();
 }
 
 void unit_test_gl::update_view(int update_count)
 {
+   ortho_cam->clear_buffers();
+
 	mws_report_gfx_errs();
-	quad_mesh->render_mesh(mws_cam);
+	quad_mesh->render_mesh(ortho_cam);
 	mws_report_gfx_errs();
 
 	unit::update_view(update_count);

@@ -202,7 +202,7 @@ public:
 
    void update_video_encoder()
    {
-#if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
+#if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX && defined MOD_MWS
 
       mws_report_gfx_errs();
 
@@ -672,7 +672,12 @@ bool unit::update()
    }
 
    gfx_scene_inst->update();
+
+#if defined MOD_MWS
+
    mws_root->update_state();
+
+#endif
 
    gfx_scene_inst->draw();
    update_view(updateCount);
@@ -824,6 +829,8 @@ void unit::base_init()
       touch_ctrl->add_receiver(get_smtp_instance());
       key_ctrl->add_receiver(get_smtp_instance());
 
+#if defined MOD_MWS
+
       {
          mws_cam = mws_camera::nwi();
          mws_cam->camera_id = "mws_cam";
@@ -843,6 +850,8 @@ void unit::base_init()
          init_mws();
          mws_root->init_subobj();
       }
+
+#endif
    }
 
 #endif // MOD_GFX
@@ -1003,7 +1012,7 @@ void unit::setInit(bool isInit0)
 
 void unit::update_view(int update_count)
 {
-#if defined MOD_GFX
+#if defined MOD_GFX && defined MOD_MWS
 
    mws_root->update_view(mws_cam);
 
