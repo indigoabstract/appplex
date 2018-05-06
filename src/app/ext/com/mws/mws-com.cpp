@@ -104,24 +104,20 @@ void mws_img_btn::set_img_name(std::string i_img_name)
 
 void mws_img_btn::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      if (!is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+      if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
          return;
       }
 
-      auto type = ts->get_type();
-
       //mws_print("evt type [%d]\n", type);
-      switch (type)
+      if (ts->type == ts->touch_began)
       {
-      case touch_sym_evt::TS_PRESSED:
          on_click();
          ts->process();
-         break;
       }
    }
 }
@@ -192,21 +188,19 @@ void mws_button::init(mws_rect i_rect, int iColor, string iText)
 
 void mws_button::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      if (!is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+      if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
          return;
       }
 
-      switch (ts->get_type())
+      switch (ts->type == ts->touch_began)
       {
-      case touch_sym_evt::TS_PRESSED:
          on_click();
          ts->process();
-         break;
       }
    }
 }
@@ -295,11 +289,10 @@ void mws_slider::set_rect(const mws_rect& i_rect)
 
 void mws_slider::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-      auto type = ts->get_type();
-      bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te);
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      bool dragging_detected = dragging_dt.detect_helper(ts);
       bool process = false;
 
       if (dragging_detected && active)
@@ -316,7 +309,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
             tx = x_off;
             t_val = 0.f;
          }
-         else if (tx >(x_off + mws_r.w))
+         else if (tx > (x_off + mws_r.w))
          {
             tx = x_off + mws_r.w;
             t_val = 1.f;
@@ -339,19 +332,19 @@ void mws_slider::receive(shared_ptr<iadp> idp)
       }
 
       //mws_print("evt type [%d]\n", type);
-      switch (type)
+      switch (ts->type)
       {
-      case touch_sym_evt::TS_PRESSED:
-         if (is_hit(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y))
+      case pointer_evt::touch_began:
+         if (is_hit(ts->points[0].x, ts->points[0].y))
          {
             active = true;
             process = true;
          }
          break;
 
-      case touch_sym_evt::TS_RELEASED:
+      case pointer_evt::touch_ended:
          active = false;
-         process = true;
+         process = false;
          break;
       }
 
@@ -459,33 +452,33 @@ void mws_list::receive(shared_ptr<iadp> idp)
 
       mws_r.h = listheight;
    }
-   else if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+      //shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      switch (ts->get_type())
-      {
-      case touch_sym_evt::TS_FIRST_TAP:
-      {
-         float x = ts->pressed.te->points[0].x;
-         float y = ts->pressed.te->points[0].y;
+      //switch (ts->get_type())
+      //{
+      //case touch_sym_evt::TS_FIRST_TAP:
+      //{
+      //   float x = ts->pressed.te->points[0].x;
+      //   float y = ts->pressed.te->points[0].y;
 
-         if (ts->tap_count == 1)
-         {
-            int idx = element_at(x, y);
+      //   if (ts->tap_count == 1)
+      //   {
+      //      int idx = element_at(x, y);
 
-            if (idx >= 0)
-            {
-               model->set_selected_elem(idx);
-               model->on_elem_selected(idx);
-            }
+      //      if (idx >= 0)
+      //      {
+      //         model->set_selected_elem(idx);
+      //         model->on_elem_selected(idx);
+      //      }
 
-            ts->process();
-         }
+      //      ts->process();
+      //   }
 
-         break;
-      }
-      }
+      //   break;
+      //}
+      //}
    }
 }
 

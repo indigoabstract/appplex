@@ -320,12 +320,12 @@ void unit_test_fmod::init_mws()
 				return;
 			}
 
-			if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-				int x = ts->crt_state.te->points[0].x;
-				int y = ts->crt_state.te->points[0].y;
+				int x = ts->points[0].x;
+				int y = ts->points[0].y;
 
 				switch (ts->get_type())
 				{

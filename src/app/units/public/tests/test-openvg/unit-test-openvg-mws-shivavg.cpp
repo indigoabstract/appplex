@@ -717,9 +717,9 @@ namespace shivavg_tp2
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 				if(ts->get_type() == touch_sym_evt::TS_FIRST_TAP)
 				{
@@ -1007,9 +1007,9 @@ namespace shivavg_tp4
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				on_touch_evt(touch_sym_evt::as_touch_sym_evt(idp));
+				on_touch_evt(pointer_evt::as_pointer_evt(idp));
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
@@ -1033,7 +1033,7 @@ namespace shivavg_tp4
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<touch_sym_evt> ts)
+		void on_touch_evt(shared_ptr<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -1560,9 +1560,9 @@ namespace shivavg_tp6
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				on_touch_evt(touch_sym_evt::as_touch_sym_evt(idp));
+				on_touch_evt(pointer_evt::as_pointer_evt(idp));
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
@@ -1586,7 +1586,7 @@ namespace shivavg_tp6
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<touch_sym_evt> ts)
+		void on_touch_evt(shared_ptr<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -1927,9 +1927,9 @@ namespace shivavg_tp7
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				on_touch_evt(touch_sym_evt::as_touch_sym_evt(idp));
+				on_touch_evt(pointer_evt::as_pointer_evt(idp));
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
@@ -1953,7 +1953,7 @@ namespace shivavg_tp7
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<touch_sym_evt> ts)
+		void on_touch_evt(shared_ptr<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -2309,9 +2309,9 @@ namespace shivavg_tp8
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				on_touch_evt(touch_sym_evt::as_touch_sym_evt(idp));
+				on_touch_evt(pointer_evt::as_pointer_evt(idp));
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
@@ -2335,7 +2335,7 @@ namespace shivavg_tp8
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<touch_sym_evt> ts)
+		void on_touch_evt(shared_ptr<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -2660,9 +2660,9 @@ namespace shivavg_tp9
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				on_touch_evt(touch_sym_evt::as_touch_sym_evt(idp));
+				on_touch_evt(pointer_evt::as_pointer_evt(idp));
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
@@ -2686,7 +2686,7 @@ namespace shivavg_tp9
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<touch_sym_evt> ts)
+		void on_touch_evt(shared_ptr<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{

@@ -228,9 +228,9 @@ namespace test_video_recording
 
       void receive(shared_ptr<iadp> idp)
       {
-         if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
-            shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+            shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
          }
          else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
          {

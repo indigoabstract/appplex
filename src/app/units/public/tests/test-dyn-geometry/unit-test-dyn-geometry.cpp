@@ -556,16 +556,16 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 {
 	if (!idp->is_processed())
 	{
-		if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			switch (ts->get_type())
 			{
 			case touch_sym_evt::TS_PRESS_AND_DRAG:
 			{
-				p->point_list.push_back(ts->crt_state.te->points[0]);
+				p->point_list.push_back(ts->points[0]);
 				p->recalc_points = true;
 				ts->process();
 				//mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
@@ -583,7 +583,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 			case touch_sym_evt::TS_PRESSED:
 			{
 				p->point_list.clear();
-				p->point_list.push_back(ts->crt_state.te->points[0]);
+				p->point_list.push_back(ts->points[0]);
 				p->recalc_points = true;
 				ts->process();
 
@@ -592,7 +592,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<iadp> idp)
 
 			case touch_sym_evt::TS_RELEASED:
 			{
-				control_curve_ns::Point pt(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+				control_curve_ns::Point pt(ts->points[0].x, ts->points[0].y);
 
 				p->point_list.clear();
 				p->recalc_points = false;

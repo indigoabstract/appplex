@@ -291,7 +291,7 @@ namespace unit_freeimage_page2
 
 		virtual void receive(shared_ptr<iadp> idp)
 		{
-			if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))

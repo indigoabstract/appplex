@@ -73,7 +73,6 @@ void mws_list_menu_model::on_elem_selected(int idx)
          ->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
 
       send(ut, upt);
-      //send(ut, up->tmap[touch_sym_evt::TS_FORWARD_SWIPE]);
    }
 }
 
@@ -107,13 +106,6 @@ void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> ielems)
 
 void mws_list_menu_model::change_page_transitions(int idx)
 {
-   if (!elems.empty())
-   {
-      shared_ptr<mws_list> ul = static_pointer_cast<mws_list>(get_view());
-      shared_ptr<mws_page> up = ul->get_mws_page_item_parent();
-
-      up->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = elems[idx].upt;
-   }
 }
 
 void mws_list_menu_model::set_data_helper(shared_ptr<mws_page_tab> mws_root, mws_list_menu_item& ulmi)
@@ -144,22 +136,6 @@ shared_ptr<mws_list_menu_page> mws_list_menu_page::nwi(shared_ptr<mws_page_tab> 
 
 void mws_list_menu_page::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-   {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-
-      switch (ts->get_type())
-      {
-      case touch_sym_evt::TS_FORWARD_SWIPE:
-      {
-         shared_ptr<mws_list_menu_model> ulmm = get_list_menu_model();
-
-         ulmm->change_page_transitions(ulmm->get_selected_elem());
-         break;
-      }
-      }
-   }
-
    mws_page::receive(idp);
 }
 

@@ -137,14 +137,14 @@ void unit_test_grid::receive(shared_ptr<iadp> idp)
 {
 	if(!idp->is_processed())
 	{
-		if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
 			{
-				float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-				float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+				float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
+				float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
 				float dx_rad = glm::radians(dx / 2);
 				float dy_rad = glm::radians(dy / 2);
 

@@ -628,17 +628,17 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
 {
    if (!idp->is_processed())
    {
-      if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+      if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
       {
-         shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+         shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
          switch (ts->get_type())
          {
          case touch_sym_evt::TS_PRESSED:
          {
-            if (ts->crt_state.te->touch_count == 2)
+            if (ts->touch_count == 2)
             {
-               p->ks.grab(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+               p->ks.grab(ts->points[0].x, ts->points[0].y);
             }
             //ts->process();
             break;
@@ -663,8 +663,8 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
             {
                int w = get_width();
                int h = get_height();
-               float dx = ts->crt_state.te->points[1].x - ts->prev_state.te->points[1].x;
-               float dy = ts->crt_state.te->points[1].y - ts->prev_state.te->points[1].y;
+               float dx = ts->points[1].x - ts->prev_state.te->points[1].x;
+               float dy = ts->points[1].y - ts->prev_state.te->points[1].y;
 
                if (dx != 0 || dy != 0)
                {
@@ -690,7 +690,7 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
                   }
                   else
                   {
-                     p->ks.begin(ts->crt_state.te->points[1].x, ts->crt_state.te->points[1].y);
+                     p->ks.begin(ts->points[1].x, ts->points[1].y);
                   }
 
                   //arcball_cam->theta_deg += glm::radians(dx * 9.f);
@@ -734,8 +734,8 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
             //mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
             if (ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
             {
-               float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-               float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+               float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
+               float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
                float scale = 0.25f;
                float dx_rad = glm::radians(dx * scale);
                float dy_rad = glm::radians(dy * scale);

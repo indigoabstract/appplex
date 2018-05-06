@@ -166,9 +166,9 @@ namespace unit_test_touch_input_ns
 
       virtual void receive(mws_sp<iadp> idp)
       {
-         if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
-            shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+            shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
             float zoom_factor;
             bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te);
             bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts->crt_state.te, zoom_factor);
@@ -214,7 +214,7 @@ namespace unit_test_touch_input_ns
             switch (ts->get_type())
             {
             case touch_sym_evt::TS_PRESSED:
-               last_click = glm::vec2(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+               last_click = glm::vec2(ts->points[0].x, ts->points[0].y);
                break;
 
             case touch_sym_evt::TS_MOUSE_WHEEL:

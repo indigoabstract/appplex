@@ -510,7 +510,6 @@ public:
 
 	virtual void init()
 	{
-		tmap.erase(touch_sym_evt::TS_FORWARD_SWIPE);
 	}
 
 	void on_load()
@@ -527,16 +526,16 @@ public:
 			return;
 		}
 
-		if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 			int tsh = 5;
 
 			switch (ts->get_type())
 			{
 			case touch_sym_evt::TS_PRESSED:
 			{
-				pressed_pos = glm::vec2(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+				pressed_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
 				ts->process();
 				break;
 			}
@@ -553,24 +552,12 @@ public:
 
 			case touch_sym_evt::TS_PRESS_AND_DRAG:
 			{
-				int x = ts->crt_state.te->points[0].x;
-				int y = ts->crt_state.te->points[0].y;
+				int x = ts->points[0].x;
+				int y = ts->points[0].y;
 				int k = std::max(std::min(x, pfm::screen::get_width() - tsh), tsh);
 				int l = std::max(std::min(y, pfm::screen::get_height() - tsh), tsh);
-				pointer_pos = glm::vec2(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
+				pointer_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
 				ts->process();
-				break;
-			}
-
-			case touch_sym_evt::TS_BACKWARD_SWIPE:
-			{
-				//prev_fx();
-				break;
-			}
-
-			case touch_sym_evt::TS_FORWARD_SWIPE:
-			{
-				//next_fx();
 				break;
 			}
 			}

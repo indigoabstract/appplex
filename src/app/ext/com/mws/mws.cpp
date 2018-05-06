@@ -18,27 +18,6 @@ using std::string;
 using std::vector;
 
 
-slide_scrolling::scroll_dir get_scroll_dir(touch_sym_evt::touch_sym_evt_types swipe_type)
-{
-   switch (swipe_type)
-   {
-   case touch_sym_evt::TS_BACKWARD_SWIPE:
-      return slide_scrolling::SD_LEFT_RIGHT;
-
-   case touch_sym_evt::TS_FORWARD_SWIPE:
-      return slide_scrolling::SD_RIGHT_LEFT;
-
-   case touch_sym_evt::TS_UPWARD_SWIPE:
-      return slide_scrolling::SD_DOWN_UP;
-
-   case touch_sym_evt::TS_DOWNWARD_SWIPE:
-      return slide_scrolling::SD_UP_DOWN;
-   }
-
-   mws_throw ia_exception("not a swipe type");
-}
-
-
 shared_ptr<mws_model> mws_model::get_instance()
 {
    return shared_from_this();
@@ -288,11 +267,6 @@ shared_ptr<mws_page> mws_page_transition::get_target_page()
    return nullptr;
 }
 
-slide_scrolling::scroll_dir mws_page_transition::get_scroll_dir()
-{
-   return dir;
-}
-
 mws_page_transition::page_transition_types mws_page_transition::get_transition_type()
 {
    return pt_type;
@@ -339,54 +313,6 @@ public:
    mwspagetab_vkeyboard_page(string iid)
    {
       set_id(iid);
-      //tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(mws_page::PREV_PAGE)
-      //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
-      //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
-      tmap.erase(touch_sym_evt::TS_FORWARD_SWIPE);
-   }
-
-   virtual void receive(shared_ptr<iadp> idp)
-   {
-      if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-      {
-         shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-
-         if (ts->get_type() == touch_sym_evt::TS_FIRST_TAP)
-         {
-            float x = ts->pressed.te->points[0].x;
-            float y = ts->pressed.te->points[0].y;
-
-            if (is_inside_box(x, y, mws_r.x, mws_r.h - 40, mws_r.w, mws_r.h))
-            {
-               //shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(mws_page::PREV_PAGE)
-               //   ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-               //   ->set_transition_type(mws_page_transition::POP_CURRENT_PAGE);
-
-               //send(get_mws_parent(), upt);
-            }
-         }
-      }
-
-      mws_page::receive(idp);
-   }
-
-   virtual void update_view(shared_ptr<mws_camera> g)
-   {
-      mws_page::update_view(g);
-
-      //if (keyboardImg)
-      //{
-      //	g->push_transform_state();
-      //	g->scale((float)pfm::screen::get_width() / keyboardImg->get_width(), (float)pfm::screen::get_height() / keyboardImg->get_height());
-      //	g->drawImage(keyboardImg, 0, 0);
-      //	g->pop_transform_state();
-      //}
-      //else
-      //{
-      //	//keyboardImg = vg_image::load_image("voronoi/voronoi-vkb3.png");
-      //}
-
-      //g->drawText(get_id(), 10, 10);
    }
 };
 
@@ -517,12 +443,6 @@ bool mws_page_tab::is_empty()
 
 void mws_page_tab::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-   {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-      auto pa = ts->crt_state.te;
-      //trx("_mt1 %1% tt %2%") % pa->is_multitouch() % pa->type;
-   }
    if (idp->is_processed())
    {
       return;
@@ -560,132 +480,12 @@ void mws_page_tab::receive(shared_ptr<iadp> idp)
          break;
       }
 
-      //mst->start();
-      //ss.set_scroll_dir(current_transition->get_scroll_dir());
-      //ss.start();
       current_page->on_visibility_changed(true);
    }
    else if (!is_empty())
    {
       send(current_page, idp);
    }
-
-   return;
-
-   //-------------------- old code. inactivated.
-   //if (source == mst)
-   //{
-   //	last_page->on_hide_transition(mst);
-   //	current_page->on_show_transition(mst);
-   //}
-   //else if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
-   //{
-   //	current_transition = static_pointer_cast<mws_page_transition>(idp);
-   //	shared_ptr<mws_page> targetPage = current_transition->get_target_page();
-   //	bool startTransition = false;
-
-   //	if (targetPage == mws_page::PAGE_NONE)
-   //	{
-   //	}
-   //	else if (targetPage == mws_page::PREV_PAGE)
-   //	{
-   //		if (page_history.size() > 1)
-   //		{
-   //			page_history.erase(page_history.end() - 1);
-   //			last_page = current_page;
-   //			current_page = page_history.back();
-   //			startTransition = true;
-   //		}
-   //		else
-   //		{
-   //			//get_unit()->back();
-   //		}
-   //	}
-   //	else if (targetPage == mws_page::NEXT_PAGE)
-   //	{
-   //		int idx = get_page_index(current_page);
-
-   //		if (idx < pages.size() - 1)
-   //		{
-   //			last_page = current_page;
-   //			current_page = pages[idx + 1];
-   //			page_history.push_back(current_page);
-   //			startTransition = true;
-   //		}
-   //	}
-   //	else
-   //	{
-   //		int idx = get_page_index(targetPage);
-
-   //		if (idx < 0)
-   //		{
-   //			mws_throw ia_exception("target page cannot be found");
-   //		}
-
-   //		last_page = current_page;
-   //		current_page = pages[idx];
-
-   //		switch (current_transition->get_jump_type())
-   //		{
-   //		case mws_page_transition::HISTORY_ADD_PAGE:
-   //			page_history.push_back(current_page);
-   //			break;
-
-   //		case mws_page_transition::HISTORY_REWIND_TO_PAGE:
-   //		{
-   //			vector<shared_ptr<mws_page> >::reverse_iterator it = std::find(page_history.rbegin(), page_history.rend(), targetPage);
-
-   //			if (it != page_history.rend())
-   //			{
-   //				page_history.erase(it.base(), page_history.end());
-   //			}
-   //			else
-   //			{
-   //				page_history.clear();
-   //				page_history.push_back(targetPage);
-   //			}
-
-   //			break;
-   //		}
-
-   //		case mws_page_transition::HISTORY_IGNORE_PAGE:
-   //			break;
-   //		}
-
-   //		startTransition = true;
-   //	}
-
-   //	if (startTransition)
-   //	{
-   //		switch (current_transition->get_transition_type())
-   //		{
-   //		case mws_page_transition::REPLACE_CURRENT_PAGE:
-   //			page_stack.back() = current_page;
-   //			break;
-
-   //		case mws_page_transition::PUSH_CURRENT_PAGE:
-   //			page_stack.push_back(current_page);
-   //			break;
-
-   //		case mws_page_transition::POP_CURRENT_PAGE:
-   //			page_stack.erase(page_stack.end() - 1);
-   //			page_stack.back() = current_page;
-   //			break;
-
-   //		case mws_page_transition::CLEAR_PAGE_STACK:
-   //			break;
-   //		}
-
-   //		mst->start();
-   //		ss.set_scroll_dir(current_transition->get_scroll_dir());
-   //		ss.start();
-   //		current_page->on_visibility_changed(true);
-   //	}
-   //}
-   //else if (!is_empty())
-   //{
-   //	send(current_page, idp);
-   //}
 }
 
 void mws_page_tab::update_state()
@@ -978,7 +778,6 @@ void mws_page_tab::set_first_page(shared_ptr<mws_page> up)
 void mws_page_tab::show_vkeyboard()
 {
    shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(get_mws_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
       ->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
 
    send(get_instance(), upt);
@@ -1031,55 +830,12 @@ void mws_page_tab::new_instance_helper()
    shared_ptr<mws_page> vkuppage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_UP_PAGE));
    shared_ptr<mws_page> vkrightpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_RIGHT_PAGE));
    shared_ptr<mws_page> vkdownpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_DOWN_PAGE));
-
-   vkmainpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkdownpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkmainpage->tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::nwi(vkrightpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkmainpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkuppage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-
-   vkuppage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkdownpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkuppage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-
-   vkrightpage->tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-
-   vkdownpage->tmap[touch_sym_evt::TS_UPWARD_SWIPE] = mws_page_transition::nwi(vkuppage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_UPWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
-   vkdownpage->tmap[touch_sym_evt::TS_DOWNWARD_SWIPE] = mws_page_transition::nwi(vkmainpage)
-      ->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_DOWNWARD_SWIPE))
-      ->set_jump_type(mws_page_transition::HISTORY_IGNORE_PAGE);
 }
-
-
-//const shared_ptr<mws_page> mws_page::PAGE_NONE = mws_page::new_standalone_instance();
-//const shared_ptr<mws_page> mws_page::PREV_PAGE = mws_page::new_standalone_instance();
-//const shared_ptr<mws_page> mws_page::NEXT_PAGE = mws_page::new_standalone_instance();
 
 
 mws_page::mws_page()
 {
 }
-
-//mws_page::mws_page(shared_ptr<mws_page_tab> iparent)
-//{
-//	shared_ptr<unit> tu = iparent->get_unit();
-//
-//	mws_r.set(0, 0, (float)tu->get_width(), (float)tu->get_height());
-//
-//	tmap[touch_sym_evt::TS_BACKWARD_SWIPE] = mws_page_transition::nwi(PREV_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
-//	tmap[touch_sym_evt::TS_FORWARD_SWIPE] = mws_page_transition::nwi(NEXT_PAGE)->set_scroll_dir(get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
-//}
 
 shared_ptr<mws_page> mws_page::nwi(shared_ptr<mws_page_tab> i_parent)
 {
@@ -1170,9 +926,9 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
       return;
    }
 
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       for (auto& c : children)
       {
@@ -1201,151 +957,91 @@ void mws_page::update_input_std_behaviour(shared_ptr<iadp> idp)
       return;
    }
 
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      switch (ts->get_type())
-      {
-      case touch_sym_evt::TS_PRESSED:
-      {
-         float x = ts->pressed.te->points[0].x;
-         float y = ts->pressed.te->points[0].y;
+      //switch (ts->get_type())
+      //{
+      //case touch_sym_evt::TS_PRESSED:
+      //{
+      //   float x = ts->pressed.te->points[0].x;
+      //   float y = ts->pressed.te->points[0].y;
 
-         if (ts->tap_count == 1)
-         {
-            ks.grab(x, y);
-            ts->process();
-         }
+      //   if (ts->tap_count == 1)
+      //   {
+      //      ks.grab(x, y);
+      //      ts->process();
+      //   }
 
-         break;
-      }
+      //   break;
+      //}
 
-      case touch_sym_evt::TS_PRESS_AND_DRAG:
-      {
-         float x = ts->crt_state.te->points[0].x;
-         float y = ts->crt_state.te->points[0].y;
+      //case touch_sym_evt::TS_PRESS_AND_DRAG:
+      //{
+      //   float x = ts->points[0].x;
+      //   float y = ts->points[0].y;
 
-         switch (ts->tap_count)
-         {
-         case 1:
-         {
-            if (ts->is_finished)
-            {
-               ks.start_slowdown();
-            }
-            else
-            {
-               ks.begin(ts->crt_state.te->points[0].x, ts->crt_state.te->points[0].y);
-            }
+      //   switch (ts->tap_count)
+      //   {
+      //   case 1:
+      //   {
+      //      if (ts->is_finished)
+      //      {
+      //         ks.start_slowdown();
+      //      }
+      //      else
+      //      {
+      //         ks.begin(ts->points[0].x, ts->points[0].y);
+      //      }
 
-            mws_r.x += ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-            mws_r.y += ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+      //      mws_r.x += ts->points[0].x - ts->prev_state.te->points[0].x;
+      //      mws_r.y += ts->points[0].y - ts->prev_state.te->points[0].y;
 
-            if (mws_r.x > 0)
-            {
-               mws_r.x = 0;
-            }
-            else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
-            {
-               mws_r.x = -mws_r.w + pfm::screen::get_width();
-            }
+      //      if (mws_r.x > 0)
+      //      {
+      //         mws_r.x = 0;
+      //      }
+      //      else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
+      //      {
+      //         mws_r.x = -mws_r.w + pfm::screen::get_width();
+      //      }
 
-            if (mws_r.y > 0)
-            {
-               mws_r.y = 0;
-            }
-            else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
-            {
-               mws_r.y = -mws_r.h + pfm::screen::get_height();
-            }
+      //      if (mws_r.y > 0)
+      //      {
+      //         mws_r.y = 0;
+      //      }
+      //      else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
+      //      {
+      //         mws_r.y = -mws_r.h + pfm::screen::get_height();
+      //      }
 
-            ts->process();
-         }
-         }
+      //      ts->process();
+      //   }
+      //   }
 
-         break;
-      }
+      //   break;
+      //}
 
-      case touch_sym_evt::TS_MOUSE_WHEEL:
-      {
-         shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+      //case touch_sym_evt::TS_MOUSE_WHEEL:
+      //{
+      //   shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
-         mws_r.y += float(mw->wheel_delta) * 50.f;
+      //   mws_r.y += float(mw->wheel_delta) * 50.f;
 
-         if (mws_r.y > 0)
-         {
-            mws_r.y = 0;
-         }
-         else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
-         {
-            mws_r.y = -mws_r.h + pfm::screen::get_height();
-         }
+      //   if (mws_r.y > 0)
+      //   {
+      //      mws_r.y = 0;
+      //   }
+      //   else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
+      //   {
+      //      mws_r.y = -mws_r.h + pfm::screen::get_height();
+      //   }
 
-         ts->process();
-         break;
-      }
-
-      case touch_sym_evt::TS_BACKWARD_SWIPE:
-      {
-         if (mws_r.x < 0)
-         {
-            ts->process();
-         }
-         else if (tmap.find(touch_sym_evt::TS_BACKWARD_SWIPE) != tmap.end())
-         {
-            send(get_mws_page_parent(), tmap[touch_sym_evt::TS_BACKWARD_SWIPE]);
-            ts->process();
-         }
-
-         break;
-      }
-
-      case touch_sym_evt::TS_FORWARD_SWIPE:
-      {
-         if (mws_r.x > -mws_r.w + pfm::screen::get_width())
-         {
-            ts->process();
-         }
-         else if (tmap.find(touch_sym_evt::TS_FORWARD_SWIPE) != tmap.end())
-         {
-            send(get_mws_page_parent(), tmap[touch_sym_evt::TS_FORWARD_SWIPE]);
-            ts->process();
-         }
-
-         break;
-      }
-
-      case touch_sym_evt::TS_UPWARD_SWIPE:
-      {
-         if (mws_r.y < 0)
-         {
-            ts->process();
-         }
-         else if (tmap.find(touch_sym_evt::TS_UPWARD_SWIPE) != tmap.end())
-         {
-            send(get_mws_page_parent(), tmap[touch_sym_evt::TS_UPWARD_SWIPE]);
-            ts->process();
-         }
-
-         break;
-      }
-
-      case touch_sym_evt::TS_DOWNWARD_SWIPE:
-      {
-         if (mws_r.y > -mws_r.h + pfm::screen::get_height())
-         {
-            ts->process();
-         }
-         else if (tmap.find(touch_sym_evt::TS_DOWNWARD_SWIPE) != tmap.end())
-         {
-            send(get_mws_page_parent(), tmap[touch_sym_evt::TS_DOWNWARD_SWIPE]);
-            ts->process();
-         }
-
-         break;
-      }
-      }
+      //   ts->process();
+      //   break;
+      //}
+      //}
    }
 }
 

@@ -1356,15 +1356,15 @@ bool unit_test_normal_mapping::update()
 
 void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 {
-	if(idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+	if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 	{
-		shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+		shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 		switch(ts->get_type())
 		{
 		case touch_sym_evt::TS_RELEASED:
 			{
-				p->process_input(ts->crt_state.te->points[0]);
+				p->process_input(ts->points[0]);
 				ts->process();
 
 				break;

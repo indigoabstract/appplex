@@ -154,12 +154,12 @@ namespace unit_texxed_ns
 				return;
 			}
 
-			if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-				float x = ts->crt_state.te->points[0].x - mws_r.x;
-				float y = ts->crt_state.te->points[0].y - mws_r.y;
+				float x = ts->points[0].x - mws_r.x;
+				float y = ts->points[0].y - mws_r.y;
 
 				switch (ts->get_type())
 				{
@@ -179,8 +179,8 @@ namespace unit_texxed_ns
 
 				case touch_sym_evt::TS_PRESS_AND_DRAG:
 				{
-					float dx = ts->crt_state.te->points[0].x - ts->prev_state.te->points[0].x;
-					float dy = ts->crt_state.te->points[0].y - ts->prev_state.te->points[0].y;
+					float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
+					float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
 
 					if (ts->is_finished)
 					{

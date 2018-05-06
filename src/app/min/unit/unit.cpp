@@ -732,19 +732,13 @@ void unit::on_resume()
 
 void unit::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
-   {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-      auto pa = ts->crt_state.te;
-      //trx("_mt2 %1% tt %2%") % pa->is_multitouch() % pa->type;
-   }
    send(mws_root, idp);
 
    if (!idp->is_processed())
    {
-      if (idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+      if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
       {
-         shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
+         shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
          //if(ts->get_type() == touch_sym_evt::TS_BACKWARD_SWIPE)
          //{
@@ -1011,24 +1005,7 @@ void unit::update_view(int update_count)
 {
 #if defined MOD_GFX
 
-   shared_ptr<mws_camera> gfx = mws_cam;
-   mws_root->update_view(gfx);
-
-   if (prefs->draw_touch_symbols_trail() && !touch_ctrl->is_pointer_released())
-   {
-      const vector<pointer_sample>& ps = touch_ctrl->get_pointer_samples();
-      int size = ps.size() - 1;
-
-      gfx->setColor(0xff0000);
-
-      for (int k = 0; k < size; k++)
-      {
-         const pointer_sample& p1 = ps[k];
-         const pointer_sample& p2 = ps[k + 1];
-
-         gfx->drawLine(p1.te->points[0].x, p1.te->points[0].y, p2.te->points[0].x, p2.te->points[0].y);
-      }
-   }
+   mws_root->update_view(mws_cam);
 
 #ifdef MWS_DEBUG_BUILD
 
@@ -1036,9 +1013,9 @@ void unit::update_view(int update_count)
    {
       float ups = 1000.f / update_ctrl->getTimeStepDuration();
       string f = mws_to_str("uc %d u %02.1f f %02.1f", update_count, ups, fps);
-      glm::vec2 txt_dim = gfx->get_font()->get_text_dim(f);
+      glm::vec2 txt_dim = mws_cam->get_font()->get_text_dim(f);
 
-      gfx->drawText(f, get_width() - txt_dim.x, 0.f);
+      mws_cam->drawText(f, get_width() - txt_dim.x, 0.f);
    }
 
 #endif // MWS_DEBUG_BUILD
@@ -1117,15 +1094,9 @@ void unit_list::on_resize()
 
 void unit_list::receive(shared_ptr<iadp> idp)
 {
-   if (!idp->is_processed() && idp->is_type(touch_sym_evt::TOUCHSYM_EVT_TYPE))
+   if (!idp->is_processed() && idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<touch_sym_evt> ts = touch_sym_evt::as_touch_sym_evt(idp);
-
-      //if (ts->get_type() == touch_sym_evt::TS_FORWARD_SWIPE)
-      //{
-      //	forward();
-      //	ts->process();
-      //}
+      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
    }
 
    if (!idp->is_processed())
@@ -1139,7 +1110,7 @@ void unit_list::forward()
    if (ulist.size() > 0)
    {
       shared_ptr<unit> u = ulist[ulmodel.lock()->get_selected_elem()];
-      unit_ctrl::inst()->set_next_unit(u);// , get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
+      unit_ctrl::inst()->set_next_unit(u);
    }
 }
 
@@ -1162,7 +1133,7 @@ void unit_list::up_one_level()
          }
       }
 
-      unit_ctrl::inst()->set_next_unit(parent);// , get_scroll_dir(touch_sym_evt::TS_BACKWARD_SWIPE));
+      unit_ctrl::inst()->set_next_unit(parent);
    }
 #endif
 }
@@ -1196,7 +1167,7 @@ void unit_list::init_mws()
          shared_ptr<unit> u = get_unit_list()->ulist[idx];
 
          //trx("item %1%") % elemAt(idx);
-         unit_ctrl::inst()->set_next_unit(u);// , get_scroll_dir(touch_sym_evt::TS_FORWARD_SWIPE));
+         unit_ctrl::inst()->set_next_unit(u);
       }
 
    private:

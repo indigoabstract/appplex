@@ -34,9 +34,6 @@ const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
 
 
-slide_scrolling::scroll_dir get_scroll_dir(touch_sym_evt::touch_sym_evt_types swipe_type);
-
-
 class mws_rect
 {
 public:
@@ -150,7 +147,6 @@ public:
    static shared_ptr<mws_page_transition> nwi(shared_ptr<mws_page_tab> imws_root, std::string iid);
 
    shared_ptr<mws_page> get_target_page();
-   slide_scrolling::scroll_dir get_scroll_dir();
    page_transition_types get_transition_type();
    page_jump_types get_jump_type();
 
