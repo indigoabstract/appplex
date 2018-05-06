@@ -233,7 +233,7 @@ void msvc_main::write_text(const wchar_t* text)const
 
 void msvc_main::write_text_v(const char* iformat, ...)const
 {
-   static char dest[1024 * 16];
+   char dest[1024 * 16];
    va_list argptr;
 
    va_start(argptr, iformat);
