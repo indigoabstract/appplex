@@ -602,25 +602,29 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // black shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-         uniform mat4 u_m4_model_view_proj;
+      auto vsh = shared_ptr<std::string>(new std::string(
+      R"(
+      uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
 
       void main()
       {
          gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
-      )));
+      )"
+      ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-#ifdef GL_ES\n
-         precision lowp float; \n
-#endif\n
+      auto fsh = shared_ptr<std::string>(new std::string(
+      R"(
+#ifdef GL_ES
+         precision lowp float;
+#endif
          void main()
       {
          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
       }
-      )));
+      )"
+      ));
 
       black_shader = shader.new_program_from_src("black-shader", vsh, fsh);
       //vprint("fsh %s\n", fsh.c_str());
@@ -628,8 +632,9 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // wireframe shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-         uniform mat4 u_m4_model_view_proj;
+      auto vsh = shared_ptr<std::string>(new std::string(
+      R"(
+      uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
 
       void main()
@@ -637,25 +642,29 @@ void gfx::init(mws_sp<gfx> i_new_inst)
          gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
          gl_Position.z -= 0.001;
       }
-      )));
+      )"
+      ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-#ifdef GL_ES\n
-         precision lowp float; \n
-#endif\n
+      auto fsh = shared_ptr<std::string>(new std::string(
+      R"(
+#ifdef GL_ES
+         precision lowp float;
+#endif
          void main()
       {
          gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0);
       }
-      )));
+      )"
+      ));
 
       wireframe_shader = shader.new_program_from_src("wireframe-shader", vsh, fsh);
    }
 
    // basic-tex shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-         attribute vec3 a_v3_position;
+      auto vsh = shared_ptr<std::string>(new std::string(
+      R"(
+      attribute vec3 a_v3_position;
       attribute vec2 a_v2_tex_coord;
 
       uniform mat4 u_m4_model_view_proj;
@@ -668,12 +677,14 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
          gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
-      )));
+      )"
+      ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-#ifdef GL_ES\n
-         precision lowp float; \n
-#endif\n
+      auto fsh = shared_ptr<std::string>(new std::string(
+      R"(
+#ifdef GL_ES
+         precision lowp float;
+#endif
 
          varying vec2 v_v2_tex_coord;
       uniform sampler2D u_s2d_tex;
@@ -682,15 +693,17 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       {
          gl_FragColor = texture2D(u_s2d_tex, v_v2_tex_coord);
       }
-      )));
+      )"
+      ));
 
       basic_tex_shader = shader.new_program_from_src("basic-tex-shader", vsh, fsh);
    }
 
    // c-o shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-         attribute vec3 a_v3_position;
+      auto vsh = shared_ptr<std::string>(new std::string(
+      R"(
+      attribute vec3 a_v3_position;
 
       uniform mat4 u_m4_model_view_proj;
 
@@ -698,12 +711,14 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       {
          gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
-      )));
+      )"
+      ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(GLSL_SRC(
-#ifdef GL_ES\n
-         precision lowp float; \n
-#endif\n
+      auto fsh = shared_ptr<std::string>(new std::string(
+      R"(
+#ifdef GL_ES
+         precision lowp float;
+#endif
 
          uniform vec4 u_v4_color;
 
@@ -711,7 +726,8 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       {
          gl_FragColor = u_v4_color;
       }
-      )));
+      )"
+      ));
 
       c_o_shader = shader.new_program_from_src("c-o-shader", vsh, fsh);
    }

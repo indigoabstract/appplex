@@ -261,6 +261,11 @@ public:
             break;
          }
 
+          if(shader_name.empty())
+          {
+              shader_name = program_name;
+          }
+          
          glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 
          std::vector<gfx_char> log(log_length);

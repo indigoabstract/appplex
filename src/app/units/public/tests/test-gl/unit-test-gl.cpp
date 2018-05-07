@@ -81,7 +81,8 @@ void unit_test_gl::load()
 
    qm.set_dimensions(1, 1);
    qm.set_scale(512, 256);
-   qm.set_translation(50, 100.f);
+   qm.set_translation(10, 50.f);
+    qm.set_anchor(gfx_quad_2d::e_top_left);
    //qm[MP_CULL_FRONT] = false;
    qm[MP_CULL_BACK] = false;
    //qm[MP_DEPTH_TEST] = false;

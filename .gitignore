@@ -31,6 +31,7 @@
 /src/app/min/appplex-conf.cpp
 /src/app/units/private
 /src/app/units/public/layered-car-paint
+/pfm/ios/xcode
 
 /pfm/msvc/proj
 *.iml

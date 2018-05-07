@@ -30,7 +30,7 @@ void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_mess
 {
 #if defined MWS_DEBUG_BUILD
 
-   char* msg = (i_message) ? i_message : "signal error";
+   const char* msg = (i_message) ? i_message : "signal error";
    mws_print("[%s] at file [%s], line [%d]\n", msg, i_file, i_line);
 
 #if defined PLATFORM_WINDOWS_PC
@@ -103,9 +103,34 @@ uint32 pfm::time::get_time_millis()
 
 #elif defined PLATFORM_IOS
 
+#include "main.hpp"
+
+#define pfm_app_inst        ios_main::get_instance()
+
 
 const std::string dir_separator = "/";
 
+platform_id pfm::get_platform_id()
+{
+    return platform_ios;
+}
+
+gfx_type_id pfm::get_gfx_type_id()
+{
+    return gfx_type_opengl_es;
+}
+
+uint32 pfm::time::get_time_millis()
+{
+    struct timespec ts;
+    
+    if(clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+    {
+        pfm_app_inst->write_text_nl("error");
+    }
+    
+    return uint32(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+}
 
 #elif defined PLATFORM_EMSCRIPTEN
 

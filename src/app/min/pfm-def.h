@@ -41,9 +41,27 @@ extern "C"
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
 
-#elif defined __APPLE__ && defined TARGET_OS_IPHONE
+#elif defined __APPLE__
+    
+#include "TargetConditionals.h"
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
 
+    // iOS simulator
 #define PLATFORM_IOS
+    
+#elif TARGET_OS_IPHONE
+
+    // actual iOS device
+#define PLATFORM_IOS
+    
+#else
+#define TARGET_OS_OSX 1
+    
+    // mac OS X
+    // define something for OSX
+    
+#endif
+    
 #define UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI

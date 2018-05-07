@@ -21,6 +21,24 @@ extern "C"
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
+#elif defined PLATFORM_IOS
+
+#define MWS_USES_OPENGL_ES
+#define MWS_OPENGL_ES_VERSION MWS_OPENGL_ES_3_0
+    
+#if MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_2_0
+    
+#define GL_GLEXT_PROTOTYPES
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+
+#elif MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_3_0
+    
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
+    
+#endif // MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_2_0
+
 #elif defined PLATFORM_EMSCRIPTEN
 
 #define MWS_USES_OPENGL_ES
@@ -47,13 +65,6 @@ extern "C"
 #endif
 
    GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
-
-#elif defined PLATFORM_IOS
-
-#define MWS_USES_OPENGL_ES
-#include <EGL/egl.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
 
 #elif defined PLATFORM_WINDOWS_PC || defined PLATFORM_QT_WINDOWS_PC
 

@@ -132,7 +132,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 else() # Assume iOS
 
     set(IOS TRUE)
-    set(CMAKE_OSX_SYSROOT "iphoneos")
+    #set(CMAKE_OSX_SYSROOT "iphoneos")
     #set(CXX_COMPILE_FLAGS "-Wno-objc-interface-ivars -Wno-objc-missing-property-synthesis -Wno-direct-ivar-access")
 	
 	add_library(app_plex_main STATIC "")
@@ -166,11 +166,11 @@ else() # Assume iOS
 	set(TEST_BUNDLE_IDENTIFIER "com.company.tests")             # <== Set to your tests's bundle ID
 	set(CODE_SIGN_IDENTITY "iPhone Developer")                  # <== Set to your preferred code sign identity, to see list:
 																# /usr/bin/env xcrun security find-identity -v -p codesigning
-	set(DEPLOYMENT_TARGET 8.0)                                  # <== Set your deployment target version of iOS
+	set(DEPLOYMENT_TARGET 10.0)                                  # <== Set your deployment target version of iOS
 	set(DEVICE_FAMILY "1")                                      # <== Set to "1" to target iPhone, set to "2" to target iPad, set to "1,2" to target both
 	set(LOGIC_ONLY_TESTS 0)                                     # <== Set to 1 if you do not want tests to be hosted by the application, speeds up pure logic tests but you can not run them on real devices
 
-	project(${DEVELOPMENT_PROJECT_NAME})
+    #project(${DEVELOPMENT_PROJECT_NAME})
 	include(BundleUtilities)
 	include(FindXCTest)
 
@@ -192,15 +192,13 @@ else() # Assume iOS
 	set(APP_HEADER_FILES
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.h"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/CppInterface.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.hpp"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 	)
 
 	set(APP_SOURCE_FILES
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.m"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.m"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/CppInterface.mm"
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.mm"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.m"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.cpp"
 	)
@@ -273,24 +271,24 @@ else() # Assume iOS
 	target_link_libraries(${APP_NAME} ${SYSTEMCONFIGURATION})
 
 	# Link the framework to the app
-	set_target_properties(${APP_NAME} PROPERTIES
-						  XCODE_ATTRIBUTE_OTHER_LDFLAGS "${XCODE_ATTRIBUTE_OTHER_LDFLAGS} -framework ${FRAMEWORK_NAME}"
-	)
+	#set_target_properties(${APP_NAME} PROPERTIES
+	#					  XCODE_ATTRIBUTE_OTHER_LDFLAGS "${XCODE_ATTRIBUTE_OTHER_LDFLAGS} -framework ${FRAMEWORK_NAME}"
+	#)
 
 	# Turn on ARC
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fobjc-arc")
 
 	# Create the app target
 	set_target_properties(${APP_NAME} PROPERTIES
 						  XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym"
-						  XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/Prefix.pch"
+						  XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 						  RESOURCE "${RESOURCES}"
 						  XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES"
 						  XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET}
 						  XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${CODE_SIGN_IDENTITY}
 						  XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${DEVELOPMENT_TEAM_ID}
 						  XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY ${DEVICE_FAMILY}
-						  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/plist.in
+						  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/plist.in
 						  XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
 						  XCODE_ATTRIBUTE_COMBINE_HIDPI_IMAGES NO
 						  XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
@@ -301,9 +299,9 @@ else() # Assume iOS
 	# Include framework headers, needed to make "Build" Xcode action work.
 	# "Archive" works fine just relying on default search paths as it has different
 	# build product output directory.
-	target_include_directories(${APP_NAME} PUBLIC 
-		"${PROJECT_BINARY_DIR}/cppframework/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/${FRAMEWORK_NAME}.framework"
-	)
+	#target_include_directories(${APP_NAME} PUBLIC 
+	#	"${PROJECT_BINARY_DIR}/cppframework/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/${FRAMEWORK_NAME}.framework"
+	#)
 
 	# Set the app's linker search path to the default location on iOS
 	set_target_properties(

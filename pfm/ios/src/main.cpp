@@ -110,7 +110,7 @@ public:
 		//AAsset* asset = AAssetManager_open(asset_manager, path.c_str(), 0);
 		//mws_print("open_impl: opening asset file %s\n", path.c_str());
 
-		return asset;
+        return nullptr;//asset;
 	}
 
 	virtual void close_impl()
@@ -233,7 +233,7 @@ void ios_main::write_text_v(const char* iformat, ...)const
    va_list arg_ptr;
 
    va_start(arg_ptr, iformat);
-   vsnprintf_s(dest, 1024 * 16 - 1, _TRUNCATE, iformat, arg_ptr);
+    vsnprintf(dest, 1024 * 16 - 1, iformat, arg_ptr);
    va_end(arg_ptr);
    
    printf("%s", dest);
