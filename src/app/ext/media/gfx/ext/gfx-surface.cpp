@@ -38,9 +38,9 @@ gfx_debug_vxo::gfx_debug_vxo(vx_info ivxi, bool iis_submesh) : gfx_vxo(ivxi, iis
 {
 }
 
-void gfx_debug_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
+void gfx_debug_vxo::draw_in_sync(shared_ptr<gfx_camera> icamera)
 {
-   gfx_vxo::render_mesh(icamera);
+   gfx_vxo::draw_in_sync(icamera);
 }
 
 
@@ -54,13 +54,13 @@ void gfx_obj_vxo::operator=(const std::string& imesh_name)
    set_mesh_name(imesh_name);
 }
 
-//void gfx_obj_mesh::render_mesh(shared_ptr<gfx_camera> icamera)
+//void gfx_obj_mesh::draw_in_sync(shared_ptr<gfx_camera> icamera)
 //{
 //	std::vector<shared_ptr<gfx_mesh> >::iterator it = mesh_list.begin();
 //
 //	for(; it != mesh_list.end(); it++)
 //	{
-//		(*it)->render_mesh(icamera);
+//		(*it)->draw_in_sync(icamera);
 //	}
 //}
 

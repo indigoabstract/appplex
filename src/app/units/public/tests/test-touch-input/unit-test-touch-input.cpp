@@ -345,7 +345,7 @@ namespace unit_test_touch_input_ns
                (*m)[MP_DEPTH_TEST] = false;
                (*m)[MP_BLENDING] = MV_NONE;
                (*m)["u_v1_z_pos"] = z_pos;
-               m->render_mesh(g);
+               m->draw_out_of_sync(g);
                (*m)[MP_SHADER_NAME] = "basic-tex-shader";
                (*m)[MP_DEPTH_TEST] = true;
                (*m)[MP_BLENDING] = MV_ALPHA;
@@ -365,8 +365,7 @@ namespace unit_test_touch_input_ns
 
             if (picking_dgb_q2d && picking_dgb_q2d->visible)
             {
-               //picking_dgb_q2d->update_recursive(glm::mat4(), true);
-               //picking_dgb_q2d->render_mesh(g);
+               //picking_dgb_q2d->draw_out_of_sync(g);
                auto tr = picking_dgb_q2d->get_translation();
                g->draw_point(glm::vec3(tr.x + map_click_x, tr.y + map_click_y, picking_dgb_q2d->get_z() + 1.f), glm::vec4(1., 1, 1, 1.), 5.f);
             }

@@ -343,7 +343,7 @@ void gfx_scene::draw()
 
             if (shader)
             {
-               mesh->render_mesh(cam);
+               mesh->draw_in_sync(cam);
             }
             else
             {
@@ -368,7 +368,7 @@ void gfx_scene::draw()
 
             if (shader)
             {
-               mesh->render_mesh(cam);
+               mesh->draw_in_sync(cam);
             }
             else
             {

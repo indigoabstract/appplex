@@ -72,7 +72,7 @@ public:
       //add_text_2d(text, pen, ifont);
    }
 
-	void render_mesh(shared_ptr<text_vxo> inst, shared_ptr<gfx_camera> icamera, const glm::vec3& ipos)
+	void draw_in_sync(shared_ptr<text_vxo> inst, shared_ptr<gfx_camera> icamera, const glm::vec3& ipos)
 	{
 		if (vbuffer->vertices->size == 0)
 		{
@@ -323,14 +323,14 @@ void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const s
 	p->add_text(itext, ipos, ifont);
 }
 
-void text_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
+void text_vxo::draw_in_sync(shared_ptr<gfx_camera> icamera)
 {
 	if (!visible)
 	{
 		return;
 	}
 
-	p->render_mesh(static_pointer_cast<text_vxo>(get_shared_ptr()), icamera, position());
+	p->draw_in_sync(static_pointer_cast<text_vxo>(get_shared_ptr()), icamera, position());
 }
 
 text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color, a_v1_shift, a_v1_gamma"))

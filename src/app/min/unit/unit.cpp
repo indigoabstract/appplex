@@ -270,20 +270,20 @@ public:
       int pbo_next_index = (pbo_index + 1) % 2;
 
       gfx::i()->rt.set_current_render_target(rt_y);
-      rt_y_quad->render_mesh(mws_cam);
+      rt_y_quad->draw_out_of_sync(mws_cam);
       //gfx::i()->rt.get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       mws_report_gfx_errs();
 
       gfx::i()->rt.set_current_render_target(rt_u);
-      rt_u_quad->render_mesh(mws_cam);
+      rt_u_quad->draw_out_of_sync(mws_cam);
       //gfx::i()->rt.get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
       helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
       gfx::i()->rt.set_current_render_target();
       mws_report_gfx_errs();
 
       gfx::i()->rt.set_current_render_target(rt_v);
-      rt_v_quad->render_mesh(mws_cam);
+      rt_v_quad->draw_out_of_sync(mws_cam);
       //gfx::i()->rt.get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
       helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
       gfx::i()->rt.set_current_render_target();

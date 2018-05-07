@@ -184,7 +184,7 @@ void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw
 
       q2d->scaling = glm::vec3(iw, ih, 1.f);
       q2d->position = glm::vec3(itx, ity, 0.f);
-      q2d->render_mesh(shared_ptr<gfx_camera>());
+      q2d->draw_out_of_sync(shared_ptr<gfx_camera>());
 
       gfx::i()->shader.set_current_program(current_program);
       mws_report_gfx_errs();

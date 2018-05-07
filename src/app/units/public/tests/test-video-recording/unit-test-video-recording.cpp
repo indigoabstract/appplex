@@ -192,7 +192,7 @@ namespace test_video_recording
          std::string frame_counter = trs("frame count: {}", frame_idx);
 
          mws_report_gfx_errs();
-         quad_mesh->render_mesh(mws_cam);
+         quad_mesh->draw_out_of_sync(mws_cam);
          mws_cam->drawText(frame_counter, 50, 50);
          mws_report_gfx_errs();
       }
@@ -202,20 +202,20 @@ namespace test_video_recording
          mws_report_gfx_errs();
          scr_mirror_tex->set_active(0);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height());
-         scr_mirror_bg_mesh->render_mesh(mws_cam);
+         scr_mirror_bg_mesh->draw_out_of_sync(mws_cam);
          //(*scr_mirror_mesh)["u_s2d_tex"] = rt_uv_tex->get_name();
-         scr_mirror_mesh->render_mesh(mws_cam);
+         scr_mirror_mesh->draw_out_of_sync(mws_cam);
          mws_report_gfx_errs();
 
          if (venc->is_encoding())
          {
             gfx::i()->rt.set_current_render_target(rt_y);
-            rt_y_quad->render_mesh(mws_cam);
+            rt_y_quad->draw_out_of_sync(mws_cam);
             shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_y);
             mws_report_gfx_errs();
 
             gfx::i()->rt.set_current_render_target(rt_uv);
-            rt_uv_quad->render_mesh(mws_cam);
+            rt_uv_quad->draw_out_of_sync(mws_cam);
             shared_ptr<std::vector<uint32> > pixels_uv_tex = gfx::i()->rt.get_render_target_pixels<uint32>(rt_uv);
             gfx::i()->rt.set_current_render_target();
             mws_report_gfx_errs();

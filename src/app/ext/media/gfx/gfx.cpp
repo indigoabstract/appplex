@@ -603,7 +603,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    // black shader
    {
       auto vsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
       uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
 
@@ -615,7 +615,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       ));
 
       auto fsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
 #ifdef GL_ES
          precision lowp float;
 #endif
@@ -633,7 +633,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    // wireframe shader
    {
       auto vsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
       uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
 
@@ -646,7 +646,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       ));
 
       auto fsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
 #ifdef GL_ES
          precision lowp float;
 #endif
@@ -663,7 +663,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    // basic-tex shader
    {
       auto vsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
       attribute vec3 a_v3_position;
       attribute vec2 a_v2_tex_coord;
 
@@ -681,7 +681,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       ));
 
       auto fsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
 #ifdef GL_ES
          precision lowp float;
 #endif
@@ -702,7 +702,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    // c-o shader
    {
       auto vsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
       attribute vec3 a_v3_position;
 
       uniform mat4 u_m4_model_view_proj;
@@ -715,7 +715,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       ));
 
       auto fsh = shared_ptr<std::string>(new std::string(
-      R"(
+         R"(
 #ifdef GL_ES
          precision lowp float;
 #endif

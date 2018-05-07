@@ -697,7 +697,7 @@ public:
 				{ gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f }, { gl::CLEAR_MASK, gl::COLOR_BUFFER_BIT_GL }, {},
 			};
 			gl_st->set_state(plist);
-			fx_quad.render_mesh(p->ortho_cam);
+			fx_quad.draw_out_of_sync(p->ortho_cam);
 		}
 
 		gfx_plane& screen_quad = *p->screen_quad;

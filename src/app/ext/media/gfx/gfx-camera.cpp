@@ -93,7 +93,7 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
    gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
    (*line_mesh)["u_v4_color"] = color;
-   line_mesh->render_mesh(cam);
+   line_mesh->draw_out_of_sync(cam);
 }
 
 void draw_context::draw_texture(std::string tex_name, float ix, float iy, float iwidth, float iheight)
@@ -133,7 +133,7 @@ void draw_context::draw_texture(std::string tex_name, float ix, float iy, float 
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(img_mesh));
 
       (*img_mesh)["u_s2d_tex"] = tex_name;
-      img_mesh->render_mesh(cam);
+      img_mesh->draw_out_of_sync(cam);
    }
 }
 
@@ -457,7 +457,7 @@ public:
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
-      line_mesh->render_mesh(cam);
+      line_mesh->draw_out_of_sync(cam);
    }
 
    glm::vec3 center;
@@ -541,7 +541,7 @@ public:
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
-      line_mesh->render_mesh(cam);
+      line_mesh->draw_out_of_sync(cam);
    }
 
    glm::vec3 center;
@@ -572,7 +572,7 @@ public:
 
    virtual void draw(shared_ptr<draw_context> idc)
    {
-      mesh->render_mesh(idc->cam.lock());
+      mesh->draw_out_of_sync(idc->cam.lock());
    }
 
    gfx_vxo* mesh;
@@ -779,7 +779,7 @@ void gfx_camera::draw_mesh(shared_ptr<gfx_vxo> imesh)
    //shared_ptr<glsl_program> glp = imesh->get_material()->get_shader();
 
    //update_glp_params(imesh, glp);
-   //imesh->render_mesh(static_pointer_cast<gfx_camera>(get_shared_ptr()));
+   //imesh->draw_out_of_sync(static_pointer_cast<gfx_camera>(get_shared_ptr()));
 }
 
 gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this), update_rt_cam_state(true) {}

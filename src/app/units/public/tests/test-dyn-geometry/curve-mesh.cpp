@@ -265,7 +265,7 @@ void curve_mesh::sample_ncs_points(int istart_idx, int iend_idx, std::vector<poi
 	}
 }
 
-void curve_mesh::render_mesh(shared_ptr<gfx_camera> icamera)
+void curve_mesh::draw_in_sync(shared_ptr<gfx_camera> icamera)
 {
 	if(!visible || vertices_buffer.empty() || indices_buffer.empty())
 	{

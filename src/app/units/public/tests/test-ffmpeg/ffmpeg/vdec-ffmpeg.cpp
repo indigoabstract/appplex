@@ -401,7 +401,7 @@ private:
 					y_tex->update(0, (const char*)av_frame->data[0]);// , codec_ctx->width * codec_ctx->height);
 					u_tex->update(1, (const char*)av_frame->data[1]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
 					v_tex->update(2, (const char*)av_frame->data[2]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
-					q2d->render_mesh(i_mws_cam);
+					q2d->draw_out_of_sync(i_mws_cam);
 
 					mws_report_gfx_errs();
 

@@ -210,9 +210,16 @@ void gfx_vxo::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_s
    }
 }
 
-void gfx_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
+void gfx_vxo::draw_out_of_sync(std::shared_ptr<gfx_camera> i_camera)
 {
-   render_mesh_impl(icamera);
+   i_camera->update_camera_state();
+   update_recursive(glm::mat4(), true);
+   draw_in_sync(i_camera);
+}
+
+void gfx_vxo::draw_in_sync(shared_ptr<gfx_camera> i_camera)
+{
+   render_mesh_impl(i_camera);
 
    if (!children.empty())
    {
@@ -222,7 +229,7 @@ void gfx_vxo::render_mesh(shared_ptr<gfx_camera> icamera)
       {
          shared_ptr<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(*it);
 
-         mesh->render_mesh(icamera);
+         mesh->draw_in_sync(i_camera);
       }
    }
 }

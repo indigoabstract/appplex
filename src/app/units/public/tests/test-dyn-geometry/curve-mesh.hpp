@@ -46,7 +46,7 @@ public:
 
 	void sample_touch_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list);
 	void sample_ncs_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list);
-	virtual void render_mesh(shared_ptr<gfx_camera> icamera);
+	virtual void draw_in_sync(shared_ptr<gfx_camera> icamera);
 	void draw_using_va(shared_ptr<gfx_camera> icamera);
 	void draw_using_vbo(shared_ptr<gfx_camera> icamera);
 	void draw_unsynchronized(shared_ptr<gfx_camera> icamera);
