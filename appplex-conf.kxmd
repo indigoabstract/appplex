@@ -49,6 +49,7 @@ units
 	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
 	test-touch-input[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, vector_fonts, zlib ], platf[ windows, android, ios ], ],
 	test-gl-uniform-blocks[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
+	test-res-ld[ uses[ gfx, png, zlib ], platf[ all ], ],
 
 	@@[ private units ],
 	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],

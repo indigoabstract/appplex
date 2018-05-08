@@ -668,8 +668,10 @@ void gfx_camera::clear_buffers()
 
    if (clear_color)
    {
+      auto cc = clear_color_value.to_vec4();
+
       bf |= GL_COLOR_BUFFER_BIT;
-      glClearColor(clear_color_value.r, clear_color_value.g, clear_color_value.b, clear_color_value.a);
+      glClearColor(cc.r, cc.g, cc.b, cc.a);
    }
 
    if (clear_depth)
