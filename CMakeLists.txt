@@ -132,6 +132,9 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 else() # Assume iOS
 
     set(IOS TRUE)
+	macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
+	set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
+	endmacro (set_xcode_property)
     #set(CMAKE_OSX_SYSROOT "iphoneos")
     #set(CXX_COMPILE_FLAGS "-Wno-objc-interface-ivars -Wno-objc-missing-property-synthesis -Wno-direct-ivar-access")
 	
@@ -318,6 +321,10 @@ else() # Assume iOS
 		"@executable_path/Frameworks"
 	)
 
+	# Use Apple's recommended standard architectures
+	set_xcode_property(${APP_NAME} ARCHS "$(ARCHS_STANDARD)")
+	set_xcode_property(${APP_NAME} ONLY_ACTIVE_ARCH YES)
+	
 	# Note that commands below are indented just for readability. They will endup as
 	# one liners after processing and unescaped ; will disappear so \; are needed.
 	# First condition in each command is for normal build, second for archive.
