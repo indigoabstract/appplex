@@ -135,6 +135,7 @@ else() # Assume iOS
     #set(CMAKE_OSX_SYSROOT "iphoneos")
     #set(CXX_COMPILE_FLAGS "-Wno-objc-interface-ivars -Wno-objc-missing-property-synthesis -Wno-direct-ivar-access")
 	
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 	add_library(app_plex_main STATIC "")
 	
 	# common include directories
@@ -155,6 +156,8 @@ else() # Assume iOS
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	include("${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/CMakeLists.txt")
+	
+	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/lib")
 	
 	#set(DEVELOPMENT_PROJECT_NAME "project")                     # <== Set to your project name, e.g. project.xcodeproj
 	set(DEVELOPMENT_TEAM_ID "9H73BRXFST")                       # <== Set to your team ID from Apple
@@ -259,6 +262,8 @@ else() # Assume iOS
 	find_library(MOBILECORESERVICES MobileCoreServices)
 	find_library(CFNETWORK CFNetwork)
 	find_library(SYSTEMCONFIGURATION SystemConfiguration)
+	# app bundled libs
+	find_library(PNG_LIB libpng.a)
 
 	# link the frameworks located above
 	target_link_libraries(${APP_NAME} app_plex_main)
@@ -269,6 +274,8 @@ else() # Assume iOS
 	target_link_libraries(${APP_NAME} ${MOBILECORESERVICES})
 	target_link_libraries(${APP_NAME} ${CFNETWORK})
 	target_link_libraries(${APP_NAME} ${SYSTEMCONFIGURATION})
+	# app bundled libs
+	target_link_libraries(${APP_NAME} ${PNG_LIB})
 
 	# Link the framework to the app
 	#set_target_properties(${APP_NAME} PROPERTIES
