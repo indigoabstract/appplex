@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.7)
 
 # Maps to a solution file (appplex.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)
-project (appplex)
+project (VideoEncApp)
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
@@ -164,8 +164,8 @@ else() # Assume iOS
 	
 	#set(DEVELOPMENT_PROJECT_NAME "project")                     # <== Set to your project name, e.g. project.xcodeproj
 	set(DEVELOPMENT_TEAM_ID "9H73BRXFST")                       # <== Set to your team ID from Apple
-	set(APP_NAME "appplex")                                     # <== Set To your app's name
-	set(APP_BUNDLE_IDENTIFIER "com.company.app")                # <== Set to your app's bundle identifier
+	set(APP_NAME "VideoEncApp")                                     # <== Set To your app's name
+	set(APP_BUNDLE_IDENTIFIER "com.indigoabstract.VideoEncApp")                # <== Set to your app's bundle identifier
 	set(FRAMEWORK_NAME "FooBar")                                # <== Set to your framework's name
 	set(FRAMEWORK_BUNDLE_IDENTIFIER "com.company.framework")    # <== Set to your framework's bundle identifier (cannot be the same as app bundle identifier)
 	set(TEST_NAME "Tests")                                      # <== Set to your test's name
@@ -209,12 +209,34 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.mm"
 	)
 
-	set(RESOURCES
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/Main.storyboard"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/LaunchScreen.storyboard"
+        set(
+        IMAGES
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default@2x.png # Retina, 640x960
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default-568h@2x.png # Retina 4-inch, 640x1136
+        # See plist.in:
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait~ipad.png # Portrait Non-Retina, 768x1024
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait@2x~ipad.png # Portrait Retina, 1536x2048
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape~ipad.png # Landscape Non-Retina, 1024x768
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape@2x~ipad.png # Landscape Retina, 2048x1536
+        )
+
+        set(
+        ICONS
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~iphone.png # iPhone Retina, 120x120
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~ipad.png # iPad Non-Retina, 76x76
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon@2x~ipad.png # iPad Retina, 152x152
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon.png # iPhone/iPad Retina, 80x80
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon@2x.png # iPhone Retina, 58x58
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon-Small.png # iPad Non-Retina 29x29
+        )
+
+	set(STORYBOARDS
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/storyboards/Main.storyboard"
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/storyboards/LaunchScreen.storyboard"
 	)
 
-	file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/*)
+	file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/app/units/private/npw/video-editor/res/*)
 
 	set_source_files_properties(
 	${res_files}
@@ -222,21 +244,24 @@ else() # Assume iOS
 	MACOSX_PACKAGE_LOCATION Resources
 	)
 
-        set(APP_RESOURCES "${RESOURCES};${res_files}")
+        #set(APP_RESOURCES "${STORYBOARDS};${res_files}")
 
         #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/rectangle.png)
         #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/basic_tex.fsh)
 
 	add_executable(
 		${APP_NAME}
-		MACOSX_BUNDLE
-		${APP_HEADER_FILES}
-		${APP_SOURCE_FILES}
-                ${APP_RESOURCES}
+		#MACOSX_BUNDLE
+                    ${ICONS}
+                    ${IMAGES}
+                    ${APP_HEADER_FILES}
+                    ${APP_SOURCE_FILES}
+                    ${STORYBOARDS}
+		    ${res_files}
 	)
 
 	# To disable bitcode:
-	# set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
+	set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
 
 	# To link a statically linked Framework from the filesystem:
 	# Note: dynamic frameworks require copying to the app bundle. Statically linked are copied into the executable itself.
@@ -303,6 +328,7 @@ else() # Assume iOS
 
 	# Create the app target
 	set_target_properties(${APP_NAME} PROPERTIES
+                                                  MACOSX_BUNDLE YES
 						  XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym"
 						  XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 						  RESOURCE "${RESOURCES}"
@@ -319,6 +345,7 @@ else() # Assume iOS
 						  XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN YES
 						  XCODE_ATTRIBUTE_ARCHS "$(ARCHS_STANDARD)"
 						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "YES"
+                                                  RESOURCE "${IMAGES};${STORYBOARDS};${res_files};${ICONS}"
 	)
 
         set_target_properties(app_plex_main PROPERTIES
