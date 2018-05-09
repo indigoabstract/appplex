@@ -140,6 +140,10 @@ else() # Assume iOS
 	
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 	add_library(app_plex_main STATIC "")
+	set_target_properties(app_plex_main PROPERTIES
+						  XCODE_ATTRIBUTE_ARCHS ${ARCHS_STANDARD}
+						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH YES
+	)
 	
 	# common include directories
 	include_directories(
