@@ -218,12 +218,21 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/LaunchScreen.storyboard"
 	)
 
+	file(GLOB_RECURSE res_files "${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/*")
+
+	set_source_files_properties(
+	${res_files}
+	PROPERTIES
+	MACOSX_PACKAGE_LOCATION Resources
+	)
+
 	add_executable(
 		${APP_NAME}
 		MACOSX_BUNDLE
 		${APP_HEADER_FILES}
 		${APP_SOURCE_FILES}
 		${RESOURCES}
+		${res_files}
 	)
 
 	# To disable bitcode:
