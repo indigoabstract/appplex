@@ -140,10 +140,6 @@ else() # Assume iOS
 	
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 	add_library(app_plex_main STATIC "")
-	set_target_properties(app_plex_main PROPERTIES
-						  XCODE_ATTRIBUTE_ARCHS ${ARCHS_STANDARD}
-						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH YES
-	)
 	
 	# common include directories
 	include_directories(
@@ -218,7 +214,7 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/LaunchScreen.storyboard"
 	)
 
-	file(GLOB_RECURSE res_files "${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/*")
+	file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/*)
 
 	set_source_files_properties(
 	${res_files}
@@ -226,13 +222,17 @@ else() # Assume iOS
 	MACOSX_PACKAGE_LOCATION Resources
 	)
 
+        set(APP_RESOURCES "${RESOURCES};${res_files}")
+
+        #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/rectangle.png)
+        #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/basic_tex.fsh)
+
 	add_executable(
 		${APP_NAME}
 		MACOSX_BUNDLE
 		${APP_HEADER_FILES}
 		${APP_SOURCE_FILES}
-		${RESOURCES}
-		${res_files}
+                ${APP_RESOURCES}
 	)
 
 	# To disable bitcode:
@@ -317,8 +317,13 @@ else() # Assume iOS
 						  XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
 						  XCODE_ATTRIBUTE_ENABLE_TESTABILITY YES
 						  XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN YES
-						  XCODE_ATTRIBUTE_ARCHS ${ARCHS_STANDARD}
-						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH YES
+						  XCODE_ATTRIBUTE_ARCHS "$(ARCHS_STANDARD)"
+						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "YES"
+	)
+
+        set_target_properties(app_plex_main PROPERTIES
+	XCODE_ATTRIBUTE_ARCHS "$(ARCHS_STANDARD)"
+	XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO"
 	)
 
 	# Include framework headers, needed to make "Build" Xcode action work.

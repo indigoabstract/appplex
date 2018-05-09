@@ -54,7 +54,6 @@ class ios_file_impl : public pfm_impl::pfm_file_impl
 public:
 	ios_file_impl(const std::string& ifilename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(ifilename, iroot_dir)
 	{
-		is_external = false;
 	}
 
 	virtual ~ios_file_impl() {}
@@ -69,36 +68,21 @@ public:
 
 			if (file)
 			{
-				if(is_external)
-				{
-                    FILE* f = (FILE*)file;
+                FILE* f = (FILE*)file;
 
-                    fseek(f, 0, SEEK_END );
-                    size = ftell(f);
-				}
-				else
-				{
-					//size = AAsset_getLength64((AAsset*)file);
-				}
-				
+                fseek(f, 0, SEEK_END );
+                size = ftell(f);
 				close();
 			}
 		}
 		else
 		{
-			if(is_external)
-			{
-                FILE* f = (FILE*)file;
-                long crt_pos = ftell(f);
+            FILE* f = (FILE*)file;
+            long crt_pos = ftell(f);
 
-                fseek(f, 0, SEEK_END );
-                size = ftell(f);
-                fseek(f, crt_pos, SEEK_SET );
-			}
-			else
-			{
-				//size = AAsset_getLength64((AAsset*)file);
-			}
+            fseek(f, 0, SEEK_END );
+            size = ftell(f);
+            fseek(f, crt_pos, SEEK_SET );
 		}
 
 		return size;
@@ -121,93 +105,72 @@ public:
 	virtual void* open_impl(std::string iopen_mode)
 	{
 		std::string path = ppath.get_full_path();
-		is_external = false;
 
 		if (iopen_mode[0] == 'w' && path[0] != '/')
 		{
 			return nullptr;
 		}
 
-		if(path[0] == '/')
-		{
-			// external path
-			FILE* file = fopen(path.c_str(), iopen_mode.c_str());
-			is_external = true;
-			mws_print("open_impl: opening external file %s\n", path.c_str());
-//			fseek( file, 0, SEEK_END );
-//			uint64 len = ftell((FILE*)file);
-//			fseek(file, 0, SEEK_SET );
+        std::string path_in_bundle = get_path_in_bundle(path.c_str());
+        
+        if(!path_in_bundle.empty())
+        {
+            FILE* file = fopen(path_in_bundle.c_str(), iopen_mode.c_str());
+            mws_print("open_impl: opening file %s\n", path.c_str());
+            //            fseek( file, 0, SEEK_END );
+            //            uint64 len = ftell((FILE*)file);
+            //            fseek(file, 0, SEEK_SET );
 
-			return file;
-		}
+            return file;
+        }
 
-		//AAsset* asset = AAssetManager_open(asset_manager, path.c_str(), 0);
-		//mws_print("open_impl: opening asset file %s\n", path.c_str());
-
-        return nullptr;//asset;
+        return nullptr;
 	}
 
 	virtual void close_impl()
 	{
-		if(is_external)
-		{
-			fclose((FILE*)file);
-		}
-		else
-		{
-			//AAsset_close((AAsset*)file);
-		}
-		
+        fclose((FILE*)file);
 		file = nullptr;
 	}
 
 	virtual void seek_impl(uint64 ipos, int iseek_pos)
 	{
-		if(is_external)
-		{
-			fseek((FILE*)file, ipos, iseek_pos);
-		}
-		else
-		{
-			//AAsset_seek64((AAsset*)file, ipos, iseek_pos);
-		}
+        fseek((FILE*)file, ipos, iseek_pos);
 	}
 
 	virtual uint64 tell_impl()
 	{
-		if(is_external)
-		{
-			return ftell((FILE*)file);
-		}
-		
-		throw ia_exception("unsupported op");
-
-		return 0;
+        return ftell((FILE*)file);
 	}
 
 	virtual int read_impl(uint8* ibuffer, int isize)
 	{
-		if(is_external)
-		{
-			return fread(ibuffer, 1, isize, (FILE*)file);
-		}
-		
-		return 0;//AAsset_read((AAsset*)file, ibuffer, isize);
+        return (int)fread(ibuffer, 1, isize, (FILE*)file);
 	}
 
 	virtual int write_impl(const uint8* ibuffer, int isize)
 	{
-		if(is_external)
-		{
-			return fwrite(ibuffer, 1, isize, (FILE*)file);
-		}
-		
-		throw ia_exception("unsupported op");
-
-		return 0;
+        return (int)fwrite(ibuffer, 1, isize, (FILE*)file);
 	}
-
-	bool is_external;
+    
+    std::string get_path_in_bundle(std::string i_filename)
+    {
+        auto c_filename = i_filename.c_str();
+        NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
+        // get the main bundle for the app
+        NSBundle* main_bundle = [NSBundle mainBundle];
+        NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
+        
+        if(path)
+        {
+            const char *c_path = [path UTF8String];
+            std::string str_path(c_path);
+            
+            return str_path;
+        }
+        
+        return "";
+    }
 };
 
 
@@ -339,6 +302,7 @@ void ios_main::init()
 	unit_ctrl::inst()->set_gfx_available(true);
 	unit_ctrl::inst()->init_app();
 
+    //auto s = load_res_as_string("rectangle.png");
 	is_started = true;
 }
 

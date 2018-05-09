@@ -712,7 +712,7 @@ pfm_file::io_op::io_op()
 
 bool pfm_file::io_op::open()
 {
-	bool file_opened = open("r+b");
+	bool file_opened = open("rb");
 
 	return file_opened;
 }
