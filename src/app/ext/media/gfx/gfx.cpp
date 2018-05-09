@@ -106,7 +106,7 @@ void gfx::global_init()
    {
       mws_print("gl_ctrl::init: this method must only be called once\n");
       //reload();
-      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
+      //glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
       //throw mws_exception("this method must only be called once");
       return;
    }
@@ -193,8 +193,6 @@ void gfx::global_init()
       tex_info_ht[e.id] = &e;
    }
 
-   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_framebuffer_id);
-
    //int ms = 8;
    //GLuint mTextureFramebuffer = 0;
    //glGenRenderbuffers(1, &mTextureFramebuffer);
@@ -215,6 +213,13 @@ void gfx::global_init()
    gfx_util::init();
    gfx_material::init();
 
+    {
+        int framebuffer_id = -1;
+        
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_id);
+        default_framebuffer_id = framebuffer_id;
+    }
+    
    main_instance = std::shared_ptr<gfx>(new gfx());
    main_instance->init(main_instance);
 }
