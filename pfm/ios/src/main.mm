@@ -14,6 +14,40 @@
 
 std::string writable_path;
 
+std::shared_ptr<std::string> load_res_as_string(std::string ifilename)
+{
+    auto c_filename = ifilename.c_str();
+    NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
+    // get the main bundle for the app
+    NSBundle* main_bundle = [NSBundle mainBundle];
+    NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
+    std::shared_ptr<std::string> text;
+    
+    if(path)
+    {
+        const char *c_path = [path UTF8String];
+        FILE* f = fopen(c_path, "rt");
+        
+        if (f)
+        {
+            // read file size
+            fseek(f, 0, SEEK_END);
+            size_t size = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            
+            auto res = std::make_shared<std::vector<uint8> >(size);
+            const char* res_bytes = (const char*)begin_ptr(res);
+            size_t text_size = fread(begin_ptr(res), 1, size, f);
+            
+            fclose(f);
+            f = nullptr;
+            text = std::make_shared<std::string>(res_bytes, text_size);
+        }
+    }
+    
+    return text;
+}
+
 
 class ios_file_impl : public pfm_impl::pfm_file_impl
 {

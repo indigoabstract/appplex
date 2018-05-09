@@ -210,7 +210,7 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.m"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.mm"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.m"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.cpp"
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.mm"
 	)
 
 	set(RESOURCES
