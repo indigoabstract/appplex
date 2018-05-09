@@ -304,6 +304,8 @@ else() # Assume iOS
 						  XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
 						  XCODE_ATTRIBUTE_ENABLE_TESTABILITY YES
 						  XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN YES
+						  XCODE_ATTRIBUTE_ARCHS ${ARCHS_STANDARD}
+						  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH YES
 	)
 
 	# Include framework headers, needed to make "Build" Xcode action work.
