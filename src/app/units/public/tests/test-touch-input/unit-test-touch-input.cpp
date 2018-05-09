@@ -170,9 +170,9 @@ namespace unit_test_touch_input_ns
          {
             shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
             float zoom_factor;
-            bool dragging_detected = dragging_dt.detect_helper(ts->crt_state.te);
-            bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts->crt_state.te, zoom_factor);
-            auto double_tap_gs = double_tap_dt.detect(ts->crt_state.te);
+            bool dragging_detected = dragging_dt.detect_helper(ts);
+            bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts, zoom_factor);
+            auto double_tap_gs = double_tap_dt.detect(ts);
 
             if (double_tap_gs == GS_ACTION)
             {
@@ -211,16 +211,15 @@ namespace unit_test_touch_input_ns
                mws_print("pinch zoom [%f]\n", zoom_factor);
             }
 
-            switch (ts->get_type())
+            switch (ts->type)
             {
-            case touch_sym_evt::TS_PRESSED:
+            case pointer_evt::touch_began:
                last_click = glm::vec2(ts->points[0].x, ts->points[0].y);
                break;
 
-            case touch_sym_evt::TS_MOUSE_WHEEL:
+            case pointer_evt::mouse_wheel:
             {
-               shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
-               float scale = obj_scaling + mw->wheel_delta * 0.1f;
+               float scale = obj_scaling + ts->mouse_wheel_delta * 0.1f;
                float inf_lim = 0.25f;
                float sup_lim = 5.f;
 

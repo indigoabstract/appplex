@@ -204,7 +204,7 @@ public:
       tex_atlas = texture_atlas_new(size, size, 1);
       ext_tex_atlas_ref = nullptr;
       reload_atlas = false;
-      mws_print("font texture atlas size: [%d].", size);
+      mws_print("font texture atlas size: [%d]\n", size);
    }
 
    uint64 get_key(shared_ptr<mws_font> ifont)

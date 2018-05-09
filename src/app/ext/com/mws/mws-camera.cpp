@@ -67,7 +67,7 @@ namespace ns_mws_camera
 
 		void on_update_end(shared_ptr<draw_context> idc)
 		{
-			tx_vxo->draw_out_of_sync(idc->get_cam());
+			tx_vxo->draw_in_sync(idc->get_cam());
 			fonts.clear();
 			tx.clear();
 		}
