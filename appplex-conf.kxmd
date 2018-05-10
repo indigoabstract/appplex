@@ -47,7 +47,7 @@ units
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
 	test-trail[ platf[ windows, android ], ],
 	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
-	test-touch-input[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, vector_fonts, zlib ], platf[ windows, android, ios ], ],
+	test-touch-input[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	test-gl-uniform-blocks[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	test-res-ld[ uses[ gfx, png, zlib ], platf[ all ], ],
 
