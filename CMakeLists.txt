@@ -190,8 +190,8 @@ else() # Assume iOS
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
 	set(MACOSX_BUNDLE_ICON_FILE "")
 	set(MACOSX_BUNDLE_LONG_VERSION_STRING "1.0")
-	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0")
-	set(MACOSX_BUNDLE_BUNDLE_VERSION "1.0")
+	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.3")
+	set(MACOSX_BUNDLE_BUNDLE_VERSION "4")
 	set(MACOSX_BUNDLE_COPYRIGHT "Copyright YOU")
 	set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
 
@@ -352,6 +352,7 @@ else() # Assume iOS
 	XCODE_ATTRIBUTE_ARCHS "$(ARCHS_STANDARD)"
 	XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO"
 	)
+        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
 
 	# Include framework headers, needed to make "Build" Xcode action work.
 	# "Archive" works fine just relying on default search paths as it has different
