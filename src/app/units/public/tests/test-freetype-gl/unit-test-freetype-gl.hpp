@@ -14,7 +14,6 @@ class unit_test_freetype_gl : public unit
 public:
 	static shared_ptr<unit_test_freetype_gl> nwi();
 
-	void init_mws() override;
 	void load() override;
 	bool update() override;
 

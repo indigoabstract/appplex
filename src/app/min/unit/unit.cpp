@@ -955,7 +955,7 @@ shared_ptr<ia_sender> unit::sender_inst()
 
 void unit::run_step()
 {
-#if defined MOD_FONTS
+#if defined MOD_VECTOR_FONTS
 
    font_db::inst()->on_frame_start();
 

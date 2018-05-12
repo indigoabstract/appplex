@@ -35,7 +35,7 @@ units
 	test-kube-sphere[ ],
 	test-grid[ ],
 	test-dyn-geometry[ ],
-	test-freetype-gl[ ],
+	test-freetype-gl[ uses[ gfx, fonts, freetype, freetype_gl, mws, vector-fonts ] ],
 	test-normal-mapping[ uses[ gfx ], platf[ windows ], ],
 	test-fmod[ uses[ boost, gfx, fmod ], ],
 	test-mws[ ],
@@ -48,7 +48,7 @@ units
 	test-trail[ platf[ windows, android ], ],
 	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
 	test-touch-input[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
-	test-gl-uniform-blocks[ uses[ gfx], platf[ windows, android, ios ], ],
+	test-gl-uniform-blocks[ uses[ gfx ], platf[ windows, android, ios ], ],
 	test-res-ld[ uses[ gfx, png, zlib ], platf[ all ], ],
 
 	@@[ private units ],

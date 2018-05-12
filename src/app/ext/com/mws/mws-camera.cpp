@@ -101,8 +101,8 @@ class mws_camera_impl
 public:
 	mws_camera_impl()
 	{
-		font = mws_font::nwi(24);
-		font->set_color(gfx_color::colors::yellow);
+		font = mws_font::nwi(18);
+		font->set_color(gfx_color::colors::cyan);
 	}
 
 	shared_ptr<mws_font> font;
