@@ -225,6 +225,15 @@ else() # Assume iOS
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~iphone.png # iPhone Retina, 120x120
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~ipad.png # iPad Non-Retina, 76x76
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon@2x~ipad.png # iPad Retina, 152x152
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-87.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-80.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-60.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-58.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-40.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-180.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-121.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-120.png
+        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-1024.png
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon.png # iPhone/iPad Retina, 80x80
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon@2x.png # iPhone Retina, 58x58
