@@ -135,7 +135,12 @@ public:
          version = trim(version);
       }
 
-      *ishader_src = version + "\n" + def_platform + "\n" + *ishader_src;
+      //*ishader_src = version + "\n" + def_platform + "\n" + *ishader_src;
+
+      if (!version.empty())
+      {
+         *ishader_src = version + "\n" + *ishader_src;
+      }
 
       return ishader_src;
    }
@@ -225,7 +230,7 @@ public:
          mws_catch(ia_exception e)
       {
          is_validated = false;
-         mws_print("%s\n", e.what());
+         mws_signal_error(e.what());
       }
    }
 

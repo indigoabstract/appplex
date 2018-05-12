@@ -13,7 +13,8 @@ class unit_test_gl_uniform_blocks : public unit
 public:
    static mws_sp<unit_test_gl_uniform_blocks> nwi();
 
-   virtual void init_mws() override;
+   virtual void load() override;
+   virtual void update_view(int update_count) override;
 
 private:
    unit_test_gl_uniform_blocks();

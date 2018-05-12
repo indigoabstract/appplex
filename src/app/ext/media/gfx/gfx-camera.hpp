@@ -173,6 +173,7 @@ public:
    void draw_sphere(glm::vec3 position, float radius, glm::quat orientation, const glm::vec4& color, float precision, float thickness);
    void draw_text_2d(glm::vec3 position, std::string text, const glm::vec4& color, glm::vec2 size, std::string fontName, glm::vec2 scale);
    void draw_mesh(shared_ptr<gfx_vxo> imesh);
+   virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) override;
    virtual void update_camera_state();
 
    // if set, use this material for rendering, instead of each object's material
@@ -200,7 +201,6 @@ protected:
    friend class gfx_scene;
    friend class gfx_camera_impl;
    gfx_camera(std::shared_ptr<gfx> i_gi = nullptr);
-   virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) override;
    virtual void load(shared_ptr<gfx_camera> inst);
    virtual void update_camera_state_impl();
    shared_ptr<draw_context> draw_ctx;

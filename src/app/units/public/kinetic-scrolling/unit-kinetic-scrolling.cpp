@@ -310,14 +310,6 @@ void unit_kinetic_scrolling::init_mws()
 				case touch_sym_evt::TS_RELEASED:
 					kscrollinst.mouseReleased(x, y);
 					break;
-
-				case touch_sym_evt::TS_BACKWARD_SWIPE:
-					if (!kscrollinst.isAtStart())
-					{
-						ts->process();
-					}
-
-					break;
 				}
 			}
 

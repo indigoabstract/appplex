@@ -894,7 +894,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
       if (sampleBufferCount > 0)
       {
-         mws_print("MSAA samples per pixel count: {}", sampleCount);
+         mws_print("MSAA samples per pixel count: [%d]\n", sampleCount);
       }
    }
 
@@ -907,7 +907,7 @@ bool msvc_main::create_open_gl_glew_ctx()
 
    if (GL_VERSION_4_2)
    {
-      mws_print("GLEW_VERSION_4_2 supported");
+      mws_print("GLEW_VERSION_4_2 supported\n");
    }
 
    //if (glewIsSupported("GL_VERSION_4_2"))

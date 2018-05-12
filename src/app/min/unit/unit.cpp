@@ -664,7 +664,7 @@ bool unit::update()
 
    int updateCount = 1;//update_ctrl->update();
 
-   for (int k = 0; k < updateCount; k++)
+   //for (int k = 0; k < updateCount; k++)
    {
       touch_ctrl->update();
       key_ctrl->update();
@@ -706,6 +706,8 @@ bool unit::update()
 
 void unit::on_resize()
 {
+#ifdef MOD_GFX
+
    if (is_gfx_unit() && gfx::i())
    {
       shared_ptr<gfx_state> gfx_st = gfx::i()->get_gfx_state();
@@ -725,6 +727,8 @@ void unit::on_resize()
          mws_root->on_resize();
       }
    }
+
+#endif
 }
 
 void unit::on_pause()
@@ -737,21 +741,15 @@ void unit::on_resume()
 
 void unit::receive(shared_ptr<iadp> idp)
 {
+#ifdef MOD_MWS
+
    send(mws_root, idp);
+
+#endif
 
    if (!idp->is_processed())
    {
-      if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
-      {
-         shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
-
-         //if(ts->get_type() == touch_sym_evt::TS_BACKWARD_SWIPE)
-         //{
-         //	back();
-         //	ts->process();
-         //}
-      }
-      else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+      if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
       {
          shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
 
