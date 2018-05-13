@@ -207,13 +207,14 @@ namespace unit_test_touch_input_ns
                }
 
                set_obj_scaling(scale);
-               mws_print("pinch zoom [%f]\n", zoom_factor);
+               mws_print("pinch zoom [%f]\n", pinch_zoom_dt.zoom_factor);
             }
 
             switch (ts->type)
             {
             case pointer_evt::touch_began:
                last_click = glm::vec2(ts->points[0].x, ts->points[0].y);
+               click_slider.start(click_anim_duration_ms);
                break;
 
             case pointer_evt::mouse_wheel:
@@ -371,6 +372,29 @@ namespace unit_test_touch_input_ns
             // increment current index first then get the next index
             // pbo_index is used to read pixels from a framebuffer to a PBO
             pbo_index = (pbo_index + 1) % PBO_COUNT;
+
+            if (click_slider.is_enabled())
+            {
+               if (click_slider.get_loop_count() < 1)
+               {
+                  float sv = click_slider.get_value();
+                  float v = sv;
+                  float scale_factor = 85.f;
+
+                  v = 1.f - (1.f - v) * (1.f - v);
+                  glm::vec2 new_scale = init_scale_factor + glm::vec2(v) * scale_factor;
+
+                  //mws_print("slider: %f %f ns %f %f\n", sv, v, new_scale.x, new_scale.y);
+                  obj_vect.back()->set_scale(new_scale);
+
+                  click_slider.update();
+               }
+               else
+               {
+                  click_slider.stop();
+                  obj_vect.back()->set_scale(init_scale_factor);
+               }
+            }
          }
 
          frame_idx++;
@@ -405,6 +429,8 @@ namespace unit_test_touch_input_ns
             mws_report_gfx_errs();
             if (src)
             {
+               auto tmp_last_click = last_click;
+
                if (g->projection_type == g->e_perspective_proj)
                {
                   float screen_aspect_ratio = gfx::i()->rt.get_screen_width() / float(gfx::i()->rt.get_screen_height());
@@ -471,6 +497,12 @@ namespace unit_test_touch_input_ns
                      obj_index = obj_vect.size() - 1;
                   }
                }
+               else
+               {
+                  obj_vect.back()->set_translation(tmp_last_click);
+               }
+
+               init_scale_factor = obj_vect.back()->get_scale();
             }
             else
             {
@@ -500,6 +532,7 @@ namespace unit_test_touch_input_ns
       std::vector<std::shared_ptr<gfx_quad_2d> > obj_vect;
       float obj_scaling;
       glm::vec2 last_click;
+      glm::vec2 init_scale_factor;
       int map_click_x;
       int map_click_y;
       int obj_index;
@@ -522,6 +555,8 @@ namespace unit_test_touch_input_ns
       pinch_zoom_detector pinch_zoom_dt;
       double_tap_detector double_tap_dt;
       dragging_detector dragging_dt;
+      ping_pong_time_slider<float> click_slider;
+      float click_anim_duration_ms = 0.15f;
    };
 }
 

@@ -174,23 +174,35 @@ shared_ptr<unit> mws::get_unit()
 
 void mws::receive(shared_ptr<iadp> idp)
 {
-   for (auto& c : children)
+   if (receive_handler)
    {
-      if (c->get_type() == gfx_obj::e_mws)
+      receive_handler(get_instance(), idp);
+   }
+   else
+   {
+      for (auto& c : children)
       {
-         auto w = mws_dynamic_pointer_cast<mws>(c);
-
-         if (w && w->visible)
+         if (c->get_type() == gfx_obj::e_mws)
          {
-            send(w, idp);
+            auto w = mws_dynamic_pointer_cast<mws>(c);
 
-            if (idp->is_processed())
+            if (w && w->visible)
             {
-               break;
+               send(w, idp);
+
+               if (idp->is_processed())
+               {
+                  break;
+               }
             }
          }
       }
    }
+}
+
+void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> i_receive_handler)
+{
+   receive_handler = i_receive_handler;
 }
 
 void mws::update_state() {}
@@ -368,7 +380,7 @@ void mws_page_tab::init_subobj()
       page_stack.push_back(current_page);
    }
 
-   static auto z_sort = [](mws_sp<mws> a, mws_sp<mws> b)
+   auto z_sort = [](mws_sp<mws> a, mws_sp<mws> b)
    {
       return (a->get_z() > b->get_z());
    };
@@ -443,48 +455,55 @@ bool mws_page_tab::is_empty()
 
 void mws_page_tab::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_processed())
+   if (receive_handler)
    {
-      return;
+      receive_handler(get_instance(), idp);
    }
-
-   shared_ptr<ia_sender> source = idp->source();
-   shared_ptr<ms_linear_transition> mst = ss.get_transition();
-
-   if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
+   else
    {
-      current_transition = static_pointer_cast<mws_page_transition>(idp);
-      shared_ptr<mws_page> targetPage = current_transition->get_target_page();
-
-      switch (current_transition->get_transition_type())
+      if (idp->is_processed())
       {
-      case mws_page_transition::REPLACE_CURRENT_PAGE:
-         //current_page->on_visibility_changed(false);
-         //current_page = current_transition->get_target_page();
-         //page_stack.back() = current_page;
-         break;
-
-      case mws_page_transition::PUSH_CURRENT_PAGE:
-         current_page->on_visibility_changed(false);
-         current_page = current_transition->get_target_page();
-         page_stack.push_back(current_page);
-         break;
-
-      case mws_page_transition::POP_CURRENT_PAGE:
-         current_page->on_visibility_changed(false);
-         page_stack.erase(page_stack.end() - 1);
-         current_page = page_stack.back();
-         break;
-
-      case mws_page_transition::CLEAR_PAGE_STACK:
-         break;
+         return;
       }
 
-      current_page->on_visibility_changed(true);
-   }
-   else if (!is_empty())
-   {
-      send(current_page, idp);
+      shared_ptr<ia_sender> source = idp->source();
+      shared_ptr<ms_linear_transition> mst = ss.get_transition();
+
+      if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
+      {
+         current_transition = static_pointer_cast<mws_page_transition>(idp);
+         shared_ptr<mws_page> targetPage = current_transition->get_target_page();
+
+         switch (current_transition->get_transition_type())
+         {
+         case mws_page_transition::REPLACE_CURRENT_PAGE:
+            //current_page->on_visibility_changed(false);
+            //current_page = current_transition->get_target_page();
+            //page_stack.back() = current_page;
+            break;
+
+         case mws_page_transition::PUSH_CURRENT_PAGE:
+            current_page->on_visibility_changed(false);
+            current_page = current_transition->get_target_page();
+            page_stack.push_back(current_page);
+            break;
+
+         case mws_page_transition::POP_CURRENT_PAGE:
+            current_page->on_visibility_changed(false);
+            page_stack.erase(page_stack.end() - 1);
+            current_page = page_stack.back();
+            break;
+
+         case mws_page_transition::CLEAR_PAGE_STACK:
+            break;
+         }
+
+         current_page->on_visibility_changed(true);
+      }
+      else if (!is_empty())
+      {
+         send(current_page, idp);
+      }
    }
 }
 
@@ -915,8 +934,15 @@ void mws_page::on_hide_transition(const shared_ptr<linear_transition> itransitio
 
 void mws_page::receive(shared_ptr<iadp> idp)
 {
-   update_input_sub_mws(idp);
-   //update_input_std_behaviour(idp);
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else
+   {
+      update_input_sub_mws(idp);
+      //update_input_std_behaviour(idp);
+   }
 }
 
 void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
@@ -929,6 +955,15 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
    if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
+      {
+         auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
+         auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());
+
+         return (pos_0.z > pos_1.z);
+      };
+
+      std::sort(children.begin(), children.end(), z_sort);
 
       for (auto& c : children)
       {

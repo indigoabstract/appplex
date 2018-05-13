@@ -104,7 +104,11 @@ void mws_img_btn::set_img_name(std::string i_img_name)
 
 void mws_img_btn::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
@@ -188,7 +192,11 @@ void mws_button::init(mws_rect i_rect, int iColor, string iText)
 
 void mws_button::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
@@ -289,7 +297,11 @@ void mws_slider::set_rect(const mws_rect& i_rect)
 
 void mws_slider::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
@@ -436,7 +448,11 @@ void mws_list::init() {}
 
 void mws_list::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(MWS_EVT_MODEL_UPDATE))
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else if (idp->is_type(MWS_EVT_MODEL_UPDATE))
    {
       float listheight = 0;
 
@@ -603,7 +619,11 @@ void mws_tree::init()
 
 void mws_tree::receive(shared_ptr<iadp> idp)
 {
-   if (idp->is_type(MWS_EVT_MODEL_UPDATE))
+   if (receive_handler)
+   {
+      receive_handler(get_instance(), idp);
+   }
+   else if (idp->is_type(MWS_EVT_MODEL_UPDATE))
    {
       float h = 25.f + model->get_length() * 20.f;
       float w = 0;

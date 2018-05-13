@@ -29,6 +29,7 @@ public:
 
    bool is_enabled() const;
    T get_value() const;
+   int get_loop_count() const;
    void start(T i_slide_time = 0.f);
    void start_int(uint32 i_slide_time);
    void stop();
@@ -42,6 +43,7 @@ private:
    uint32 start_time;
    uint32 slide_time;
    T slider;
+   int loop_count;
 };
 
 template <typename T> basic_time_slider<T>::basic_time_slider(T i_slide_time)
@@ -50,6 +52,7 @@ template <typename T> basic_time_slider<T>::basic_time_slider(T i_slide_time)
    enabled = false;
    start_time = 0;
    slider = 0.f;
+   loop_count = 0;
 }
 
 template <typename T> bool basic_time_slider<T>::is_enabled() const
@@ -60,6 +63,11 @@ template <typename T> bool basic_time_slider<T>::is_enabled() const
 template <typename T> T basic_time_slider<T>::get_value() const
 {
    return slider;
+}
+
+template <typename T> int basic_time_slider<T>::get_loop_count() const
+{
+   return loop_count;
 }
 
 template <typename T> void basic_time_slider<T>::start(T i_slide_time)
@@ -84,11 +92,13 @@ template <typename T> void basic_time_slider<T>::start_int(uint32 i_slide_time)
    enabled = true;
    start_time = pfm::time::get_time_millis();
    slider = 0.f;
+   loop_count = 0;
 }
 
 template <typename T> void basic_time_slider<T>::stop()
 {
    enabled = false;
+   slider = 0.f;
 }
 
 template <typename T> void basic_time_slider<T>::update()
@@ -104,6 +114,7 @@ template <typename T> void basic_time_slider<T>::update()
    if (start_delta < slide_time)
    {
       slider = T(start_delta) / slide_time;
+      loop_count++;
    }
    else
    {
@@ -131,6 +142,7 @@ public:
 
    bool is_enabled() const;
    T get_value() const;
+   int get_loop_count() const;
    void start(T i_slide_time = 0.f);
    void start_int(uint32 i_slide_time);
    void stop();
@@ -146,6 +158,7 @@ private:
    uint32 last_start_delta;
    uint32 slide_time;
    T slider;
+   int loop_count;
 };
 
 template <typename T> ping_pong_time_slider<T>::ping_pong_time_slider(T i_slide_time)
@@ -155,6 +168,7 @@ template <typename T> ping_pong_time_slider<T>::ping_pong_time_slider(T i_slide_
    forward = true;
    start_time = 0;
    slider = 0.f;
+   loop_count = 0;
 }
 
 template <typename T> bool ping_pong_time_slider<T>::is_enabled() const
@@ -165,6 +179,11 @@ template <typename T> bool ping_pong_time_slider<T>::is_enabled() const
 template <typename T> T ping_pong_time_slider<T>::get_value() const
 {
    return slider;
+}
+
+template <typename T> int ping_pong_time_slider<T>::get_loop_count() const
+{
+   return loop_count;
 }
 
 template <typename T> void ping_pong_time_slider<T>::start(T i_slide_time)
@@ -190,11 +209,13 @@ template <typename T> void ping_pong_time_slider<T>::start_int(uint32 i_slide_ti
    start_time = pfm::time::get_time_millis();
    last_start_delta = 0;
    slider = 0.f;
+   loop_count = 0;
 }
 
 template <typename T> void ping_pong_time_slider<T>::stop()
 {
    enabled = false;
+   slider = 0.f;
 }
 
 template <typename T> void ping_pong_time_slider<T>::update()
@@ -211,6 +232,11 @@ template <typename T> void ping_pong_time_slider<T>::update()
    {
       // reverse slider direction
       forward = !forward;
+
+      if (forward)
+      {
+         loop_count++;
+      }
    }
 
    if (forward)

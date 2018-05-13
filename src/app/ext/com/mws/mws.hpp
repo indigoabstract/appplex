@@ -103,6 +103,7 @@ public:
    virtual shared_ptr<unit> get_unit();
 
    virtual void receive(shared_ptr<iadp> idp);
+   virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> i_receive_handler);
    virtual void update_state();
    virtual void update_view(shared_ptr<mws_camera> g);
    mws_rect get_pos();
@@ -116,6 +117,7 @@ protected:
    mws_rect mws_r;
    weak_ptr<mws_page_tab> mwsroot;
    weak_ptr<mws_camera> mws_cam;
+   std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> receive_handler;
 
 private:
    virtual shared_ptr<ia_sender> sender_inst();
