@@ -169,9 +169,8 @@ namespace unit_test_touch_input_ns
          if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
             shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
-            float zoom_factor;
             bool dragging_detected = dragging_dt.detect_helper(ts);
-            bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts, zoom_factor);
+            bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts);
             auto double_tap_gs = double_tap_dt.detect(ts);
 
             if (double_tap_gs == GS_ACTION)
@@ -194,7 +193,7 @@ namespace unit_test_touch_input_ns
 
             if (pinch_zoom_detected)
             {
-               float scale = obj_scaling + zoom_factor * 0.005f;
+               float scale = obj_scaling + pinch_zoom_dt.zoom_factor * 0.005f;
                float inf_lim = 0.25f;
                float sup_lim = 5.f;
 

@@ -81,16 +81,18 @@ units
 
 mod
 [
-	3d-engine [ gfx, obj-loader, res-loader ],
-	bitmap-fonts[ png ],
-	gfx[ opengl, glm ],
-	fonts[ vector-fonts, bitmap-fonts ],
-	freetype-gl[ freetype ],
-	mws [ gfx, fonts ],
-	obj-loader [ gfx ],
-	png [ zlib ],
-	res-loader [ gfx, png ],
-	vector-fonts[ freetype-gl ],
+	3d-engine [ req[ gfx, obj-loader, res-loader ] ],
+	bitmap-fonts[ req[ png ] ],
+	gfx[ pths[ "src/app/ext/media/gfx" ], req[ opengl, glm ], ],
+	glm[ pths[ "src/lib/std/inc/glm/*" ] ],
+	fonts[ req[ vector-fonts, bitmap-fonts ] ],
+	freetype-gl[ req[ freetype ] ],
+	mws [ req[ gfx, fonts ] ],
+	obj-loader [ req[ gfx ] ],
+	opengl [ pths[ "src/app/min/pfm-gl.h", "src/lib/std/inc/GL" ], req[ lib-opengl ] ],
+	png [ req[ zlib ] ],
+	res-loader [ req[ gfx, png ] ],
+	vector-fonts[ req[ freetype-gl ] ],
 ],
 
 paths

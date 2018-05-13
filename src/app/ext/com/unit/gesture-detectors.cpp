@@ -234,7 +234,7 @@ pinch_zoom_detector::pinch_zoom_detector()
    start_event = dummy_event;
 }
 
-bool pinch_zoom_detector::detect_helper(std::shared_ptr<pointer_evt> evt, float& zoom_factor)
+bool pinch_zoom_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
 {
    bool gesture_detected = false;
    auto pinch_state = detect(evt);

@@ -54,7 +54,7 @@ class gfx_transform
    //};
 
 public:
-   gfx_transform() : position(this), orientation(this), scaling(this), transform_mx(this) {}
+   gfx_transform();
 
    glm::vec3 get_forward_dir();
    glm::vec3 get_up_dir();

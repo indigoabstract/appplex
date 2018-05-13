@@ -14,6 +14,11 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 
+gfx_transform::gfx_transform() : position(this), orientation(this), scaling(this), transform_mx(this)
+{
+   scaling = glm::vec3(1.f);
+}
+
 glm::vec3 gfx_transform::get_forward_dir()
 {
    return orientation() * glm::vec3(0, 0, -1.f);

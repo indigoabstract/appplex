@@ -91,7 +91,7 @@ class pinch_zoom_detector
 {
 public:
    pinch_zoom_detector();
-   bool detect_helper(std::shared_ptr<pointer_evt> evt, float& zoom_factor);
+   bool detect_helper(std::shared_ptr<pointer_evt> evt);
    gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
    gesture_state reset();
 
