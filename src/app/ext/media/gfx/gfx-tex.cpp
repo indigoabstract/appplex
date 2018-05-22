@@ -567,12 +567,22 @@ gfx_tex_cube_map::~gfx_tex_cube_map()
 
 gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
+   {
+      gfx_tex_params t_prm;
+
+      t_prm.wrap_r = gfx_tex_params::e_twm_clamp_to_edge;
+      t_prm.wrap_s = gfx_tex_params::e_twm_clamp_to_edge;
+      t_prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
+      set_params(&t_prm);
+   }
+
    uni_tex_type = TEX_CUBE_MAP;
    set_texture_name(itex_name);
    gl_tex_target = GL_TEXTURE_CUBE_MAP;
    texture_gl_id = gen_texture_gl_id();
    glActiveTexture(GL_TEXTURE0);
    glBindTexture(gl_tex_target, texture_gl_id);
+    mws_report_gfx_errs();
 
    std::string ends[] = { "posx", "negx", "posy", "negy", "posz", "negz" };
    bool is_init = false;
@@ -597,17 +607,19 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
          is_init = true;
          init_dimensions(rid->width, rid->height);
          mws_tex_img_2d(GL_TEXTURE_CUBE_MAP, mipmap_count, prm.internal_format, width, height, 0, prm.format, prm.type, nullptr);
+          mws_report_gfx_errs();
       }
 
       glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + k, 0, 0, 0, width, height, prm.format, prm.type, rid->data);
+       mws_report_gfx_errs();
    }
 
    mws_report_gfx_errs();
 
    if (mipmaps_supported(prm.internal_format))
    {
-      glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
+      glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
    }
    else
    {
@@ -617,9 +629,9 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
 
    //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, prm.gl_wrap_s());
+   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, prm.gl_wrap_t());
+   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, prm.gl_wrap_r());
    if (prm.anisotropy_enabled())glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, prm.max_anisotropy);
    if (prm.gen_mipmaps && mipmaps_supported(prm.internal_format))glGenerateMipmap(gl_tex_target);
 

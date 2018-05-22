@@ -1250,6 +1250,11 @@ shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 }
 
 
+void trx(const char* i_msg)
+{
+   pfm::get_pfm_main_inst()->write_text_nl(i_msg);
+}
+
 void trx(std::string msg)
 {
    pfm::get_pfm_main_inst()->write_text_nl(msg.c_str());

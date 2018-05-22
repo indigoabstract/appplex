@@ -27,7 +27,7 @@ units
 	@@[ tests ],
 
 	test[ ],
-	test-ffmpeg[ uses[ gfx, ffmpeg ], enabled[ true ], ],
+	test-ffmpeg[ uses[ gfx, ffmpeg, fonts, freetype, freetype_gl, mws, png, vector-fonts, zlib ], enabled[ true ], ],
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
 	test-gl[ uses[ gfx ], platf[ all ], ],
@@ -64,7 +64,7 @@ units
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
 	break-reminder[ uses[ gfx, notifications, kxmd, snd ], platf[ windows, android ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
-	tangled-memories[ uses[ gfx ] ],
+	tangled-memories[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 
 	@@[ npw ],
@@ -72,7 +72,7 @@ units
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
-	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
+	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib, ffmpeg, unit-test-ffmpeg ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
 

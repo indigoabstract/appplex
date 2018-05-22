@@ -289,7 +289,7 @@ namespace test_video_recording
       shared_ptr<gfx_quad_2d> rt_uv_quad;
       shared_ptr<venc_ffmpeg> venc;
       std::string video_path;
-      video_params_ffmpeg video_params;
+      mws_video_params video_params;
 
       int frame_idx;
       float video_scale;

@@ -27,10 +27,9 @@ namespace test_ffmpeg
 {
    shared_ptr<vdec_ffmpeg> vdec;
    shared_ptr<venc_ffmpeg> venc;
-   shared_ptr<vdec_ffmpeg_listener> vdec_listener;
+   shared_ptr<mws_vdec_listener> vdec_listener;
    shared_ptr<gfx_quad_2d> q2d_tex;
 	shared_ptr<gfx_quad_2d> q2d_rt_tex;
-	shared_ptr<gfx_shader> texture_display;
 }
 
 using namespace test_ffmpeg;
@@ -62,34 +61,32 @@ void unit_test_ffmpeg::load()
 	gfx_quad_2d& q_tex = *q2d_tex;
 	gfx_quad_2d& q_rt_tex = *q2d_rt_tex;
 
-	texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
-
-	gfx::i()->shader.set_current_program(texture_display);
-
 	q_tex[MP_CULL_BACK] = false;
 	q_tex[MP_CULL_FRONT] = false;
 	q_tex[MP_DEPTH_TEST] = false;
-	q_tex.set_dimensions(2, 2);
+	q_tex.set_dimensions(1, 1);
 	q_tex[MP_SHADER_NAME] = "basic-tex-shader";
+   q2d_tex->set_translation(50.f, 50.f);
 
 	q_rt_tex[MP_CULL_BACK] = false;
 	q_rt_tex[MP_CULL_FRONT] = false;
 	q_rt_tex[MP_DEPTH_TEST] = false;
-	q_rt_tex.set_dimensions(2, 2);
+	q_rt_tex.set_dimensions(1, 1);
 	q_rt_tex[MP_SHADER_NAME] = "basic-tex-shader";
 
    {
-      class vdec_ffmpeg_listener_impl : public vdec_ffmpeg_listener
+      class vdec_ffmpeg_listener_impl : public mws_vdec_listener
       {
       public:
-         virtual void on_decoding_started(std::shared_ptr<video_params_ffmpeg> i_params) override
+         virtual void on_decoding_started(std::shared_ptr<mws_video_params> i_params) override
          {
-            venc->start_encoding("test-vid.mp4", *i_params);
+            venc->set_video_path("test-vid.mp4");
+            venc->start_encoding(*i_params);
          }
 
-         virtual void on_frame_decoded(AVFrame* i_frame) override
+         virtual void on_frame_decoded(void* i_frame) override
          {
-            venc->encode_frame(i_frame);
+            venc->encode_frame((AVFrame*)i_frame);
          }
 
          //virtual void on_decoding_stopped() {}
@@ -102,7 +99,7 @@ void unit_test_ffmpeg::load()
       };
 
       venc = std::make_shared<venc_ffmpeg>();
-      vdec_listener = std::make_shared<vdec_ffmpeg_listener_impl>();
+      vdec_listener = std::make_shared<mws_vdec_listener>();
    }
    {
       shared_ptr<pfm_file> raf = pfm_file::get_inst("video.mp4");
@@ -111,8 +108,9 @@ void unit_test_ffmpeg::load()
       vdec = shared_ptr<vdec_ffmpeg>(new vdec_ffmpeg());
       // get notified when a frame is ready and then encode it
       //vdec->set_listener(vdec_listener);
-      vdec->start_decoding(fpath.c_str());
-      vdec->update(mws_cam);
+      vdec->set_video_path(fpath);
+      vdec->start_decoding();
+      vdec->update();
 
       int fw = vdec->get_media_info()->get_width();
       int tw = vdec->get_media_info()->get_total_width();
@@ -127,50 +125,34 @@ void unit_test_ffmpeg::load()
    }
 }
 
-bool unit_test_ffmpeg::update()
+void unit_test_ffmpeg::update_view(int update_count)
 {
-	touch_ctrl->update();
-	key_ctrl->update();
-
-	frame_count++;
-	uint32 now = pfm::time::get_time_millis();
-	uint32 dt = now - last_frame_time;
-
-	if(dt >= 1000)
-	{
-		fps = frame_count * 1000.f / dt;
-		last_frame_time = now;
-		frame_count = 0;
-	}
-
-	shared_ptr<media_info> mi = vdec->get_media_info();
+	shared_ptr<mws_media_info> mi = vdec->get_media_info();
 	shared_ptr<gfx_tex> tex = mi->get_current_frame();
 	float p = float(mi->get_current_frame_index()) / mi->get_frame_count();
 	float tw = (float)mi->get_width();
+   float th = (float)tex->get_height();
    auto fps_d = mi->get_frame_rate();
 
 	(*q2d_tex)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
-	q2d_tex->position = glm::vec3(50.f + tw * 0.5, 50.f + tex->get_height() * 0.5, 0.f);
-	q2d_tex->scaling = glm::vec3(tw * 0.5, tex->get_height() * 0.5, 1.f);
+   q2d_tex->set_scale(tw, th);
 
 	(*q2d_rt_tex)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
-	q2d_rt_tex->position = glm::vec3(50.f + p * tw * 0.5, 20 * 0.5 + tex->get_height() + 100, 0.f);
-	q2d_rt_tex->scaling = glm::vec3(p * tw * 0.5, 20, 1.f);
+   q2d_rt_tex->set_translation(50.f, 20 + th + 100);
+   q2d_rt_tex->set_scale(p * tw, 20);
 
-	mws_cam->draw_mesh(q2d_tex);
-	mws_cam->draw_mesh(q2d_rt_tex);
+   q2d_tex->draw_out_of_sync(mws_cam);
+   q2d_rt_tex->draw_out_of_sync(mws_cam);
 
 	vdec->update(mws_cam);
 
 	if (vdec->get_state() == st_stopped)
 	{
 		vdec->replay();
-		vdec->update(mws_cam);
+		vdec->update();
 	}
 
 	mws_report_gfx_errs();
-
-	return unit::update();
 }
 
 void unit_test_ffmpeg::receive(shared_ptr<iadp> idp)

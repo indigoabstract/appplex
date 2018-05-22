@@ -232,7 +232,6 @@ private:
 class mws_page : public mws
 {
 public:
-   static const shared_ptr<mws_page> PAGE_NONE;
    static const shared_ptr<mws_page> PREV_PAGE;
    static const shared_ptr<mws_page> NEXT_PAGE;
 

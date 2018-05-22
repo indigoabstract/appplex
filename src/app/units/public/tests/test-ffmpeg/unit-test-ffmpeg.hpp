@@ -10,15 +10,15 @@
 class unit_test_ffmpeg : public unit
 {
 public:
-	static shared_ptr<unit_test_ffmpeg> nwi();
+   static shared_ptr<unit_test_ffmpeg> nwi();
 
-    virtual void init();
-    virtual void load();
-	virtual bool update();
+   virtual void init();
+   virtual void load();
+   virtual void update_view(int update_count);
 
 private:
-	unit_test_ffmpeg();
-	virtual void receive(shared_ptr<iadp> idp);
+   unit_test_ffmpeg();
+   virtual void receive(shared_ptr<iadp> idp);
 };
 
 #endif

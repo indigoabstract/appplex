@@ -4,6 +4,8 @@
 
 #ifdef MOD_FFMPEG
 
+#include "media/vid/video-enc.hpp"
+
 extern "C"
 {
 #define __STDC_CONSTANT_MACROS
@@ -22,43 +24,6 @@ extern "C"
 }
 
 #include <string>
-
-
-enum class vid_enc_st
-{
-   e_st_encoding,
-   e_st_finished,
-};
-
-
-class video_params_ffmpeg
-{
-public:
-   video_params_ffmpeg();
-
-   // the average bitrate
-   int bit_rate;
-   // resolution must be a multiple of two
-   int width;
-   int height;
-   // this is the fundamental unit of time (in seconds) in terms of which frame timestamps are represented.For fixed - fps content,
-   // timebase should be 1 / framerate and timestamp increments should be identically 1.
-   AVRational time_base;
-   // set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2
-   int ticks_per_frame;
-   // the number of pictures in a group of pictures, or 0 for intra_only
-   // emits one intra frame every gop_size frames
-   int gop_size;
-   // maximum number of B-frames between non-B-frames
-   int max_b_frames;
-   // Pixel format, see AV_PIX_FMT_xxx.
-   enum AVPixelFormat pix_fmt;
-   enum AVCodecID codec_id;
-   // see venc_ffmpeg::open_video or H.264 Video Encoding Guide for details
-   std::string preset;
-   std::string tune;
-   int crf;
-};
 
 
 // a wrapper around a single output AVStream
@@ -93,24 +58,26 @@ public:
 };
 
 
-class venc_ffmpeg
+class venc_ffmpeg : public mws_video_enc
 {
 public:
    venc_ffmpeg();
-   vid_enc_st get_state() const;
-   bool is_encoding() const;
-   void start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params);
+   virtual ~venc_ffmpeg() {}
+   virtual mws_vid_enc_st get_state() const override;
+   virtual std::string get_video_path() override;
+   virtual void set_video_path(std::string i_video_path) override;
+   virtual void start_encoding(const mws_video_params& i_params) override;
    void encode_frame(AVFrame* i_frame);
-	void encode_frame(const char* iframe_data, int iframe_data_length);
-   void encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame);
-   void stop_encoding();
+   virtual void encode_frame(const char* iframe_data, int iframe_data_length) override;
+   virtual void encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
+   virtual void stop_encoding() override;
 
 private:
    void open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
    void open_video(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
    void add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
 
-   video_params_ffmpeg params;
+   mws_video_params params;
    output_stream_ffmpeg* ost;
    AVOutputFormat* fmt;
    AVDictionary* opt;
@@ -125,7 +92,7 @@ private:
    output_stream_ffmpeg audio_st;
    AVCodec* audio_codec;
    AVCodec* video_codec;
-   vid_enc_st state;
+   mws_vid_enc_st state;
 };
 
 #endif

@@ -481,7 +481,7 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
       }
       else
       {
-         //mws_print("gl_material::load_shader(): failed to load shader. switching to default\n");
+         mws_print("gl_material::load_shader(): failed to load shader. switching to default\n");
          return mesh.lock()->gi()->shader.get_program_by_name("black-shader");
       }
    }

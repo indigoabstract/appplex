@@ -6,6 +6,7 @@
 
 #include "venc-ffmpeg.hpp"
 #include "pfm.hpp"
+#include "min.hpp"
 
 #pragma comment (lib, "ffmpeg/avformat.lib")
 #pragma comment(lib, "ffmpeg/avcodec.lib")
@@ -37,13 +38,14 @@ std::string get_av_error_string(int av_error_code)
    return std::string(str);
 }
 
-video_params_ffmpeg::video_params_ffmpeg()
+mws_video_params::mws_video_params()
 {
    bit_rate = 3000000;
    width = 480;
    height = 480;
    // frames per second
-   time_base = { 1, 24 };
+   time_base_numerator = 1;
+   time_base_denominator = 24;
    ticks_per_frame = 1;
    // emit one intra frame every ten frames
    gop_size = 10;
@@ -64,7 +66,7 @@ static void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs
 
 venc_ffmpeg::venc_ffmpeg()
 {
-   state = vid_enc_st::e_st_finished;
+   state = mws_vid_enc_st::e_st_finished;
    fmt = nullptr;
    opt = nullptr;
 	f = nullptr;
@@ -288,32 +290,41 @@ static void close_stream(AVFormatContext *oc, output_stream_ffmpeg *ost)
    //swr_free(&ost->swr_ctx);
 }
 
-vid_enc_st venc_ffmpeg::get_state() const
+mws_vid_enc_st venc_ffmpeg::get_state() const
 {
    return state;
 }
 
-bool venc_ffmpeg::is_encoding() const
+std::string venc_ffmpeg::get_video_path()
 {
-   return state == vid_enc_st::e_st_encoding;
+   return video_path;
 }
 
-void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffmpeg& i_params)
+void venc_ffmpeg::set_video_path(std::string i_video_path)
 {
+   video_path = i_video_path;
+}
+
+void venc_ffmpeg::start_encoding(const mws_video_params& i_params)
+{
+   if (video_path.empty())
+   {
+      mws_throw ia_exception("venc-ffmpeg [video_path is empty]");
+   }
+
    int ret = 0;
    params = i_params;
-   video_path = std::string(ivideo_path);
-   mws_print("Encode video file %s\n", ivideo_path);
+   mws_print("Encode video file %s\n", video_path.c_str());
    pts_idx = 0;
 
 
  /* allocate the output media context */
-   avformat_alloc_output_context2(&oc, NULL, NULL, ivideo_path);
+   avformat_alloc_output_context2(&oc, NULL, NULL, video_path.c_str());
 
    if (!oc)
    {
       printf("Could not deduce output format from file extension: using mp4.\n");
-      avformat_alloc_output_context2(&oc, NULL, "mp4", ivideo_path);
+      avformat_alloc_output_context2(&oc, NULL, "mp4", video_path.c_str());
    }
 
    if (!oc)
@@ -351,16 +362,16 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
       open_audio(oc, audio_codec, &audio_st, opt);
    }
 
-   av_dump_format(oc, 0, ivideo_path, 1);
+   av_dump_format(oc, 0, video_path.c_str(), 1);
 
    /* open the output file, if needed */
    if (!(fmt->flags & AVFMT_NOFILE))
    {
-      ret = avio_open(&oc->pb, ivideo_path, AVIO_FLAG_WRITE);
+      ret = avio_open(&oc->pb, video_path.c_str(), AVIO_FLAG_WRITE);
 
       if (ret < 0)
       {
-         mws_print("Could not open '%s': %s\n", ivideo_path, get_av_error_string(ret).c_str());
+         mws_print("Could not open '%s': %s\n", video_path.c_str(), get_av_error_string(ret).c_str());
          exit(1);
       }
    }
@@ -385,7 +396,7 @@ void venc_ffmpeg::start_encoding(const char* ivideo_path, const video_params_ffm
    //      encode_audio = !write_audio_frame(oc, &audio_st);
    //   }
    //}
-   state = vid_enc_st::e_st_encoding;
+   state = mws_vid_enc_st::e_st_encoding;
 }
 
 // encode 1 frame of video
@@ -478,7 +489,7 @@ void venc_ffmpeg::stop_encoding()
 
    /* free the stream */
    avformat_free_context(oc);
-   state = vid_enc_st::e_st_finished;
+   state = mws_vid_enc_st::e_st_finished;
 }
 
 static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
@@ -787,7 +798,7 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
 
    case AVMEDIA_TYPE_VIDEO:
    {
-      c->codec_id = params.codec_id;
+      c->codec_id = (AVCodecID)params.codec_id;
 
       c->bit_rate = params.bit_rate;
       //c->bit_rate = 800 * 1000;
@@ -799,13 +810,14 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
       * timebase should be 1/framerate and timestamp increments should be
       * identical to 1. */
       //AVRational t = { 1, STREAM_FRAME_RATE };
-      ost->st->time_base = params.time_base;
+      ost->st->time_base.num = params.time_base_numerator;
+      ost->st->time_base.den = params.time_base_denominator;
       c->time_base = ost->st->time_base;
       c->time_base.num = params.ticks_per_frame;
       c->ticks_per_frame = params.ticks_per_frame;
 
       c->gop_size = params.gop_size; /* emit one intra frame every twelve frames at most */
-      c->pix_fmt = params.pix_fmt;
+      c->pix_fmt = (AVPixelFormat)params.pix_fmt;
       c->max_b_frames = params.max_b_frames;
 
       if (c->codec_id == AV_CODEC_ID_MPEG2VIDEO)

@@ -67,7 +67,17 @@ public:
 		free_memory();
 	}
 
-	shared_ptr<media_info> get_media_info()
+   std::string get_video_path()
+   {
+      return video_path;
+   }
+
+   void set_video_path(std::string i_video_path)
+   {
+      video_path = i_video_path;
+   }
+  
+   shared_ptr<mws_media_info> get_media_info()
 	{
 		return mi;
 	}
@@ -100,23 +110,27 @@ public:
 		mws_print("msg: %s\n", message);
 	}
 
-	int start_decoding(const char* ivideo_path)
+	int start_decoding()
 	{
+      if (video_path.empty())
+      {
+         mws_throw ia_exception("vdec-ffmpeg [video_path is empty]");
+      }
+
 		free_memory();
 		state = st_stopped;
-		file_path = ivideo_path;
 		current_frame_idx = 0;
 		format_ctx = 0;
 		int r = 0;
 		AVDictionary* options = 0;
 		char errbuf[256];
 
-		r = avformat_open_input(&format_ctx, ivideo_path, nullptr, nullptr);
+		r = avformat_open_input(&format_ctx, video_path.c_str(), nullptr, nullptr);
 
 		if(r < 0)
 		{
 			av_strerror(r, errbuf, sizeof(errbuf));
-			trx("vdec_ffmpeg::start_decoding: can't open file. error: {}", errbuf);
+			mws_print("vdec_ffmpeg::start_decoding: can't open file. error: %s\n", errbuf);
 
 			return -1;
 		}
@@ -129,7 +143,7 @@ public:
 		}
 
 		// print format info
-		av_dump_format(format_ctx, 0, ivideo_path, 0);
+		av_dump_format(format_ctx, 0, video_path.c_str(), 0);
 		video_stream = -1;
 
 		for(uint32 i = 0; i < format_ctx->nb_streams; i++)
@@ -213,15 +227,15 @@ public:
 
 	void replay()
 	{
-		start_decoding(file_path.c_str());
+		start_decoding();
 	}
 
-	vdec_state get_state()
+   mws_vdec_state get_state()
 	{
 		return state;
 	}
 
-	void set_state(vdec_state istate)
+	void set_state(mws_vdec_state istate)
 	{
 		switch(istate)
 		{
@@ -271,9 +285,20 @@ public:
 		state = istate;
 	}
 
-	void update(std::shared_ptr<gfx_camera> i_mws_cam)
+	void update(std::shared_ptr<gfx_camera> i_cam)
 	{
-		uint32 crt_frame_time = pfm::time::get_time_millis();
+      if (!i_cam)
+      {
+         if (!ortho_cam)
+         {
+            ortho_cam = gfx_camera::nwi();
+            ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
+         }
+
+         i_cam = ortho_cam;
+      }
+
+      uint32 crt_frame_time = pfm::time::get_time_millis();
 
 		if (frame_limit > 0.f)
 		{
@@ -296,7 +321,7 @@ public:
 
 		while(frame_is_complete == 0)
 		{
-			int r = decode_frame(i_mws_cam);
+			int r = decode_frame(i_cam);
 
 			if(r == 0)
 			{
@@ -325,17 +350,17 @@ public:
 		frame_limit = iframe_limit;
 	}
 
-   void set_listener(std::shared_ptr<vdec_ffmpeg_listener> i_listener)
+   void set_listener(std::shared_ptr<mws_vdec_listener> i_listener)
    {
       listener = i_listener;
    }
 
-	shared_ptr<media_info> mi;
+	shared_ptr<mws_media_info> mi;
 
 private:
-	friend class media_info;
+	friend class ffmpeg_media_info;
 
-	int decode_frame(std::shared_ptr<gfx_camera> i_mws_cam)
+	int decode_frame(std::shared_ptr<gfx_camera> i_cam)
 	{
 		int ret = 0;
 		ret = av_read_frame(format_ctx, &av_packet);
@@ -355,7 +380,7 @@ private:
 
 					if (!(y_tex && y_tex->get_width() == w1 && y_tex->get_height() == h))
 					{
-						std::string tex_idx_str = trs("{}", tex_idx);
+						std::string tex_idx_str = std::to_string(tex_idx);
 
 						q2d = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
 						//rt = nullptr;
@@ -401,7 +426,7 @@ private:
 					y_tex->update(0, (const char*)av_frame->data[0]);// , codec_ctx->width * codec_ctx->height);
 					u_tex->update(1, (const char*)av_frame->data[1]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
 					v_tex->update(2, (const char*)av_frame->data[2]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
-					q2d->draw_out_of_sync(i_mws_cam);
+					q2d->draw_out_of_sync(i_cam);
 
 					mws_report_gfx_errs();
 
@@ -409,7 +434,7 @@ private:
                {
                   if (current_frame_idx == 0)
                   {
-                     auto params = std::make_shared<video_params_ffmpeg>();
+                     auto params = std::make_shared<mws_video_params>();
 
                      params->bit_rate = codec_ctx->bit_rate;
                      //params->codec_id = codec_ctx->codec_id;
@@ -419,7 +444,8 @@ private:
                      params->max_b_frames = codec_ctx->max_b_frames;
                      params->pix_fmt = codec_ctx->pix_fmt;
                      params->ticks_per_frame = codec_ctx->ticks_per_frame;
-                     params->time_base = codec_ctx->time_base;
+                     params->time_base_numerator = codec_ctx->time_base.num;
+                     params->time_base_denominator = codec_ctx->time_base.den;
                      listener->on_decoding_started(params);
                   }
 
@@ -467,7 +493,7 @@ private:
 		}
 	}
 
-	vdec_state state;
+   mws_vdec_state state;
 	shared_ptr<gfx_tex> y_tex;
 	shared_ptr<gfx_tex> u_tex;
 	shared_ptr<gfx_tex> v_tex;
@@ -487,57 +513,58 @@ private:
 	shared_ptr<gfx_rt> rt;
 	shared_ptr<gfx_tex> rt_tex;
 	int current_frame_idx;
-	std::string file_path;
+	std::string video_path;
 	int tex_idx;
 	float frame_limit;
 	uint32 last_frame_time;
-   std::shared_ptr<vdec_ffmpeg_listener> listener;
+   std::shared_ptr<mws_vdec_listener> listener;
+   std::shared_ptr<gfx_camera> ortho_cam;
 };
 
 
-int media_info::get_width()
+int ffmpeg_media_info::get_width()
 {
 	return impl.lock()->codec_ctx->width;
 }
 
-int media_info::get_height()
+int ffmpeg_media_info::get_height()
 {
 	return impl.lock()->codec_ctx->height;
 }
 
-int media_info::get_current_frame_index()
+int ffmpeg_media_info::get_current_frame_index()
 {
 	return impl.lock()->current_frame_idx;
 }
 
-int64 media_info::get_frame_count()
+int64 ffmpeg_media_info::get_frame_count()
 {
 	return impl.lock()->av_stream->nb_frames;
 }
 
-double media_info::get_frame_rate()
+double ffmpeg_media_info::get_frame_rate()
 {
 	shared_ptr<vdec_ffmpeg_impl> i = impl.lock();
 
 	return i->codec_ctx->time_base.den / double(i->codec_ctx->time_base.num * i->codec_ctx->ticks_per_frame);
 }
 
-unsigned long long media_info::get_duration_us()
+unsigned long long ffmpeg_media_info::get_duration_us()
 {
 	return impl.lock()->format_ctx->duration;
 }
 
-shared_ptr<gfx_tex> media_info::get_current_frame()
+shared_ptr<gfx_tex> ffmpeg_media_info::get_current_frame()
 {
 	return impl.lock()->rt_tex;
 }
 
-int media_info::get_total_width()
+int ffmpeg_media_info::get_total_width()
 {
 	return impl.lock()->av_frame->linesize[0];
 }
 
-vdec_state media_info::get_dec_state()
+mws_vdec_state ffmpeg_media_info::get_dec_state()
 {
 	return impl.lock()->get_state();
 }
@@ -546,21 +573,31 @@ vdec_state media_info::get_dec_state()
 vdec_ffmpeg::vdec_ffmpeg()
 {
 	impl = shared_ptr<vdec_ffmpeg_impl>(new vdec_ffmpeg_impl());
-	impl->mi = shared_ptr<media_info>(new media_info(impl));
+	impl->mi = shared_ptr<mws_media_info>(new ffmpeg_media_info(impl));
 }
 
 vdec_ffmpeg::~vdec_ffmpeg()
 {
 }
 
-shared_ptr<media_info> vdec_ffmpeg::get_media_info()
+std::string vdec_ffmpeg::get_video_path()
+{
+   return impl->get_video_path();
+}
+
+void vdec_ffmpeg::set_video_path(std::string i_video_path)
+{
+   impl->set_video_path(i_video_path);
+}
+
+shared_ptr<mws_media_info> vdec_ffmpeg::get_media_info()
 {
 	return impl->get_media_info();
 }
 
-int vdec_ffmpeg::start_decoding(const char* ivideo_path)
+int vdec_ffmpeg::start_decoding()
 {
-	return impl->start_decoding(ivideo_path);
+	return impl->start_decoding();
 }
 
 void vdec_ffmpeg::stop()
@@ -568,12 +605,12 @@ void vdec_ffmpeg::stop()
 	impl->stop_decoding();
 }
 
-vdec_state vdec_ffmpeg::get_state()
+mws_vdec_state vdec_ffmpeg::get_state() const
 {
 	return impl->get_state();
 }
 
-void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> i_mws_cam)
+void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> i_cam)
 {
 	switch(get_state())
 	{
@@ -582,7 +619,7 @@ void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> i_mws_cam)
 
 	case st_playing:
 		{
-			impl->update(i_mws_cam);
+			impl->update(i_cam);
 			break;
 		}
 
@@ -644,7 +681,7 @@ void vdec_ffmpeg::set_frame_limit(float iframe_limit)
 	impl->set_frame_limit(iframe_limit);
 }
 
-void vdec_ffmpeg::set_listener(std::shared_ptr<vdec_ffmpeg_listener> listener)
+void vdec_ffmpeg::set_listener(std::shared_ptr<mws_vdec_listener> listener)
 {
    impl->set_listener(listener);
 }

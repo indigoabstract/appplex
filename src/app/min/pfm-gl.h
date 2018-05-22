@@ -17,6 +17,8 @@ extern "C"
 #if defined PLATFORM_ANDROID
 
 #define MWS_USES_OPENGL_ES
+#define MWS_OPENGL_ES_VERSION MWS_OPENGL_ES_3_0
+
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>

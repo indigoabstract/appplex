@@ -275,7 +275,6 @@ shared_ptr<mws_page> mws_page_transition::get_target_page()
 
    mws_print("target page with id [%s] is not available\n", id.c_str());
 
-   //return mws_page::PAGE_NONE;
    return nullptr;
 }
 

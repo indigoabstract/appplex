@@ -451,11 +451,11 @@ extern "C"
         if(asset_manager)
         {
             android_main::get_instance()->init();
-            trx("asset manager loaded");
+            mws_print("asset manager loaded");
         }
         else
         {
-            trx("error loading asset manager");
+            mws_print("error loading asset manager");
         }
 	}
 

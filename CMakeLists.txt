@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7)
+cmake_minimum_required (VERSION 3.6)
 
 # Maps to a solution file (appplex.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)

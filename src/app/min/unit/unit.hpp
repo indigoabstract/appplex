@@ -18,7 +18,7 @@ class gfx_scene;
 class mws_camera;
 class pfm_file;
 class mws_list_model;
-class video_params_ffmpeg;
+class mws_video_params;
 
 
 class app_impl
@@ -67,7 +67,7 @@ public:
       void save_screenshot(std::string ifilename = "");
 
       // screen video recording
-      void start_recording_screen(std::string i_filename = "", const video_params_ffmpeg* i_params = nullptr);
+      void start_recording_screen(std::string i_filename = "", const mws_video_params* i_params = nullptr);
       void stop_recording_screen();
       bool is_recording_screen();
       void toggle_screen_recording();

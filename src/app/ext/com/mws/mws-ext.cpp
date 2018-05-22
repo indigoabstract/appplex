@@ -66,14 +66,6 @@ void mws_list_menu_model::on_elem_selected(int idx)
    shared_ptr<mws_page> np = elems[idx].get_page(ul);
 
    change_page_transitions(idx);
-
-   if (np && np != mws_page::PAGE_NONE)
-   {
-      shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(np)
-         ->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
-
-      send(ut, upt);
-   }
 }
 
 void mws_list_menu_model::set_data(mws_list_menu_item ielems[], int ielemsLength)

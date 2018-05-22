@@ -271,6 +271,10 @@ public class main extends Activity
 		super.onStart();
         opensl_conf params = opensl_conf.createInstance(this);
 		native_snd_init(params.get_sample_rate(), params.get_buffer_size());
+
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = 1.f;
+        getWindow().setAttributes(layoutParams);
     }
 
 	@Override

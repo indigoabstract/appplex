@@ -67,7 +67,8 @@ public:
          default_video_params.width = 0;
          default_video_params.height = 0;
          // frames per second
-         default_video_params.time_base = { 2, 60 };
+         default_video_params.time_base_numerator = 2;
+         default_video_params.time_base_denominator = 60;
          default_video_params.ticks_per_frame = 2;
          // emit one intra frame every ten frames
          default_video_params.gop_size = 10;
@@ -320,7 +321,7 @@ public:
 #endif
    }
 
-   void start_recording_screen(std::string i_filename = "", const video_params_ffmpeg* i_params = nullptr)
+   void start_recording_screen(std::string i_filename = "", const mws_video_params* i_params = nullptr)
    {
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
@@ -349,9 +350,10 @@ public:
          i_filename = mws_to_str("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
       }
 
-      const video_params_ffmpeg* video_params = (i_params) ? i_params : &default_video_params;
+      const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
 
-      venc->start_encoding(i_filename.c_str(), *video_params);
+      venc->set_video_path(i_filename);
+      venc->start_encoding(*video_params);
 
 #else
 
@@ -442,7 +444,7 @@ public:
    int pbo_index;
 
    std::shared_ptr<venc_ffmpeg> venc;
-   video_params_ffmpeg default_video_params;
+   mws_video_params default_video_params;
    std::shared_ptr<mws_font> date_fnt;
    std::shared_ptr<mws_font> recording_fnt;
    std::string recording_txt;
@@ -557,7 +559,7 @@ void unit::app_storage::save_screenshot(std::string ifilename)
 }
 
 
-void unit::app_storage::start_recording_screen(std::string i_filename, const video_params_ffmpeg* i_params)
+void unit::app_storage::start_recording_screen(std::string i_filename, const mws_video_params* i_params)
 {
    p->start_recording_screen(i_filename, i_params);
 }

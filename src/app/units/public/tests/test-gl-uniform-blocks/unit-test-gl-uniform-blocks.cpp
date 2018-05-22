@@ -205,12 +205,6 @@ namespace unit_test_gl_uniform_blocks_ns
          green_shader->reload_on_modifications();
          yellow_shader->reload_on_modifications();
 
-         // per-frame time logic
-         // --------------------
-         float currentFrame = pfm::time::get_time_millis();
-         deltaTime = currentFrame - lastFrame;
-         lastFrame = currentFrame;
-
          alpha_value += 0.005f;
          //mws_print("a %f\n", alpha_value);
 

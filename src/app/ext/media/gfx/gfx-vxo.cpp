@@ -242,8 +242,6 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
    if (shader)
    {
       shared_ptr<gfx_state> gl_st = gi()->get_gfx_state();
-      auto it4 = mat.other_params.begin();
-      int texture_unit_idx = 0;
 
       plist.clear();
       gi()->shader.set_current_program(shader);
@@ -525,7 +523,9 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 #endif
       }
 
-      for (; it4 != mat.other_params.end(); it4++)
+      int texture_unit_idx = 0;
+
+      for (auto it4 = mat.other_params.begin(); it4 != mat.other_params.end(); it4++)
       {
          const std::string& uniform_name = it4->first;
          shared_ptr<gfx_material_entry> e = it4->second;
