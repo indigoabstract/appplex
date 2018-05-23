@@ -312,6 +312,7 @@ else() # Assume iOS
 	find_library(MOBILECORESERVICES MobileCoreServices)
 	find_library(CFNETWORK CFNetwork)
 	find_library(SYSTEMCONFIGURATION SystemConfiguration)
+	FIND_LIBRARY(AV_FOUNDATION_LIB AVFoundation)
 	# app bundled libs
 	find_library(PNG_LIB libpng.a)
 
@@ -324,6 +325,7 @@ else() # Assume iOS
 	target_link_libraries(${APP_NAME} ${MOBILECORESERVICES})
 	target_link_libraries(${APP_NAME} ${CFNETWORK})
 	target_link_libraries(${APP_NAME} ${SYSTEMCONFIGURATION})
+	target_link_libraries(${APP_NAME} ${AV_FOUNDATION_LIB})
 	# app bundled libs
 	target_link_libraries(${APP_NAME} ${PNG_LIB})
 
