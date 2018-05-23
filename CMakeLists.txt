@@ -172,7 +172,7 @@ else() # Assume iOS
 	set(TEST_BUNDLE_IDENTIFIER "com.company.tests")             # <== Set to your tests's bundle ID
 	set(CODE_SIGN_IDENTITY "iPhone Developer")                  # <== Set to your preferred code sign identity, to see list:
 																# /usr/bin/env xcrun security find-identity -v -p codesigning
-	set(DEPLOYMENT_TARGET 10.0)                                  # <== Set your deployment target version of iOS
+	set(DEPLOYMENT_TARGET 8.0)                                  # <== Set your deployment target version of iOS
 	set(DEVICE_FAMILY "1")                                      # <== Set to "1" to target iPhone, set to "2" to target iPad, set to "1,2" to target both
 	set(LOGIC_ONLY_TESTS 0)                                     # <== Set to 1 if you do not want tests to be hosted by the application, speeds up pure logic tests but you can not run them on real devices
 
@@ -190,8 +190,8 @@ else() # Assume iOS
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
 	set(MACOSX_BUNDLE_ICON_FILE "")
 	set(MACOSX_BUNDLE_LONG_VERSION_STRING "1.0")
-	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.3")
-	set(MACOSX_BUNDLE_BUNDLE_VERSION "4")
+	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.4")
+	set(MACOSX_BUNDLE_BUNDLE_VERSION "5")
 	set(MACOSX_BUNDLE_COPYRIGHT "Copyright YOU")
 	set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
 
