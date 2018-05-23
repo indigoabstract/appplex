@@ -9,6 +9,8 @@
 
 #include "ViewController.h"
 #include "dec/video-player.h"
+#include "gfx.hpp"
+#include "gfx-tex.hpp"
 #import <AVFoundation/AVAudioPlayer.h>
 #import <AVFoundation/AVMediaFormat.h>
 #import <AVFoundation/AVAssetExportSession.h>
@@ -291,6 +293,7 @@ public:
                                                  selector:@selector(willResumeActiveNotification:)
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
+        rt_tex = gfx::i()->tex.new_external_tex_2d("video-rgba-tex", 0, 1, 1);
     }
     
     void play()
@@ -333,6 +336,7 @@ public:
     void end_frame()
     {
         [anim_helper_inst.video_player end_frame];
+        rt_tex->set_texture_gl_id(tex_y_gl_id());
     }
     
     unsigned int video_width()
@@ -343,6 +347,11 @@ public:
     unsigned int video_height()
     {
         return [anim_helper_inst.video_player video_height];
+    }
+    
+    std::shared_ptr<gfx_tex> get_current_frame()
+    {
+        return rt_tex;
     }
     
     unsigned int tex_y_gl_id()
@@ -364,8 +373,14 @@ public:
     std::string video_path;
     std::shared_ptr<ios_media_info> mi;
     mws_vdec_state state;
+    std::shared_ptr<gfx_tex> rt_tex;
 };
 
+
+ios_media_info::ios_media_info(std::shared_ptr<ios_video_dec_impl> i_p)
+{
+    p = i_p;
+}
 
 int ios_media_info::get_width()
 {
@@ -400,7 +415,7 @@ unsigned long long ios_media_info::get_duration_us()
 
 std::shared_ptr<gfx_tex> ios_media_info::get_current_frame()
 {
-    return nullptr;
+    return impl()->get_current_frame();
 }
 
 int ios_media_info::get_total_width()

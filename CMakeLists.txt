@@ -313,6 +313,11 @@ else() # Assume iOS
 	find_library(CFNETWORK CFNetwork)
 	find_library(SYSTEMCONFIGURATION SystemConfiguration)
 	FIND_LIBRARY(AV_FOUNDATION_LIB AVFoundation)
+        FIND_LIBRARY(CORE_GRAPHICS_LIB CoreGraphics)
+        FIND_LIBRARY(CORE_VIDEO_LIB CoreVideo)
+        FIND_LIBRARY(CORE_MEDIA_LIB CoreMedia)
+        FIND_LIBRARY(CORE_IMAGE_LIB CoreImage)
+        FIND_LIBRARY(QUARTZ_CORE_LIB QuartzCore)
 	# app bundled libs
 	find_library(PNG_LIB libpng.a)
 
@@ -326,6 +331,11 @@ else() # Assume iOS
 	target_link_libraries(${APP_NAME} ${CFNETWORK})
 	target_link_libraries(${APP_NAME} ${SYSTEMCONFIGURATION})
 	target_link_libraries(${APP_NAME} ${AV_FOUNDATION_LIB})
+        target_link_libraries(${APP_NAME} ${CORE_GRAPHICS_LIB})
+        target_link_libraries(${APP_NAME} ${CORE_VIDEO_LIB})
+        target_link_libraries(${APP_NAME} ${CORE_MEDIA_LIB})
+        target_link_libraries(${APP_NAME} ${CORE_IMAGE_LIB})
+        target_link_libraries(${APP_NAME} ${QUARTZ_CORE_LIB})
 	# app bundled libs
 	target_link_libraries(${APP_NAME} ${PNG_LIB})
 

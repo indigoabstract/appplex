@@ -12,6 +12,7 @@ class ios_media_info : public mws_media_info
 {
 public:
     ios_media_info(std::shared_ptr<ios_video_dec_impl> i_p);
+    
    virtual int get_width() override;
    virtual int get_height() override;
    virtual int get_current_frame_index() override;
@@ -36,7 +37,6 @@ public:
    static std::shared_ptr<ios_video_dec> nwi();
 
    virtual ~ios_video_dec() {}
-   virtual bool is_playing() const { return get_state() == mws_vdec_state::st_playing; }
    virtual std::string get_video_path() override;
    virtual void set_video_path(std::string i_video_path) override;
    virtual std::shared_ptr<mws_media_info> get_media_info() override;
