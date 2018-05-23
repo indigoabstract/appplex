@@ -1,0 +1,12 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/frame-decoder.m"
+	"${CMAKE_CURRENT_LIST_DIR}/video-fb.m"
+	"${CMAKE_CURRENT_LIST_DIR}/video-frame.m"
+	"${CMAKE_CURRENT_LIST_DIR}/video-player.m"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/frame-decoder.h"
+	"${CMAKE_CURRENT_LIST_DIR}/video-fb.h"
+	"${CMAKE_CURRENT_LIST_DIR}/video-frame.h"
+	"${CMAKE_CURRENT_LIST_DIR}/video-player.h"
+)

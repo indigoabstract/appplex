@@ -21,3 +21,5 @@
 
 # # Adds logic to INSTALL.vcproj to copy app.exe to destination directory
 # install (TARGETS app RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/_install)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ios/CMakeLists.txt")

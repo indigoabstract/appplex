@@ -199,6 +199,7 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.hpp"
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ios-bridge.hpp"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 	)
 

@@ -15,9 +15,12 @@ std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
 
 #elif defined PLATFORM_IOS
 
+#include "ios/vid/ios-video-dec.hpp"
+
+
 std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
 {
-   return nullptr;
+   return ios_video_dec::nwi();
 }
 
 #endif
