@@ -3,7 +3,8 @@
 #import "GPUImageContext.h"
 #import "GLProgram.h"
 #import "GPUImageFilter.h"
-#import "../VideoEncAppGLKitVC.h"
+#import "ViewController.h"
+#include "global-c-functions.h"
 
 NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 (

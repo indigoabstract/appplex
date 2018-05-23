@@ -56,5 +56,5 @@ public:
 protected:
    ios_video_enc() {}
    
-   std::unique_ptr<ios_video_enc_impl> p;
+   std::shared_ptr<ios_video_enc_impl> p;
 };

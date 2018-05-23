@@ -172,7 +172,7 @@ else() # Assume iOS
 	set(TEST_BUNDLE_IDENTIFIER "com.company.tests")             # <== Set to your tests's bundle ID
 	set(CODE_SIGN_IDENTITY "iPhone Developer")                  # <== Set to your preferred code sign identity, to see list:
 																# /usr/bin/env xcrun security find-identity -v -p codesigning
-	set(DEPLOYMENT_TARGET 8.0)                                  # <== Set your deployment target version of iOS
+	set(DEPLOYMENT_TARGET 10.0)                                  # <== Set your deployment target version of iOS
 	set(DEVICE_FAMILY "1")                                      # <== Set to "1" to target iPhone, set to "2" to target iPad, set to "1,2" to target both
 	set(LOGIC_ONLY_TESTS 0)                                     # <== Set to 1 if you do not want tests to be hosted by the application, speeds up pure logic tests but you can not run them on real devices
 
@@ -199,7 +199,6 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.hpp"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ios-bridge.hpp"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 	)
 
@@ -343,6 +342,7 @@ else() # Assume iOS
 						  XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 						  RESOURCE "${RESOURCES}"
 						  XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES"
+                                                  XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_WEAK "YES"
 						  XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET}
 						  XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${CODE_SIGN_IDENTITY}
 						  XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${DEVELOPMENT_TEAM_ID}
@@ -363,6 +363,8 @@ else() # Assume iOS
 	XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO"
 	)
         set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
+        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_WEAK "YES")
+        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 
 	# Include framework headers, needed to make "Build" Xcode action work.
 	# "Archive" works fine just relying on default search paths as it has different

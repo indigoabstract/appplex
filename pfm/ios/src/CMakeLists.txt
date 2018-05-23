@@ -22,4 +22,10 @@
 # # Adds logic to INSTALL.vcproj to copy app.exe to destination directory
 # install (TARGETS app RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/_install)
 
+target_sources(app_plex_main
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/objc-cxx-bridge.hpp"
+        "${CMAKE_CURRENT_LIST_DIR}/global-c-functions.h"
+)
+
 include("${CMAKE_CURRENT_LIST_DIR}/ios/CMakeLists.txt")

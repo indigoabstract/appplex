@@ -2,8 +2,18 @@
 
 #include "appplex-conf.hpp"
 #include "ios-video-dec.hpp"
+#include "pfm.hpp"
+#include "min.hpp"
 
 #if defined PLATFORM_IOS
+
+#include "ViewController.h"
+#include "dec/video-player.h"
+#import <AVFoundation/AVAudioPlayer.h>
+#import <AVFoundation/AVMediaFormat.h>
+#import <AVFoundation/AVAssetExportSession.h>
+#import <AVFoundation/AVAsset.h>
+
 
 std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
 {
@@ -200,7 +210,7 @@ uint32 start_time;
         [self start_audio_player];
     }
     
-    start_time = get_time_millis();
+    start_time = pfm::time::get_time_millis();
     return;
 }
 
@@ -210,10 +220,10 @@ uint32 start_time;
 {
     NSLog(@"animatorStoppedNotification");
     
-    uint32 crt_time = get_time_millis();
+    uint32 crt_time = pfm::time::get_time_millis();
     uint32 delta = crt_time - start_time;
     float duration = delta / 1000.f;
-    vprint("\n\n\nvideo duration: %f\n\n\n", duration);
+    mws_print("\n\n\nvideo duration: %f\n\n\n", duration);
     // Kick off another animation cycle by doing a prepare operation which will open
     // the asset resource and load the first frame of data. An asset based player
     // needs to be reinitialized each time it is played.
@@ -248,16 +258,16 @@ uint32 start_time;
 @end
 
 
-class ios_video_dec_impl;
+class ios_video_dec_impl
 {
 public:
-    ios_video_dec_impl;()
+    ios_video_dec_impl()
     {
-        is_playing = false;
+        state = st_stopped;
         
         anim_helper_inst = [AnimHelper alloc];
         anim_helper_inst.video_player = [video_dec_player alloc];
-        anim_helper_inst.video_player.context = [VideoEncAppGLKitVC eagl_context];
+        anim_helper_inst.video_player.context = [ViewController eagl_context];
         anim_helper_inst.keepAnimating = TRUE;
         
         [[NSNotificationCenter defaultCenter] addObserver:anim_helper_inst
@@ -290,24 +300,24 @@ public:
         
         [anim_helper_inst set_video_path:video_path_nss];
         [anim_helper_inst start_playing];
-        is_playing = true;
+        state = st_playing;
     }
     
     void stop()
     {
-        is_playing = false;
+        state = st_stopped;
         [anim_helper_inst stop_playing];
     }
     
     void pause()
     {
-        is_playing = false;
+        state = st_paused;
         [anim_helper_inst stop_playing];
     }
     
     void destroy()
     {
-        if(is_playing)
+        if(state == st_playing)
         {
             stop();
         }
@@ -351,54 +361,61 @@ public:
     }
     
     AnimHelper* anim_helper_inst;
-    bool is_playing;
     std::string video_path;
+    std::shared_ptr<ios_media_info> mi;
+    mws_vdec_state state;
 };
 
 
 int ios_media_info::get_width()
 {
-	
+    return impl()->video_width();
 }
 
 int ios_media_info::get_height()
 {
-	
+    return impl()->video_height();
 }
 
 int ios_media_info::get_current_frame_index()
 {
-	
+    return (int)impl()->anim_helper_inst.video_player.frameDecoder.frameIndex;
 }
 
 int64 ios_media_info::get_frame_count()
 {
-	
+    return (int64)impl()->anim_helper_inst.video_player.frameDecoder.numFrames;
 }
 
-double gios_media_info::et_frame_rate()
+double ios_media_info::get_frame_rate()
 {
-	
+    return (double)impl()->anim_helper_inst.video_player.frameDecoder.nominalFrameRate;
 }
 
 unsigned long long ios_media_info::get_duration_us()
 {
-	
+    mws_throw ia_exception("n/a");
+    return 0;
 }
 
 std::shared_ptr<gfx_tex> ios_media_info::get_current_frame()
 {
-	
+    return nullptr;
 }
 
 int ios_media_info::get_total_width()
 {
-	
+    return impl()->video_width();
 }
 
 mws_vdec_state ios_media_info::get_dec_state()
 {
-	
+    return impl()->state;
+}
+
+std::shared_ptr<ios_video_dec_impl> ios_media_info::impl() const
+{
+    return p.lock();
 }
 
 
@@ -409,87 +426,92 @@ std::shared_ptr<ios_video_dec> ios_video_dec::nwi()
 
 std::string ios_video_dec::get_video_path()
 {
-	
+    return p->video_path;
 }
 
 void ios_video_dec::set_video_path(std::string i_video_path)
 {
-	
+    p->video_path = i_video_path;
 }
 
 std::shared_ptr<mws_media_info> ios_video_dec::get_media_info()
 {
-	
+    return p->mi;
 }
 
 int ios_video_dec::start_decoding()
 {
-	
+    p->play();
+    
+    return 0;
 }
 
 void ios_video_dec::stop()
 {
-	
+    p->stop();
 }
 
 mws_vdec_state ios_video_dec::get_state() const
 {
-	
+    return p->state;
 }
 
-void ios_video_dec::update(std::shared_ptr<gfx_camera> i_mws_cam = nullptr)
+void ios_video_dec::update(std::shared_ptr<gfx_camera> i_mws_cam)
 {
-	
+    p->render_frame();
+    p->end_frame();
 }
 
 void ios_video_dec::play()
 {
-	
+    p->play();
 }
 
 void ios_video_dec::replay()
 {
-	
+    p->stop();
+    p->play();
 }
 
 void ios_video_dec::pause()
 {
-	
+    p->pause();
 }
 
 void ios_video_dec::play_pause()
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 void ios_video_dec::goto_frame(int iframe_idx)
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 void ios_video_dec::next_frame()
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 void ios_video_dec::prev_frame()
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 void ios_video_dec::set_frame_limit(float iframe_limit)
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 void ios_video_dec::set_listener(std::shared_ptr<mws_vdec_listener> listener)
 {
-	
+    mws_throw ia_exception("n/a");
 }
 
 ios_video_dec::ios_video_dec()
 {
 	p = std::make_unique<ios_video_dec_impl>();
+    p->mi = std::make_shared<ios_media_info>(p);
 }
 
 #endif

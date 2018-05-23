@@ -5,5 +5,8 @@
 
 @interface ViewController : GLKViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
++(EAGLContext*) eagl_context;
++(ViewController*) inst;
+
 @end
 

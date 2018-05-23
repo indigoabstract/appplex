@@ -18,9 +18,10 @@ std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
 #include "ios/vid/ios-video-enc.hpp"
 
 
-std::shared_ptr<mws_video_dec> mws_video_enc::nwi()
+std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
 {
-   return ios_video_enc::nwi();
+   //return ios_video_enc::nwi();
+    return nullptr;
 }
 
 #endif
