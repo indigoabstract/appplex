@@ -70,7 +70,7 @@ static ViewController* instance = NULL;
     [super viewDidLoad];
     
     instance = self;
-    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    eagl_context_inst = self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
     
     if (!self.context) {
         NSLog(@"Failed to create ES context");

@@ -10,7 +10,11 @@
 #include "ViewController.h"
 #include "dec/video-player.h"
 #include "gfx.hpp"
+#include "gfx-camera.hpp"
 #include "gfx-tex.hpp"
+#include "gfx-rt.hpp"
+#include "gfx-quad-2d.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #import <AVFoundation/AVAudioPlayer.h>
 #import <AVFoundation/AVMediaFormat.h>
 #import <AVFoundation/AVAssetExportSession.h>
@@ -293,7 +297,23 @@ public:
                                                  selector:@selector(willResumeActiveNotification:)
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
-        rt_tex = gfx::i()->tex.new_external_tex_2d("video-rgba-tex", 0, 1, 1);
+        
+        {
+            ortho_cam = gfx_camera::nwi();
+            ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
+            ortho_cam->clear_color = true;
+            ortho_cam->clear_depth = true;
+        }
+        {
+            quad_mesh = std::make_shared<gfx_quad_2d>();
+            auto& qm = *quad_mesh;
+            
+            qm[MP_SHADER_NAME] = "yuv";
+        }
+        {
+            tex_y = gfx::i()->tex.new_external_tex_2d("tex-y", 0, 1, 1);
+            tex_uv = gfx::i()->tex.new_external_tex_2d("tex-uv", 0, 1, 1);
+        }
     }
     
     void play()
@@ -331,12 +351,60 @@ public:
     void render_frame()
     {
         [anim_helper_inst.video_player drawRect];
+        
+        int width = video_width();
+        
+        // convert yuv to rgba
+        if(width > 0)
+        {
+            auto& qm = *quad_mesh;
+            gfx_uint y_gl_id = tex_y_gl_id();
+            gfx_uint uv_gl_id = tex_uv_gl_id();
+            
+            if(!rt_tex || (rt_tex->get_width() != width))
+            {
+                static int tex_id = 0;
+                auto pc = preferred_conversion();
+                auto ccm = glm::make_mat3(pc);
+                int height = video_height();
+                gfx_tex_params p;
+                
+                p.mag_filter = p.e_tf_nearest;
+                p.min_filter = p.e_tf_nearest;
+                p.wrap_s = p.e_twm_clamp_to_edge;
+                p.wrap_t = p.e_twm_clamp_to_edge;
+                p.gen_mipmaps = false;
+                
+                rt = nullptr;
+                rt_tex = nullptr;
+                
+                std::string tex_nr = std::to_string(tex_id);
+                tex_id++;
+                rt_tex = gfx::i()->tex.new_tex_2d("video-rgba-tex-" + tex_nr, width, height, &p);
+                rt = gfx::i()->rt.new_rt();
+                rt->set_color_attachment(rt_tex);
+                
+                qm.set_dimensions(2, 2);
+                qm["SamplerY"] = tex_y->get_name();
+                qm["SamplerUV"] = tex_uv->get_name();
+                qm["colorConversionMatrix"] = ccm;
+                qm.set_scale(width, height);
+                qm.set_v_flip(true);
+            }
+            
+            tex_y->set_texture_gl_id(y_gl_id);
+            tex_uv->set_texture_gl_id(uv_gl_id);
+            
+            gfx::i()->rt.set_current_render_target(rt);
+            ortho_cam->clear_buffers();
+            qm.draw_out_of_sync(ortho_cam);
+            gfx::i()->rt.set_current_render_target();
+        }
     }
     
     void end_frame()
     {
         [anim_helper_inst.video_player end_frame];
-        rt_tex->set_texture_gl_id(tex_y_gl_id());
     }
     
     unsigned int video_width()
@@ -373,7 +441,12 @@ public:
     std::string video_path;
     std::shared_ptr<ios_media_info> mi;
     mws_vdec_state state;
-    std::shared_ptr<gfx_tex> rt_tex;
+    shared_ptr<gfx_camera> ortho_cam;
+    shared_ptr<gfx_rt> rt;
+    shared_ptr<gfx_tex> rt_tex;
+    shared_ptr<gfx_tex> tex_y;
+    shared_ptr<gfx_tex> tex_uv;
+    shared_ptr<gfx_quad_2d> quad_mesh;
 };
 
 

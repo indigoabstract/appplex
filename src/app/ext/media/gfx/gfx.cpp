@@ -335,7 +335,7 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
    }
 
    gi()->active_rt = irdt;
-   glViewport(0, 0, width, height);
+   //glViewport(0, 0, width, height);
    mws_report_gfx_errs();
 }
 

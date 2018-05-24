@@ -2,8 +2,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
+#import "pfm-gl.h"
 #import "video-fb.h"
 #import "video-frame.h"
 #import <mach/mach.h>
@@ -413,16 +412,16 @@ const static BOOL renderBGRA = FALSE;
                                                            cvImageBufferRef,
                                                            (CFDictionaryRef) NULL,
                                                            GL_TEXTURE_2D, // not GL_RENDERBUFFER
-                                                           GL_RED_EXT,
+                                                           GL_R8,
                                                            (GLsizei)frameWidth,
                                                            (GLsizei)frameHeight,
-                                                           GL_RED_EXT,
+                                                           GL_RED,
                                                            GL_UNSIGNED_BYTE,
                                                            0,
                                                            &textureRef);
         
         if (textureRef == NULL) {
-            NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage failed and returned NULL (error: %d)", err);
+            NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage y-tex failed and returned NULL (error: %d)", err);
             return;
         }
         
@@ -455,16 +454,16 @@ const static BOOL renderBGRA = FALSE;
                                                            cvImageBufferRef,
                                                            (CFDictionaryRef) NULL,
                                                            GL_TEXTURE_2D, // not GL_RENDERBUFFER
-                                                           GL_RG_EXT,
+                                                           GL_RG8,
                                                            (GLsizei)frameWidth/2,
                                                            (GLsizei)frameHeight/2,
-                                                           GL_RG_EXT,
+                                                           GL_RG,
                                                            GL_UNSIGNED_BYTE,
                                                            1,
                                                            &textureUVRef);
         
         if (textureUVRef == NULL) {
-            NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage failed and returned NULL (error: %d)", err);
+            NSLog(@"CVOpenGLESTextureCacheCreateTextureFromImage uv-tex failed and returned NULL (error: %d)", err);
             return;
         }
         

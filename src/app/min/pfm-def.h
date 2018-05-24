@@ -140,8 +140,10 @@ extern "C"
 
 
 #ifndef __cplusplus
-   typedef enum { false, true } bool;
-#endif 
+#ifndef bool
+    typedef unsigned int bool;
+#endif
+#endif
    typedef char int8;
    typedef signed char sint8;
    typedef unsigned char uint8;

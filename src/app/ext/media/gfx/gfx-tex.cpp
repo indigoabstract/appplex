@@ -219,6 +219,18 @@ int gfx_tex::get_height()
    return height;
 }
 
+void gfx_tex::set_dim(int i_width, int i_height)
+{
+    check_valid_state();
+    
+    if (!is_external)
+    {
+        mws_throw ia_exception("only available for external textures!");
+    }
+    
+    init_dimensions(i_width, i_height);
+}
+
 void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_index)
 {
    check_valid_state();

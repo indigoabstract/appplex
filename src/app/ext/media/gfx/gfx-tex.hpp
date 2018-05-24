@@ -78,6 +78,7 @@ public:
    void set_texture_gl_id(int itexture_id);
    int get_width();
    int get_height();
+    void set_dim(int i_width, int i_height);
    void send_uniform(const std::string iuniform_name, int iactive_tex_index);
    void set_active(int itex_unit_index);
    void update(int iactive_tex_index, const char* ibb);
