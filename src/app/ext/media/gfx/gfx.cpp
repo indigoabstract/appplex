@@ -10,9 +10,11 @@
 #include "gfx-state.hpp"
 #include "min.hpp"
 #include "pfm-gl.h"
+#include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
 
 
+glm::vec4 default_viewport_dim;
 gfx_int gfx::default_framebuffer_id = 0;
 mws_sp<gfx> gfx::main_instance;
 
@@ -218,7 +220,8 @@ void gfx::global_init()
         
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_id);
         default_framebuffer_id = framebuffer_id;
-    }
+        glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
+   }
     
    main_instance = std::shared_ptr<gfx>(new gfx());
    main_instance->init(main_instance);
@@ -297,18 +300,19 @@ std::shared_ptr<gfx_rt> gfx::ic_rt::get_current_render_target()
 
 void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
 {
-   int width = 0, height = 0;
-
    mws_report_gfx_errs();
 
    if (irdt)
    {
+      int width = 0, height = 0;
+
       glBindFramebuffer(GL_FRAMEBUFFER, irdt->framebuffer);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, irdt->color_att->get_texture_gl_id(), 0);
       // attach a renderbuffer to depth attachment point
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, irdt->depth_buffer_id);
       width = irdt->color_att->get_width();
       height = irdt->color_att->get_height();
+      glViewport(0, 0, width, height);
 
 #ifdef MWS_REPORT_GL_ERRORS
 
@@ -329,13 +333,11 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
          gi()->active_rt->color_att->texture_updated = true;
       }
 
-      width = get_screen_width();
-      height = get_screen_height();
+      glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);
       mws_report_gfx_errs();
    }
 
    gi()->active_rt = irdt;
-   //glViewport(0, 0, width, height);
    mws_report_gfx_errs();
 }
 
