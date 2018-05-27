@@ -11,7 +11,7 @@ units
 [
 	@@[ public units ],
 
-	cmd[ uses[ boost, kxmd, kappaxx_bug ], platf[ windows ], ],
+	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
 	template[ enabled[ false ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],

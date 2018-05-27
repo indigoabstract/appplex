@@ -55,6 +55,7 @@ public:
    struct time
    {
       static std::string get_current_date();
+      static std::string get_duration_as_string(uint32 i_duration);
    };
 };
 

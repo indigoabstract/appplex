@@ -93,6 +93,24 @@ std::string mws_util::time::get_current_date()
    return s;
 }
 
+std::string mws_util::time::get_duration_as_string(uint32 i_duration)
+{
+   std::string duration;
+
+   uint32 millis = i_duration % 1000;
+   uint32 seconds = i_duration / 1000;
+   uint32 minutes = seconds / 60;
+   uint32 seconds_remainder = seconds % 60;
+
+   duration += std::to_string(minutes);
+   duration += ":";
+   duration += std::to_string(seconds_remainder);
+   //duration += ":";
+   //duration += std::to_string(millis);
+
+   return duration;
+}
+
 
 
 bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
