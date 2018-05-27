@@ -91,6 +91,8 @@ public:
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
    virtual void attach(shared_ptr<gfx_node> i_node) override;
    virtual void list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list);
+   virtual void set_enabled(bool i_is_enabled);
+   bool is_enabled()const;
    void set_visible(bool iis_visible);
    bool is_visible()const;
    void set_id(std::string iid);
@@ -113,7 +115,8 @@ public:
 protected:
    mws(std::shared_ptr<gfx> i_gi = nullptr);
 
-   bool is_opaque;
+   bool enabled = true;
+   bool is_opaque = true;
    mws_rect mws_r;
    weak_ptr<mws_page_tab> mwsroot;
    weak_ptr<mws_camera> mws_cam;

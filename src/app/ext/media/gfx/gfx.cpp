@@ -690,15 +690,18 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       auto fsh = shared_ptr<std::string>(new std::string(
          R"(
 #ifdef GL_ES
-         precision lowp float;
+      precision lowp float;
 #endif
 
-         varying vec2 v_v2_tex_coord;
       uniform sampler2D u_s2d_tex;
+
+      varying vec2 v_v2_tex_coord;
 
       void main()
       {
-         gl_FragColor = texture2D(u_s2d_tex, v_v2_tex_coord);
+         vec4 v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+
+         gl_FragColor = v4_color;
       }
       )"
       ));
@@ -737,6 +740,67 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       ));
 
       c_o_shader = shader.new_program_from_src("c-o-shader", vsh, fsh);
+   }
+
+   // mws shader
+   {
+      auto vsh = shared_ptr<std::string>(new std::string(
+         R"(
+      attribute vec3 a_v3_position;
+      attribute vec2 a_v2_tex_coord;
+
+      uniform mat4 u_m4_model_view_proj;
+
+      varying vec2 v_v2_tex_coord;
+
+      void main()
+      {
+         v_v2_tex_coord = a_v2_tex_coord;
+
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )"
+      ));
+
+      auto fsh = shared_ptr<std::string>(new std::string(
+         R"(
+#ifdef GL_ES
+      precision lowp float;
+#endif
+
+      uniform float u_v1_is_enabled;
+      uniform vec4 u_v4_color;
+      uniform float u_v1_has_tex;
+      uniform sampler2D u_s2d_tex;
+      uniform float u_v1_has_alpha;
+
+      varying vec2 v_v2_tex_coord;
+
+      void main()
+      {
+         vec4 v4_color;
+
+         if(u_v1_has_tex == 1.)
+         {
+            v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+         }
+         else
+         {
+            v4_color = u_v4_color;
+         }
+
+         if(u_v1_is_enabled == 0.)
+         {
+            float v1_gray = dot(v4_color.rgb, vec3(0.299, 0.587, 0.114));
+            v4_color.rgb = vec3(v1_gray);
+         }
+
+         gl_FragColor = v4_color;
+      }
+      )"
+      ));
+
+      mws_shader = shader.new_program_from_src("mws-shader", vsh, fsh);
    }
 }
 

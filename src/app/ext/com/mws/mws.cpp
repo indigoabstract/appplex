@@ -56,7 +56,6 @@ mws::mws(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
 // for rootless / parentless mws inst
 {
    visible = true;
-   is_opaque = true;
 }
 
 shared_ptr<mws> mws::get_instance()
@@ -115,6 +114,16 @@ void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
          w->list_mws_children(i_mws_subobj_list);
       }
    }
+}
+
+void mws::set_enabled(bool i_is_enabled)
+{
+   enabled = i_is_enabled;
+}
+
+bool mws::is_enabled() const
+{
+   return enabled;
 }
 
 void mws::set_visible(bool iis_visible)

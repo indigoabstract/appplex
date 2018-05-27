@@ -30,11 +30,13 @@ shared_ptr<mws_panel> mws_panel::nwi()
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o-shader";
+      rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(0, 1.f, 0, 1);
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
       rvxo.set_dimensions(1, 1);
    }
 
@@ -64,17 +66,30 @@ std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
       auto& rvxo = *inst->vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "basic-tex-shader";
+      rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_s2d_tex"] = "";
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 1.f;
       rvxo.set_dimensions(1, 1);
       rvxo.set_anchor(gfx_quad_2d::e_center);
       rvxo[MP_BLENDING] = MV_ALPHA;
    }
 
    return inst;
+}
+
+void mws_img_btn::set_enabled(bool i_is_enabled)
+{
+   if (i_is_enabled != enabled)
+   {
+      float u_v1_is_enabled = i_is_enabled ? 1.f : 0.f;
+      (*get_vxo())["u_v1_is_enabled"] = u_v1_is_enabled;
+   }
+
+   mws_page_item::set_enabled(i_is_enabled);
 }
 
 void mws_img_btn::set_rect(const mws_rect& i_rect)
@@ -104,6 +119,11 @@ void mws_img_btn::set_img_name(std::string i_img_name)
 
 void mws_img_btn::receive(shared_ptr<iadp> idp)
 {
+   if (!is_enabled())
+   {
+      return;
+   }
+
    if (receive_handler)
    {
       receive_handler(get_instance(), idp);
@@ -192,6 +212,11 @@ void mws_button::init(mws_rect i_rect, int iColor, string iText)
 
 void mws_button::receive(shared_ptr<iadp> idp)
 {
+   if (!is_enabled())
+   {
+      return;
+   }
+
    if (receive_handler)
    {
       receive_handler(get_instance(), idp);
@@ -257,11 +282,13 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_bar);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o-shader";
+      rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(0.75f);
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
       rvxo.set_dimensions(1, 1);
    }
 
@@ -270,14 +297,17 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_ball);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "c-o-shader";
+      rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       rvxo["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 0.75f);
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
       rvxo[MP_BLENDING] = MV_ADD;
       rvxo.set_dimensions(1, 1);
       rvxo.position = glm::vec3(0.f, 0.f, 0.1f);
+      rvxo.set_anchor(gfx_quad_2d::e_center);
    }
 
    return inst;
@@ -289,7 +319,7 @@ void mws_slider::set_rect(const mws_rect& i_rect)
    auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
    s_bar->set_translation(i_rect.x, i_rect.y + i_rect.h / 3);
    s_bar->set_scale(i_rect.w, i_rect.h / 3);
-   s_ball->set_translation(i_rect.x - i_rect.h / 2, i_rect.y);
+   s_ball->set_translation(i_rect.x, i_rect.y + i_rect.h / 2);
    s_ball->set_scale(i_rect.h, i_rect.h);
 
    mws_r = i_rect;
@@ -297,6 +327,11 @@ void mws_slider::set_rect(const mws_rect& i_rect)
 
 void mws_slider::receive(shared_ptr<iadp> idp)
 {
+   if (!is_enabled())
+   {
+      return;
+   }
+
    if (receive_handler)
    {
       receive_handler(get_instance(), idp);
@@ -312,7 +347,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
          auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
          auto tr = s_ball->get_translation();
          float tx = tr.x + dragging_dt.drag_diff.x;
-         float x_off = mws_r.x - mws_r.h / 2;
+         float x_off = mws_r.x;
          float t_val = 0.f;
 
          //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
@@ -347,12 +382,39 @@ void mws_slider::receive(shared_ptr<iadp> idp)
       switch (ts->type)
       {
       case pointer_evt::touch_began:
-         if (is_hit(ts->points[0].x, ts->points[0].y))
+      {
+         bool ball_hit;
+         bool bar_hit;
+
+         if (is_hit(ts->points[0].x, ts->points[0].y, ball_hit, bar_hit))
          {
+            // if we hit the bar, but not the ball, move the ball to the hit position
+            if (bar_hit && !ball_hit)
+            {
+               float x_off = mws_r.x;
+               float t_val = (ts->points[0].x - x_off) / mws_r.w;
+
+               if (t_val != value)
+               {
+                  auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+                  auto tr = s_ball->get_translation();
+                  float tx = x_off + t_val * mws_r.w;
+
+                  value = t_val;
+                  s_ball->set_translation(tx, tr.y);
+
+                  if (on_drag_handler)
+                  {
+                     on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+                  }
+               }
+            }
+
             active = true;
             process = true;
          }
          break;
+      }
 
       case pointer_evt::touch_ended:
          active = false;
@@ -367,7 +429,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
    }
 }
 
-bool mws_slider::is_hit(float x, float y)
+bool mws_slider::is_hit(float x, float y, bool& i_ball_hit, bool& i_bar_hit)
 {
    auto& tf_bar = get_bar_vxo()->get_global_tf_mx();
    auto& pos_bar = gfx_util::get_pos_from_tf_mx(tf_bar);
@@ -375,8 +437,10 @@ bool mws_slider::is_hit(float x, float y)
    auto& pos_ball = gfx_util::get_pos_from_tf_mx(get_ball_vxo()->get_global_tf_mx());
    auto& scale_ball = gfx_util::get_scale_from_tf_mx(get_ball_vxo()->get_global_tf_mx());
 
-   bool hit = is_inside_box(x, y, pos_bar.x - scale_bar.x / 2, pos_bar.y - scale_bar.y / 2, scale_bar.x, scale_bar.y);
-   hit = hit || is_inside_box(x, y, pos_ball.x - scale_ball.x / 2, pos_ball.y - scale_ball.y / 2, scale_ball.x, scale_ball.y);
+   i_bar_hit = is_inside_box(x, y, pos_bar.x - scale_bar.x / 2, pos_bar.y - scale_ball.y / 2, scale_bar.x, scale_ball.y);
+   i_ball_hit = is_inside_box(x, y, pos_ball.x - scale_ball.x / 2, pos_ball.y - scale_ball.y / 2, scale_ball.x, scale_ball.y);
+
+   bool hit = i_bar_hit || i_ball_hit;
 
    return hit;
 }
@@ -448,6 +512,11 @@ void mws_list::init() {}
 
 void mws_list::receive(shared_ptr<iadp> idp)
 {
+   if (!is_enabled())
+   {
+      return;
+   }
+
    if (receive_handler)
    {
       receive_handler(get_instance(), idp);
@@ -619,6 +688,11 @@ void mws_tree::init()
 
 void mws_tree::receive(shared_ptr<iadp> idp)
 {
+   if (!is_enabled())
+   {
+      return;
+   }
+
    if (receive_handler)
    {
       receive_handler(get_instance(), idp);

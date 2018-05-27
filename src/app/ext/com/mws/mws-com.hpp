@@ -28,6 +28,7 @@ class mws_img_btn : public mws_page_item
 public:
    static std::shared_ptr<mws_img_btn> nwi();
    virtual ~mws_img_btn() {}
+   void set_enabled(bool i_is_enabled) override;
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void set_img_name(std::string i_img_name);
    virtual void receive(shared_ptr<iadp> idp) override;
@@ -77,7 +78,7 @@ public:
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp) override;
-   virtual bool is_hit(float x, float y);
+   virtual bool is_hit(float x, float y, bool& i_ball_hit, bool& i_bar_hit);
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
    virtual void set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_slider)> i_on_drag_handler);

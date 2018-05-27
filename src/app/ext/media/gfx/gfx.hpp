@@ -126,6 +126,7 @@ private:
    std::shared_ptr<gfx_shader> black_shader;
    std::shared_ptr<gfx_shader> wireframe_shader;
    std::shared_ptr<gfx_shader> basic_tex_shader;
+   std::shared_ptr<gfx_shader> mws_shader;
    std::shared_ptr<gfx_shader> c_o_shader;
    std::vector<std::weak_ptr<gfx_rt> > rt_list;
    std::vector<std::weak_ptr<gfx_shader> > shader_list;
