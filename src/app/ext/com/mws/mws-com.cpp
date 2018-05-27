@@ -230,7 +230,7 @@ void mws_button::receive(shared_ptr<iadp> idp)
          return;
       }
 
-      switch (ts->type == ts->touch_began)
+      if (ts->type == ts->touch_began)
       {
          on_click();
          ts->process();
