@@ -25,6 +25,11 @@ int gfx_readback::get_pbo_size() const
    return width * height * ti->get_bpp();
 }
 
+const std::vector<uint8>& gfx_readback::get_pbo_pixels() const
+{
+   return pbo_pixels;
+}
+
 void gfx_readback::rewind()
 {
    pbo_index = 0;
@@ -39,7 +44,7 @@ void gfx_readback::set_params(int i_width, int i_height, std::string i_format)
    pbo_data_size = get_pbo_size();
    //pbo_data.resize(pbo_data_size);
 
-   for (uint32 k = 0; k < pbo_count; k++)
+   for (int k = 0; k < pbo_count; k++)
    {
       glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id_vect[k]);
       glBufferData(GL_PIXEL_PACK_BUFFER, pbo_data_size, 0, GL_STREAM_READ);
@@ -47,6 +52,32 @@ void gfx_readback::set_params(int i_width, int i_height, std::string i_format)
 
    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
    rewind();
+}
+
+void gfx_readback::set_read_method(mws_read_method i_read_method)
+{
+   read_method = i_read_method;
+
+   switch (read_method)
+   {
+   case mws_read_method::e_map_buff:
+      pbo_pixels.clear();
+      break;
+
+   case mws_read_method::e_map_buff_pixels_buff:
+   case mws_read_method::e_get_buff:
+      pbo_pixels.resize(get_pbo_size());
+      break;
+
+   default:
+      mws_assert(false);
+      break;
+   }
+}
+
+mws_read_method gfx_readback::get_read_method() const
+{
+   return read_method;
 }
 
 void gfx_readback::update()
@@ -70,21 +101,45 @@ void gfx_readback::update()
 
       // map the PBO containing the framebuffer pixels before processing it
       glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id_vect[pbo_next_index]);
-      // glGetBufferSubData(GL_PIXEL_PACK_BUFFER, 0, pbo_data.size(), pbo_data.data());
-      GLubyte* src = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, pbo_data_size, GL_MAP_READ_BIT);
 
-      mws_report_gfx_errs();
-      if (src)
+      switch (read_method)
       {
-         if (on_data_recv_handler)
+      case mws_read_method::e_map_buff:
+      case mws_read_method::e_map_buff_pixels_buff:
+      {
+         GLubyte* src = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, pbo_data_size, GL_MAP_READ_BIT);
+
+         mws_report_gfx_errs();
+         if (src)
          {
-            on_data_recv_handler(src, pbo_data_size);
+            if (on_data_recv_handler)
+            {
+               on_data_recv_handler(this, src, pbo_data_size);
+            }
          }
+
+         // release pointer to the mapped buffer
+         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+         mws_report_gfx_errs();
+         break;
       }
 
-      // release pointer to the mapped buffer
-      glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-      mws_report_gfx_errs();
+      case mws_read_method::e_get_buff:
+      {
+         glGetBufferSubData(GL_PIXEL_PACK_BUFFER, 0, get_pbo_size(), pbo_pixels.data());
+
+         if (on_data_recv_handler)
+         {
+            on_data_recv_handler(this, pbo_pixels.data(), pbo_data_size);
+         }
+         break;
+      }
+
+      default:
+         mws_assert(false);
+         break;
+      }
+
       glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
       mws_report_gfx_errs();
    }
@@ -125,11 +180,13 @@ mws_pbo_bundle::mws_pbo_bundle(mws_sp<gfx> i_gi, int i_width, int i_height, std:
    readback = gfx_readback::nwi(i_gi);
    readback->set_params(i_width, i_height, i_format);
    rt_quad = gfx_quad_2d::nwi(i_gi);
-   rt_quad->set_dimensions(1.f, 1.f);
-   rt_quad->set_scale((float)i_width, (float)i_height);
+   rt_quad->set_dimensions(2.f, 2.f);
+   rt_quad->set_anchor(gfx_quad_2d::e_center);
+   rt_quad->set_v_flip(true);
+   (*rt_quad)[MP_CULL_BACK] = false;
 }
 
-void mws_pbo_bundle::set_on_data_recv_handler(std::function<void(gfx_ubyte* i_data, int i_size)> i_handler)
+void mws_pbo_bundle::set_on_data_recv_handler(std::function<void(const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)> i_handler)
 {
    readback->on_data_recv_handler = i_handler;
 }
@@ -143,8 +200,6 @@ void mws_pbo_bundle::update(std::shared_ptr<gfx_camera> i_cam)
 {
    gfx::i()->rt.set_current_render_target(rt);
    rt_quad->draw_out_of_sync(i_cam);
-   //gfx::i()->rt.get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
-   //helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
    readback->update();
    mws_report_gfx_errs();
 

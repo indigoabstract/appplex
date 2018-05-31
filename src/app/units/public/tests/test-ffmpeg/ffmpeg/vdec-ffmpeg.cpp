@@ -376,17 +376,20 @@ private:
 				{
 					int w1 = av_frame->linesize[0];
 					int w2 = av_frame->linesize[1];
+               int w = codec_ctx->width;
 					int h = codec_ctx->height;
 
 					if (!(y_tex && y_tex->get_width() == w1 && y_tex->get_height() == h))
 					{
-						q2d = gfx_quad_2d::nwi();
-						//rt = nullptr;
-						//rt_tex = y_tex = u_tex = v_tex = nullptr;
+                  gfx_tex_params prm;
 
-						y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), w1, h, "R8");
-						u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), w2, h / 2, "R8");
-						v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), w2, h / 2, "R8");
+                  prm.set_format_id("R8");
+                  prm.set_rt_params();
+                  q2d = gfx_quad_2d::nwi();
+
+						y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), w1, h, &prm);
+						u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), w2, h / 2, &prm);
+						v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), w2, h / 2, &prm);
 						yt.resize(w1 * h);
 						ut.resize(w2 * h / 2);
 						vt.resize(w2 * h / 2);
@@ -400,33 +403,29 @@ private:
 						q_tex["u_s2d_y_tex"][MP_TEXTURE_INST] = y_tex;
 						q_tex["u_s2d_u_tex"][MP_TEXTURE_INST] = u_tex;
 						q_tex["u_s2d_v_tex"][MP_TEXTURE_INST] = v_tex;
-						q_tex.scaling = glm::vec3(w1, h, 1.f);
-						//q2d->set_v_flip(true);
-                  gfx_tex_params prm;
+						//q_tex.scaling = glm::vec3(w, h, 1.f);
 
-                  prm.set_format_id("RGBA8");
-                  prm.set_rt_params();
-                  rt_tex = gfx::i()->tex.nwi("s2d-" + gfx_tex::gen_id(), w1, h, &prm);
+                  float hratio = float(w) / w1;
+
+                  q2d->set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
+                  q2d->set_v_flip(true);
+                  gfx_tex_params prm_2;
+
+                  prm_2.set_format_id("RGBA8");
+                  prm_2.set_rt_params();
+                  rt_tex = gfx::i()->tex.nwi("s2d-" + gfx_tex::gen_id(), w, h, &prm_2);
 						rt = gfx::i()->rt.new_rt();
 						rt->set_color_attachment(rt_tex);
 						clear_rt();
-					}
-
-					shared_ptr<gfx_shader> active_shader = gfx::i()->shader.get_current_program();
-
-					if (!active_shader)
-					{
-						active_shader = gfx::i()->shader.get_program_by_name("black-shader");
-						gfx::i()->shader.set_current_program(active_shader);
 					}
 
 					y_tex->send_uniform("u_s2d_y_tex", 0);
 					u_tex->send_uniform("u_s2d_u_tex", 1);
 					v_tex->send_uniform("u_s2d_v_tex", 2);
 
-					y_tex->update(0, (const char*)av_frame->data[0]);// , codec_ctx->width * codec_ctx->height);
-					u_tex->update(1, (const char*)av_frame->data[1]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
-					v_tex->update(2, (const char*)av_frame->data[2]);// , codec_ctx->width / 2 * codec_ctx->height / 2);
+					y_tex->update(0, (const char*)av_frame->data[0]);
+					u_tex->update(1, (const char*)av_frame->data[1]);
+					v_tex->update(2, (const char*)av_frame->data[2]);
 					q2d->draw_out_of_sync(i_cam);
 
 					mws_report_gfx_errs();

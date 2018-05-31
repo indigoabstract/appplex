@@ -81,6 +81,9 @@ public:
    void stop_encoding() override;
    void update();
 
+   mws_vid_enc_method enc_method;
+   mws_video_params params;
+
 private:
    void encode_frame_m0_yuv420_impl(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame);
    void encode_frame_m1_yuv420_impl(const char* iframe_data, int iframe_data_length);
@@ -90,7 +93,6 @@ private:
    void open_video(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
    void add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
 
-   mws_video_params params;
    output_stream_ffmpeg* ost;
    AVOutputFormat* fmt;
    AVDictionary* opt;
@@ -106,15 +108,11 @@ private:
    AVCodec* audio_codec;
    AVCodec* video_codec;
    mws_vid_enc_st state;
-   mws_vid_enc_method enc_method;
-
+   // async gpu readback
    mws_sp<gfx_camera> ortho_cam;
    mws_sp<mws_pbo_bundle> pbo_b_y;
-   std::vector<uint8> y_pbo_pixels;
    mws_sp<mws_pbo_bundle> pbo_b_u;
-   std::vector<uint8> u_pbo_pixels;
    mws_sp<mws_pbo_bundle> pbo_b_v;
-   std::vector<uint8> v_pbo_pixels;
 };
 
 

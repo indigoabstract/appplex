@@ -1028,8 +1028,8 @@ void gfx_vxo::compute_tangent_basis()
 
    struct vx_fmt_3f_3f
    {
-      vx_pos_coord_3f tg;
-      vx_pos_coord_3f bitg;
+      glm::vec3 tg;
+      glm::vec3 bitg;
    };
 
    //std::string n = this->name;
@@ -1039,8 +1039,8 @@ void gfx_vxo::compute_tangent_basis()
    for (int i = 0; i < vertex_count; i++)
    {
       vx_fmt_3f_3f* tangent_basis = (vx_fmt_3f_3f*)&aux_vertices_buffer[i * sizeof(vx_fmt_3f_3f)];
-      tangent_basis->tg.set(tangents[i]);
-      tangent_basis->bitg.set(bitangents[i]);
+      tangent_basis->tg = tangents[i];
+      tangent_basis->bitg = bitangents[i];
    }
    int x = 3;
 }

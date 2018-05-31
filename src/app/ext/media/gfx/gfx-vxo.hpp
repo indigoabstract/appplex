@@ -98,65 +98,30 @@ public:
 };
 
 
-struct vx_pos_coord_3f
-{
-   gfx_float x, y, z;
-
-   void set(const glm::vec3& iv)
-   {
-      x = iv.x;
-      y = iv.y;
-      z = iv.z;
-   }
-};
-
-struct vx_norm_coord_3f
-{
-   gfx_float nx, ny, nz;
-
-   void set(const glm::vec3& iv)
-   {
-      nx = iv.x;
-      ny = iv.y;
-      nz = iv.z;
-   }
-};
-
 struct vx_color_coord_4b
 {
    gfx_ubyte r, g, b, a;
 };
 
-struct vx_tex_coord_2f
-{
-   gfx_float u, v;
-
-   void set(float is, float it)
-   {
-      u = is;
-      v = it;
-   }
-};
-
 struct vx_fmt_p3f_t2f
 {
-   vx_pos_coord_3f pos;
-   vx_tex_coord_2f tex;
+   glm::vec3 pos;
+   glm::vec2 tex;
 };
 
 struct vx_fmt_p3f_n3f_t2f
 {
-   vx_pos_coord_3f pos;
-   vx_norm_coord_3f nrm;
-   vx_tex_coord_2f tex;
+   glm::vec3 pos;
+   glm::vec3 nrm;
+   glm::vec2 tex;
 };
 
 struct vx_fmt_p3f_c4b_n3f_t2f
 {
-   vx_pos_coord_3f pos;
+   glm::vec3 pos;
    vx_color_coord_4b clr;
-   vx_norm_coord_3f nrm;
-   vx_tex_coord_2f tex;
+   glm::vec3 nrm;
+   glm::vec2 tex;
 };
 
 

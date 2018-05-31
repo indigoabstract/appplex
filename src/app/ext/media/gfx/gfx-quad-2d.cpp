@@ -97,27 +97,44 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
 
    if (iv_flip)
    {
-      // xyz, uv
       tvertices_data =
       {
-         { { -p * dx,  p * dy, 0 },{ 0, 0, -1 },{ 0, 0 } },
-         { { -p * dx, -p * dy, 0 },{ 0, 0, -1 },{ 0, 1 } },
-         { { p * dx, -p * dy, 0 },{ 0, 0, -1 },{ 1, 1 } },
-         { { p * dx,  p * dy, 0 },{ 0, 0, -1 },{ 1, 0 } },
+         { vx_data[0].pos, vx_data[0].nrm, { vx_data[1].tex.s, vx_data[1].tex.t } },
+         { vx_data[1].pos, vx_data[1].nrm, { vx_data[0].tex.s, vx_data[0].tex.t } },
+         { vx_data[2].pos, vx_data[2].nrm, { vx_data[3].tex.s, vx_data[3].tex.t } },
+         { vx_data[3].pos, vx_data[3].nrm, { vx_data[2].tex.s, vx_data[2].tex.t } },
       };
    }
    else
    {
-      // xyz, uv
       tvertices_data =
       {
-         { { -p * dx,  p * dy, 0 },{ 0, 0, -1 },{ 0, 1 } },
-         { { -p * dx, -p * dy, 0 },{ 0, 0, -1 },{ 0, 0 } },
-         { { p * dx, -p * dy, 0 },{ 0, 0, -1 },{ 1, 0 } },
-         { { p * dx,  p * dy, 0 },{ 0, 0, -1 },{ 1, 1 } },
+         { vx_data[0].pos, vx_data[0].nrm, { vx_data[0].tex.s, vx_data[0].tex.t } },
+         { vx_data[1].pos, vx_data[1].nrm, { vx_data[1].tex.s, vx_data[1].tex.t } },
+         { vx_data[2].pos, vx_data[2].nrm, { vx_data[2].tex.s, vx_data[2].tex.t } },
+         { vx_data[3].pos, vx_data[3].nrm, { vx_data[3].tex.s, vx_data[3].tex.t } },
       };
    }
 
+
+   const gfx_indices_type tindices_data[] =
+   {
+      1, 0, 2, 3, 2, 0,
+   };
+
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+}
+
+void gfx_quad_2d::set_dimensions(float idx, float idy)
+{
+   float p = 0.5;
+   vx_data =
+   {
+      { { -p * idx,  p * idy, 0 }, { 0, 0, -1 }, { 0, 1 } },
+   { { -p * idx, -p * idy, 0 }, { 0, 0, -1 }, { 0, 0 } },
+   { { p * idx, -p * idy, 0 }, { 0, 0, -1 }, { 1, 0 } },
+   { { p * idx,  p * idy, 0 }, { 0, 0, -1 }, { 1, 1 } },
+   };
 
    const gfx_indices_type tindices_data[] =
    {
@@ -126,39 +143,31 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f) * tvertices_data.size(), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
-}
-
-void gfx_quad_2d::set_dimensions(float idx, float idy)
-{
    dx = idx;
    dy = idy;
-   gfx_plane::set_dimensions(dx, dy);
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
 }
 
 void gfx_quad_2d::set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::vec2 lb)
 {
    float p = 0.5;
-   const vx_fmt_p3f_n3f_t2f tvertices_data[] =
-      // xyz, uv
+   vx_data =
    {
-      { { -p * dx,  p * dy, 0 },{ 0, 0, -1 },{ lb.s, lb.t } },
-      { { -p * dx, -p * dy, 0 },{ 0, 0, -1 },{ lt.s, lt.t } },
-      { { p * dx, -p * dy, 0 },{ 0, 0, -1 },{ rt.s, rt.t } },
-      { { p * dx,  p * dy, 0 },{ 0, 0, -1 },{ rb.s, rb.t } },
+      { vx_data[0].pos, vx_data[0].nrm, { lb.s, lb.t } },
+      { vx_data[1].pos, vx_data[1].nrm, { lt.s, lt.t } },
+      { vx_data[2].pos, vx_data[2].nrm, { rt.s, rt.t } },
+      { vx_data[3].pos, vx_data[3].nrm, { rb.s, rb.t } },
    };
 
    const gfx_indices_type tindices_data[] =
    {
-      //0, 1, 2, 0, 2, 3
-      //2, 0, 1, 0, 2, 3,
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
 }
 
-gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_plane(i_gi)
+gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"), i_gi)
 {
    anchor_type = e_top_left;
    tr = glm::vec2(0.f);

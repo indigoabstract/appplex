@@ -7,7 +7,7 @@
 class gfx;
 
 
-class gfx_quad_2d : public gfx_plane
+class gfx_quad_2d : public gfx_vxo
 {
 public:
    enum e_anchor_types
@@ -30,7 +30,7 @@ public:
    virtual void set_scale(const glm::vec2& i_sc);
    virtual void set_scale(float ix, float iy);
    virtual void set_v_flip(bool iv_flip);
-   virtual void set_dimensions(float idx, float idy) override;
+   virtual void set_dimensions(float idx, float idy);
    virtual void set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::vec2 lb);
 
 protected:
@@ -41,6 +41,7 @@ protected:
    float a;
    glm::vec2 tr;
    glm::vec2 sc;
+   std::vector<vx_fmt_p3f_n3f_t2f> vx_data;
 };
 
 

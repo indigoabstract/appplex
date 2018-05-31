@@ -576,13 +576,23 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_
 
    if (!pbo_b_y || (pbo_b_y->rt_tex->get_width() != width) || (pbo_b_y->rt_tex->get_height() != height))
    {
+      mws_video_params prm;
+
+      prm.width = width;
+      prm.height = height;
+      prm.time_base_numerator = params.time_base_numerator;
+      prm.time_base_denominator = params.time_base_denominator;
+      prm.ticks_per_frame = params.ticks_per_frame;
+
+      start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
+
       {
          pbo_b_y = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width, height, "R8"));
-         y_pbo_pixels.resize(pbo_b_y->readback->get_pbo_size());
-         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         pbo_b_y->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
+         auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
             //memcpy(i_data, y_pbo_pixels.data(), i_size);
-            encode_frame_m0_yuv420_impl(i_data, u_pbo_pixels.data(), v_pbo_pixels.data());
+            encode_frame_m0_yuv420_impl(i_data, pbo_b_u->readback->get_pbo_pixels().data(), pbo_b_v->readback->get_pbo_pixels().data());
             mws_print("recv y data\n");
          };
          pbo_b_y->set_on_data_recv_handler(handler);
@@ -591,10 +601,10 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_
       }
       {
          pbo_b_u = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
-         u_pbo_pixels.resize(pbo_b_u->readback->get_pbo_size());
-         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         pbo_b_u->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
+         auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
-            memcpy(u_pbo_pixels.data(), i_data, i_size);
+            memcpy((void*)i_rb->get_pbo_pixels().data(), i_data, i_size);
             mws_print("recv u data\n");
          };
          pbo_b_u->set_on_data_recv_handler(handler);
@@ -603,10 +613,10 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_
       }
       {
          pbo_b_v = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
-         v_pbo_pixels.resize(pbo_b_v->readback->get_pbo_size());
-         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         pbo_b_v->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
+         auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
-            memcpy(v_pbo_pixels.data(), i_data, i_size);
+            memcpy((void*)i_rb->get_pbo_pixels().data(), i_data, i_size);
             mws_print("recv v data\n");
          };
          pbo_b_v->set_on_data_recv_handler(handler);
@@ -624,6 +634,8 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_
    // must be last
    pbo_b_y->set_tex(i_tex);
    pbo_b_y->update(ortho_cam);
+
+   gfx_util::draw_tex(ortho_cam, i_tex, 10, 300);
 }
 
 void venc_ffmpeg::stop_encoding()
@@ -999,7 +1011,9 @@ public:
 
       if (reenc->video_reencoder_listener)
       {
-         reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
+         //reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
+         reenc->venc->enc_method = mws_vid_enc_method::e_enc_m2;
+         reenc->venc->params = prm;
          reenc->video_reencoder_listener->on_decoding_started(i_gi, prm);
       }
       else

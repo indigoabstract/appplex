@@ -6,23 +6,23 @@
 
 namespace gfx_vxo_util
 {
-   vx_pos_coord_3f lerp_pos(const vx_pos_coord_3f& start, const vx_pos_coord_3f& end, float t)
+   glm::vec3 lerp_pos(const glm::vec3& start, const glm::vec3& end, float t)
    {
-      vx_pos_coord_3f r = { start.x * (1.f - t) + end.x * t, start.y * (1.f - t) + end.y * t, start.z * (1.f - t) + end.z * t };
+      glm::vec3 r = { start.x * (1.f - t) + end.x * t, start.y * (1.f - t) + end.y * t, start.z * (1.f - t) + end.z * t };
 
       return r;
    }
 
-   vx_norm_coord_3f lerp_nrm(const vx_norm_coord_3f& start, const vx_norm_coord_3f& end, float t)
+   glm::vec3 lerp_nrm(const glm::vec3& start, const glm::vec3& end, float t)
    {
-      vx_norm_coord_3f r = { start.nx * (1.f - t) + end.nx * t, start.ny * (1.f - t) + end.ny * t, start.nz * (1.f - t) + end.nz * t };
+      glm::vec3 r = { start.x * (1.f - t) + end.x * t, start.y * (1.f - t) + end.y * t, start.z * (1.f - t) + end.z * t };
 
       return r;
    }
 
-   vx_tex_coord_2f lerp_tex(const vx_tex_coord_2f& start, const vx_tex_coord_2f& end, float t)
+   glm::vec2 lerp_tex(const glm::vec2& start, const glm::vec2& end, float t)
    {
-      vx_tex_coord_2f r = { start.u * (1.f - t) + end.u * t, start.v * (1.f - t) + end.v * t };
+      glm::vec2 r = { start.s * (1.f - t) + end.s * t, start.t * (1.f - t) + end.t * t };
 
       return r;
    }
@@ -130,9 +130,9 @@ void gfx_grid::set_dimensions(int i_h_point_count, int i_v_point_count)
          glm::vec2 it_tx = glm::mix(left_tx, right_tx, hf);
          auto& r = tvertices_data[i_h_point_count * i + j];
 
-         r.pos.set(it_vx);
-         r.nrm.set(glm::vec3(0, 0, -1));
-         r.tex.set(it_tx.x, it_tx.y);
+         r.pos = it_vx;
+         r.nrm = glm::vec3(0, 0, -1);
+         r.tex = it_tx;
       }
    }
 
@@ -192,9 +192,9 @@ void gfx_box::set_dimensions(float idx, float idy, float idz)
    for (int k = 0; k < 6; k++)
    {
       int i = k * 4;
-      vx_pos_coord_3f& pos0 = tvertices_data[i + 0].pos;
-      vx_pos_coord_3f& pos1 = tvertices_data[i + 1].pos;
-      vx_pos_coord_3f& pos2 = tvertices_data[i + 2].pos;
+      glm::vec3& pos0 = tvertices_data[i + 0].pos;
+      glm::vec3& pos1 = tvertices_data[i + 1].pos;
+      glm::vec3& pos2 = tvertices_data[i + 2].pos;
       glm::vec3 v0(pos0.x, pos0.y, pos0.z);
       glm::vec3 v1(pos1.x, pos1.y, pos1.z);
       glm::vec3 v2(pos2.x, pos2.y, pos2.z);
@@ -205,15 +205,15 @@ void gfx_box::set_dimensions(float idx, float idy, float idz)
 
       for (int l = 0; l < 4; l++)
       {
-         tvertices_data[i + l].nrm.nx = sn.x;
-         tvertices_data[i + l].nrm.ny = sn.y;
-         tvertices_data[i + l].nrm.nz = sn.z;
+         tvertices_data[i + l].nrm.x = sn.x;
+         tvertices_data[i + l].nrm.y = sn.y;
+         tvertices_data[i + l].nrm.z = sn.z;
       }
    }
 
    for (int k = 0; k < tvertices_data_length; k++)
    {
-      vx_pos_coord_3f& pos = tvertices_data[k].pos;
+      glm::vec3& pos = tvertices_data[k].pos;
 
       pos.x *= idx;
       pos.y *= idy;
@@ -310,9 +310,9 @@ void gfx_vpc_box::set_dimensions(float iradius, int isegments)
    for (int k = 0; k < 6; k++)
    {
       int i = k * 4;
-      vx_pos_coord_3f& pos0 = tvertices_data[i + 0].pos;
-      vx_pos_coord_3f& pos1 = tvertices_data[i + 1].pos;
-      vx_pos_coord_3f& pos2 = tvertices_data[i + 2].pos;
+      glm::vec3& pos0 = tvertices_data[i + 0].pos;
+      glm::vec3& pos1 = tvertices_data[i + 1].pos;
+      glm::vec3& pos2 = tvertices_data[i + 2].pos;
       glm::vec3 v0(pos0.x, pos0.y, pos0.z);
       glm::vec3 v1(pos1.x, pos1.y, pos1.z);
       glm::vec3 v2(pos2.x, pos2.y, pos2.z);
@@ -323,15 +323,15 @@ void gfx_vpc_box::set_dimensions(float iradius, int isegments)
 
       for (int l = 0; l < 4; l++)
       {
-         tvertices_data[i + l].nrm.nx = sn.x;
-         tvertices_data[i + l].nrm.ny = sn.y;
-         tvertices_data[i + l].nrm.nz = sn.z;
+         tvertices_data[i + l].nrm.x = sn.x;
+         tvertices_data[i + l].nrm.y = sn.y;
+         tvertices_data[i + l].nrm.z = sn.z;
       }
    }
 
    for (int k = 0; k < tvertices_data_length; k++)
    {
-      vx_pos_coord_3f& pos = tvertices_data[k].pos;
+      glm::vec3& pos = tvertices_data[k].pos;
 
       pos.x *= iradius;
       pos.y *= iradius;
@@ -355,18 +355,18 @@ void gfx_vpc_box::set_dimensions(float iradius, int isegments)
       {
          float vt1 = float(i) / isegments;
          float vt2 = float(i + 1) / isegments;
-         vx_pos_coord_3f hstart_pos1 = lerp_pos(tl.pos, bl.pos, vt1);
-         vx_pos_coord_3f hstart_pos2 = lerp_pos(tl.pos, bl.pos, vt2);
-         vx_pos_coord_3f hend_pos1 = lerp_pos(tr.pos, br.pos, vt1);
-         vx_pos_coord_3f hend_pos2 = lerp_pos(tr.pos, br.pos, vt2);
-         vx_norm_coord_3f hstart_nrm1 = lerp_nrm(tl.nrm, bl.nrm, vt1);
-         vx_norm_coord_3f hstart_nrm2 = lerp_nrm(tl.nrm, bl.nrm, vt2);
-         vx_norm_coord_3f hend_nrm1 = lerp_nrm(tr.nrm, br.nrm, vt1);
-         vx_norm_coord_3f hend_nrm2 = lerp_nrm(tr.nrm, br.nrm, vt2);
-         vx_tex_coord_2f hstart_tex1 = lerp_tex(tl.tex, bl.tex, vt1);
-         vx_tex_coord_2f hstart_tex2 = lerp_tex(tl.tex, bl.tex, vt2);
-         vx_tex_coord_2f hend_tex1 = lerp_tex(tr.tex, br.tex, vt1);
-         vx_tex_coord_2f hend_tex2 = lerp_tex(tr.tex, br.tex, vt2);
+         glm::vec3 hstart_pos1 = lerp_pos(tl.pos, bl.pos, vt1);
+         glm::vec3 hstart_pos2 = lerp_pos(tl.pos, bl.pos, vt2);
+         glm::vec3 hend_pos1 = lerp_pos(tr.pos, br.pos, vt1);
+         glm::vec3 hend_pos2 = lerp_pos(tr.pos, br.pos, vt2);
+         glm::vec3 hstart_nrm1 = lerp_nrm(tl.nrm, bl.nrm, vt1);
+         glm::vec3 hstart_nrm2 = lerp_nrm(tl.nrm, bl.nrm, vt2);
+         glm::vec3 hend_nrm1 = lerp_nrm(tr.nrm, br.nrm, vt1);
+         glm::vec3 hend_nrm2 = lerp_nrm(tr.nrm, br.nrm, vt2);
+         glm::vec2 hstart_tex1 = lerp_tex(tl.tex, bl.tex, vt1);
+         glm::vec2 hstart_tex2 = lerp_tex(tl.tex, bl.tex, vt2);
+         glm::vec2 hend_tex1 = lerp_tex(tr.tex, br.tex, vt1);
+         glm::vec2 hend_tex2 = lerp_tex(tr.tex, br.tex, vt2);
 
          for (int j = 0; j < isegments; j++, idx++)
          {
@@ -570,36 +570,36 @@ void gfx_vpc_kubic_sphere::set_dimensions(float iradius, int isegments)
       {
          float vt1 = float(i) / isegments;
          float vt2 = float(i + 1) / isegments;
-         vx_pos_coord_3f hstart_pos1 = lerp_pos(tl.pos, bl.pos, vt1);
-         vx_pos_coord_3f hstart_pos2 = lerp_pos(tl.pos, bl.pos, vt2);
-         vx_pos_coord_3f hend_pos1 = lerp_pos(tr.pos, br.pos, vt1);
-         vx_pos_coord_3f hend_pos2 = lerp_pos(tr.pos, br.pos, vt2);
-         vx_tex_coord_2f hstart_tex1 = lerp_tex(tl.tex, bl.tex, vt1);
-         vx_tex_coord_2f hstart_tex2 = lerp_tex(tl.tex, bl.tex, vt2);
-         vx_tex_coord_2f hend_tex1 = lerp_tex(tr.tex, br.tex, vt1);
-         vx_tex_coord_2f hend_tex2 = lerp_tex(tr.tex, br.tex, vt2);
+         glm::vec3 hstart_pos1 = lerp_pos(tl.pos, bl.pos, vt1);
+         glm::vec3 hstart_pos2 = lerp_pos(tl.pos, bl.pos, vt2);
+         glm::vec3 hend_pos1 = lerp_pos(tr.pos, br.pos, vt1);
+         glm::vec3 hend_pos2 = lerp_pos(tr.pos, br.pos, vt2);
+         glm::vec2 hstart_tex1 = lerp_tex(tl.tex, bl.tex, vt1);
+         glm::vec2 hstart_tex2 = lerp_tex(tl.tex, bl.tex, vt2);
+         glm::vec2 hend_tex1 = lerp_tex(tr.tex, br.tex, vt1);
+         glm::vec2 hend_tex2 = lerp_tex(tr.tex, br.tex, vt2);
 
          for (int j = 0; j < isegments; j++, idx++)
          {
             int i_off = idx * 4;
             float ht1 = float(j) / isegments;
             float ht2 = float(j + 1) / isegments;
-            vx_pos_coord_3f pos[4] =
+            glm::vec3 pos[4] =
             {
                lerp_pos(hstart_pos2, hend_pos2, ht1),
                lerp_pos(hstart_pos1, hend_pos1, ht1),
                lerp_pos(hstart_pos1, hend_pos1, ht2),
                lerp_pos(hstart_pos2, hend_pos2, ht2),
             };
-            vx_norm_coord_3f nrm[4];
+            glm::vec3 nrm[4];
             glm::vec3 gpos[4];
 
             for (int v = 0; v < 4; v++)
             {
                gpos[v] = glm::normalize(glm::vec3(pos[v].x, pos[v].y, pos[v].z));
-               nrm[v].nx = 0;//gpos[v].x;
-               nrm[v].ny = 0;//gpos[v].y;
-               nrm[v].nz = 0;//gpos[v].z;
+               nrm[v].x = 0;//gpos[v].x;
+               nrm[v].y = 0;//gpos[v].y;
+               nrm[v].z = 0;//gpos[v].z;
 
                float height_val = 0;//displ_map[k][i + vi[v]][j + vj[v]];
 
@@ -641,27 +641,27 @@ void gfx_vpc_kubic_sphere::set_dimensions(float iradius, int isegments)
       glm::vec3 v2(tv2.pos.x, tv2.pos.y, tv2.pos.z);
 
       glm::vec3 normal = -glm::normalize(glm::cross(v2 - v0, v1 - v0));
-      vx_norm_coord_3f nrm = { normal.x, normal.y, normal.z };
+      glm::vec3 nrm = { normal.x, normal.y, normal.z };
 
-      vx_norm_coord_3f& n0 = ks_vertices_data[ks_indices_data[i]].nrm;
-      vx_norm_coord_3f& n1 = ks_vertices_data[ks_indices_data[i + 1]].nrm;
-      vx_norm_coord_3f& n2 = ks_vertices_data[ks_indices_data[i + 2]].nrm;
-      n0.nx += nrm.nx;
-      n0.ny += nrm.ny;
-      n0.nz += nrm.nz;
-      n1.nx += nrm.nx;
-      n1.ny += nrm.ny;
-      n1.nz += nrm.nz;
-      n2.nx += nrm.nx;
-      n2.ny += nrm.ny;
-      n2.nz += nrm.nz;
+      glm::vec3& n0 = ks_vertices_data[ks_indices_data[i]].nrm;
+      glm::vec3& n1 = ks_vertices_data[ks_indices_data[i + 1]].nrm;
+      glm::vec3& n2 = ks_vertices_data[ks_indices_data[i + 2]].nrm;
+      n0.x += nrm.x;
+      n0.y += nrm.y;
+      n0.z += nrm.z;
+      n1.x += nrm.x;
+      n1.y += nrm.y;
+      n1.z += nrm.z;
+      n2.x += nrm.x;
+      n2.y += nrm.y;
+      n2.z += nrm.z;
    }
 
    for (int i = 0; i < ks_vertices_data.size(); i++)
    {
-      glm::vec3 n(ks_vertices_data[i].nrm.nx, ks_vertices_data[i].nrm.ny, ks_vertices_data[i].nrm.nz);
+      glm::vec3 n(ks_vertices_data[i].nrm.x, ks_vertices_data[i].nrm.y, ks_vertices_data[i].nrm.z);
       n = glm::normalize(n);
-      vx_norm_coord_3f nn = { n.x, n.y, n.z };
+      glm::vec3 nn = { n.x, n.y, n.z };
       ks_vertices_data[i].nrm = nn;
    }
 
