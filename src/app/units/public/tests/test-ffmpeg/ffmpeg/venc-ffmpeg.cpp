@@ -5,8 +5,15 @@
 #ifdef MOD_FFMPEG
 
 #include "venc-ffmpeg.hpp"
+#include "vdec-ffmpeg.hpp"
 #include "pfm.hpp"
 #include "min.hpp"
+#include "gfx.hpp"
+#include "gfx-quad-2d.hpp"
+#include "gfx-tex.hpp"
+#include "gfx-pbo.hpp"
+#include "gfx-camera.hpp"
+#include "gfx-rt.hpp"
 
 #pragma comment (lib, "ffmpeg/avformat.lib")
 #pragma comment(lib, "ffmpeg/avcodec.lib")
@@ -41,8 +48,8 @@ std::string get_av_error_string(int av_error_code)
 mws_video_params::mws_video_params()
 {
    bit_rate = 3000000;
-   width = 480;
-   height = 480;
+   width = 0;
+   height = 0;
    // frames per second
    time_base_numerator = 1;
    time_base_denominator = 24;
@@ -60,20 +67,22 @@ mws_video_params::mws_video_params()
 
 static void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
-	mws_print("ffmpeg encoding error log %s", fmt);
+   mws_print("ffmpeg encoding error log %s", fmt);
 }
 
 
 venc_ffmpeg::venc_ffmpeg()
 {
+   ortho_cam = gfx_camera::nwi();
+   ortho_cam->projection_type = gfx_camera::e_orthographic_proj;
    state = mws_vid_enc_st::e_st_finished;
    fmt = nullptr;
    opt = nullptr;
-	f = nullptr;
-	frame = nullptr;
+   f = nullptr;
+   frame = nullptr;
    oc = nullptr;
-	video_path = "";
-	pts_idx = 0;
+   video_path = "";
+   pts_idx = 0;
 
    have_video = have_audio = false;
    encode_video = encode_audio = false;
@@ -121,7 +130,7 @@ static AVFrame *get_audio_frame(output_stream_ffmpeg *ost)
       return NULL;
    }
 
-   for (j = 0; j <frame->nb_samples; j++)
+   for (j = 0; j < frame->nb_samples; j++)
    {
       v = (int)(sin(ost->t) * 10000);
 
@@ -187,7 +196,7 @@ static int write_audio_frame(AVFormatContext *oc, output_stream_ffmpeg *ost)
       }
 
       frame = ost->frame;
-      AVRational t = {1, c->sample_rate};
+      AVRational t = { 1, c->sample_rate };
 
       frame->pts = av_rescale_q(ost->samples_count, t, c->time_base);
       ost->samples_count += dst_nb_samples;
@@ -295,6 +304,11 @@ mws_vid_enc_st venc_ffmpeg::get_state() const
    return state;
 }
 
+mws_vid_enc_method venc_ffmpeg::get_enc_method() const
+{
+   return enc_method;
+}
+
 std::string venc_ffmpeg::get_video_path()
 {
    return video_path;
@@ -305,7 +319,7 @@ void venc_ffmpeg::set_video_path(std::string i_video_path)
    video_path = i_video_path;
 }
 
-void venc_ffmpeg::start_encoding(const mws_video_params& i_params)
+void venc_ffmpeg::start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
 {
    if (video_path.empty())
    {
@@ -313,12 +327,13 @@ void venc_ffmpeg::start_encoding(const mws_video_params& i_params)
    }
 
    int ret = 0;
-   params = i_params;
+
+   enc_method = i_enc_method;
+   params = i_prm;
    mws_print("Encode video file %s\n", video_path.c_str());
    pts_idx = 0;
 
-
- /* allocate the output media context */
+   /* allocate the output media context */
    avformat_alloc_output_context2(&oc, NULL, NULL, video_path.c_str());
 
    if (!oc)
@@ -396,100 +411,50 @@ void venc_ffmpeg::start_encoding(const mws_video_params& i_params)
    //      encode_audio = !write_audio_frame(oc, &audio_st);
    //   }
    //}
+
+   if (enc_method == mws_vid_enc_method::e_enc_m2)
+   {
+      if (pbo_b_y)
+      {
+         pbo_b_y->readback->rewind();
+         pbo_b_u->readback->rewind();
+         pbo_b_v->readback->rewind();
+      }
+   }
+
    state = mws_vid_enc_st::e_st_encoding;
 }
 
 // encode 1 frame of video
-void venc_ffmpeg::encode_frame(AVFrame* i_frame)
+void venc_ffmpeg::encode_frame_impl(AVFrame* i_frame)
 {
+   mws_assert(enc_method == mws_vid_enc_method::e_enc_m0);
    i_frame->pts = pts_idx;
    write_video_frame(oc, &video_st, i_frame);
    pts_idx++;
 }
 
-// encode 1 frame of video
-void venc_ffmpeg::encode_frame(const char* iframe_data, int iframe_data_length)
+void venc_ffmpeg::encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
 {
-   int video_height = video_st.st->codec->height;
-   int video_width = video_st.st->codec->width;
-   int idx = 0;
-  
-   // y channel
-	for (int y = 0; y < video_height; y++)
-	{
-		for (int x = 0; x < video_width; x++)
-		{
-			frame->data[0][y * frame->linesize[0] + x] = iframe_data[idx];
-			idx++;
-		}
-	}
-
-	// uv channels
-	for (int y = 0; y < video_height / 2; y++)
-	{
-		for (int x = 0; x < video_width / 2; x++)
-		{
-			frame->data[2][y * frame->linesize[2] + x] = iframe_data[idx];
-			idx++;
-			frame->data[1][y * frame->linesize[1] + x] = iframe_data[idx];
-			idx++;
-		}
-	}
-
-   frame->pts = pts_idx;
-   write_video_frame(oc, &video_st, frame);
-   pts_idx++;
+   mws_assert(enc_method == mws_vid_enc_method::e_enc_m0);
+   encode_frame_m0_yuv420_impl(y_frame, u_frame, v_frame);
 }
 
-void venc_ffmpeg::encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
+void venc_ffmpeg::encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length)
 {
-   uint8_t* p0 = &frame->data[0][0];
-   uint8_t* p1 = &frame->data[0][1];
-   uint8_t* p2 = &frame->data[0][2];
-
-   // swap frame pointers to incoming data
-   frame->data[0] = (uint8_t*)y_frame;
-   frame->data[1] = (uint8_t*)u_frame;
-   frame->data[2] = (uint8_t*)v_frame;
-
-   frame->pts = pts_idx;
-   write_video_frame(oc, &video_st, frame);
-   pts_idx++;
-
-   // swap frame pointers back to original data
-   frame->data[0] = p0;
-   frame->data[1] = p1;
-   frame->data[2] = p2;
+   mws_assert(enc_method == mws_vid_enc_method::e_enc_m1);
+   encode_frame_m1_yuv420_impl(iframe_data, iframe_data_length);
 }
 
-void venc_ffmpeg::stop_encoding()
+void venc_ffmpeg::encode_frame_m2_rbga(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex)
 {
- /* Write the trailer, if any. The trailer must be written before you
- * close the CodecContexts open when you wrote the header; otherwise
- * av_write_trailer() may try_ to use memory that was freed on
- * av_codec_close(). */
-   av_write_trailer(oc);
+   mws_assert(enc_method == mws_vid_enc_method::e_enc_m2);
+   encode_frame_m2_rbga_impl(i_gfx_inst, i_frame_tex);
+}
 
-   /* Close each codec. */
-   if (have_video)
-   {
-      close_stream(oc, &video_st);
-   }
+void venc_ffmpeg::update()
+{
 
-   if (have_audio)
-   {
-      close_stream(oc, &audio_st);
-   }
-
-   if (!(fmt->flags & AVFMT_NOFILE))
-   {
-      /* Close the output file. */
-      avio_close(oc->pb);
-   }
-
-   /* free the stream */
-   avformat_free_context(oc);
-   state = mws_vid_enc_st::e_st_finished;
 }
 
 static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
@@ -548,6 +513,147 @@ static AVFrame* alloc_audio_frame(enum AVSampleFormat sample_fmt, uint64_t chann
    }
 
    return frame;
+}
+
+void venc_ffmpeg::encode_frame_m0_yuv420_impl(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
+{
+   uint8_t* p0 = &frame->data[0][0];
+   uint8_t* p1 = &frame->data[0][1];
+   uint8_t* p2 = &frame->data[0][2];
+
+   // swap frame pointers to incoming data
+   frame->data[0] = (uint8_t*)y_frame;
+   frame->data[1] = (uint8_t*)u_frame;
+   frame->data[2] = (uint8_t*)v_frame;
+
+   frame->pts = pts_idx;
+   write_video_frame(oc, &video_st, frame);
+   pts_idx++;
+
+   // swap frame pointers back to original data
+   frame->data[0] = p0;
+   frame->data[1] = p1;
+   frame->data[2] = p2;
+}
+
+void venc_ffmpeg::encode_frame_m1_yuv420_impl(const char* iframe_data, int iframe_data_length)
+{
+   int video_height = video_st.st->codec->height;
+   int video_width = video_st.st->codec->width;
+   int idx = 0;
+
+   // y channel
+   for (int y = 0; y < video_height; y++)
+   {
+      for (int x = 0; x < video_width; x++)
+      {
+         frame->data[0][y * frame->linesize[0] + x] = iframe_data[idx];
+         idx++;
+      }
+   }
+
+   // uv channels
+   for (int y = 0; y < video_height / 2; y++)
+   {
+      for (int x = 0; x < video_width / 2; x++)
+      {
+         frame->data[2][y * frame->linesize[2] + x] = iframe_data[idx];
+         idx++;
+         frame->data[1][y * frame->linesize[1] + x] = iframe_data[idx];
+         idx++;
+      }
+   }
+
+   frame->pts = pts_idx;
+   write_video_frame(oc, &video_st, frame);
+   pts_idx++;
+}
+
+void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_tex)
+{
+   int width = i_tex->get_width();
+   int height = i_tex->get_height();
+
+   if (!pbo_b_y || (pbo_b_y->rt_tex->get_width() != width) || (pbo_b_y->rt_tex->get_height() != height))
+   {
+      {
+         pbo_b_y = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width, height, "R8"));
+         y_pbo_pixels.resize(pbo_b_y->readback->get_pbo_size());
+         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         {
+            //memcpy(i_data, y_pbo_pixels.data(), i_size);
+            encode_frame_m0_yuv420_impl(i_data, u_pbo_pixels.data(), v_pbo_pixels.data());
+            mws_print("recv y data\n");
+         };
+         pbo_b_y->set_on_data_recv_handler(handler);
+         (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
+         (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-y-420.fsh";
+      }
+      {
+         pbo_b_u = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
+         u_pbo_pixels.resize(pbo_b_u->readback->get_pbo_size());
+         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         {
+            memcpy(u_pbo_pixels.data(), i_data, i_size);
+            mws_print("recv u data\n");
+         };
+         pbo_b_u->set_on_data_recv_handler(handler);
+         (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
+         (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-u-420.fsh";
+      }
+      {
+         pbo_b_v = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
+         v_pbo_pixels.resize(pbo_b_v->readback->get_pbo_size());
+         auto handler = [this](gfx_ubyte* i_data, int i_size)
+         {
+            memcpy(v_pbo_pixels.data(), i_data, i_size);
+            mws_print("recv v data\n");
+         };
+         pbo_b_v->set_on_data_recv_handler(handler);
+         (*pbo_b_v->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
+         (*pbo_b_v->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-v-420.fsh";
+      }
+   }
+
+   pbo_b_u->set_tex(i_tex);
+   pbo_b_u->update(ortho_cam);
+
+   pbo_b_v->set_tex(i_tex);
+   pbo_b_v->update(ortho_cam);
+
+   // must be last
+   pbo_b_y->set_tex(i_tex);
+   pbo_b_y->update(ortho_cam);
+}
+
+void venc_ffmpeg::stop_encoding()
+{
+   /* Write the trailer, if any. The trailer must be written before you
+   * close the CodecContexts open when you wrote the header; otherwise
+   * av_write_trailer() may try_ to use memory that was freed on
+   * av_codec_close(). */
+   av_write_trailer(oc);
+
+   /* Close each codec. */
+   if (have_video)
+   {
+      close_stream(oc, &video_st);
+   }
+
+   if (have_audio)
+   {
+      close_stream(oc, &audio_st);
+   }
+
+   if (!(fmt->flags & AVFMT_NOFILE))
+   {
+      /* Close the output file. */
+      avio_close(oc->pb);
+   }
+
+   /* free the stream */
+   avformat_free_context(oc);
+   state = mws_vid_enc_st::e_st_finished;
 }
 
 void venc_ffmpeg::open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg)
@@ -701,8 +807,8 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (!frame)
    {
-   	mws_print("Could not allocate video frame\n");
-   	exit(1);
+      mws_print("Could not allocate video frame\n");
+      exit(1);
    }
 
    frame->format = c->pix_fmt;
@@ -715,8 +821,8 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
    if (ret < 0)
    {
-   	mws_print("Could not allocate raw picture buffer\n");
-   	exit(1);
+      mws_print("Could not allocate raw picture buffer\n");
+      exit(1);
    }
 }
 
@@ -812,8 +918,8 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
       //AVRational t = { 1, STREAM_FRAME_RATE };
       ost->st->time_base.num = params.time_base_numerator;
       ost->st->time_base.den = params.time_base_denominator;
-      c->time_base = ost->st->time_base;
-      c->time_base.num = params.ticks_per_frame;
+      c->time_base.num = params.time_base_numerator * 2;
+      c->time_base.den = params.time_base_denominator;
       c->ticks_per_frame = params.ticks_per_frame;
 
       c->gop_size = params.gop_size; /* emit one intra frame every twelve frames at most */
@@ -845,6 +951,204 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
    {
       c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
    }
+}
+
+
+class mws_ffmpeg_vdec_listener;
+
+
+class mws_ffmpeg_reencoder_impl
+{
+public:
+   mws_ffmpeg_reencoder_impl();
+   void on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex);
+   void update();
+
+   mws_sp<vdec_ffmpeg> vdec;
+   mws_sp<venc_ffmpeg> venc;
+   mws_sp<mws_ffmpeg_vdec_listener> vdec_listener;
+   mws_sp<mws_video_reencoder_listener> video_reencoder_listener;
+   mws_video_params params;
+};
+
+
+class mws_ffmpeg_vdec_listener : public mws_vdec_listener
+{
+public:
+   void on_decoding_started(std::shared_ptr<gfx> i_gi, mws_sp<mws_video_params> i_params) override
+   {
+      auto reenc = reenc_impl.lock();
+      mws_assert(reenc != nullptr);
+      mws_video_params& prm = reenc->params;
+
+      if (prm.width > 0 && prm.height > 0)
+      {
+         int width = prm.width;
+         int height = prm.height;
+
+         prm = *i_params;
+         prm.width = width;
+         prm.height = prm.height;
+      }
+      else
+      {
+         prm = *i_params;
+      }
+
+      mws_print("on_decoding_started\n");
+
+      if (reenc->video_reencoder_listener)
+      {
+         reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
+         reenc->video_reencoder_listener->on_decoding_started(i_gi, prm);
+      }
+      else
+      {
+         reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m0);
+      }
+   }
+
+   void on_frame_decoded(void* i_frame) override
+   {
+      auto reenc = reenc_impl.lock();
+
+      mws_assert(reenc != nullptr);
+
+      // if video_reencoder_listener is null, then no gfx processing is done to the frame. use the direct route to encode frames
+      if (!reenc->video_reencoder_listener)
+      {
+         reenc->venc->encode_frame_impl((AVFrame*)i_frame);
+         mws_print("encode frame AVFrame\n!");
+      }
+   }
+
+   void on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex) override
+   {
+      auto reenc = reenc_impl.lock();
+
+      mws_assert(reenc != nullptr);
+
+      // if video_reencoder_listener is not null, do some gfx processing to the frame and then read pixels back and feed them to the FFMPEG encoder
+      if (reenc->video_reencoder_listener)
+      {
+         auto tex = reenc->video_reencoder_listener->on_frame_decoded(i_gfx_inst, i_frame_tex);
+         auto frame_tex = (tex) ? tex : i_frame_tex;
+
+         reenc->on_frame_decoded(i_gfx_inst, frame_tex);
+         mws_print("encode frame i_gfx_inst, i_frame_tex\n!");
+      }
+   }
+
+   void on_decoding_stopped() override
+   {
+      auto reenc = reenc_impl.lock();
+
+      mws_assert(reenc != nullptr);
+      mws_print("on_decoding_stopped\n");
+      reenc->venc->stop_encoding();
+
+      if (reenc->video_reencoder_listener)
+      {
+         reenc->video_reencoder_listener->on_decoding_stopped();
+      }
+   }
+
+   void on_decoding_finished() override
+   {
+      auto reenc = reenc_impl.lock();
+
+      mws_assert(reenc != nullptr);
+      mws_print("on_decoding_finished\n");
+      reenc->venc->stop_encoding();
+
+      if (reenc->video_reencoder_listener)
+      {
+         reenc->video_reencoder_listener->on_decoding_finished();
+      }
+   }
+
+   mws_wp<mws_ffmpeg_reencoder_impl> reenc_impl;
+};
+
+
+mws_ffmpeg_reencoder_impl::mws_ffmpeg_reencoder_impl()
+{
+   vdec = mws_sp<vdec_ffmpeg>(new vdec_ffmpeg());
+   venc = mws_sp<venc_ffmpeg>(new venc_ffmpeg());
+   vdec_listener = mws_sp<mws_ffmpeg_vdec_listener>(new mws_ffmpeg_vdec_listener());
+   vdec->set_listener(vdec_listener);
+}
+
+void mws_ffmpeg_reencoder_impl::on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex)
+{
+   venc->encode_frame_m2_rbga(i_gfx_inst, i_frame_tex);
+}
+
+void mws_ffmpeg_reencoder_impl::update()
+{
+   vdec->update();
+   venc->update();
+}
+
+
+mws_sp<mws_ffmpeg_reencoder> mws_ffmpeg_reencoder::nwi()
+{
+   auto p = mws_sp<mws_ffmpeg_reencoder_impl>(new mws_ffmpeg_reencoder_impl());
+   auto r = mws_sp<mws_ffmpeg_reencoder>(new mws_ffmpeg_reencoder());
+   r->p = p;
+   p->vdec_listener->reenc_impl = p;
+
+   return r;
+}
+
+mws_vdec_state mws_ffmpeg_reencoder::get_dec_state() const
+{
+   return p->vdec->get_state();
+}
+
+mws_vid_enc_st mws_ffmpeg_reencoder::get_enc_state() const
+{
+   return p->venc->get_state();
+}
+
+std::string mws_ffmpeg_reencoder::get_src_video_path()
+{
+   return p->vdec->get_video_path();
+}
+
+void mws_ffmpeg_reencoder::set_src_video_path(std::string i_video_path)
+{
+   p->vdec->set_video_path(i_video_path);
+}
+
+std::string mws_ffmpeg_reencoder::get_dst_video_path()
+{
+   return p->venc->get_video_path();
+}
+
+void mws_ffmpeg_reencoder::set_dst_video_path(std::string i_video_path)
+{
+   p->venc->set_video_path(i_video_path);
+}
+
+void mws_ffmpeg_reencoder::start_encoding(const mws_video_params& i_prm)
+{
+   p->vdec->start_decoding();
+}
+
+void mws_ffmpeg_reencoder::stop_encoding()
+{
+   p->vdec->stop();
+}
+
+void mws_ffmpeg_reencoder::update()
+{
+   p->update();
+}
+
+void mws_ffmpeg_reencoder::set_listener(mws_sp<mws_video_reencoder_listener> i_listener)
+{
+   p->video_reencoder_listener = i_listener;
 }
 
 #endif

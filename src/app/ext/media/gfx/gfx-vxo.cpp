@@ -550,7 +550,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                if (!tex)
                {
-                  tex = gi()->tex.new_tex_2d(tex_name);
+                  tex = gi()->tex.nwi(tex_name);
                }
 
                if (tex)

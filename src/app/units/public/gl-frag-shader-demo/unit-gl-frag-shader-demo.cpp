@@ -346,7 +346,11 @@ public:
 
 		for (int k = 0; k < 2; k++)
 		{
-			rt_tex_vect[k] = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), tex_width, tex_height);
+         gfx_tex_params prm;
+
+         prm.set_format_id("RGBA8");
+         prm.set_rt_params();
+         rt_tex_vect[k] = gfx::i()->tex.nwi(gfx_tex::gen_id(), tex_width, tex_height, &prm);
 			rt_vect[k] = gfx::i()->rt.new_rt();
 			rt_vect[k]->set_color_attachment(rt_tex_vect[k]);
 			gfx::i()->rt.set_current_render_target(rt_vect[k]);

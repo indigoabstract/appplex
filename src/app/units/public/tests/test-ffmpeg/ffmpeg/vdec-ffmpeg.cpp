@@ -54,7 +54,7 @@ public:
 		av_frame = nullptr;
 
 		tex_idx = 0;
-		state = st_stopped;
+		state = mws_vdec_state::st_stopped;
 		current_frame_idx = 0;
 		frame_limit = 0.f;
 
@@ -118,7 +118,7 @@ public:
       }
 
 		free_memory();
-		state = st_stopped;
+		state = mws_vdec_state::st_stopped;
 		current_frame_idx = 0;
 		format_ctx = 0;
 		int r = 0;
@@ -197,7 +197,7 @@ public:
 			mws_report_gfx_errs();
 		}
 
-		state = st_playing;
+		state = mws_vdec_state::st_playing;
 		last_frame_time = uint32(pfm::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
 
 		return 0;
@@ -207,7 +207,7 @@ public:
    {
       clear_rt();
 
-      state = st_stopped;
+      state = mws_vdec_state::st_stopped;
 
       if (listener)
       {
@@ -239,44 +239,44 @@ public:
 	{
 		switch(istate)
 		{
-		case st_stopped:
+		case mws_vdec_state::st_stopped:
 			switch(state)
 			{
-			case st_stopped:
+			case mws_vdec_state::st_stopped:
 				break;
 
-			case st_playing:
+			case mws_vdec_state::st_playing:
 				break;
 
-			case st_paused:
+			case mws_vdec_state::st_paused:
 				break;
 			}
 			break;
 
-		case st_playing:
+		case mws_vdec_state::st_playing:
 			switch(state)
 			{
-			case st_stopped:
+			case mws_vdec_state::st_stopped:
 				break;
 
-			case st_playing:
+			case mws_vdec_state::st_playing:
 				break;
 
-			case st_paused:
+         case mws_vdec_state::st_paused:
 				break;
 			}
 			break;
 
-		case st_paused:
+		case mws_vdec_state::st_paused:
 			switch(state)
 			{
-			case st_stopped:
+			case mws_vdec_state::st_stopped:
 				break;
 
-			case st_playing:
+			case mws_vdec_state::st_playing:
 				break;
 
-			case st_paused:
+			case mws_vdec_state::st_paused:
 				break;
 			}
 			break;
@@ -380,15 +380,13 @@ private:
 
 					if (!(y_tex && y_tex->get_width() == w1 && y_tex->get_height() == h))
 					{
-						std::string tex_idx_str = std::to_string(tex_idx);
-
-						q2d = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+						q2d = gfx_quad_2d::nwi();
 						//rt = nullptr;
 						//rt_tex = y_tex = u_tex = v_tex = nullptr;
 
-						y_tex = gfx::i()->tex.new_tex_2d("u_s2d_y_tex" + tex_idx_str, w1, h, "R8");
-						u_tex = gfx::i()->tex.new_tex_2d("u_s2d_u_tex" + tex_idx_str, w2, h / 2, "R8");
-						v_tex = gfx::i()->tex.new_tex_2d("u_s2d_v_tex" + tex_idx_str, w2, h / 2, "R8");
+						y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), w1, h, "R8");
+						u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), w2, h / 2, "R8");
+						v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), w2, h / 2, "R8");
 						yt.resize(w1 * h);
 						ut.resize(w2 * h / 2);
 						vt.resize(w2 * h / 2);
@@ -404,11 +402,14 @@ private:
 						q_tex["u_s2d_v_tex"][MP_TEXTURE_INST] = v_tex;
 						q_tex.scaling = glm::vec3(w1, h, 1.f);
 						//q2d->set_v_flip(true);
-						rt_tex = gfx::i()->tex.new_tex_2d("u_s2d_tex" + tex_idx_str, w1, h);
+                  gfx_tex_params prm;
+
+                  prm.set_format_id("RGBA8");
+                  prm.set_rt_params();
+                  rt_tex = gfx::i()->tex.nwi("s2d-" + gfx_tex::gen_id(), w1, h, &prm);
 						rt = gfx::i()->rt.new_rt();
 						rt->set_color_attachment(rt_tex);
 						clear_rt();
-						tex_idx++;
 					}
 
 					shared_ptr<gfx_shader> active_shader = gfx::i()->shader.get_current_program();
@@ -446,10 +447,11 @@ private:
                      params->ticks_per_frame = codec_ctx->ticks_per_frame;
                      params->time_base_numerator = codec_ctx->time_base.num;
                      params->time_base_denominator = codec_ctx->time_base.den;
-                     listener->on_decoding_started(params);
+                     listener->on_decoding_started(gfx::i(), params);
                   }
 
                   listener->on_frame_decoded(av_frame);
+                  listener->on_frame_decoded(gfx::i(), rt_tex);
                }
 
 					//mws_print("decode_frame counter %d\n", current_frame_idx);
@@ -614,23 +616,23 @@ void vdec_ffmpeg::update(std::shared_ptr<gfx_camera> i_cam)
 {
 	switch(get_state())
 	{
-	case st_stopped:
+	case mws_vdec_state::st_stopped:
 		break;
 
-	case st_playing:
+	case mws_vdec_state::st_playing:
 		{
 			impl->update(i_cam);
 			break;
 		}
 
-	case st_paused:
+	case mws_vdec_state::st_paused:
 		break;
 	}
 }
 
 void vdec_ffmpeg::play()
 {
-	impl->set_state(st_playing);
+	impl->set_state(mws_vdec_state::st_playing);
 }
 
 void vdec_ffmpeg::replay()
@@ -640,23 +642,23 @@ void vdec_ffmpeg::replay()
 
 void vdec_ffmpeg::pause()
 {
-	impl->set_state(st_paused);
+	impl->set_state(mws_vdec_state::st_paused);
 }
 
 void vdec_ffmpeg::play_pause()
 {
 	switch(get_state())
 	{
-	case st_stopped:
-		impl->set_state(st_playing);
+	case mws_vdec_state::st_stopped:
+		impl->set_state(mws_vdec_state::st_playing);
 		break;
 
-	case st_playing:
-		impl->set_state(st_paused);
+	case mws_vdec_state::st_playing:
+		impl->set_state(mws_vdec_state::st_paused);
 		break;
 
-	case st_paused:
-		impl->set_state(st_playing);
+	case mws_vdec_state::st_paused:
+		impl->set_state(mws_vdec_state::st_playing);
 		break;
 	}
 }

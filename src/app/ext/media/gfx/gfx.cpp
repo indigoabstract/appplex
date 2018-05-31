@@ -19,74 +19,6 @@ gfx_int gfx::default_framebuffer_id = 0;
 mws_sp<gfx> gfx::main_instance;
 
 
-struct tex_info
-{
-   const char* id;
-   gfx_enum internal_format;
-   gfx_enum format;
-   gfx_enum type;
-};
-
-tex_info tex_info_tab[] =
-{
-   { "R8", GL_R8, GL_RED, GL_UNSIGNED_BYTE, },
-   { "R8_SNORM", GL_R8_SNORM, GL_RED, GL_BYTE, },
-   { "R16F", GL_R16F, GL_RED, GL_HALF_FLOAT, },
-   { "R32F", GL_R32F, GL_RED, GL_FLOAT, },
-   { "R8UI", GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, },
-   { "R8I", GL_R8I, GL_RED_INTEGER, GL_BYTE, },
-   { "R16UI", GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_SHORT, },
-   { "R16I", GL_R16I, GL_RED_INTEGER, GL_SHORT, },
-   { "R32UI", GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, },
-   { "R32I", GL_R32I, GL_RED_INTEGER, GL_INT, },
-   { "RG8", GL_RG8, GL_RG, GL_UNSIGNED_BYTE, },
-   { "RG8_SNORM", GL_RG8_SNORM, GL_RG, GL_BYTE, },
-   { "RG16F", GL_RG16F, GL_RG, GL_HALF_FLOAT, },
-   { "RG32F", GL_RG32F, GL_RG, GL_FLOAT, },
-   { "RG8UI", GL_RG8UI, GL_RG_INTEGER, GL_UNSIGNED_BYTE, },
-   { "RG8I", GL_RG8I, GL_RG_INTEGER, GL_BYTE, },
-   { "RG16UI", GL_RG16UI, GL_RG_INTEGER, GL_UNSIGNED_SHORT, },
-   { "RG16I", GL_RG16I, GL_RG_INTEGER, GL_SHORT, },
-   { "RG32UI", GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, },
-   { "RG32I", GL_RG32I, GL_RG_INTEGER, GL_INT, },
-   { "RGB8", GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, },
-   { "SRGB8", GL_SRGB8, GL_RGB, GL_UNSIGNED_BYTE, },
-   { "RGB565", GL_RGB565, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, },
-   { "RGB8_SNORM", GL_RGB8_SNORM, GL_RGB, GL_BYTE, },
-   { "R11F_G11F_B10F", GL_R11F_G11F_B10F, GL_RGB, GL_UNSIGNED_INT_10F_11F_11F_REV, },
-   { "RGB9_E5", GL_RGB9_E5, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, },
-   { "RGB16F", GL_RGB16F, GL_RGB, GL_HALF_FLOAT, },
-   { "RGB32F", GL_RGB32F, GL_RGB, GL_FLOAT, },
-   { "RGB8UI", GL_RGB8UI, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, },
-   { "RGB8I", GL_RGB8I, GL_RGB_INTEGER, GL_BYTE, },
-   { "RGB16UI", GL_RGB16UI, GL_RGB_INTEGER, GL_UNSIGNED_SHORT, },
-   { "RGB16I", GL_RGB16I, GL_RGB_INTEGER, GL_SHORT, },
-   { "RGB32UI", GL_RGB32UI, GL_RGB_INTEGER, GL_UNSIGNED_INT, },
-   { "RGB32I", GL_RGB32I, GL_RGB_INTEGER, GL_INT, },
-   { "RGBA8", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, },
-   { "SRGB8_ALPHA8", GL_SRGB8_ALPHA8, GL_RGBA, GL_UNSIGNED_BYTE, },
-   { "RGBA8_SNORM", GL_RGBA8_SNORM, GL_RGBA, GL_BYTE, },
-   { "RGB5_A1", GL_RGB5_A1, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, },
-   { "RGBA4", GL_RGBA4, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, },
-   { "RGB10_A2", GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, },
-   { "RGBA16F", GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, },
-   { "RGBA32F", GL_RGBA32F, GL_RGBA, GL_FLOAT, },
-   { "RGBA8UI", GL_RGBA8UI, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, },
-   { "RGBA8I", GL_RGBA8I, GL_RGBA_INTEGER, GL_BYTE, },
-   { "RGB10_A2UI", GL_RGB10_A2UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, },
-   { "RGBA16UI", GL_RGBA16UI, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, },
-   { "RGBA16I", GL_RGBA16I, GL_RGBA_INTEGER, GL_SHORT, },
-   { "RGBA32I", GL_RGBA32I, GL_RGBA_INTEGER, GL_INT, },
-   { "RGBA32UI", GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, },
-
-   { "DEPTH_COMPONENT16", GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, },
-   { "DEPTH_COMPONENT24", GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, },
-   { "DEPTH_COMPONENT32F", GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, },
-   { "DEPTH24_STENCIL8", GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, },
-   { "DEPTH32F_STENCIL8", GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, },
-};
-int tex_info_tab_length = sizeof(tex_info_tab) / sizeof(tex_info);
-std::unordered_map<std::string, tex_info*> tex_info_ht;
 
 void mws_tex_img_2d(GLenum target, GLint mipmap_count, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels)
 {
@@ -188,12 +120,6 @@ void gfx::global_init()
    }
 
    //inst = shared_ptr<gfx>(new gfx());
-
-   for (int k = 0; k < tex_info_tab_length; k++)
-   {
-      tex_info& e = tex_info_tab[k];
-      tex_info_ht[e.id] = &e;
-   }
 
    //int ms = 8;
    //GLuint mTextureFramebuffer = 0;
@@ -469,72 +395,52 @@ void gfx::ic_shader::set_current_program(std::shared_ptr<gfx_shader> iglp, bool 
    mws_report_gfx_errs();
 }
 
-std::shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm)
+
+mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_filename, const gfx_tex_params* i_prm)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_filename);
+   mws_assert(!tex);
 
-   if (tex)
-   {
-      mws_throw ia_exception("texture name already exists");
-   }
-
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, i_prm, gi()));
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_filename, i_prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-std::shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm)
+mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height, const gfx_tex_params* i_prm)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_assert(!tex);
 
-   if (tex)
-   {
-      mws_throw ia_exception("texture name already exists");
-   }
-
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, i_prm, gi()));
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, i_prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex> gfx::ic_tex::new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm)
+mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height, std::string i_format_id)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_assert(!tex);
 
-   if (tex)
-   {
-      mws_throw ia_exception("texture name already exists");
-   }
-
-   tex_info* ti = tex_info_ht[iformat];
    gfx_tex_params prm;
 
-   if (i_prm)
-   {
-      prm = *i_prm;
-   }
-
-   prm.internal_format = ti->internal_format;
-   prm.format = ti->format;
-   prm.type = ti->type;
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, iwith, iheight, gfx_tex::TEX_2D, &prm, gi()));
+   prm.set_format_id(i_format_id);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, &prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-std::shared_ptr<gfx_tex> gfx::ic_tex::new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm)
+mws_sp<gfx_tex> gfx::ic_tex::nwi_external(std::string i_tex_id, int i_gl_id, std::string i_format_id)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(iuni_tex_name);
+   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_assert(!tex);
 
-   if (tex)
-   {
-      mws_throw ia_exception("texture name already exists");
-   }
+   gfx_tex_params prm;
 
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(iuni_tex_name, itexture_id, iwith, iheight, gfx_tex::TEX_2D, i_prm, gi()));
+   prm.set_format_id(i_format_id);
+   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_gl_id, 1, 1, gfx_tex::TEX_2D, &prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
@@ -820,10 +726,12 @@ void gfx::get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect)
       shared_ptr<gfx_tex> att = rt.get_current_render_target()->color_att;
       auto& prm = att->get_params();
 
-      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), prm.format, prm.type, ivect);
+      glPixelStorei(GL_PACK_ALIGNMENT, prm.get_bpp());
+      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), prm.get_format(), prm.get_type(), ivect);
    }
    else
    {
+      glPixelStorei(GL_PACK_ALIGNMENT, 4);
       glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), GL_RGBA, GL_UNSIGNED_BYTE, ivect);
    }
 }

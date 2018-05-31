@@ -9,15 +9,7 @@
 #include "com/mws/mws-font.hpp"
 #include "com/unit/input-ctrl.hpp"
 #include "cpp-property.hpp"
-#include "gfx.hpp"
-#include "gfx-rt.hpp"
-#include "gfx-camera.hpp"
-#include "gfx-shader.hpp"
-#include "gfx-quad-2d.hpp"
-#include "gfx-tex.hpp"
-#include "gfx-util.hpp"
-#include "gfx-vxo.hpp"
-#include "gfx-state.hpp"
+#include "gfx-inc.hpp"
 #include "ext/gfx-surface.hpp"
 #include "utils/free-camera.hpp"
 #include "tlib/rng/rng.hpp"
@@ -454,6 +446,7 @@ namespace global_flight_paths_ns
             int sv_idx = 0;
             int ev_idx = link->step_count - 1;
 
+            link->calc_vertex_positions();
             link->set_visible_vertices(sv_idx, ev_idx);
             link->visible = false;
          }
@@ -776,7 +769,7 @@ namespace global_flight_paths_ns
             hot_spot_chain_list[k]->restart_animation();
          }
 
-         show();
+         //show();
       }
 
       void stop_animation()
@@ -799,7 +792,7 @@ namespace global_flight_paths_ns
          hot_spot_chain_list.clear();
       }
 
-      void Sethot_spots(std::vector<glm::vec2> globe_hot_spot_list)
+      void set_hot_spots(std::vector<glm::vec2> globe_hot_spot_list)
       {
          std::vector<std::shared_ptr<hot_spot> > globe_hot_spot_data_list;
 
@@ -872,8 +865,10 @@ namespace global_flight_paths_ns
             int hot_spot_list_length = globe_hot_spot_list.size();
             std::vector<std::shared_ptr<hot_spot_link> > hot_spot_link_list;
             auto scene = globe->get_scene();
+            auto hot_spot_chain_inst = std::make_shared<hot_spot_chain>();
 
-            hot_spot_chain_list[0] = std::make_shared<hot_spot_chain>();
+            hot_spot_chain_inst->loop_count = -1;
+            hot_spot_chain_list.push_back(hot_spot_chain_inst);
 
             for (int j = 0; j < hot_spot_list_length; j++)
             {
@@ -891,7 +886,7 @@ namespace global_flight_paths_ns
                auto end_point = hot_spot_list[j];
                auto link = std::make_shared<hot_spot_link>();
 
-               scene->attach(scene);
+               scene->attach(link);
                link->gen_link(end_point, start_point, globe_radius);
                hot_spot_link_list.push_back(link);
                index = index + 1;
@@ -917,8 +912,6 @@ namespace global_flight_paths_ns
    class main_page : public mws_page
    {
    public:
-      main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent) {}
-
       virtual void init()
       {
          mws_page::init();
@@ -986,7 +979,7 @@ namespace global_flight_paths_ns
 
          hot_spot_connex = std::make_shared<hot_spot_connector>(vpc_rs_mesh, globe_radius);
          std::vector<glm::vec2> hs_list;
-         hot_spot_connex->Sethot_spots(hs_list);
+         hot_spot_connex->set_hot_spots(hs_list);
          hot_spot_connex->show();
 
          mws_report_gfx_errs();
@@ -1017,7 +1010,7 @@ namespace global_flight_paths_ns
                   case KEY_N:
                   {
                      std::vector<glm::vec2> hs_list;
-                     hot_spot_connex->Sethot_spots(hs_list);
+                     hot_spot_connex->set_hot_spots(hs_list);
                      hot_spot_connex->show();
                      break;
                   }
@@ -1084,7 +1077,7 @@ shared_ptr<unit_global_flight_paths> unit_global_flight_paths::nwi()
 
 void unit_global_flight_paths::init_mws()
 {
-   mws_page::new_shared_instance(new main_page(mws_root));
+   auto page = mws_page::new_shared_instance(mws_root, new main_page());
 }
 
 #endif

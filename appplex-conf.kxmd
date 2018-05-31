@@ -21,7 +21,7 @@ units
 	texxed[ ],
 	exercise[ ],
 	gen-texture[ ],
-	global-flight-paths[ uses[ gfx ] ],
+	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
 
 	@@[ tests ],
@@ -46,7 +46,7 @@ units
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
 	test-trail[ platf[ windows, android ], ],
-	test-video-recording[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
+	test-video-recording[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, vector-fonts, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
 	test-touch-input[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	test-gl-uniform-blocks[ uses[ gfx ], platf[ windows, android, ios ], ],
 	test-res-ld[ uses[ gfx, png, zlib ], platf[ all ], ],
@@ -64,7 +64,7 @@ units
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
 	break-reminder[ uses[ gfx, notifications, kxmd, snd ], platf[ windows, android ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
-	tangled-memories[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
+	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 
 	@@[ npw ],
@@ -72,7 +72,7 @@ units
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
-	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib, ffmpeg, unit-test-ffmpeg ], platf[ windows, android, ios ], ],
+	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
 

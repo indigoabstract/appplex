@@ -9,6 +9,7 @@
 #include <vector>
 
 class gfx_tex;
+class gfx_camera;
 
 
 class vx_attribute : public gfx_input
@@ -106,14 +107,36 @@ public:
 };
 
 
+class gfx_tex_info
+{
+public:
+   gfx_tex_info(std::string i_id, gfx_enum i_internal_format, gfx_enum i_format, gfx_enum i_type, int i_bpp);
+   gfx_tex_info(const gfx_tex_info& i_obj);
+   const std::string& get_id() const;
+   gfx_enum get_internal_format() const;
+   gfx_enum get_format() const;
+   gfx_enum get_type() const;
+   // bytes per pixel
+   int get_bpp() const;
+
+private:
+   std::string id;
+   gfx_enum internal_format;
+   gfx_enum format;
+   gfx_enum type;
+   int bpp;
+};
+
+
 class gfx_util
 {
 public:
+   static mws_sp<gfx_tex_info> get_tex_info(std::string i_format);
    static std::shared_ptr<vx_attribute> parse_attribute(std::string iattribute);
    static std::vector<std::shared_ptr<vx_attribute> > parse_attribute_list(std::string iattr_list);
    static std::shared_ptr<gfx_uniform> parse_uniform(std::string iuniform);
-   static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity);
-   static void draw_tex(std::shared_ptr<gfx_tex> itex, float itx, float ity, float iw, float ih);
+   static void draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity);
+   static void draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity, float iw, float ih);
    static const glm::vec4& get_pos_from_tf_mx(const glm::mat4& i_tranform);
    static const glm::quat get_orientation_from_tf_mx(const glm::mat4& i_tranform);
    static const glm::vec3 get_scale_from_tf_mx(const glm::mat4& i_tranform);

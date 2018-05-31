@@ -1064,7 +1064,25 @@ bool pfm::screen::is_gfx_available()
 
 std::string pfm::filesystem::get_writable_path(std::string iname)
 {
-	std::string p = pfm_app_inst->get_writable_path();
+   std::string p;
+
+   if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
+   {
+      auto unit = unit_ctrl::inst()->get_current_unit();
+
+      if (unit)
+      {
+         p = pfm_impl::get_unit_res_path(unit);
+      }
+      else
+      {
+         p = pfm_impl::get_common_res_path();
+      }
+   }
+   else
+   {
+      p = pfm_app_inst->get_writable_path();
+   }
 
 	if (iname[0] == '/')
 	{

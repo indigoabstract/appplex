@@ -3,14 +3,14 @@
 #include <memory>
 #include <string>
 
-class mws_video_dec_impl;
 class mws_video_params;
 class mws_media_info;
+class gfx;
 class gfx_camera;
 class gfx_tex;
 
 
-enum mws_vdec_state
+enum class mws_vdec_state
 {
    st_stopped,
    st_playing,
@@ -21,8 +21,9 @@ enum mws_vdec_state
 class mws_vdec_listener
 {
 public:
-   virtual void on_decoding_started(std::shared_ptr<mws_video_params> i_params) {}
+   virtual void on_decoding_started(std::shared_ptr<gfx> i_gi, std::shared_ptr<mws_video_params> i_params) {}
    virtual void on_frame_decoded(void* i_frame) {}
+   virtual void on_frame_decoded(std::shared_ptr<gfx> i_gi, std::shared_ptr<gfx_tex> i_frame_tex) {}
    virtual void on_decoding_stopped() {}
    virtual void on_decoding_finished() {}
 };

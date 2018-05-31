@@ -87,10 +87,10 @@ public:
    struct ic_tex
    {
       mws_sp<gfx> gi() { return g.lock(); }
-      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr);
-      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
-      shared_ptr<gfx_tex> new_tex_2d(std::string iuni_tex_name, int iwith, int iheight, std::string iformat, const gfx_tex_params* i_prm = nullptr);
-      shared_ptr<gfx_tex> new_external_tex_2d(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, const gfx_tex_params* i_prm = nullptr);
+      mws_sp<gfx_tex> nwi(std::string i_filename, const gfx_tex_params* i_prm = nullptr);
+      mws_sp<gfx_tex> nwi(std::string i_tex_id, int i_width, int i_height, const gfx_tex_params* i_prm = nullptr);
+      mws_sp<gfx_tex> nwi(std::string i_tex_id, int i_width, int i_height, std::string i_format_id);
+      mws_sp<gfx_tex> nwi_external(std::string i_tex_id, int i_gl_id, std::string i_format_id);
 
       /**
       expects to find in the resources 6 same size images named like this:

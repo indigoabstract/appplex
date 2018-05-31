@@ -12,13 +12,127 @@
 #include <glm/gtx/transform.hpp>
 
 
+gfx_tex_info::gfx_tex_info(std::string i_id, gfx_enum i_internal_format, gfx_enum i_format, gfx_enum i_type, int i_bpp)
+{
+   id = i_id;
+   internal_format = i_internal_format;
+   format = i_format;
+   type = i_type;
+   bpp = i_bpp;
+}
+
+gfx_tex_info::gfx_tex_info(const gfx_tex_info& i_obj)
+{
+   id = i_obj.id;
+   internal_format = i_obj.internal_format;
+   format = i_obj.format;
+   type = i_obj.type;
+   bpp = i_obj.bpp;
+}
+
+const std::string& gfx_tex_info::get_id() const
+{
+   return id;
+}
+
+gfx_enum gfx_tex_info::get_internal_format() const
+{
+   return internal_format;
+}
+
+gfx_enum gfx_tex_info::get_format() const
+{
+   return format;
+}
+
+gfx_enum gfx_tex_info::get_type() const
+{
+   return type;
+}
+
+int gfx_tex_info::get_bpp() const
+{
+   return bpp;
+}
+
+gfx_tex_info tex_info_tab[] =
+{
+   { "R8", GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, },
+{ "R8_SNORM", GL_R8_SNORM, GL_RED, GL_BYTE, 1, },
+{ "R16F", GL_R16F, GL_RED, GL_HALF_FLOAT, 2, },
+{ "R32F", GL_R32F, GL_RED, GL_FLOAT, 4, },
+{ "R8UI", GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 1, },
+{ "R8I", GL_R8I, GL_RED_INTEGER, GL_BYTE, 1, },
+{ "R16UI", GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_SHORT, 2, },
+{ "R16I", GL_R16I, GL_RED_INTEGER, GL_SHORT, 2, },
+{ "R32UI", GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, 4, },
+{ "R32I", GL_R32I, GL_RED_INTEGER, GL_INT, 4, },
+{ "RG8", GL_RG8, GL_RG, GL_UNSIGNED_BYTE, 2, },
+{ "RG8_SNORM", GL_RG8_SNORM, GL_RG, GL_BYTE, 2, },
+{ "RG16F", GL_RG16F, GL_RG, GL_HALF_FLOAT, 4, },
+{ "RG32F", GL_RG32F, GL_RG, GL_FLOAT, 8, },
+{ "RG8UI", GL_RG8UI, GL_RG_INTEGER, GL_UNSIGNED_BYTE, 2, },
+{ "RG8I", GL_RG8I, GL_RG_INTEGER, GL_BYTE, 2, },
+{ "RG16UI", GL_RG16UI, GL_RG_INTEGER, GL_UNSIGNED_SHORT, 4, },
+{ "RG16I", GL_RG16I, GL_RG_INTEGER, GL_SHORT, 4, },
+{ "RG32UI", GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, },
+{ "RG32I", GL_RG32I, GL_RG_INTEGER, GL_INT, 8, },
+{ "RGB8", GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, 3, },
+{ "SRGB8", GL_SRGB8, GL_RGB, GL_UNSIGNED_BYTE, 3, },
+{ "RGB565", GL_RGB565, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, 2, },
+{ "RGB8_SNORM", GL_RGB8_SNORM, GL_RGB, GL_BYTE, 3, },
+{ "R11F_G11F_B10F", GL_R11F_G11F_B10F, GL_RGB, GL_UNSIGNED_INT_10F_11F_11F_REV, 4, },
+{ "RGB9_E5", GL_RGB9_E5, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 4, },
+{ "RGB16F", GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, },
+{ "RGB32F", GL_RGB32F, GL_RGB, GL_FLOAT, 12, },
+{ "RGB8UI", GL_RGB8UI, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 3, },
+{ "RGB8I", GL_RGB8I, GL_RGB_INTEGER, GL_BYTE, 3, },
+{ "RGB16UI", GL_RGB16UI, GL_RGB_INTEGER, GL_UNSIGNED_SHORT, 6, },
+{ "RGB16I", GL_RGB16I, GL_RGB_INTEGER, GL_SHORT, 6, },
+{ "RGB32UI", GL_RGB32UI, GL_RGB_INTEGER, GL_UNSIGNED_INT, 12, },
+{ "RGB32I", GL_RGB32I, GL_RGB_INTEGER, GL_INT, 12, },
+{ "RGBA8", GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, },
+{ "SRGB8_ALPHA8", GL_SRGB8_ALPHA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, },
+{ "RGBA8_SNORM", GL_RGBA8_SNORM, GL_RGBA, GL_BYTE, 4, },
+{ "RGB5_A1", GL_RGB5_A1, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, 2, },
+{ "RGBA4", GL_RGBA4, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, 2, },
+{ "RGB10_A2", GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, 4, },
+{ "RGBA16F", GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, },
+{ "RGBA32F", GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, },
+{ "RGBA8UI", GL_RGBA8UI, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, 4, },
+{ "RGBA8I", GL_RGBA8I, GL_RGBA_INTEGER, GL_BYTE, 4, },
+{ "RGB10_A2UI", GL_RGB10_A2UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 4, },
+{ "RGBA16UI", GL_RGBA16UI, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 8, },
+{ "RGBA16I", GL_RGBA16I, GL_RGBA_INTEGER, GL_SHORT, 8, },
+{ "RGBA32I", GL_RGBA32I, GL_RGBA_INTEGER, GL_INT, 16, },
+{ "RGBA32UI", GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 16, },
+
+{ "DEPTH_COMPONENT16", GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, 2, },
+{ "DEPTH_COMPONENT24", GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 3, },
+{ "DEPTH_COMPONENT32F", GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, 4, },
+{ "DEPTH24_STENCIL8", GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 4, },
+{ "DEPTH32F_STENCIL8", GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, 5, },
+};
+int tex_info_tab_length = sizeof(tex_info_tab) / sizeof(gfx_tex_info);
+std::unordered_map<std::string, mws_sp<gfx_tex_info> > tex_info_ht;
 std::unordered_map<std::string, gfx_input::e_data_type> gfx_types;
 std::unordered_map<gfx_int, std::string> gl_error_code_list;
 std::unordered_map<std::string, std::string> gl_error_list;
 
 
+mws_sp<gfx_tex_info> gfx_util::get_tex_info(std::string i_format)
+{
+   return tex_info_ht[i_format];
+}
+
 void gfx_util::init()
 {
+   for (int k = 0; k < tex_info_tab_length; k++)
+   {
+      gfx_tex_info& e = tex_info_tab[k];
+      tex_info_ht[e.get_id()] = mws_sp<gfx_tex_info>(new gfx_tex_info(e));
+   }
+
    gfx_types["bv1"] = gfx_input::bvec1;
    gfx_types["bv2"] = gfx_input::bvec2;
    gfx_types["bv3"] = gfx_input::bvec3;
@@ -156,39 +270,23 @@ std::shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
    return v;
 }
 
-void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity)
+void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity)
 {
-   draw_tex(itex, itx, ity, itex->get_width(), itex->get_height());
+   draw_tex(i_cam, itex, itx, ity, itex->get_width(), itex->get_height());
 }
 
-void gfx_util::draw_tex(shared_ptr<gfx_tex> itex, float itx, float ity, float iw, float ih)
+void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity, float iw, float ih)
 {
-   shared_ptr<gfx_shader> tex_dsp = gfx::i()->shader.get_program_by_name("basic-tex-shader");
+   auto q2d = gfx_quad_2d::nwi();
 
-   if (tex_dsp)
-   {
-      gfx_tex_params prm;
+   q2d->set_dimensions(1, 1);
+   q2d->set_translation(itx, ity);
+   q2d->set_scale(iw, ih);
+   (*q2d)[MP_SHADER_NAME] = "basic-tex-shader";
+   (*q2d)["u_s2d_tex"][MP_TEXTURE_INST] = itex;
+   q2d->draw_out_of_sync(i_cam);
 
-      prm.internal_format = GL_RGBA8;
-      prm.format = GL_RGBA;
-      prm.type = GL_UNSIGNED_BYTE;
-
-      int iw = itex->get_width(), ih = itex->get_height();
-      shared_ptr<gfx_plane> q2d(new gfx_plane());
-      shared_ptr<gfx_shader> current_program = gfx::i()->shader.get_current_program();
-      gfx::i()->shader.set_current_program(tex_dsp);
-      shared_ptr<gfx_tex> u_s2d_tex = gfx::i()->tex.new_external_tex_2d("u_s2d_tex", itex->get_texture_gl_id(), iw, ih, &prm);
-
-      u_s2d_tex->set_active(0);
-      u_s2d_tex->send_uniform(u_s2d_tex->get_name(), 0);
-
-      q2d->scaling = glm::vec3(iw, ih, 1.f);
-      q2d->position = glm::vec3(itx, ity, 0.f);
-      q2d->draw_out_of_sync(shared_ptr<gfx_camera>());
-
-      gfx::i()->shader.set_current_program(current_program);
-      mws_report_gfx_errs();
-   }
+   mws_report_gfx_errs();
 }
 
 const glm::vec4& gfx_util::get_pos_from_tf_mx(const glm::mat4& i_tranform)

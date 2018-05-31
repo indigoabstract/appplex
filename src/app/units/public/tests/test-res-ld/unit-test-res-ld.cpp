@@ -52,7 +52,7 @@ void unit_test_res_ld::load()
 	mws_report_gfx_errs();
 
    {
-      quad_mesh = std::make_shared<gfx_quad_2d>();
+      quad_mesh = gfx_quad_2d::nwi();
       auto& qm = *quad_mesh;
 
       qm.set_dimensions(1, 1);

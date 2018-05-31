@@ -38,7 +38,7 @@ track::track()
 
 void track::loadTrackData(char* track_name)
 {
-	tex = gi()->tex.new_tex_2d("square.png");
+	tex = gi()->tex.nwi("square.png");
 
 	std::string fn = trs("abstract-racing/{}", track_name);
 	shared_ptr<std::vector<uint8> > res = pfm::filesystem::load_res_byte_vect(fn);

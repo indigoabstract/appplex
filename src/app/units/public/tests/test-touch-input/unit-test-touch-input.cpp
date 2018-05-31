@@ -69,7 +69,7 @@ namespace unit_test_touch_input_ns
 
          // triangle
          {
-            obj_vect.push_back(std::make_shared<gfx_quad_2d>());
+            obj_vect.push_back(gfx_quad_2d::nwi());
             gfx_quad_2d& mq = *obj_vect.back();
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, -50));
@@ -80,7 +80,7 @@ namespace unit_test_touch_input_ns
 
          // square quad
          {
-            obj_vect.push_back(std::make_shared<gfx_quad_2d>());
+            obj_vect.push_back(gfx_quad_2d::nwi());
             gfx_quad_2d& mq = *obj_vect.back();
             mq.set_dimensions(1, 1);
             mq.set_translation(cn);
@@ -91,7 +91,7 @@ namespace unit_test_touch_input_ns
 
          // pentagon
          {
-            obj_vect.push_back(std::make_shared<gfx_quad_2d>());
+            obj_vect.push_back(gfx_quad_2d::nwi());
             gfx_quad_2d& mq = *obj_vect.back();
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, 50));
@@ -102,7 +102,7 @@ namespace unit_test_touch_input_ns
 
          // hexagon
          {
-            obj_vect.push_back(std::make_shared<gfx_quad_2d>());
+            obj_vect.push_back(gfx_quad_2d::nwi());
             gfx_quad_2d& mq = *obj_vect.back();
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, 50));
@@ -113,7 +113,7 @@ namespace unit_test_touch_input_ns
 
          // octagon
          {
-            obj_vect.push_back(std::make_shared<gfx_quad_2d>());
+            obj_vect.push_back(gfx_quad_2d::nwi());
             gfx_quad_2d& mq = *obj_vect.back();
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, -50));
@@ -124,7 +124,7 @@ namespace unit_test_touch_input_ns
 
          // picking detector debug
          {
-            gfx_quad_2d& mq = *(picking_dgb_q2d = std::make_shared<gfx_quad_2d>());
+            gfx_quad_2d& mq = *(picking_dgb_q2d = gfx_quad_2d::nwi());
             //picking_tex_dim = glm::vec2(256, 512);
             picking_tex_dim = glm::vec2(128, 256);
             //picking_tex_dim = glm::vec2(gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height());
@@ -293,14 +293,9 @@ namespace unit_test_touch_input_ns
                pbo_data_size = int(picking_tex_dim.x) * int(picking_tex_dim.y);
                gfx_tex_params prm;
 
-               prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
-               prm.max_anisotropy = 0.f;
-               prm.min_filter = gfx_tex_params::e_tf_nearest;
-               prm.mag_filter = gfx_tex_params::e_tf_nearest;
-               prm.gen_mipmaps = false;
-               prm.max_anisotropy = 0.f;
-
-               picking_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), int(picking_tex_dim.x), int(picking_tex_dim.y), "R8", &prm);
+               prm.set_format_id("R8");
+               prm.set_rt_params();
+               picking_tex = gfx::i()->tex.nwi(gfx_tex::gen_id(), int(picking_tex_dim.x), int(picking_tex_dim.y), &prm);
                picking_rt = gfx::i()->rt.new_rt();
                picking_rt->set_color_attachment(picking_tex);
 
@@ -411,9 +406,9 @@ namespace unit_test_touch_input_ns
          // OpenGL should perform async DMA transfer, so glReadPixels() will return immediately.
          glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id_vect[pbo_index]);
          mws_report_gfx_errs();
-         glPixelStorei(GL_PACK_ALIGNMENT, 1);
+         glPixelStorei(GL_PACK_ALIGNMENT, tex_prm.get_bpp());
          mws_report_gfx_errs();
-         glReadPixels(0, 0, picking_tex->get_width(), picking_tex->get_height(), tex_prm.format, tex_prm.type, 0);
+         glReadPixels(0, 0, picking_tex->get_width(), picking_tex->get_height(), tex_prm.get_format(), tex_prm.get_type(), 0);
 
          mws_report_gfx_errs();
          if ((frame_idx >= PBO_COUNT - 1) && last_click.x >= 0.f)

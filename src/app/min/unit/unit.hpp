@@ -132,6 +132,7 @@ protected:
    virtual void unload();
    virtual std::shared_ptr<ia_sender> sender_inst();
    virtual void update_view(int update_count);
+   virtual void post_update_view();
 
    std::unique_ptr<app_impl> p;
    std::shared_ptr<unit_preferences> prefs;

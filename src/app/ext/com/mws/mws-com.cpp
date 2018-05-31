@@ -23,7 +23,7 @@ using std::vector;
 shared_ptr<mws_panel> mws_panel::nwi()
 {
    auto inst = std::shared_ptr<mws_panel>(new mws_panel());
-   inst->vxo = std::make_shared<gfx_quad_2d>();
+   inst->vxo = gfx_quad_2d::nwi();
    inst->attach(inst->vxo);
 
    {
@@ -59,7 +59,7 @@ mws_sp<gfx_quad_2d> mws_panel::get_vxo()
 std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
 {
    auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
-   inst->vxo = std::make_shared<gfx_quad_2d>();
+   inst->vxo = gfx_quad_2d::nwi();
    inst->attach(inst->vxo);
 
    {
@@ -113,7 +113,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    //prm.mag_filter = gfx_tex_params::e_tf_linear;
    //prm.gen_mipmaps = false;
 
-   //tex = gi()->tex.new_tex_2d(i_img_name, &prm);
+   //tex = gi()->tex.nwi(i_img_name, &prm);
    (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
@@ -271,8 +271,8 @@ void mws_button::set_text(string iText)
 std::shared_ptr<mws_slider> mws_slider::nwi()
 {
    auto inst = std::shared_ptr<mws_slider>(new mws_slider());
-   inst->slider_bar = std::make_shared<gfx_quad_2d>();
-   inst->slider_ball = std::make_shared<gfx_quad_2d>();
+   inst->slider_bar = gfx_quad_2d::nwi();
+   inst->slider_ball = gfx_quad_2d::nwi();
    inst->attach(inst->slider_bar);
    inst->attach(inst->slider_ball);
    inst->set_z(0.f);

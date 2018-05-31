@@ -9,5 +9,5 @@ void main()
 {
 	v_v2_tex_coord = a_v2_tex_coord;
 	
-   	gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+   	gl_Position = vec4(a_v3_position, 1.0);
 }

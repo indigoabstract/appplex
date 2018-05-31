@@ -55,8 +55,8 @@ void unit_test_ffmpeg::load()
 {
 	mws_cam->clear_color = true;
 	mws_cam->clear_color_value = gfx_color::colors::blue;
-	q2d_tex = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
-	q2d_rt_tex = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+	q2d_tex = gfx_quad_2d::nwi();
+	q2d_rt_tex = gfx_quad_2d::nwi();
 
 	gfx_quad_2d& q_tex = *q2d_tex;
 	gfx_quad_2d& q_rt_tex = *q2d_rt_tex;
@@ -78,15 +78,15 @@ void unit_test_ffmpeg::load()
       class vdec_ffmpeg_listener_impl : public mws_vdec_listener
       {
       public:
-         virtual void on_decoding_started(std::shared_ptr<mws_video_params> i_params) override
+         virtual void on_decoding_started(std::shared_ptr<gfx> i_gi, std::shared_ptr<mws_video_params> i_params) override
          {
             venc->set_video_path("test-vid.mp4");
-            venc->start_encoding(*i_params);
+            venc->start_encoding(gfx::i(), *i_params, mws_vid_enc_method::e_enc_m0);
          }
 
          virtual void on_frame_decoded(void* i_frame) override
          {
-            venc->encode_frame((AVFrame*)i_frame);
+            venc->encode_frame_impl((AVFrame*)i_frame);
          }
 
          //virtual void on_decoding_stopped() {}
@@ -146,7 +146,7 @@ void unit_test_ffmpeg::update_view(int update_count)
 
 	vdec->update(mws_cam);
 
-	if (vdec->get_state() == st_stopped)
+	if (vdec->get_state() == mws_vdec_state::st_stopped)
 	{
 		vdec->replay();
 		vdec->update();

@@ -59,7 +59,11 @@ void unit_test_gl::load()
 	mws_report_gfx_errs();
 
 	{
-		rt_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), 256, 256);
+      gfx_tex_params prm;
+
+      prm.set_format_id("RGBA8");
+      prm.set_rt_params();
+      rt_tex = gfx::i()->tex.nwi(gfx_tex::gen_id(), 256, 256, &prm);
 		rt = gfx::i()->rt.new_rt();
 		rt->set_color_attachment(rt_tex);
 
@@ -77,7 +81,7 @@ void unit_test_gl::load()
 	}
 
    {
-      quad_mesh = std::make_shared<gfx_quad_2d>();
+      quad_mesh = gfx_quad_2d::nwi();
       auto& qm = *quad_mesh;
 
       qm.set_dimensions(1, 1);

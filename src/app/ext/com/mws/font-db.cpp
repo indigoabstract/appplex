@@ -337,13 +337,8 @@ public:
 
          if (!ext_tex_atlas_ref)
          {
-            std::string name = mws_to_str("texture-atlas-%s", gfx_tex::gen_id().c_str());
-            gfx_tex_params prm;
-
-            prm.internal_format = GL_R8;
-            prm.format = GL_RED;
-            prm.type = GL_UNSIGNED_BYTE;
-            ext_tex_atlas_ref = gfx::i()->tex.new_external_tex_2d(name, tex_atlas->id, tex_atlas->width, tex_atlas->height, &prm);
+            ext_tex_atlas_ref = gfx::i()->tex.nwi_external("texture-atlas-" + gfx_tex::gen_id(), tex_atlas->id, "R8");
+            ext_tex_atlas_ref->set_dim(tex_atlas->width, tex_atlas->height);
          }
       }
 

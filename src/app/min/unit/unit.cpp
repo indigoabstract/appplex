@@ -96,17 +96,18 @@ public:
 
       if (!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
       {
+         {
+            gfx_tex_params prm;
+
+            prm.set_format_id("RGBA8");
+            prm.set_rt_params();
+            scr_mirror_tex = gfx::i()->tex.nwi(gfx_tex::gen_id(), gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height(), &prm);
+         }
+
          gfx_tex_params prm;
 
-         prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
-         prm.max_anisotropy = 0.f;
-         prm.min_filter = gfx_tex_params::e_tf_linear;
-         prm.mag_filter = gfx_tex_params::e_tf_linear;
-         prm.gen_mipmaps = false;
-         scr_mirror_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height(), &prm);
-
-         prm.min_filter = gfx_tex_params::e_tf_nearest;
-         prm.mag_filter = gfx_tex_params::e_tf_nearest;
+         prm.set_format_id("R8");
+         prm.set_rt_params();
 
          // y rt
          {
@@ -114,18 +115,19 @@ public:
             int rt_y_height = video_height;
 
             pixels_y_tex.resize(rt_y_width * rt_y_height);
-            rt_y_tex = gfx::i()->tex.new_tex_2d("u_s2d_y_tex", rt_y_width, rt_y_height, "R8", &prm);
+            rt_y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), rt_y_width, rt_y_height, &prm);
             rt_y = gfx::i()->rt.new_rt();
             rt_y->set_color_attachment(rt_y_tex);
-            rt_y_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+            rt_y_quad = gfx_quad_2d::nwi();
 
             {
                auto& msh = *rt_y_quad;
 
-               msh.set_dimensions(1, 1);
-               msh.set_scale((float)rt_y_width, (float)rt_y_height);
+               msh.set_dimensions(2, 2);
+               msh.set_v_flip(true);
                msh[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
                msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-y-420.fsh";
+               msh[MP_CULL_BACK] = false;
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
             }
          }
@@ -136,18 +138,19 @@ public:
             int rt_u_height = video_height / 2;
 
             pixels_u_tex.resize(rt_u_width * rt_u_height);
-            rt_u_tex = gfx::i()->tex.new_tex_2d("u_s2d_u_tex", rt_u_width, rt_u_height, "R8", &prm);
+            rt_u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), rt_u_width, rt_u_height, &prm);
             rt_u = gfx::i()->rt.new_rt();
             rt_u->set_color_attachment(rt_u_tex);
-            rt_u_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+            rt_u_quad = gfx_quad_2d::nwi();
 
             {
                auto& msh = *rt_u_quad;
 
-               msh.set_dimensions(1, 1);
-               msh.set_scale((float)rt_u_width, (float)rt_u_height);
+               msh.set_dimensions(2, 2);
+               msh.set_v_flip(true);
                msh[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
                msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-u-420.fsh";
+               msh[MP_CULL_BACK] = false;
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
             }
          }
@@ -158,18 +161,19 @@ public:
             int rt_v_height = video_height / 2;
 
             pixels_v_tex.resize(rt_v_width * rt_v_height);
-            rt_v_tex = gfx::i()->tex.new_tex_2d("u_s2d_v_tex", rt_v_width, rt_v_height, "R8", &prm);
+            rt_v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), rt_v_width, rt_v_height, &prm);
             rt_v = gfx::i()->rt.new_rt();
             rt_v->set_color_attachment(rt_v_tex);
-            rt_v_quad = shared_ptr<gfx_quad_2d>(new gfx_quad_2d());
+            rt_v_quad = gfx_quad_2d::nwi();
 
             {
                auto& msh = *rt_v_quad;
 
-               msh.set_dimensions(1, 1);
-               msh.set_scale((float)rt_v_width, (float)rt_v_height);
+               msh.set_dimensions(2, 2);
+               msh.set_v_flip(true);
                msh[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
                msh[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-v-420.fsh";
+               msh[MP_CULL_BACK] = false;
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
             }
          }
@@ -237,30 +241,41 @@ public:
             // with PBO
             if (pbo_supported)
             {
+               mws_report_gfx_errs();
                // copy pixels from framebuffer to PBO and use offset instead of ponter.
                // OpenGL should perform async DMA transfer, so glReadPixels() will return immediately.
                glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id);
-               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.format, tex_prm.type, 0);
+               mws_report_gfx_errs();
+               glPixelStorei(GL_PACK_ALIGNMENT, tex_prm.get_bpp());
+               mws_report_gfx_errs();
+               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.get_format(), tex_prm.get_type(), 0);
+               mws_report_gfx_errs();
 
                // map the PBO containing the framebuffer pixels before processing it
                glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_next_id);
+               mws_report_gfx_errs();
 
                GLubyte* src = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
 
+               mws_report_gfx_errs();
                if (src)
                {
                   std::memcpy(i_data_dst.data(), src, i_data_dst.size());
                   // release pointer to the mapped buffer
                   glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
                }
+               mws_report_gfx_errs();
 
                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+               mws_report_gfx_errs();
             }
             // without PBO
             else
             {
-               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.format, tex_prm.type, i_data_dst.data());
+               glPixelStorei(GL_PACK_ALIGNMENT, tex_prm.get_bpp());
+               glReadPixels(0, 0, i_tex->get_width(), i_tex->get_height(), tex_prm.get_format(), tex_prm.get_type(), i_data_dst.data());
             }
+            mws_report_gfx_errs();
          }
       };
 
@@ -270,9 +285,11 @@ public:
       // pbo_next_index is used to process pixels in the other PBO
       int pbo_next_index = (pbo_index + 1) % 2;
 
+      mws_report_gfx_errs();
       gfx::i()->rt.set_current_render_target(rt_y);
       rt_y_quad->draw_out_of_sync(mws_cam);
       //gfx::i()->rt.get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
+      mws_report_gfx_errs();
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       mws_report_gfx_errs();
 
@@ -294,8 +311,11 @@ public:
       // also skip on the second frame to avoid capturing the fps text (it's still in the backbuffer)
       if (frame_index > 1)
       {
-         venc->encode_yuv420_frame(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
+         venc->encode_frame_m0_yuv420(pixels_y_tex.data(), pixels_u_tex.data(), pixels_v_tex.data());
       }
+      //gfx_util::draw_tex(mws_cam, rt_u_tex, 700.f, 10.f, rt_u_tex->get_width() / 2, rt_u_tex->get_height() / 2);
+      //gfx_util::draw_tex(mws_cam, rt_v_tex, 700.f, 280.f, rt_v_tex->get_width() / 2, rt_v_tex->get_height() / 2);
+      //gfx_util::draw_tex(mws_cam, rt_y_tex, 10.f, 10.f, rt_y_tex->get_width() / 2, rt_y_tex->get_height() / 2);
 
       // show recording text
       {
@@ -353,7 +373,7 @@ public:
       const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
 
       venc->set_video_path(i_filename);
-      venc->start_encoding(*video_params);
+      venc->start_encoding(gfx::i(), *video_params, mws_vid_enc_method::e_enc_m0);
 
 #else
 
@@ -684,6 +704,7 @@ bool unit::update()
    gfx_scene_inst->draw();
    update_view(updateCount);
    gfx_scene_inst->post_draw();
+   post_update_view();
 
 #endif
 
@@ -1031,6 +1052,8 @@ void unit::update_view(int update_count)
 
 #endif
 }
+
+void unit::post_update_view() {}
 
 
 int unit_list::unit_list_count = 0;

@@ -235,7 +235,7 @@ namespace unit_freeimage_page1
 			mws_page::init();
 
 			string s = "openvg/test_img_guitar.png";
-			imgxxx = gfx::i()->tex.new_tex_2d(s);
+			imgxxx = gfx::i()->tex.nwi(s);
 		}
 
 		virtual void on_destroy()

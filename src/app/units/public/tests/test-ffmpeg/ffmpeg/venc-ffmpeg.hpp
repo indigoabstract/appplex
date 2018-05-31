@@ -5,6 +5,7 @@
 #ifdef MOD_FFMPEG
 
 #include "media/vid/video-enc.hpp"
+#include "pfm.hpp"
 
 extern "C"
 {
@@ -24,6 +25,11 @@ extern "C"
 }
 
 #include <string>
+
+
+class mws_ffmpeg_reencoder_impl;
+class mws_pbo_bundle;
+class gfx_camera;
 
 
 // a wrapper around a single output AVStream
@@ -63,16 +69,23 @@ class venc_ffmpeg : public mws_video_enc
 public:
    venc_ffmpeg();
    virtual ~venc_ffmpeg() {}
-   virtual mws_vid_enc_st get_state() const override;
-   virtual std::string get_video_path() override;
-   virtual void set_video_path(std::string i_video_path) override;
-   virtual void start_encoding(const mws_video_params& i_params) override;
-   void encode_frame(AVFrame* i_frame);
-   virtual void encode_frame(const char* iframe_data, int iframe_data_length) override;
-   virtual void encode_yuv420_frame(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
-   virtual void stop_encoding() override;
+   mws_vid_enc_st get_state() const override;
+   mws_vid_enc_method get_enc_method() const override;
+   std::string get_video_path() override;
+   void set_video_path(std::string i_video_path) override;
+   void start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
+   void encode_frame_impl(AVFrame* i_frame);
+   void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
+   void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length) override;
+   void encode_frame_m2_rbga(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex) override;
+   void stop_encoding() override;
+   void update();
 
 private:
+   void encode_frame_m0_yuv420_impl(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame);
+   void encode_frame_m1_yuv420_impl(const char* iframe_data, int iframe_data_length);
+   void encode_frame_m2_rbga_impl(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex);
+
    void open_audio(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
    void open_video(AVFormatContext *oc, AVCodec *codec, output_stream_ffmpeg *ost, AVDictionary *opt_arg);
    void add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
@@ -93,6 +106,40 @@ private:
    AVCodec* audio_codec;
    AVCodec* video_codec;
    mws_vid_enc_st state;
+   mws_vid_enc_method enc_method;
+
+   mws_sp<gfx_camera> ortho_cam;
+   mws_sp<mws_pbo_bundle> pbo_b_y;
+   std::vector<uint8> y_pbo_pixels;
+   mws_sp<mws_pbo_bundle> pbo_b_u;
+   std::vector<uint8> u_pbo_pixels;
+   mws_sp<mws_pbo_bundle> pbo_b_v;
+   std::vector<uint8> v_pbo_pixels;
+};
+
+
+class mws_ffmpeg_reencoder : public mws_video_reencoder
+{
+public:
+   static std::shared_ptr<mws_ffmpeg_reencoder> nwi();
+
+   virtual ~mws_ffmpeg_reencoder() {}
+   virtual mws_vdec_state get_dec_state() const override;
+   virtual mws_vid_enc_st get_enc_state() const override;
+   std::string get_src_video_path() override;
+   void set_src_video_path(std::string i_video_path) override;
+   std::string get_dst_video_path() override;
+   void set_dst_video_path(std::string i_video_path) override;
+   void start_encoding(const mws_video_params& i_prm) override;
+   void stop_encoding() override;
+   void update() override;
+   void set_listener(mws_sp<mws_video_reencoder_listener> i_listener) override;
+
+protected:
+   mws_ffmpeg_reencoder() {}
+
+private:
+   std::shared_ptr<mws_ffmpeg_reencoder_impl> p;
 };
 
 #endif

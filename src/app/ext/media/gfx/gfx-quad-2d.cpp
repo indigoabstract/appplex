@@ -12,6 +12,11 @@
 
 using gfx_vxo_util::set_mesh_data;
 
+std::shared_ptr<gfx_quad_2d> gfx_quad_2d::nwi(std::shared_ptr<gfx> i_gi)
+{
+   return std::shared_ptr<gfx_quad_2d>(new gfx_quad_2d(i_gi));
+}
+
 void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
 {
    anchor_type = ianchor_type;

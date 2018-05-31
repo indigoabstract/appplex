@@ -12,12 +12,16 @@ class gfx_obj : public std::enable_shared_from_this<gfx_obj>
 public:
    enum e_gfx_obj_type
    {
-      e_node,
-      e_cam,
+      // generic gfx obj
+      e_obj,
       e_mat,
       e_rt,
       e_shader,
       e_tex,
+
+      // nodes in the scene
+      e_node,
+      e_cam,
       e_vxo,
       e_mws,
    };

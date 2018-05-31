@@ -6,6 +6,7 @@
 
 
 class gfx;
+class gfx_tex_info;
 
 
 class gfx_tex_params
@@ -39,10 +40,15 @@ public:
    gfx_int gl_wrap_s();
    gfx_int gl_wrap_t();
    bool anisotropy_enabled();
+   gfx_enum get_bpp() const;
+   gfx_enum get_internal_format() const;
+   gfx_enum get_format() const;
+   gfx_enum get_type() const;
+   const std::string& get_format_id() const;
+   void set_format_id(std::string i_format_id);
+   // set params to enable this tex to be used as an rt (filtering/wrap/gen mipmaps, etc). use this before creating the texture.
+   void set_rt_params();
 
-   gfx_enum internal_format;
-   gfx_enum format;
-   gfx_enum type;
    e_tex_filters mag_filter;
    e_tex_filters min_filter;
    e_tex_wrap_modes wrap_r;
@@ -51,6 +57,9 @@ public:
    float max_anisotropy;
    bool gen_mipmaps;
    bool regen_mipmaps;
+
+private:
+   mws_sp<gfx_tex_info> ti;
 };
 
 

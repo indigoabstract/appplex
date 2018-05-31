@@ -92,7 +92,11 @@ void unit_test_kube_sphere::load()
 	p->persp_cam->clear_color_value = gfx_color::colors::black;
 	p->persp_cam->clear_depth = true;
 
-	p->rt_tex = gfx::i()->tex.new_tex_2d(gfx_tex::gen_id(), 256, 256);
+   gfx_tex_params prm;
+
+   prm.set_format_id("RGBA8");
+   prm.set_rt_params();
+   p->rt_tex = gfx::i()->tex.nwi(gfx_tex::gen_id(), 256, 256, &prm);
 	p->rt = gfx::i()->rt.new_rt();
 	p->rt->set_color_attachment(p->rt_tex);
 
