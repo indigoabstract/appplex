@@ -96,17 +96,6 @@ static GPUImageMovie* movieFile;
 static GPUImageMovieWriter* movieWriter;
 static NSTimer* timer;
 
-void cxx_2_objc_encode_video(std::string i_src_path, std::string i_dst_path)
-{
-	// if a file with that name already exists, delete the old movie
-	unlink(i_dst_path.c_str());
-	
-    NSString* src_path_nss = [[NSString alloc] initWithUTF8String:i_src_path.c_str()];
-    NSString* dst_path_nss = [[NSString alloc] initWithUTF8String:i_dst_path.c_str()];
-    //mws_print("\n\nencode_selected_videoooooooo : %s %s \n\n\n", i_src_path.c_str(), i_dst_path.c_str());
-    //[[VideoEncAppGLKitVC inst] encode_video:src_path_nss i_dst_path:dst_path_nss];
-}
-
 
 @implementation ViewController
 
@@ -450,7 +439,7 @@ extern "C"
     
     void render_video_frame_to_fbo_2()
     {
-        
+        int x = 3;
     }
 
 #ifdef __cplusplus

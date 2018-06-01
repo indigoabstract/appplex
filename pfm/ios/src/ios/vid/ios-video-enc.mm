@@ -63,7 +63,7 @@ public:
 		state = mws_vid_enc_st::e_st_finished;
 	}
 	
-	std::string video_path;
+    std::string video_path;
 	mws_vid_enc_st state;
 	mws_vid_enc_method enc_method;
 };
@@ -181,8 +181,19 @@ void ios_video_reencoder::set_dst_video_path(std::string i_video_path)
 
 void ios_video_reencoder::start_encoding(const mws_video_params& i_prm)
 {
+    std::string src_path = get_src_video_path();
+    std::string dst_path = get_dst_video_path();
+    
     p->vdec_state = mws_vdec_state::st_playing;
-   //p->vdec->start_decoding();
+    p->venc->start_encoding(nullptr, i_prm, mws_vid_enc_method::e_enc_m2);
+    
+    // if a file with that name already exists, delete the old movie
+    unlink(get_dst_video_path().c_str());
+    
+    NSString* src_path_nss = [[NSString alloc] initWithUTF8String:src_path.c_str()];
+    NSString* dst_path_nss = [[NSString alloc] initWithUTF8String:dst_path.c_str()];
+    //mws_print("\n\nencode_selected_videoooooooo : %s %s \n\n\n", i_src_path.c_str(), i_dst_path.c_str());
+    [[ViewController inst] encode_video:src_path_nss dst_path:dst_path_nss];
 }
 
 void ios_video_reencoder::stop_encoding()
