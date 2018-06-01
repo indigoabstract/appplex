@@ -41,7 +41,7 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
 
 @interface video_encoder_helper ()
 {
-	mws_wp<ios_video_enc_impl> venc_impl;
+	@public mws_wp<ios_video_enc_impl> venc_impl;
     NSURL* src_video_url;
     NSURL* dst_video_url;
 }
@@ -53,8 +53,8 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
 - (void)retrieving_progress
 {
     int progress_0_2_100 = (int)(movieFile.progress * 100);
-	video_enc_progress_handler(venc_impl, progress_0_2_100);
-    //mws_print("progress: %d\n", p);
+	video_enc_progress_handler(venc_impl.lock(), progress_0_2_100);
+    mws_print("progress: %d\n", progress_0_2_100);
 }
 
 -(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path
@@ -122,7 +122,7 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
 			auto dst_path_c = [dst_path UTF8String];
 			std::string new_video_path = (dst_path_c) ? dst_path_c : "";
 			
-			video_enc_finished_handler(venc_impl, new_video_path);
+			video_enc_finished_handler(venc_impl.lock(), new_video_path);
         });
     }];
 }
@@ -202,7 +202,7 @@ std::shared_ptr<ios_video_enc> ios_video_enc::nwi()
 {
 	auto i = std::shared_ptr<ios_video_enc>(new ios_video_enc());
 	i->p = std::shared_ptr<ios_video_enc_impl>(new ios_video_enc_impl());
-	i->p->venc_helper_inst = i->p;
+	i->p->venc_helper_inst->venc_impl = i->p;
 	return i;
 }
 
@@ -341,11 +341,11 @@ void video_enc_progress_handler(mws_sp<ios_video_enc_impl> i_venc_impl, int i_pr
 
 void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::string i_new_video_path)
 {
-	auto i_venc_impl->reencoder_impl.lock();
+	auto reencoder_impl = i_venc_impl->reencoder_impl.lock();
 	
-	if(i_venc_impl->video_reencoder_listener)
+	if(reencoder_impl->video_reencoder_listener)
 	{
-		i_venc_impl->video_reencoder_listener->on_decoding_finished();
+		reencoder_impl->video_reencoder_listener->on_decoding_finished();
 	}
 	
 	mws_print("video_enc_finished_handler [%s]\n", i_new_video_path.c_str());
