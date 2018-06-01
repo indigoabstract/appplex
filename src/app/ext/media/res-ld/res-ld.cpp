@@ -2,6 +2,8 @@
 
 #include "appplex-conf.hpp"
 #include "res-ld.hpp"
+#include "gfx.hpp"
+#include "gfx-tex.hpp"
 
 
 raw_img_data::raw_img_data(int i_width, int i_height)
@@ -56,7 +58,7 @@ void abort_(const char * s, ...)
    abort();
 }
 
-void write_png_file(shared_ptr<pfm_file> file_name, int iwidth, int iheight, uint8* ibuffer, uint32 iflip)
+void write_png_file(mws_sp<pfm_file> file_name, int iwidth, int iheight, uint8* ibuffer, uint32 iflip)
 {
    int width = iwidth;
    int height = iheight;
@@ -178,7 +180,7 @@ void process_file(void)
 }
 
 
-shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename);
+mws_sp<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename);
 
 
 raw_img_data::raw_img_data()
@@ -187,33 +189,38 @@ raw_img_data::raw_img_data()
 }
 
 
-shared_ptr<res_ld> res_ld::res_loader_inst;
+mws_sp<res_ld> res_ld::res_loader_inst;
 
 res_ld::res_ld()
 {
 }
 
-shared_ptr<res_ld> res_ld::inst()
+mws_sp<res_ld> res_ld::inst()
 {
    if (!res_loader_inst)
    {
-      res_loader_inst = shared_ptr<res_ld>(new res_ld());
+      res_loader_inst = mws_sp<res_ld>(new res_ld());
    }
 
    return res_loader_inst;
 }
 
-shared_ptr<raw_img_data> res_ld::load_image(shared_ptr<pfm_file> ifile)
+mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
+{
+   return gfx::i()->tex.nwi(i_filename);
+}
+
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> ifile)
 {
    auto filename = ifile->get_file_name().c_str();
-   shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(ifile);
-   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), filename);
+   mws_sp<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(ifile);
+   mws_sp<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), filename);
    mws_print("loading img file1 [%s], size [%d]\n", filename, img_data->size());
 
    return rid;
 }
 
-shared_ptr<raw_img_data> res_ld::load_image(std::string i_filename)
+mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
 {
    std::string img_name = i_filename;
 
@@ -222,14 +229,14 @@ shared_ptr<raw_img_data> res_ld::load_image(std::string i_filename)
       img_name += ".png";
    }
 
-   shared_ptr<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(img_name);
-   shared_ptr<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), img_name.c_str());
+   mws_sp<std::vector<uint8> > img_data = pfm::filesystem::load_res_byte_vect(img_name);
+   mws_sp<raw_img_data> rid = get_raw_image_data_from_png(begin_ptr(img_data), img_data->size(), img_name.c_str());
    mws_print("loading img file2 [%s], size [%d]\n", img_name.c_str(), img_data->size());
 
    return rid;
 }
 
-bool res_ld::save_image(shared_ptr<pfm_file> ifile, int iwidth, int iheight, uint8* ibuffer, uint32 iflip)
+bool res_ld::save_image(mws_sp<pfm_file> ifile, int iwidth, int iheight, uint8* ibuffer, uint32 iflip)
 {
    write_png_file(ifile, iwidth, iheight, ibuffer, iflip);
 
@@ -263,7 +270,7 @@ static PngInfo read_and_update_info(const png_structp png_ptr, const png_infop i
 static DataHandle read_entire_png_image(const png_structp png_ptr, const png_infop info_ptr, const png_uint_32 height);
 static gfx_enum get_gl_color_format(const int png_color_format);
 
-shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename)
+mws_sp<raw_img_data> get_raw_image_data_from_png(const void* png_data, const int png_data_size, const char* i_filename)
 {
    assert(png_data != NULL && png_data_size > 8);
    assert(png_check_sig((png_const_bytep)png_data, 8));
@@ -287,7 +294,7 @@ shared_ptr<raw_img_data> get_raw_image_data_from_png(const void* png_data, const
    png_read_end(png_ptr, info_ptr);
    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-   shared_ptr<raw_img_data> rd(new raw_img_data());
+   mws_sp<raw_img_data> rd(new raw_img_data());
    rd->width = png_info.width;
    rd->height = png_info.height;
    rd->size = raw_image.size;
@@ -392,5 +399,16 @@ raw_img_data::raw_img_data()
 {
    data = nullptr;
 }
+
+#if defined PLATFORM_IOS
+
+#include "objc-cxx-bridge.hpp"
+
+mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
+{
+   return cxx_2_objc_load_tex_by_name(i_filename, gfx::i());
+}
+
+#endif
 
 #endif

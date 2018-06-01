@@ -3,6 +3,9 @@
 #include "pfm.hpp"
 
 
+class gfx_tex;
+
+
 union rgba_32_fmt
 {
    uint32 rgba;
@@ -42,14 +45,15 @@ public:
       e_vertical_flip = 1 << 1,
    };
 
-   static shared_ptr<res_ld> inst();
+   static mws_sp<res_ld> inst();
 
-   shared_ptr<raw_img_data> load_image(shared_ptr<pfm_file> ifile);
-   shared_ptr<raw_img_data> load_image(std::string ifile_name);
-   bool save_image(shared_ptr<pfm_file> ifile, int iwidth, int iheight, uint8* ibuffer, uint32 iflip = e_no_flip);
+   mws_sp<gfx_tex> load_tex(std::string i_filename);
+   mws_sp<raw_img_data> load_image(mws_sp<pfm_file> ifile);
+   mws_sp<raw_img_data> load_image(std::string i_filename);
+   bool save_image(mws_sp<pfm_file> ifile, int iwidth, int iheight, uint8* ibuffer, uint32 iflip = e_no_flip);
 
 private:
    res_ld();
 
-   static shared_ptr<res_ld> res_loader_inst;
+   static mws_sp<res_ld> res_loader_inst;
 };

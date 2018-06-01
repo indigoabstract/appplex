@@ -635,7 +635,7 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_
    pbo_b_y->set_tex(i_tex);
    pbo_b_y->update(ortho_cam);
 
-   gfx_util::draw_tex(ortho_cam, i_tex, 10, 300);
+   //gfx_util::draw_tex(ortho_cam, i_tex, 10, 300);
 }
 
 void venc_ffmpeg::stop_encoding()
@@ -830,6 +830,7 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
    // the image can be allocated by any means and av_image_alloc() is
    // just the most convenient way if av_malloc() is to be used
    ret = av_image_alloc(frame->data, frame->linesize, c->width, c->height, c->pix_fmt, 32);
+   mws_assert(frame->linesize[0] == c->width);
 
    if (ret < 0)
    {

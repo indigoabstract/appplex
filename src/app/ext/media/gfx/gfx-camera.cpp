@@ -784,7 +784,11 @@ void gfx_camera::draw_mesh(shared_ptr<gfx_vxo> imesh)
    //imesh->draw_in_sync(static_pointer_cast<gfx_camera>(get_shared_ptr()));
 }
 
-gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this), update_rt_cam_state(true) {}
+gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this)
+{
+   update_rt_cam_state = true;
+   node_type = camera_node;
+}
 
 void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
 {
@@ -846,19 +850,6 @@ void gfx_camera::load(shared_ptr<gfx_camera> inst)
 
    p = shared_ptr<gfx_camera_impl>(new gfx_camera_impl());
    p->camera = inst;
-
-   node_type = camera_node;
-   enabled = true;
-   near_clip_distance = -100.f;
-   far_clip_distance = 100.f;
-   fov_y_deg = glm::radians(60.f);
-   projection_type = e_perspective_proj;
-   rendering_priority = 0;
-   render_target = "";
-   clear_color = false;
-   clear_color_value = gfx_color::colors::black;
-   clear_depth = false;
-   clear_stencil = false;
 
    if (camera_idx == 0)
    {

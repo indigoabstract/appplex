@@ -98,7 +98,9 @@ public:
       */
       shared_ptr<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
       shared_ptr<gfx_tex_cube_map> new_tex_cube_map(uint32 isize);
-      shared_ptr<gfx_tex> get_texture_by_name(std::string iname);
+      shared_ptr<gfx_tex> get_texture_by_name(std::string i_filename);
+      // returns an existing texture by that name, or creates an new one if it doesn't exist yet
+      shared_ptr<gfx_tex> load_tex(std::string iname);
 
    private:
       friend class gfx;

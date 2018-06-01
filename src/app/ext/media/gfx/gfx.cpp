@@ -8,6 +8,7 @@
 #include "gfx-quad-2d.hpp"
 #include "gfx-vxo.hpp"
 #include "gfx-state.hpp"
+#include "media/res-ld/res-ld.hpp"
 #include "min.hpp"
 #include "pfm-gl.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -499,6 +500,18 @@ std::shared_ptr<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
          tex = t;
          break;
       }
+   }
+
+   return tex;
+}
+
+shared_ptr<gfx_tex> gfx::ic_tex::load_tex(std::string i_filename)
+{
+   auto tex = get_texture_by_name(i_filename);
+
+   if (!tex)
+   {
+      tex = res_ld::inst()->load_tex(i_filename);
    }
 
    return tex;

@@ -8,10 +8,40 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 
-
-std::shared_ptr<gfx_tex> load_texture_by_ui_image(UIImage* image, std::string image_filename, std::shared_ptr<gfx> gfx_inst)
+std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std::shared_ptr<gfx> i_gi)
 {
-    auto tex = gfx_inst->tex.get_texture_by_name(image_filename);
+    auto tex = i_gi->tex.get_texture_by_name(i_filename);
+    
+    if(tex)
+    {
+        return tex;
+    }
+    
+    auto c_filename = i_filename.c_str();
+    NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
+    NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], GLKTextureLoaderOriginBottomLeft, nil];
+    // get the main bundle for the app
+    NSBundle* main_bundle = [NSBundle mainBundle];
+    NSError* error;
+    NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
+    GLKTextureInfo* info = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
+    
+    if (info != nil)
+    {
+        tex = i_gi->tex.nwi_external(i_filename, tex_gl_id, "RGBA8");
+		tex->set_dim(info.width, info.height);
+    }
+    else
+    {
+        NSLog(@"load_tex_by_name: error loading file: %@", [error localizedDescription]);
+    }
+    
+    return tex;
+}
+
+std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi)
+{
+    auto tex = i_gi->tex.get_texture_by_name(i_filename);
     
     if(tex)
     {
@@ -23,12 +53,8 @@ std::shared_ptr<gfx_tex> load_texture_by_ui_image(UIImage* image, std::string im
     
     if (info != nil)
     {
-        gfx_uint tex_gl_id = info.name;
-        gfx_uint width = info.width;
-        gfx_uint height = info.height;
-        gfx_tex_params p;
-        
-        tex = gfx_inst->tex.new_external_tex_2d(image_filename, tex_gl_id, width, height, &p);
+        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
+		tex->set_dim(info.width, info.height);
     }
     else
     {
@@ -268,7 +294,7 @@ static ViewController* instance = NULL;
         {
             const char* img_path_c = [img_path UTF8String];
             std::string img_path_str = img_path_c;
-            auto tex = load_texture_by_ui_image(picked_image, img_path_str, gfx::i());
+            auto tex = load_tex_by_ui_image(picked_image, img_path_str, gfx::i());
             
             if(tex)
             {

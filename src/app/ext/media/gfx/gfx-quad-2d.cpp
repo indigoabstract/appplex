@@ -97,7 +97,7 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
 
    if (iv_flip)
    {
-      tvertices_data =
+      vx_data =
       {
          { vx_data[0].pos, vx_data[0].nrm, { vx_data[1].tex.s, vx_data[1].tex.t } },
          { vx_data[1].pos, vx_data[1].nrm, { vx_data[0].tex.s, vx_data[0].tex.t } },
@@ -107,7 +107,7 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
    }
    else
    {
-      tvertices_data =
+      vx_data =
       {
          { vx_data[0].pos, vx_data[0].nrm, { vx_data[0].tex.s, vx_data[0].tex.t } },
          { vx_data[1].pos, vx_data[1].nrm, { vx_data[1].tex.s, vx_data[1].tex.t } },
