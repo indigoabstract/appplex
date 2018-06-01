@@ -45,25 +45,6 @@ std::string get_av_error_string(int av_error_code)
    return std::string(str);
 }
 
-mws_video_params::mws_video_params()
-{
-   bit_rate = 3000000;
-   width = 0;
-   height = 0;
-   // frames per second
-   time_base_numerator = 1;
-   time_base_denominator = 24;
-   ticks_per_frame = 1;
-   // emit one intra frame every ten frames
-   gop_size = 10;
-   max_b_frames = 1;
-   pix_fmt = AV_PIX_FMT_YUV420P;
-   codec_id = AV_CODEC_ID_H264;
-   preset = "ultrafast";
-   tune = "film";
-   crf = 0;
-}
-
 
 static void my_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
