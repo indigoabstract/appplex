@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-std::string writable_path;
-
 std::shared_ptr<std::string> load_res_as_string(std::string ifilename)
 {
     auto c_filename = ifilename.c_str();
@@ -238,7 +236,14 @@ void ios_main::write_text_v(const char* iformat, ...)const
 
 std::string ios_main::get_writable_path()const
 {
-	return writable_path;
+    NSString* output_path_nss = nil;
+    std::string output_path;
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* documents_directory = [paths objectAtIndex:0];
+    const char* output_path_c = [documents_directory UTF8String];
+    output_path = output_path_c;
+
+    return output_path;
 }
 
 void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)

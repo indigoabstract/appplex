@@ -5,7 +5,15 @@
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
 #include "objc-cxx-bridge.hpp"
+
+#import "ios/vid/dec/GPUImageFilter.h"
+#import "ios/vid/dec/GPUImageMovie.h"
+#import "ios/vid/dec/GPUImageOutput.h"
+#import "ios/vid/dec/GPUImageMovieWriter.h"
+#import "ios/vid/dec/GPUImageView.h"
+
 #import <MobileCoreServices/MobileCoreServices.h>
+#include <unistd.h>
 
 
 std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std::shared_ptr<gfx> i_gi)
@@ -80,6 +88,25 @@ std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_file
 static EAGLContext* eagl_context_inst = NULL;
 static ViewController* instance = NULL;
 
+// GPUImageMovie
+static GPUImageView* gpu_image_view;
+static GPUImageMovie* movieFile;
+//static GPUImageOutput<GPUImageInput>* filter;
+static GPUImageMovieWriter* movieWriter;
+static NSTimer* timer;
+
+void cxx_2_objc_encode_video(std::string i_src_path, std::string i_dst_path)
+{
+	// if a file with that name already exists, delete the old movie
+	_unlink(i_dst_path.c_str());
+	
+    NSString* src_path_nss = [[NSString alloc] initWithUTF8String:i_src_path.c_str()];
+    NSString* dst_path_nss = [[NSString alloc] initWithUTF8String:i_dst_path.c_str()];
+    //mws_print("\n\nencode_selected_videoooooooo : %s %s \n\n\n", i_src_path.c_str(), i_dst_path.c_str());
+    //[[VideoEncAppGLKitVC inst] encode_video:src_path_nss i_dst_path:dst_path_nss];
+}
+
+
 @implementation ViewController
 
 +(EAGLContext*) eagl_context
@@ -92,11 +119,109 @@ static ViewController* instance = NULL;
     return instance;
 }
 
+- (void)retrieving_progress
+{
+    int p = (int)(movieFile.progress * 100);
+    controller::inst()->on_progress_evt(movieFile.progress);
+    //vprint("progress: %d\n", p);
+}
+
+-(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path
+{
+    NSLog(@"\n\nenc src %@ dst %@\n\n", src_path, dst_path);
+    NSString* full_src_path = [video_file_util getQualifiedFilenameOrResource:src_path];
+    NSURL* sampleURL = [NSURL fileURLWithPath:full_src_path];
+    //NSURL *sampleURL = [[NSBundle mainBundle] URLForResource:@"sample_iPod" withExtension:@"m4v"];
+    
+    movieFile = [[GPUImageMovie alloc] initWithURL:sampleURL];
+    movieFile.runBenchmark = NO;
+    movieFile.playAtActualSpeed = NO;
+    //filter = [[GPUImageFilter alloc] init];
+    //    filter = [[GPUImageUnsharpMaskFilter alloc] init];
+    
+    //[movieFile addTarget:filter];
+    
+    // Only rotate the video for display, leave orientation the same for recording
+    //GPUImageView *filterView = (GPUImageView *)self.view;
+    
+    CGRect screen_rect = [[UIScreen mainScreen] bounds];
+    CGFloat screen_width = screen_rect.size.width;
+    CGFloat screen_height = screen_rect.size.height;
+    
+    if(!gpu_image_view)
+    {
+        gpu_image_view = [[GPUImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, screen_width, screen_height)];
+    }
+    
+    [movieFile addTarget:gpu_image_view];
+    
+    // In addition to displaying to the screen, write out a processed version of the movie to disk
+    //NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+    unlink([dst_path UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
+    NSURL *movieURL = [NSURL fileURLWithPath:dst_path];
+    
+    //movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(640.0, 480.0)];
+    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(screen_width, screen_height)];
+    [movieFile addTarget:movieWriter];
+    
+    // Configure this for video from the movie file, where we want to preserve all video frames and audio samples
+    movieWriter.shouldPassthroughAudio = YES;
+    movieFile.audioEncodingTarget = movieWriter;
+    [movieFile enableSynchronizedEncodingUsingMovieWriter:movieWriter];
+    
+    [movieWriter startRecording];
+    [movieFile startProcessing];
+    
+    timer = [NSTimer scheduledTimerWithTimeInterval:0.3f
+                                             target:self
+                                           selector:@selector(retrieving_progress)
+                                           userInfo:nil
+                                            repeats:YES];
+    
+    [movieWriter setCompletionBlock:^{
+        [movieFile removeTarget:movieWriter];
+        [movieWriter finishRecording];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [timer invalidate];
+            vprint("\n\nencoding finished\n\n");
+            
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(dst_path))
+            {
+                UISaveVideoAtPathToSavedPhotosAlbum(dst_path, nil, nil, nil);
+            }
+            
+            controller::inst()->on_encoding_finished();
+            
+            {
+                _play_stop_btn.hidden = false;
+                _new_video_btn.hidden = false;
+                _del_video_btn.hidden = false;
+                _bg_image_btn.hidden = false;
+                _video_file_btn.hidden = false;
+                _video_enc_btn.hidden = false;
+            }
+
+            auto vp = controller::inst()->new_video();
+            
+            if(vp)
+            {
+                auto dst_path_c = [dst_path UTF8String];
+                
+                vp->set_video_path(dst_path_c);
+                vp->play();
+            }
+        });
+    }];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    EAGLSharegroup* sg = [[[GPUImageContext sharedImageProcessingContext] context] sharegroup];
     instance = self;
-    eagl_context_inst = self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:sg];
+    eagl_context_inst = self.context;
     
     if (!self.context) {
         NSLog(@"Failed to create ES context");
