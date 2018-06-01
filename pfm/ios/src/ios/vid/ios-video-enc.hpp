@@ -6,7 +6,7 @@
 
 
 class ios_video_enc_impl;
-class ios_reencoder_impl;
+class ios_video_reencoder_impl;
 
 
 class ios_video_enc : public mws_video_enc
@@ -16,6 +16,7 @@ public:
 
 	virtual ~ios_video_enc() {}
 	mws_vid_enc_st get_state() const override;
+    mws_vid_enc_method get_enc_method() const override;
 	std::string get_video_path() override;
 	void set_video_path(std::string i_video_path) override;
 	void start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
@@ -31,12 +32,12 @@ protected:
 };
 
 
-class ios_reencoder : public mws_video_reencoder
+class ios_video_reencoder : public mws_video_reencoder
 {
 public:
-	static std::shared_ptr<ios_reencoder> nwi();
+	static std::shared_ptr<ios_video_reencoder> nwi();
 
-	virtual ~ios_reencoder() {}
+	virtual ~ios_video_reencoder() {}
 	virtual mws_vdec_state get_dec_state() const override;
 	virtual mws_vid_enc_st get_enc_state() const override;
 	std::string get_src_video_path() override;
@@ -46,11 +47,11 @@ public:
 	void start_encoding(const mws_video_params& i_prm) override;
 	void stop_encoding() override;
 	void update() override;
-	void set_listener(mws_sp<mws_video_reencoder_listener> i_listener) override;
+	void set_listener(std::shared_ptr<mws_video_reencoder_listener> i_listener) override;
 
 protected:
-	ios_reencoder() {}
+	ios_video_reencoder() {}
 
 private:
-	std::shared_ptr<ios_reencoder_impl> p;
+	std::shared_ptr<ios_video_reencoder_impl> p;
 };

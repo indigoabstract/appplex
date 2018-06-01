@@ -21,6 +21,26 @@ bool mws_video_reencoder::is_encoding() const
 #include "app/units/public/tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
 
 
+mws_video_params::mws_video_params()
+{
+    bit_rate = 3000000;
+    width = 0;
+    height = 0;
+    // frames per second
+    time_base_numerator = 1;
+    time_base_denominator = 24;
+    ticks_per_frame = 1;
+    // emit one intra frame every ten frames
+    gop_size = 10;
+    max_b_frames = 1;
+    pix_fmt = AV_PIX_FMT_YUV420P;
+    codec_id = AV_CODEC_ID_H264;
+    preset = "ultrafast";
+    tune = "film";
+    crf = 0;
+}
+
+
 std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
 {
    return std::make_shared<venc_ffmpeg>();
@@ -36,15 +56,34 @@ std::shared_ptr<mws_video_reencoder> mws_video_reencoder::nwi()
 #include "ios/vid/ios-video-enc.hpp"
 
 
+mws_video_params::mws_video_params()
+{
+    bit_rate = 3000000;
+    width = 0;
+    height = 0;
+    // frames per second
+    time_base_numerator = 1;
+    time_base_denominator = 24;
+    ticks_per_frame = 1;
+    // emit one intra frame every ten frames
+    gop_size = 10;
+    max_b_frames = 1;
+    pix_fmt = 0;
+    codec_id = 0;
+    preset = "ultrafast";
+    tune = "film";
+    crf = 0;
+}
+
+
 std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
 {
-   //return ios_video_enc::nwi();
-    return nullptr;
+   return ios_video_enc::nwi();
 }
 
 std::shared_ptr<mws_video_reencoder> mws_video_reencoder::nwi()
 {
-   return nullptr;
+   return ios_video_reencoder::nwi();
 }
 
 #endif

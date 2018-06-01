@@ -143,7 +143,7 @@ public:
    std::shared_ptr<gfx_material> get_material();
    void set_material(std::shared_ptr<gfx_material> imaterial);
    vx_info& get_vx_info();
-   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
+   void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
 
    // this is used for drawing the vxo explicitely by hand (ie when it's not drawn by the scene manager)
    // it's slower than the in_sync version, since the camera and vxo states need to be recalculated,

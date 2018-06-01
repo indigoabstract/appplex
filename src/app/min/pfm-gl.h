@@ -14,6 +14,9 @@ extern "C"
 #define MWS_OPENGL_ES_3_1 31
 #define MWS_OPENGL_ES_MAX_AVAILABLE 1
 
+
+// --- BEGIN PLATFORMS ---
+// --- ANDROID ---
 #if defined PLATFORM_ANDROID
 
 #define MWS_USES_OPENGL_ES
@@ -23,6 +26,8 @@ extern "C"
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
+
+// --- IOS ---
 #elif defined PLATFORM_IOS
 
 #define MWS_USES_OPENGL_ES
@@ -39,8 +44,12 @@ extern "C"
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
     
-#endif // MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_2_0
+#endif
+    
+GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
 
+
+// --- EMSCRIPTEN ---
 #elif defined PLATFORM_EMSCRIPTEN
 
 #define MWS_USES_OPENGL_ES
@@ -57,7 +66,7 @@ extern "C"
 #include <GLES3/gl3.h>
 #include <GLES3/gl2ext.h>
 
-#endif // MWS_OPENGL_ES_VERSION == MWS_OPENGL_ES_2_0
+#endif
 
 #ifndef APIENTRY
 #define APIENTRY
@@ -66,8 +75,10 @@ extern "C"
 #define GLAPI extern
 #endif
 
-   GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
 
+
+// --- WINDOWS ---
 #elif defined PLATFORM_WINDOWS_PC || defined PLATFORM_QT_WINDOWS_PC
 
 #define MWS_USES_OPENGL
@@ -110,6 +121,7 @@ extern "C"
 #endif
 
 #endif
+// --- END PLATFORMS ---
 
 
    int mws_is_gl_extension_supported(const char* i_extension);

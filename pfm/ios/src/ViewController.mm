@@ -6,11 +6,12 @@
 #include "gfx-tex.hpp"
 #include "objc-cxx-bridge.hpp"
 
-#import "ios/vid/dec/GPUImageFilter.h"
-#import "ios/vid/dec/GPUImageMovie.h"
-#import "ios/vid/dec/GPUImageOutput.h"
-#import "ios/vid/dec/GPUImageMovieWriter.h"
-#import "ios/vid/dec/GPUImageView.h"
+#import "ios/vid/dec/video-player.h"
+#import "ios/vid/enc/GPUImageFilter.h"
+#import "ios/vid/enc/GPUImageMovie.h"
+#import "ios/vid/enc/GPUImageOutput.h"
+#import "ios/vid/enc/GPUImageMovieWriter.h"
+#import "ios/vid/enc/GPUImageView.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #include <unistd.h>
@@ -36,7 +37,7 @@ std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std
     
     if (info != nil)
     {
-        tex = i_gi->tex.nwi_external(i_filename, tex_gl_id, "RGBA8");
+        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
 		tex->set_dim(info.width, info.height);
     }
     else
@@ -98,7 +99,7 @@ static NSTimer* timer;
 void cxx_2_objc_encode_video(std::string i_src_path, std::string i_dst_path)
 {
 	// if a file with that name already exists, delete the old movie
-	_unlink(i_dst_path.c_str());
+	unlink(i_dst_path.c_str());
 	
     NSString* src_path_nss = [[NSString alloc] initWithUTF8String:i_src_path.c_str()];
     NSString* dst_path_nss = [[NSString alloc] initWithUTF8String:i_dst_path.c_str()];
@@ -122,7 +123,7 @@ void cxx_2_objc_encode_video(std::string i_src_path, std::string i_dst_path)
 - (void)retrieving_progress
 {
     int p = (int)(movieFile.progress * 100);
-    controller::inst()->on_progress_evt(movieFile.progress);
+    //controller::inst()->on_progress_evt(movieFile.progress);
     //vprint("progress: %d\n", p);
 }
 
@@ -184,33 +185,23 @@ void cxx_2_objc_encode_video(std::string i_src_path, std::string i_dst_path)
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [timer invalidate];
-            vprint("\n\nencoding finished\n\n");
+            mws_print("\n\nencoding finished\n\n");
             
             if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(dst_path))
             {
                 UISaveVideoAtPathToSavedPhotosAlbum(dst_path, nil, nil, nil);
             }
             
-            controller::inst()->on_encoding_finished();
-            
-            {
-                _play_stop_btn.hidden = false;
-                _new_video_btn.hidden = false;
-                _del_video_btn.hidden = false;
-                _bg_image_btn.hidden = false;
-                _video_file_btn.hidden = false;
-                _video_enc_btn.hidden = false;
-            }
-
-            auto vp = controller::inst()->new_video();
-            
-            if(vp)
-            {
-                auto dst_path_c = [dst_path UTF8String];
-                
-                vp->set_video_path(dst_path_c);
-                vp->play();
-            }
+//            controller::inst()->on_encoding_finished();
+//            auto vp = controller::inst()->new_video();
+//            
+//            if(vp)
+//            {
+//                auto dst_path_c = [dst_path UTF8String];
+//                
+//                vp->set_video_path(dst_path_c);
+//                vp->play();
+//            }
         });
     }];
 }
@@ -447,12 +438,26 @@ void cxx_2_objc_open_video_picker()
     [[ViewController inst] on_vid_btn_click];
 }
 
-int render_video_frame_to_fbo(int fb_width, int fb_height, int tex_gl_id)
+#ifdef __cplusplus
+extern "C"
 {
-    return 0;
-}
-
-void render_video_frame_to_fbo_2()
-{
+#endif
     
+    int render_video_frame_to_fbo(int fb_width, int fb_height, int tex_gl_id)
+    {
+        return 0;
+    }
+    
+    void render_video_frame_to_fbo_2()
+    {
+        
+    }
+
+#ifdef __cplusplus
+}
+#endif
+
+GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data)
+{
+    mws_assert(false);
 }

@@ -269,7 +269,7 @@ class ios_video_dec_impl
 public:
     ios_video_dec_impl()
     {
-        state = st_stopped;
+        state = mws_vdec_state::st_stopped;
         
         anim_helper_inst = [AnimHelper alloc];
         anim_helper_inst.video_player = [video_dec_player alloc];
@@ -305,14 +305,14 @@ public:
             ortho_cam->clear_depth = true;
         }
         {
-            quad_mesh = std::make_shared<gfx_quad_2d>();
+            quad_mesh = gfx_quad_2d::nwi();
             auto& qm = *quad_mesh;
             
             qm[MP_SHADER_NAME] = "yuv";
         }
         {
-            tex_y = gfx::i()->tex.new_external_tex_2d("tex-y", 0, 1, 1);
-            tex_uv = gfx::i()->tex.new_external_tex_2d("tex-uv", 0, 1, 1);
+            tex_y = gfx::i()->tex.nwi_external("tex-y", 0, "R8");
+            tex_uv = gfx::i()->tex.nwi_external("tex-uv", 0, "RG8");
         }
     }
     
@@ -323,24 +323,24 @@ public:
         
         [anim_helper_inst set_video_path:video_path_nss];
         [anim_helper_inst start_playing];
-        state = st_playing;
+        state = mws_vdec_state::st_playing;
     }
     
     void stop()
     {
-        state = st_stopped;
+        state = mws_vdec_state::st_stopped;
         [anim_helper_inst stop_playing];
     }
     
     void pause()
     {
-        state = st_paused;
+        state = mws_vdec_state::st_paused;
         [anim_helper_inst stop_playing];
     }
     
     void destroy()
     {
-        if(state == st_playing)
+        if(state == mws_vdec_state::st_playing)
         {
             stop();
         }
@@ -363,24 +363,16 @@ public:
             
             if(!rt_tex || (rt_tex->get_width() != width))
             {
-                static int tex_id = 0;
                 auto pc = preferred_conversion();
                 auto ccm = glm::make_mat3(pc);
                 int height = video_height();
                 gfx_tex_params p;
                 
-                p.mag_filter = p.e_tf_nearest;
-                p.min_filter = p.e_tf_nearest;
-                p.wrap_s = p.e_twm_clamp_to_edge;
-                p.wrap_t = p.e_twm_clamp_to_edge;
-                p.gen_mipmaps = false;
-                
+                p.set_rt_params();
                 rt = nullptr;
                 rt_tex = nullptr;
                 
-                std::string tex_nr = std::to_string(tex_id);
-                tex_id++;
-                rt_tex = gfx::i()->tex.new_tex_2d("video-rgba-tex-" + tex_nr, width, height, &p);
+                rt_tex = gfx::i()->tex.nwi("video-rgba-tex-" + gfx_tex::gen_id(), width, height, &p);
                 rt = gfx::i()->rt.new_rt();
                 rt->set_color_attachment(rt_tex);
                 
