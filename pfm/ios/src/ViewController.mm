@@ -5,73 +5,11 @@
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
 #include "objc-cxx-bridge.hpp"
-
-#import "ios/vid/dec/video-player.h"
-#import "ios/vid/enc/GPUImageFilter.h"
-#import "ios/vid/enc/GPUImageMovie.h"
-#import "ios/vid/enc/GPUImageOutput.h"
-#import "ios/vid/enc/GPUImageMovieWriter.h"
-#import "ios/vid/enc/GPUImageView.h"
-
+#import "ios/vid/enc/GPUImageContext.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#include <unistd.h>
 
 
-std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std::shared_ptr<gfx> i_gi)
-{
-    auto tex = i_gi->tex.get_texture_by_name(i_filename);
-    
-    if(tex)
-    {
-        return tex;
-    }
-    
-    auto c_filename = i_filename.c_str();
-    NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
-    NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], GLKTextureLoaderOriginBottomLeft, nil];
-    // get the main bundle for the app
-    NSBundle* main_bundle = [NSBundle mainBundle];
-    NSError* error;
-    NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
-    GLKTextureInfo* info = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
-    
-    if (info != nil)
-    {
-        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
-		tex->set_dim(info.width, info.height);
-    }
-    else
-    {
-        NSLog(@"load_tex_by_name: error loading file: %@", [error localizedDescription]);
-    }
-    
-    return tex;
-}
-
-std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi)
-{
-    auto tex = i_gi->tex.get_texture_by_name(i_filename);
-    
-    if(tex)
-    {
-        return tex;
-    }
-    
-    NSError* error;
-    GLKTextureInfo* info = [GLKTextureLoader textureWithCGImage:image.CGImage options:nil error:&error];
-    
-    if (info != nil)
-    {
-        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
-		tex->set_dim(info.width, info.height);
-    }
-    else
-    {
-        NSLog(@"Error loading file: %@", [error localizedDescription]);
-    }
-    
-    return tex;
-}
+std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi);
 
 
 @interface ViewController ()
@@ -89,14 +27,6 @@ std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_file
 static EAGLContext* eagl_context_inst = NULL;
 static ViewController* instance = NULL;
 
-// GPUImageMovie
-static GPUImageView* gpu_image_view;
-static GPUImageMovie* movieFile;
-//static GPUImageOutput<GPUImageInput>* filter;
-static GPUImageMovieWriter* movieWriter;
-static NSTimer* timer;
-
-
 @implementation ViewController
 
 +(EAGLContext*) eagl_context
@@ -107,92 +37,6 @@ static NSTimer* timer;
 +(ViewController*) inst
 {
     return instance;
-}
-
-- (void)retrieving_progress
-{
-    int p = (int)(movieFile.progress * 100);
-    //controller::inst()->on_progress_evt(movieFile.progress);
-    //vprint("progress: %d\n", p);
-}
-
--(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path
-{
-    NSLog(@"\n\nenc src %@ dst %@\n\n", src_path, dst_path);
-    NSString* full_src_path = [video_file_util getQualifiedFilenameOrResource:src_path];
-    NSURL* sampleURL = [NSURL fileURLWithPath:full_src_path];
-    //NSURL *sampleURL = [[NSBundle mainBundle] URLForResource:@"sample_iPod" withExtension:@"m4v"];
-    
-    movieFile = [[GPUImageMovie alloc] initWithURL:sampleURL];
-    movieFile.runBenchmark = NO;
-    movieFile.playAtActualSpeed = NO;
-    //filter = [[GPUImageFilter alloc] init];
-    //    filter = [[GPUImageUnsharpMaskFilter alloc] init];
-    
-    //[movieFile addTarget:filter];
-    
-    // Only rotate the video for display, leave orientation the same for recording
-    //GPUImageView *filterView = (GPUImageView *)self.view;
-    
-    CGRect screen_rect = [[UIScreen mainScreen] bounds];
-    CGFloat screen_width = screen_rect.size.width;
-    CGFloat screen_height = screen_rect.size.height;
-    
-    if(!gpu_image_view)
-    {
-        gpu_image_view = [[GPUImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, screen_width, screen_height)];
-    }
-    
-    [movieFile addTarget:gpu_image_view];
-    
-    // In addition to displaying to the screen, write out a processed version of the movie to disk
-    //NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
-    unlink([dst_path UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
-    NSURL *movieURL = [NSURL fileURLWithPath:dst_path];
-    
-    //movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(640.0, 480.0)];
-    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(screen_width, screen_height)];
-    [movieFile addTarget:movieWriter];
-    
-    // Configure this for video from the movie file, where we want to preserve all video frames and audio samples
-    movieWriter.shouldPassthroughAudio = YES;
-    movieFile.audioEncodingTarget = movieWriter;
-    [movieFile enableSynchronizedEncodingUsingMovieWriter:movieWriter];
-    
-    [movieWriter startRecording];
-    [movieFile startProcessing];
-    
-    timer = [NSTimer scheduledTimerWithTimeInterval:0.3f
-                                             target:self
-                                           selector:@selector(retrieving_progress)
-                                           userInfo:nil
-                                            repeats:YES];
-    
-    [movieWriter setCompletionBlock:^{
-        [movieFile removeTarget:movieWriter];
-        [movieWriter finishRecording];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [timer invalidate];
-            mws_print("\n\nencoding finished\n\n");
-            
-            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(dst_path))
-            {
-                UISaveVideoAtPathToSavedPhotosAlbum(dst_path, nil, nil, nil);
-            }
-            
-//            controller::inst()->on_encoding_finished();
-//            auto vp = controller::inst()->new_video();
-//            
-//            if(vp)
-//            {
-//                auto dst_path_c = [dst_path UTF8String];
-//                
-//                vp->set_video_path(dst_path_c);
-//                vp->play();
-//            }
-        });
-    }];
 }
 
 - (void)viewDidLoad {
@@ -427,24 +271,61 @@ void cxx_2_objc_open_video_picker()
     [[ViewController inst] on_vid_btn_click];
 }
 
-#ifdef __cplusplus
-extern "C"
+std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std::shared_ptr<gfx> i_gi)
 {
-#endif
+    auto tex = i_gi->tex.get_texture_by_name(i_filename);
     
-    int render_video_frame_to_fbo(int fb_width, int fb_height, int tex_gl_id)
+    if(tex)
     {
-        return 0;
+        return tex;
     }
     
-    void render_video_frame_to_fbo_2()
+    auto c_filename = i_filename.c_str();
+    NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
+    NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], GLKTextureLoaderOriginBottomLeft, nil];
+    // get the main bundle for the app
+    NSBundle* main_bundle = [NSBundle mainBundle];
+    NSError* error;
+    NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
+    GLKTextureInfo* info = [GLKTextureLoader textureWithContentsOfFile:path options:options error:&error];
+    
+    if (info != nil)
     {
-        int x = 3;
+        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
+		tex->set_dim(info.width, info.height);
     }
-
-#ifdef __cplusplus
+    else
+    {
+        NSLog(@"load_tex_by_name: error loading file: %@", [error localizedDescription]);
+    }
+    
+    return tex;
 }
-#endif
+
+std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi)
+{
+    auto tex = i_gi->tex.get_texture_by_name(i_filename);
+    
+    if(tex)
+    {
+        return tex;
+    }
+    
+    NSError* error;
+    GLKTextureInfo* info = [GLKTextureLoader textureWithCGImage:image.CGImage options:nil error:&error];
+    
+    if (info != nil)
+    {
+        tex = i_gi->tex.nwi_external(i_filename, info.name, "RGBA8");
+		tex->set_dim(info.width, info.height);
+    }
+    else
+    {
+        NSLog(@"Error loading file: %@", [error localizedDescription]);
+    }
+    
+    return tex;
+}
 
 GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data)
 {

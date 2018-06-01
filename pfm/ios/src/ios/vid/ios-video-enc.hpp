@@ -6,6 +6,7 @@
 
 
 class ios_video_enc_impl;
+class ios_video_reencoder;
 class ios_video_reencoder_impl;
 
 
@@ -26,6 +27,7 @@ public:
 	void stop_encoding() override;
 
 protected:
+	friend class ios_video_reencoder;
 	ios_video_enc() {}
 
 	std::shared_ptr<ios_video_enc_impl> p;

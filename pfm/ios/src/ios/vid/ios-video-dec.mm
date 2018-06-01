@@ -9,11 +9,7 @@
 
 #include "ViewController.h"
 #include "dec/video-player.h"
-#include "gfx.hpp"
-#include "gfx-camera.hpp"
-#include "gfx-tex.hpp"
-#include "gfx-rt.hpp"
-#include "gfx-quad-2d.hpp"
+#include "gfx-inc.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #import <AVFoundation/AVAudioPlayer.h>
 #import <AVFoundation/AVMediaFormat.h>
