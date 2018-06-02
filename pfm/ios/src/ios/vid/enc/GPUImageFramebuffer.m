@@ -1,5 +1,7 @@
 #import "GPUImageFramebuffer.h"
+#include "pfm-def.h"
 #import "GPUImageOutput.h"
+
 
 @interface GPUImageFramebuffer()
 {
@@ -133,8 +135,10 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
     
+        mws_report_gfx_errs();
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        mws_report_gfx_errs();
         
         // By default, all framebuffers on iOS 5.0+ devices are backed by texture caches, using one shared cache
         if ([GPUImageContext supportsFastTextureUpload])
@@ -180,6 +184,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT);
             
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+            mws_report_gfx_errs();
 #endif
         }
         else
@@ -194,10 +199,12 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
         
         #ifndef NS_BLOCK_ASSERTIONS
         GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
+        mws_assert(status == GL_FRAMEBUFFER_COMPLETE);
+        //NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
         #endif
         
         glBindTexture(GL_TEXTURE_2D, 0);
+        mws_report_gfx_errs();
     });
 }
 
@@ -244,6 +251,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, (int)_size.width, (int)_size.height);
+    mws_report_gfx_errs();
 }
 
 #pragma mark -

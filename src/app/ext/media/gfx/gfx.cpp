@@ -225,7 +225,7 @@ std::shared_ptr<gfx_rt> gfx::ic_rt::get_current_render_target()
    return gi()->active_rt;
 }
 
-void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
+void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt, bool i_force_binding)
 {
    mws_report_gfx_errs();
 
@@ -254,10 +254,14 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt)
    }
    else
    {
-      if (gi()->active_rt)
+      if (gi()->active_rt || i_force_binding)
       {
          glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer_id);
-         gi()->active_rt->color_att->texture_updated = true;
+          
+          if(gi()->active_rt)
+          {
+              gi()->active_rt->color_att->texture_updated = true;
+          }
       }
 
       glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);

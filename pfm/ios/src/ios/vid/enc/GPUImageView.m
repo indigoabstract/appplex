@@ -1,4 +1,5 @@
 #import "GPUImageView.h"
+#include "pfm-def.h"
 #import <OpenGLES/EAGLDrawable.h>
 #import <QuartzCore/QuartzCore.h>
 #import "GPUImageContext.h"
@@ -164,7 +165,8 @@
 	
     glGenRenderbuffers(1, &displayRenderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer);
-	
+	mws_report_gfx_errs();
+    
     [[[GPUImageContext sharedImageProcessingContext] context] renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)self.layer];
 	
     GLint backingWidth, backingHeight;
@@ -188,6 +190,7 @@
     __unused GLuint framebufferCreationStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     NSAssert(framebufferCreationStatus == GL_FRAMEBUFFER_COMPLETE, @"Failure with display framebuffer generation for display of size: %f, %f", self.bounds.size.width, self.bounds.size.height);
     boundsSizeAtFrameBufferEpoch = self.bounds.size;
+    mws_report_gfx_errs();
 
     [self recalculateViewGeometry];
 }
@@ -219,6 +222,7 @@
     glBindFramebuffer(GL_FRAMEBUFFER, displayFramebuffer);
     
     glViewport(0, 0, (GLint)_sizeInPixels.width, (GLint)_sizeInPixels.height);
+    mws_report_gfx_errs();
 }
 
 - (void)presentFramebuffer;

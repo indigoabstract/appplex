@@ -1,5 +1,5 @@
 #import "GPUImageMovieWriter.h"
-
+#include "pfm-def.h"
 #import "GPUImageContext.h"
 #import "GLProgram.h"
 #import "GPUImageFilter.h"
@@ -569,14 +569,17 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     glActiveTexture(GL_TEXTURE1);
     glGenFramebuffers(1, &movieFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer);
+    mws_report_gfx_errs();
     
     if ([GPUImageContext supportsFastTextureUpload])
     {
         // Code originally sourced from http://allmybrain.com/2011/12/08/rendering-to-a-texture-with-ios-5-texture-cache-api/
         
 
-        CVPixelBufferPoolCreatePixelBuffer (NULL, [assetWriterPixelBufferInput pixelBufferPool], &renderTarget);
+        CVPixelBufferPoolRef pbpf = [assetWriterPixelBufferInput pixelBufferPool];
+        int ret = CVPixelBufferPoolCreatePixelBuffer (NULL, pbpf, &renderTarget);
 
+        mws_assert(ret == kCVReturnSuccess);
         /* AVAssetWriter will use BT.601 conversion matrix for RGB to YCbCr conversion
          * regardless of the kCVImageBufferYCbCrMatrixKey value.
          * Tagging the resulting video file as BT.601, is the best option right now.
@@ -602,19 +605,22 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+        mws_report_gfx_errs();
     }
     else
     {
         glGenRenderbuffers(1, &movieRenderbuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, movieRenderbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, (int)videoSize.width, (int)videoSize.height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, (int)videoSize.width, (int)videoSize.height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, movieRenderbuffer);	
+        mws_report_gfx_errs();
     }
     
 	
 	__unused GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    
-    NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
+    mws_assert(status == GL_FRAMEBUFFER_COMPLETE);
+    //NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
+    mws_report_gfx_errs();
 }
 
 - (void)destroyDataFBO;
@@ -649,16 +655,6 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     });
 }
 
-void check_gl_err()
-{
-    int error_code = glGetError();
-    
-    if (error_code != 0)
-    {
-        NSLog(@"problem");
-    }
-}
-
 - (void)setFilterFBO;
 {
     if (!movieFramebuffer)
@@ -669,6 +665,7 @@ void check_gl_err()
     glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer);
     
     glViewport(0, 0, (int)videoSize.width, (int)videoSize.height);
+    mws_report_gfx_errs();
 }
 
 - (void)renderAtInternalSizeUsingFramebuffer:(GPUImageFramebuffer *)inputFramebufferToUse;
@@ -683,22 +680,22 @@ void check_gl_err()
     //glBindTexture(GL_TEXTURE_2D, 0);
     
     render_video_frame_to_fbo(fb_width, fb_height, tex_gl_id);
-    check_gl_err();
+    mws_report_gfx_errs();
     glBindTexture(GL_TEXTURE_2D, 0);
-    check_gl_err();
+    mws_report_gfx_errs();
     
     [self setFilterFBO];
-    check_gl_err();
+    mws_report_gfx_errs();
 
     render_video_frame_to_fbo_2();
-    check_gl_err();
+    mws_report_gfx_errs();
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    check_gl_err();
+    mws_report_gfx_errs();
 
 //    [_movieWriterContext setContextShaderProgram:colorSwizzlingProgram];
 //
-//    check_gl_err();
+//    mws_report_gfx_errs();
 //    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //
@@ -712,24 +709,24 @@ void check_gl_err()
 //
 //    const GLfloat *textureCoordinates = [GPUImageFilter textureCoordinatesForRotation:inputRotation];
 //
-//    check_gl_err();
+//    mws_report_gfx_errs();
 //    glActiveTexture(GL_TEXTURE6);
-//    check_gl_err();
+//    mws_report_gfx_errs();
 //    //glBindTexture(GL_TEXTURE_2D, [inputFramebufferToUse texture]);
 //    glBindTexture(GL_TEXTURE_2D, fbo_tex_id);
-//    check_gl_err();
+//    mws_report_gfx_errs();
 //    glUniform1i(colorSwizzlingInputTextureUniform, 6);
 //
-//    check_gl_err();
+//    mws_report_gfx_errs();
 ////    NSLog(@"Movie writer framebuffer: %@", inputFramebufferToUse);
 //
 //    glVertexAttribPointer(colorSwizzlingPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
 //    glVertexAttribPointer(colorSwizzlingTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
-//    check_gl_err();
+//    mws_report_gfx_errs();
 //
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 //    glBindTexture(GL_TEXTURE_2D, 0);
-//    check_gl_err();
+//    mws_report_gfx_errs();
 
     glFinish();
 }

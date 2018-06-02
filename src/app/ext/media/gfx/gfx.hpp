@@ -32,7 +32,9 @@ public:
       int get_render_target_width();
       int get_render_target_height();
       std::shared_ptr<gfx_rt> get_current_render_target();
-      void set_current_render_target(std::shared_ptr<gfx_rt> irdt = nullptr);
+       // i_rdt - new framebuffer to bind, null for default
+       // i_force_binding - force a rebinding to the default FB, even if it was already bound. useful for resync of opengl state with outside libs
+      void set_current_render_target(std::shared_ptr<gfx_rt> i_rdt = nullptr, bool i_force_binding = false);
 
       template<typename T> shared_ptr<std::vector<T> > get_render_target_pixels(shared_ptr<gfx_rt> irt = nullptr)
       {
