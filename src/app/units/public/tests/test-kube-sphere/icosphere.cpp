@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 
-static uint64 get_key(vx_pos_coord_3f& pos)
+static uint64 get_key(glm::vec3& pos)
 {
 	float k1 = pos.x * 1.23f + pos.y * 4.56f + pos.z * 7.89f;
 	float k2 = pos.x * 9.87f + pos.y * 6.54f + pos.z * 3.21f;
@@ -79,9 +79,9 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 
 		for(int j = 0; j < ind_data.size(); j += 3)
 		{
-			vx_pos_coord_3f va = vx_data[ind_data[j + 0]].pos;
-			vx_pos_coord_3f vb = vx_data[ind_data[j + 1]].pos;
-			vx_pos_coord_3f vc = vx_data[ind_data[j + 2]].pos;
+			glm::vec3 va = vx_data[ind_data[j + 0]].pos;
+			glm::vec3 vb = vx_data[ind_data[j + 1]].pos;
+			glm::vec3 vc = vx_data[ind_data[j + 2]].pos;
 			int va_idx = vertex_map[get_key(va)];
 			int vb_idx = vertex_map[get_key(vb)];
 			int vc_idx = vertex_map[get_key(vc)];

@@ -2,6 +2,7 @@
 
 #include "min.hpp"
 #include <glm/glm.hpp>
+#include "com/unit/gesture-detectors.hpp"
 
 class gfx_camera;
 class unit;
@@ -39,6 +40,7 @@ private:
    float theta_deg; // [0, 360)
    float sign_phi;
    e_movement_types mov_type;
+   dragging_detector dragging_det;
    std::shared_ptr<kinetic_scrolling> ks;
    std::weak_ptr<unit> u;
 };

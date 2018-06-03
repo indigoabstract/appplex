@@ -45,86 +45,85 @@ void free_camera::update_input(shared_ptr<iadp> idp)
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      //mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
-      //switch (ts->get_type())
-      //{
-      //case touch_sym_evt::TS_PRESSED:
-      //{
-      //   ks->grab(ts->points[0].x, ts->points[0].y);
-      //   ts->process();
-      //   break;
-      //}
+      bool dragging_detected = dragging_det.detect(ts);
 
-      //case touch_sym_evt::TS_RELEASED:
-      //{
-      //   ts->process();
-      //   break;
-      //}
+      if (dragging_detected)
+      {
+         // rotation about the camera's view/target axis.
+         if (ctrl_held)
+         {
+            float dx = ts->points[0].x - dragging_det.last_move_pos.x;// ts->prev_state.te->points[0].x;
+            float dy = ts->points[0].y - dragging_det.last_move_pos.y;// ts->prev_state.te->points[0].y;
+            float dx_rad = glm::radians(dx / 2);
+            float dy_rad = glm::radians(dy / 2);
 
-      //case touch_sym_evt::TS_PRESS_AND_DRAG:
-      //{
-      //   // rotation about the camera's view/target axis.
-      //   if (ctrl_held)
-      //   {
-      //      float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
-      //      float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
-      //      float dx_rad = glm::radians(dx / 2);
-      //      float dy_rad = glm::radians(dy / 2);
+            glm::vec3 right_dir = glm::cross(look_at_dir, up_dir);
+            glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
+            look_at_dir = glm::normalize(look_at_dir * rot_around_right_dir);
+            up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
 
-      //      glm::vec3 right_dir = glm::cross(look_at_dir, up_dir);
-      //      glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
-      //      look_at_dir = glm::normalize(look_at_dir * rot_around_right_dir);
-      //      up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
+            glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
+            look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
+            ts->process();
+         }
+         // translation movement.
+         else
+         {
+            float dx = ts->points[0].x - dragging_det.last_move_pos.x;// ts->prev_state.te->points[0].x;
+            float dy = ts->points[0].y - dragging_det.last_move_pos.y;// ts->prev_state.te->points[0].y;
 
-      //      glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
-      //      look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
-      //      ts->process();
-      //   }
-      //   // translation movement.
-      //   else
-      //   {
-      //      float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
-      //      float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
+            //if (ts->is_finished)
+            //{
+            //   uint32 delta_t = ts->time - ts->prev_state.te->time;
 
-      //      if (ts->is_finished)
-      //      {
-      //         uint32 delta_t = ts->time - ts->prev_state.te->time;
+            //   if (delta_t < 150)
+            //   {
+            //      ks->start_slowdown();
+            //   }
+            //   else
+            //   {
+            //      ks->reset();
+            //   }
+            //}
+            //else
+            //{
+            //   ks->begin(ts->points[0].x, ts->points[0].y);
+            //}
 
-      //         if (delta_t < 150)
-      //         {
-      //            ks->start_slowdown();
-      //         }
-      //         else
-      //         {
-      //            ks->reset();
-      //         }
-      //      }
-      //      else
-      //      {
-      //         ks->begin(ts->points[0].x, ts->points[0].y);
-      //      }
+            float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
 
-      //      float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
+            theta_deg -= dx * camera_radius * 0.00045f;
+            phi_deg -= dy * camera_radius * 0.00045f;
+            clamp_angles();
+            //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
+            mov_type = e_roll_view_axis;
+            ts->process();
+         }
+      }
 
-      //      theta_deg -= dx * camera_radius * 0.00045f;
-      //      phi_deg -= dy * camera_radius * 0.00045f;
-      //      clamp_angles();
-      //      //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
-      //      mov_type = e_roll_view_axis;
-      //      ts->process();
-      //   }
-      //   break;
-      //}
+      //mws_print("tn %s\n", ts->get_type_name(ts->type).c_str());
+      switch (ts->type)
+      {
+      case pointer_evt::touch_began:
+      {
+         ks->grab(ts->points[0].x, ts->points[0].y);
+         ts->process();
+         break;
+      }
 
-      //case touch_sym_evt::TS_MOUSE_WHEEL:
-      //{
-      //   shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+      case pointer_evt::touch_ended:
+      {
+         ts->process();
+         break;
+      }
 
-      //   persp_cam->position += look_at_dir * mw_speed_factor * float(mw->wheel_delta);
-      //   ts->process();
-      //   break;
-      //}
-      //}
+      case pointer_evt::mouse_wheel:
+      {
+         persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
+         ts->process();
+         break;
+      }
+      }
    }
    else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
    {

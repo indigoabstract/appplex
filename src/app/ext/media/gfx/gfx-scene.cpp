@@ -85,6 +85,10 @@ std::shared_ptr<gfx_scene> gfx_node::get_scene()
 
 void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
+   for (auto it = children.begin(); it != children.end(); it++)
+   {
+      (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+   }
 }
 
 void gfx_node::attach(shared_ptr<gfx_node> inode)
