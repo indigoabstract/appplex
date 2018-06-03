@@ -322,7 +322,8 @@ public:
             rt_tex = gi->tex.nwi("vid-reenc-" + gfx_tex::gen_id(), width, height, &prm);
             rt = gi->rt.new_rt();
             rt->set_color_attachment(rt_tex);
-            
+            rt_video_frame = gi->tex.nwi_external("vid-frame" + gfx_tex::gen_id(), 0, "RGBA8");
+
             rt_cam = gfx_camera::nwi(gi);
             rt_cam->projection_type = gfx_camera::e_orthographic_proj;
             rt_cam->clear_color = gfx_color::colors::dark_orange;
@@ -332,12 +333,11 @@ public:
                 rt_video_quad = gfx_quad_2d::nwi(gi);
                 auto& msh = *rt_video_quad;
                 
-                rt_video_frame = gi->tex.nwi_external("vid-frame" + gfx_tex::gen_id(), 0, "RGBA8");
                 msh.set_dimensions(1.f, 1.f);
                 msh.set_scale((float)width, (float)height);
                 msh.set_v_flip(true);
                 msh[MP_SHADER_NAME] = "basic-tex-shader";
-                msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_video_frame;
+                msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_tex;
                 msh[MP_CULL_BACK] = false;
             }
         }
