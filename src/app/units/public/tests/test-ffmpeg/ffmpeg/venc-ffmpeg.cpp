@@ -300,7 +300,7 @@ void venc_ffmpeg::set_video_path(std::string i_video_path)
    video_path = i_video_path;
 }
 
-void venc_ffmpeg::start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
+void venc_ffmpeg::start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
 {
    if (video_path.empty())
    {
@@ -310,7 +310,8 @@ void venc_ffmpeg::start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_para
    int ret = 0;
 
    enc_method = i_enc_method;
-   params = i_prm;
+   params = std::make_shared<mws_video_params>();
+   *params = i_prm;
    mws_print("Encode video file %s\n", video_path.c_str());
    pts_idx = 0;
 
@@ -427,10 +428,10 @@ void venc_ffmpeg::encode_frame_m1_yuv420(const char* iframe_data, int iframe_dat
    encode_frame_m1_yuv420_impl(iframe_data, iframe_data_length);
 }
 
-void venc_ffmpeg::encode_frame_m2_rbga(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex)
+void venc_ffmpeg::encode_frame_m2_rbga(mws_sp<gfx_tex> i_frame_tex)
 {
    mws_assert(enc_method == mws_vid_enc_method::e_enc_m2);
-   encode_frame_m2_rbga_impl(i_gfx_inst, i_frame_tex);
+   encode_frame_m2_rbga_impl(i_frame_tex);
 }
 
 void venc_ffmpeg::update()
@@ -550,55 +551,46 @@ void venc_ffmpeg::encode_frame_m1_yuv420_impl(const char* iframe_data, int ifram
    pts_idx++;
 }
 
-void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx> i_gi, mws_sp<gfx_tex> i_tex)
+void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx_tex> i_tex)
 {
    int width = i_tex->get_width();
    int height = i_tex->get_height();
 
    if (!pbo_b_y || (pbo_b_y->rt_tex->get_width() != width) || (pbo_b_y->rt_tex->get_height() != height))
    {
-      mws_video_params prm;
-
-      prm.width = width;
-      prm.height = height;
-      prm.time_base_numerator = params.time_base_numerator;
-      prm.time_base_denominator = params.time_base_denominator;
-      prm.ticks_per_frame = params.ticks_per_frame;
-
-      start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
-
+      auto gi = i_tex->gi();
       {
-         pbo_b_y = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width, height, "R8"));
+         pbo_b_y = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(gi, width, height, "R8"));
          pbo_b_y->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
          auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
             //memcpy(i_data, y_pbo_pixels.data(), i_size);
             encode_frame_m0_yuv420_impl(i_data, pbo_b_u->readback->get_pbo_pixels().data(), pbo_b_v->readback->get_pbo_pixels().data());
-            mws_print("recv y data\n");
+            //mws_print("recv y data\n");
          };
          pbo_b_y->set_on_data_recv_handler(handler);
          (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
          (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-y-420.fsh";
       }
       {
-         pbo_b_u = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
+         pbo_b_u = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(gi, width / 2, height / 2, "R8"));
          pbo_b_u->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
          auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
             memcpy((void*)i_rb->get_pbo_pixels().data(), i_data, i_size);
-            mws_print("recv u data\n");
+            //mws_print("recv u data\n");
          };
          pbo_b_u->set_on_data_recv_handler(handler);
          (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
          (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-u-420.fsh";
       }
       {
-         pbo_b_v = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(i_gi, width / 2, height / 2, "R8"));
+         pbo_b_v = mws_sp<mws_pbo_bundle>(new mws_pbo_bundle(gi, width / 2, height / 2, "R8"));
          pbo_b_v->readback->set_read_method(mws_read_method::e_map_buff_pixels_buff);
          auto handler = [this](const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)
          {
             memcpy((void*)i_rb->get_pbo_pixels().data(), i_data, i_size);
-            mws_print("recv v data\n");
+            //mws_print("recv v data\n");
          };
          pbo_b_v->set_on_data_recv_handler(handler);
          (*pbo_b_v->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
@@ -753,9 +745,9 @@ void venc_ffmpeg::open_video(AVFormatContext *oc, AVCodec *codec, output_stream_
 
       auto ctx = ost->st->codec->priv_data;
 
-      av_opt_set(ctx, "preset", params.preset.c_str(), 0);
-      av_opt_set(ctx, "tune", params.tune.c_str(), 0);
-      av_opt_set_int(ctx, "crf", params.crf, 0);
+      av_opt_set(ctx, "preset", params->preset.c_str(), 0);
+      av_opt_set(ctx, "tune", params->tune.c_str(), 0);
+      av_opt_set_int(ctx, "crf", params->crf, 0);
    }
 
    /* open the codec */
@@ -898,27 +890,27 @@ void venc_ffmpeg::add_stream(output_stream_ffmpeg *ost, AVFormatContext *oc, AVC
 
    case AVMEDIA_TYPE_VIDEO:
    {
-      c->codec_id = (AVCodecID)params.codec_id;
+      c->codec_id = (AVCodecID)params->codec_id;
 
-      c->bit_rate = params.bit_rate;
+      c->bit_rate = params->bit_rate;
       //c->bit_rate = 800 * 1000;
       /* Resolution must be a multiple of two. */
-      c->width = params.width;
-      c->height = params.height;
+      c->width = params->width;
+      c->height = params->height;
       /* timebase: This is the fundamental unit of time (in seconds) in terms
       * of which frame timestamps are represented. For fixed-fps content,
       * timebase should be 1/framerate and timestamp increments should be
       * identical to 1. */
       //AVRational t = { 1, STREAM_FRAME_RATE };
-      ost->st->time_base.num = params.time_base_numerator;
-      ost->st->time_base.den = params.time_base_denominator;
-      c->time_base.num = params.time_base_numerator * 2;
-      c->time_base.den = params.time_base_denominator;
-      c->ticks_per_frame = params.ticks_per_frame;
+      ost->st->time_base.num = params->time_base_numerator;
+      ost->st->time_base.den = params->time_base_denominator;
+      c->time_base.num = params->time_base_numerator * 2;
+      c->time_base.den = params->time_base_denominator;
+      c->ticks_per_frame = params->ticks_per_frame;
 
-      c->gop_size = params.gop_size; /* emit one intra frame every twelve frames at most */
-      c->pix_fmt = (AVPixelFormat)params.pix_fmt;
-      c->max_b_frames = params.max_b_frames;
+      c->gop_size = params->gop_size; /* emit one intra frame every twelve frames at most */
+      c->pix_fmt = (AVPixelFormat)params->pix_fmt;
+      c->max_b_frames = params->max_b_frames;
 
       if (c->codec_id == AV_CODEC_ID_MPEG2VIDEO)
       {
@@ -955,111 +947,122 @@ class mws_ffmpeg_reencoder_impl
 {
 public:
    mws_ffmpeg_reencoder_impl();
-   void on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex);
+   void start_encoding(const mws_video_params& i_prm);
+   void on_frame_decoded(mws_sp<gfx_tex> i_video_frame);
    void update();
 
    mws_sp<vdec_ffmpeg> vdec;
    mws_sp<venc_ffmpeg> venc;
+   // use this class to listen to the FFMPEG video decoder events
    mws_sp<mws_ffmpeg_vdec_listener> vdec_listener;
-   mws_sp<mws_video_reencoder_listener> video_reencoder_listener;
-   mws_video_params params;
+   // use this class to listen to the FFMPEG video reencoder events
+   mws_sp<mws_vdec_listener> vreencoder_evt_listener;
+   // use this class to listen to reencode frame events
+   mws_sp<mws_vreencoder_listener> rencode_frame_listener;
+   mws_video_params recv_params;
+   // video frame rt
+   mws_sp<gfx_rt> rt;
+   mws_sp<gfx_tex> rt_tex;
+   mws_sp<gfx_camera> rt_cam;
+   mws_sp<gfx_quad_2d> rt_video_quad;
+   mws_sp<gfx_tex> rt_video_frame;
 };
 
 
+// use this class to listen to the FFMPEG video decoder events
 class mws_ffmpeg_vdec_listener : public mws_vdec_listener
 {
 public:
-   void on_decoding_started(std::shared_ptr<gfx> i_gi, mws_sp<mws_video_params> i_params) override
+   void on_start(mws_sp<mws_video_params> i_params) override
+   {
+      mws_assert(i_params->width > 0 && i_params->height > 0);
+      auto reenc = reenc_impl.lock();
+      mws_assert(reenc != nullptr);
+      mws_print("on_decoding_started\n");
+
+      // if rencode_frame_listener is not null, use the async gpu readback method, else use the direct FFMPMEG method
+      {
+         mws_video_params prm = reenc->recv_params;
+         mws_vid_enc_method enc_method = (reenc->rencode_frame_listener) ? mws_vid_enc_method::e_enc_m2 : mws_vid_enc_method::e_enc_m0;
+
+         prm.time_base_numerator = i_params->time_base_numerator;
+         prm.time_base_denominator = i_params->time_base_denominator;
+         prm.ticks_per_frame = i_params->ticks_per_frame;
+         reenc->venc->start_encoding(prm, enc_method);
+      }
+
+      if (reenc->vreencoder_evt_listener)
+      {
+         reenc->vreencoder_evt_listener->on_start(i_params);
+      }
+   }
+
+   void on_progress_evt(float i_progress_percent) override
    {
       auto reenc = reenc_impl.lock();
       mws_assert(reenc != nullptr);
-      mws_video_params& prm = reenc->params;
+      //mws_print("on_progress_evt [%f]\n", i_progress_percent);
 
-      if (prm.width > 0 && prm.height > 0)
+      if (reenc->vreencoder_evt_listener)
       {
-         int width = prm.width;
-         int height = prm.height;
-
-         prm = *i_params;
-         prm.width = width;
-         prm.height = prm.height;
-      }
-      else
-      {
-         prm = *i_params;
-      }
-
-      mws_print("on_decoding_started\n");
-
-      if (reenc->video_reencoder_listener)
-      {
-         //reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m2);
-         reenc->venc->enc_method = mws_vid_enc_method::e_enc_m2;
-         reenc->venc->params = prm;
-         reenc->video_reencoder_listener->on_decoding_started(i_gi, prm);
-      }
-      else
-      {
-         reenc->venc->start_encoding(i_gi, prm, mws_vid_enc_method::e_enc_m0);
+         reenc->vreencoder_evt_listener->on_progress_evt(i_progress_percent);
       }
    }
 
    void on_frame_decoded(void* i_frame) override
    {
       auto reenc = reenc_impl.lock();
-
       mws_assert(reenc != nullptr);
 
       // if video_reencoder_listener is null, then no gfx processing is done to the frame. use the direct route to encode frames
-      if (!reenc->video_reencoder_listener)
+      if (!reenc->rencode_frame_listener)
       {
          reenc->venc->encode_frame_impl((AVFrame*)i_frame);
          mws_print("encode frame AVFrame\n!");
       }
    }
 
-   void on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex) override
+   void on_frame_decoded(mws_sp<gfx_tex> i_video_frame) override
    {
       auto reenc = reenc_impl.lock();
-
       mws_assert(reenc != nullptr);
 
-      // if video_reencoder_listener is not null, do some gfx processing to the frame and then read pixels back and feed them to the FFMPEG encoder
-      if (reenc->video_reencoder_listener)
+      if (reenc->vreencoder_evt_listener)
       {
-         auto tex = reenc->video_reencoder_listener->on_frame_decoded(i_gfx_inst, i_frame_tex);
-         auto frame_tex = (tex) ? tex : i_frame_tex;
+         reenc->vreencoder_evt_listener->on_frame_decoded(i_video_frame);
 
-         reenc->on_frame_decoded(i_gfx_inst, frame_tex);
-         mws_print("encode frame i_gfx_inst, i_frame_tex\n!");
+         // if video_reencoder_listener is not null, do some gfx processing to the frame and then read pixels back and feed them to the FFMPEG encoder
+         if (reenc->rencode_frame_listener)
+         {
+            reenc->on_frame_decoded(i_video_frame);
+            //mws_print("encode frame i_frame_tex\n");
+         }
       }
    }
 
-   void on_decoding_stopped() override
+   void on_stop() override
    {
       auto reenc = reenc_impl.lock();
-
       mws_assert(reenc != nullptr);
       mws_print("on_decoding_stopped\n");
       reenc->venc->stop_encoding();
 
-      if (reenc->video_reencoder_listener)
+      if (reenc->vreencoder_evt_listener)
       {
-         reenc->video_reencoder_listener->on_decoding_stopped();
+         reenc->vreencoder_evt_listener->on_stop();
       }
    }
 
-   void on_decoding_finished() override
+   void on_finish() override
    {
       auto reenc = reenc_impl.lock();
-
       mws_assert(reenc != nullptr);
       mws_print("on_decoding_finished\n");
       reenc->venc->stop_encoding();
 
-      if (reenc->video_reencoder_listener)
+      if (reenc->vreencoder_evt_listener)
       {
-         reenc->video_reencoder_listener->on_decoding_finished();
+         reenc->vreencoder_evt_listener->on_finish();
       }
    }
 
@@ -1075,9 +1078,62 @@ mws_ffmpeg_reencoder_impl::mws_ffmpeg_reencoder_impl()
    vdec->set_listener(vdec_listener);
 }
 
-void mws_ffmpeg_reencoder_impl::on_frame_decoded(mws_sp<gfx> i_gfx_inst, mws_sp<gfx_tex> i_frame_tex)
+void mws_ffmpeg_reencoder_impl::start_encoding(const mws_video_params& i_prm)
 {
-   venc->encode_frame_m2_rbga(i_gfx_inst, i_frame_tex);
+   recv_params = i_prm;
+
+   if (rencode_frame_listener)
+   {
+      int width = i_prm.width;
+      int height = i_prm.height;
+
+      if (!rt_tex || (rt_tex->get_width() != width) || (rt_tex->get_height() != height))
+      {
+         auto gi = gfx::i();
+         gfx_tex_params prm;
+
+         prm.set_rt_params();
+         rt_tex = gi->tex.nwi("vid-reenc-" + gfx_tex::gen_id(), width, height, &prm);
+         rt = gi->rt.new_rt();
+         rt->set_color_attachment(rt_tex);
+
+         rt_cam = gfx_camera::nwi(gi);
+         rt_cam->projection_type = gfx_camera::e_orthographic_proj;
+         rt_cam->clear_color = gfx_color::colors::dark_orange;
+         rt_cam->clear_color = true;
+
+         {
+            rt_video_quad = gfx_quad_2d::nwi();
+            auto& msh = *rt_video_quad;
+
+            rt_video_frame = gi->tex.nwi_external("vid-frame" + gfx_tex::gen_id(), 0, "RGBA8");
+            msh.set_dimensions(1.f, 1.f);
+            msh.set_scale((float)width, (float)height);
+            msh[MP_SHADER_NAME] = "basic-tex-shader";
+            msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_video_frame;
+            msh[MP_CULL_BACK] = false;
+         }
+      }
+   }
+
+   vdec->start_decoding();
+   //venc->start_encoding(i_prm, enc_method);
+}
+
+void mws_ffmpeg_reencoder_impl::on_frame_decoded(mws_sp<gfx_tex> i_video_frame)
+{
+   bool use_rt_video_frame = rencode_frame_listener->on_reencode_frame(rt, i_video_frame);
+
+   // render the source video into the final frame
+   if (!use_rt_video_frame)
+   {
+      rt_video_frame->set_texture_gl_id(i_video_frame->get_texture_gl_id());
+      gfx::i()->rt.set_current_render_target(rt);
+      rt_cam->clear_buffers();
+      gfx::i()->rt.set_current_render_target();
+   }
+
+   venc->encode_frame_m2_rbga(rt_tex);
 }
 
 void mws_ffmpeg_reencoder_impl::update()
@@ -1129,7 +1185,7 @@ void mws_ffmpeg_reencoder::set_dst_video_path(std::string i_video_path)
 
 void mws_ffmpeg_reencoder::start_encoding(const mws_video_params& i_prm)
 {
-   p->vdec->start_decoding();
+   p->start_encoding(i_prm);
 }
 
 void mws_ffmpeg_reencoder::stop_encoding()
@@ -1142,9 +1198,14 @@ void mws_ffmpeg_reencoder::update()
    p->update();
 }
 
-void mws_ffmpeg_reencoder::set_listener(mws_sp<mws_video_reencoder_listener> i_listener)
+void mws_ffmpeg_reencoder::set_listener(mws_sp<mws_vdec_listener> i_listener)
 {
-   p->video_reencoder_listener = i_listener;
+   p->vreencoder_evt_listener = i_listener;
+}
+
+void mws_ffmpeg_reencoder::set_reencode_listener(mws_sp<mws_vreencoder_listener> i_listener)
+{
+   p->rencode_frame_listener = i_listener;
 }
 
 #endif

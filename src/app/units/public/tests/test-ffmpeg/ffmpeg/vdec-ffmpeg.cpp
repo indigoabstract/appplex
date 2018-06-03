@@ -211,7 +211,7 @@ public:
 
       if (listener)
       {
-         listener->on_decoding_finished();
+         listener->on_finish();
       }
    }
   
@@ -219,7 +219,7 @@ public:
 	{
       if (listener)
       {
-         listener->on_decoding_stopped();
+         listener->on_stop();
       }
 
       finish_decoding();
@@ -446,11 +446,14 @@ private:
                      params->ticks_per_frame = codec_ctx->ticks_per_frame;
                      params->time_base_numerator = codec_ctx->time_base.num;
                      params->time_base_denominator = codec_ctx->time_base.den;
-                     listener->on_decoding_started(gfx::i(), params);
+                     listener->on_start(params);
                   }
 
+                  float i_progress_percent = float(current_frame_idx) / av_stream->nb_frames;
+
+                  listener->on_progress_evt(i_progress_percent);
                   listener->on_frame_decoded(av_frame);
-                  listener->on_frame_decoded(gfx::i(), rt_tex);
+                  listener->on_frame_decoded(rt_tex);
                }
 
 					//mws_print("decode_frame counter %d\n", current_frame_idx);

@@ -14,6 +14,10 @@ bool mws_video_reencoder::is_encoding() const
 {
    return get_enc_state() == mws_vid_enc_st::e_st_encoding;
 }
+bool mws_video_reencoder::is_running() const
+{
+   return is_decoding() || is_encoding();
+}
 
 
 #if defined MOD_FFMPEG

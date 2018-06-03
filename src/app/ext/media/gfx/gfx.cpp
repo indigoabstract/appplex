@@ -142,14 +142,14 @@ void gfx::global_init()
    gfx_util::init();
    gfx_material::init();
 
-    {
-        int framebuffer_id = -1;
-        
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_id);
-        default_framebuffer_id = framebuffer_id;
-        glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
+   {
+      int framebuffer_id = -1;
+
+      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_id);
+      default_framebuffer_id = framebuffer_id;
+      glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
    }
-    
+
    main_instance = std::shared_ptr<gfx>(new gfx());
    main_instance->init(main_instance);
 }
@@ -257,11 +257,11 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt, bool i_
       if (gi()->active_rt || i_force_binding)
       {
          glBindFramebuffer(GL_FRAMEBUFFER, default_framebuffer_id);
-          
-          if(gi()->active_rt)
-          {
-              gi()->active_rt->color_att->texture_updated = true;
-          }
+
+         if (gi()->active_rt)
+         {
+            gi()->active_rt->color_att->texture_updated = true;
+         }
       }
 
       glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);

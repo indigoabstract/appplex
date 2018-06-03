@@ -78,10 +78,10 @@ void unit_test_ffmpeg::load()
       class vdec_ffmpeg_listener_impl : public mws_vdec_listener
       {
       public:
-         virtual void on_decoding_started(std::shared_ptr<gfx> i_gi, std::shared_ptr<mws_video_params> i_params) override
+         virtual void on_start(std::shared_ptr<mws_video_params> i_params) override
          {
             venc->set_video_path("test-vid.mp4");
-            venc->start_encoding(gfx::i(), *i_params, mws_vid_enc_method::e_enc_m0);
+            venc->start_encoding(*i_params, mws_vid_enc_method::e_enc_m0);
          }
 
          virtual void on_frame_decoded(void* i_frame) override
@@ -89,9 +89,7 @@ void unit_test_ffmpeg::load()
             venc->encode_frame_impl((AVFrame*)i_frame);
          }
 
-         //virtual void on_decoding_stopped() {}
-
-         virtual void on_decoding_finished() override
+         virtual void on_finish() override
          {
             venc->stop_encoding();
             vdec->set_listener(nullptr);

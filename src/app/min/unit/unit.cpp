@@ -373,7 +373,7 @@ public:
       const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
 
       venc->set_video_path(i_filename);
-      venc->start_encoding(gfx::i(), *video_params, mws_vid_enc_method::e_enc_m0);
+      venc->start_encoding(*video_params, mws_vid_enc_method::e_enc_m0);
 
 #else
 

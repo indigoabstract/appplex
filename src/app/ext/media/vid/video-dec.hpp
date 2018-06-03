@@ -21,11 +21,12 @@ enum class mws_vdec_state
 class mws_vdec_listener
 {
 public:
-   virtual void on_decoding_started(std::shared_ptr<gfx> i_gi, std::shared_ptr<mws_video_params> i_params) {}
+   virtual void on_start(std::shared_ptr<mws_video_params> i_params) {}
+   virtual void on_progress_evt(float i_progress_percent) {}
    virtual void on_frame_decoded(void* i_frame) {}
-   virtual void on_frame_decoded(std::shared_ptr<gfx> i_gi, std::shared_ptr<gfx_tex> i_frame_tex) {}
-   virtual void on_decoding_stopped() {}
-   virtual void on_decoding_finished() {}
+   virtual void on_frame_decoded(std::shared_ptr<gfx_tex> i_video_frame) {}
+   virtual void on_stop() {}
+   virtual void on_finish() {}
 };
 
 
