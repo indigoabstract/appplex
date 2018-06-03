@@ -20,10 +20,10 @@ public:
     mws_vid_enc_method get_enc_method() const override;
 	std::string get_video_path() override;
 	void set_video_path(std::string i_video_path) override;
-	void start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
+	void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
 	void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
 	void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length) override;
-	void encode_frame_m2_rbga(std::shared_ptr<gfx> i_gi, std::shared_ptr<gfx_tex> i_frame_tex) override;
+	void encode_frame_m2_rbga(std::shared_ptr<gfx_tex> i_frame_tex) override;
 	void stop_encoding() override;
 
 protected:
@@ -49,7 +49,8 @@ public:
 	void start_encoding(const mws_video_params& i_prm) override;
 	void stop_encoding() override;
 	void update() override;
-	void set_listener(std::shared_ptr<mws_video_reencoder_listener> i_listener) override;
+	void set_listener(std::shared_ptr<mws_vdec_listener> i_listener) override;
+    void set_reencode_listener(std::shared_ptr<mws_vreencoder_listener> i_listener) override;
 
 protected:
 	ios_video_reencoder() {}

@@ -690,8 +690,7 @@ bool unit::update()
 #endif
    int updateCount = 1;//update_ctrl->update();
 
-    mws_report_gfx_errs();
-    gfx::i()->rt.set_current_render_target(nullptr, force_rebind);
+   mws_report_gfx_errs();
 
    //for (int k = 0; k < updateCount; k++)
    {
@@ -708,12 +707,13 @@ bool unit::update()
 
 #endif
 
-    mws_report_gfx_errs();
+   gfx::i()->rt.set_current_render_target(nullptr, force_rebind);
+   mws_report_gfx_errs();
    gfx_scene_inst->draw();
    update_view(updateCount);
    gfx_scene_inst->post_draw();
    post_update_view();
-    mws_report_gfx_errs();
+   mws_report_gfx_errs();
 
 #endif
 

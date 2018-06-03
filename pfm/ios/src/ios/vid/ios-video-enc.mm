@@ -15,6 +15,7 @@
 #import "ios/vid/enc/GPUImageOutput.h"
 #import "ios/vid/enc/GPUImageMovieWriter.h"
 #import "ios/vid/enc/GPUImageView.h"
+#include "gfx-inc.hpp"
 #include <unistd.h>
 
 
@@ -22,6 +23,7 @@ class ios_video_enc_impl;
 class ios_video_reencoder_impl;
 
 
+static mws_wp<ios_video_reencoder_impl> global_vreencoder_impl;
 // GPUImageMovie
 static GPUImageView* gpu_image_view;
 static GPUImageMovie* movieFile;
@@ -54,7 +56,7 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
 {
     int progress_0_2_100 = (int)(movieFile.progress * 100);
 	video_enc_progress_handler(venc_impl.lock(), progress_0_2_100);
-    mws_print("progress: %d\n", progress_0_2_100);
+    //mws_print("progress: %d\n", progress_0_2_100);
 }
 
 -(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path
@@ -153,7 +155,7 @@ public:
 		video_path = i_video_path;
 	}
 
-	void start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
+	void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
 	{
 		mws_assert(!src_video_path.empty());
 		mws_assert(!video_path.empty());
@@ -179,7 +181,7 @@ public:
 		mws_throw ia_exception("n/a");
 	}
 	
-	void encode_frame_m2_rbga(std::shared_ptr<gfx> i_gi, std::shared_ptr<gfx_tex> i_frame_tex)
+	void encode_frame_m2_rbga(std::shared_ptr<gfx_tex> i_frame_tex)
 	{
 		mws_throw ia_exception("n/a");
 	}
@@ -226,9 +228,9 @@ void ios_video_enc::set_video_path(std::string i_video_path)
 	p->set_video_path(i_video_path);
 }
 
-void ios_video_enc::start_encoding(std::shared_ptr<gfx> i_gi, const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
+void ios_video_enc::start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
 {
-	p->start_encoding(i_gi, i_prm, i_enc_method);
+	p->start_encoding(i_prm, i_enc_method);
 }
 
 void ios_video_enc::encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
@@ -241,9 +243,9 @@ void ios_video_enc::encode_frame_m1_yuv420(const char* iframe_data, int iframe_d
 	p->encode_frame_m1_yuv420(iframe_data, iframe_data_length);
 }
 
-void ios_video_enc::encode_frame_m2_rbga(std::shared_ptr<gfx> i_gi, std::shared_ptr<gfx_tex> i_frame_tex)
+void ios_video_enc::encode_frame_m2_rbga(std::shared_ptr<gfx_tex> i_frame_tex)
 {
-	p->encode_frame_m2_rbga(i_gi, i_frame_tex);
+	p->encode_frame_m2_rbga(i_frame_tex);
 }
 
 void ios_video_enc::stop_encoding()
@@ -260,13 +262,100 @@ public:
 	   venc = ios_video_enc::nwi();
    }
    
-   //mws_sp<ios_video_dec> vdec;
+    void start_encoding(const mws_video_params& i_prm)
+    {
+        recv_params = std::make_shared<mws_video_params>();
+        *recv_params = i_prm;
+
+        vdec_state = mws_vdec_state::st_playing;
+        venc->start_encoding(*recv_params, mws_vid_enc_method::e_enc_m2);
+        
+        if(vdec_listener)
+        {
+            vdec_listener->on_start(recv_params);
+        }
+    }
+    
+    void encode_video_frame(int tex_gl_id)
+    {
+        bool use_rt_video_frame = false;
+        
+        create_rt();
+        rt_video_frame->set_texture_gl_id(tex_gl_id);
+
+        if(video_reencoder_listener)
+        {
+            use_rt_video_frame = video_reencoder_listener->on_reencode_frame(rt, rt_video_frame);
+        }
+        
+        // render the source video into the final frame
+        if (!use_rt_video_frame)
+        {
+            gfx::i()->rt.set_current_render_target(rt);
+            rt_cam->clear_buffers();
+            gfx::i()->rt.set_current_render_target();
+        }
+    }
+    
+    // this is the frame which will be fed to the encoder
+    void draw_video_frame_into_fbo()
+    {
+        rt_cam->clear_buffers();
+        rt_video_quad->draw_out_of_sync(rt_cam);
+    }
+    
+    void create_rt()
+    {
+        int width = recv_params->width;
+        int height = recv_params->height;
+        
+        if (!rt_tex || (rt_tex->get_width() != width) || (rt_tex->get_height() != height))
+        {
+            if(!gi)
+            {
+                gi = gfx::nwi();
+            }
+            
+            gfx_tex_params prm;
+            
+            prm.set_rt_params();
+            rt_tex = gi->tex.nwi("vid-reenc-" + gfx_tex::gen_id(), width, height, &prm);
+            rt = gi->rt.new_rt();
+            rt->set_color_attachment(rt_tex);
+            
+            rt_cam = gfx_camera::nwi(gi);
+            rt_cam->projection_type = gfx_camera::e_orthographic_proj;
+            rt_cam->clear_color = gfx_color::colors::dark_orange;
+            rt_cam->clear_color = true;
+            
+            {
+                rt_video_quad = gfx_quad_2d::nwi(gi);
+                auto& msh = *rt_video_quad;
+                
+                rt_video_frame = gi->tex.nwi_external("vid-frame" + gfx_tex::gen_id(), 0, "RGBA8");
+                msh.set_dimensions(1.f, 1.f);
+                msh.set_scale((float)width, (float)height);
+                msh.set_v_flip(true);
+                msh[MP_SHADER_NAME] = "basic-tex-shader";
+                msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_video_frame;
+                msh[MP_CULL_BACK] = false;
+            }
+        }
+    }
+    
     mws_vdec_state vdec_state;
    mws_sp<ios_video_enc> venc;
-   // mws_sp<mws_ffmpeg_vdec_listener> vdec_listener;
-   mws_sp<mws_video_reencoder_listener> video_reencoder_listener;
-   mws_video_params params;
+   mws_sp<mws_vdec_listener> vdec_listener;
+   mws_sp<mws_vreencoder_listener> video_reencoder_listener;
+   mws_sp<mws_video_params> recv_params;
    std::string src_video_path;
+    // rt
+    mws_sp<gfx> gi;
+    mws_sp<gfx_tex> rt_video_frame;
+    mws_sp<gfx_rt> rt;
+    mws_sp<gfx_tex> rt_tex;
+    mws_sp<gfx_camera> rt_cam;
+    mws_sp<gfx_quad_2d> rt_video_quad;
 };
 
 
@@ -276,6 +365,8 @@ mws_sp<ios_video_reencoder> ios_video_reencoder::nwi()
    auto r = mws_sp<ios_video_reencoder>(new ios_video_reencoder());
    p->venc->p->reencoder_impl = p;
    r->p = p;
+   // it's going to take a lot of time to get rid of this hack
+   global_vreencoder_impl = p;
 
    return r;
 }
@@ -313,8 +404,7 @@ void ios_video_reencoder::set_dst_video_path(std::string i_video_path)
 
 void ios_video_reencoder::start_encoding(const mws_video_params& i_prm)
 {
-    p->vdec_state = mws_vdec_state::st_playing;
-    p->venc->start_encoding(nullptr, i_prm, mws_vid_enc_method::e_enc_m2);
+    p->start_encoding(i_prm);
 }
 
 void ios_video_reencoder::stop_encoding()
@@ -328,26 +418,39 @@ void ios_video_reencoder::update()
    //p->update();
 }
 
-void ios_video_reencoder::set_listener(mws_sp<mws_video_reencoder_listener> i_listener)
+void ios_video_reencoder::set_listener(mws_sp<mws_vdec_listener> i_listener)
 {
-   p->video_reencoder_listener = i_listener;
+   p->vdec_listener = i_listener;
+}
+
+void ios_video_reencoder::set_reencode_listener(std::shared_ptr<mws_vreencoder_listener> i_listener)
+{
+    p->video_reencoder_listener = i_listener;
 }
 
 
 void video_enc_progress_handler(mws_sp<ios_video_enc_impl> i_venc_impl, int i_progress_0_2_100)
 {
-	mws_print("video_enc_progress_handler [%d]\n", i_progress_0_2_100);
+	//mws_print("video_enc_progress_handler [%d]\n", i_progress_0_2_100);
+    auto reencoder_impl = i_venc_impl->reencoder_impl.lock();
+    
+    if(reencoder_impl->vdec_listener)
+    {
+        reencoder_impl->vdec_listener->on_progress_evt(i_progress_0_2_100 / 100.f);
+    }
 }
 
 void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::string i_new_video_path)
 {
 	auto reencoder_impl = i_venc_impl->reencoder_impl.lock();
 	
-	if(reencoder_impl->video_reencoder_listener)
+	if(reencoder_impl->vdec_listener)
 	{
-		reencoder_impl->video_reencoder_listener->on_decoding_finished();
+		reencoder_impl->vdec_listener->on_finish();
 	}
 	
+    reencoder_impl->vdec_state = mws_vdec_state::st_stopped;
+    reencoder_impl->venc->stop_encoding();
 	mws_print("video_enc_finished_handler [%s]\n", i_new_video_path.c_str());
 }
 
@@ -357,14 +460,18 @@ extern "C"
 {
 #endif
     
-    int render_video_frame_to_fbo(int fb_width, int fb_height, int tex_gl_id)
+    void render_video_frame_to_fbo(int fb_width, int fb_height, int tex_gl_id)
     {
-        return tex_gl_id;
+        auto vreencoder_impl = global_vreencoder_impl.lock();
+        mws_assert(vreencoder_impl != nullptr);
+        vreencoder_impl->encode_video_frame(tex_gl_id);
     }
     
     void render_video_frame_to_fbo_2()
     {
-        int x = 3;
+        auto vreencoder_impl = global_vreencoder_impl.lock();
+        mws_assert(vreencoder_impl != nullptr);
+        vreencoder_impl->draw_video_frame_into_fbo();
     }
 
 #ifdef __cplusplus
