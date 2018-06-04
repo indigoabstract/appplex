@@ -16,6 +16,7 @@
 #import "ios/vid/enc/GPUImageMovieWriter.h"
 #import "ios/vid/enc/GPUImageView.h"
 #include "gfx-inc.hpp"
+#include "pfm-gl.h"
 #include <unistd.h>
 
 
@@ -59,11 +60,16 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
     //mws_print("progress: %d\n", progress_0_2_100);
 }
 
--(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path
+-(void)encode_video:(NSString*) src_path dst_path:(NSString*) dst_path width:(int) width height:(int) height
 {
     NSLog(@"\n\nenc src %@ dst %@\n\n", src_path, dst_path);
     NSString* full_src_path = [video_file_util getQualifiedFilenameOrResource:src_path];
     src_video_url = [NSURL fileURLWithPath:full_src_path];
+    
+    if(height %  2 != 0)
+    {
+        height++;
+    }
     
     movieFile = [[GPUImageMovie alloc] initWithURL:src_video_url];
     movieFile.runBenchmark = NO;
@@ -76,13 +82,15 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
     // Only rotate the video for display, leave orientation the same for recording
     //GPUImageView *filterView = (GPUImageView *)self.view;
     
-    CGRect screen_rect = [[UIScreen mainScreen] bounds];
-    CGFloat screen_width = screen_rect.size.width;
-    CGFloat screen_height = screen_rect.size.height;
+//    CGRect screen_rect = [[UIScreen mainScreen] bounds];
+//    CGFloat screen_width = screen_rect.size.width;
+//    CGFloat screen_height = screen_rect.size.height;
+    //width = screen_width;
+    //height = screen_height;
     
     if(!gpu_image_view)
     {
-        gpu_image_view = [[GPUImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, screen_width, screen_height)];
+        gpu_image_view = [[GPUImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, height)];
     }
     
     [movieFile addTarget:gpu_image_view];
@@ -91,7 +99,7 @@ void video_enc_finished_handler(mws_sp<ios_video_enc_impl> i_venc_impl, std::str
     unlink([dst_path UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
     dst_video_url = [NSURL fileURLWithPath:dst_path];
     
-    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:dst_video_url size:CGSizeMake(screen_width, screen_height)];
+    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:dst_video_url size:CGSizeMake(width, height)];
     [movieFile addTarget:movieWriter];
     
     // Configure this for video from the movie file, where we want to preserve all video frames and audio samples
@@ -168,7 +176,7 @@ public:
 		NSString* src_path_nss = [[NSString alloc] initWithUTF8String:src_video_path.c_str()];
 		NSString* dst_path_nss = [[NSString alloc] initWithUTF8String:video_path.c_str()];
 		mws_print("\n\nencode_selected_videoooooooo : [%s] [%s] \n\n\n", src_video_path.c_str(), video_path.c_str());
-		[venc_helper_inst encode_video:src_path_nss dst_path:dst_path_nss];
+        [venc_helper_inst encode_video:src_path_nss dst_path:dst_path_nss width:i_prm.width height:i_prm.height];
 	}
 
 	void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
@@ -285,6 +293,9 @@ public:
 
         if(video_reencoder_listener)
         {
+//            int w = rt->get_width();
+//            int h = rt->get_height();
+//            glViewport(0, 0, w, h);
             use_rt_video_frame = video_reencoder_listener->on_reencode_frame(rt, rt_video_frame);
         }
         
@@ -300,7 +311,11 @@ public:
     // this is the frame which will be fed to the encoder
     void draw_video_frame_into_fbo()
     {
-        rt_cam->clear_buffers();
+//        int w = rt->get_width();
+//        int h = rt->get_height();
+//        glViewport(0, 0, w, h);
+//        rt_cam->clear_buffers();
+//        glScissor(0, 0, w, h);
         rt_video_quad->draw_out_of_sync(rt_cam);
     }
     
@@ -326,7 +341,7 @@ public:
 
             rt_cam = gfx_camera::nwi(gi);
             rt_cam->projection_type = gfx_camera::e_orthographic_proj;
-            rt_cam->clear_color = gfx_color::colors::dark_orange;
+            rt_cam->clear_color_value = gfx_color::colors::cyan;
             rt_cam->clear_color = true;
             
             {
@@ -335,7 +350,8 @@ public:
                 
                 msh.set_dimensions(1.f, 1.f);
                 msh.set_scale((float)width, (float)height);
-                msh.set_v_flip(true);
+                msh.set_translation(0.f, 0.f);
+                //msh.set_v_flip(true);
                 msh[MP_SHADER_NAME] = "basic-tex-shader";
                 msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_tex;
                 msh[MP_CULL_BACK] = false;

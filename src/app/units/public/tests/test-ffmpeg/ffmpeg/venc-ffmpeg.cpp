@@ -1105,7 +1105,7 @@ void mws_ffmpeg_reencoder_impl::start_encoding(const mws_video_params& i_prm)
 
          rt_cam = gfx_camera::nwi(gi);
          rt_cam->projection_type = gfx_camera::e_orthographic_proj;
-         rt_cam->clear_color = gfx_color::colors::dark_orange;
+         rt_cam->clear_color_value = gfx_color::colors::dark_orange;
          rt_cam->clear_color = true;
 
          {
