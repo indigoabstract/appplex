@@ -29,6 +29,7 @@ public:
    virtual glm::vec2 get_scale() const;
    virtual void set_scale(const glm::vec2& i_sc);
    virtual void set_scale(float ix, float iy);
+   virtual void set_h_flip(bool iv_flip);
    virtual void set_v_flip(bool iv_flip);
    virtual void set_dimensions(float idx, float idy);
    virtual void set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::vec2 lb);

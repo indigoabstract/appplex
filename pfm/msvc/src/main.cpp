@@ -472,6 +472,11 @@ void msvc_main::restore_window()
    ShowWindow(hwnd, SW_SHOW);
 }
 
+float msvc_main::get_screen_scale()
+{
+   return 1.f;
+}
+
 bool msvc_main::is_full_screen_mode()
 {
    return is_full_screen;

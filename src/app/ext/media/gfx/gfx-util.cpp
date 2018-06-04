@@ -287,6 +287,8 @@ void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float it
    (*q2d)[MP_DEPTH_TEST] = false;
    (*q2d)[MP_DEPTH_WRITE] = true;
    (*q2d)[MP_CULL_BACK] = false;
+   //q2d->set_v_flip(true);
+   //q2d->set_h_flip(true);
    q2d->draw_out_of_sync(i_cam);
 
    mws_report_gfx_errs();

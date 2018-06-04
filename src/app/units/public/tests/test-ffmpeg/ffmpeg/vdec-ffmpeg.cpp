@@ -408,7 +408,6 @@ private:
                   float hratio = float(w) / w1;
 
                   q2d->set_tex_coord(glm::vec2(0.f), glm::vec2(hratio, 0.f), glm::vec2(hratio, 1.f), glm::vec2(0.f, 1.f));
-                  q2d->set_v_flip(true);
                   gfx_tex_params prm_2;
 
                   prm_2.set_format_id("RGBA8");

@@ -286,6 +286,11 @@ umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list
 	return iplist;
 }
 
+float ios_main::get_screen_scale()
+{
+	return screen_scale;
+}
+
 bool ios_main::is_full_screen_mode()
 {
 	return true;

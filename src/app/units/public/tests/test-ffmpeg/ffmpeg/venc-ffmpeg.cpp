@@ -569,6 +569,8 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx_tex> i_tex)
             //mws_print("recv y data\n");
          };
          pbo_b_y->set_on_data_recv_handler(handler);
+         //pbo_b_y->rt_quad->set_v_flip(true);
+         //pbo_b_y->rt_quad->set_h_flip(true);
          (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
          (*pbo_b_y->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-y-420.fsh";
       }
@@ -581,6 +583,8 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx_tex> i_tex)
             //mws_print("recv u data\n");
          };
          pbo_b_u->set_on_data_recv_handler(handler);
+         //pbo_b_u->rt_quad->set_v_flip(true);
+         //pbo_b_u->rt_quad->set_h_flip(true);
          (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
          (*pbo_b_u->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-u-420.fsh";
       }
@@ -593,6 +597,8 @@ void venc_ffmpeg::encode_frame_m2_rbga_impl(mws_sp<gfx_tex> i_tex)
             //mws_print("recv v data\n");
          };
          pbo_b_v->set_on_data_recv_handler(handler);
+         //pbo_b_v->rt_quad->set_v_flip(true);
+         //pbo_b_v->rt_quad->set_h_flip(true);
          (*pbo_b_v->rt_quad)[MP_SHADER_NAME][MP_VSH_NAME] = "conv-rgb-2-yuv-420.vsh";
          (*pbo_b_v->rt_quad)[MP_SHADER_NAME][MP_FSH_NAME] = "conv-rgb-2-v-420.fsh";
       }

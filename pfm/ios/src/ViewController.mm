@@ -47,7 +47,8 @@ static ViewController* instance = NULL;
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:sg];
     eagl_context_inst = self.context;
     
-    if (!self.context) {
+    if (!self.context)
+	{
         NSLog(@"Failed to create ES context");
     }
     
@@ -61,12 +62,18 @@ static ViewController* instance = NULL;
     // Set animation frame rate
     self.preferredFramesPerSecond = 60;
 
-    float scale = [UIScreen mainScreen].scale;
-    CGRect screen_rect = [[UIScreen mainScreen] bounds];
-    CGFloat screen_width = screen_rect.size.width;
-    CGFloat screen_height = screen_rect.size.height;
+	{
+		float scale = [UIScreen mainScreen].scale;
+		ios_main::get_instance()->screen_scale = scale;
+	}
+	
+	{
+		CGRect screen_rect = [[UIScreen mainScreen] bounds];
+		CGFloat screen_width = screen_rect.size.width;
+		CGFloat screen_height = screen_rect.size.height;
+		unit_ctrl::inst()->resize_app(screen_width, screen_height);
+	}
 
-    unit_ctrl::inst()->resize_app(screen_width, screen_height);
     // this is needed to find out the default framebuffer's id
     [view bindDrawable];
     [self setupGL];

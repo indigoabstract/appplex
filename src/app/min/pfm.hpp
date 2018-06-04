@@ -226,6 +226,9 @@ public:
    {
       static int get_width();
       static int get_height();
+      static float get_scale();
+      static float get_scaled_width();
+      static float get_scaled_height();
       static int get_target_fps();
       static int get_screen_dpi();
       static bool is_full_screen_mode();

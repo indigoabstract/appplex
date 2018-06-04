@@ -90,9 +90,42 @@ void gfx_quad_2d::set_scale(float ix, float iy)
    set_scale(glm::vec2(ix, iy));
 }
 
+void gfx_quad_2d::set_h_flip(bool i_flip)
+{
+   std::vector<vx_fmt_p3f_n3f_t2f> tvertices_data;
+
+   if (i_flip)
+   {
+      vx_data =
+      {
+         { vx_data[0].pos, vx_data[0].nrm,{ vx_data[3].tex.s, vx_data[3].tex.t } },
+      { vx_data[1].pos, vx_data[1].nrm,{ vx_data[2].tex.s, vx_data[2].tex.t } },
+      { vx_data[2].pos, vx_data[2].nrm,{ vx_data[1].tex.s, vx_data[1].tex.t } },
+      { vx_data[3].pos, vx_data[3].nrm,{ vx_data[0].tex.s, vx_data[0].tex.t } },
+      };
+   }
+   else
+   {
+      vx_data =
+      {
+         { vx_data[0].pos, vx_data[0].nrm,{ vx_data[0].tex.s, vx_data[0].tex.t } },
+      { vx_data[1].pos, vx_data[1].nrm,{ vx_data[1].tex.s, vx_data[1].tex.t } },
+      { vx_data[2].pos, vx_data[2].nrm,{ vx_data[2].tex.s, vx_data[2].tex.t } },
+      { vx_data[3].pos, vx_data[3].nrm,{ vx_data[3].tex.s, vx_data[3].tex.t } },
+      };
+   }
+
+
+   const gfx_indices_type tindices_data[] =
+   {
+      1, 0, 2, 3, 2, 0,
+   };
+
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+}
+
 void gfx_quad_2d::set_v_flip(bool iv_flip)
 {
-   float p = 0.5;
    std::vector<vx_fmt_p3f_n3f_t2f> tvertices_data;
 
    if (iv_flip)

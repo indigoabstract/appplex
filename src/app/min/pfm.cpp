@@ -1013,6 +1013,21 @@ int pfm::screen::get_height()
 	return data.screen_height;
 }
 
+float pfm::screen::get_scale()
+{
+   return pfm_app_inst->get_screen_scale();
+}
+
+float pfm::screen::get_scaled_width()
+{
+   return get_width() * get_scale();
+}
+
+float pfm::screen::get_scaled_height()
+{
+   return get_height() * get_scale();
+}
+
 int pfm::screen::get_target_fps()
 {
 	return 30;

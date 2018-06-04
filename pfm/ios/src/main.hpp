@@ -17,6 +17,7 @@ public:
 	virtual void write_text_v(const char* iformat, ...)const;
 	virtual std::string get_writable_path()const;
 	umf_list get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive);
+	virtual float get_screen_scale();
 	virtual bool is_full_screen_mode();
 	virtual void set_full_screen_mode(bool ienabled);
 	void init();
@@ -28,6 +29,7 @@ public:
 
 	int sample_rate;
 	int buffer_size;
+	float screen_scale;
 
 private:
 	ios_main();

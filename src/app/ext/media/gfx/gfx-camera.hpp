@@ -191,7 +191,7 @@ public:
    bool clear_color = false;
    gfx_color clear_color_value = gfx_color::colors::black;
    bool clear_depth = false;
-   bool clear_stencil = false;
+   bool clear_stencil = true;
    std::vector<mws_sp<gfx_vxo> > opaque_obj_list;
    std::vector<mws_sp<gfx_vxo> > translucent_obj_list;
    std::function<void(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& opaque, std::vector<mws_sp<gfx_vxo> >& translucent)> sort_function;
