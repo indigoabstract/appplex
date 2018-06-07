@@ -23,6 +23,23 @@ raw_img_data::~raw_img_data()
 }
 
 
+mws_sp<res_ld> res_ld::res_loader_inst;
+
+res_ld::res_ld()
+{
+}
+
+mws_sp<res_ld> res_ld::inst()
+{
+   if (!res_loader_inst)
+   {
+      res_loader_inst = mws_sp<res_ld>(new res_ld());
+   }
+
+   return res_loader_inst;
+}
+
+
 #if defined MOD_PNG
 
 #include "min.hpp"
@@ -188,22 +205,6 @@ raw_img_data::raw_img_data()
    data = nullptr;
 }
 
-
-mws_sp<res_ld> res_ld::res_loader_inst;
-
-res_ld::res_ld()
-{
-}
-
-mws_sp<res_ld> res_ld::inst()
-{
-   if (!res_loader_inst)
-   {
-      res_loader_inst = mws_sp<res_ld>(new res_ld());
-   }
-
-   return res_loader_inst;
-}
 
 mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
 {
@@ -407,6 +408,13 @@ raw_img_data::raw_img_data()
 mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
 {
    return cxx_2_objc_load_tex_by_name(i_filename, gfx::i());
+}
+
+#else
+
+mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
+{
+   return nullptr;
 }
 
 #endif
