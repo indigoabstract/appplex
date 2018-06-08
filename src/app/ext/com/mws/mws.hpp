@@ -28,6 +28,7 @@ class mws_tree;
 class mws_font;
 class mws_camera;
 class gfx_vxo;
+class text_vxo;
 
 
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
@@ -201,6 +202,7 @@ public:
    shared_ptr<mws_page_tab> get_mws_page_tab_instance();
    virtual shared_ptr<unit> get_unit();
    bool is_empty();
+   mws_sp<text_vxo> get_text_vxo() const;
 
    virtual void receive(shared_ptr<iadp> idp);
    virtual void update_state();
@@ -227,6 +229,7 @@ private:
    shared_ptr<mws_page> current_page;
    shared_ptr<mws_page> last_page;
    std::vector<shared_ptr<mws_page> > page_history;
+   mws_sp<text_vxo> tab_text_vxo;
    slide_scrolling ss;
    weak_ptr<unit> u;
 };

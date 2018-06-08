@@ -7,6 +7,7 @@
 #include "mws.hpp"
 #include "mws-camera.hpp"
 #include "mws-font.hpp"
+#include "text-vxo.hpp"
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-vxo.hpp"
@@ -379,6 +380,7 @@ void mws_page_tab::init()
    mws_cam = mwsroot.lock()->get_unit()->mws_cam;
    ss.get_transition()->add_receiver(get_instance());
 }
+
 void mws_page_tab::init_subobj()
 {
    if (!is_empty())
@@ -461,6 +463,11 @@ bool mws_page_tab::is_empty()
    return pages.size() <= 4;
 }
 
+mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
+{
+   return tab_text_vxo;
+}
+
 void mws_page_tab::receive(shared_ptr<iadp> idp)
 {
    if (receive_handler)
@@ -517,6 +524,8 @@ void mws_page_tab::receive(shared_ptr<iadp> idp)
 
 void mws_page_tab::update_state()
 {
+   tab_text_vxo->clear_text();
+
    if (!is_empty())
    {
       if (!ss.is_finished())
@@ -853,6 +862,15 @@ void mws_page_tab::new_instance_helper()
    shared_ptr<mws_page_tab> mws_root = get_mws_page_tab_instance();
    mwsroot = mws_root;
    mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+   {
+      auto tab_text_vxo = text_vxo::nwi();
+
+      mws_root->tab_text_vxo = tab_text_vxo;
+      mws_root->attach(tab_text_vxo);
+      tab_text_vxo->camera_id_list.clear();
+      tab_text_vxo->camera_id_list.push_back("mws_cam");
+   }
+
    shared_ptr<mws_page> vkmainpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_MAIN_PAGE));
    shared_ptr<mws_page> vkuppage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_UP_PAGE));
    shared_ptr<mws_page> vkrightpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_RIGHT_PAGE));
@@ -1119,9 +1137,17 @@ void mws_page::update_state()
       mws_r.y = -mws_r.h + pfm::screen::get_height();
    }
 
-   for (auto b : mlist)
+   for (auto& c : children)
    {
-      b->update_state();
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         if (w && w->visible)
+         {
+            w->update_state();
+         }
+      }
    }
 }
 

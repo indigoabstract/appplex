@@ -4,6 +4,7 @@
 #include "com/unit/gesture-detectors.hpp"
 #include "gfx-color.hpp"
 
+
 class gfx_quad_2d;
 class mws_font;
 
@@ -49,24 +50,27 @@ class mws_button : public mws_page_item
 {
 public:
    virtual ~mws_button() {}
-   static shared_ptr<mws_button> nwi(shared_ptr<mws_page> iparent);
-   static shared_ptr<mws_button> new_shared_instance(mws_button* newButtonClassInstance);
-   virtual void init(mws_rect i_mwsr, int icolor, std::string itext = "n/a");
-
+   static shared_ptr<mws_button> nwi();
+   void set_enabled(bool i_is_enabled);
+   virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp);
    virtual bool is_hit(float x, float y);
    virtual void on_click();
-   virtual void update_state();
-   virtual void update_view(shared_ptr<mws_camera> g);
-   void set_color(const gfx_color& icolor);
-   void set_text(std::string iText);
+   virtual void update_state() override;
+   virtual void set_text(std::string i_text);
+   virtual void set_color(const gfx_color& i_color);
+   virtual void set_font(mws_sp<mws_font> i_font);
+   virtual void set_on_click_handler(std::function<void(mws_sp<mws_button> i_btn)> i_on_click_handler);
+   virtual mws_sp<gfx_quad_2d> get_vxo();
 
 protected:
-   mws_button(shared_ptr<mws_page> iparent);
+   mws_button() {}
 
    std::string text;
    gfx_color color;
    shared_ptr<mws_font> font;
+   std::function<void(mws_sp<mws_button> i_btn)> on_click_handler;
+   mws_sp<gfx_quad_2d> vxo;
 };
 
 

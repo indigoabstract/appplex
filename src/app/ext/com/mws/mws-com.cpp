@@ -5,6 +5,7 @@
 #if defined MOD_MWS
 
 #include "mws-com.hpp"
+#include "text-vxo.hpp"
 #include "mws-camera.hpp"
 #include "mws-font.hpp"
 #include "unit.hpp"
@@ -13,6 +14,7 @@
 #include "gfx-quad-2d.hpp"
 #include "gfx.hpp"
 #include "gfx-util.hpp"
+#include "gfx-color.hpp"
 #include "glm/vec2.hpp"
 #include <algorithm>
 
@@ -176,38 +178,46 @@ mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
 }
 
 
-mws_button::mws_button(shared_ptr<mws_page> iparent)
+shared_ptr<mws_button> mws_button::nwi()
 {
-   color = gfx_color::colors::black;
-   font = mws_font::nwi(24.f);
-   font->set_color(gfx_color::colors::white);
-   set_text("n/a");
+   auto inst = std::shared_ptr<mws_button>(new mws_button());
+   inst->vxo = gfx_quad_2d::nwi();
+   inst->attach(inst->vxo);
+
+   {
+      auto& rvxo = *inst->vxo;
+      rvxo.camera_id_list.clear();
+      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_DEPTH_TEST] = true;
+      rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      rvxo["u_v4_color"] = inst->color.to_vec4();
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
+      rvxo.set_dimensions(1, 1);
+   }
+
+   return inst;
 }
 
-shared_ptr<mws_button> mws_button::nwi(shared_ptr<mws_page> iparent)
+void mws_button::set_enabled(bool i_is_enabled)
 {
-   shared_ptr<mws_button> u(new mws_button(iparent));
-   u->add_to_page();
-   return u;
+   if (i_is_enabled != enabled)
+   {
+      float u_v1_is_enabled = i_is_enabled ? 1.f : 0.f;
+      (*get_vxo())["u_v1_is_enabled"] = u_v1_is_enabled;
+   }
+
+   mws_page_item::set_enabled(i_is_enabled);
 }
 
-shared_ptr<mws_button> mws_button::new_shared_instance(mws_button* newButtonClassInstance)
+void mws_button::set_rect(const mws_rect& i_rect)
 {
-   shared_ptr<mws_button> u(newButtonClassInstance);
-   u->add_to_page();
-   return u;
-}
-
-void mws_button::init(mws_rect i_rect, int iColor, string iText)
-{
-   mws_r.x = i_rect.x - i_rect.w / 2;
-   mws_r.y = i_rect.y - i_rect.h / 2;
-   mws_r.w = i_rect.w;
-   mws_r.h = i_rect.h;
-
-   color = gfx_color(iColor);
-
-   set_text(iText);
+   //vxo->set_translation(i_rect.x, i_rect.y);
+   position = glm::vec3(i_rect.x, i_rect.y, position().z);
+   vxo->set_scale(i_rect.w, i_rect.h);
+   mws_r = i_rect;
 }
 
 void mws_button::receive(shared_ptr<iadp> idp)
@@ -230,6 +240,7 @@ void mws_button::receive(shared_ptr<iadp> idp)
          return;
       }
 
+      //mws_print("evt type [%d]\n", type);
       if (ts->type == ts->touch_began)
       {
          on_click();
@@ -240,31 +251,59 @@ void mws_button::receive(shared_ptr<iadp> idp)
 
 bool mws_button::is_hit(float x, float y)
 {
-   return false;
+   auto& tf = get_vxo()->get_global_tf_mx();
+   auto& pos = gfx_util::get_pos_from_tf_mx(tf);
+   //auto& scale = gfx_util::get_scale_from_tf_mx(tf);
+   //bool hit = is_inside_box(x, y, pos.x - scale.x / 2, pos.y - scale.y / 2, scale.x, scale.y);
+   bool hit = is_inside_box(x, y, pos.x - mws_r.w / 2, pos.y - mws_r.h / 2, mws_r.w, mws_r.h);
+
+   return hit;
 }
 
-void mws_button::on_click() {}
-void mws_button::update_state() {}
-
-void mws_button::update_view(shared_ptr<mws_camera> g)
+void mws_button::on_click()
 {
-   //if(visible && mws_r.w > 0 && mws_r.h > 0)
-   //{
-   //	g->setColor(color.argb());
-   //	g->fillRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
-   //	//draw_bar(g, mws_r.x, mws_r.y, mws_r.w, mws_r.h, color);
-   //	g->drawText(text, mws_r.x + 10, mws_r.y + mws_r.h / 2 - 10, font);
-   //}
+   if (on_click_handler)
+   {
+      on_click_handler(std::static_pointer_cast<mws_button>(get_instance()));
+   }
 }
 
-void mws_button::set_color(const gfx_color& icolor)
+void mws_button::update_state()
 {
-   color = icolor;
+   auto& tf = get_vxo()->get_global_tf_mx();
+   auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
+   glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
+   auto root = get_mws_root();
+   auto text_ref = root->get_text_vxo();
+   mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+
+   text_ref->add_text(text, pos, f);
 }
 
-void mws_button::set_text(string iText)
+void mws_button::set_text(string i_text)
 {
-   text = iText;
+   text = i_text;
+}
+
+void mws_button::set_color(const gfx_color& i_color)
+{
+   color = i_color;
+   (*get_vxo())["u_v4_color"] = color.to_vec4();
+}
+
+void mws_button::set_font(mws_sp<mws_font> i_font)
+{
+   font = i_font;
+}
+
+void mws_button::set_on_click_handler(std::function<void(mws_sp<mws_button> i_img_btn)> i_on_click_handler)
+{
+   on_click_handler = i_on_click_handler;
+}
+
+mws_sp<gfx_quad_2d> mws_button::get_vxo()
+{
+   return vxo;
 }
 
 
