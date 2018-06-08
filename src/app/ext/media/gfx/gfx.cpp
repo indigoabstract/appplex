@@ -264,7 +264,30 @@ void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt, bool i_
          }
       }
 
-      glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);
+      if (pfm::screen::get_width() > pfm::screen::get_height())
+      {
+         // if landscape mode
+         if (default_viewport_dim.z > default_viewport_dim.w)
+         {
+            glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);
+         }
+         else
+         {
+            glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.w, default_viewport_dim.z);
+         }
+      }
+      else
+      {
+         // if portrait mode
+         if (default_viewport_dim.z > default_viewport_dim.w)
+         {
+            glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.w, default_viewport_dim.z);
+         }
+         else
+         {
+            glViewport(default_viewport_dim.x, default_viewport_dim.y, default_viewport_dim.z, default_viewport_dim.w);
+         }
+      }
       mws_report_gfx_errs();
    }
 

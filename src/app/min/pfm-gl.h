@@ -26,6 +26,8 @@ extern "C"
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
+GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+
 
 // --- IOS ---
 #elif defined PLATFORM_IOS

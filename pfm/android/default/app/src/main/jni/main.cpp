@@ -1,5 +1,6 @@
 #include "main.hpp"
 
+#include "pfm-gl.h"
 #include "min.hpp"
 #include "unit-ctrl.hpp"
 #include "com/unit/input-ctrl.hpp"
@@ -302,6 +303,11 @@ umf_list android_main::get_directory_listing(const std::string& idirectory, umf_
 	return iplist;
 }
 
+float android_main::get_screen_scale()
+{
+    return 1.f;
+}
+
 bool android_main::is_full_screen_mode()
 {
 	return true;
@@ -547,4 +553,9 @@ extern "C"
 			env->ReleaseStringUTFChars(iwritable_path, twritable_path);
 		}
 	}
+
+    GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data)
+    {
+        mws_throw ia_exception("not implemented");
+    }
 }

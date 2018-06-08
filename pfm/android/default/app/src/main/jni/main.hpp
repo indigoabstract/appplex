@@ -21,6 +21,7 @@ public:
 	virtual void write_text_v(const char* iformat, ...)const;
 	virtual std::string get_writable_path()const;
 	umf_list get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive);
+    float get_screen_scale();
 	virtual bool is_full_screen_mode();
 	virtual void set_full_screen_mode(bool ienabled);
 	void init();
