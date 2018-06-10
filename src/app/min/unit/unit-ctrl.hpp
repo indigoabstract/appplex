@@ -28,7 +28,7 @@ public:
    void update();
    void pause();
    void resume();
-   void resize_app(int iwidth, int iheight);
+   void resize_app(int i_width, int i_height);
    void pointer_action(std::shared_ptr<pointer_evt> ite);
    void key_action(key_actions iaction_type, int ikey);
    std::shared_ptr<unit> get_current_unit();

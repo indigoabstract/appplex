@@ -117,6 +117,7 @@ private:
    friend class unit_ctrl;
 
    static void global_init();
+   static void on_resize(int i_width, int i_height);
    void init(mws_sp<gfx> i_new_inst);
    void get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect);
    void remove_gfx_obj(const gfx_obj* iobj);

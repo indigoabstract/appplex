@@ -197,12 +197,13 @@ void unit_ctrl::resume()
    }
 }
 
-void unit_ctrl::resize_app(int iwidth, int iheight)
+void unit_ctrl::resize_app(int i_width, int i_height)
 {
 #ifdef MOD_GFX
 
-   pfm::data.screen_width = iwidth;
-   pfm::data.screen_height = iheight;
+   pfm::data.screen_width = i_width;
+   pfm::data.screen_height = i_height;
+   gfx::on_resize(i_width, i_height);
 
    if (ul)
    {

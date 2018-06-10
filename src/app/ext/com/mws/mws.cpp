@@ -1190,8 +1190,6 @@ void mws_page::add(shared_ptr<mws_page_item> b)
 }
 
 
-mws_page_item::mws_page_item() {}
-
 void mws_page_item::set_rect(const mws_rect& i_rect)
 {
    mws_r = i_rect;
@@ -1205,6 +1203,13 @@ void mws_page_item::set_size(float i_width, float i_height)
 shared_ptr<mws_page> mws_page_item::get_mws_page_item_parent()
 {
    return static_pointer_cast<mws_page>(get_mws_parent());
+}
+
+mws_page_item::mws_page_item() {}
+
+void mws_page_item::setup()
+{
+   mws::setup();
 }
 
 void mws_page_item::add_to_page()

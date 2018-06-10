@@ -25,23 +25,7 @@ using std::vector;
 shared_ptr<mws_panel> mws_panel::nwi()
 {
    auto inst = std::shared_ptr<mws_panel>(new mws_panel());
-   inst->vxo = gfx_quad_2d::nwi();
-   inst->attach(inst->vxo);
-
-   {
-      auto& rvxo = *inst->vxo;
-      rvxo.camera_id_list.clear();
-      rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
-      rvxo[MP_DEPTH_TEST] = true;
-      rvxo[MP_DEPTH_WRITE] = true;
-      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-      rvxo["u_v4_color"] = glm::vec4(0, 1.f, 0, 1);
-      rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 0.f;
-      rvxo.set_dimensions(1, 1);
-   }
-
+   inst->setup();
    return inst;
 }
 
@@ -57,29 +41,32 @@ mws_sp<gfx_quad_2d> mws_panel::get_vxo()
    return vxo;
 }
 
-
-std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
+void mws_panel::setup()
 {
-   auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
-   inst->vxo = gfx_quad_2d::nwi();
-   inst->attach(inst->vxo);
+   mws_page_item::setup();
+   vxo = gfx_quad_2d::nwi();
+   attach(vxo);
 
    {
-      auto& rvxo = *inst->vxo;
+      auto& rvxo = *vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
       rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-      rvxo["u_s2d_tex"] = "";
+      rvxo["u_v4_color"] = glm::vec4(0, 1.f, 0, 1);
       rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
       rvxo.set_dimensions(1, 1);
-      rvxo.set_anchor(gfx_quad_2d::e_center);
-      rvxo[MP_BLENDING] = MV_ALPHA;
    }
+}
 
+
+std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
+{
+   auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
+   inst->setup();
    return inst;
 }
 
@@ -177,27 +164,34 @@ mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
    return vxo;
 }
 
-
-shared_ptr<mws_button> mws_button::nwi()
+void mws_img_btn::setup()
 {
-   auto inst = std::shared_ptr<mws_button>(new mws_button());
-   inst->vxo = gfx_quad_2d::nwi();
-   inst->attach(inst->vxo);
+   mws_page_item::setup();
+   vxo = gfx_quad_2d::nwi();
+   attach(vxo);
 
    {
-      auto& rvxo = *inst->vxo;
+      auto& rvxo = *vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
       rvxo[MP_SHADER_NAME] = "mws-shader";
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-      rvxo["u_v4_color"] = inst->color.to_vec4();
+      rvxo["u_s2d_tex"] = "";
       rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 0.f;
+      rvxo["u_v1_has_tex"] = 1.f;
       rvxo.set_dimensions(1, 1);
+      rvxo.set_anchor(gfx_quad_2d::e_center);
+      rvxo[MP_BLENDING] = MV_ALPHA;
    }
+}
 
+
+shared_ptr<mws_button> mws_button::nwi()
+{
+   auto inst = std::shared_ptr<mws_button>(new mws_button());
+   inst->setup();
    return inst;
 }
 
@@ -306,49 +300,32 @@ mws_sp<gfx_quad_2d> mws_button::get_vxo()
    return vxo;
 }
 
+void mws_button::setup()
+{
+   mws_page_item::setup();
+   vxo = gfx_quad_2d::nwi();
+   attach(vxo);
+
+   {
+      auto& rvxo = *vxo;
+      rvxo.camera_id_list.clear();
+      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_DEPTH_TEST] = true;
+      rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      rvxo["u_v4_color"] = color.to_vec4();
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
+      rvxo.set_dimensions(1, 1);
+   }
+}
+
 
 std::shared_ptr<mws_slider> mws_slider::nwi()
 {
    auto inst = std::shared_ptr<mws_slider>(new mws_slider());
-   inst->slider_bar = gfx_quad_2d::nwi();
-   inst->slider_ball = gfx_quad_2d::nwi();
-   inst->attach(inst->slider_bar);
-   inst->attach(inst->slider_ball);
-   inst->set_z(0.f);
-
-   // slider bar
-   {
-      auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_bar);
-      rvxo.camera_id_list.clear();
-      rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
-      rvxo[MP_DEPTH_TEST] = true;
-      rvxo[MP_DEPTH_WRITE] = true;
-      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-      rvxo["u_v4_color"] = glm::vec4(0.75f);
-      rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 0.f;
-      rvxo.set_dimensions(1, 1);
-   }
-
-   // slider ball
-   {
-      auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(inst->slider_ball);
-      rvxo.camera_id_list.clear();
-      rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
-      rvxo[MP_DEPTH_TEST] = true;
-      rvxo[MP_DEPTH_WRITE] = true;
-      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-      rvxo["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 0.75f);
-      rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 0.f;
-      rvxo[MP_BLENDING] = MV_ADD;
-      rvxo.set_dimensions(1, 1);
-      rvxo.position = glm::vec3(0.f, 0.f, 0.1f);
-      rvxo.set_anchor(gfx_quad_2d::e_center);
-   }
-
+   inst->setup();
    return inst;
 }
 
@@ -505,6 +482,49 @@ mws_slider::mws_slider()
    active = false;
 }
 
+void mws_slider::setup()
+{
+   mws_page_item::setup();
+   slider_bar = gfx_quad_2d::nwi();
+   slider_ball = gfx_quad_2d::nwi();
+   attach(slider_bar);
+   attach(slider_ball);
+   set_z(0.f);
+
+   // slider bar
+   {
+      auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(slider_bar);
+      rvxo.camera_id_list.clear();
+      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_DEPTH_TEST] = true;
+      rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      rvxo["u_v4_color"] = glm::vec4(0.75f);
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
+      rvxo.set_dimensions(1, 1);
+   }
+
+   // slider ball
+   {
+      auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+      rvxo.camera_id_list.clear();
+      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_DEPTH_TEST] = true;
+      rvxo[MP_DEPTH_WRITE] = true;
+      rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      rvxo["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 0.75f);
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 0.f;
+      rvxo[MP_BLENDING] = MV_ADD;
+      rvxo.set_dimensions(1, 1);
+      rvxo.position = glm::vec3(0.f, 0.f, 0.1f);
+      rvxo.set_anchor(gfx_quad_2d::e_center);
+   }
+}
+
 
 mws_list_model::mws_list_model()
 {
@@ -529,6 +549,11 @@ mws_list::mws_list(shared_ptr<mws_page> iparent)
    vertical_space = 55;
    item_w = mws_r.w * 80 / 100;
    item_x = (mws_r.w - item_w) / 2;
+}
+
+void mws_list::setup()
+{
+   mws_page_item::setup();
 }
 
 shared_ptr<mws_list> mws_list::nwi(shared_ptr<mws_page> i_parent)
@@ -707,10 +732,16 @@ mws_tree::mws_tree(shared_ptr<mws_page> iparent)
 {
 }
 
+void mws_tree::setup()
+{
+   mws_page_item::setup();
+   add_to_page();
+}
+
 shared_ptr<mws_tree> mws_tree::nwi(shared_ptr<mws_page> iparent)
 {
    shared_ptr<mws_tree> u(new mws_tree(iparent));
-   u->add_to_page();
+   u->setup();
    return u;
 }
 

@@ -19,6 +19,7 @@ public:
 
 protected:
    mws_panel() {}
+   void setup() override;
 
    mws_sp<gfx_quad_2d> vxo;
 };
@@ -40,6 +41,7 @@ public:
 
 protected:
    mws_img_btn() {}
+   void setup() override;
 
    std::function<void(mws_sp<mws_img_btn> i_img_btn)> on_click_handler;
    mws_sp<gfx_quad_2d> vxo;
@@ -65,6 +67,7 @@ public:
 
 protected:
    mws_button() {}
+   void setup() override;
 
    std::string text;
    gfx_color color;
@@ -89,6 +92,7 @@ public:
 
 protected:
    mws_slider();
+   void setup() override;
 
    float value;
    std::function<void(mws_sp<mws_slider> i_slider)> on_drag_handler;
@@ -134,6 +138,7 @@ public:
 
 protected:
    mws_list(shared_ptr<mws_page> iparent);
+   void setup() override;
 
    int element_at(float x, float y);
 
@@ -190,6 +195,7 @@ public:
 
 protected:
    mws_tree(shared_ptr<mws_page> iparent);
+   void setup() override;
 
    void get_max_width(shared_ptr<mws_font> f, const shared_ptr<mws_tree_model_node> node, int level, float& maxWidth);
    void draw_tree_elem(shared_ptr<mws_camera> g, const shared_ptr<mws_tree_model_node> node, int level, int& elemIdx);

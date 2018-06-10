@@ -115,6 +115,7 @@ public:
 
 protected:
    mws(std::shared_ptr<gfx> i_gi = nullptr);
+   virtual void setup(){}
 
    bool enabled = true;
    bool is_opaque = true;
@@ -294,6 +295,7 @@ public:
 
 protected:
    mws_page_item();
+   void setup() override;
 
    void add_to_page();
 };
