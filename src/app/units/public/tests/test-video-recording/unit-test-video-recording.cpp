@@ -10,10 +10,7 @@
 #include "ext/gfx-surface.hpp"
 #include "com/mws/mws-camera.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
+#include <glm/inc.hpp>
 
 
 unit_test_video_recording::unit_test_video_recording()
@@ -33,7 +30,7 @@ void unit_test_video_recording::init()
 
 namespace test_video_recording
 {
-   class impl : public app_impl
+   class im : public app_impl
    {
    public:
       void load()
@@ -419,40 +416,39 @@ using namespace test_video_recording;
 
 void unit_test_video_recording::load()
 {
-   p = std::make_unique<impl>();
-
-   auto i = static_cast<impl*>(p.get());
+   p = std::make_unique<im>();
+   im& i = i_m<im>();
    gfx_color cc;
 
    mws_cam->clear_color = true;
    cc.from_float(0.5f, 0.f, 1.f, 1.f);
    mws_cam->clear_color_value = cc;
 
-   i->load();
+   i.load();
 }
 
 void unit_test_video_recording::update_view(int update_count)
 {
-   auto i = static_cast<impl*>(p.get());
+   im& i = i_m<im>();
 
-   i->update_view(mws_cam);
+   i.update_view(mws_cam);
    unit::update_view(update_count);
 }
 
 void unit_test_video_recording::post_update_view()
 {
-   auto i = static_cast<impl*>(p.get());
+   im& i = i_m<im>();
 
-   i->post_update_view(mws_cam);
+   i.post_update_view(mws_cam);
 }
 
 void unit_test_video_recording::receive(shared_ptr<iadp> idp)
 {
    if (!idp->is_processed())
    {
-      auto i = static_cast<impl*>(p.get());
+      im& i = i_m<im>();
 
-      i->receive(idp);
+      i.receive(idp);
    }
 }
 

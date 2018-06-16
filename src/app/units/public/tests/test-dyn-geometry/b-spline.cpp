@@ -5,7 +5,7 @@
 #ifdef UNIT_TEST_DYN_GEOMETRY
 
 #include "b-spline.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 // http://www.cse.unsw.edu.au/~lambert/splines/

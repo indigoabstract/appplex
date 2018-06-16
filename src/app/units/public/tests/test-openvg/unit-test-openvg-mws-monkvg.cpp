@@ -258,7 +258,7 @@ void unit_test_openvg::init_monkvg()
 	// setup the OpenVG context
 	vgCreateContextSH(pfm::screen::get_width(), pfm::screen::get_height());
 
-	mws_page::new_shared_instance(new monkvgpage(mws_root));
+   mws_root->new_page<monkvgpage>();
 #endif
 }
 

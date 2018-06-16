@@ -17,7 +17,7 @@
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 class unit_test_kube_sphere_impl

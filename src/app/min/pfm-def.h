@@ -1,7 +1,17 @@
 #pragma once
 // common c/c++ code.
 
+
 #ifdef __cplusplus
+#include <memory>
+
+using std::enable_shared_from_this;
+using std::shared_ptr;
+using std::static_pointer_cast;
+using std::weak_ptr;
+template <typename T> using mws_sp = std::shared_ptr<T>;
+template <typename T> using mws_wp = std::weak_ptr<T>;
+
 extern "C"
 {
 #endif 
@@ -110,12 +120,12 @@ extern "C"
 
 #ifdef MWS_USES_RTTI
 
-#define mws_dynamic_cast std::dynamic_cast
+#define mws_dynamic_cast dynamic_cast
 #define mws_dynamic_pointer_cast std::dynamic_pointer_cast
 
 #else
 
-#define mws_dynamic_cast std::static_cast
+#define mws_dynamic_cast static_cast
 #define mws_dynamic_pointer_cast std::static_pointer_cast
 
 #endif

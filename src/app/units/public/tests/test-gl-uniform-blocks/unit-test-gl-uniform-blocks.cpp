@@ -10,10 +10,7 @@
 #include "gfx-vxo.hpp"
 #include "gfx-quad-2d.hpp"
 #include "gfx-material.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
+#include <glm/inc.hpp>
 
 
 unit_test_gl_uniform_blocks::unit_test_gl_uniform_blocks()
@@ -252,19 +249,19 @@ namespace unit_test_gl_uniform_blocks_ns
          //glm::mat4 mvp = projection * view_mx * model;
          // GREEN
          gfx::i()->shader.set_current_program(green_shader);
-         model = glm::mat4();
+         model = glm::mat4(1.f);
          model = glm::translate(model, glm::vec3(0.75f, 0.75f, 0.0f)); // move top-right
          green_shader->update_uniform("model", glm::value_ptr(model));
          glDrawArrays(GL_TRIANGLES, 0, 36);
          // YELLOW
          gfx::i()->shader.set_current_program(yellow_shader);
-         model = glm::mat4();
+         model = glm::mat4(1.f);
          model = glm::translate(model, glm::vec3(-0.75f, -0.75f, 0.0f)); // move bottom-left
          yellow_shader->update_uniform("model", glm::value_ptr(model));
          glDrawArrays(GL_TRIANGLES, 0, 36);
          // BLUE
          gfx::i()->shader.set_current_program(blue_shader);
-         model = glm::mat4();
+         model = glm::mat4(1.f);
          model = glm::translate(model, glm::vec3(0.75f, -0.75f, 0.0f)); // move bottom-right
          blue_shader->update_uniform("model", glm::value_ptr(model));
          glDrawArrays(GL_TRIANGLES, 0, 36);

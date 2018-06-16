@@ -2,8 +2,7 @@
 
 #include "gfx-param-surface.hpp"
 #include "pfm-def.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 #include <list>
 #include <fstream>
 #include <assert.h>

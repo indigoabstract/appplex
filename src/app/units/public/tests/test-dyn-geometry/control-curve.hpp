@@ -7,7 +7,7 @@
 #include "pfm.hpp"
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 namespace control_curve_ns

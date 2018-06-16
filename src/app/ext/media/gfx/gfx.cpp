@@ -11,7 +11,7 @@
 #include "media/res-ld/res-ld.hpp"
 #include "min.hpp"
 #include "pfm-gl.h"
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/inc.hpp>
 #include <unordered_map>
 
 

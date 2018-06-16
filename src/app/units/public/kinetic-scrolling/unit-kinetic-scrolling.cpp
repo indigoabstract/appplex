@@ -324,8 +324,8 @@ void unit_kinetic_scrolling::init_mws()
 		}
 	};
 
-	mws_page::new_shared_instance(new mainpage(mws_root));
-	mws_cam->clear_color = true;
+   mws_root->new_page<mainpage>();
+   mws_cam->clear_color = true;
 }
 
 #endif

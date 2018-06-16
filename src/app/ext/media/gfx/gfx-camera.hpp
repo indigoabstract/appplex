@@ -5,7 +5,7 @@
 #include "gfx-scene.hpp"
 #include "gfx-util.hpp"
 #include "gfx-color.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -190,7 +190,7 @@ public:
    std::string render_target = "";
    bool clear_color = false;
    gfx_color clear_color_value = gfx_color::colors::black;
-   bool clear_depth = false;
+   bool clear_depth = true;
    bool clear_stencil = true;
    std::vector<mws_sp<gfx_vxo> > opaque_obj_list;
    std::vector<mws_sp<gfx_vxo> > translucent_obj_list;
@@ -207,8 +207,8 @@ protected:
    shared_ptr<rw_sequence> draw_ops;
 
 public:
-   glm::mat4 camera_mx;
-   glm::mat4 view_mx;
+   glm::mat4 camera_mx = glm::mat4(1.f);
+   glm::mat4 view_mx = glm::mat4(1.f);
    glm::mat4 projection_mx;
    shared_ptr<gfx_camera_impl> p;
 

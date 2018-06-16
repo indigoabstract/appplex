@@ -3,7 +3,7 @@
 #include "input-ctrl.hpp"
 #include "pfm-def.h"
 #include "unit.hpp"
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 
 
 const std::string pointer_evt::TOUCHSYM_EVT_TYPE = "ts-";

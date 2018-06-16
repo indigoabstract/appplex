@@ -1,7 +1,7 @@
 #pragma once
 
 #include "min.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include "com/unit/gesture-detectors.hpp"
 
 class gfx_camera;
@@ -25,21 +25,21 @@ public:
 	void update();
 
 	std::shared_ptr<gfx_camera> persp_cam;
-	glm::vec3 look_at_dir;
-	glm::vec3 up_dir;
-   glm::vec3 target_ref_point;
-	float speed;
-	float mw_speed_factor;
+	glm::vec3 look_at_dir = glm::vec3(0.f);
+	glm::vec3 up_dir = glm::vec3(0.f);
+   glm::vec3 target_ref_point = glm::vec3(0.f);
+	float speed = 0.f;
+	float mw_speed_factor = 0.f;
 
 private:
    void clamp_angles();
 
-   float inf_phi_deg;
-   float sup_phi_deg;
-   float phi_deg; // [10, 80]
-   float theta_deg; // [0, 360)
-   float sign_phi;
-   e_movement_types mov_type;
+   float inf_phi_deg = 0.f;
+   float sup_phi_deg = 0.f;
+   float phi_deg = 0.f; // [10, 80]
+   float theta_deg = 0.f; // [0, 360)
+   float sign_phi = 0.f;
+   e_movement_types mov_type = e_movement_types::e_translation;
    dragging_detector dragging_det;
    std::shared_ptr<kinetic_scrolling> ks;
    std::weak_ptr<unit> u;

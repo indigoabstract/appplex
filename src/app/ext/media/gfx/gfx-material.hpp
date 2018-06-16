@@ -6,7 +6,7 @@
 #include "gfx-util.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-shader.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>

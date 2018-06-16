@@ -3,7 +3,7 @@
 #include "pfm.hpp"
 #include "min.hpp"
 #include "gfx-shader.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <memory>
 #include <string>
 #include <vector>

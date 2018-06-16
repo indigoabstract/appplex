@@ -8,7 +8,7 @@
 #include "com/mws/mws-com.hpp"
 #include <noise/perlinnoise.hpp>
 #include <rng/rng.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 
 
 class embeddedRes
@@ -195,7 +195,7 @@ namespace unit_test_main_page
 
 void unit_test::init_mws()
 {
-	mws_page::new_shared_instance(new unit_test_main_page::main_page(mws_root));
+   mws_root->new_page<unit_test_main_page::mainpage>();
 	mws_cam->clear_color = true;
 }
 

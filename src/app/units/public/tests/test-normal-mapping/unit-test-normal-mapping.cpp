@@ -19,7 +19,7 @@
 #include "media/res-ld/res-ld.hpp"
 #include <rng/rng.hpp>
 #include <utils/free-camera.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <map>
 
 

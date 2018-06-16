@@ -1357,52 +1357,52 @@ void mws_print_impl(const char* i_format, ...)
 
 #if defined PLATFORM_WINDOWS_PC
 
-void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value)
-{
-	void* ptr = 0;
-
-	if (isize > 0)
-	{
-		ptr = _aligned_malloc(isize, 16);
-
-		mws_assert(ptr);
-
-		if (ptr)
-		{
-			memset(ptr, 0, isize);
-		}
-	}
-
-	return ptr;
-}
-
-void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value)
-{
-	void* ptr = 0;
-
-	if (isize > 0)
-	{
-		ptr = _aligned_malloc(isize, 16);
-
-		mws_assert(ptr);
-
-		if (ptr)
-		{
-			memset(ptr, 0, isize);
-		}
-	}
-
-	return ptr;
-}
-
-void operator delete(void* iptr, const std::nothrow_t& nothrow_constant)
-{
-   _aligned_free(iptr);
-}
-
-void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant)
-{
-   _aligned_free(iptr);
-}
+//void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value)
+//{
+//	void* ptr = 0;
+//
+//	if (isize > 0)
+//	{
+//		ptr = _aligned_malloc(isize, 16);
+//
+//		mws_assert(ptr);
+//
+//		if (ptr)
+//		{
+//			memset(ptr, 0, isize);
+//		}
+//	}
+//
+//	return ptr;
+//}
+//
+//void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value)
+//{
+//	void* ptr = 0;
+//
+//	if (isize > 0)
+//	{
+//		ptr = _aligned_malloc(isize, 16);
+//
+//		mws_assert(ptr);
+//
+//		if (ptr)
+//		{
+//			memset(ptr, 0, isize);
+//		}
+//	}
+//
+//	return ptr;
+//}
+//
+//void operator delete(void* iptr, const std::nothrow_t& nothrow_constant)
+//{
+//   _aligned_free(iptr);
+//}
+//
+//void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant)
+//{
+//   _aligned_free(iptr);
+//}
 
 #endif

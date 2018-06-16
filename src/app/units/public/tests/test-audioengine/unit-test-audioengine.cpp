@@ -59,7 +59,7 @@ namespace unit_test_audioengine_ns
 
 void unit_test_audioengine::init_mws()
 {
-	mws_page::new_shared_instance(new unit_test_audioengine_ns::main_page(mws_root));
+   mws_root->new_page<unit_test_audioengine_ns::mainpage>();
 	mws_cam->clear_color = true;
 }
 

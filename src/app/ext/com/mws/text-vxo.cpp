@@ -16,9 +16,7 @@
 #include "gfx-vxo.hpp"
 #include "pfm-gl.h"
 #include <freetype-gl/vertex-buffer.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/inc.hpp>
 
 
 struct vertex_t
@@ -295,9 +293,9 @@ public:
    }
 
    vertex_buffer_t* vbuffer;
-   glm::mat4 model;
-   glm::mat4 view;
-   glm::mat4 projection;
+   glm::mat4 model = glm::mat4(1.f);
+   glm::mat4 view = glm::mat4(1.f);
+   glm::mat4 projection = glm::mat4(1.f);
    int rt_width;
    int rt_height;
    glm::vec3 mPosition;

@@ -9,7 +9,7 @@
 #include "gfx.hpp"
 #include "gfx-camera.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 curve_mesh::curve_mesh() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord"))

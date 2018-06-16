@@ -28,7 +28,6 @@ std::vector<shared_ptr<kx_process> > kxmd_ops::get_process_list(const shared_ptr
    return list;
 }
 
-
 std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<shared_ptr<kx_process> >& ilist)
 {
    std::vector<std::string> list;
@@ -76,14 +75,14 @@ bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 }
 
 
-// ipath is like xxx.yyy.zzz
-mws_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, mws_any default_val)
+// i_path is like xxx.yyy.zzz
+shared_ptr<kx_process> kxmd_ops::get_px(std::string i_path, shared_ptr<kx_block> i_root)
 {
    std::vector<std::string> tokens;
-   tokens = str_split(ipath, ".");
-   shared_ptr<kx_process> xdb = iroot;
+   tokens = str_split(i_path, ".");
+   shared_ptr<kx_process> xdb = i_root;
 
-   if (ipath == "units.kappaxx.platf")
+   if (i_path == "units.kappaxx.platf")
    {
       int x = 3;
    }
@@ -94,29 +93,35 @@ mws_any kxmd_ops::get_kxmd_value(std::string ipath, shared_ptr<kx_block> iroot, 
 
       if (!xdb)
       {
-         break;
+         return nullptr;
       }
    }
 
+   return xdb;
+}
+
+mws_any kxmd_ops::get_kxmd_value(std::string i_path, shared_ptr<kx_block> i_root, mws_any i_default_val)
+{
+   shared_ptr<kx_process> px = get_px(i_path, i_root);
    mws_any result;
 
-   if (xdb)
+   if (px)
    {
-      auto values = get_process_name_list(xdb);
+      auto values = get_process_name_list(px);
       result = values;
    }
    else
    {
-      result = default_val;
+      result = i_default_val;
    }
 
    return result;
 }
 
-std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_ptr<kx_block> iroot, std::vector<std::string> default_val)
+std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string i_path, shared_ptr<kx_block> i_root, std::vector<std::string> i_default_val)
 {
    std::vector<std::string> seq;
-   mws_any val = get_kxmd_value(ipath, iroot);
+   mws_any val = get_kxmd_value(i_path, i_root);
 
    if (!val.empty())
    {
@@ -141,23 +146,23 @@ std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string ipath, shared_pt
 
    if (seq.empty())
    {
-      seq = default_val;
+      seq = i_default_val;
    }
 
    return seq;
 }
 
 
-// ipath is like xxx.yyy.zzz
-bool kxmd_ops::kxmd_path_exists(std::string ipath, shared_ptr<kx_block> iroot)
+// i_path is like xxx.yyy.zzz
+bool kxmd_ops::kxmd_path_exists(std::string i_path, shared_ptr<kx_block> i_root)
 {
-   std::size_t found = ipath.find_last_of(".");
+   std::size_t found = i_path.find_last_of(".");
 
    if (found > 0)
    {
-      std::string stem = ipath.substr(0, found);
-      std::string leaf = ipath.substr(found + 1, ipath.length() - found - 1);
-      auto seq = get_kxmd_str_seq(stem, iroot);
+      std::string stem = i_path.substr(0, found);
+      std::string leaf = i_path.substr(found + 1, i_path.length() - found - 1);
+      auto seq = get_kxmd_str_seq(stem, i_root);
       auto idx = std::find(seq.begin(), seq.end(), leaf);
 
       if (idx != seq.end())

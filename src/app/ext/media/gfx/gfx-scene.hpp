@@ -4,8 +4,7 @@
 #include "pfm.hpp"
 #include "gfx-state.hpp"
 #include "gfx-util.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <glm/inc.hpp>
 #include <string>
 #include <vector>
 
@@ -69,10 +68,10 @@ public:
    def_mat_prop(gfx_transform, mat4_accessor) transform_mx;
 
 protected:
-   glm::mat4 global_tf_mx;
-   glm::mat4 translation_mx;
-   glm::mat4 rotation_mx;
-   glm::mat4 scaling_mx;
+   glm::mat4 global_tf_mx = glm::mat4(1.f);
+   glm::mat4 translation_mx = glm::mat4(1.f);
+   glm::mat4 rotation_mx = glm::mat4(1.f);
+   glm::mat4 scaling_mx = glm::mat4(1.f);
 };
 
 

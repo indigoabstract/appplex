@@ -9,13 +9,13 @@
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/inc.hpp>
 
 
 gfx_transform::gfx_transform() : position(this), orientation(this), scaling(this), transform_mx(this)
 {
+   position = glm::vec3(0.f);
+   orientation = glm::quat(1.f, 0.f, 0.f, 0.f);
    scaling = glm::vec3(1.f);
 }
 

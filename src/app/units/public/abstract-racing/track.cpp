@@ -10,7 +10,7 @@
 #include "com/util/util.hpp"
 #include "spline.hpp"
 #include "data-sequence.hpp"
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 #include <cstdio>
 
 using std::vector;

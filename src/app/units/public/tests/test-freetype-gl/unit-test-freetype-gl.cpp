@@ -20,7 +20,7 @@
 #include "gfx-state.hpp"
 #include "gfx-color.hpp"
 #include <rng/rng.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 class unit_test_freetype_gl_impl

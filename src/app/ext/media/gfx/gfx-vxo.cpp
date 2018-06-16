@@ -13,8 +13,7 @@
 #if defined MOD_OBJ_LOADER
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
 #endif
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/inc.hpp>
 #include <iostream>
 
 
@@ -213,7 +212,7 @@ void gfx_vxo::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_s
 void gfx_vxo::draw_out_of_sync(std::shared_ptr<gfx_camera> i_camera)
 {
    i_camera->update_camera_state();
-   update_recursive(glm::mat4(), true);
+   update_recursive(glm::mat4(1.f), true);
    draw_in_sync(i_camera);
 }
 

@@ -10,7 +10,7 @@
 #include "min.hpp"
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
-#include <glm/vec2.hpp>
+#include <glm/inc.hpp>
 
 
 class mws_font_impl

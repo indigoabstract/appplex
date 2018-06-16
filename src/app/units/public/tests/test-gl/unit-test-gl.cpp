@@ -12,7 +12,7 @@
 #include "gfx-quad-2d.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-state.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 unit_test_gl::unit_test_gl()

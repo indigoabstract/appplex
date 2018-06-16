@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "gfx-color.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 gfx_color gfx_color::colors::black = gfx_color(0x000000);

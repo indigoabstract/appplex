@@ -386,7 +386,7 @@ gesture_state anchor_rotation_one_finger_detector::detect(const std::shared_ptr<
    {
       start_event = new_event;
       start_position = new_event->points[0].get_position();
-      prev_position = mPosition = start_position;
+      prev_position = position = start_position;
       start_time = pfm::time::get_time_millis();
 
       return GS_START;
@@ -399,8 +399,8 @@ gesture_state anchor_rotation_one_finger_detector::detect(const std::shared_ptr<
          return GS_NONE;
       }
 
-      prev_position = mPosition;
-      mPosition = new_event->points[0].get_position();
+      prev_position = position;
+      position = new_event->points[0].get_position();
 
       return GS_MOVE;
    }
@@ -411,8 +411,8 @@ gesture_state anchor_rotation_one_finger_detector::detect(const std::shared_ptr<
          return GS_NONE;
       }
 
-      prev_position = mPosition;
-      mPosition = start_event->points[0].get_position();
+      prev_position = position;
+      position = start_event->points[0].get_position();
       reset();
 
       return GS_END;
@@ -632,10 +632,10 @@ gesture_state panning_tilting_detector::detect(const std::shared_ptr<pointer_evt
       start_event = new_event;
       start_position_0 = new_event->touch_pos(new_event->points[0].identifier);
       start_position_1 = new_event->touch_pos(new_event->points[1].identifier);
-      start_position2 = new_event->touch_pos(new_event->points[2].identifier);
+      start_position_2 = new_event->touch_pos(new_event->points[2].identifier);
       position_0 = start_position_0;
       position_1 = start_position_1;
-      prev_position2 = position_2 = start_position2;
+      prev_position_2 = position_2 = start_position_2;
 
       return GS_START;
    }
@@ -649,7 +649,7 @@ gesture_state panning_tilting_detector::detect(const std::shared_ptr<pointer_evt
 
       position_0 = new_event->touch_pos(start_event->points[0].identifier);
       position_1 = new_event->touch_pos(start_event->points[1].identifier);
-      prev_position2 = position_2;
+      prev_position_2 = position_2;
       position_2 = new_event->touch_pos(start_event->points[2].identifier);
 
       float dist0 = glm::distance(start_position_0, position_0);

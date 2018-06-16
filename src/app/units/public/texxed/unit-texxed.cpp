@@ -128,7 +128,7 @@ namespace unit_texxed_ns
 			}
 			else
 			{
-				select_char_rect = glm::vec4();
+				select_char_rect = glm::vec4(0.f);
 			}
 		}
 
@@ -346,8 +346,8 @@ void unit_texxed::init()
 
 void unit_texxed::init_mws()
 {
-	mws_page::new_shared_instance(new unit_texxed_ns::main_page(mws_root));
-	mws_cam->clear_color = true;
+   mws_root->new_page<unit_texxed_ns::main_page>();
+   mws_cam->clear_color = true;
 	//mws_cam->clear_color_value = gfx_color::colors::white;
 }
 

@@ -138,7 +138,7 @@ public:
       }
       //mws_print("rot: %f\n", a);
 
-      orientation = glm::rotate(glm::quat(), a, glm::vec3(0, 0, 1));
+      orientation = glm::rotate(glm::quat(1.f, 0.f, 0.f, 0.f), a, glm::vec3(0, 0, 1));
       update_coord();
    }
 

@@ -23,7 +23,7 @@
 #include "curve-mesh.hpp"
 #include <utils/free-camera.hpp>
 #include <rng/rng.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 class Gaussian

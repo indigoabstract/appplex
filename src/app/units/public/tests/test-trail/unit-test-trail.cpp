@@ -17,8 +17,7 @@
 #include "ext/gfx-surface.hpp"
 #include "ext/gfx-trail.hpp"
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/inc.hpp>
 
 
 namespace ns_test_trail

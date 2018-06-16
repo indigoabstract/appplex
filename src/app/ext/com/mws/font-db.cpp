@@ -7,7 +7,7 @@
 #include "font-db.hpp"
 #include "mws-font.hpp"
 #include "min.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 shared_ptr<font_db> font_db::instance;
 

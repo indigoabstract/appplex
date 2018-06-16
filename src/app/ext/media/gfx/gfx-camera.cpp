@@ -8,11 +8,7 @@
 #include "gfx-state.hpp"
 #include "gfx-color.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/inc.hpp>
 
 draw_context::draw_context(shared_ptr<gfx_camera> icam)
 {

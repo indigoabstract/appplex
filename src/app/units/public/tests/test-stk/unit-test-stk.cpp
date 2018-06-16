@@ -8,7 +8,7 @@
 #include "com/mws/mws.hpp"
 #include "snd.hpp"
 #include <rng/rng.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 #include <stk/Guitar.h>
 #include <stk/Plucked.h>
 #include <fmod/fmod.hpp>
@@ -405,7 +405,7 @@ void unit_test_stk::init_mws()
 		std::string show_note;
 	};
 
-	mws_page::new_shared_instance(new mainpage(mws_root));
+   mws_root->new_page<main_page>();
 	mws_cam->clear_color = true;
 }
 

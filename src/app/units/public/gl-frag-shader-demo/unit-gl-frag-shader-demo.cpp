@@ -24,10 +24,7 @@
 #include "ext/gfx-surface.hpp"
 #include <utils/free-camera.hpp>
 #include <rng/rng.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
+#include <glm/inc.hpp>
 #include <string>
 #include <vector>
 
@@ -779,8 +776,8 @@ public:
 void unit_gl_frag_shader_demo::init_mws()
 {
 	mws_cam->clear_color = false;
-	shared_ptr<mws_page> page = mws_page::new_shared_instance(new unit_gl_frag_shader_demo_page(mws_root));
-	mws_root->set_first_page(page);
+	shared_ptr<mws_page> page = mws_root->new_page<unit_gl_frag_shader_demo_page>();
+   mws_root->set_first_page(page);
 }
 
 

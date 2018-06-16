@@ -6,8 +6,7 @@
 #include <atomic>
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 class keyctrl;
 class touchctrl;

@@ -2,7 +2,7 @@
 
 #include "rng.hpp"
 #include "pfm-def.h"
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 
 
 int RNG::nextInt1()

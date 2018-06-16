@@ -13,9 +13,7 @@
 //#include "3d-objects.h"
 #include "track.hpp"
 #include <rng/rng.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
+#include <glm/inc.hpp>
 #include <string>
 
 using std::string;
@@ -171,7 +169,7 @@ namespace unit_abstract_racing_main_page
 
 			// car
 			sl = 30;
-			tf = glm::mat4();
+			tf = glm::mat4(1.f);
 			tf = tf * glm::translate(glm::vec3(carPos.x, carPos.y, carPos.z));
 			tf = tf * glm::rotate(angleDeg, glm::vec3(0.f, 1.f, 0.f));
 			tf = tf * glm::scale(glm::vec3(sl, sl, 5.f * sl));
@@ -220,7 +218,7 @@ namespace unit_abstract_racing_main_page
 
 void unit_abstract_racing::init_mws()
 {
-	mws_page::new_shared_instance(new unit_abstract_racing_main_page::mainpage(mws_root));
+   mws_root->new_page<unit_abstract_racing_main_page::mainpage>();
 }
 
 void unit_abstract_racing::init()

@@ -8,7 +8,7 @@
 #include "com/mws/mws.hpp"
 #include "snd.hpp"
 #include <rng/rng.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 #include <fmod/fmod.hpp>
 #include <fmod/fmod_errors.h>
 
@@ -428,7 +428,7 @@ void unit_test_fmod::init_mws()
 		std::string show_note;
 	};
 
-	mws_page::new_shared_instance(new mainpage(mws_root));
+   mws_root->new_page<mainpage>();
 	mws_cam->clear_color = true;
 }
 

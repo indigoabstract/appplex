@@ -15,8 +15,7 @@
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 
 
 class unit_test_shadow_map_impl

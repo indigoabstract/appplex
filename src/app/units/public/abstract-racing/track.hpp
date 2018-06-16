@@ -6,7 +6,7 @@
 
 #include "gfx-camera.hpp"
 #include "gfx-tex.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <vector>
 
 

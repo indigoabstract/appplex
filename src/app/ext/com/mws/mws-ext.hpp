@@ -8,14 +8,10 @@ class mws_list_menu_item
 public:
    mws_list_menu_item(std::string idisplay, std::string iid = "");
    mws_list_menu_item(std::string idisplay, shared_ptr<mws_page> ipage);
-   mws_list_menu_item(std::string idisplay, shared_ptr<mws_page_transition> iupt);
    virtual ~mws_list_menu_item() {}
-
-   shared_ptr<mws_page> get_page(shared_ptr<mws> u);
 
    std::string display;
    std::string id;
-   shared_ptr<mws_page_transition> upt;
 };
 
 

@@ -59,7 +59,7 @@ namespace unit_template_ns
 
 void unit_template::init_mws()
 {
-   mws_page::new_shared_instance(new unit_template_ns::main_page(mws_root));
+   mws_root->new_page<mainpage>();
    mws_cam->clear_color = true;
 }
 

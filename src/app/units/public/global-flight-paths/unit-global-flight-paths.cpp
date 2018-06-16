@@ -13,7 +13,7 @@
 #include "ext/gfx-surface.hpp"
 #include "utils/free-camera.hpp"
 #include "tlib/rng/rng.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 namespace global_flight_paths_ns
@@ -197,11 +197,11 @@ namespace global_flight_paths_ns
             float iv = cumulated_distances[i] / total_distance;
             int idx1 = 2 * i + 0;
             tex_coord[idx1] = glm::vec2(-0.5f, iv);
-            segment_dir[idx1] = glm::vec3();
+            segment_dir[idx1] = glm::vec3(0.f);
 
             int idx2 = 2 * i + 1;
             tex_coord[idx2] = glm::vec2(0.5f, iv);
-            segment_dir[idx2] = glm::vec3();
+            segment_dir[idx2] = glm::vec3(0.f);
          }
 
          int indices_size = step_count - 1;
@@ -334,7 +334,7 @@ namespace global_flight_paths_ns
          {
             auto pos = transform_point(positions[k], i_globe_tf);
             camera->draw_line(pos, src, gfx_color::colors::green.to_vec4(), 0.25f);
-            camera->draw_box(pos, bsize, glm::quat(), gfx_color::colors::blue.to_vec4(), 0.25f);
+            camera->draw_box(pos, bsize, glm::quat(1.f, 0.f, 0.f, 0.f), gfx_color::colors::blue.to_vec4(), 0.25f);
          }
       }
 
@@ -1077,7 +1077,7 @@ shared_ptr<unit_global_flight_paths> unit_global_flight_paths::nwi()
 
 void unit_global_flight_paths::init_mws()
 {
-   auto page = mws_page::new_shared_instance(mws_root, new main_page());
+   auto page = mws_root->new_page<main_page>();
 }
 
 #endif

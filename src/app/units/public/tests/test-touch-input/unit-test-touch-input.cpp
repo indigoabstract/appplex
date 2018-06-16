@@ -558,7 +558,7 @@ namespace unit_test_touch_input_ns
 
 void unit_test_touch_input::init_mws()
 {
-   auto page = mws_page::new_shared_instance(mws_root, new unit_test_touch_input_ns::main_page());
+   mws_root->new_page<unit_test_touch_input_ns::main_page>();
    mws_cam->clear_color = true;
    mws_cam->clear_depth = true;
    mws_cam->clear_color_value = gfx_color::colors::indigo;

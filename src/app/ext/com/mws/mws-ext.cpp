@@ -24,18 +24,6 @@ mws_list_menu_item::mws_list_menu_item(string idisplay, string iid)
 mws_list_menu_item::mws_list_menu_item(string idisplay, shared_ptr<mws_page> ipage)
 {
    display = idisplay;
-   upt = mws_page_transition::nwi(ipage);
-}
-
-mws_list_menu_item::mws_list_menu_item(string idisplay, shared_ptr<mws_page_transition> iupt)
-{
-   display = idisplay;
-   upt = iupt;
-}
-
-shared_ptr<mws_page> mws_list_menu_item::get_page(shared_ptr<mws> u)
-{
-   return upt->get_target_page();
 }
 
 mws_list_menu_model::mws_list_menu_model()
@@ -63,7 +51,6 @@ void mws_list_menu_model::on_elem_selected(int idx)
    shared_ptr<mws_list> ul = static_pointer_cast<mws_list>(get_view());
    shared_ptr<mws_page> up = ul->get_mws_page_item_parent();
    shared_ptr<mws_page_tab> ut = up->get_mws_page_parent();
-   shared_ptr<mws_page> np = elems[idx].get_page(ul);
 
    change_page_transitions(idx);
 }
@@ -103,13 +90,6 @@ void mws_list_menu_model::change_page_transitions(int idx)
 void mws_list_menu_model::set_data_helper(shared_ptr<mws_page_tab> mws_root, mws_list_menu_item& ulmi)
 {
    elems.push_back(ulmi);
-
-   mws_list_menu_item& tulmi = elems.back();
-
-   if (!tulmi.upt)
-   {
-      tulmi.upt = mws_page_transition::nwi(mws_root, tulmi.id);
-   }
 }
 
 
@@ -119,7 +99,8 @@ mws_list_menu_page::mws_list_menu_page()
 
 shared_ptr<mws_list_menu_page> mws_list_menu_page::nwi(shared_ptr<mws_page_tab> iparent, string iid)
 {
-   shared_ptr<mws_list_menu_page> u = static_pointer_cast<mws_list_menu_page>(new_shared_instance(iparent, new mws_list_menu_page()));
+   auto u = mws_sp<mws_list_menu_page>(new mws_list_menu_page());
+   iparent->add_page(u);
    u->set_id(iid);
    u->item_list = mws_list::nwi(u);
    u->item_list->set_model(shared_ptr<mws_list_model>(new mws_list_menu_model()));

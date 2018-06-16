@@ -8,7 +8,7 @@
 #include "gfx-state.hpp"
 #include "ext/gfx-surface.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 static std::string depth_func_name_list[] = { MV_NEVER, MV_LESS, MV_EQUAL, MV_LESS_OR_EQUAL, MV_GREATER, MV_NOT_EQUAL, MV_GREATER_OR_EQUAL, MV_ALWAYS };
 static gfx_uint depth_func_list[] = { gl::NEVER_GL, gl::LESS_GL, gl::EQUAL_GL, gl::LEQUAL_GL, gl::GREATER_GL, gl::NOTEQUAL_GL, gl::GEQUAL_GL, gl::ALWAYS_GL };

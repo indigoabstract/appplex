@@ -126,7 +126,7 @@ namespace unit_test_snd_android_ns
 
 void unit_test_snd_android::init_mws()
 {
-	mws_page::new_shared_instance(new unit_test_snd_android_ns::main_page(mws_root));
+   mws_root->new_page<unit_test_snd_android_ns::main_page>();
 	mws_cam->clear_color = true;
 }
 

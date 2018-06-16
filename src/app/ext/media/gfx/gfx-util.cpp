@@ -9,7 +9,7 @@
 #include "gfx-tex.hpp"
 #include "ext/gfx-surface.hpp"
 #include "pfm-gl.h"
-#include <glm/gtx/transform.hpp>
+#include <glm/inc.hpp>
 
 
 gfx_tex_info::gfx_tex_info(std::string i_id, gfx_enum i_internal_format, gfx_enum i_format, gfx_enum i_type, int i_bpp)
@@ -301,7 +301,7 @@ const glm::vec4& gfx_util::get_pos_from_tf_mx(const glm::mat4& i_tranform)
 
 const glm::quat gfx_util::get_orientation_from_tf_mx(const glm::mat4& i_tranform)
 {
-   return glm::quat();
+   return glm::quat(1.f, 0.f, 0.f, 0.f);
 }
 
 const glm::vec3 gfx_util::get_scale_from_tf_mx(const glm::mat4& i_tranform)

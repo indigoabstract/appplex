@@ -15,7 +15,7 @@
 #include "gfx-vxo.hpp"
 #include "gfx-state.hpp"
 #include <tiny-obj-loader/tiny_obj_loader.hpp>
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 
 
 class unit_test_grid_impl

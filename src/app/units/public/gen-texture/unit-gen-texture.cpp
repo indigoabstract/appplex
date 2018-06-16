@@ -239,9 +239,9 @@ namespace unit_gen_texture_mainpage
 
 void unit_gen_texture::init_mws()
 {
-	mws_page::new_shared_instance(new unit_gen_texture_mainpage::mainpage(mws_root));
-	mws_page::new_shared_instance(new unit_gen_texture_rtt_screen::page_rtt_screen(mws_root));
-	mws_page::new_shared_instance(new unit_gen_texture_rtt_fbo::page_rtt_fbo(mws_root));
+   mws_root->new_page<unit_gen_texture_mainpage::mainpage>();
+   mws_root->new_page<unit_gen_texture_rtt_screen::page_rtt_screen>();
+   mws_root->new_page<unit_gen_texture_rtt_fbo::page_rtt_fbo>();
 }
 
 void unit_gen_texture::load()

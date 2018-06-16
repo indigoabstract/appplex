@@ -19,16 +19,16 @@ using std::string;
 using std::vector;
 
 
-shared_ptr<mws_model> mws_model::get_instance()
+mws_sp<mws_model> mws_model::get_instance()
 {
    return shared_from_this();
 }
 
-void mws_model::receive(shared_ptr<iadp> idp)
+void mws_model::receive(mws_sp<iadp> idp)
 {
 }
 
-void mws_model::set_view(shared_ptr<mws> iview)
+void mws_model::set_view(mws_sp<mws> iview)
 {
    view = iview;
    notify_update();
@@ -42,24 +42,24 @@ void mws_model::notify_update()
    }
 }
 
-shared_ptr<mws> mws_model::get_view()
+mws_sp<mws> mws_model::get_view()
 {
    return view.lock();
 }
 
-shared_ptr<ia_sender> mws_model::sender_inst()
+mws_sp<ia_sender> mws_model::sender_inst()
 {
    return get_instance();
 }
 
 
-mws::mws(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
+mws::mws(mws_sp<gfx> i_gi) : gfx_node(i_gi)
 // for rootless / parentless mws inst
 {
    visible = true;
 }
 
-shared_ptr<mws> mws::get_instance()
+mws_sp<mws> mws::get_instance()
 {
    return std::static_pointer_cast<mws>(get_inst());
 }
@@ -85,7 +85,7 @@ void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gf
    }
 }
 
-void mws::attach(shared_ptr<gfx_node> i_node)
+void mws::attach(mws_sp<gfx_node> i_node)
 {
    gfx_node::attach(i_node);
 
@@ -147,42 +147,42 @@ const string& mws::get_id()
    return id;
 }
 
-shared_ptr<mws> mws::find_by_id(const string& iid)
+mws_sp<mws> mws::find_by_id(const string& iid)
 {
    return mwsroot.lock()->contains_id(iid);
 }
 
-shared_ptr<mws> mws::contains_id(const string& iid)
+mws_sp<mws> mws::contains_id(const string& iid)
 {
    if (iid == id)
    {
       return get_instance();
    }
 
-   return shared_ptr<mws>();
+   return mws_sp<mws>();
 }
 
-bool mws::contains_mws(const shared_ptr<mws> i_mws)
+bool mws::contains_mws(const mws_sp<mws> i_mws)
 {
    return i_mws == get_instance();
 }
 
-shared_ptr<mws> mws::get_mws_parent()
+mws_sp<mws> mws::get_mws_parent()
 {
    return mws_dynamic_pointer_cast<mws>(get_parent());
 }
 
-shared_ptr<mws_page_tab> mws::get_mws_root()
+mws_sp<mws_page_tab> mws::get_mws_root()
 {
    return mwsroot.lock();
 }
 
-shared_ptr<unit> mws::get_unit()
+mws_sp<unit> mws::get_unit()
 {
    return std::static_pointer_cast<unit>(mwsroot.lock()->get_unit());
 }
 
-void mws::receive(shared_ptr<iadp> idp)
+void mws::receive(mws_sp<iadp> idp)
 {
    if (receive_handler)
    {
@@ -216,7 +216,7 @@ void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp>
 }
 
 void mws::update_state() {}
-void mws::update_view(shared_ptr<mws_camera> g) {}
+void mws::update_view(mws_sp<mws_camera> g) {}
 
 mws_rect mws::get_pos()
 {
@@ -234,117 +234,13 @@ void mws::set_z(float i_z_position)
 }
 
 
-shared_ptr<ia_sender> mws::sender_inst()
+mws_sp<ia_sender> mws::sender_inst()
 {
    return get_instance();
 }
 
 
-shared_ptr<mws_page_transition> mws_page_transition::nwi(shared_ptr<mws_page> ipage)
-{
-   return shared_ptr<mws_page_transition>(new mws_page_transition(ipage));
-}
-
-shared_ptr<mws_page_transition> mws_page_transition::nwi(shared_ptr<mws_page_tab> imws_root, string iid)
-{
-   return shared_ptr<mws_page_transition>(new mws_page_transition(imws_root, iid));
-}
-
-mws_page_transition::mws_page_transition(shared_ptr<mws_page> ipage) : iadp(MWS_EVT_PAGE_TRANSITION)
-{
-   page = ipage;
-   dir = slide_scrolling::SD_RIGHT_LEFT;
-   pt_type = REPLACE_CURRENT_PAGE;
-   pj_type = HISTORY_ADD_PAGE;
-}
-
-mws_page_transition::mws_page_transition(shared_ptr<mws_page_tab> imws_root, string iid) : iadp(MWS_EVT_PAGE_TRANSITION)
-{
-   mws_root = imws_root;
-   id = iid;
-   dir = slide_scrolling::SD_RIGHT_LEFT;
-   pt_type = REPLACE_CURRENT_PAGE;
-   pj_type = HISTORY_ADD_PAGE;
-}
-
-shared_ptr<mws_page> mws_page_transition::get_target_page()
-{
-   if (!page.expired())
-   {
-      return page.lock();
-   }
-   else
-   {
-      shared_ptr<mws> u = mws_root.lock()->contains_id(id);
-
-      if (u)
-      {
-         return static_pointer_cast<mws_page>(u);
-      }
-   }
-
-   mws_print("target page with id [%s] is not available\n", id.c_str());
-
-   return nullptr;
-}
-
-mws_page_transition::page_transition_types mws_page_transition::get_transition_type()
-{
-   return pt_type;
-}
-
-mws_page_transition::page_jump_types mws_page_transition::get_jump_type()
-{
-   return pj_type;
-}
-
-shared_ptr<mws_page_transition> mws_page_transition::set_scroll_dir(slide_scrolling::scroll_dir idir)
-{
-   dir = idir;
-
-   return get_instance();
-}
-
-shared_ptr<mws_page_transition> mws_page_transition::set_transition_type(page_transition_types iptType)
-{
-   pt_type = iptType;
-
-   return get_instance();
-}
-
-shared_ptr<mws_page_transition> mws_page_transition::set_jump_type(page_jump_types ipjType)
-{
-   pj_type = ipjType;
-
-   return get_instance();
-}
-
-shared_ptr<mws_page_transition> mws_page_transition::get_instance()
-{
-   return shared_from_this();
-}
-
-
-static shared_ptr<gfx_tex> keyboardImg;
-
-
-class mwspagetab_vkeyboard_page : public mws_page
-{
-public:
-   mwspagetab_vkeyboard_page(string iid)
-   {
-      set_id(iid);
-   }
-};
-
-
-const string mws_page_tab::VKEYBOARD_MAIN_PAGE = "vkeyboard-main-page";
-const string mws_page_tab::VKEYBOARD_UP_PAGE = "vkeyboard-up-page";
-const string mws_page_tab::VKEYBOARD_RIGHT_PAGE = "vkeyboard-right-page";
-const string mws_page_tab::VKEYBOARD_DOWN_PAGE = "vkeyboard-down-page";
-
-
-mws_page_tab::mws_page_tab(shared_ptr<unit> iu) : mws(), ss(550)
+mws_page_tab::mws_page_tab(mws_sp<unit> iu)
 {
    if (!iu)
    {
@@ -355,16 +251,9 @@ mws_page_tab::mws_page_tab(shared_ptr<unit> iu) : mws(), ss(550)
    mws_r.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
 }
 
-shared_ptr<mws_page_tab> mws_page_tab::nwi(shared_ptr<unit> iu)
+mws_sp<mws_page_tab> mws_page_tab::nwi(mws_sp<unit> i_u)
 {
-   shared_ptr<mws_page_tab> pt(new mws_page_tab(iu));
-   pt->new_instance_helper();
-   return pt;
-}
-
-shared_ptr<mws_page_tab> mws_page_tab::new_shared_instance(mws_page_tab* inew_page_tab_class_instance)
-{
-   shared_ptr<mws_page_tab> pt(inew_page_tab_class_instance);
+   mws_sp<mws_page_tab> pt(new mws_page_tab(i_u));
    pt->new_instance_helper();
    return pt;
 }
@@ -378,24 +267,16 @@ void mws_page_tab::init()
 {
    mwsroot = get_mws_page_tab_instance();
    mws_cam = mwsroot.lock()->get_unit()->mws_cam;
-   ss.get_transition()->add_receiver(get_instance());
 }
 
 void mws_page_tab::init_subobj()
 {
-   if (!is_empty())
-   {
-      current_page = pages[4];
-      page_history.push_back(current_page);
-      page_stack.push_back(current_page);
-   }
-
    auto z_sort = [](mws_sp<mws> a, mws_sp<mws> b)
    {
       return (a->get_z() > b->get_z());
    };
 
-   for (auto p : pages)
+   for (auto p : page_tab)
    {
       p->init();
       p->mws_subobj_list.clear();
@@ -406,13 +287,13 @@ void mws_page_tab::init_subobj()
 
 void mws_page_tab::on_destroy()
 {
-   for (auto p : pages)
+   for (auto p : page_tab)
    {
       p->on_destroy();
    }
 }
 
-shared_ptr<mws> mws_page_tab::contains_id(const string& iid)
+mws_sp<mws> mws_page_tab::contains_id(const string& iid)
 {
    if (iid.length() > 0)
    {
@@ -421,9 +302,9 @@ shared_ptr<mws> mws_page_tab::contains_id(const string& iid)
          return get_instance();
       }
 
-      for (auto p : pages)
+      for (auto p : page_tab)
       {
-         shared_ptr<mws> u = p->contains_id(iid);
+         mws_sp<mws> u = p->contains_id(iid);
 
          if (u)
          {
@@ -432,12 +313,12 @@ shared_ptr<mws> mws_page_tab::contains_id(const string& iid)
       }
    }
 
-   return shared_ptr<mws>();
+   return mws_sp<mws>();
 }
 
-bool mws_page_tab::contains_mws(const shared_ptr<mws> i_mws)
+bool mws_page_tab::contains_mws(const mws_sp<mws> i_mws)
 {
-   for (auto p : pages)
+   for (auto p : page_tab)
    {
       if (i_mws == p || p->contains_mws(i_mws))
       {
@@ -448,19 +329,19 @@ bool mws_page_tab::contains_mws(const shared_ptr<mws> i_mws)
    return false;
 }
 
-shared_ptr<mws_page_tab> mws_page_tab::get_mws_page_tab_instance()
+mws_sp<mws_page_tab> mws_page_tab::get_mws_page_tab_instance()
 {
    return static_pointer_cast<mws_page_tab>(get_instance());
 }
 
-shared_ptr<unit> mws_page_tab::get_unit()
+mws_sp<unit> mws_page_tab::get_unit()
 {
    return static_pointer_cast<unit>(u.lock());
 }
 
 bool mws_page_tab::is_empty()
 {
-   return pages.size() <= 4;
+   return page_tab.empty();
 }
 
 mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
@@ -468,7 +349,7 @@ mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
    return tab_text_vxo;
 }
 
-void mws_page_tab::receive(shared_ptr<iadp> idp)
+void mws_page_tab::receive(mws_sp<iadp> idp)
 {
    if (receive_handler)
    {
@@ -481,342 +362,32 @@ void mws_page_tab::receive(shared_ptr<iadp> idp)
          return;
       }
 
-      shared_ptr<ia_sender> source = idp->source();
-      shared_ptr<ms_linear_transition> mst = ss.get_transition();
-
-      if (idp->is_type(MWS_EVT_PAGE_TRANSITION))
+      if (!is_empty())
       {
-         current_transition = static_pointer_cast<mws_page_transition>(idp);
-         shared_ptr<mws_page> targetPage = current_transition->get_target_page();
-
-         switch (current_transition->get_transition_type())
-         {
-         case mws_page_transition::REPLACE_CURRENT_PAGE:
-            //current_page->on_visibility_changed(false);
-            //current_page = current_transition->get_target_page();
-            //page_stack.back() = current_page;
-            break;
-
-         case mws_page_transition::PUSH_CURRENT_PAGE:
-            current_page->on_visibility_changed(false);
-            current_page = current_transition->get_target_page();
-            page_stack.push_back(current_page);
-            break;
-
-         case mws_page_transition::POP_CURRENT_PAGE:
-            current_page->on_visibility_changed(false);
-            page_stack.erase(page_stack.end() - 1);
-            current_page = page_stack.back();
-            break;
-
-         case mws_page_transition::CLEAR_PAGE_STACK:
-            break;
-         }
-
-         current_page->on_visibility_changed(true);
-      }
-      else if (!is_empty())
-      {
-         send(current_page, idp);
+         send(page_tab.back(), idp);
       }
    }
 }
 
 void mws_page_tab::update_state()
 {
-   tab_text_vxo->clear_text();
-
-   if (!is_empty())
+   if (tab_text_vxo)
    {
-      if (!ss.is_finished())
-      {
-         ss.update();
+      tab_text_vxo->clear_text();
+   }
 
-         switch (current_transition->get_transition_type())
-         {
-         case mws_page_transition::REPLACE_CURRENT_PAGE:
-            last_page->update_state();
-
-            for (auto p : page_stack)
-            {
-               p->update_state();
-            }
-
-            break;
-
-         case mws_page_transition::PUSH_CURRENT_PAGE:
-            for (auto p : page_stack)
-            {
-               p->update_state();
-            }
-
-            break;
-
-         case mws_page_transition::POP_CURRENT_PAGE:
-            last_page->update_state();
-
-            for (auto p : page_stack)
-            {
-               p->update_state();
-            }
-
-            break;
-
-         case mws_page_transition::CLEAR_PAGE_STACK:
-            current_page->update_state();
-
-            for (auto p : page_stack)
-            {
-               p->update_state();
-            }
-
-            break;
-         }
-
-         if (ss.is_finished())
-         {
-            last_page->on_visibility_changed(false);
-
-            if (current_transition->get_transition_type() == mws_page_transition::CLEAR_PAGE_STACK)
-            {
-               page_stack.clear();
-               page_stack.push_back(current_page);
-            }
-
-            current_transition.reset();
-         }
-      }
-      else
-      {
-         for (auto p : page_stack)
-         {
-            p->update_state();
-         }
-      }
+   for (auto p : page_tab)
+   {
+      p->update_state();
    }
 }
 
-void mws_page_tab::update_view(shared_ptr<mws_camera> g)
+void mws_page_tab::update_view(mws_sp<mws_camera> g)
 {
-   if (!is_empty())
+   for (auto p : page_tab)
    {
-      int size = page_stack.size();
-      int c = 0;
-
-      for (int k = size - 1; k >= 0; k--)
-      {
-         if (page_stack[k]->is_opaque)
-         {
-            c = k;
-            break;
-         }
-      }
-
-      for (int k = c; k < size; k++)
-      {
-         shared_ptr<mws_page> p = page_stack[k];
-
-         //g->push_transform_state();
-         //g->translate(p->mws_r.x, p->mws_r.y);
-         p->update_view(g);
-         //g->pop_transform_state();
-      }
+      p->update_view(g);
    }
-
-   return;
-
-   //-------------------- old code. inactivated.
-   //if (!is_empty())
-   //{
-   //	if (!ss.is_finished())
-   //	{
-   //		float sx = ss.srcpos.x * get_unit()->get_width();
-   //		float sy = ss.srcpos.y * get_unit()->get_height();
-   //		float dx = ss.dstpos.x * get_unit()->get_width();
-   //		float dy = ss.dstpos.y * get_unit()->get_height();
-
-   //		switch (current_transition->get_transition_type())
-   //		{
-   //		case mws_page_transition::REPLACE_CURRENT_PAGE:
-   //		{
-   //			int size = page_stack.size() - 1;
-
-   //			for (int k = 0; k < size; k++)
-   //			{
-   //				shared_ptr<mws_page> p = page_stack[k];
-
-   //				g->push_transform_state();
-   //				g->translate(p->mws_r.x, p->mws_r.y);
-
-   //				p->update_view(g);
-
-   //				g->pop_transform_state();
-   //			}
-
-   //			g->push_transform_state();
-   //			g->translate(sx, sy);
-   //			g->push_transform_state();
-   //			g->translate(last_page->mws_r.x, last_page->mws_r.y);
-
-   //			last_page->update_view(g);
-
-   //			g->pop_transform_state();
-   //			g->pop_transform_state();
-
-   //			g->push_transform_state();
-   //			g->translate(dx, dy);
-   //			g->push_transform_state();
-   //			g->translate(current_page->mws_r.x, current_page->mws_r.y);
-
-   //			current_page->update_view(g);
-
-   //			g->pop_transform_state();
-   //			g->pop_transform_state();
-   //			break;
-   //		}
-
-   //		case mws_page_transition::PUSH_CURRENT_PAGE:
-   //		{
-   //			int size = page_stack.size() - 1;
-
-   //			for (int k = 0; k < size; k++)
-   //			{
-   //				shared_ptr<mws_page> p = page_stack[k];
-
-   //				g->push_transform_state();
-   //				g->translate(p->mws_r.x, p->mws_r.y);
-
-   //				p->update_view(g);
-
-   //				g->pop_transform_state();
-   //			}
-
-   //			g->push_transform_state();
-   //			g->translate(dx, dy);
-   //			g->push_transform_state();
-   //			g->translate(current_page->mws_r.x, current_page->mws_r.y);
-
-   //			current_page->update_view(g);
-
-   //			g->pop_transform_state();
-   //			g->pop_transform_state();
-   //			break;
-   //		}
-
-   //		case mws_page_transition::POP_CURRENT_PAGE:
-   //		{
-   //			int size = page_stack.size();
-
-   //			for (int k = 0; k < size; k++)
-   //			{
-   //				shared_ptr<mws_page> p = page_stack[k];
-
-   //				g->push_transform_state();
-   //				g->translate(p->mws_r.x, p->mws_r.y);
-
-   //				p->update_view(g);
-
-   //				g->pop_transform_state();
-   //			}
-
-   //			g->push_transform_state();
-   //			g->translate(sx, sy);
-   //			g->push_transform_state();
-   //			g->translate(last_page->mws_r.x, last_page->mws_r.y);
-
-   //			last_page->update_view(g);
-
-   //			g->pop_transform_state();
-   //			g->pop_transform_state();
-   //			break;
-   //		}
-
-   //		case mws_page_transition::CLEAR_PAGE_STACK:
-   //		{
-   //			int size = page_stack.size();
-
-   //			for (int k = 0; k < size; k++)
-   //			{
-   //				shared_ptr<mws_page> p = page_stack[k];
-
-   //				g->push_transform_state();
-   //				g->translate(sx, sy);
-   //				g->push_transform_state();
-   //				g->translate(p->mws_r.x, p->mws_r.y);
-
-   //				p->update_view(g);
-
-   //				g->pop_transform_state();
-   //				g->pop_transform_state();
-   //			}
-
-   //			g->push_transform_state();
-   //			g->translate(dx, dy);
-   //			g->push_transform_state();
-   //			g->translate(current_page->mws_r.x, current_page->mws_r.y);
-
-   //			current_page->update_view(g);
-
-   //			g->pop_transform_state();
-   //			g->pop_transform_state();
-   //			break;
-   //		}
-   //		}
-   //	}
-   //	else
-   //	{
-   //		int c = 0;
-
-   //		for (int k = page_stack.size() - 1; k >= 0; k--)
-   //		{
-   //			if (page_stack[k]->is_opaque)
-   //			{
-   //				c = k;
-   //				break;
-   //			}
-   //		}
-
-   //		for (int k = c; k < page_stack.size(); k++)
-   //		{
-   //			shared_ptr<mws_page> p = page_stack[k];
-
-   //			g->push_transform_state();
-   //			g->translate(p->mws_r.x, p->mws_r.y);
-   //			p->update_view(g);
-   //			g->pop_transform_state();
-   //		}
-   //	}
-   //}
-}
-
-shared_ptr<mws_page> mws_page_tab::get_page_at(int idx)
-{
-   return pages[idx + 4];
-}
-
-void mws_page_tab::set_first_page(shared_ptr<mws_page> up)
-{
-   int idx = get_page_index(up);
-
-   if (idx > 0)
-   {
-      shared_ptr<mws_page> swp = pages[idx];
-
-      pages.erase(pages.begin() + idx);
-      pages.insert(pages.begin() + 4, swp);
-   }
-   else if (idx == -1)
-   {
-      mws_throw ia_exception("page is not a member of this container");
-   }
-}
-
-void mws_page_tab::show_vkeyboard()
-{
-   shared_ptr<mws_page_transition> upt = mws_page_transition::nwi(get_mws_page_tab_instance(), VKEYBOARD_MAIN_PAGE)
-      ->set_transition_type(mws_page_transition::PUSH_CURRENT_PAGE);
-
-   send(get_instance(), upt);
 }
 
 void mws_page_tab::on_resize()
@@ -824,27 +395,33 @@ void mws_page_tab::on_resize()
    mws_r.w = (float)u.lock()->get_width();
    mws_r.h = (float)u.lock()->get_height();
 
-   for (auto p : pages)
+   for (auto p : page_tab)
    {
       p->on_resize();
    }
 }
 
-void mws_page_tab::add(shared_ptr<mws_page> p)
+void mws_page_tab::add_page(mws_sp<mws_page> i_page)
+{
+   attach(i_page);
+   add(i_page);
+}
+
+void mws_page_tab::add(mws_sp<mws_page> p)
 {
    if (contains_mws(p))
    {
       mws_throw ia_exception();//trs("page with id [%1%] already exists") % p->get_id());
    }
 
-   pages.push_back(p);
+   page_tab.push_back(p);
 }
 
-int mws_page_tab::get_page_index(shared_ptr<mws_page> ipage)
+int mws_page_tab::get_page_index(mws_sp<mws_page> ipage)
 {
    int k = 0;
 
-   for (auto p : pages)
+   for (auto p : page_tab)
    {
       if (ipage == p)
       {
@@ -859,9 +436,11 @@ int mws_page_tab::get_page_index(shared_ptr<mws_page> ipage)
 
 void mws_page_tab::new_instance_helper()
 {
-   shared_ptr<mws_page_tab> mws_root = get_mws_page_tab_instance();
+   mws_sp<mws_page_tab> mws_root = get_mws_page_tab_instance();
    mwsroot = mws_root;
    mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+
+#if defined MOD_VECTOR_FONTS
    {
       auto tab_text_vxo = text_vxo::nwi();
 
@@ -870,11 +449,7 @@ void mws_page_tab::new_instance_helper()
       tab_text_vxo->camera_id_list.clear();
       tab_text_vxo->camera_id_list.push_back("mws_cam");
    }
-
-   shared_ptr<mws_page> vkmainpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_MAIN_PAGE));
-   shared_ptr<mws_page> vkuppage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_UP_PAGE));
-   shared_ptr<mws_page> vkrightpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_RIGHT_PAGE));
-   shared_ptr<mws_page> vkdownpage = mws_page::new_shared_instance(mws_root, new mwspagetab_vkeyboard_page(VKEYBOARD_DOWN_PAGE));
+#endif
 }
 
 
@@ -882,19 +457,11 @@ mws_page::mws_page()
 {
 }
 
-shared_ptr<mws_page> mws_page::nwi(shared_ptr<mws_page_tab> i_parent)
+mws_sp<mws_page> mws_page::nwi(mws_sp<mws_page_tab> i_parent)
 {
-   shared_ptr<mws_page> u(new mws_page());
+   mws_sp<mws_page> u(new mws_page());
    i_parent->attach(u);
    i_parent->add(u);
-   return u;
-}
-
-shared_ptr<mws_page> mws_page::new_shared_instance(shared_ptr<mws_page_tab> i_page_tab, mws_page* inew_page_class_instance)
-{
-   shared_ptr<mws_page> u(inew_page_class_instance);
-   i_page_tab->attach(u);
-   i_page_tab->add(u);
    return u;
 }
 
@@ -908,7 +475,7 @@ void mws_page::on_destroy()
    }
 }
 
-shared_ptr<mws> mws_page::contains_id(const string& iid)
+mws_sp<mws> mws_page::contains_id(const string& iid)
 {
    if (iid.length() > 0)
    {
@@ -919,7 +486,7 @@ shared_ptr<mws> mws_page::contains_id(const string& iid)
 
       for (auto p : mlist)
       {
-         shared_ptr<mws> u = p->contains_id(iid);
+         mws_sp<mws> u = p->contains_id(iid);
 
          if (u)
          {
@@ -928,10 +495,10 @@ shared_ptr<mws> mws_page::contains_id(const string& iid)
       }
    }
 
-   return shared_ptr<mws>();
+   return mws_sp<mws>();
 }
 
-bool mws_page::contains_mws(const shared_ptr<mws> i_mws)
+bool mws_page::contains_mws(const mws_sp<mws> i_mws)
 {
    for (auto p : mlist)
    {
@@ -944,21 +511,21 @@ bool mws_page::contains_mws(const shared_ptr<mws> i_mws)
    return false;
 }
 
-shared_ptr<mws_page> mws_page::get_mws_page_instance()
+mws_sp<mws_page> mws_page::get_mws_page_instance()
 {
    return static_pointer_cast<mws_page>(get_instance());
 }
 
-shared_ptr<mws_page_tab> mws_page::get_mws_page_parent()
+mws_sp<mws_page_tab> mws_page::get_mws_page_parent()
 {
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
 }
 
 void mws_page::on_visibility_changed(bool iis_visible) {}
-void mws_page::on_show_transition(const shared_ptr<linear_transition> itransition) {}
-void mws_page::on_hide_transition(const shared_ptr<linear_transition> itransition) {}
+void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {}
+void mws_page::on_hide_transition(const mws_sp<linear_transition> itransition) {}
 
-void mws_page::receive(shared_ptr<iadp> idp)
+void mws_page::receive(mws_sp<iadp> idp)
 {
    if (receive_handler)
    {
@@ -971,7 +538,7 @@ void mws_page::receive(shared_ptr<iadp> idp)
    }
 }
 
-void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
+void mws_page::update_input_sub_mws(mws_sp<iadp> idp)
 {
    if (idp->is_processed())
    {
@@ -980,7 +547,7 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
 
    if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
       static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
@@ -1011,7 +578,7 @@ void mws_page::update_input_sub_mws(shared_ptr<iadp> idp)
    }
 }
 
-void mws_page::update_input_std_behaviour(shared_ptr<iadp> idp)
+void mws_page::update_input_std_behaviour(mws_sp<iadp> idp)
 {
    if (idp->is_processed())
    {
@@ -1020,7 +587,7 @@ void mws_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
    if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       //switch (ts->get_type())
       //{
@@ -1086,7 +653,7 @@ void mws_page::update_input_std_behaviour(shared_ptr<iadp> idp)
 
       //case touch_sym_evt::TS_MOUSE_WHEEL:
       //{
-      //   shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+      //   mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
       //   mws_r.y += float(mw->wheel_delta) * 50.f;
 
@@ -1151,7 +718,7 @@ void mws_page::update_state()
    }
 }
 
-void mws_page::update_view(shared_ptr<mws_camera> g)
+void mws_page::update_view(mws_sp<mws_camera> g)
 {
    for (auto b : mlist)
    {
@@ -1159,14 +726,14 @@ void mws_page::update_view(shared_ptr<mws_camera> g)
    }
 }
 
-shared_ptr<mws> mws_page::get_mws_at(int idx)
+mws_sp<mws> mws_page::get_mws_at(int idx)
 {
    return mlist[idx];
 }
 
 void mws_page::on_resize()
 {
-   shared_ptr<mws_page_tab> parent = get_mws_page_parent();
+   mws_sp<mws_page_tab> parent = get_mws_page_parent();
 
    mws_r.x = 0;
    mws_r.y = 0;
@@ -1174,12 +741,12 @@ void mws_page::on_resize()
    mws_r.h = parent->mws_r.h;
 }
 
-shared_ptr<mws_page> mws_page::new_standalone_instance()
+mws_sp<mws_page> mws_page::new_standalone_instance()
 {
-   return shared_ptr<mws_page>(new mws_page());
+   return mws_sp<mws_page>(new mws_page());
 }
 
-void mws_page::add(shared_ptr<mws_page_item> b)
+void mws_page::add(mws_sp<mws_page_item> b)
 {
    if (contains_mws(b))
    {
@@ -1200,7 +767,7 @@ void mws_page_item::set_size(float i_width, float i_height)
    mws_r.h = i_height;
 }
 
-shared_ptr<mws_page> mws_page_item::get_mws_page_item_parent()
+mws_sp<mws_page> mws_page_item::get_mws_page_item_parent()
 {
    return static_pointer_cast<mws_page>(get_mws_parent());
 }
@@ -1214,8 +781,8 @@ void mws_page_item::setup()
 
 void mws_page_item::add_to_page()
 {
-   shared_ptr<mws_page> page = static_pointer_cast<mws_page>(get_mws_parent());
-   shared_ptr<mws_page_item> inst = static_pointer_cast<mws_page_item>(get_instance());
+   mws_sp<mws_page> page = static_pointer_cast<mws_page>(get_mws_parent());
+   mws_sp<mws_page_item> inst = static_pointer_cast<mws_page_item>(get_instance());
 
    page->add(inst);
 }

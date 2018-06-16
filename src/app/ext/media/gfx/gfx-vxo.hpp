@@ -5,7 +5,7 @@
 #include "gfx-scene.hpp"
 #include "gfx-state.hpp"
 #include "gfx-util.hpp"
-#include <glm/glm.hpp>
+#include <glm/inc.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>

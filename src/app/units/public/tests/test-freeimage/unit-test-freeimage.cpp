@@ -367,8 +367,8 @@ namespace unit_freeimage_page2
 
 void unit_test_freeimage::init_mws()
 {
-	mws_page::new_shared_instance(new unit_freeimage_page1::main_page(mws_root));
-	mws_page::new_shared_instance(new unit_freeimage_page2::main_page(mws_root));
+   mws_root->new_page<unit_freeimage_page1::mainpage>();
+   mws_root->new_page<unit_freeimage_page2::mainpage>();
 }
 
 void unit_test_freeimage::load()

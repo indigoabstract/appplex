@@ -5,9 +5,7 @@
 #include "gfx-util.hpp"
 #include "gfx-shader.hpp"
 #include "pfm-gl.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/inc.hpp>
 
 
 using gfx_vxo_util::set_mesh_data;

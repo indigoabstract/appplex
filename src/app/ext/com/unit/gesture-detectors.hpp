@@ -38,11 +38,11 @@ public:
    gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
    gesture_state reset();
 
-   glm::vec2 drag_diff;
-   glm::vec2 press_pos;
-   glm::vec2 pointer_pos;
-   glm::vec2 last_move_pos;
-   glm::vec2 last_move_pos_bak;
+   glm::vec2 drag_diff = glm::vec2(0.f);
+   glm::vec2 press_pos = glm::vec2(0.f);
+   glm::vec2 pointer_pos = glm::vec2(0.f);
+   glm::vec2 last_move_pos = glm::vec2(0.f);
+   glm::vec2 last_move_pos_bak = glm::vec2(0.f);
 
 private:
    enum class tap_detector_state
@@ -79,8 +79,8 @@ private:
    void set_state(tap_detector_state i_st);
 
    // get start position of tap
-   glm::vec2 first_press_pos;
-   glm::vec2 second_press_pos;
+   glm::vec2 first_press_pos = glm::vec2(0.f);
+   glm::vec2 second_press_pos = glm::vec2(0.f);
 
    std::shared_ptr<pointer_evt> start_event;
    tap_detector_state det_state;
@@ -96,19 +96,19 @@ public:
    gesture_state reset();
 
    // position of first touch
-   glm::vec2 position_0;
+   glm::vec2 position_0 = glm::vec2(0.f);
    // position of second touch
-   glm::vec2 position_1;
+   glm::vec2 position_1 = glm::vec2(0.f);
    // prev position of first touch
-   glm::vec2 prev_position_0;
+   glm::vec2 prev_position_0 = glm::vec2(0.f);
    // prev position of second touch
-   glm::vec2 prev_position_1;
+   glm::vec2 prev_position_1 = glm::vec2(0.f);
    // start position of first touch
-   glm::vec2 start_position_0;
+   glm::vec2 start_position_0 = glm::vec2(0.f);
    // start position of second touch
-   glm::vec2 start_position_1;
-   float zoom_factor;
-   float last_dist;
+   glm::vec2 start_position_1 = glm::vec2(0.f);
+   float zoom_factor = 0.f;
+   float last_dist = 0.f;
 
    std::shared_ptr<pointer_evt> start_event;
    gesture_state det_state;
@@ -124,12 +124,12 @@ public:
    gesture_state reset();
 
    // position of finger
-   glm::vec2 mPosition;
+   glm::vec2 position = glm::vec2(0.f);
    // prev position of finger
-   glm::vec2 prev_position;
+   glm::vec2 prev_position = glm::vec2(0.f);
    // start position of finger press
-   glm::vec2 start_position;
-   unsigned long start_time;
+   glm::vec2 start_position = glm::vec2(0.f);
+   unsigned long start_time = 0;
 
    std::shared_ptr<pointer_evt> start_event;
 };
@@ -145,17 +145,17 @@ public:
    gesture_state reset();
 
    // position of first touch
-   glm::vec2 position_0;
+   glm::vec2 position_0 = glm::vec2(0.f);
    // position of second touch
-   glm::vec2 position_1;
+   glm::vec2 position_1 = glm::vec2(0.f);
    // start position of first touch
-   glm::vec2 start_position_0;
+   glm::vec2 start_position_0 = glm::vec2(0.f);
    // start position of second touch
-   glm::vec2 start_position_1;
+   glm::vec2 start_position_1 = glm::vec2(0.f);
 
-   glm::vec2 anchor_touch_position;
-   glm::vec2 roll_touch_prev_position;
-   glm::vec2 roll_touch_position;
+   glm::vec2 anchor_touch_position = glm::vec2(0.f);
+   glm::vec2 roll_touch_prev_position = glm::vec2(0.f);
+   glm::vec2 roll_touch_position = glm::vec2(0.f);
 
    std::shared_ptr<pointer_evt> start_event;
    gesture_state det_state;
@@ -170,19 +170,19 @@ public:
    gesture_state reset();
 
    // position of first touch
-   glm::vec2 position_0;
+   glm::vec2 position_0 = glm::vec2(0.f);
    // position of second touch
-   glm::vec2 position_1;
+   glm::vec2 position_1 = glm::vec2(0.f);
    // position of third touch
-   glm::vec2 position_2;
+   glm::vec2 position_2 = glm::vec2(0.f);
    // prev position of third touch
-   glm::vec2 prev_position2;
+   glm::vec2 prev_position_2 = glm::vec2(0.f);
    // start position of first touch
-   glm::vec2 start_position_0;
+   glm::vec2 start_position_0 = glm::vec2(0.f);
    // start position of second touch
-   glm::vec2 start_position_1;
+   glm::vec2 start_position_1 = glm::vec2(0.f);
    // start position of third touch
-   glm::vec2 start_position2;
+   glm::vec2 start_position_2 = glm::vec2(0.f);
 
    std::shared_ptr<pointer_evt> start_event;
 };

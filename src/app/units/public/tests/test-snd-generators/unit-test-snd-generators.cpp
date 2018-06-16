@@ -14,7 +14,7 @@
 #include <stk/Plucked.h>
 #include <fmod/fmod.hpp>
 #include <fmod/fmod_errors.h>
-#include <glm/gtc/constants.hpp>
+#include <glm/inc.hpp>
 
 #pragma comment (lib, "libstk.lib")
 #pragma comment (lib, "fmodex_vc.lib")
@@ -597,7 +597,7 @@ void unit_test_snd_generators::init()
 
 void unit_test_snd_generators::init_mws()
 {
-	mws_page::new_shared_instance(new unit_test_snd_generators_ns::main_page(mws_root));
+   mws_root->new_page<unit_test_snd_generators_ns::main_page>();
 	mws_cam->clear_color = true;
 }
 
