@@ -190,6 +190,9 @@ public:
    virtual void init();
    virtual void start();
    virtual void run();
+   virtual float get_screen_scale() const;
+   virtual float get_screen_brightness() const;
+   virtual void set_screen_brightness(float i_brightness);
    virtual int get_screen_dpi()const = 0;
    virtual void write_text(const char* text)const = 0;
    virtual void write_text_nl(const char* text)const = 0;

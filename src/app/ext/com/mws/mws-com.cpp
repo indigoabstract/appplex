@@ -154,11 +154,6 @@ void mws_img_btn::on_click()
    }
 }
 
-void mws_img_btn::set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler)
-{
-   on_click_handler = i_on_click_handler;
-}
-
 mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
 {
    return vxo;
@@ -264,14 +259,17 @@ void mws_button::on_click()
 
 void mws_button::update_state()
 {
-   auto& tf = get_vxo()->get_global_tf_mx();
-   auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
-   glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
-   auto root = get_mws_root();
-   auto text_ref = root->get_text_vxo();
-   mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+   if (text_visible && !text.empty())
+   {
+      auto& tf = get_vxo()->get_global_tf_mx();
+      auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
+      glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
+      auto root = get_mws_root();
+      auto text_ref = root->get_text_vxo();
+      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
 
-   text_ref->add_text(text, pos, f);
+      text_ref->add_text(text, pos, f);
+   }
 }
 
 void mws_button::set_text(string i_text)
@@ -279,20 +277,20 @@ void mws_button::set_text(string i_text)
    text = i_text;
 }
 
-void mws_button::set_color(const gfx_color& i_color)
+void mws_button::set_bg_color(const gfx_color& i_color)
 {
    color = i_color;
    (*get_vxo())["u_v4_color"] = color.to_vec4();
 }
 
+void mws_button::set_bg_visible(bool i_visible)
+{
+   get_vxo()->visible = i_visible;
+}
+
 void mws_button::set_font(mws_sp<mws_font> i_font)
 {
    font = i_font;
-}
-
-void mws_button::set_on_click_handler(std::function<void(mws_sp<mws_button> i_img_btn)> i_on_click_handler)
-{
-   on_click_handler = i_on_click_handler;
 }
 
 mws_sp<gfx_quad_2d> mws_button::get_vxo()
@@ -329,6 +327,18 @@ std::shared_ptr<mws_slider> mws_slider::nwi()
    return inst;
 }
 
+void mws_slider::set_value(float i_value)
+{
+   mws_assert(i_value >= 0.f && i_value <= 1.f);
+   float x_off = mws_r.x;
+   auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+   auto tr = s_ball->get_translation();
+   float tx = x_off + i_value * mws_r.w;
+
+   s_ball->set_translation(tx, tr.y);
+   value = i_value;
+}
+
 void mws_slider::set_rect(const mws_rect& i_rect)
 {
    auto s_bar = std::static_pointer_cast<gfx_quad_2d>(slider_bar);
@@ -339,6 +349,7 @@ void mws_slider::set_rect(const mws_rect& i_rect)
    s_ball->set_scale(i_rect.h, i_rect.h);
 
    mws_r = i_rect;
+   set_value(value);
 }
 
 void mws_slider::receive(shared_ptr<iadp> idp)
@@ -384,8 +395,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
 
          if (t_val != value)
          {
-            value = t_val;
-            s_ball->set_translation(tx, tr.y);
+            set_value(t_val);
 
             if (on_drag_handler)
             {
@@ -412,12 +422,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
 
                if (t_val != value)
                {
-                  auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
-                  auto tr = s_ball->get_translation();
-                  float tx = x_off + t_val * mws_r.w;
-
-                  value = t_val;
-                  s_ball->set_translation(tx, tr.y);
+                  set_value(t_val);
 
                   if (on_drag_handler)
                   {
@@ -469,11 +474,6 @@ mws_sp<gfx_vxo> mws_slider::get_bar_vxo() const
 mws_sp<gfx_vxo> mws_slider::get_ball_vxo() const
 {
    return slider_ball;
-}
-
-void mws_slider::set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_img_btn)> i_on_drag_handler)
-{
-   on_drag_handler = i_on_drag_handler;
 }
 
 mws_slider::mws_slider()

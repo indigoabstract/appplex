@@ -944,18 +944,12 @@ pfm_data::pfm_data()
 pfm_data pfm::data;
 
 
-void pfm_main::init()
-{
-   //pfm_impl::print_type_sizes();
-}
-
-void pfm_main::start()
-{
-}
-
-void pfm_main::run()
-{
-}
+void pfm_main::init() {}
+void pfm_main::start() {}
+void pfm_main::run() {}
+float pfm_main::get_screen_scale() const { return 1.f; }
+float pfm_main::get_screen_brightness() const { return 1.f; }
+void pfm_main::set_screen_brightness(float i_brightness) {}
 
 bool pfm_main::back_evt()
 {

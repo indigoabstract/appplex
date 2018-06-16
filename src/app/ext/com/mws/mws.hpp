@@ -176,9 +176,6 @@ private:
 class mws_page : public mws
 {
 public:
-   static const mws_sp<mws_page> PREV_PAGE;
-   static const mws_sp<mws_page> NEXT_PAGE;
-
    virtual ~mws_page() {}
    static mws_sp<mws_page> nwi(mws_sp<mws_page_tab> iparent);
    virtual void init();

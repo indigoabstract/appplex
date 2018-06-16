@@ -159,7 +159,7 @@ mws_sp<mws> mws::contains_id(const string& iid)
       return get_instance();
    }
 
-   return mws_sp<mws>();
+   return nullptr;
 }
 
 bool mws::contains_mws(const mws_sp<mws> i_mws)
@@ -378,7 +378,10 @@ void mws_page_tab::update_state()
 
    for (auto p : page_tab)
    {
-      p->update_state();
+      if (p->visible)
+      {
+         p->update_state();
+      }
    }
 }
 
@@ -386,7 +389,10 @@ void mws_page_tab::update_view(mws_sp<mws_camera> g)
 {
    for (auto p : page_tab)
    {
-      p->update_view(g);
+      if (p->visible)
+      {
+         p->update_view(g);
+      }
    }
 }
 

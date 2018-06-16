@@ -48,7 +48,7 @@ public:
    UINT get_taskbar_created_msg();
    void minimize_window();
    void restore_window();
-   float get_screen_scale();
+   virtual float get_screen_scale() const override;
    bool is_full_screen_mode();
    void set_full_screen_mode(bool ienabled);
    RECT get_window_coord();

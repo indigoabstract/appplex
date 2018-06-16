@@ -36,14 +36,14 @@ public:
    virtual void receive(shared_ptr<iadp> idp) override;
    virtual bool is_hit(float x, float y);
    virtual void on_click();
-   virtual void set_on_click_handler(std::function<void(mws_sp<mws_img_btn> i_img_btn)> i_on_click_handler);
    virtual mws_sp<gfx_quad_2d> get_vxo();
+
+   std::function<void(mws_sp<mws_img_btn> i_img_btn)> on_click_handler;
 
 protected:
    mws_img_btn() {}
    void setup() override;
 
-   std::function<void(mws_sp<mws_img_btn> i_img_btn)> on_click_handler;
    mws_sp<gfx_quad_2d> vxo;
 };
 
@@ -60,19 +60,22 @@ public:
    virtual void on_click();
    virtual void update_state() override;
    virtual void set_text(std::string i_text);
-   virtual void set_color(const gfx_color& i_color);
+   virtual void set_text_visible(bool i_visible) { text_visible = i_visible; }
+   virtual void set_bg_color(const gfx_color& i_color);
+   virtual void set_bg_visible(bool i_visible);
    virtual void set_font(mws_sp<mws_font> i_font);
-   virtual void set_on_click_handler(std::function<void(mws_sp<mws_button> i_btn)> i_on_click_handler);
    virtual mws_sp<gfx_quad_2d> get_vxo();
+
+   std::function<void(mws_sp<mws_button> i_btn)> on_click_handler;
 
 protected:
    mws_button() {}
    void setup() override;
 
    std::string text;
+   bool text_visible = true;
    gfx_color color;
    shared_ptr<mws_font> font;
-   std::function<void(mws_sp<mws_button> i_btn)> on_click_handler;
    mws_sp<gfx_quad_2d> vxo;
 };
 
@@ -82,20 +85,21 @@ class mws_slider : public mws_page_item
 public:
    static std::shared_ptr<mws_slider> nwi();
    virtual ~mws_slider() {}
+   void set_value(float i_value);
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp) override;
    virtual bool is_hit(float x, float y, bool& i_ball_hit, bool& i_bar_hit);
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
-   virtual void set_on_drag_handler(std::function<void(mws_sp<mws_slider> i_slider)> i_on_drag_handler);
+
+   std::function<void(mws_sp<mws_slider> i_slider)> on_drag_handler;
 
 protected:
    mws_slider();
    void setup() override;
 
    float value;
-   std::function<void(mws_sp<mws_slider> i_slider)> on_drag_handler;
    mws_sp<gfx_vxo> slider_bar;
    mws_sp<gfx_vxo> slider_ball;
    bool active;
