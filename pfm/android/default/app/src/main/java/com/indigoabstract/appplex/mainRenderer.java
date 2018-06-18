@@ -15,7 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 
 public class mainRenderer implements GLSurfaceView.Renderer
 {
-	static main				m_MainObject;
+	static main				main_inst;
 	public static String	m_sDownloadPath;
 	mainGLSurfaceView		mGlSurfaceView;
 	Display					d;
@@ -24,9 +24,9 @@ public class mainRenderer implements GLSurfaceView.Renderer
 
 	public mainRenderer(main c, mainGLSurfaceView m)
 	{
-		this.m_MainObject = c;
+		main_inst = c;
 		mGlSurfaceView = m;
-		m_MainObject.ApplicationInputManager = (InputMethodManager) m_MainObject.getSystemService(Context.INPUT_METHOD_SERVICE);
+		main_inst.ApplicationInputManager = (InputMethodManager) main_inst.getSystemService(Context.INPUT_METHOD_SERVICE);
 		asset_manager = main.inst().getAssets();
 	}
 
@@ -82,9 +82,9 @@ public class mainRenderer implements GLSurfaceView.Renderer
 							// somehow forced by the user
 		closeAppClean = true; // we hope to do clean native destroy!
 
-		if (((Activity) m_MainObject).isFinishing() == false)
+		if (((Activity) main_inst).isFinishing() == false)
 		{
-			((Activity) m_MainObject).finish();
+			((Activity) main_inst).finish();
 			Log.i("mainRenderer", "Activity finish request");
 		}
 
@@ -113,7 +113,7 @@ public class mainRenderer implements GLSurfaceView.Renderer
 
 	public static void ExitApplication()
 	{
-		m_MainObject.finish();
+		main_inst.finish();
 	}
 	
 	private AssetManager asset_manager = null;

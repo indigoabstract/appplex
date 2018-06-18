@@ -13,7 +13,9 @@ public:
 	virtual ~android_main();
 	static shared_ptr<android_main> get_instance();
 	static shared_ptr<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
-    virtual int get_screen_dpi()const;
+    virtual float get_screen_brightness() const override;
+    virtual void set_screen_brightness(float i_brightness) override;
+    virtual int get_screen_dpi()const override;
 	virtual void write_text(const char* text)const;
 	virtual void write_text_nl(const char* text)const;
 	virtual void write_text(const wchar_t* text)const;

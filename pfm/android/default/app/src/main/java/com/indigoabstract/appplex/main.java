@@ -271,10 +271,6 @@ public class main extends Activity
 		super.onStart();
         opensl_conf params = opensl_conf.createInstance(this);
 		native_snd_init(params.get_sample_rate(), params.get_buffer_size());
-
-        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.screenBrightness = 1.f;
-        getWindow().setAttributes(layoutParams);
     }
 
 	@Override
@@ -520,7 +516,21 @@ public class main extends Activity
 		}
 	}
 
-	public static int get_screen_dpi()
+	public static float get_screen_brightness()
+    {
+        WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
+
+        return layoutParams.screenBrightness;
+    }
+
+    public static void set_screen_brightness(float i_brightness)
+    {
+        WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
+        layoutParams.screenBrightness = i_brightness;
+        instance.getWindow().setAttributes(layoutParams);
+    }
+
+    public static int get_screen_dpi()
     {
         if(inst().display_metrics == null)
         {
@@ -530,7 +540,6 @@ public class main extends Activity
 
         return inst().display_metrics.densityDpi;
     }
-
 	private static native boolean native_back_evt();
 	private static native void native_snd_init(int isample_rate, int ibuffer_size);
 	private static native void native_snd_close();

@@ -218,6 +218,25 @@ shared_ptr<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::s
 	return std::make_shared<android_file_impl>(ifilename, iroot_dir);
 }
 
+float android_main::get_screen_brightness() const
+{
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_brightness", "()F");
+
+    jfloat brightness = env->CallStaticFloatMethod(clazz, mid);
+
+    return (float)brightness;
+}
+
+void android_main::set_screen_brightness(float i_brightness)
+{
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "set_screen_brightness", "(F)V");
+    env->CallStaticVoidMethod(clazz, mid, (jfloat)i_brightness);
+}
+
 int android_main::get_screen_dpi()const
 {
     JNIEnv* env = JniHelper::getEnv();

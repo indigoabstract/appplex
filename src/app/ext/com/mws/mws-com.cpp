@@ -336,7 +336,16 @@ void mws_slider::set_value(float i_value)
    float tx = x_off + i_value * mws_r.w;
 
    s_ball->set_translation(tx, tr.y);
-   value = i_value;
+
+   if (value != i_value)
+   {
+      value = i_value;
+
+      if (on_drag_handler)
+      {
+         on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+      }
+   }
 }
 
 void mws_slider::set_rect(const mws_rect& i_rect)
@@ -396,11 +405,6 @@ void mws_slider::receive(shared_ptr<iadp> idp)
          if (t_val != value)
          {
             set_value(t_val);
-
-            if (on_drag_handler)
-            {
-               on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
-            }
          }
       }
 
@@ -423,11 +427,6 @@ void mws_slider::receive(shared_ptr<iadp> idp)
                if (t_val != value)
                {
                   set_value(t_val);
-
-                  if (on_drag_handler)
-                  {
-                     on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
-                  }
                }
             }
 
