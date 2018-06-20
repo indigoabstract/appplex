@@ -11,6 +11,15 @@ const int Q = (M / A);
 // m0 % a0 == 2836
 const int R = (M % A);
 
+struct rng_state
+{
+   int crt_seed;
+   int init_seed;
+   float z;
+   float gauss_next;
+};
+
+
 class RNG
 {
 public:
@@ -18,7 +27,7 @@ public:
 	{
 		long t = pfm::time::get_time_millis();
 		setSeed((int)(t & 0x7fffffff));
-		//System.out.println("t " + t + " is " + initSeed);
+		//System.out.println("t " + t + " is " + init_seed);
 	}
 
 	RNG(int seed0)
@@ -26,21 +35,28 @@ public:
 		setSeed(seed0);
 	}
 
+   const rng_state& get_state() const { return st; }
+
+   void set_state(const rng_state& i_state)
+   {
+      st = i_state;
+   }
+
 	int getInitSeed()
 	{
-		return initSeed;
+		return st.init_seed;
 	}
 
 	int getCrtSeed()
 	{
-		return crtSeed;
+		return st.crt_seed;
 	}
 
 	// 0 < seed0 < m0
 	void setSeed(int seed0)
 	{
-		initSeed = crtSeed = seed0;
-		z = gauss_next = 0.f;
+      st.init_seed = st.crt_seed = seed0;
+      st.z = st.gauss_next = 0.f;
 	}
 
 	int nextInt()
@@ -50,21 +66,21 @@ public:
 
 	int nextIntV1()
 	{
-		if ((crtSeed = A * (crtSeed % Q) - R * (crtSeed / Q)) <= 0)
+		if ((st.crt_seed = A * (st.crt_seed % Q) - R * (st.crt_seed / Q)) <= 0)
 		{
-			return crtSeed += M;
+			return st.crt_seed += M;
 		}
 		// This is equivalent, but quite slower though:
-		// crtSeed = (crtSeed & 0x7FFFFFFF) + (crtSeed >> 31);
-		return crtSeed;
+		// crt_seed = (crt_seed & 0x7FFFFFFF) + (crt_seed >> 31);
+		return st.crt_seed;
 	}
 
 	int nextIntV2()
 	{
 
-		crtSeed = (214013 * crtSeed + 2531011);
+      st.crt_seed = (214013 * st.crt_seed + 2531011);
 
-		return (crtSeed >> 16) & 0x7FFF;
+		return (st.crt_seed >> 16) & 0x7FFF;
 	}
 
 	/**
@@ -160,8 +176,5 @@ public:
 	int nextInt1();
 
 private:
-	int crtSeed;
-	int initSeed;
-	float z;
-	float gauss_next;
+   rng_state st;
 };
