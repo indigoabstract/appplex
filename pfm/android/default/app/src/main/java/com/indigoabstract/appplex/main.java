@@ -472,23 +472,24 @@ public class main extends Activity
 	}
 
 	/**
-	 * Cancel all pending alarms/notifications between startId and endId.
-	 * @param startId First identifier for the cancelled alarms/notifications.
-	 * @param endId Last identifier for the cancelled alarms/notifications.
+	 * Cancel all pending alarms/notifications between i_start_tag and i_stop_tag.
+	 * @param i_start_tag first identifier for the cancelled alarms/notifications.
+	 * @param i_stop_tag last identifier for the cancelled alarms/notifications.
 	 */
-	public static void cancel_all_notifications(int startId, int endId){
+	public static void cancel_notification_interval(int i_start_tag, int i_stop_tag){
 		Context ctx = inst();
 		AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
 		Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
 		NotificationManager notificationManager = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Cancel any pending alarms.
-		for (int k = startId; k < endId; k++)
+		for (int k = i_start_tag; k <= i_stop_tag; k++)
 		{
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, k, alarmIntent, 0);
 
 			if (pendingIntent != null)
 			{
+                Log.i("alarm","canceling alarm tag " + k);
 				alarmManager.cancel(pendingIntent);
 			}
 		}
@@ -523,11 +524,18 @@ public class main extends Activity
         return layoutParams.screenBrightness;
     }
 
-    public static void set_screen_brightness(float i_brightness)
+    public static void set_screen_brightness(final float i_brightness)
     {
-        WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
-        layoutParams.screenBrightness = i_brightness;
-        instance.getWindow().setAttributes(layoutParams);
+        inst().runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
+                layoutParams.screenBrightness = i_brightness;
+                instance.getWindow().setAttributes(layoutParams);
+            }
+        });
     }
 
     public static int get_screen_dpi()

@@ -34,52 +34,47 @@ class android_file_impl : public pfm_impl::pfm_file_impl
 public:
 	android_file_impl(const std::string& ifilename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(ifilename, iroot_dir)
 	{
-		is_external = false;
 	}
 
 	virtual ~android_file_impl() {}
 
-	virtual uint64 length()
+    virtual FILE* get_file_impl() override
+    {
+        return file;
+    }
+
+	virtual uint64 length() override
 	{
 		uint64 size = 0;
 
-		if (!file)
-		{
-			open("rb");
+        if(asset_file)
+        {
+            size = AAsset_getLength64(asset_file);
+        }
+        else if(file)
+        {
+            long crt_pos = ftell(file);
 
-			if (file)
-			{
-				if(is_external)
-				{
-                    FILE* f = (FILE*)file;
+            fseek(file, 0, SEEK_END);
+            size = ftell(file);
+            fseek(file, crt_pos, SEEK_SET);
+        }
+        else
+        {
+            open_impl("rb");
 
-                    fseek(f, 0, SEEK_END );
-                    size = ftell(f);
-				}
-				else
-				{
-					size = AAsset_getLength64((AAsset*)file);
-				}
-				
-				close();
-			}
-		}
-		else
-		{
-			if(is_external)
-			{
-                FILE* f = (FILE*)file;
-                long crt_pos = ftell(f);
-
-                fseek(f, 0, SEEK_END );
-                size = ftell(f);
-                fseek(f, crt_pos, SEEK_SET );
-			}
-			else
-			{
-				size = AAsset_getLength64((AAsset*)file);
-			}
-		}
+            if(asset_file)
+            {
+                size = AAsset_getLength64(asset_file);
+                close_impl();
+            }
+            else if(file)
+            {
+                fseek(file, 0, SEEK_END);
+                size = ftell(file);
+                close_impl();
+            }
+        }
 
 		return size;
 	}
@@ -98,10 +93,9 @@ public:
 		return 0;
 	}
 
-	virtual void* open_impl(std::string iopen_mode)
+	virtual bool open_impl(std::string iopen_mode)
 	{
 		std::string path = ppath.get_full_path();
-		is_external = false;
 
 		if (iopen_mode[0] == 'w' && path[0] != '/')
 		{
@@ -111,83 +105,88 @@ public:
 		if(path[0] == '/')
 		{
 			// external path
-			FILE* file = fopen(path.c_str(), iopen_mode.c_str());
-			is_external = true;
+			file = fopen(path.c_str(), iopen_mode.c_str());
 			mws_print("open_impl: opening external file %s\n", path.c_str());
-//			fseek( file, 0, SEEK_END );
-//			uint64 len = ftell((FILE*)file);
-//			fseek(file, 0, SEEK_SET );
 
-			return file;
+			return file != nullptr;
 		}
 
-		AAsset* asset = AAssetManager_open(asset_manager, path.c_str(), 0);
+		asset_file = AAssetManager_open(asset_manager, path.c_str(), 0);
 		mws_print("open_impl: opening asset file %s\n", path.c_str());
 
-		return asset;
+		return asset_file != nullptr;
 	}
 
 	virtual void close_impl()
 	{
-		if(is_external)
+		if(file)
 		{
-			fclose((FILE*)file);
+			fclose(file);
+            file = nullptr;
 		}
-		else
+		else if(asset_file)
 		{
-			AAsset_close((AAsset*)file);
+			AAsset_close(asset_file);
+            asset_file = nullptr;
 		}
-		
-		file = nullptr;
+        else
+        {
+            mws_print("error[ file [ %s ] is not open! ]", ppath.get_full_path().c_str());
+        }
 	}
 
 	virtual void seek_impl(uint64 ipos, int iseek_pos)
 	{
-		if(is_external)
+		if(file)
 		{
-			fseek((FILE*)file, ipos, iseek_pos);
+			fseek(file, ipos, iseek_pos);
 		}
-		else
+		else if(asset_file)
 		{
-			AAsset_seek64((AAsset*)file, ipos, iseek_pos);
+			AAsset_seek64(asset_file, ipos, iseek_pos);
 		}
+        else
+        {
+            mws_throw ia_exception("error");
+        }
 	}
 
 	virtual uint64 tell_impl()
 	{
-		if(is_external)
+		if(file)
 		{
-			return ftell((FILE*)file);
+			return ftell(file);
 		}
-		
-		throw ia_exception("unsupported op");
+
+        mws_throw ia_exception("unsupported op");
 
 		return 0;
 	}
 
 	virtual int read_impl(uint8* ibuffer, int isize)
 	{
-		if(is_external)
+		if(file)
 		{
-			return fread(ibuffer, 1, isize, (FILE*)file);
+			return fread(ibuffer, 1, isize, file);
 		}
 		
-		return AAsset_read((AAsset*)file, ibuffer, isize);
+		return AAsset_read(asset_file, ibuffer, isize);
 	}
 
 	virtual int write_impl(const uint8* ibuffer, int isize)
 	{
-		if(is_external)
+		if(file)
 		{
-			return fwrite(ibuffer, 1, isize, (FILE*)file);
+			return fwrite(ibuffer, 1, isize, file);
 		}
 		
-		throw ia_exception("unsupported op");
+		mws_throw ia_exception("unsupported op");
 
 		return 0;
 	}
 
-	bool is_external;
+    FILE* file = nullptr;
+    AAsset* asset_file = nullptr;
 };
 
 
@@ -223,7 +222,6 @@ float android_main::get_screen_brightness() const
     JNIEnv* env = JniHelper::getEnv();
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
     jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_brightness", "()F");
-
     jfloat brightness = env->CallStaticFloatMethod(clazz, mid);
 
     return (float)brightness;
@@ -242,7 +240,6 @@ int android_main::get_screen_dpi()const
     JNIEnv* env = JniHelper::getEnv();
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
     jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()I");
-
     jint dpi = env->CallStaticIntMethod(clazz, mid);
 
     return (int)dpi;
@@ -287,7 +284,7 @@ void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{
 		mws_print("android_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
-		throw ia_exception("duplicate filename: " + ifile->get_full_path());
+        mws_throw ia_exception("duplicate filename: " + ifile->get_full_path());
 	}
 
 	(*iplist)[ifile->get_file_name()] = ifile;

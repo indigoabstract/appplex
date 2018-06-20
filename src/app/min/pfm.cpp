@@ -433,7 +433,6 @@ namespace pfm_impl
 		ppath.filename = ifilename;
 		ppath.aux_root_dir = iroot_dir;
 		ppath.make_standard_path();
-		file = 0;
 		file_pos = 0;
 		file_is_open = false;
 		file_is_writable = false;
@@ -441,11 +440,6 @@ namespace pfm_impl
 
 	pfm_file_impl::~pfm_file_impl()
 	{
-	}
-
-	void* pfm_file_impl::get_file_impl()const
-	{
-		return file;
 	}
 
 	bool pfm_file_impl::exists()
@@ -472,8 +466,7 @@ namespace pfm_impl
 
 	bool pfm_file_impl::open(std::string iopen_mode)
 	{
-		file = open_impl(iopen_mode);
-		file_is_open = (file != 0);
+		file_is_open = open_impl(iopen_mode);
 
 		return file_is_open;
 	}
@@ -485,7 +478,6 @@ namespace pfm_impl
 			close_impl();
 		}
 
-		file = 0;
 		file_pos = 0;
 		file_is_open = false;
 	}
@@ -542,36 +534,24 @@ namespace pfm_impl
 		}
 	}
 
-	void* pfm_file_impl::open_impl(std::string iopen_mode)
-	{
-		std::string path = ppath.get_full_path();
-
-		return fopen(path.c_str(), iopen_mode.c_str());
-	}
-
-	void pfm_file_impl::close_impl()
-	{
-		fclose((FILE*)file);
-	}
-
 	void pfm_file_impl::seek_impl(uint64 ipos, int iseek_pos)
 	{
-		fseek((FILE*)file, (long)ipos, iseek_pos);
+		fseek(get_file_impl(), (long)ipos, iseek_pos);
 	}
 
 	uint64 pfm_file_impl::tell_impl()
 	{
-		return ftell((FILE*)file);
+		return ftell(get_file_impl());
 	}
 
 	int pfm_file_impl::read_impl(uint8* ibuffer, int isize)
 	{
-		return fread(ibuffer, 1, isize, (FILE*)file);
+		return fread(ibuffer, 1, isize, get_file_impl());
 	}
 
 	int pfm_file_impl::write_impl(const uint8* ibuffer, int isize)
 	{
-		return fwrite(ibuffer, 1, isize, (FILE*)file);
+		return fwrite(ibuffer, 1, isize, get_file_impl());
 	}
 }
 
@@ -701,7 +681,7 @@ const std::string& pfm_file::get_root_directory()const
 	return io.impl->ppath.get_root_directory();
 }
 
-void* pfm_file::get_file_impl()const
+FILE* pfm_file::get_file_impl()const
 {
 	return io.impl->get_file_impl();
 }

@@ -71,7 +71,12 @@ public:
    {
    }
 
-   virtual uint64 length()
+   virtual FILE* get_file_impl() override
+   {
+      return file;
+   }
+
+   virtual uint64 length() override
    {
       std::string path = ppath.get_full_path();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -89,7 +94,7 @@ public:
       return 0;
    }
 
-   virtual uint64 creation_time()const
+   virtual uint64 creation_time()const override
    {
       std::string path = ppath.get_full_path();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -107,7 +112,7 @@ public:
       return 0;
    }
 
-   virtual uint64 last_write_time()const
+   virtual uint64 last_write_time()const override
    {
       std::string path = ppath.get_full_path();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -124,6 +129,22 @@ public:
 
       return 0;
    }
+
+   virtual bool open_impl(std::string iopen_mode) override
+   {
+      std::string path = ppath.get_full_path();
+      file = fopen(path.c_str(), iopen_mode.c_str());
+
+      return file != nullptr;
+   }
+
+   virtual void close_impl() override
+   {
+      fclose((FILE*)file);
+      file = nullptr;
+   }
+
+   FILE* file = nullptr;
 };
 
 
@@ -200,6 +221,7 @@ void msvc_main::run()
 
 int msvc_main::get_screen_dpi()const
 {
+   //return 480;
    return 127;
 }
 
@@ -472,7 +494,7 @@ void msvc_main::restore_window()
    ShowWindow(hwnd, SW_SHOW);
 }
 
-float msvc_main::get_screen_scale()
+float msvc_main::get_screen_scale() const
 {
    return 1.f;
 }
@@ -1208,7 +1230,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          pfm_te->time = pfm::time::get_time_millis();
          pfm_te->touch_count = 1;
          pfm_te->type = pointer_evt::mouse_wheel;
-         pfm_te->mouse_wheel_delta = wheel_delta;
+         pfm_te->mouse_wheel_delta = (float)wheel_delta;
 
          unit_ctrl::inst()->pointer_action(pfm_te);
          //mws_print("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;

@@ -8,15 +8,6 @@
 class local_notification
 {
 public:
-    enum e_notification_tags
-    {
-        e15sNotifTag = 0, // for testing
-        e8hNotifTag,
-        e24hNotifTag,
-        e48hNotifTag,
-        eNotificationCount,
-    };
-    
     /**
      * Registers the types of notifications the app is using
      */
@@ -39,24 +30,13 @@ public:
     static void schedule_by_delay(std::string message, int delay_in_seconds, int tag);
     
     /**
-     * Check if notification specified by ID is active
-     * @param tag Tag of local notification
-     */
-    static bool is_active(int tag);
-    
-    /**
      * Cancel local notification specified by ID
      * @param tag Tag of local notification
      */
     static void cancel(int tag);
     
     /**
-     * Cancel all scheduled local notifications
+     * Cancel all scheduled local notifications in the set interval
      */
-    static void cancell_all();
-    
-    // a list with the tags of the currently scheduled(active) notifications
-    static std::vector<int> active_notif_tag_list;
-    // a list with the string ids of possible messages in a local notification.
-    static std::vector<int> notification_list;
+    static void cancel_interval(int i_start_tag, int i_stop_tag);
 };

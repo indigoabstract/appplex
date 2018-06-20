@@ -97,9 +97,8 @@ void write_png_file(mws_sp<pfm_file> file_name, int iwidth, int iheight, uint8* 
 
    if (setjmp(png_jmpbuf(png_ptr)))
       abort_("[write_png_file] Error during init_io");
-   FILE* fff = (FILE*)file_name->get_file_impl();
 
-   png_init_io(png_ptr, (FILE*)file_name->get_file_impl());
+   png_init_io(png_ptr, file_name->get_file_impl());
 
 
    /* write header */

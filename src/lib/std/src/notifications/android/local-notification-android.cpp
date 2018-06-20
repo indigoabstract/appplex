@@ -27,54 +27,26 @@ void local_notification::schedule_by_date(std::string message, const std::chrono
 
 void local_notification::schedule_by_delay(std::string message, int delay_in_seconds, int tag)
 {
-    if(std::find(active_notif_tag_list.begin(), active_notif_tag_list.end(), tag) != active_notif_tag_list.end())
-    {
-        // don't schedule any notifications using this tag if they are not cancelled first.
-        return;
-    }
-
     JNIEnv* env = JniHelper::getEnv();
-    jstring jstr1 = env->NewStringUTF(message.c_str());
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
     jmethodID mid = env->GetStaticMethodID(clazz, "schedule_notification", "(Ljava/lang/String;II)V");
+    jstring jstr1 = env->NewStringUTF(message.c_str());
 
     env->CallStaticVoidMethod(clazz, mid, jstr1, delay_in_seconds, tag);
-
-    // the notification is scheduled now, so add the tag to the list.
-    active_notif_tag_list.push_back(tag);
-}
-
-bool local_notification::is_active(int tag)
-{
-    return std::find(active_notif_tag_list.begin(), active_notif_tag_list.end(), tag) != active_notif_tag_list.end();
 }
 
 void local_notification::cancel(int tag)
 {
-    auto idx = std::find(active_notif_tag_list.begin(), active_notif_tag_list.end(), tag);
-
-    // remove tag from the active notifications list.
-    if(idx != active_notif_tag_list.end())
-    {
-        JNIEnv* env = JniHelper::getEnv();
-        jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-        jmethodID mid = env->GetStaticMethodID(clazz, "cancel_notification", "(I)V");
-
-        env->CallStaticVoidMethod(clazz, mid, tag);
-        active_notif_tag_list.erase(idx);
-    }
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "cancel_notification", "(I)V");
+    env->CallStaticVoidMethod(clazz, mid, tag);
 }
 
-void local_notification::cancell_all()
+void local_notification::cancel_interval(int i_start_tag, int i_stop_tag)
 {
     JNIEnv* env = JniHelper::getEnv();
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-    jmethodID mid = env->GetStaticMethodID(clazz, "cancel_all_notifications", "(II)V");
-
-    env->CallStaticVoidMethod(clazz, mid, e8hNotifTag, eNotificationCount);
-
-    // clear all active notifications.
-    active_notif_tag_list.clear();
+    jmethodID mid = env->GetStaticMethodID(clazz, "cancel_notification_interval", "(II)V");
+    env->CallStaticVoidMethod(clazz, mid, i_start_tag, i_stop_tag);
 }
-
-std::vector<int> local_notification::active_notif_tag_list;

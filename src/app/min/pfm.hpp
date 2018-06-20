@@ -100,7 +100,7 @@ public:
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   void* get_file_impl()const;
+   FILE* get_file_impl()const;
 
    class io_op
    {
@@ -139,7 +139,7 @@ namespace pfm_impl
    public:
       pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
       virtual ~pfm_file_impl();
-      virtual void* get_file_impl()const;
+      virtual FILE* get_file_impl() = 0;
       virtual bool exists();
       virtual bool is_opened()const;
       virtual bool is_writable()const;
@@ -156,14 +156,13 @@ namespace pfm_impl
       virtual void check_state()const;
 
       pfm_path ppath;
-      void* file;
       uint64 file_pos;
       bool file_is_open;
       bool file_is_writable;
 
    protected:
-      virtual void* open_impl(std::string iopen_mode);
-      virtual void close_impl();
+      virtual bool open_impl(std::string iopen_mode) = 0;
+      virtual void close_impl() = 0;
       virtual void seek_impl(uint64 ipos, int iseek_pos);
       virtual uint64 tell_impl();
       virtual int read_impl(uint8* ibuffer, int isize);
