@@ -91,6 +91,25 @@ void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_
    }
 }
 
+void gfx_node::draw_in_sync(std::shared_ptr<gfx_camera> i_cam)
+{
+   for (auto it = children.begin(); it != children.end(); it++)
+   {
+      (*it)->draw_in_sync(i_cam);
+   }
+}
+
+void gfx_node::draw_out_of_sync(std::shared_ptr<gfx_camera> i_cam)
+{
+   i_cam->update_camera_state();
+   update_recursive(glm::mat4(1.f), true);
+
+   for (auto it = children.begin(); it != children.end(); it++)
+   {
+      (*it)->draw_in_sync(i_cam);
+   }
+}
+
 void gfx_node::attach(shared_ptr<gfx_node> inode)
 {
    if (inode->parent.lock())

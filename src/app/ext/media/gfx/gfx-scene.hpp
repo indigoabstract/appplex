@@ -91,6 +91,8 @@ public:
    std::shared_ptr<gfx_node> get_root();
    std::shared_ptr<gfx_scene> get_scene();
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
+   virtual void draw_in_sync(std::shared_ptr<gfx_camera> i_cam);
+   virtual void draw_out_of_sync(std::shared_ptr<gfx_camera> i_cam);
    virtual void attach(shared_ptr<gfx_node> inode);
    virtual void detach();
    virtual void on_attach();

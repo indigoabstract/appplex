@@ -148,11 +148,11 @@ public:
    // this is used for drawing the vxo explicitely by hand (ie when it's not drawn by the scene manager)
    // it's slower than the in_sync version, since the camera and vxo states need to be recalculated,
    // as they might be out of sync with other renderer states (transforms, active render targets, etc)
-   virtual void draw_out_of_sync(std::shared_ptr<gfx_camera> i_camera);
+   virtual void draw_out_of_sync(std::shared_ptr<gfx_camera> i_camera) override;
 
    // this is used by the scene manager for drawing the vxo
    // it's the most efficient way to draw it, as the camera and vxo states are already up to date, so they don't need to be recalculated/kept in sync
-   virtual void draw_in_sync(std::shared_ptr<gfx_camera> i_camera);
+   virtual void draw_in_sync(std::shared_ptr<gfx_camera> i_camera) override;
 
    void push_material_params(mws_sp<gfx_material> i_mat);
    void set_size(int ivx_count, int iidx_count);
