@@ -232,7 +232,11 @@ void mws_button::receive(shared_ptr<iadp> idp)
       //mws_print("evt type [%d]\n", type);
       if (ts->type == ts->touch_began)
       {
-         on_click();
+         if (on_click_handler)
+         {
+            on_click_handler(std::static_pointer_cast<mws_button>(get_instance()));
+         }
+
          ts->process();
       }
    }
@@ -247,14 +251,6 @@ bool mws_button::is_hit(float x, float y)
    bool hit = is_inside_box(x, y, pos.x - mws_r.w / 2, pos.y - mws_r.h / 2, mws_r.w, mws_r.h);
 
    return hit;
-}
-
-void mws_button::on_click()
-{
-   if (on_click_handler)
-   {
-      on_click_handler(std::static_pointer_cast<mws_button>(get_instance()));
-   }
 }
 
 void mws_button::update_state()
@@ -275,6 +271,11 @@ void mws_button::update_state()
 void mws_button::set_text(string i_text)
 {
    text = i_text;
+}
+
+const gfx_color& mws_button::get_bg_color() const
+{
+   return color;
 }
 
 void mws_button::set_bg_color(const gfx_color& i_color)

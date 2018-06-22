@@ -28,6 +28,7 @@ bool dragging_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
       pointer_pos = evt->get_pointer_press_by_index(0)->get_position();
       drag_diff = pointer_pos - last_move_pos;
       last_move_pos = pointer_pos;
+      last_move_pos_time = evt->time;
       gesture_detected = true;
       break;
    }
@@ -42,6 +43,11 @@ bool dragging_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
    }
 
    return gesture_detected;
+}
+
+bool dragging_detector::is_finished() const
+{
+   return det_state == tap_detector_state::ST_READY;
 }
 
 gesture_state dragging_detector::detect(const std::shared_ptr<pointer_evt> new_event)

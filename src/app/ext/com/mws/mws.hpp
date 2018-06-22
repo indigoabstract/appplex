@@ -83,6 +83,8 @@ protected:
 class mws : public gfx_node, public ia_node
 {
 public:
+   static mws_sp<mws> nwi();
+
    virtual void init() {}
    virtual void on_destroy() {}
    virtual ~mws() {}
@@ -210,7 +212,6 @@ private:
    void add(mws_sp<mws_page_item> b);
 
    std::vector<mws_sp<mws_page_item> > mlist;
-   kinetic_scrolling ks;
 };
 
 

@@ -35,6 +35,8 @@ class dragging_detector
 public:
    dragging_detector();
    bool detect_helper(std::shared_ptr<pointer_evt> evt);
+   // returns true if the dragging gesture is finished, false if it is in progress
+   bool is_finished() const;
    gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
    gesture_state reset();
 
@@ -42,6 +44,7 @@ public:
    glm::vec2 press_pos = glm::vec2(0.f);
    glm::vec2 pointer_pos = glm::vec2(0.f);
    glm::vec2 last_move_pos = glm::vec2(0.f);
+   uint32 last_move_pos_time = 0;
    glm::vec2 last_move_pos_bak = glm::vec2(0.f);
 
 private:

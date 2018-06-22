@@ -53,6 +53,13 @@ mws_sp<ia_sender> mws_model::sender_inst()
 }
 
 
+mws_sp<mws> mws::nwi()
+{
+   auto inst = std::shared_ptr<mws>(new mws());
+   inst->setup();
+   return inst;
+}
+
 mws::mws(mws_sp<gfx> i_gi) : gfx_node(i_gi)
 // for rootless / parentless mws inst
 {
@@ -215,8 +222,37 @@ void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp>
    receive_handler = i_receive_handler;
 }
 
-void mws::update_state() {}
-void mws::update_view(mws_sp<mws_camera> g) {}
+void mws::update_state()
+{
+   for (auto& c : children)
+   {
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         if (w && w->visible)
+         {
+            w->update_state();
+         }
+      }
+   }
+}
+
+void mws::update_view(mws_sp<mws_camera> g)
+{
+   for (auto& c : children)
+   {
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         if (w && w->visible)
+         {
+            w->update_view(g);
+         }
+      }
+   }
+}
 
 mws_rect mws::get_pos()
 {
@@ -681,34 +717,34 @@ void mws_page::update_input_std_behaviour(mws_sp<iadp> idp)
 
 void mws_page::update_state()
 {
-   point2d p = ks.update();
+   //point2d p = ks.update();
 
-   mws_r.x += p.x;
-   mws_r.y += p.y;
+   //mws_r.x += p.x;
+   //mws_r.y += p.y;
 
-   for (auto b : mlist)
-   {
-      mws_r.w = std::max(mws_r.w, b->get_pos().w);
-      mws_r.h = std::max(mws_r.h, b->get_pos().h);
-   }
+   //for (auto b : mlist)
+   //{
+   //   mws_r.w = std::max(mws_r.w, b->get_pos().w);
+   //   mws_r.h = std::max(mws_r.h, b->get_pos().h);
+   //}
 
-   if (mws_r.x > 0)
-   {
-      mws_r.x = 0;
-   }
-   else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
-   {
-      mws_r.x = -mws_r.w + pfm::screen::get_width();
-   }
+   //if (mws_r.x > 0)
+   //{
+   //   mws_r.x = 0;
+   //}
+   //else if (mws_r.x < -mws_r.w + pfm::screen::get_width())
+   //{
+   //   mws_r.x = -mws_r.w + pfm::screen::get_width();
+   //}
 
-   if (mws_r.y > 0)
-   {
-      mws_r.y = 0;
-   }
-   else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
-   {
-      mws_r.y = -mws_r.h + pfm::screen::get_height();
-   }
+   //if (mws_r.y > 0)
+   //{
+   //   mws_r.y = 0;
+   //}
+   //else if (mws_r.y < -mws_r.h + pfm::screen::get_height())
+   //{
+   //   mws_r.y = -mws_r.h + pfm::screen::get_height();
+   //}
 
    for (auto& c : children)
    {

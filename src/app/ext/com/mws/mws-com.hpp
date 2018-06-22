@@ -57,10 +57,10 @@ public:
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(shared_ptr<iadp> idp);
    virtual bool is_hit(float x, float y);
-   virtual void on_click();
    virtual void update_state() override;
    virtual void set_text(std::string i_text);
    virtual void set_text_visible(bool i_visible) { text_visible = i_visible; }
+   virtual const gfx_color& get_bg_color() const;
    virtual void set_bg_color(const gfx_color& i_color);
    virtual void set_bg_visible(bool i_visible);
    virtual void set_font(mws_sp<mws_font> i_font);
