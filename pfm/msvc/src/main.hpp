@@ -32,6 +32,7 @@ public:
    virtual void start() override;
    virtual void run() override;
    virtual int get_screen_dpi()const;
+   virtual void flip_screen();
    virtual void write_text(const char* text)const;
    virtual void write_text_nl(const char* text)const;
    virtual void write_text(const wchar_t* text)const;
@@ -66,6 +67,8 @@ private:
 
    static shared_ptr<msvc_main> instance;
    bool is_full_screen;
+   bool is_window_flipped = false;
+   bool emulate_mobile_screen = false;
    RECT window_coord;
    bool disable_paint;
    lnk_subsystem subsys;

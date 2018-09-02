@@ -1027,6 +1027,11 @@ bool pfm::screen::is_gfx_available()
 	return data.gfx_available;
 }
 
+void pfm::screen::flip_screen()
+{
+   pfm_app_inst->flip_screen();
+}
+
 
 //shared_array<uint8> pfm::storage::load_res_byte_array(string ifilename, int& isize)
 //{

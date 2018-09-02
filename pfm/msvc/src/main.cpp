@@ -221,8 +221,62 @@ void msvc_main::run()
 
 int msvc_main::get_screen_dpi()const
 {
-   //return 480;
+   if (emulate_mobile_screen)
+   {
+      int dpi = int(480 * pfm::screen::get_width() / 1920.f);
+      //return 480;
+      return dpi;
+   }
+
    return 127;
+}
+
+void msvc_main::flip_screen()
+{
+   if (is_full_screen_mode())
+   {
+      // this only works in windowed apps
+      return;
+   }
+
+   is_window_flipped = !is_window_flipped;
+
+   auto u = unit_ctrl::inst()->get_app_start_unit();
+   int x = 0;
+   int y = 0;
+   int width = pfm::screen::get_width();
+   int height = pfm::screen::get_height();
+   bool start_full_screen = false;
+
+   if (u)
+   {
+      auto unit_pref = u->get_preferences();
+      int pref_width = unit_pref->get_preferred_screen_width();
+      int pref_height = unit_pref->get_preferred_screen_height();
+      start_full_screen = unit_pref->start_full_screen();
+
+      if (pref_width > 0 && pref_height > 0)
+      {
+         width = pref_width;
+         height = pref_height;
+      }
+   }
+
+   if (is_window_flipped)
+   {
+      int t = width;
+      width = height;
+      height = t;
+   }
+
+#if defined MWS_DEBUG_BUILD
+
+   x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
+   y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+
+#endif
+
+   SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
 }
 
 void msvc_main::write_text(const char* text)const
@@ -375,6 +429,7 @@ bool msvc_main::init_app(int argc, char** argv)
          int pref_width = unit_pref->get_preferred_screen_width();
          int pref_height = unit_pref->get_preferred_screen_height();
          start_full_screen = unit_pref->start_full_screen();
+         emulate_mobile_screen = unit_pref->emulate_mobile_screen();
 
          if (pref_width > 0 && pref_height > 0)
          {

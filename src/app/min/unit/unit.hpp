@@ -41,6 +41,8 @@ public:
    virtual bool start_full_screen() { return false; }
    virtual bool draw_touch_symbols_trail() { return false; }
    virtual bool show_onscreen_console() { return false; }
+
+   virtual bool emulate_mobile_screen() { return false; }
 };
 
 

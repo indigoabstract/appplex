@@ -803,6 +803,10 @@ void unit::receive(shared_ptr<iadp> idp)
                   unit_ctrl::inst()->resume();
                   break;
 
+               case KEY_F3:
+                  pfm::screen::flip_screen();
+                  break;
+
                case KEY_F4:
                   storage.toggle_screen_recording();
                   break;

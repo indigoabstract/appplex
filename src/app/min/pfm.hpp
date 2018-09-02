@@ -193,6 +193,8 @@ public:
    virtual float get_screen_brightness() const;
    virtual void set_screen_brightness(float i_brightness);
    virtual int get_screen_dpi()const = 0;
+   // switches between screen width and height. this only works in windowed desktop applications
+   virtual void flip_screen() {};
    virtual void write_text(const char* text)const = 0;
    virtual void write_text_nl(const char* text)const = 0;
    virtual void write_text(const wchar_t* text)const = 0;
@@ -228,6 +230,8 @@ public:
       static bool is_full_screen_mode();
       static void set_full_screen_mode(bool ienabled);
       static bool is_gfx_available();
+      // switches between screen width and height. this only works in windowed desktop applications
+      static void flip_screen();
    };
 
 
