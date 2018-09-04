@@ -129,7 +129,7 @@ void kx_block::eval()
    trc("]");
 }
 
-mws_sp<kx_process> kx_block::find_by_name(const std::string& iname, bool i_recursive)
+mws_sp<kx_process> kx_block::find_by_name(const std::string& iname, bool i_recursive) const
 {
    for (auto ke : list)
    {
@@ -156,6 +156,29 @@ mws_sp<kx_process> kx_block::find_by_name(const std::string& iname, bool i_recur
 
    return nullptr;
 }
+
+int kx_block::index_of_name(const std::string& iname) const
+{
+   int k = 0;
+
+   for (auto ke : list)
+   {
+      if (ke->is_process())
+      {
+         auto px = static_pointer_cast<kx_process>(ke);
+
+         if (px->get_name() == iname)
+         {
+            return k;
+         }
+
+         k++;
+      }
+   }
+
+   return -1;
+}
+
 
 
 mws_sp<kx_ignore_block> kx_ignore_block::nwi() { return mws_sp<kx_ignore_block>(new kx_ignore_block()); }

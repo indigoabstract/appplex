@@ -148,9 +148,14 @@ public:
    virtual bool is_process() override;
    virtual std::string print(int ilevel = 0);
    virtual std::string get_name()const = 0;
+   // direct subelements(subblocks)
+   virtual int get_elem_list_size() const { return 0; }
+   virtual mws_sp<kx_elem> get_elem_at(int i_idx) const { return nullptr; }
    // search inside the component for a process with the given name
    // if recursive, searches all subcomponents too
-   virtual mws_sp<kx_process> find_by_name(const std::string& iname, bool i_recursive) { return nullptr; }
+   virtual mws_sp<kx_process> find_by_name(const std::string& iname, bool i_recursive) const { return nullptr; }
+   // get index of a subelement in the list by name. returns index or -1 if not found
+   virtual int index_of_name(const std::string& iname) const { return -1; }
 
    mws_sp<kx_flowop> in, ex;
    mws_sp<rectangle_2d> box;
@@ -208,7 +213,10 @@ public:
       if (!name) { return "block-nn/a"; }
       return name->name;
    }
-   virtual mws_sp<kx_process> find_by_name(const std::string& iname, bool i_recursive) override;
+   virtual int get_elem_list_size() const override { return list.size(); }
+   virtual mws_sp<kx_elem> get_elem_at(int i_idx) const override { return list[i_idx]; }
+   virtual mws_sp<kx_process> find_by_name(const std::string& iname, bool i_recursive) const override;
+   virtual int index_of_name(const std::string& iname) const override;
 
    mws_sp<kx_symbol> name;
    std::vector<mws_sp<kx_elem> > list;
