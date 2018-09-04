@@ -24,210 +24,208 @@ class kx_scn_block;
 class kx_scn_main;
 
 
-shared_ptr<kx_whitespace> kx_whitespace::nwi(){ return shared_ptr<kx_whitespace>(new kx_whitespace()); }
+mws_sp<kx_whitespace> kx_whitespace::nwi() { return mws_sp<kx_whitespace>(new kx_whitespace()); }
 
-string kx_whitespace::print(int ilevel){ return data; }
-
-
-shared_ptr<kx_comma> kx_comma::nwi(){ return shared_ptr<kx_comma>(new kx_comma()); }
-
-string kx_comma::print(int ilevel){ return ", "; }
+string kx_whitespace::print(int ilevel) { return data; }
 
 
-shared_ptr<kx_async_flowop> kx_async_flowop::nwi(){ return shared_ptr<kx_async_flowop>(new kx_async_flowop()); }
+mws_sp<kx_comma> kx_comma::nwi() { return mws_sp<kx_comma>(new kx_comma()); }
+
+string kx_comma::print(int ilevel) { return ", "; }
+
+
+mws_sp<kx_async_flowop> kx_async_flowop::nwi() { return mws_sp<kx_async_flowop>(new kx_async_flowop()); }
 
 string kx_async_flowop::print(int ilevel)
 {
-	std::string s = "->>";
+   std::string s = "->>";
 
-	if (fltype == afl_left)
-	{
-		s = "<<-";
-	}
+   if (fltype == afl_left)
+   {
+      s = "<<-";
+   }
 
-	return s;
+   return s;
 }
 
-shared_ptr<kx_flowop> kx_flowop::nwi(){ return shared_ptr<kx_flowop>(new kx_flowop()); }
+mws_sp<kx_flowop> kx_flowop::nwi() { return mws_sp<kx_flowop>(new kx_flowop()); }
 
 string kx_flowop::print(int ilevel)
 {
-	std::string s = "->";
+   std::string s = "->";
 
-	if (fltype == fl_left)
-	{
-		s = "<-";
-	}
+   if (fltype == fl_left)
+   {
+      s = "<-";
+   }
 
-	return s;
+   return s;
 }
 
 
-bool kx_process::is_process(){ return true; }
+bool kx_process::is_process() { return true; }
 
-string kx_process::print(int ilevel){ return "kx_process"; }
-
-shared_ptr<kx_process> kx_process::find_by_name(const std::string& iname)
-{
-	if (get_name() == iname)
-	{
-		return static_pointer_cast<kx_process>(get_inst());
-	}
-
-	return nullptr;
-}
+string kx_process::print(int ilevel) { return "kx_process"; }
 
 
-shared_ptr<kx_symbol> kx_symbol::nwi(){ return shared_ptr<kx_symbol>(new kx_symbol()); }
+mws_sp<kx_symbol> kx_symbol::nwi() { return mws_sp<kx_symbol>(new kx_symbol()); }
 
-string kx_symbol::print(int ilevel){ return name; }
+string kx_symbol::print(int ilevel) { return name; }
 
 void kx_symbol::eval()
 {
-	trx("sym[{}]", name);
+   trx("sym[{}]", name);
 }
 
 
-shared_ptr<kx_text> kx_text::nwi(){ return shared_ptr<kx_text>(new kx_text()); }
+mws_sp<kx_text> kx_text::nwi() { return mws_sp<kx_text>(new kx_text()); }
 
-std::string kx_text::print(int ilevel){ return data; }
+std::string kx_text::print(int ilevel) { return data; }
 
 void kx_text::eval()
 {
-	trx("text[{}]", data);
+   trx("text[{}]", data);
 }
 
 
-shared_ptr<kx_block> kx_block::nwi(){ return shared_ptr<kx_block>(new kx_block()); }
+mws_sp<kx_block> kx_block::nwi() { return mws_sp<kx_block>(new kx_block()); }
 
 string kx_block::print(int ilevel)
 {
-	std::string s = "";
+   std::string s = "";
 
-	if (name)
-	{
-		s.append(indent_by_level(ilevel) + name->name);
-	}
+   if (name)
+   {
+      s.append(indent_by_level(ilevel) + name->name);
+   }
 
-	s.append("\n" + indent_by_level(ilevel) + "[\n");
-	s.append(indent_by_level(ilevel + 1));
-	for(auto ke : list)
-	{
-		s.append(ke->print(ilevel + 1));
-	}
-	s.append("\n" + indent_by_level(ilevel) + "]\n");
+   s.append("\n" + indent_by_level(ilevel) + "[\n");
+   s.append(indent_by_level(ilevel + 1));
+   for (auto ke : list)
+   {
+      s.append(ke->print(ilevel + 1));
+   }
+   s.append("\n" + indent_by_level(ilevel) + "]\n");
 
-	return s;
+   return s;
 }
 
 void kx_block::eval()
 {
-	trc("block ");
+   trc("block ");
 
-	if (name)
-	{
-		trc("{}", name->name);
-	}
+   if (name)
+   {
+      trc("{}", name->name);
+   }
 
-	trc("[");
+   trc("[");
 
-	for(auto ke : list)
-	{
-		ke->eval();
-	}
+   for (auto ke : list)
+   {
+      ke->eval();
+   }
 
-	trc("]");
+   trc("]");
 }
 
-shared_ptr<kx_process> kx_block::find_by_name(const std::string& iname)
+mws_sp<kx_process> kx_block::find_by_name(const std::string& iname, bool i_recursive)
 {
-	if (get_name() == iname)
-	{
-		return static_pointer_cast<kx_process>(get_inst());
-	}
+   for (auto ke : list)
+   {
+      if (ke->is_process())
+      {
+         auto px = static_pointer_cast<kx_process>(ke);
 
-	for(auto ke : list)
-	{
-		shared_ptr<kx_process> f = ke->find_by_name(iname);
+         if (px->get_name() == iname)
+         {
+            return px;
+         }
 
-		if (f)
-		{
-			return f;
-		}
-	}
+         if (i_recursive)
+         {
+            mws_sp<kx_process> px_r = px->find_by_name(iname, true);
 
-	return nullptr;
+            if (px_r)
+            {
+               return px_r;
+            }
+         }
+      }
+   }
+
+   return nullptr;
 }
 
 
-shared_ptr<kx_ignore_block> kx_ignore_block::nwi(){ return shared_ptr<kx_ignore_block>(new kx_ignore_block()); }
+mws_sp<kx_ignore_block> kx_ignore_block::nwi() { return mws_sp<kx_ignore_block>(new kx_ignore_block()); }
 
 string kx_ignore_block::print(int ilevel)
 {
-	std::string s = "@@";
+   std::string s = "@@";
 
-	if (name)
-	{
-		s.append(indent_by_level(ilevel) + name->name);
-	}
+   if (name)
+   {
+      s.append(indent_by_level(ilevel) + name->name);
+   }
 
-	if (!body.empty())
-	{
-		s.append(indent_by_level(ilevel) + "\n[\n");
-		s.append(indent_by_level(ilevel) + body);
-		s.append(indent_by_level(ilevel) + "\n]\n");
-	}
+   if (!body.empty())
+   {
+      s.append(indent_by_level(ilevel) + "\n[\n");
+      s.append(indent_by_level(ilevel) + body);
+      s.append(indent_by_level(ilevel) + "\n]\n");
+   }
 
-	return s;
+   return s;
 }
 
 
-shared_ptr<kx_match_block> kx_match_block::nwi(){ return shared_ptr<kx_match_block>(new kx_match_block()); }
+mws_sp<kx_match_block> kx_match_block::nwi() { return mws_sp<kx_match_block>(new kx_match_block()); }
 
 string kx_match_block::print(int ilevel)
 {
-	std::string s = "?";
+   std::string s = "?";
 
-	if (name)
-	{
-		s.append(indent_by_level(ilevel) + name->name);
-	}
+   if (name)
+   {
+      s.append(indent_by_level(ilevel) + name->name);
+   }
 
-	s.append(indent_by_level(ilevel) + "\n[\n");
-	s.append(indent_by_level(ilevel));
-	for(auto ke : blk->list)
-	{
-		s.append(ke->print(ilevel + 1));
-	}
-	s.append(indent_by_level(ilevel) + "\n]\n");
+   s.append(indent_by_level(ilevel) + "\n[\n");
+   s.append(indent_by_level(ilevel));
+   for (auto ke : blk->list)
+   {
+      s.append(ke->print(ilevel + 1));
+   }
+   s.append(indent_by_level(ilevel) + "\n]\n");
 
-	return s;
+   return s;
 }
 
 
-shared_ptr<kx_meta_block> kx_meta_block::nwi(){ return shared_ptr<kx_meta_block>(new kx_meta_block()); }
+mws_sp<kx_meta_block> kx_meta_block::nwi() { return mws_sp<kx_meta_block>(new kx_meta_block()); }
 
 std::string kx_meta_block::print(int ilevel)
 {
-	std::string s = "@";
+   std::string s = "@";
 
-	if (name)
-	{
-		s.append(indent_by_level(ilevel) + name->name);
-	}
+   if (name)
+   {
+      s.append(indent_by_level(ilevel) + name->name);
+   }
 
-	if (blk)
-	{
-		s.append(indent_by_level(ilevel) + "\n[\n");
-		s.append(indent_by_level(ilevel));
-		for(auto ke : blk->list)
-		{
-			s.append(ke->print(ilevel + 1));
-		}
-		s.append(indent_by_level(ilevel) + "\n]\n");
-	}
+   if (blk)
+   {
+      s.append(indent_by_level(ilevel) + "\n[\n");
+      s.append(indent_by_level(ilevel));
+      for (auto ke : blk->list)
+      {
+         s.append(ke->print(ilevel + 1));
+      }
+      s.append(indent_by_level(ilevel) + "\n]\n");
+   }
 
-	return s;
+   return s;
 }
 
 #endif

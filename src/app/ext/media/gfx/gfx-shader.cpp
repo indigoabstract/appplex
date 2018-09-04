@@ -825,6 +825,7 @@ void gfx_shader::release()
 {
    p->release();
    gi()->remove_gfx_obj(this);
+   mws_print("shader [%s] released.\n", get_program_name().c_str());
 }
 
 bool gfx_shader::make_current()

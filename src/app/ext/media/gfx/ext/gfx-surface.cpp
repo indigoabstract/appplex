@@ -69,16 +69,16 @@ gfx_plane::gfx_plane(std::shared_ptr<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position
 {
 }
 
-void gfx_plane::set_dimensions(float idx, float idy)
+void gfx_plane::set_dimensions(float idx, float idy, float i_z_val)
 {
    float p = 0.5;
    const vx_fmt_p3f_n3f_t2f tvertices_data[] =
       // xyz, uv
    {
-      {{-p * idx,  p * idy, 0}, {0, 0, -1}, {0, 1}},
-      {{-p * idx, -p * idy, 0}, {0, 0, -1}, {0, 0}},
-      {{ p * idx, -p * idy, 0}, {0, 0, -1}, {1, 0}},
-      {{ p * idx,  p * idy, 0}, {0, 0, -1}, {1, 1}},
+      {{-p * idx,  p * idy, i_z_val}, {0, 0, -1}, {0, 1}},
+      {{-p * idx, -p * idy, i_z_val}, {0, 0, -1}, {0, 0}},
+      {{ p * idx, -p * idy, i_z_val}, {0, 0, -1}, {1, 0}},
+      {{ p * idx,  p * idy, i_z_val}, {0, 0, -1}, {1, 1}},
    };
 
    const gfx_indices_type tindices_data[] =

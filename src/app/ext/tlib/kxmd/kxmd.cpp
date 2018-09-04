@@ -8,9 +8,9 @@
 #include <kxmd/kx-elem.hpp>
 
 
-std::vector<shared_ptr<kx_process> > kxmd_ops::get_process_list(const shared_ptr<kx_process> ikp)
+std::vector<mws_sp<kx_process> > kxmd_ops::get_process_list(const mws_sp<kx_process> ikp)
 {
-   std::vector<shared_ptr<kx_process> > list;
+   std::vector<mws_sp<kx_process> > list;
 
    if (ikp->type == kxe_block)
    {
@@ -28,7 +28,7 @@ std::vector<shared_ptr<kx_process> > kxmd_ops::get_process_list(const shared_ptr
    return list;
 }
 
-std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<shared_ptr<kx_process> >& ilist)
+std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<mws_sp<kx_process> >& ilist)
 {
    std::vector<std::string> list;
 
@@ -41,9 +41,9 @@ std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<share
 }
 
 
-std::vector<std::string> kxmd_ops::get_process_name_list(const shared_ptr<kx_process> ikp)
+std::vector<std::string> kxmd_ops::get_process_name_list(const mws_sp<kx_process> ikp)
 {
-   std::vector<shared_ptr<kx_process> > l1 = get_process_list(ikp);
+   std::vector<mws_sp<kx_process> > l1 = get_process_list(ikp);
    std::vector<std::string> l2;
 
    if (!l1.empty())
@@ -76,33 +76,39 @@ bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
 
 
 // i_path is like xxx.yyy.zzz
-shared_ptr<kx_process> kxmd_ops::get_px(std::string i_path, shared_ptr<kx_block> i_root)
+mws_sp<kx_process> kxmd_ops::get_inner_block(std::string i_path, mws_sp<kx_process> i_root, bool i_recursive)
 {
-   std::vector<std::string> tokens;
-   tokens = str_split(i_path, ".");
-   shared_ptr<kx_process> xdb = i_root;
+   mws_sp<kx_process> xdb;
 
-   if (i_path == "units.kappaxx.platf")
+   if (i_root->type == kxe_block)
    {
-      int x = 3;
-   }
-   for (auto& xdb_name : tokens)
-   {
-      auto sub_xdb = xdb->find_by_name(xdb_name);
-      xdb = sub_xdb;
+      auto block = static_pointer_cast<kx_block>(i_root);
+      std::vector<std::string> tokens;
+      tokens = str_split(i_path, ".");
+      xdb = i_root;
 
-      if (!xdb)
+      if (i_path == "units.kappaxx.platf")
       {
-         return nullptr;
+         int x = 3;
+      }
+      for (auto& xdb_name : tokens)
+      {
+         auto sub_xdb = xdb->find_by_name(xdb_name, i_recursive);
+         xdb = sub_xdb;
+
+         if (!xdb)
+         {
+            return nullptr;
+         }
       }
    }
 
    return xdb;
 }
 
-mws_any kxmd_ops::get_kxmd_value(std::string i_path, shared_ptr<kx_block> i_root, mws_any i_default_val)
+mws_any kxmd_ops::get_value(std::string i_path, mws_sp<kx_process> i_root, mws_any i_default_val)
 {
-   shared_ptr<kx_process> px = get_px(i_path, i_root);
+   mws_sp<kx_process> px = get_inner_block(i_path, i_root);
    mws_any result;
 
    if (px)
@@ -118,10 +124,10 @@ mws_any kxmd_ops::get_kxmd_value(std::string i_path, shared_ptr<kx_block> i_root
    return result;
 }
 
-std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string i_path, shared_ptr<kx_block> i_root, std::vector<std::string> i_default_val)
+std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string i_path, mws_sp<kx_process> i_root, std::vector<std::string> i_default_val)
 {
    std::vector<std::string> seq;
-   mws_any val = get_kxmd_value(i_path, i_root);
+   mws_any val = get_value(i_path, i_root);
 
    if (!val.empty())
    {
@@ -154,25 +160,34 @@ std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string i_path, shared_p
 
 
 // i_path is like xxx.yyy.zzz
-bool kxmd_ops::kxmd_path_exists(std::string i_path, shared_ptr<kx_block> i_root)
+bool kxmd_ops::kxmd_path_exists(std::string i_path, mws_sp<kx_process> i_root)
 {
-   std::size_t found = i_path.find_last_of(".");
-
-   if (found > 0)
+   if (i_root->type == kxe_block)
    {
-      std::string stem = i_path.substr(0, found);
-      std::string leaf = i_path.substr(found + 1, i_path.length() - found - 1);
-      auto seq = get_kxmd_str_seq(stem, i_root);
-      auto idx = std::find(seq.begin(), seq.end(), leaf);
+      std::size_t found = i_path.find_last_of(".");
 
-      if (idx != seq.end())
+      if (found > 0)
       {
-         return true;
+         std::string stem = i_path.substr(0, found);
+         std::string leaf = i_path.substr(found + 1, i_path.length() - found - 1);
+         auto seq = get_kxmd_str_seq(stem, i_root);
+         auto idx = std::find(seq.begin(), seq.end(), leaf);
+
+         if (idx != seq.end())
+         {
+            return true;
+         }
       }
    }
 
    return false;
 }
 
+
+std::string kxmd_ops::as_string(mws_any const& i_val)
+{
+   std::string str = mws_any_cast<std::string>(i_val);
+   return str;
+}
 
 #endif

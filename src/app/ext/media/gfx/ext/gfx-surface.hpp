@@ -28,7 +28,7 @@ class gfx_plane : public gfx_vxo
 {
 public:
    gfx_plane(std::shared_ptr<gfx> i_gi = nullptr);
-   virtual void set_dimensions(float idx, float idy);
+   virtual void set_dimensions(float idx, float idy, float i_z_val = 0.f);
 };
 
 class gfx_billboard : public gfx_plane

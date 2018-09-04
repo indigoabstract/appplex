@@ -16,8 +16,8 @@ gfx_tex_params::gfx_tex_params()
    min_filter = e_tf_linear_mipmap_linear;
    mag_filter = e_tf_linear;
    wrap_r = e_twm_clamp_to_edge;
-   wrap_s = e_twm_repeat;
-   wrap_t = e_twm_repeat;
+   wrap_s = e_twm_clamp_to_edge;
+   wrap_t = e_twm_clamp_to_edge;
    max_anisotropy = 16.f;
    gen_mipmaps = true;
    regen_mipmaps = false;
@@ -239,12 +239,8 @@ int gfx_tex::get_texture_gl_id()
 void gfx_tex::set_texture_gl_id(int itexture_id)
 {
    check_valid_state();
-
-   if (!is_external)
-   {
-      mws_throw ia_exception("only available for external textures!");
-   }
-
+   // only available for external textures
+   assert(is_external);
    texture_gl_id = itexture_id;
 }
 
@@ -263,12 +259,8 @@ int gfx_tex::get_height()
 void gfx_tex::set_dim(int i_width, int i_height)
 {
     check_valid_state();
-    
-    if (!is_external)
-    {
-        mws_throw ia_exception("only available for external textures!");
-    }
-    
+    // only available for external textures
+    assert(is_external);
     init_dimensions(i_width, i_height);
 }
 
@@ -462,7 +454,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = true;
@@ -477,20 +469,20 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int iwith, int iheight,
    }
 
    texture_gl_id = itexture_id;
-   init_dimensions(iwith, iheight);
+   init_dimensions(i_width, i_height);
 
    mws_report_gfx_errs();
    is_valid_state = true;
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = false;
    uni_tex_type = iuni_tex_type;
    set_texture_name(itex_name);
-   init_dimensions(iwith, iheight);
+   init_dimensions(i_width, i_height);
 
    switch (uni_tex_type)
    {
@@ -537,15 +529,11 @@ void gfx_tex::set_texture_name(std::string itex_name)
    tex_name = itex_name;
 }
 
-void gfx_tex::init_dimensions(int iwidth, int iheight)
+void gfx_tex::init_dimensions(int i_width, int i_height)
 {
-   if (iwidth <= 0 || iheight <= 0)
-   {
-      mws_throw ia_exception("width and height must be > 0");
-   }
-
-   width = iwidth;
-   height = iheight;
+   mws_assert(i_width > 0 && i_height > 0);
+   width = i_width;
+   height = i_height;
 }
 
 void gfx_tex::set_params(const gfx_tex_params* i_prm)
@@ -570,10 +558,7 @@ int gfx_tex::gen_texture_gl_id()
 
 void gfx_tex::check_valid_state()
 {
-   if (!is_valid_state)
-   {
-      mws_throw ia_exception("the texture is not in a valid state");
-   }
+   assert(is_valid_state);
 }
 
 void gfx_tex::release()

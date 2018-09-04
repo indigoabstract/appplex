@@ -156,15 +156,15 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
    set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
 }
 
-void gfx_quad_2d::set_dimensions(float idx, float idy)
+void gfx_quad_2d::set_dimensions(float idx, float idy, float i_z_val)
 {
    float p = 0.5;
    vx_data =
    {
-      { { -p * idx,  p * idy, 0 }, { 0, 0, -1 }, { 0, 1 } },
-   { { -p * idx, -p * idy, 0 }, { 0, 0, -1 }, { 0, 0 } },
-   { { p * idx, -p * idy, 0 }, { 0, 0, -1 }, { 1, 0 } },
-   { { p * idx,  p * idy, 0 }, { 0, 0, -1 }, { 1, 1 } },
+      { { -p * idx,  p * idy, i_z_val }, { 0, 0, -1 }, { 0, 1 } },
+   { { -p * idx, -p * idy, i_z_val }, { 0, 0, -1 }, { 0, 0 } },
+   { { p * idx, -p * idy, i_z_val }, { 0, 0, -1 }, { 1, 0 } },
+   { { p * idx,  p * idy, i_z_val }, { 0, 0, -1 }, { 1, 1 } },
    };
 
    const gfx_indices_type tindices_data[] =
