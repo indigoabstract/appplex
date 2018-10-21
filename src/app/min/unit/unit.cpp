@@ -903,7 +903,7 @@ void unit::init()
 */
 void unit::on_destroy()
 {
-   if (isInit())
+   if (is_init())
    {
       //mws_root->on_destroy();
    }
@@ -979,7 +979,7 @@ shared_ptr<unit_preferences> unit::get_preferences()
    return prefs;
 }
 
-bool unit::isInit()
+bool unit::is_init()
 {
    return initVal;
 }
@@ -1130,7 +1130,7 @@ void unit_list::on_resize()
    {
       auto u = ulist[ulmodel.lock()->get_selected_elem()];
 
-      if (u)
+      if (u && u->is_init())
       {
          u->on_resize();
       }

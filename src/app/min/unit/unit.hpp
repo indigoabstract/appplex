@@ -101,7 +101,7 @@ public:
    bool is_gfx_unit();
    std::shared_ptr<unit_preferences> get_preferences();
    // true to exit app, false to continue
-   bool back();
+   virtual bool back();
    bool rsk_was_hit(int x0, int y0);
    int schedule_operation(const std::function<void()> &ioperation);
    bool cancel_operation(int ioperation_id);
@@ -154,7 +154,7 @@ private:
    void run_step();
    void base_load();
    void base_unload();
-   bool isInit();
+   bool is_init();
    void setInit(bool isInit0);
 
    // unit name/id

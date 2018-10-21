@@ -10,6 +10,16 @@ void local_notification::register_for_notifications()
 {
 }
 
+void local_notification::schedule_wakeup_by_delay(std::string message, int delay_in_seconds, int tag)
+{
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "schedule_wakeup", "(Ljava/lang/String;II)V");
+    jstring jstr1 = env->NewStringUTF(message.c_str());
+
+    env->CallStaticVoidMethod(clazz, mid, jstr1, delay_in_seconds, tag);
+}
+
 /**
 * Schedules a local notification
 * @param message - message to be shown in notification

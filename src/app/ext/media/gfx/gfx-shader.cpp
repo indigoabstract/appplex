@@ -395,6 +395,7 @@ public:
       {
          is_validated = is_activated = false;
          glDeleteProgram(program_id);
+         mws_report_gfx_errs();
          program_id = fragment_shader_id = vertex_shader_id = 0;
       }
 

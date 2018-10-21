@@ -1308,7 +1308,8 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
       if (get_key(wparam) == KEY_ESCAPE)
       {
-         unit_ctrl::inst()->back_evt();
+         bool back = unit_ctrl::inst()->back_evt();
+         unit_ctrl::inst()->set_app_exit_on_next_run(back);
       }
 
       return 0;

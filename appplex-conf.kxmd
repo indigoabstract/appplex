@@ -12,7 +12,7 @@ units
 	@@[ public units ],
 
 	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
-	gl-frag-shader-demo[ uses[ gfx ], platf[ windows, android ], ],
+	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png, zlib ], platf[ windows, android ], ],
 	template[ enabled[ false ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],

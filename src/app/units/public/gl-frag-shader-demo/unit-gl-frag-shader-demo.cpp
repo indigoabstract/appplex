@@ -506,7 +506,7 @@ public:
 class unit_gl_frag_shader_demo_page : public mws_page
 {
 public:
-	unit_gl_frag_shader_demo_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){ set_id("gl-frag-shader-demo-page"); }
+	unit_gl_frag_shader_demo_page() { set_id("gl-frag-shader-demo-page"); }
 	virtual ~unit_gl_frag_shader_demo_page(){}
 
 	virtual void init()
@@ -532,16 +532,16 @@ public:
 			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 			int tsh = 5;
 
-			switch (ts->get_type())
+			switch (ts->type)
 			{
-			case touch_sym_evt::TS_PRESSED:
+			case pointer_evt::touch_began:
 			{
 				pressed_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
 				ts->process();
 				break;
 			}
 
-			case touch_sym_evt::TS_RELEASED:
+			case pointer_evt::touch_ended:
 			{
 				shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
 				glm::vec2 screen_size((float)u->get_width(), (float)u->get_height());
@@ -551,7 +551,7 @@ public:
 				break;
 			}
 
-			case touch_sym_evt::TS_PRESS_AND_DRAG:
+			case pointer_evt::touch_moved:
 			{
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
@@ -776,8 +776,7 @@ public:
 void unit_gl_frag_shader_demo::init_mws()
 {
 	mws_cam->clear_color = false;
-	shared_ptr<mws_page> page = mws_root->new_page<unit_gl_frag_shader_demo_page>();
-   mws_root->set_first_page(page);
+   mws_root->new_page<unit_gl_frag_shader_demo_page>();
 }
 
 
@@ -801,7 +800,7 @@ void unit_gl_frag_shader_demo::init()
 
 void unit_gl_frag_shader_demo::load()
 {
-	shared_ptr<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(mws_root->get_page_at(0));
+	shared_ptr<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(mws_root->page_tab[0]);
 
 	p->load(static_pointer_cast<unit_gl_frag_shader_demo>(get_smtp_instance()));
 	page->on_load();

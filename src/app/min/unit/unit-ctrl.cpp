@@ -205,7 +205,7 @@ void unit_ctrl::resize_app(int i_width, int i_height)
    pfm::data.screen_height = i_height;
    gfx::on_resize(i_width, i_height);
 
-   if (ul)
+   if (ul && ul->is_init())
    {
       ul->on_resize();
    }
@@ -213,7 +213,7 @@ void unit_ctrl::resize_app(int i_width, int i_height)
    {
       auto u = get_current_unit();
 
-      if (u)
+      if (u && u->is_init())
       {
          u->on_resize();
       }
@@ -304,7 +304,7 @@ void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
       crt_unit = unit0;
       pfm::filesystem::load_res_file_map(unit0);
 
-      if (!unit0->isInit())
+      if (!unit0->is_init())
       {
          unit0->base_init();
          unit0->setInit(true);
