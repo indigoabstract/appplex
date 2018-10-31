@@ -333,13 +333,13 @@ void gfx_scene::draw()
          plist.push_back({ gl::CLEAR_MASK, clear_mask });
       }
 
-       mws_report_gfx_errs();
+      mws_report_gfx_errs();
       if (!plist.empty())
       {
          gl_st->set_state(&plist[0], plist.size());
       }
 
-       mws_report_gfx_errs();
+      mws_report_gfx_errs();
       auto& opaque_obj_list = cam->opaque_obj_list;
       auto& translucent_obj_list = cam->translucent_obj_list;
 

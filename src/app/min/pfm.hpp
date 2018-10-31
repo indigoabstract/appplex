@@ -108,10 +108,11 @@ public:
       bool open();
       bool open(std::string iopen_mode);
       void close();
+      void flush();
       void seek(uint64 ipos);
 
-      int read(shared_ptr<std::vector<uint8> > ibuffer);
-      int write(const shared_ptr<std::vector<uint8> > ibuffer);
+      int read(std::vector<uint8>& ibuffer);
+      int write(const std::vector<uint8>& ibuffer);
       int read(uint8* ibuffer, int isize);
       int write(const uint8* ibuffer, int isize);
 
@@ -148,9 +149,10 @@ namespace pfm_impl
       virtual uint64 last_write_time()const = 0;
       virtual bool open(std::string iopen_mode);
       virtual void close();
+      virtual void flush();
       virtual void seek(uint64 ipos);
-      virtual int read(shared_ptr<std::vector<uint8> > ibuffer);
-      virtual int write(const shared_ptr<std::vector<uint8> > ibuffer);
+      virtual int read(std::vector<uint8>& ibuffer);
+      virtual int write(const std::vector<uint8>& ibuffer);
       virtual int read(uint8* ibuffer, int isize);
       virtual int write(const uint8* ibuffer, int isize);
       virtual void check_state()const;
@@ -163,12 +165,28 @@ namespace pfm_impl
    protected:
       virtual bool open_impl(std::string iopen_mode) = 0;
       virtual void close_impl() = 0;
+      virtual void flush_impl() = 0;
       virtual void seek_impl(uint64 ipos, int iseek_pos);
       virtual uint64 tell_impl();
       virtual int read_impl(uint8* ibuffer, int isize);
       virtual int write_impl(const uint8* ibuffer, int isize);
    };
 }
+
+
+class mws_log
+{
+public:
+   static mws_sp<mws_log> i();
+   virtual const std::vector<std::string>& get_log() = 0;
+   virtual void push(const char* i_msg) = 0;
+   virtual void pushf(const char* i_fmt, ...) = 0;
+   virtual void clear() = 0;
+
+protected:
+   mws_log();
+   static mws_sp<mws_log> inst;
+};
 
 
 class pfm_data

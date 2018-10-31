@@ -38,12 +38,12 @@ public:
 
 	virtual ~android_file_impl() {}
 
-    virtual FILE* get_file_impl() override
+    FILE* get_file_impl() override
     {
         return file;
     }
 
-	virtual uint64 length() override
+	uint64 length() override
 	{
 		uint64 size = 0;
 
@@ -79,21 +79,21 @@ public:
 		return size;
 	}
 
-	virtual uint64 creation_time()const
+	uint64 creation_time() const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	virtual uint64 last_write_time()const
+	uint64 last_write_time()const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	virtual bool open_impl(std::string iopen_mode)
+	bool open_impl(std::string iopen_mode) override
 	{
 		std::string path = ppath.get_full_path();
 
@@ -117,7 +117,7 @@ public:
 		return asset_file != nullptr;
 	}
 
-	virtual void close_impl()
+	void close_impl() override
 	{
 		if(file)
 		{
@@ -135,7 +135,23 @@ public:
         }
 	}
 
-	virtual void seek_impl(uint64 ipos, int iseek_pos)
+    void flush_impl() override
+    {
+        if(file)
+        {
+            fflush(file);
+        }
+        else if(asset_file)
+        {
+            mws_print("error[ cannot flush an asset file! [ %s ] ]", ppath.get_full_path().c_str());
+        }
+        else
+        {
+            mws_print("error[ file [ %s ] is not open! ]", ppath.get_full_path().c_str());
+        }
+    }
+
+	void seek_impl(uint64 ipos, int iseek_pos) override
 	{
 		if(file)
 		{
@@ -151,7 +167,7 @@ public:
         }
 	}
 
-	virtual uint64 tell_impl()
+	uint64 tell_impl() override
 	{
 		if(file)
 		{
@@ -163,7 +179,7 @@ public:
 		return 0;
 	}
 
-	virtual int read_impl(uint8* ibuffer, int isize)
+	int read_impl(uint8* ibuffer, int isize) override
 	{
 		if(file)
 		{
@@ -173,7 +189,7 @@ public:
 		return AAsset_read(asset_file, ibuffer, isize);
 	}
 
-	virtual int write_impl(const uint8* ibuffer, int isize)
+	int write_impl(const uint8* ibuffer, int isize) override
 	{
 		if(file)
 		{
@@ -446,14 +462,12 @@ extern "C"
 			CppString_to_JniString(name));
 	}
 
-	char* GetBuildVersion()
+	void exit_application()
 	{
-		return (char*)JavaCallStaticMethodByObject_string("GetBuildVersion", "()Ljava/lang/String;");
-	}
-
-	void ExitApplication()
-	{
-		JavaCallStaticMethodByObject_void("ExitApplication", "()V");
+        JNIEnv* env = JniHelper::getEnv();
+        jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+        jmethodID mid = env->GetStaticMethodID(clazz, "exit_application", "()V");
+        env->CallStaticVoidMethod(clazz, mid);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeInitRenderer(JNIEnv* env, jobject obj, jobject iasset_manager, jstring iapk_path)
@@ -540,8 +554,26 @@ extern "C"
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeRender(JNIEnv*  env, jobject thiz)
 	{
-		android_main::get_instance()->run();
+	    if(unit_ctrl::inst()->is_set_app_exit_on_next_run())
+        {
+            exit_application();
+        }
+        else
+        {
+            android_main::get_instance()->run();
+        }
 	}
+
+    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1log(JNIEnv*  env, jobject thiz, jstring i_msg)
+    {
+        const char* msg = env->GetStringUTFChars(i_msg, 0);
+
+        if (msg)
+        {
+            mws_log::i()->push(msg);
+            env->ReleaseStringUTFChars(i_msg, msg);
+        }
+    }
 
 	JNIEXPORT jboolean JNICALL Java_com_indigoabstract_appplex_main_native_1back_1evt(JNIEnv *env, jobject thiz)
 	{

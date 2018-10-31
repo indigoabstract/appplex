@@ -4,5 +4,6 @@ target_sources(app_plex_main
 	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.cpp"
     PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/gap-buffer.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-text-area.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.hpp"
 )

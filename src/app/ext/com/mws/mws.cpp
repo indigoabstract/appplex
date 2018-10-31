@@ -762,9 +762,17 @@ void mws_page::update_state()
 
 void mws_page::update_view(mws_sp<mws_camera> g)
 {
-   for (auto b : mlist)
+   for (auto& c : children)
    {
-      b->update_view(g);
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         if (w && w->visible)
+         {
+            w->update_view(g);
+         }
+      }
    }
 }
 

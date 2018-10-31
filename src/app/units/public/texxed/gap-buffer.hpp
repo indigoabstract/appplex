@@ -32,6 +32,53 @@
 #include <stdio.h>
 #include <string>
 
+
+class text_area_model_ro : public text_area_model
+{
+public:
+   text_area_model_ro();
+   bool get_word_wrap() override;
+   void set_word_wrap(bool i_word_wrap) override;
+   int get_line_count() override;
+   std::string get_line_at(int i_idx, bool i_keep_line_break = true) override;
+   std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) override;
+   void push_back(const char* i_text, int i_length) override;
+   void set_text(const std::string& i_text) override;
+   void set_text(const char* i_text, int i_length) override;
+   void set_size(int i_width, int i_height) override;
+   void set_font(mws_sp<mws_font> i_font) override;
+   int get_char_at_pixel(float i_x, float i_y) override;
+
+private:
+   void update_added_line_offsets(const std::string& i_new_text);
+   void update_line_offsets();
+
+   std::string text;
+   bool word_wrap = false;
+   std::vector<uint32> line_offsets;
+   int width = 0;
+   int height = 0;
+   mws_sp<mws_font> font;
+};
+
+
+class text_area_model_rw : public text_area_model
+{
+public:
+   bool get_word_wrap() override;
+   void set_word_wrap(bool i_word_wrap) override;
+   int get_line_count() override;
+   std::string get_line_at(int i_idx, bool i_keep_line_break = true) override;
+   std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) override;
+   void push_back(const char* i_text, int i_length) override;
+   void set_text(const std::string& i_text) override;
+   void set_text(const char* i_text, int i_length) override;
+   void set_size(int i_width, int i_height) override;
+   void set_font(mws_sp<mws_font> i_font) override;
+   int get_char_at_pixel(float i_x, float i_y) override;
+};
+
+
 class GapBuffer : public text_area_model
 {
 
@@ -84,8 +131,9 @@ public:
     ~GapBuffer();
 
 	virtual int get_line_count();
-	virtual std::string get_line_at(int iidx);
-	virtual std::vector<std::string> get_lines_at(int iidx, int iline_count);
+	virtual std::string get_line_at(int iidx, bool i_keep_line_break = true);
+	virtual std::vector<std::string> get_lines_at(int iidx, int iline_count, bool i_keep_line_break = true);
+   virtual void push_back(const char* i_text, int i_length) override;
 
 	/*
      *  Returns the size of the buffer minus the gap.
@@ -157,7 +205,7 @@ public:
      *  Inserts a length size string 
      *  at point.
      */
-    void InsertString(char *string, unsigned int length);
+    void InsertString(const char *string, unsigned int length);
 
     /*
      *  Prints out the current buffer from start
@@ -172,6 +220,13 @@ public:
     int SaveBufferToFile(FILE *file, unsigned int bytes);
 
     
+    virtual bool get_word_wrap() { return false; }
+    virtual void set_word_wrap(bool i_word_wrap) {}
+    void set_text(const std::string& i_text) override {}
+    virtual void set_text(const char* i_text, int i_length) {}
+    virtual void set_size(int i_width, int i_height) {}
+    virtual void set_font(mws_sp<mws_font> i_font) {}
+    virtual int get_char_at_pixel(float i_x, float i_y) { return 0; }
 };
 
 #endif

@@ -482,7 +482,13 @@ namespace pfm_impl
 		file_is_open = false;
 	}
 
-	void pfm_file_impl::seek(uint64 ipos)
+   void pfm_file_impl::flush()
+   {
+      check_state();
+      flush_impl();
+   }
+  
+   void pfm_file_impl::seek(uint64 ipos)
 	{
 		check_state();
 
@@ -490,20 +496,20 @@ namespace pfm_impl
 		file_pos = ipos;
 	}
 
-	int pfm_file_impl::read(shared_ptr<std::vector<uint8> > ibuffer)
+	int pfm_file_impl::read(std::vector<uint8>& ibuffer)
 	{
 		check_state();
 
-		ibuffer->resize((size_t)length());
+		ibuffer.resize((size_t)length());
 
-		return read(begin_ptr(ibuffer), ibuffer->size());
+		return read(begin_ptr(ibuffer), ibuffer.size());
 	}
 
-	int pfm_file_impl::write(const shared_ptr<std::vector<uint8> > ibuffer)
+	int pfm_file_impl::write(const std::vector<uint8>& ibuffer)
 	{
 		check_state();
 
-		return write(begin_ptr(ibuffer), ibuffer->size());
+		return write(begin_ptr(ibuffer), ibuffer.size());
 	}
 
 	int pfm_file_impl::read(uint8* ibuffer, int isize)
@@ -719,17 +725,22 @@ void pfm_file::io_op::close()
 	impl->close();
 }
 
+void pfm_file::io_op::flush()
+{
+   impl->flush();
+}
+
 void pfm_file::io_op::seek(uint64 ipos)
 {
 	impl->seek(ipos);
 }
 
-int pfm_file::io_op::read(shared_ptr<std::vector<uint8> > ibuffer)
+int pfm_file::io_op::read(std::vector<uint8>& ibuffer)
 {
 	return impl->read(ibuffer);
 }
 
-int pfm_file::io_op::write(const shared_ptr<std::vector<uint8> > ibuffer)
+int pfm_file::io_op::write(const std::vector<uint8>& ibuffer)
 {
 	return impl->write(ibuffer);
 }

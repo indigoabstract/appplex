@@ -38,6 +38,129 @@
 
 using namespace std;
 
+
+text_area_model_ro::text_area_model_ro()
+{
+   update_line_offsets();
+}
+
+bool text_area_model_ro::get_word_wrap() { return word_wrap; }
+
+void text_area_model_ro::set_word_wrap(bool i_word_wrap) { word_wrap = i_word_wrap; }
+
+int text_area_model_ro::get_line_count() { return line_offsets.size() - 1; }
+
+std::string text_area_model_ro::get_line_at(int i_idx, bool i_keep_line_break)
+{
+   int start_idx = line_offsets[i_idx];
+   int len = line_offsets[i_idx + 1] - start_idx;
+
+   if (!i_keep_line_break)
+   {
+      // if not empty line, discard the new line character at the end
+      if (len > 0)
+      {
+         len--;
+      }
+   }
+
+   std::string line = text.substr(start_idx, len);
+
+   return line;
+}
+
+std::vector<std::string> text_area_model_ro::get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break)
+{
+   std::vector<std::string> lines;
+
+   for (int k = 0; k < i_line_count; k++)
+   {
+      lines.push_back(get_line_at(i_idx + k, i_keep_line_break));
+   }
+
+   return lines;
+}
+
+void text_area_model_ro::push_back(const char* i_text, int i_length)
+{
+   std::string new_text(i_text, i_length);
+   text += new_text;
+   update_added_line_offsets(new_text);
+}
+
+void text_area_model_ro::set_text(const std::string& i_text)
+{
+   set_text(i_text.c_str(), i_text.length());
+}
+
+void text_area_model_ro::set_text(const char* i_text, int i_length)
+{
+   text = std::string(i_text, i_length);
+   update_line_offsets();
+}
+
+void text_area_model_ro::set_size(int i_width, int i_height) {}
+
+void text_area_model_ro::set_font(mws_sp<mws_font> i_font) {}
+
+int text_area_model_ro::get_char_at_pixel(float i_x, float i_y) { return 0; }
+
+void text_area_model_ro::update_added_line_offsets(const std::string& i_new_text)
+{
+   int len = i_new_text.length();
+   int last_offset = line_offsets.back();
+   line_offsets.pop_back();
+
+   for (int k = 0; k < len; k++)
+   {
+      if (i_new_text[k] == '\n')
+      {
+         int offset = last_offset + k + 1;
+         line_offsets.push_back(offset);
+      }
+   }
+
+   line_offsets.push_back(text.length());
+}
+
+void text_area_model_ro::update_line_offsets()
+{
+   int len = text.length();
+   line_offsets.clear();
+   line_offsets.push_back(0);
+
+   for (int k = 0; k < len; k++)
+   {
+      if (text[k] == '\n')
+      {
+         line_offsets.push_back(k + 1);
+      }
+   }
+
+   line_offsets.push_back(len);
+}
+
+
+bool text_area_model_rw::get_word_wrap() { return false; }
+void text_area_model_rw::set_word_wrap(bool i_word_wrap) {}
+int text_area_model_rw::get_line_count() { return 0; }
+std::string text_area_model_rw::get_line_at(int i_idx, bool i_keep_line_break) { return ""; }
+std::vector<std::string> text_area_model_rw::get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break) { return std::vector<std::string>(); }
+void text_area_model_rw::push_back(const char* i_text, int i_length)
+{
+}
+
+void text_area_model_rw::set_text(const std::string& i_text)
+{
+   set_text(i_text.c_str(), i_text.length());
+}
+
+void text_area_model_rw::set_text(const char* i_text, int i_length) {}
+void text_area_model_rw::set_size(int i_width, int i_height) {}
+void text_area_model_rw::set_font(mws_sp<mws_font> i_font) {}
+int text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
+
+
 GapBuffer::GapBuffer(int gsize) : GAP_SIZE(gsize)
 {
 	point = nullptr;
@@ -138,16 +261,16 @@ int GapBuffer::get_line_count()
 	return nl_offsets.size() - 1;
 }
 
-std::string GapBuffer::get_line_at(int iidx)
+std::string GapBuffer::get_line_at(int iidx, bool i_keep_line_break)
 {
 	int offset = nl_offsets[iidx];
 
-	std::string line(buffer + offset, nl_offsets[iidx + 1] - offset - 1);
+	std::string line(buffer + offset, nl_offsets[iidx + 1] - 1);
 
 	return line;
 }
 
-std::vector<std::string> GapBuffer::get_lines_at(int iidx, int iline_count)
+std::vector<std::string> GapBuffer::get_lines_at(int iidx, int iline_count, bool i_keep_line_break)
 {
 	std::vector<std::string> lines;
 
@@ -157,6 +280,23 @@ std::vector<std::string> GapBuffer::get_lines_at(int iidx, int iline_count)
 	}
 
 	return lines;
+}
+
+void GapBuffer::push_back(const char* i_text, int i_length)
+{
+   for (int k = 0; k < i_length; k++)
+   {
+      if (i_text[k] == '\n')
+      {
+         nl_offsets.push_back(k + 1);
+      }
+   }
+
+   nl_offsets.push_back(i_length + 1);
+   int size = BufferSize();
+   SetPoint(size);
+   InsertChar('\n');
+   InsertString(i_text, i_length);
 }
 
 /*
@@ -432,9 +572,9 @@ void GapBuffer::DeleteChars(unsigned int size)
     gapend += size;
 }
 
-void GapBuffer::InsertString(char *string, unsigned int length)
+void GapBuffer::InsertString(const char *string, unsigned int length)
 {
-
+   char* s = (char*)string;
     MoveGapToPoint();
 
     if (length > SizeOfGap()) {
@@ -442,7 +582,7 @@ void GapBuffer::InsertString(char *string, unsigned int length)
     }
 
     do {
-        PutChar(*(string++));
+        PutChar(*(s++));
     } while ( length-- );
 }
 

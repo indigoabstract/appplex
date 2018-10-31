@@ -211,7 +211,15 @@ protected:
 class text_area_model
 {
 public:
+   virtual bool get_word_wrap() = 0;
+   virtual void set_word_wrap(bool i_word_wrap) = 0;
    virtual int get_line_count() = 0;
-   virtual std::string get_line_at(int iidx) = 0;
-   virtual std::vector<std::string> get_lines_at(int iidx, int iline_count) = 0;
+   virtual std::string get_line_at(int i_idx, bool i_keep_line_break = true) = 0;
+   virtual std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) = 0;
+   virtual void push_back(const char* i_text, int i_length) = 0;
+   virtual void set_text(const std::string& i_text) = 0;
+   virtual void set_text(const char* i_text, int i_length) = 0;
+   virtual void set_size(int i_width, int i_height) = 0;
+   virtual void set_font(mws_sp<mws_font> i_font) = 0;
+   virtual int get_char_at_pixel(float i_x, float i_y) = 0;
 };

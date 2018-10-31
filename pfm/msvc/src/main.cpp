@@ -140,8 +140,13 @@ public:
 
    virtual void close_impl() override
    {
-      fclose((FILE*)file);
+      fclose(file);
       file = nullptr;
+   }
+
+   virtual void flush_impl() override
+   {
+      fflush(file);
    }
 
    FILE* file = nullptr;

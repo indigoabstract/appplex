@@ -60,8 +60,10 @@ public:
       vertex_buffer_clear(vbuffer);
    }
 
+   std::string mtext;
    void add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<mws_font> ifont)
    {
+      mtext = itext;
       auto& glyphs = font_db::inst()->get_glyph_vect(ifont->get_inst(), itext);
       glm::vec2 pen(ipos.x, ipos.y + ifont->get_ascender());
 
