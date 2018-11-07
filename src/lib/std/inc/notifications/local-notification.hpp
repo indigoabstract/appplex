@@ -19,6 +19,14 @@ public:
     * @param delay_in_seconds - the notification will be fired after this number of seconds have elapsed (since 'schedule_by_delay()' is called).
     * @param tag - tag to specify notification
     */
+    static void schedule_wakeup_by_date(std::string message, const std::chrono::system_clock::time_point& time_point_date, int tag);
+
+    /**
+    * Schedules a local notification
+    * @param message - message to be shown in notification
+    * @param delay_in_seconds - the notification will be fired after this number of seconds have elapsed (since 'schedule_by_delay()' is called).
+    * @param tag - tag to specify notification
+    */
     static void schedule_wakeup_by_delay(std::string message, int delay_in_seconds, int tag);
 
     /**
