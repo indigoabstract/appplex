@@ -85,7 +85,14 @@ void text_area_model_ro::push_back(const char* i_text, int i_length)
 {
    std::string new_text(i_text, i_length);
    text += new_text;
-   update_added_line_offsets(new_text);
+   update_back_added_line_offsets(new_text);
+}
+
+void text_area_model_ro::push_front(const char* i_text, int i_length)
+{
+   std::string new_text(i_text, i_length);
+   text = new_text + text;
+   update_front_added_line_offsets(new_text);
 }
 
 void text_area_model_ro::set_text(const std::string& i_text)
@@ -105,7 +112,7 @@ void text_area_model_ro::set_font(mws_sp<mws_font> i_font) {}
 
 int text_area_model_ro::get_char_at_pixel(float i_x, float i_y) { return 0; }
 
-void text_area_model_ro::update_added_line_offsets(const std::string& i_new_text)
+void text_area_model_ro::update_back_added_line_offsets(const std::string& i_new_text)
 {
    int len = i_new_text.length();
    int last_offset = line_offsets.back();
@@ -121,6 +128,29 @@ void text_area_model_ro::update_added_line_offsets(const std::string& i_new_text
    }
 
    line_offsets.push_back(text.length());
+}
+
+void text_area_model_ro::update_front_added_line_offsets(const std::string& i_new_text)
+{
+   std::vector<uint32> lo;
+   int len = i_new_text.length();
+   int idx = 1;
+
+   for (int k = 1; k < line_offsets.size(); k++)
+   {
+      line_offsets[k] += len;
+   }
+
+   for (int k = 0; k < len; k++)
+   {
+      if (i_new_text[k] == '\n')
+      {
+         line_offsets.insert(line_offsets.begin() + idx, k + 1);
+         idx++;
+      }
+   }
+
+   //update_line_offsets();
 }
 
 void text_area_model_ro::update_line_offsets()

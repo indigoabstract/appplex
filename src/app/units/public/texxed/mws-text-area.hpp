@@ -65,6 +65,31 @@ public:
       }
    }
 
+   virtual void push_front_text(const std::string& i_text)
+   {
+      if (!tx_src)
+      {
+         set_text(i_text);
+      }
+      else
+      {
+         tx_src->push_front(i_text.c_str(), i_text.length());
+
+         int line_count = tx_src->get_line_count();
+         std::string text;
+
+         for (int k = 0; k < line_count; k++)
+         {
+            text += tx_src->get_line_at(k);// +"\n";
+         }
+
+         tx_vxo->clear_text();
+         tx_vxo->add_text(text, glm::vec2(), font);
+         scroll_text(glm::vec2());
+         select_char_at(glm::vec2());
+      }
+   }
+
    virtual void scroll_text(const glm::vec2& ioff)
    {
       //tx_vxo->position += glm::vec3(ioff, 0);

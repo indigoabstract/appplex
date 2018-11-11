@@ -101,28 +101,31 @@ void free_camera::update_input(shared_ptr<iadp> idp)
          }
       }
 
-      //mws_print("tn %s\n", ts->get_type_name(ts->type).c_str());
-      switch (ts->type)
+      if (!ts->is_processed())
       {
-      case pointer_evt::touch_began:
-      {
-         ks->grab(ts->points[0].x, ts->points[0].y);
-         ts->process();
-         break;
-      }
+         //mws_print("tn %s\n", ts->get_type_name(ts->type).c_str());
+         switch (ts->type)
+         {
+         case pointer_evt::touch_began:
+         {
+            ks->grab(ts->points[0].x, ts->points[0].y);
+            ts->process();
+            break;
+         }
 
-      case pointer_evt::touch_ended:
-      {
-         ts->process();
-         break;
-      }
+         case pointer_evt::touch_ended:
+         {
+            ts->process();
+            break;
+         }
 
-      case pointer_evt::mouse_wheel:
-      {
-         persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
-         ts->process();
-         break;
-      }
+         case pointer_evt::mouse_wheel:
+         {
+            persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
+            ts->process();
+            break;
+         }
+         }
       }
    }
    else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))

@@ -43,6 +43,7 @@ public:
    std::string get_line_at(int i_idx, bool i_keep_line_break = true) override;
    std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) override;
    void push_back(const char* i_text, int i_length) override;
+   void push_front(const char* i_text, int i_length) override;
    void set_text(const std::string& i_text) override;
    void set_text(const char* i_text, int i_length) override;
    void set_size(int i_width, int i_height) override;
@@ -50,7 +51,8 @@ public:
    int get_char_at_pixel(float i_x, float i_y) override;
 
 private:
-   void update_added_line_offsets(const std::string& i_new_text);
+   void update_back_added_line_offsets(const std::string& i_new_text);
+   void update_front_added_line_offsets(const std::string& i_new_text);
    void update_line_offsets();
 
    std::string text;

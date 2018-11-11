@@ -72,7 +72,7 @@ units
 	
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
-	techno-globe[ uses[ gfx ], platf[ windows, emscripten ], ],
+	techno-globe[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ], platf[ windows, android, emscripten ], ],
 	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, zlib ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
