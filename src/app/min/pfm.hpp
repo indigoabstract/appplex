@@ -109,6 +109,7 @@ public:
       bool open(std::string iopen_mode);
       void close();
       void flush();
+      bool reached_eof() const;
       void seek(uint64 ipos);
 
       int read(std::vector<uint8>& ibuffer);
@@ -140,7 +141,7 @@ namespace pfm_impl
    public:
       pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
       virtual ~pfm_file_impl();
-      virtual FILE* get_file_impl() = 0;
+      virtual FILE* get_file_impl() const = 0;
       virtual bool exists();
       virtual bool is_opened()const;
       virtual bool is_writable()const;
@@ -150,6 +151,7 @@ namespace pfm_impl
       virtual bool open(std::string iopen_mode);
       virtual void close();
       virtual void flush();
+      virtual bool reached_eof() const;
       virtual void seek(uint64 ipos);
       virtual int read(std::vector<uint8>& ibuffer);
       virtual int write(const std::vector<uint8>& ibuffer);

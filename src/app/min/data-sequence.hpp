@@ -8,7 +8,8 @@ class data_sequence
 {
 public:
    data_sequence();
-   ~data_sequence();
+   virtual ~data_sequence();
+   virtual bool reached_end_of_sequence();
    void close();
    virtual uint64 get_size()const = 0;
    virtual void reset() = 0;
@@ -17,7 +18,8 @@ public:
    uint64 get_total_bytes_read()const { return total_bytes_read; }
    uint64 get_total_bytes_written()const { return total_bytes_written; }
    virtual void rewind() = 0;
-   void read_bytes(int8* s, int elem_count, int offset);
+   // return number of bytes read
+   int read_bytes(int8* s, int elem_count, int offset);
    void write_bytes(const int8* s, int elem_count, int offset);
 
 protected:
@@ -62,6 +64,7 @@ class file_data_sequence : public data_sequence
 public:
    file_data_sequence(shared_ptr<pfm_file> ifile);
    ~file_data_sequence();
+   bool reached_end_of_sequence() override;
    void close();
    virtual uint64 get_size()const;
    virtual void reset() override;
@@ -74,6 +77,7 @@ protected:
 
 private:
    shared_ptr<pfm_file> file;
+   uint64 file_size = 0;
 };
 
 
@@ -102,17 +106,17 @@ public:
    std::string read_line();
    template<class T> void read_pointer(T*& s);
 
-   // sequence data versions
-   void read_int8(int8* s, int elem_count, int offset);
-   void read_uint8(uint8* s, int elem_count, int offset);
-   void read_int16(int16* s, int elem_count, int offset);
-   void read_uint16(uint16* s, int elem_count, int offset);
-   void read_int32(int32* s, int elem_count, int offset);
-   void read_uint32(uint32* s, int elem_count, int offset);
-   void read_int64(int64* s, int elem_count, int offset);
-   void read_uint64(uint64* s, int elem_count, int offset);
-   void read_real32(real32* s, int elem_count, int offset);
-   void read_real64(real64* s, int elem_count, int offset);
+   // sequence data versions. return the number of bytes read
+   int read_int8(int8* s, int elem_count, int offset);
+   int read_uint8(uint8* s, int elem_count, int offset);
+   int read_int16(int16* s, int elem_count, int offset);
+   int read_uint16(uint16* s, int elem_count, int offset);
+   int read_int32(int32* s, int elem_count, int offset);
+   int read_uint32(uint32* s, int elem_count, int offset);
+   int read_int64(int64* s, int elem_count, int offset);
+   int read_uint64(uint64* s, int elem_count, int offset);
+   int read_real32(real32* s, int elem_count, int offset);
+   int read_real64(real64* s, int elem_count, int offset);
 
 private:
    weak_ptr<data_sequence> sequence;
@@ -281,7 +285,26 @@ inline std::string data_sequence_reader::read_string()
 inline std::string data_sequence_reader::read_line()
 {
    std::string text;
-   mws_throw std::exception();
+   std::vector<char> line;
+   char c = 0;
+   line.reserve(256);
+
+   while (true)
+   {
+      int bytes_read = read_int8(&c, 1, 0);
+
+      if (bytes_read <= 0 || (c == '\n') || (c == '\r'))
+      {
+         break;
+      }
+
+      line.push_back(c);
+   }
+
+   if (!line.empty())
+   {
+      text = std::string(line.data(), line.size());
+   }
 
    return text;
 }
@@ -305,54 +328,54 @@ template<class T> inline void data_sequence_reader::read_pointer(T*& s)
    read_pointer_helper<sizeof(void*)>(sequence.lock(), (void*)&s);
 }
 
-inline void data_sequence_reader::read_int8(int8* s, int elem_count, int offset)
+inline int data_sequence_reader::read_int8(int8* s, int elem_count, int offset)
 {
-   sequence.lock()->read_bytes(s, elem_count, offset);
+   return sequence.lock()->read_bytes(s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_uint8(uint8* s, int elem_count, int offset)
+inline int data_sequence_reader::read_uint8(uint8* s, int elem_count, int offset)
 {
-   read_int8((int8*)s, elem_count, offset);
+   return read_int8((int8*)s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_int16(int16* s, int elem_count, int offset)
+inline int data_sequence_reader::read_int16(int16* s, int elem_count, int offset)
 {
-   read_int8((int8*)s, elem_count * 2, offset * 2);
+   return read_int8((int8*)s, elem_count * 2, offset * 2);
 }
 
-inline void data_sequence_reader::read_uint16(uint16* s, int elem_count, int offset)
+inline int data_sequence_reader::read_uint16(uint16* s, int elem_count, int offset)
 {
-   read_int16((int16*)s, elem_count, offset);
+   return read_int16((int16*)s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_int32(int32* s, int elem_count, int offset)
+inline int data_sequence_reader::read_int32(int32* s, int elem_count, int offset)
 {
-   read_int8((int8*)s, elem_count * 4, offset * 4);
+   return read_int8((int8*)s, elem_count * 4, offset * 4);
 }
 
-inline void data_sequence_reader::read_uint32(uint32* s, int elem_count, int offset)
+inline int data_sequence_reader::read_uint32(uint32* s, int elem_count, int offset)
 {
-   read_int32((int32*)s, elem_count, offset);
+   return read_int32((int32*)s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_int64(int64* s, int elem_count, int offset)
+inline int data_sequence_reader::read_int64(int64* s, int elem_count, int offset)
 {
-   read_int8((int8*)s, elem_count * 8, offset * 8);
+   return read_int8((int8*)s, elem_count * 8, offset * 8);
 }
 
-inline void data_sequence_reader::read_uint64(uint64* s, int elem_count, int offset)
+inline int data_sequence_reader::read_uint64(uint64* s, int elem_count, int offset)
 {
-   read_int64((int64*)s, elem_count, offset);
+   return read_int64((int64*)s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_real32(real32* s, int elem_count, int offset)
+inline int data_sequence_reader::read_real32(real32* s, int elem_count, int offset)
 {
-   read_int32((int32*)s, elem_count, offset);
+   return read_int32((int32*)s, elem_count, offset);
 }
 
-inline void data_sequence_reader::read_real64(real64* s, int elem_count, int offset)
+inline int data_sequence_reader::read_real64(real64* s, int elem_count, int offset)
 {
-   read_int64((int64*)s, elem_count, offset);
+   return read_int64((int64*)s, elem_count, offset);
 }
 
 

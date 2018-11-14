@@ -71,7 +71,7 @@ public:
    {
    }
 
-   virtual FILE* get_file_impl() override
+   virtual FILE* get_file_impl() const override
    {
       return file;
    }

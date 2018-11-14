@@ -488,6 +488,16 @@ namespace pfm_impl
       flush_impl();
    }
   
+   bool pfm_file_impl::reached_eof() const
+   {
+      check_state();
+      FILE* f = get_file_impl();
+      //long pos = ftell(f);
+      int is_eof = feof(f);
+
+      return is_eof != 0;
+   }
+
    void pfm_file_impl::seek(uint64 ipos)
 	{
 		check_state();
@@ -728,6 +738,11 @@ void pfm_file::io_op::close()
 void pfm_file::io_op::flush()
 {
    impl->flush();
+}
+
+bool pfm_file::io_op::reached_eof() const
+{
+   return impl->reached_eof();
 }
 
 void pfm_file::io_op::seek(uint64 ipos)

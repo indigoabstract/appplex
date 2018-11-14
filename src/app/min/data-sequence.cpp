@@ -16,16 +16,26 @@ data_sequence::~data_sequence()
 {
 }
 
+bool data_sequence::reached_end_of_sequence()
+{
+   uint64 read_pos = get_read_position();
+   uint64 size = get_size();
+
+   return read_pos >= size;
+}
+
 void data_sequence::close()
 {
 }
 
-void data_sequence::read_bytes(int8* s, int elem_count, int offset)
+int data_sequence::read_bytes(int8* s, int elem_count, int offset)
 {
    int bytes_read = read_int8(s, elem_count, offset);
 
    read_position += bytes_read;
    total_bytes_read += bytes_read;
+
+   return bytes_read;
 }
 
 void data_sequence::write_bytes(const int8* s, int elem_count, int offset)
@@ -121,6 +131,22 @@ file_data_sequence::file_data_sequence(shared_ptr<pfm_file> ifile)
 
 file_data_sequence::~file_data_sequence()
 {
+}
+
+bool file_data_sequence::reached_end_of_sequence()
+{
+   if (file_size == 0)
+   {
+      file_size = get_size();
+   }
+
+   if (get_write_position() > file_size)
+   {
+      return get_read_position() >= get_write_position();
+   }
+
+   return get_read_position() >= file_size;
+   //return file->io.reached_eof();
 }
 
 void file_data_sequence::close()
