@@ -707,6 +707,7 @@ bool unit::update()
 
 #endif
 
+   post_update();
    gfx::i()->rt.set_current_render_target(nullptr, force_rebind);
    mws_report_gfx_errs();
    gfx_scene_inst->draw();

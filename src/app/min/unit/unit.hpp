@@ -126,6 +126,7 @@ protected:
    static bool gfx_available();
 
    virtual bool update();
+   virtual void post_update() {}
    virtual void on_resize();
    virtual void on_pause();
    virtual void on_resume();

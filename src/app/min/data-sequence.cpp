@@ -186,6 +186,11 @@ int file_data_sequence::read_int8(int8* s, int elem_count, int offset)
       bytes_read = file->io.read((uint8*)s, elem_count);
    }
 
+   if (bytes_read != elem_count)
+   {
+      mws_throw ia_exception("reached end of file");
+   }
+
    return bytes_read;
 }
 
