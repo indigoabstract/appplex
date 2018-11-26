@@ -221,6 +221,7 @@ public:
    virtual void write_text_nl(const wchar_t* text)const = 0;
    virtual void write_text_v(const char* iformat, ...)const = 0;
    virtual std::string get_writable_path()const = 0;
+   virtual std::string get_timezone_id()const = 0;
    // return true to exit the app
    virtual bool back_evt();
 };

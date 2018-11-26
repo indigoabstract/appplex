@@ -239,7 +239,7 @@ public:
          {
             return;
          }
-         mws_print("hit at [%f, %f]\n", ts->points[0].x, ts->points[0].y);
+         //mws_print("hit at [%f, %f]\n", ts->points[0].x, ts->points[0].y);
 
          float x = ts->points[0].x - mws_r.x;
          float y = ts->points[0].y - mws_r.y;

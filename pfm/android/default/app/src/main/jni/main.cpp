@@ -38,7 +38,7 @@ public:
 
 	virtual ~android_file_impl() {}
 
-    FILE* get_file_impl() override
+    FILE* get_file_impl() const override
     {
         return file;
     }
@@ -293,6 +293,24 @@ void android_main::write_text_v(const char* iformat, ...)const
 std::string android_main::get_writable_path()const
 {
 	return writable_path;
+}
+
+std::string android_main::get_timezone_id()const
+{
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "get_timezone_id", "()Ljava/lang/String;");
+    jstring timezone_id = (jstring)env->CallStaticObjectMethod(clazz, mid);
+    const char* ttimezone_id = env->GetStringUTFChars(timezone_id, 0);
+    std::string ret;
+
+    if (ttimezone_id)
+    {
+        ret = ttimezone_id;
+        env->ReleaseStringUTFChars(timezone_id, ttimezone_id);
+    }
+
+    return ret;
 }
 
 void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)

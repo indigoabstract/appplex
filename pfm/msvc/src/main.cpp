@@ -335,6 +335,11 @@ std::string msvc_main::get_writable_path()const
    return "";
 }
 
+std::string msvc_main::get_timezone_id()const
+{
+   return "Europe/Bucharest";
+}
+
 void msvc_main::write_text_nl(const wchar_t* text)const
 {
    write_text(text);
