@@ -1229,7 +1229,7 @@ void unit_list::init_mws()
 
    shared_ptr<mws_list_model> lm((mws_list_model*)new lmodel(ul));
    shared_ptr<mws_page> p = mws_page::nwi(mws_root);
-   shared_ptr<mws_list> l = mws_list::nwi(p);
+   shared_ptr<mws_list> l = mws_list::nwi();
 
    ulmodel = lm;
    l->set_model(lm);

@@ -128,9 +128,7 @@ class mws_list : public mws_page_item
 {
 public:
    virtual ~mws_list() {}
-   static shared_ptr<mws_list> nwi(shared_ptr<mws_page> iparent);
-   static shared_ptr<mws_list> new_shared_instance(shared_ptr<mws_page> i_parent, mws_list* new_instance);
-   virtual void init();
+   static shared_ptr<mws_list> nwi();
 
    virtual void receive(shared_ptr<iadp> idp);
    virtual bool is_hit(float x, float y);
@@ -141,7 +139,7 @@ public:
    shared_ptr<mws_list_model> get_model();
 
 protected:
-   mws_list(shared_ptr<mws_page> iparent);
+   mws_list();
    void setup() override;
 
    int element_at(float x, float y);

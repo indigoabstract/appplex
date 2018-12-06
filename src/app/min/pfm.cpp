@@ -1348,6 +1348,11 @@ std::wstring wtrs(const wchar_t* format, fmt::ArgList args)
 
 #endif
 
+void mws_nl_impl()
+{
+   pfm::get_pfm_main_inst()->write_text("\n");
+}
+
 void mws_print_impl(const char* i_format, ...)
 {
    char dest[1024 * 16];

@@ -26,7 +26,9 @@ extern "C"
 
 #define MWS_REPORT_GL_ERRORS
 #define mws_report_gfx_errs() mws_report_gfx_errs_impl(__FILE__, __LINE__)
+#define mws_nl() mws_nl_impl()
 #define mws_print(i_format, ...) mws_print_impl(i_format, ##__VA_ARGS__)
+#define mws_println(i_format, ...) mws_print_impl(i_format, ##__VA_ARGS__); mws_nl_impl()
 
 #else
 
@@ -199,6 +201,7 @@ extern "C"
    void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message);
    void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition);
    void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line);
+   void mws_nl_impl();
    void mws_print_impl(const char* i_format, ...);
 
 

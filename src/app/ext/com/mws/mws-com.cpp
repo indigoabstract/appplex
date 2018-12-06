@@ -542,37 +542,26 @@ void mws_list_model::set_selected_elem(int iselectedElem)
 }
 
 
-mws_list::mws_list(shared_ptr<mws_page> iparent)
+mws_list::mws_list()
 {
-   mws_r.set(0, 0, iparent->get_pos().w, iparent->get_pos().h);
-   item_height = 150;
-   vertical_space = 55;
-   item_w = mws_r.w * 80 / 100;
-   item_x = (mws_r.w - item_w) / 2;
 }
 
 void mws_list::setup()
 {
    mws_page_item::setup();
+   //mws_r.set(0, 0, get_mws_parent()->get_pos().w, get_mws_parent()->get_pos().h);
+   //item_height = 150;
+   //vertical_space = 55;
+   //item_w = mws_r.w * 80 / 100;
+   //item_x = (mws_r.w - item_w) / 2;
 }
 
-shared_ptr<mws_list> mws_list::nwi(shared_ptr<mws_page> i_parent)
+shared_ptr<mws_list> mws_list::nwi()
 {
-   shared_ptr<mws_list> u(new mws_list(i_parent));
-   i_parent->attach(u);
-   u->add_to_page();
-   return u;
+   auto inst = std::shared_ptr<mws_list>(new mws_list());
+   inst->setup();
+   return inst;
 }
-
-shared_ptr<mws_list> mws_list::new_shared_instance(shared_ptr<mws_page> i_parent, mws_list* newListClassInstance)
-{
-   shared_ptr<mws_list> u(newListClassInstance);
-   i_parent->attach(u);
-   u->add_to_page();
-   return u;
-}
-
-void mws_list::init() {}
 
 void mws_list::receive(shared_ptr<iadp> idp)
 {

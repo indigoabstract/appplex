@@ -102,7 +102,7 @@ shared_ptr<mws_list_menu_page> mws_list_menu_page::nwi(shared_ptr<mws_page_tab> 
    auto u = mws_sp<mws_list_menu_page>(new mws_list_menu_page());
    iparent->add_page(u);
    u->set_id(iid);
-   u->item_list = mws_list::nwi(u);
+   u->item_list = mws_list::nwi();
    u->item_list->set_model(shared_ptr<mws_list_model>(new mws_list_menu_model()));
    return u;
 }
