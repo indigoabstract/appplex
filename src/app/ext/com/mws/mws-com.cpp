@@ -22,9 +22,9 @@ using std::string;
 using std::vector;
 
 
-shared_ptr<mws_panel> mws_panel::nwi()
+mws_sp<mws_panel> mws_panel::nwi()
 {
-   auto inst = std::shared_ptr<mws_panel>(new mws_panel());
+   auto inst = mws_sp<mws_panel>(new mws_panel());
    inst->setup();
    return inst;
 }
@@ -63,9 +63,9 @@ void mws_panel::setup()
 }
 
 
-std::shared_ptr<mws_img_btn> mws_img_btn::nwi()
+mws_sp<mws_img_btn> mws_img_btn::nwi()
 {
-   auto inst = std::shared_ptr<mws_img_btn>(new mws_img_btn());
+   auto inst = mws_sp<mws_img_btn>(new mws_img_btn());
    inst->setup();
    return inst;
 }
@@ -106,7 +106,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
-void mws_img_btn::receive(shared_ptr<iadp> idp)
+void mws_img_btn::receive(mws_sp<iadp> idp)
 {
    if (!is_enabled())
    {
@@ -119,7 +119,7 @@ void mws_img_btn::receive(shared_ptr<iadp> idp)
    }
    else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -183,9 +183,9 @@ void mws_img_btn::setup()
 }
 
 
-shared_ptr<mws_button> mws_button::nwi()
+mws_sp<mws_button> mws_button::nwi()
 {
-   auto inst = std::shared_ptr<mws_button>(new mws_button());
+   auto inst = mws_sp<mws_button>(new mws_button());
    inst->setup();
    return inst;
 }
@@ -209,7 +209,7 @@ void mws_button::set_rect(const mws_rect& i_rect)
    mws_r = i_rect;
 }
 
-void mws_button::receive(shared_ptr<iadp> idp)
+void mws_button::receive(mws_sp<iadp> idp)
 {
    if (!is_enabled())
    {
@@ -222,7 +222,7 @@ void mws_button::receive(shared_ptr<iadp> idp)
    }
    else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -321,9 +321,9 @@ void mws_button::setup()
 }
 
 
-std::shared_ptr<mws_slider> mws_slider::nwi()
+mws_sp<mws_slider> mws_slider::nwi()
 {
-   auto inst = std::shared_ptr<mws_slider>(new mws_slider());
+   auto inst = mws_sp<mws_slider>(new mws_slider());
    inst->setup();
    return inst;
 }
@@ -362,7 +362,7 @@ void mws_slider::set_rect(const mws_rect& i_rect)
    set_value(value);
 }
 
-void mws_slider::receive(shared_ptr<iadp> idp)
+void mws_slider::receive(mws_sp<iadp> idp)
 {
    if (!is_enabled())
    {
@@ -375,7 +375,7 @@ void mws_slider::receive(shared_ptr<iadp> idp)
    }
    else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
       bool process = false;
 
@@ -556,14 +556,14 @@ void mws_list::setup()
    //item_x = (mws_r.w - item_w) / 2;
 }
 
-shared_ptr<mws_list> mws_list::nwi()
+mws_sp<mws_list> mws_list::nwi()
 {
-   auto inst = std::shared_ptr<mws_list>(new mws_list());
+   auto inst = mws_sp<mws_list>(new mws_list());
    inst->setup();
    return inst;
 }
 
-void mws_list::receive(shared_ptr<iadp> idp)
+void mws_list::receive(mws_sp<iadp> idp)
 {
    if (!is_enabled())
    {
@@ -592,7 +592,7 @@ void mws_list::receive(shared_ptr<iadp> idp)
    }
    else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      //shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      //mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       //switch (ts->get_type())
       //{
@@ -627,9 +627,28 @@ bool mws_list::is_hit(float x, float y)
 
 void mws_list::update_state()
 {
+   int size = model->get_length();
+
+   if (size > 0)
+   {
+      auto& tf = get_global_tf_mx();
+      auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
+      glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
+      auto root = get_mws_root();
+      auto text_ref = root->get_text_vxo();
+      mws_sp<mws_font> font;
+      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+
+      for (int k = 0; k < size; k++)
+      {
+         std::string text = model->elem_at(k);
+         text_ref->add_text(text, pos, f);
+         pos.y += f->get_height() * 1.25f;
+      }
+   }
 }
 
-void mws_list::update_view(shared_ptr<mws_camera> g)
+void mws_list::update_view(mws_sp<mws_camera> g)
 {
    if (!model)
    {
@@ -658,13 +677,13 @@ void mws_list::update_view(shared_ptr<mws_camera> g)
    }
 }
 
-void mws_list::set_model(shared_ptr<mws_list_model> imodel)
+void mws_list::set_model(mws_sp<mws_list_model> imodel)
 {
    model = imodel;
    model->set_view(get_instance());
 }
 
-shared_ptr<mws_list_model> mws_list::get_model()
+mws_sp<mws_list_model> mws_list::get_model()
 {
    return model;
 }
@@ -707,17 +726,17 @@ int mws_tree_model::get_length()
    return length;
 }
 
-void mws_tree_model::set_root_node(shared_ptr<mws_tree_model_node> iroot)
+void mws_tree_model::set_root_node(mws_sp<mws_tree_model_node> iroot)
 {
    root = iroot;
 }
 
-shared_ptr<mws_tree_model_node> mws_tree_model::get_root_node()
+mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
 {
    return root;
 }
 
-mws_tree::mws_tree(shared_ptr<mws_page> iparent)
+mws_tree::mws_tree(mws_sp<mws_page> iparent)
 {
 }
 
@@ -727,16 +746,16 @@ void mws_tree::setup()
    add_to_page();
 }
 
-shared_ptr<mws_tree> mws_tree::nwi(shared_ptr<mws_page> iparent)
+mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> iparent)
 {
-   shared_ptr<mws_tree> u(new mws_tree(iparent));
+   mws_sp<mws_tree> u(new mws_tree(iparent));
    u->setup();
    return u;
 }
 
-shared_ptr<mws_tree> mws_tree::new_shared_instance(mws_tree* newTreeClassInstance)
+mws_sp<mws_tree> mws_tree::new_shared_instance(mws_tree* newTreeClassInstance)
 {
-   shared_ptr<mws_tree> u(newTreeClassInstance);
+   mws_sp<mws_tree> u(newTreeClassInstance);
    u->add_to_page();
    return u;
 }
@@ -745,7 +764,7 @@ void mws_tree::init()
 {
 }
 
-void mws_tree::receive(shared_ptr<iadp> idp)
+void mws_tree::receive(mws_sp<iadp> idp)
 {
    if (!is_enabled())
    {
@@ -763,7 +782,7 @@ void mws_tree::receive(shared_ptr<iadp> idp)
 
       if (model->get_root_node())
       {
-         //shared_ptr<mws_font> f = gfx_openvg::get_instance()->getFont();
+         //mws_sp<mws_font> f = gfx_openvg::get_instance()->getFont();
          //get_max_width(f, model->get_root_node(), 0, w);
       }
 
@@ -776,9 +795,9 @@ void mws_tree::update_state()
 {
 }
 
-void mws_tree::update_view(shared_ptr<mws_camera> g)
+void mws_tree::update_view(mws_sp<mws_camera> g)
 {
-   shared_ptr<mws_tree_model_node> node = model->get_root_node();
+   mws_sp<mws_tree_model_node> node = model->get_root_node();
 
    if (node->nodes.size() > 0)
    {
@@ -788,24 +807,24 @@ void mws_tree::update_view(shared_ptr<mws_camera> g)
    }
 }
 
-void mws_tree::set_model(shared_ptr<mws_tree_model> imodel)
+void mws_tree::set_model(mws_sp<mws_tree_model> imodel)
 {
    model = imodel;
    model->set_view(get_instance());
 }
 
-shared_ptr<mws_tree_model> mws_tree::get_model()
+mws_sp<mws_tree_model> mws_tree::get_model()
 {
    return model;
 }
 
-void mws_tree::get_max_width(shared_ptr<mws_font> f, const shared_ptr<mws_tree_model_node> node, int level, float& maxWidth)
+void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, int level, float& maxWidth)
 {
    int size = node->nodes.size();
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<mws_tree_model_node> kv = node->nodes[k];
+      mws_sp<mws_tree_model_node> kv = node->nodes[k];
 
       float textWidth = 0;//get_text_width(f, kv->data);
       float twidth = 25 + level * 20 + textWidth;
@@ -822,14 +841,14 @@ void mws_tree::get_max_width(shared_ptr<mws_font> f, const shared_ptr<mws_tree_m
    }
 }
 
-void mws_tree::draw_tree_elem(shared_ptr<mws_camera> g, const shared_ptr<mws_tree_model_node> node, int level, int& elemIdx)
+void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, int level, int& elemIdx)
 {
    int size = node->nodes.size();
    mws_rect r = get_mws_parent()->get_pos();
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<mws_tree_model_node> kv = node->nodes[k];
+      mws_sp<mws_tree_model_node> kv = node->nodes[k];
       glm::vec2 dim = g->get_font()->get_text_dim(kv->data);
 
       g->setColor(0xff00ff);

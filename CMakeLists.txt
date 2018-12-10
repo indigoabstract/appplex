@@ -65,7 +65,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -frtti -fexceptions -Wall")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -frtti -fexceptions -Wall")
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 	add_library(app_plex_main SHARED "")
 	
@@ -345,7 +345,7 @@ else() # Assume iOS
 	#)
 
 	# Turn on ARC
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fobjc-arc")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fobjc-arc")
 
 	# Create the app target
 	set_target_properties(${APP_NAME} PROPERTIES
