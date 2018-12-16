@@ -173,10 +173,10 @@ uint32 pfm::time::get_time_millis()
 
 const std::string dir_separator = "\\";
 
-#ifdef USE_VLD
-#include <vld.h>
-#endif
-#include <new>
+//#ifdef USE_VLD
+//#include <vld.h>
+//#endif
+//#include <new>
 
 namespace std { const nothrow_t nothrow = nothrow_t(); }
 

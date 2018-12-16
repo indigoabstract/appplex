@@ -36,7 +36,7 @@ int is_whitespace_intv(int c)
 inline std::string ni_ltrim(const std::string& is)
 {
 	std::string s(is);
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(is_whitespace_intv))));
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !is_whitespace_intv(c); }));
 	return s;
 }
 
@@ -44,7 +44,7 @@ inline std::string ni_ltrim(const std::string& is)
 inline std::string ni_rtrim(const std::string& is)
 {
 	std::string s(is);
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(is_whitespace_intv))).base(), s.end());
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !is_whitespace_intv(c); }).base(), s.end());
 	return s;
 }
 

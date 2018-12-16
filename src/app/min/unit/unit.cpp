@@ -1233,7 +1233,7 @@ void unit_list::init_mws()
 
    ulmodel = lm;
    l->set_model(lm);
-
+   p->attach(l);
    mws_cam->clear_color = true;
 
 #endif

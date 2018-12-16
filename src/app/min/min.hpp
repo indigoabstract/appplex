@@ -247,7 +247,7 @@ bool ends_with(const std::string& istr, const std::string& ifind);
 inline std::string ltrim(const std::string& is)
 {
    std::string s(is);
-   s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
    return s;
 }
 
@@ -255,7 +255,7 @@ inline std::string ltrim(const std::string& is)
 inline std::string rtrim(const std::string& is)
 {
    std::string s(is);
-   s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+   s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
    return s;
 }
 

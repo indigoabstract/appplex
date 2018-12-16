@@ -9,11 +9,11 @@
 
 #if defined PLATFORM_WINDOWS_PC
 
-void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value);
-void operator delete(void* iptr, const std::nothrow_t& nothrow_constant);
-
-void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value);
-void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant);
+//void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value);
+//void operator delete(void* iptr, const std::nothrow_t& nothrow_constant);
+//
+//void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value);
+//void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant);
 
 #endif
 

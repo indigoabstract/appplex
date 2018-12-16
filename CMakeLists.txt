@@ -9,17 +9,18 @@ project (VideoEncApp)
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Set compiler flags and options. 
-# Here it is setting the Visual Studio warning level to 4
-# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
-
 # Command to output information to the console
 # Useful for displaying errors, warnings, and debugging
 message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 message("CMAKE_SYSTEM_NAME  " ${CMAKE_SYSTEM_NAME})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+	# Set compiler flags and options. 
+	# Here it is setting the Visual Studio warning level to 4
+	# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+	add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+	add_compile_options("/std:c++17")
 
 	add_library(app_plex_main STATIC "")
 	

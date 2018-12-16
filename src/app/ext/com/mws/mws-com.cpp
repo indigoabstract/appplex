@@ -638,6 +638,7 @@ void mws_list::update_state()
       auto text_ref = root->get_text_vxo();
       mws_sp<mws_font> font;
       mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+      pos = glm::vec2(20.f);
 
       for (int k = 0; k < size; k++)
       {
