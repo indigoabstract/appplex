@@ -1288,16 +1288,6 @@ shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 }
 
 
-void trx(const char* i_msg)
-{
-   pfm::get_pfm_main_inst()->write_text_nl(i_msg);
-}
-
-void trx(std::string msg)
-{
-   pfm::get_pfm_main_inst()->write_text_nl(msg.c_str());
-}
-
 std::string mws_to_str(const char* i_format, ...)
 {
    char dest[1024 * 16];
@@ -1309,44 +1299,6 @@ std::string mws_to_str(const char* i_format, ...)
 
    return std::string(dest);
 }
-
-#ifdef MOD_FORMAT
-
-void trx(const char* format, fmt::ArgList args)
-{
-   std::string s = fmt::format(format, args);
-   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
-}
-
-void wtrx(const wchar_t* format, fmt::ArgList args)
-{
-   std::wstring s = fmt::format(format, args);
-   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
-}
-
-void trc(const char* format, fmt::ArgList args)
-{
-   std::string s = fmt::format(format, args);
-   pfm::get_pfm_main_inst()->write_text(s.c_str());
-}
-
-void wtrc(const wchar_t* format, fmt::ArgList args)
-{
-   std::wstring s = fmt::format(format, args);
-   pfm::get_pfm_main_inst()->write_text(s.c_str());
-}
-
-std::string trs(const char* format, fmt::ArgList args)
-{
-   return fmt::format(format, args);
-}
-
-std::wstring wtrs(const wchar_t* format, fmt::ArgList args)
-{
-   return fmt::format(format, args);
-}
-
-#endif
 
 void mws_nl_impl()
 {

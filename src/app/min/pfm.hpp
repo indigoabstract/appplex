@@ -306,18 +306,38 @@ private:
 
 #define trn() pfm::get_pfm_main_inst()->write_text_nl("")
 #define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
-void trx(const char* i_msg);
-void trx(std::string msg);
 std::string mws_to_str(const char* i_format, ...);
-void trx(const char* format, fmt::ArgList args);
-FMT_VARIADIC(void, trx, const char*)
-void wtrx(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC_W(void, wtrx, const wchar_t*)
-void trc(const char* format, fmt::ArgList args);
-FMT_VARIADIC(void, trc, const char*)
-void wtrc(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC_W(void, wtrc, const wchar_t*)
-std::string trs(const char* format, fmt::ArgList args);
-FMT_VARIADIC(std::string, trs, const char*)
-std::wstring wtrs(const wchar_t* format, fmt::ArgList args);
-FMT_VARIADIC_W(std::wstring, wtrs, const wchar_t*)
+
+template <typename... argst> void trx(const char* i_format, const argst& ... args)
+{
+   std::string s = fmt::format(i_format, args...);
+   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
+}
+
+template <typename... argst> void wtrx(const wchar_t* i_format, const argst& ... args)
+{
+   std::wstring s = fmt::format(i_format, args...);
+   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
+}
+
+template <typename... argst> void trc(const char* i_format, const argst& ... args)
+{
+   std::string s = fmt::format(i_format, args...);
+   pfm::get_pfm_main_inst()->write_text(s.c_str());
+}
+
+template <typename... argst> void wtrc(const wchar_t* i_format, const argst& ... args)
+{
+   std::wstring s = fmt::format(i_format, args...);
+   pfm::get_pfm_main_inst()->write_text(s.c_str());
+}
+
+template <typename... argst> std::string trs(const char* i_format, const argst& ... args)
+{
+   return fmt::format(i_format, args...);
+}
+
+template <typename... argst> std::wstring wtrs(const wchar_t* i_format, const argst& ... args)
+{
+   return fmt::format(i_format, args...);
+}
