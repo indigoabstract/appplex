@@ -811,6 +811,7 @@ void mws_page_item::set_rect(const mws_rect& i_rect)
 {
    mws_r = i_rect;
 }
+
 void mws_page_item::set_size(float i_width, float i_height)
 {
    mws_r.w = i_width;

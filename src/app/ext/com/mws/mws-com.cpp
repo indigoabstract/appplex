@@ -649,35 +649,6 @@ void mws_list::update_state()
    }
 }
 
-void mws_list::update_view(mws_sp<mws_camera> g)
-{
-   if (!model)
-   {
-      return;
-   }
-
-   mws_rect pr = get_mws_parent()->get_pos();
-   int size = model->get_length();
-   float vertOffset = pr.y;
-   int selectedElem = model->get_selected_elem();
-
-   for (int k = 0; k < size; k++)
-   {
-      if (k == selectedElem)
-      {
-         g->setColor(0xff7f00);
-      }
-      else
-      {
-         g->setColor(0x5000af);
-      }
-
-      g->fillRect(pr.x + item_x, vertOffset, item_w, item_height);
-      g->drawText(model->elem_at(k), pr.x + item_x + item_w / 2, vertOffset + item_height / 2 - 10);
-      vertOffset += item_height + vertical_space;
-   }
-}
-
 void mws_list::set_model(mws_sp<mws_list_model> imodel)
 {
    model = imodel;
@@ -796,17 +767,17 @@ void mws_tree::update_state()
 {
 }
 
-void mws_tree::update_view(mws_sp<mws_camera> g)
-{
-   mws_sp<mws_tree_model_node> node = model->get_root_node();
-
-   if (node->nodes.size() > 0)
-   {
-      int elemIdx = 0;
-
-      draw_tree_elem(g, node, 0, elemIdx);
-   }
-}
+//void mws_tree::update_view(mws_sp<mws_camera> g)
+//{
+//   mws_sp<mws_tree_model_node> node = model->get_root_node();
+//
+//   if (node->nodes.size() > 0)
+//   {
+//      int i_elem_idx = 0;
+//
+//      draw_tree_elem(g, node, 0, i_elem_idx);
+//   }
+//}
 
 void mws_tree::set_model(mws_sp<mws_tree_model> imodel)
 {
@@ -819,7 +790,7 @@ mws_sp<mws_tree_model> mws_tree::get_model()
    return model;
 }
 
-void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, int level, float& maxWidth)
+void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, int level, float& i_max_width)
 {
    int size = node->nodes.size();
 
@@ -830,19 +801,19 @@ void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_nod
       float textWidth = 0;//get_text_width(f, kv->data);
       float twidth = 25 + level * 20 + textWidth;
 
-      if (twidth > maxWidth)
+      if (twidth > i_max_width)
       {
-         maxWidth = twidth;
+         i_max_width = twidth;
       }
 
       if (kv->nodes.size() > 0)
       {
-         get_max_width(f, kv, level + 1, maxWidth);
+         get_max_width(f, kv, level + 1, i_max_width);
       }
    }
 }
 
-void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, int level, int& elemIdx)
+void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, int level, int& i_elem_idx)
 {
    int size = node->nodes.size();
    mws_rect r = get_mws_parent()->get_pos();
@@ -853,13 +824,13 @@ void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_
       glm::vec2 dim = g->get_font()->get_text_dim(kv->data);
 
       g->setColor(0xff00ff);
-      g->drawRect(r.x + 20 + level * 20, r.y + 20 + elemIdx * dim.y, dim.x, dim.y);
-      g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + elemIdx * dim.y);
-      elemIdx++;
+      g->drawRect(r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
+      g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y);
+      i_elem_idx++;
 
       if (kv->nodes.size() > 0)
       {
-         draw_tree_elem(g, kv, level + 1, elemIdx);
+         draw_tree_elem(g, kv, level + 1, i_elem_idx);
       }
    }
 }

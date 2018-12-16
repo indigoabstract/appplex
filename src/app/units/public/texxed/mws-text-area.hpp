@@ -117,7 +117,7 @@ public:
       float rem = glm::mod(text_offset.y, font->get_height());
       tx_vxo->position = glm::vec3(pos.x - text_offset.x, pos.y - rem, 0);
 
-      for (int k = 0; k < tx_rows.size(); k++)
+      for (size_t k = 0; k < tx_rows.size(); k++)
       {
          tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font->get_height()), font);
       }
@@ -147,7 +147,7 @@ public:
    virtual void select_char_at(const glm::vec2& ipos)
    {
       float rem = glm::mod(text_offset.y, font->get_height());
-      int row_idx = int((ipos.y + rem) / font->get_height());
+      size_t row_idx = size_t((ipos.y + rem) / font->get_height());
 
       if (row_idx >= tx_rows.size())
       {
@@ -158,7 +158,7 @@ public:
       std::string& text = tx_rows[row_idx];
       auto& glyphs = font_db::inst()->get_glyph_vect(font->get_inst(), text);
       float x_off = -text_offset.x;
-      int k = 0;
+      size_t k = 0;
 
       for (k = 0; k < text.length(); k++)
       {
@@ -290,13 +290,13 @@ public:
       else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
       {
          shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
-         float off = 51.175;
+         float off = 51.175f;
 
          if (ke->get_type() != key_evt::KE_RELEASED)
          {
             if (ke->get_type() == key_evt::KE_PRESSED)
             {
-               off = 21.175;
+               off = 21.175f;
             }
 
             switch (ke->get_key())

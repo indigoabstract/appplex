@@ -50,7 +50,7 @@ namespace unit_texxed_ns
 
 			shared_ptr<mws_button> b = mws_button::nwi();
          attach(b);
-         b->set_rect(mws_rect(10, h - 50, 50, 20));
+         b->set_rect(mws_rect(10, h - 50.f, 50, 20));
          b->set_text("btn");
          b->set_bg_color(gfx_color(0xff8200b4));
       }

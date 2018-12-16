@@ -134,7 +134,6 @@ public:
    virtual bool is_hit(float x, float y);
 
    virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
    void set_model(mws_sp<mws_list_model> imodel);
    mws_sp<mws_list_model> get_model();
 
@@ -191,7 +190,7 @@ public:
    virtual void receive(mws_sp<iadp> idp);
 
    virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
+   //virtual void update_view(mws_sp<mws_camera> g);
    void set_model(mws_sp<mws_tree_model> imodel);
    mws_sp<mws_tree_model> get_model();
 
