@@ -21,6 +21,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 	add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 	add_compile_options("/std:c++17")
+	add_compile_options("/Zc:__cplusplus")
 
 	add_library(app_plex_main STATIC "")
 	
