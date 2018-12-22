@@ -45,17 +45,15 @@ void free_camera::update_input(shared_ptr<iadp> idp)
    {
       shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
-      bool dragging_detected = dragging_det.detect(ts);
+      bool dragging_detected = dragging_det.detect_helper(ts);
 
       if (dragging_detected)
       {
          // rotation about the camera's view/target axis.
          if (ctrl_held)
          {
-            float dx = ts->points[0].x - dragging_det.last_move_pos.x;// ts->prev_state.te->points[0].x;
-            float dy = ts->points[0].y - dragging_det.last_move_pos.y;// ts->prev_state.te->points[0].y;
-            float dx_rad = glm::radians(dx / 2);
-            float dy_rad = glm::radians(dy / 2);
+            float dx_rad = glm::radians(dragging_det.drag_diff.x / 2.f);
+            float dy_rad = glm::radians(dragging_det.drag_diff.y / 2.f);
 
             glm::vec3 right_dir = glm::cross(look_at_dir, up_dir);
             glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
@@ -69,31 +67,28 @@ void free_camera::update_input(shared_ptr<iadp> idp)
          // translation movement.
          else
          {
-            float dx = ts->points[0].x - dragging_det.last_move_pos.x;// ts->prev_state.te->points[0].x;
-            float dy = ts->points[0].y - dragging_det.last_move_pos.y;// ts->prev_state.te->points[0].y;
+            if (dragging_det.is_finished())
+            {
+               uint32 delta_t = ts->time - dragging_det.last_move_pos_time;
 
-            //if (ts->is_finished)
-            //{
-            //   uint32 delta_t = ts->time - ts->prev_state.te->time;
-
-            //   if (delta_t < 150)
-            //   {
-            //      ks->start_slowdown();
-            //   }
-            //   else
-            //   {
-            //      ks->reset();
-            //   }
-            //}
-            //else
-            //{
-            //   ks->begin(ts->points[0].x, ts->points[0].y);
-            //}
+               if (delta_t < 150)
+               {
+                  ks->start_slowdown();
+               }
+               else
+               {
+                  ks->reset();
+               }
+            }
+            else
+            {
+               ks->begin(ts->points[0].x, ts->points[0].y);
+            }
 
             float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
 
-            theta_deg -= dx * camera_radius * 0.00045f;
-            phi_deg -= dy * camera_radius * 0.00045f;
+            theta_deg -= dragging_det.drag_diff.x * camera_radius * 0.00045f;
+            phi_deg -= dragging_det.drag_diff.y * camera_radius * 0.00045f;
             clamp_angles();
             //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
             mov_type = e_roll_view_axis;
