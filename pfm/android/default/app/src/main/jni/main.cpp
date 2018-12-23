@@ -488,19 +488,19 @@ extern "C"
         env->CallStaticVoidMethod(clazz, mid);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeInitRenderer(JNIEnv* env, jobject obj, jobject iasset_manager, jstring iapk_path)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1init_1renderer(JNIEnv* env, jobject obj, jobject i_asset_manager, jstring i_apk_path)
 	{
 		initJavaMethodsIDs(env, obj);
 
-		const char* apk_path = env->GetStringUTFChars(iapk_path, 0);
+		const char* apk_path = env->GetStringUTFChars(i_apk_path, 0);
 
 		if (apk_path)
 		{
 			g_apk_path = apk_path;
-			env->ReleaseStringUTFChars(iapk_path, apk_path);
+			env->ReleaseStringUTFChars(i_apk_path, apk_path);
 		}
 
-		asset_manager = AAssetManager_fromJava(env, iasset_manager);
+		asset_manager = AAssetManager_fromJava(env, i_asset_manager);
 
         if(asset_manager)
         {
@@ -513,42 +513,42 @@ extern "C"
         }
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeStartApp(JNIEnv*  env, jobject thiz)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1start_1app(JNIEnv*  env, jobject thiz)
 	{
 		android_main::get_instance()->start();
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeDestroy(JNIEnv*  env, jobject thiz)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1destroy(JNIEnv*  env, jobject thiz)
 	{
         unit_ctrl::inst()->destroy_app();
 	}
 
-    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeResume(JNIEnv*  env, jobject thiz)
+    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1resume(JNIEnv*  env, jobject thiz)
     {
         unit_ctrl::inst()->resume();
     }
 
-    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativePause(JNIEnv*  env, jobject thiz)
+    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1pause(JNIEnv*  env, jobject thiz)
 	{
         unit_ctrl::inst()->pause();
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeResize(JNIEnv*  env, jobject  thiz, jint w, jint h)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1resize(JNIEnv*  env, jobject  thiz, jint i_w, jint i_h)
 	{
-		unit_ctrl::inst()->resize_app(w, h);
+		unit_ctrl::inst()->resize_app(i_w, i_h);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_native_1touch_1event
-			(JNIEnv*  env, jobject thiz, jint itouch_type, jint itouch_count, jintArray itouch_points_identifier,
-			 jbooleanArray itouch_points_is_changed, jfloatArray itouch_points_x, jfloatArray itouch_points_y)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event
+			(JNIEnv*  env, jobject thiz, jint i_touch_type, jint i_touch_count, jintArray i_touch_points_identifier,
+			 jbooleanArray i_touch_points_is_changed, jfloatArray i_touch_points_x, jfloatArray i_touch_points_y)
 	{
 		auto pfm_te = std::make_shared<pointer_evt>();
-		jint* touch_points_identifier = env->GetIntArrayElements(itouch_points_identifier, NULL);
-		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(itouch_points_is_changed, NULL);
-		jfloat* touch_points_x = env->GetFloatArrayElements(itouch_points_x, NULL);
-		jfloat* touch_points_y = env->GetFloatArrayElements(itouch_points_y, NULL);
+		jint* touch_points_identifier = env->GetIntArrayElements(i_touch_points_identifier, NULL);
+		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(i_touch_points_is_changed, NULL);
+		jfloat* touch_points_x = env->GetFloatArrayElements(i_touch_points_x, NULL);
+		jfloat* touch_points_y = env->GetFloatArrayElements(i_touch_points_y, NULL);
 
-		for (int k = 0; k < itouch_count; k++)
+		for (int k = 0; k < i_touch_count; k++)
 		{
             auto& te = pfm_te->points[k];
 
@@ -558,19 +558,19 @@ extern "C"
 			te.y = touch_points_y[k];
 		}
 
-		env->ReleaseIntArrayElements(itouch_points_identifier, touch_points_identifier, 0);
-		env->ReleaseBooleanArrayElements(itouch_points_is_changed, touch_points_is_changed, 0);
-		env->ReleaseFloatArrayElements(itouch_points_x, touch_points_x, 0);
-		env->ReleaseFloatArrayElements(itouch_points_y, touch_points_y, 0);
+		env->ReleaseIntArrayElements(i_touch_points_identifier, touch_points_identifier, 0);
+		env->ReleaseBooleanArrayElements(i_touch_points_is_changed, touch_points_is_changed, 0);
+		env->ReleaseFloatArrayElements(i_touch_points_x, touch_points_x, 0);
+		env->ReleaseFloatArrayElements(i_touch_points_y, touch_points_y, 0);
 
 		pfm_te->time = pfm::time::get_time_millis();
-		pfm_te->touch_count = itouch_count;
-		pfm_te->type = (pointer_evt::e_touch_type)itouch_type;
+		pfm_te->touch_count = i_touch_count;
+		pfm_te->type = (pointer_evt::e_touch_type)i_touch_type;
 
 		unit_ctrl::inst()->pointer_action(pfm_te);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_mainRenderer_nativeRender(JNIEnv*  env, jobject thiz)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1render(JNIEnv*  env, jobject thiz)
 	{
 	    if(unit_ctrl::inst()->is_set_app_exit_on_next_run())
         {
@@ -599,9 +599,9 @@ extern "C"
 		return jboolean(r ? 1 : 0);
 	}
 	
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1init(JNIEnv *env, jobject thiz, jint isample_rate, jint ibuffer_size)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1init(JNIEnv *env, jobject thiz, jint i_sample_rate, jint i_buffer_size)
 	{
-		android_main::get_instance()->snd_init(isample_rate, ibuffer_size);
+		android_main::get_instance()->snd_init(i_sample_rate, i_buffer_size);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1close(JNIEnv *env, jobject thiz)
@@ -609,14 +609,14 @@ extern "C"
 		android_main::get_instance()->snd_close();
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1set_1writable_1path(JNIEnv*  env, jobject thiz, jstring iwritable_path)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1set_1writable_1path(JNIEnv*  env, jobject thiz, jstring i_writable_path)
 	{
-		const char* twritable_path = env->GetStringUTFChars(iwritable_path, 0);
+		const char* twritable_path = env->GetStringUTFChars(i_writable_path, 0);
 
 		if (twritable_path)
 		{
 			writable_path = twritable_path;
-			env->ReleaseStringUTFChars(iwritable_path, twritable_path);
+			env->ReleaseStringUTFChars(i_writable_path, twritable_path);
 		}
 	}
 

@@ -864,16 +864,19 @@ void gfx_camera::load(shared_ptr<gfx_camera> inst)
 
 void gfx_camera::update_camera_state_impl()
 {
+   float rtw = gi()->rt.get_render_target_width();
+   float rth = gi()->rt.get_render_target_height();
+
    if (projection_type == e_perspective_proj)
    {
-      float aspect = gi()->rt.get_render_target_width() / float(gi()->rt.get_render_target_height());
+      float aspect = rtw / rth;
       projection_mx = glm::perspective(glm::radians(fov_y_deg), aspect, near_clip_distance, far_clip_distance);
    }
    else if (projection_type == e_orthographic_proj)
    {
       float left = 0;
-      float right = gi()->rt.get_render_target_width();
-      float bottom = gi()->rt.get_render_target_height();
+      float right = rtw;
+      float bottom = rth;
       float top = 0;
 
       projection_mx = glm::ortho(left, right, bottom, top, near_clip_distance, far_clip_distance);

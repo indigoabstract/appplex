@@ -107,6 +107,7 @@ public:
    bool cancel_operation(int ioperation_id);
    /// return a reference to the app_impl implementation
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
+   bool i_m_is_null() const { return p.get() == nullptr; }
 
    int game_time;
    std::shared_ptr<updatectrl> update_ctrl;

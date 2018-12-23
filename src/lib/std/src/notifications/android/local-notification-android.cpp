@@ -26,6 +26,7 @@ void local_notification::schedule_wakeup_by_delay(std::string message, int delay
     jmethodID mid = env->GetStaticMethodID(clazz, "schedule_wakeup", "(Ljava/lang/String;II)V");
     jstring jstr1 = env->NewStringUTF(message.c_str());
 
+    mws_assert(delay_in_seconds > 0);
     env->CallStaticVoidMethod(clazz, mid, jstr1, delay_in_seconds, tag);
 }
 
@@ -45,6 +46,7 @@ void local_notification::schedule_by_delay(std::string message, int delay_in_sec
     jmethodID mid = env->GetStaticMethodID(clazz, "schedule_notification", "(Ljava/lang/String;II)V");
     jstring jstr1 = env->NewStringUTF(message.c_str());
 
+    mws_assert(delay_in_seconds >= 0);
     env->CallStaticVoidMethod(clazz, mid, jstr1, delay_in_seconds, tag);
 }
 
