@@ -23,6 +23,7 @@ units
 	gen-texture[ ],
 	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
+	voronoi-keyboard[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 
 	@@[ tests ],
 
@@ -63,7 +64,7 @@ units
 	shipwrecked[ ],
 	vorofract[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, zlib, kxmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
-	break-reminder[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, notifications, mws, png, unit-texxed, vector-fonts ], platf[ windows, android, ios ], ],
+	break-reminder[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, notifications, mws, png, vector-fonts, unit-techno-globe, unit-texxed ], platf[ windows, android, ios ], ],
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
