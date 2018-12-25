@@ -23,7 +23,6 @@ units
 	gen-texture[ ],
 	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
-	voronoi-keyboard[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 
 	@@[ tests ],
 
@@ -68,6 +67,7 @@ units
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
+	voronoi-keyboard[ uses[ gfx, fonts, freetype, freetype_gl, mws, png, zlib, vector-fonts ] ],
 
 	@@[ npw ],
 	
