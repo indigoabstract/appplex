@@ -128,6 +128,12 @@ double_tap_detector::double_tap_detector()
    reset();
 }
 
+bool double_tap_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
+{
+   gesture_state gs = detect(evt);
+   return gs == GS_ACTION;
+}
+
 gesture_state double_tap_detector::detect(const std::shared_ptr<pointer_evt> new_event)
 {
    // only one finger press is allowed for taps
