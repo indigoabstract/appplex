@@ -771,7 +771,7 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
 
          if (ke->get_type() != key_evt::KE_RELEASED)
          {
-            bool isAction = true;
+            bool do_action = true;
 
             switch (ke->get_key())
             {
@@ -814,12 +814,12 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
             }
 
             default:
-               isAction = false;
+               do_action = false;
             }
 
-            if (!isAction && ke->get_type() != key_evt::KE_REPEATED)
+            if (!do_action && ke->get_type() != key_evt::KE_REPEATED)
             {
-               isAction = true;
+               do_action = true;
 
                switch (ke->get_key())
                {
@@ -842,11 +842,11 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
                   break;
 
                default:
-                  isAction = false;
+                  do_action = false;
                }
             }
 
-            if (isAction)
+            if (do_action)
             {
                ke->process();
             }

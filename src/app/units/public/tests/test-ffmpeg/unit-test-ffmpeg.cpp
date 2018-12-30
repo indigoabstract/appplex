@@ -167,11 +167,11 @@ void unit_test_ffmpeg::receive(shared_ptr<iadp> idp)
 
 			if(ke->get_type() != key_evt::KE_RELEASED)
 			{
-				bool isAction = false;
+				bool do_action = false;
 
 				if(ke->get_type() != key_evt::KE_REPEATED)
 				{
-					isAction = true;
+					do_action = true;
 
 					switch(ke->get_key())
 					{
@@ -194,11 +194,11 @@ void unit_test_ffmpeg::receive(shared_ptr<iadp> idp)
 						break;
 
 					default:
-						isAction = false;
+						do_action = false;
 					}
 				}
 
-				if(isAction)
+				if(do_action)
 				{
 					ke->process();
 				}

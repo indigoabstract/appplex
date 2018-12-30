@@ -61,15 +61,15 @@ namespace unit_abstract_racing_main_page
 
 				if(ke->get_type() != key_evt::KE_RELEASED)
 				{
-					bool isAction = true;
+					bool do_action = true;
 
 					switch(ke->get_key())
 					{
 					default:
-						isAction = false;
+						do_action = false;
 					}
 
-					if(isAction)
+					if(do_action)
 					{
 						ke->process();
 					}

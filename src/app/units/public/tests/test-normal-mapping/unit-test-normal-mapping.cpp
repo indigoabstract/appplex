@@ -1377,7 +1377,7 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 
 		if(ke->get_type() != key_evt::KE_RELEASED)
 		{
-			bool isAction = true;
+			bool do_action = true;
 
 			switch(ke->get_key())
 			{
@@ -1452,10 +1452,10 @@ void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
 				}
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				ke->process();
 			}

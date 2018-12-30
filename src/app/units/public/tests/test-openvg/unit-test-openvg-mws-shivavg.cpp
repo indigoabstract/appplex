@@ -1103,7 +1103,7 @@ namespace shivavg_tp4
 				return;
 			}
 
-			bool isAction = true;
+			bool do_action = true;
 			char code = 0;
 
 			switch(ke->get_key())
@@ -1144,10 +1144,10 @@ namespace shivavg_tp4
 				break;
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				if(code > 0)
 				{
@@ -1676,7 +1676,7 @@ namespace shivavg_tp6
 				return;
 			}
 
-			bool isAction = true;
+			bool do_action = true;
 			char code = 0;
 
 			switch(ke->get_key())
@@ -1746,10 +1746,10 @@ namespace shivavg_tp6
 				break;
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				if(code > 0)
 				{
@@ -2029,7 +2029,7 @@ namespace shivavg_tp7
 				return;
 			}
 
-			bool isAction = true;
+			bool do_action = true;
 			char code = 0;
 
 			switch(ke->get_key())
@@ -2084,10 +2084,10 @@ namespace shivavg_tp7
 				break;
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				if(code > 0)
 				{
@@ -2433,7 +2433,7 @@ namespace shivavg_tp8
 				return;
 			}
 
-			bool isAction = true;
+			bool do_action = true;
 			char code = 0;
 
 			switch(ke->get_key())
@@ -2505,10 +2505,10 @@ namespace shivavg_tp8
 				break;
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				if(code > 0)
 				{
@@ -2755,7 +2755,7 @@ namespace shivavg_tp9
 				return;
 			}
 
-			bool isAction = true;
+			bool do_action = true;
 			char code = 0;
 
 			switch(ke->get_key())
@@ -2780,10 +2780,10 @@ namespace shivavg_tp9
 				break;
 
 			default:
-				isAction = false;
+				do_action = false;
 			}
 
-			if(isAction)
+			if(do_action)
 			{
 				if(code > 0)
 				{

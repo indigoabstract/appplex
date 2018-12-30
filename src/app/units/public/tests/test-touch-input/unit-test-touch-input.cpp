@@ -244,7 +244,7 @@ namespace unit_test_touch_input_ns
 
             if (ke->is_pressed())
             {
-               bool isAction = true;
+               bool do_action = true;
 
                switch (ke->get_key())
                {
@@ -259,10 +259,10 @@ namespace unit_test_touch_input_ns
                }
 
                default:
-                  isAction = false;
+                  do_action = false;
                }
 
-               if (isAction)
+               if (do_action)
                {
                   ke->process();
                }

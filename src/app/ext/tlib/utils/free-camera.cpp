@@ -129,7 +129,7 @@ void free_camera::update_input(shared_ptr<iadp> idp)
 
       if (!ke->is_released())
       {
-         bool isAction = true;
+         bool do_action = true;
 
          switch (ke->get_key())
          {
@@ -178,12 +178,12 @@ void free_camera::update_input(shared_ptr<iadp> idp)
          }
 
          default:
-            isAction = false;
+            do_action = false;
          }
 
-         //if (!isAction && !ke->is_repeated())
+         //if (!do_action && !ke->is_repeated())
          //{
-         //   isAction = true;
+         //   do_action = true;
 
          //   switch (ke->get_key())
          //   {
@@ -192,11 +192,11 @@ void free_camera::update_input(shared_ptr<iadp> idp)
          //      break;
 
          //   default:
-         //      isAction = false;
+         //      do_action = false;
          //   }
          //}
 
-         if (isAction)
+         if (do_action)
          {
             ke->process();
          }

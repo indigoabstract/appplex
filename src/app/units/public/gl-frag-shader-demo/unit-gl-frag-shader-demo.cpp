@@ -569,7 +569,7 @@ public:
 
 			if (ke->get_type() == key_evt::KE_PRESSED)
 			{
-				bool isAction = true;
+				bool do_action = true;
 
 				switch (ke->get_key())
 				{
@@ -598,10 +598,10 @@ public:
 				}
 
 				default:
-					isAction = false;
+					do_action = false;
 				}
 
-				if (isAction)
+				if (do_action)
 				{
 					ke->process();
 				}
