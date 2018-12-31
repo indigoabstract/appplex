@@ -27,6 +27,7 @@ enum kx_elem_type
    kxe_comma,
 };
 
+const std::string indent_str = "    ";
 
 class kx_elem : public std::enable_shared_from_this<kx_elem>
 {
@@ -34,7 +35,8 @@ public:
    virtual ~kx_elem() {}
 
    mws_sp<kx_elem> get_inst() { return shared_from_this(); }
-   virtual bool is_process() { return false; }
+   virtual bool is_block() const { return false; }
+   virtual bool is_process() const { return false; }
    virtual std::string print(int ilevel = 0) { return "kx_elem"; }
    virtual void eval() {}
 
@@ -48,7 +50,7 @@ protected:
 
       for (int k = 0; k < ilevel; k++)
       {
-         ret += '\t';
+         ret += indent_str;
       }
 
       return ret;
@@ -145,7 +147,7 @@ class kx_process : public kx_elem
 public:
    virtual ~kx_process() {}
 
-   virtual bool is_process() override;
+   virtual bool is_process() const override;
    virtual std::string print(int ilevel = 0);
    virtual std::string get_name()const = 0;
    // direct subelements(subblocks)
@@ -206,6 +208,7 @@ public:
    static mws_sp<kx_block> nwi();
    virtual ~kx_block() {}
 
+   virtual bool is_block() const override { return true; }
    virtual std::string print(int ilevel = 0);
    virtual void eval();
    virtual std::string get_name()const
@@ -232,6 +235,7 @@ public:
    static mws_sp<kx_ignore_block> nwi();
    virtual ~kx_ignore_block() {}
 
+   virtual bool is_block() const override { return true; }
    virtual std::string print(int ilevel = 0);
    virtual std::string get_name()const { return "comment"; }
 
@@ -249,6 +253,7 @@ public:
    static mws_sp<kx_match_block> nwi();
    virtual ~kx_match_block() {}
 
+   virtual bool is_block() const override { return true; }
    virtual std::string print(int ilevel = 0);
    virtual std::string get_name()const { return "match-block"; }
 
@@ -266,6 +271,7 @@ public:
    static mws_sp<kx_meta_block> nwi();
    virtual ~kx_meta_block() {}
 
+   virtual bool is_block() const override { return true; }
    virtual std::string print(int ilevel = 0);
    virtual std::string get_name()const { return "meta-block"; }
 

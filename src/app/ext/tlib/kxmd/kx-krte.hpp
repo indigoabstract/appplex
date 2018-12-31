@@ -14,16 +14,17 @@ class kx_block;
 class kx_krte
 {
 public:
-	kx_krte(){}
-	virtual ~kx_krte(){}
+   kx_krte() {}
+   virtual ~kx_krte() {}
 
-	void set_src(std::shared_ptr<std::string> isrc);
-	void run();
+   void set_src(std::shared_ptr<std::string> isrc);
+   void run();
+   void print();
 
 public:
-	std::shared_ptr<std::string> src;
-	std::shared_ptr<kx_block> kxb;
-	kx_parser kxp;
+   std::shared_ptr<std::string> src;
+   std::shared_ptr<kx_block> kxb;
+   kx_parser kxp;
 };
 
 #endif

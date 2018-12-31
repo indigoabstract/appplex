@@ -63,7 +63,7 @@ string kx_flowop::print(int ilevel)
 }
 
 
-bool kx_process::is_process() { return true; }
+bool kx_process::is_process() const { return true; }
 
 string kx_process::print(int ilevel) { return "kx_process"; }
 
@@ -96,16 +96,22 @@ string kx_block::print(int ilevel)
 
    if (name)
    {
-      s.append(indent_by_level(ilevel) + name->name);
+      s.append("\n" + indent_by_level(ilevel) + name->name);
    }
 
-   s.append("\n" + indent_by_level(ilevel) + "[\n");
-   s.append(indent_by_level(ilevel + 1));
+   s.append("\n" + indent_by_level(ilevel) + "[");
+
+   if (!list.empty() && !list[0]->is_block())
+   {
+      s.append("\n" + indent_by_level(ilevel + 1));
+   }
+
    for (auto ke : list)
    {
       s.append(ke->print(ilevel + 1));
    }
-   s.append("\n" + indent_by_level(ilevel) + "]\n");
+
+   s.append("\n" + indent_by_level(ilevel) + "]");
 
    return s;
 }
