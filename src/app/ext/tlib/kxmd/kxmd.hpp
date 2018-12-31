@@ -11,6 +11,7 @@
 
 class kx_process;
 class kx_block;
+class kx_elem;
 
 
 class kxmd_ops
@@ -19,9 +20,9 @@ public:
    // gets the direct subblock list of the given block, if any exist
    static std::vector<mws_sp<kx_process> > get_process_list(const mws_sp<kx_process> ikp);
 
-   static std::vector<std::string> get_process_name_list(const std::vector<mws_sp<kx_process> >& ilist);
+   static std::vector<std::string> get_process_name_list(const std::vector<mws_sp<kx_process> >& i_list);
    static std::vector<std::string> get_process_name_list(const mws_sp<kx_process> ikp);
-   static bool get_bool_from_list(const std::vector<std::string>& ilist);
+   static bool get_bool_from_list(const std::vector<std::string>& i_list);
 
    // gets a reference to a block that's inside the given block
    // i_path is like xxx.yyy.zzz
@@ -37,6 +38,10 @@ public:
    static bool kxmd_path_exists(std::string i_path, mws_sp<kx_process> i_root);
 
    static std::string as_string(mws_any const& i_val);
+
+   static void push_val(mws_sp<kx_block> i_block, const mws_sp<kx_elem> i_val);
+   static void push_val(mws_sp<kx_block> i_block, const std::string& i_val);
+   static void push_val(mws_sp<kx_block> i_block, const std::vector<std::string>& i_list);
 };
 
 

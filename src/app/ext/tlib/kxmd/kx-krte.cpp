@@ -45,13 +45,24 @@ void kx_krte::run()
    //trx("\n\n");
 }
 
-void kx_krte::print()
+std::string kx_krte::to_string()
 {
+   std::string ret;
+
    for (auto ke : kxb->list)
    {
       string s = ke->print();
-      trx("{}", s);
+      ret += s;
    }
+
+   return ret;
+}
+
+void kx_krte::print()
+{
+   string s = to_string();
+
+   trx("{}", s);
 }
 
 #endif

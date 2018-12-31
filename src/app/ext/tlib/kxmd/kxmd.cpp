@@ -28,11 +28,11 @@ std::vector<mws_sp<kx_process> > kxmd_ops::get_process_list(const mws_sp<kx_proc
    return list;
 }
 
-std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<mws_sp<kx_process> >& ilist)
+std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<mws_sp<kx_process> >& i_list)
 {
    std::vector<std::string> list;
 
-   for (auto& i : ilist)
+   for (auto& i : i_list)
    {
       list.push_back(i->get_name());
    }
@@ -55,18 +55,18 @@ std::vector<std::string> kxmd_ops::get_process_name_list(const mws_sp<kx_process
 }
 
 
-bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& ilist)
+bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& i_list)
 {
-   if (ilist.empty())
+   if (i_list.empty())
    {
       mws_throw ia_exception("list is empty");
    }
 
-   if (ilist[0] == "false")
+   if (i_list[0] == "false")
    {
       return false;
    }
-   else if (ilist[0] == "true")
+   else if (i_list[0] == "true")
    {
       return true;
    }
@@ -188,6 +188,30 @@ std::string kxmd_ops::as_string(mws_any const& i_val)
 {
    std::string str = mws_any_cast<std::string>(i_val);
    return str;
+}
+
+void kxmd_ops::push_val(mws_sp<kx_block> i_block, const mws_sp<kx_elem> i_val)
+{
+   i_block->list.push_back(i_val);
+}
+
+void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::string& i_val)
+{
+   auto val = kx_symbol::nwi();
+
+   val->name = i_val;
+   i_block->list.push_back(val);
+}
+
+void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::vector<std::string>& i_list)
+{
+   for (auto& str : i_list)
+   {
+      auto val = kx_symbol::nwi();
+
+      val->name = str;
+      i_block->list.push_back(val);
+   }
 }
 
 #endif

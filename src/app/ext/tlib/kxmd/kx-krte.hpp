@@ -19,6 +19,7 @@ public:
 
    void set_src(std::shared_ptr<std::string> isrc);
    void run();
+   std::string to_string();
    void print();
 
 public:
