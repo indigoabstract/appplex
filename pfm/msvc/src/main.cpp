@@ -1349,15 +1349,20 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    return DefWindowProc(hwnd, message, wparam, lparam);
 }
 
-int get_key(int ikey)
+int get_key(int i_key)
 {
-   if (ikey >= 'A' && ikey <= 'Z')
+   if (i_key >= '0' && i_key <= '9')
    {
-      int diff = ikey - 'A';
+      int diff = i_key - '0';
+      return KEY_0 + diff;
+   }
+   else if (i_key >= 'A' && i_key <= 'Z')
+   {
+      int diff = i_key - 'A';
       return KEY_A + diff;
    }
 
-   switch (ikey)
+   switch (i_key)
    {
    case VK_SHIFT:
       return KEY_SHIFT;
