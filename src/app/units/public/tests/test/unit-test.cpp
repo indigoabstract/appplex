@@ -42,9 +42,8 @@ public:
 };
 
 
-unit_test::unit_test()
+unit_test::unit_test() : unit(mws_stringify(UNIT_TEST))
 {
-	set_name("test");
     texInit = false;
 }
 

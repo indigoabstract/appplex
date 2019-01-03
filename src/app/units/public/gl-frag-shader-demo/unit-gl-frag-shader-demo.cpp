@@ -780,10 +780,7 @@ void unit_gl_frag_shader_demo::init_mws()
 }
 
 
-unit_gl_frag_shader_demo::unit_gl_frag_shader_demo()
-{
-	set_name("gl-frag-shader-demo");
-}
+unit_gl_frag_shader_demo::unit_gl_frag_shader_demo() : unit(mws_stringify(UNIT_GL_FRAG_SHADER_DEMO)) {}
 
 shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::nwi()
 {

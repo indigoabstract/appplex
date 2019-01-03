@@ -119,9 +119,10 @@ public:
    app_storage storage;
 
 protected:
-   unit();
+   unit(const char* i_include_guard);
 
    std::shared_ptr<unit> get_smtp_instance();
+   void set_internal_name_from_include_guard(const char* i_include_guard);
 
    static void set_app_exit_on_next_run(bool iapp_exit_on_next_run);
    static bool gfx_available();
@@ -157,7 +158,7 @@ private:
    void base_load();
    void base_unload();
    bool is_init();
-   void setInit(bool isInit0);
+   void set_init(bool i_is_init);
 
    // unit name/id
    std::string name;
@@ -166,7 +167,7 @@ private:
    // unit path, relative to project (appplex) path
    std::string proj_rel_path;
    std::weak_ptr<unit> parent;
-   bool initVal;
+   bool init_val;
    std::vector<std::function<void()> > operation_list;
    std::mutex operation_mutex;
 
@@ -180,9 +181,9 @@ public:
    static std::shared_ptr<unit_list> nwi();
 
    unit_type get_unit_type();
-   void add(std::shared_ptr<unit> unit0);
-   std::shared_ptr<unit> unit_at(int index0);
-   std::shared_ptr<unit> unit_by_name(std::string iname);
+   void add(std::shared_ptr<unit> i_unit);
+   std::shared_ptr<unit> unit_at(int i_index);
+   std::shared_ptr<unit> unit_by_name(std::string i_name);
    int get_unit_count()const;
    virtual void on_resize();
    virtual void receive(std::shared_ptr<iadp> idp);

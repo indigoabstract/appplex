@@ -434,10 +434,7 @@ public:
 };
 
 
-unit_test_dyn_geometry::unit_test_dyn_geometry()
-{
-	set_name("test-dyn-geometry");
-}
+unit_test_dyn_geometry::unit_test_dyn_geometry() : unit(mws_stringify(UNIT_TEST_DYN_GEOMETRY)) {}
 
 shared_ptr<unit_test_dyn_geometry> unit_test_dyn_geometry::nwi()
 {

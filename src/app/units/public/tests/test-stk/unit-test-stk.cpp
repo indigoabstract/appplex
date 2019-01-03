@@ -226,10 +226,7 @@ namespace unit_test_stk_ns
 using namespace unit_test_stk_ns;
 
 
-unit_test_stk::unit_test_stk()
-{
-	set_name("test-stk");
-}
+unit_test_stk::unit_test_stk() : unit(mws_stringify(UNIT_TEST_STK)) {}
 
 shared_ptr<unit_test_stk> unit_test_stk::nwi()
 {

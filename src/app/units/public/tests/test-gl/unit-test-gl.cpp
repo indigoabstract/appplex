@@ -15,10 +15,7 @@
 #include <glm/inc.hpp>
 
 
-unit_test_gl::unit_test_gl()
-{
-	set_name("test-gl");
-}
+unit_test_gl::unit_test_gl() : unit(mws_stringify(UNIT_TEST_GL)) {}
 
 shared_ptr<unit_test_gl> unit_test_gl::nwi()
 {

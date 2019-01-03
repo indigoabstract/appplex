@@ -13,10 +13,7 @@
 #include <glm/inc.hpp>
 
 
-unit_test_gl_outlines::unit_test_gl_outlines()
-{
-   set_name("test-gl-outlines");
-}
+unit_test_gl_outlines::unit_test_gl_outlines() : unit(mws_stringify(UNIT_TEST_GL_OUTLINES)) {}
 
 mws_sp<unit_test_gl_outlines> unit_test_gl_outlines::nwi()
 {

@@ -17,6 +17,7 @@
 #include "gfx-state.hpp"
 #include "media/res-ld/res-ld.hpp"
 #include "com/mws/font-db.hpp"
+#include <algorithm>
 #include <cstdio>
 
 #ifdef MOD_BOOST
@@ -602,10 +603,10 @@ void unit::app_storage::toggle_screen_recording()
 
 int unit::unit_count = 0;
 
-unit::unit()
+unit::unit(const char* i_include_guard)
 {
-   initVal = false;
-   name = mws_to_str("unit#%d", unit_count);
+   init_val = false;
+   set_internal_name_from_include_guard(i_include_guard);
    unit_count++;
    prefs = std::make_shared<unit_preferences>();
    game_time = 0;
@@ -680,13 +681,31 @@ shared_ptr<unit> unit::get_smtp_instance()
    return shared_from_this();
 }
 
+void unit::set_internal_name_from_include_guard(const char* i_include_guard)
+{
+   std::string name(i_include_guard);
+   int idx = name.find('_');
+
+   if (idx <= 0)
+   {
+      mws_throw ia_exception("invalid format for the include guard");
+   }
+
+   std::string internal_name = name.substr(idx + 1, std::string::npos);
+
+   std::transform(internal_name.begin(), internal_name.end(), internal_name.begin(), ::tolower);
+   // replace all '_' with '-'
+   std::replace(internal_name.begin(), internal_name.end(), '_', '-');
+   set_name(internal_name);
+}
+
 bool unit::update()
 {
 #ifdef MOD_GFX
 
-    bool force_rebind = false;
+   bool force_rebind = false;
 #if defined PLATFORM_IOS
-    force_rebind = true;
+   force_rebind = true;
 #endif
    int updateCount = 1;//update_ctrl->update();
 
@@ -982,7 +1001,7 @@ shared_ptr<unit_preferences> unit::get_preferences()
 
 bool unit::is_init()
 {
-   return initVal;
+   return init_val;
 }
 
 shared_ptr<ia_sender> unit::sender_inst()
@@ -1040,9 +1059,9 @@ void unit::base_unload()
    //update_ctrl->stopped();
 }
 
-void unit::setInit(bool isInit0)
+void unit::set_init(bool i_is_init)
 {
-   initVal = isInit0;
+   init_val = i_is_init;
 }
 
 void unit::update_view(int update_count)
@@ -1073,9 +1092,8 @@ void unit::post_update_view() {}
 int unit_list::unit_list_count = 0;
 
 
-unit_list::unit_list()
+unit_list::unit_list() : unit(mws_to_str("unit_app_list_#%d", unit_list::unit_list_count).c_str())
 {
-   name = mws_to_str("unit-list#%d", unit_list_count);
    unit_list_count++;
 }
 
@@ -1098,9 +1116,9 @@ void unit_list::add(shared_ptr<unit> iunit)
    //ulmodel.lock()->notify_update();
 }
 
-shared_ptr<unit> unit_list::unit_at(int iindex)
+shared_ptr<unit> unit_list::unit_at(int i_index)
 {
-   return ulist[iindex];
+   return ulist[i_index];
 }
 
 shared_ptr<unit> unit_list::unit_by_name(string iname)
@@ -1196,7 +1214,7 @@ void unit_list::init_mws()
    class lmodel : public mws_list_model
    {
    public:
-      lmodel(shared_ptr<unit_list> iul) : ul(iul) {}
+      lmodel(shared_ptr<unit_list> i_ul) : ul(i_ul) {}
 
       int get_length()
       {
@@ -1226,7 +1244,6 @@ void unit_list::init_mws()
    };
 
    shared_ptr<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
-
    shared_ptr<mws_list_model> lm((mws_list_model*)new lmodel(ul));
    shared_ptr<mws_page> p = mws_page::nwi(mws_root);
    shared_ptr<mws_list> l = mws_list::nwi();
@@ -1249,17 +1266,17 @@ shared_ptr<unit_list> app_units_setup::get_unit_list()
    return ul.lock();
 }
 
-void app_units_setup::add_unit(std::shared_ptr<unit> iu, std::string iunit_path, bool iset_current)
+void app_units_setup::add_unit(std::shared_ptr<unit> i_u, std::string i_unit_path, bool i_set_current)
 {
-   iu->set_proj_rel_path(iunit_path);
+   i_u->set_proj_rel_path(i_unit_path);
 
    if (get_unit_list())
    {
-      get_unit_list()->add(iu);
+      get_unit_list()->add(i_u);
 
-      if (iset_current)
+      if (i_set_current)
       {
-         next_crt_unit = iu;
+         next_crt_unit = i_u;
       }
    }
 }

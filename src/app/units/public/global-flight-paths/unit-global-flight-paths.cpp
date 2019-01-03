@@ -1065,10 +1065,7 @@ namespace global_flight_paths_ns
 using namespace global_flight_paths_ns;
 
 
-unit_global_flight_paths::unit_global_flight_paths()
-{
-   set_name("global-flight-paths");
-}
+unit_global_flight_paths::unit_global_flight_paths() : unit(mws_stringify(UNIT_GLOBAL_FLIGHT_PATHS)) {}
 
 shared_ptr<unit_global_flight_paths> unit_global_flight_paths::nwi()
 {

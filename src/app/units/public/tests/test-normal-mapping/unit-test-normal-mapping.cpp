@@ -996,10 +996,7 @@ namespace ns_unit_test_normal_mapping
 using namespace ns_unit_test_normal_mapping;
 
 
-unit_test_normal_mapping::unit_test_normal_mapping()
-{
-	set_name("test-normal-mapping");
-}
+unit_test_normal_mapping::unit_test_normal_mapping() : unit(mws_stringify(UNIT_TEST_NORMAL_MAPPING)) {}
 
 shared_ptr<unit_test_normal_mapping> unit_test_normal_mapping::nwi()
 {

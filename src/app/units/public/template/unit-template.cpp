@@ -7,11 +7,7 @@
 #include "com/mws/mws-camera.hpp"
 #include "com/mws/mws-com.hpp"
 
-
-unit_template::unit_template()
-{
-   set_name("template");
-}
+unit_template::unit_template() : unit(mws_stringify(UNIT_TEMPLATE)) {}
 
 shared_ptr<unit_template> unit_template::nwi()
 {
@@ -28,24 +24,22 @@ namespace unit_template_ns
    class main_page : public mws_page
    {
    public:
-      main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent) {}
-
-      virtual void init()
+      virtual void init() override
       {
          mws_page::init();
       }
 
-      virtual void receive(shared_ptr<iadp> idp)
+      virtual void receive(shared_ptr<iadp> idp) override
       {
          mws_page::receive(idp);
       }
 
-      virtual void update_state()
+      virtual void update_state() override
       {
          mws_page::update_state();
       }
 
-      virtual void update_view(shared_ptr<mws_camera> g)
+      virtual void update_view(shared_ptr<mws_camera> g) override
       {
          mws_page::update_view(g);
 
@@ -59,7 +53,7 @@ namespace unit_template_ns
 
 void unit_template::init_mws()
 {
-   mws_root->new_page<mainpage>();
+   mws_root->new_page<unit_template_ns::main_page>();
    mws_cam->clear_color = true;
 }
 

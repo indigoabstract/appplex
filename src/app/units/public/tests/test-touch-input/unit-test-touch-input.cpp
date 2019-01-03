@@ -28,9 +28,8 @@ namespace unit_test_touch_input_ns
 }
 
 
-unit_test_touch_input::unit_test_touch_input()
+unit_test_touch_input::unit_test_touch_input() : unit(mws_stringify(UNIT_TEST_TOUCH_INPUT))
 {
-   set_name("test-touch-input");
    prefs = mws_sp<unit_preferences>(new unit_test_touch_input_ns::unit_preferences_detail());
 }
 

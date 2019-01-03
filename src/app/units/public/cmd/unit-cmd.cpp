@@ -25,9 +25,8 @@ namespace unit_cmd_pref
 }
 
 
-unit_cmd::unit_cmd()
+unit_cmd::unit_cmd() : unit(mws_stringify(UNIT_CMD))
 {
-   set_name("cmd");
    prefs = shared_ptr<unit_preferences>(new unit_cmd_pref::unit_preferences_detail());
 }
 

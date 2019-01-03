@@ -8,10 +8,7 @@
 #include "com/mws/mws-com.hpp"
 
 
-unit_test_audioengine::unit_test_audioengine()
-{
-	set_name("test_audioengine");
-}
+unit_test_audioengine::unit_test_audioengine() : unit(mws_stringify(UNIT_TEST_AUDIOENGINE)) {}
 
 shared_ptr<unit_test_audioengine> unit_test_audioengine::nwi()
 {

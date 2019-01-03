@@ -261,10 +261,7 @@ void kscroll2::mouseReleased(int iMouseX, int iMouseY)
 
 
 
-unit_kinetic_scrolling::unit_kinetic_scrolling()
-{
-	set_name("kinetic-scrolling");
-}
+unit_kinetic_scrolling::unit_kinetic_scrolling() : unit(mws_stringify(UNIT_KINETIC_SCROLLING)) {}
 
 shared_ptr<unit_kinetic_scrolling> unit_kinetic_scrolling::nwi()
 {

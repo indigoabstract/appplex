@@ -135,7 +135,7 @@ void unit_ctrl::init_app()
    {
       ul->base_init();
       ul->base_load();
-      ul->setInit(true);
+      ul->set_init(true);
    }
 }
 
@@ -307,7 +307,7 @@ void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
       if (!unit0->is_init())
       {
          unit0->base_init();
-         unit0->setInit(true);
+         unit0->set_init(true);
       }
 
       unit0->base_load();

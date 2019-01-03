@@ -13,10 +13,7 @@
 #include <glm/inc.hpp>
 
 
-unit_test_video_recording::unit_test_video_recording()
-{
-   set_name("test-video-recording");
-}
+unit_test_video_recording::unit_test_video_recording() : unit(mws_stringify(UNIT_TEST_VIDEO_RECORDING)) {}
 
 shared_ptr<unit_test_video_recording> unit_test_video_recording::nwi()
 {

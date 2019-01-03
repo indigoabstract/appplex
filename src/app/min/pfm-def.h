@@ -17,6 +17,8 @@ extern "C"
 #endif 
 
 
+#define mws_stringify(s) #s
+
 #if !defined NDEBUG || defined _DEBUG
 
 #define MWS_DEBUG_BUILD

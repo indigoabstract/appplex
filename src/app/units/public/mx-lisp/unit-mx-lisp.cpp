@@ -32,9 +32,8 @@ public:
 };
 
 
-unit_mx_lisp::unit_mx_lisp()
+unit_mx_lisp::unit_mx_lisp() : unit(mws_stringify(UNIT_MX_LISP))
 {
-	set_name("mx-lisp");
 	prefs = shared_ptr<unit_preferences>(new unit_mx_lisp_pref::unit_preferences_detail());
 }
 

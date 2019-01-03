@@ -40,10 +40,7 @@ public:
 };
 
 
-unit_test_freetype_gl::unit_test_freetype_gl()
-{
-	set_name("test-freetype-gl");
-}
+unit_test_freetype_gl::unit_test_freetype_gl() : unit(mws_stringify(UNIT_TEST_FREETYPE_GL)) {}
 
 shared_ptr<unit_test_freetype_gl> unit_test_freetype_gl::nwi()
 {

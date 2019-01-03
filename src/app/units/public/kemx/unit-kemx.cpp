@@ -33,9 +33,8 @@ public:
    }
 };
 
-unit_kemx::unit_kemx()
+unit_kemx::unit_kemx() : unit(mws_stringify(UNIT_KEMX))
 {
-   set_name("kemx");
    is_valid_expression = false;
 }
 

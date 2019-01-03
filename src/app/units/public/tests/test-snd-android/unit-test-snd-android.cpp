@@ -13,10 +13,7 @@
 #include <stk/Plucked.h>
 
 
-unit_test_snd_android::unit_test_snd_android()
-{
-	set_name("test-snd-android");
-}
+unit_test_snd_android::unit_test_snd_android() : unit(mws_stringify(UNIT_TEST_SND_ANDROID)) {}
 
 shared_ptr<unit_test_snd_android> unit_test_snd_android::nwi()
 {

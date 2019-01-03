@@ -5,10 +5,7 @@
 #ifdef UNIT_TEST_OPENVG
 
 
-unit_test_openvg::unit_test_openvg()
-{
-	set_name("test-openvg");
-}
+unit_test_openvg::unit_test_openvg() : unit(mws_stringify(UNIT_TEST_OPENVG)) {}
 
 shared_ptr<unit_test_openvg> unit_test_openvg::nwi()
 {

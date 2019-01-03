@@ -18,10 +18,7 @@
 
 using std::string;
 
-unit_abstract_racing::unit_abstract_racing()
-{
-	set_name("abstract-racing");
-}
+unit_abstract_racing::unit_abstract_racing() : unit(mws_stringify(UNIT_ABSTRACT_RACING)) {}
 
 shared_ptr<unit_abstract_racing> unit_abstract_racing::nwi()
 {

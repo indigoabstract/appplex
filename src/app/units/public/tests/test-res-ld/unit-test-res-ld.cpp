@@ -15,10 +15,7 @@
 #include <glm/inc.hpp>
 
 
-unit_test_res_ld::unit_test_res_ld()
-{
-	set_name("test-res-ld");
-}
+unit_test_res_ld::unit_test_res_ld() : unit(mws_stringify(UNIT_TEST_RES_LD)) {}
 
 shared_ptr<unit_test_res_ld> unit_test_res_ld::nwi()
 {

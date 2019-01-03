@@ -8,10 +8,7 @@
 #include "com/mws/mws-camera.hpp"
 
 
-unit_test_mws::unit_test_mws()
-{
-	set_name("mws-test");
-}
+unit_test_mws::unit_test_mws() : unit(mws_stringify(UNIT_TEST_MWS)) {}
 
 shared_ptr<unit_test_mws> unit_test_mws::nwi()
 {

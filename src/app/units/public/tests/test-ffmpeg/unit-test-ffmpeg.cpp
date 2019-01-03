@@ -34,10 +34,7 @@ namespace test_ffmpeg
 
 using namespace test_ffmpeg;
 
-unit_test_ffmpeg::unit_test_ffmpeg()
-{
-	set_name("test-ffmpeg");
-}
+unit_test_ffmpeg::unit_test_ffmpeg() : unit(mws_stringify(UNIT_TEST_FFMPEG)) {}
 
 shared_ptr<unit_test_ffmpeg> unit_test_ffmpeg::nwi()
 {

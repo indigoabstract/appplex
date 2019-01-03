@@ -64,10 +64,7 @@ public:
 const float unit_test_grid_impl::GRID_SIZE = 500.f;
 
 
-unit_test_grid::unit_test_grid()
-{
-	set_name("test-grid");
-}
+unit_test_grid::unit_test_grid() : unit(mws_stringify(UNIT_TEST_GRID)) {}
 
 shared_ptr<unit_test_grid> unit_test_grid::nwi()
 {

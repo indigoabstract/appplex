@@ -42,10 +42,7 @@ public:
 };
 
 
-unit_test_shadow_map::unit_test_shadow_map()
-{
-	set_name("test-shadow-map");
-}
+unit_test_shadow_map::unit_test_shadow_map() : unit(mws_stringify(UNIT_TEST_SHADOW_MAP)) {}
 
 shared_ptr<unit_test_shadow_map> unit_test_shadow_map::nwi()
 {

@@ -90,10 +90,7 @@ namespace unit_texxed_ns
 }
 
 
-unit_texxed::unit_texxed()
-{
-	set_name("texxed");
-}
+unit_texxed::unit_texxed() : unit(mws_stringify(UNIT_TEXXED)) {}
 
 shared_ptr<unit_texxed> unit_texxed::nwi()
 {

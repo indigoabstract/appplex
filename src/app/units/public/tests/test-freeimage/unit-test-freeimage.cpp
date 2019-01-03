@@ -20,10 +20,7 @@ using std::string;
 using std::vector;
 
 
-unit_test_freeimage::unit_test_freeimage()
-{
-	set_name("test-freeimage");
-}
+unit_test_freeimage::unit_test_freeimage() : unit(mws_stringify(UNIT_TEST_FREEIMAGE)) {}
 
 shared_ptr<unit_test_freeimage> unit_test_freeimage::nwi()
 {

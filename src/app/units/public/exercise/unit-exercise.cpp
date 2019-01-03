@@ -90,9 +90,8 @@ namespace unit_exercise_pref
 }
 
 
-unit_exercise::unit_exercise()
+unit_exercise::unit_exercise() : unit(mws_stringify(UNIT_EXERCISE))
 {
-	set_name("exercise");
 	prefs = shared_ptr<unit_preferences>(new unit_exercise_pref::unit_preferences_detail());
 }
 

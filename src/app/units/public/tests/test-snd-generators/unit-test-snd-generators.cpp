@@ -581,10 +581,7 @@ namespace unit_test_snd_generators_ns
 }
 
 
-unit_test_snd_generators::unit_test_snd_generators()
-{
-	set_name("test sound generators");
-}
+unit_test_snd_generators::unit_test_snd_generators() : unit(mws_stringify(UNIT_TEST_SND_GENERATORS)) {}
 
 shared_ptr<unit_test_snd_generators> unit_test_snd_generators::nwi()
 {

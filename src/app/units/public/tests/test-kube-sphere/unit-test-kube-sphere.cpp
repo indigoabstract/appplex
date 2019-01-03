@@ -54,10 +54,7 @@ public:
 };
 
 
-unit_test_kube_sphere::unit_test_kube_sphere()
-{
-	set_name("test-kube-sphere");
-}
+unit_test_kube_sphere::unit_test_kube_sphere() : unit(mws_stringify(UNIT_TEST_KUBE_SPHERE)) {}
 
 shared_ptr<unit_test_kube_sphere> unit_test_kube_sphere::nwi()
 {

@@ -243,10 +243,7 @@ namespace unit_test_fmod_ns
 using namespace unit_test_fmod_ns;
 
 
-unit_test_fmod::unit_test_fmod()
-{
-	set_name("test-fmod");
-}
+unit_test_fmod::unit_test_fmod() : unit(mws_stringify(UNIT_TEST_FMOD)) {}
 
 shared_ptr<unit_test_fmod> unit_test_fmod::nwi()
 {

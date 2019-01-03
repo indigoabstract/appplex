@@ -11,10 +11,7 @@
 #include <VG/openvg.h>
 
 
-unit_gen_texture::unit_gen_texture()
-{
-	set_name("gen-texture");
-}
+unit_gen_texture::unit_gen_texture() : unit(mws_stringify(UNIT_GEN_TEXTURE)) {}
 
 shared_ptr<unit_gen_texture> unit_gen_texture::nwi()
 {

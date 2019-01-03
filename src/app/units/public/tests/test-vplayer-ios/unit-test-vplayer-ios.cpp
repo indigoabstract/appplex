@@ -7,10 +7,7 @@
 using std::string;
 
 
-unit_test_vplayer_ios::unit_test_vplayer_ios()
-{
-	set_name("test-vplayer-ios");
-}
+unit_test_vplayer_ios::unit_test_vplayer_ios() : unit(mws_stringify(UNIT_TEST_VPLAYER_IOS)) {}
 
 shared_ptr<unit_test_vplayer_ios> unit_test_vplayer_ios::nwi()
 {

@@ -13,10 +13,7 @@
 #include <glm/inc.hpp>
 
 
-unit_test_gl_uniform_blocks::unit_test_gl_uniform_blocks()
-{
-   set_name("test-gl-uniform-blocks");
-}
+unit_test_gl_uniform_blocks::unit_test_gl_uniform_blocks() : unit(mws_stringify(UNIT_TEST_GL_UNIFORM_BLOCKS)) {}
 
 mws_sp<unit_test_gl_uniform_blocks> unit_test_gl_uniform_blocks::nwi()
 {

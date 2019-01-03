@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit-list[ test-touch-input ], exclusive [ true ], launch-unit [ true ], ],
+	start[ unit-list[ template ], exclusive [ true ], launch-unit [ true ], ],
 ],
 
 units
@@ -13,7 +13,7 @@ units
 
 	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png, zlib ], platf[ windows, android ], ],
-	template[ enabled[ false ], ],
+	template[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts ] ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ ],
@@ -68,6 +68,7 @@ units
 	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 	voronoi-keyboard[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts, unit-texxed ] ],
+	kxmdb[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts ] ],
 
 	@@[ npw ],
 	

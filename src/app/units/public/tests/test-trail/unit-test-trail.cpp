@@ -470,10 +470,7 @@ public:
 };
 
 
-unit_test_trail::unit_test_trail()
-{
-   set_name("test-trail");
-}
+unit_test_trail::unit_test_trail() : unit(mws_stringify(UNIT_TEST_TRAIL)) {}
 
 shared_ptr<unit_test_trail> unit_test_trail::nwi()
 {
