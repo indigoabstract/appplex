@@ -13,7 +13,6 @@
 #include <vector>
 
 namespace bfs = ::boost::filesystem;
-using std::vector;
 
 
 class mod_cmd_start_process : public mod_cmd
@@ -21,7 +20,7 @@ class mod_cmd_start_process : public mod_cmd
 public:
 	std::string get_module_name();
 	boost::program_options::options_description get_options_description();
-	shared_ptr<long_operation> run(const vector<unicodestring>& args);
+	shared_ptr<long_operation> run(const std::vector<unicodestring>& args);
 };
 
 
