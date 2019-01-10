@@ -55,8 +55,13 @@ public:
 	}
 
 	virtual ~ios_file_impl() {}
-
-	virtual uint64 length()
+    
+    FILE* get_file_impl() const override
+    {
+        return file;
+    }
+    
+	virtual uint64 length() override
 	{
 		uint64 size = 0;
 
@@ -66,89 +71,95 @@ public:
 
 			if (file)
 			{
-                FILE* f = (FILE*)file;
-
-                fseek(f, 0, SEEK_END );
-                size = ftell(f);
+                fseek(file, 0, SEEK_END );
+                size = ftell(file);
 				close();
 			}
 		}
 		else
 		{
-            FILE* f = (FILE*)file;
-            long crt_pos = ftell(f);
+            long crt_pos = ftell(file);
 
-            fseek(f, 0, SEEK_END );
-            size = ftell(f);
-            fseek(f, crt_pos, SEEK_SET );
+            fseek(file, 0, SEEK_END );
+            size = ftell(file);
+            fseek(file, crt_pos, SEEK_SET );
 		}
 
 		return size;
 	}
 
-	virtual uint64 creation_time()const
+	virtual uint64 creation_time() const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	virtual uint64 last_write_time()const
+	virtual uint64 last_write_time() const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	virtual void* open_impl(std::string iopen_mode)
+	virtual bool open_impl(std::string iopen_mode) override
 	{
 		std::string path = ppath.get_full_path();
 
 		if (iopen_mode[0] == 'w' && path[0] != '/')
 		{
-			return nullptr;
+			return false;
 		}
 
         std::string path_in_bundle = get_path_in_bundle(path.c_str());
         
         if(!path_in_bundle.empty())
         {
-            FILE* file = fopen(path_in_bundle.c_str(), iopen_mode.c_str());
-            mws_print("open_impl: opening file %s\n", path.c_str());
-            //            fseek( file, 0, SEEK_END );
-            //            uint64 len = ftell((FILE*)file);
-            //            fseek(file, 0, SEEK_SET );
+            file = fopen(path_in_bundle.c_str(), iopen_mode.c_str());
+            mws_println("open_impl [ opening file %s ]", path.c_str());
 
-            return file;
+            return file != nullptr;
         }
 
-        return nullptr;
+        return false;
 	}
 
-	virtual void close_impl()
+	virtual void close_impl() override
 	{
-        fclose((FILE*)file);
+        fclose(file);
 		file = nullptr;
 	}
 
-	virtual void seek_impl(uint64 ipos, int iseek_pos)
+    virtual void flush_impl() override
+    {
+        if(file)
+        {
+            fflush(file);
+        }
+        else
+        {
+            mws_print("error[ file [ %s ] is not open! ]", ppath.get_full_path().c_str());
+        }
+    }
+
+    virtual void seek_impl(uint64 ipos, int iseek_pos) override
 	{
-        fseek((FILE*)file, ipos, iseek_pos);
+        fseek(file, ipos, iseek_pos);
 	}
 
-	virtual uint64 tell_impl()
+	virtual uint64 tell_impl() override
 	{
-        return ftell((FILE*)file);
+        return ftell(file);
 	}
 
-	virtual int read_impl(uint8* ibuffer, int isize)
+	virtual int read_impl(uint8* ibuffer, int isize) override
 	{
-        return (int)fread(ibuffer, 1, isize, (FILE*)file);
+        return (int)fread(ibuffer, 1, isize, file);
 	}
 
-	virtual int write_impl(const uint8* ibuffer, int isize)
+	virtual int write_impl(const uint8* ibuffer, int isize) override
 	{
-        return (int)fwrite(ibuffer, 1, isize, (FILE*)file);
+        return (int)fwrite(ibuffer, 1, isize, file);
 	}
     
     std::string get_path_in_bundle(std::string i_filename)
@@ -169,6 +180,8 @@ public:
         
         return "";
     }
+    
+    FILE* file = nullptr;
 };
 
 
@@ -199,30 +212,30 @@ shared_ptr<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::strin
 	return std::make_shared<ios_file_impl>(ifilename, iroot_dir);
 }
 
-int ios_main::get_screen_dpi()const
+int ios_main::get_screen_dpi() const
 {
     return 0;
 }
 
-void ios_main::write_text(const char* text)const
+void ios_main::write_text(const char* text) const
 {
 	printf("%s", text);
 }
 
-void ios_main::write_text_nl(const char* text)const
+void ios_main::write_text_nl(const char* text) const
 {
 	printf("%s\n", text);
 }
 
-void ios_main::write_text(const wchar_t* text)const
+void ios_main::write_text(const wchar_t* text) const
 {
 }
 
-void ios_main::write_text_nl(const wchar_t* text)const
+void ios_main::write_text_nl(const wchar_t* text) const
 {
 }
 
-void ios_main::write_text_v(const char* iformat, ...)const
+void ios_main::write_text_v(const char* iformat, ...) const
 {
    char dest[1024 * 16];
    va_list arg_ptr;
@@ -234,7 +247,7 @@ void ios_main::write_text_v(const char* iformat, ...)const
    printf("%s", dest);
 }
 
-std::string ios_main::get_writable_path()const
+std::string ios_main::get_writable_path() const
 {
     NSString* output_path_nss = nil;
     std::string output_path;
@@ -244,6 +257,11 @@ std::string ios_main::get_writable_path()const
     output_path = output_path_c;
 
     return output_path;
+}
+
+std::string ios_main::get_timezone_id()const
+{
+    return "";
 }
 
 void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)
@@ -286,12 +304,12 @@ umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list
 	return iplist;
 }
 
-float ios_main::get_screen_scale()
+float ios_main::get_screen_scale() const
 {
 	return screen_scale;
 }
 
-bool ios_main::is_full_screen_mode()
+bool ios_main::is_full_screen_mode() const
 {
 	return true;
 }
