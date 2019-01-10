@@ -166,7 +166,7 @@ else() # Assume iOS
 	#set(DEVELOPMENT_PROJECT_NAME "project")                     # <== Set to your project name, e.g. project.xcodeproj
 	set(DEVELOPMENT_TEAM_ID "9H73BRXFST")                       # <== Set to your team ID from Apple
 	set(APP_NAME "VideoEncApp")                                     # <== Set To your app's name
-	set(APP_BUNDLE_IDENTIFIER "com.indigoabstract.VideoEncApp")                # <== Set to your app's bundle identifier
+	set(APP_BUNDLE_IDENTIFIER "com.indigoabstract.testapp")                # <== Set to your app's bundle identifier
 	set(FRAMEWORK_NAME "FooBar")                                # <== Set to your framework's name
 	set(FRAMEWORK_BUNDLE_IDENTIFIER "com.company.framework")    # <== Set to your framework's bundle identifier (cannot be the same as app bundle identifier)
 	set(TEST_NAME "Tests")                                      # <== Set to your test's name
@@ -191,8 +191,8 @@ else() # Assume iOS
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
 	set(MACOSX_BUNDLE_ICON_FILE "")
 	set(MACOSX_BUNDLE_LONG_VERSION_STRING "1.0")
-	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.6")
-	set(MACOSX_BUNDLE_BUNDLE_VERSION "7")
+	set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0")
+	set(MACOSX_BUNDLE_BUNDLE_VERSION "1")
 	set(MACOSX_BUNDLE_COPYRIGHT "Copyright YOU")
 	set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
 
@@ -236,7 +236,7 @@ else() # Assume iOS
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-120.png
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-1024.png
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon.png # iPhone/iPad Retina, 80x80
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
+        #${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon@2x.png # iPhone Retina, 58x58
         ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon-Small.png # iPad Non-Retina 29x29
         )
