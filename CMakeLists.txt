@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.6)
 
 # Maps to a solution file (appplex.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)
-project (VideoEncApp)
+project (omnirecall)
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
@@ -165,8 +165,8 @@ else() # Assume iOS
 	
 	#set(DEVELOPMENT_PROJECT_NAME "project")                     # <== Set to your project name, e.g. project.xcodeproj
 	set(DEVELOPMENT_TEAM_ID "9H73BRXFST")                       # <== Set to your team ID from Apple
-	set(APP_NAME "VideoEncApp")                                     # <== Set To your app's name
-	set(APP_BUNDLE_IDENTIFIER "com.indigoabstract.testapp")                # <== Set to your app's bundle identifier
+        set(APP_NAME "omnirecall")                                     # <== Set To your app's name
+	set(APP_BUNDLE_IDENTIFIER "com.indigoabstract.testapp2")                # <== Set to your app's bundle identifier
 	set(FRAMEWORK_NAME "FooBar")                                # <== Set to your framework's name
 	set(FRAMEWORK_BUNDLE_IDENTIFIER "com.company.framework")    # <== Set to your framework's bundle identifier (cannot be the same as app bundle identifier)
 	set(TEST_NAME "Tests")                                      # <== Set to your test's name
@@ -246,7 +246,9 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/storyboards/LaunchScreen.storyboard"
 	)
 
-	file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/app/units/private/npw/video-editor/res/*)
+        file(GLOB_RECURSE res_files_0 ${CMAKE_CURRENT_LIST_DIR}/src/res/*)
+	file(GLOB_RECURSE res_files_1 ${CMAKE_CURRENT_LIST_DIR}/src/app/units/private/omnirecall/res/*)
+        set(res_files ${res_files_0} ${res_files_1})
 
 	set_source_files_properties(
 	${res_files}
@@ -321,6 +323,8 @@ else() # Assume iOS
         FIND_LIBRARY(QUARTZ_CORE_LIB QuartzCore)
 	# app bundled libs
 	find_library(PNG_LIB libpng.a)
+        find_library(FREETYPE_LIB libfreetype.a)
+
 
 	# link the frameworks located above
 	target_link_libraries(${APP_NAME} app_plex_main)
@@ -339,6 +343,7 @@ else() # Assume iOS
         target_link_libraries(${APP_NAME} ${QUARTZ_CORE_LIB})
 	# app bundled libs
 	target_link_libraries(${APP_NAME} ${PNG_LIB})
+        target_link_libraries(${APP_NAME} ${FREETYPE_LIB})
 
 	# Link the framework to the app
 	#set_target_properties(${APP_NAME} PROPERTIES

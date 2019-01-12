@@ -102,26 +102,44 @@ public:
 		return 0;
 	}
 
-	virtual bool open_impl(std::string iopen_mode) override
+	virtual bool open_impl(std::string i_open_mode) override
 	{
 		std::string path = ppath.get_full_path();
-
-		if (iopen_mode[0] == 'w' && path[0] != '/')
-		{
-			return false;
-		}
-
         std::string path_in_bundle = get_path_in_bundle(path.c_str());
+        std::string* path_ptr = nullptr;
         
-        if(!path_in_bundle.empty())
+        // file not found in bundle. try the filesystem
+        if(path_in_bundle.empty())
         {
-            file = fopen(path_in_bundle.c_str(), iopen_mode.c_str());
-            mws_println("open_impl [ opening file %s ]", path.c_str());
-
-            return file != nullptr;
+            path_ptr = &path;
         }
-
-        return false;
+        // file found in bundle
+        else
+        {
+            // files in the bundle are read only
+            if(i_open_mode[0] != 'w')
+            {
+                path_ptr = &path_in_bundle;
+            }
+        }
+        
+        if(path_ptr)
+        {
+            file = fopen(path_ptr->c_str(), i_open_mode.c_str());
+        }
+        
+        bool open_successful = (file != nullptr);
+        
+        if(open_successful)
+        {
+            mws_println("open_impl [ opening file %s ]", path_ptr->c_str());
+        }
+        else
+        {
+            mws_println("open_impl [ cannot open file %s ]", path.c_str());
+        }
+        
+        return open_successful;
 	}
 
 	virtual void close_impl() override
@@ -162,7 +180,7 @@ public:
         return (int)fwrite(ibuffer, 1, isize, file);
 	}
     
-    std::string get_path_in_bundle(std::string i_filename)
+    static std::string get_path_in_bundle(std::string i_filename)
     {
         auto c_filename = i_filename.c_str();
         NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
@@ -214,7 +232,7 @@ shared_ptr<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::strin
 
 int ios_main::get_screen_dpi() const
 {
-    return 0;
+    return 480;
 }
 
 void ios_main::write_text(const char* text) const
@@ -261,7 +279,12 @@ std::string ios_main::get_writable_path() const
 
 std::string ios_main::get_timezone_id()const
 {
-    return "";
+    NSTimeZone* time_zone = [NSTimeZone localTimeZone];
+    NSString* name_nss = [time_zone name];
+    const char* name_c = [name_nss UTF8String];
+    std::string name(name_c);
+    
+    return name;
 }
 
 void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)

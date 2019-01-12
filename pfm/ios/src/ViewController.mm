@@ -212,6 +212,8 @@ static ViewController* instance = NULL;
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
+#ifdef UNIT_VIDEO_EDITOR
+    
     NSString* media_type = [info objectForKey: UIImagePickerControllerMediaType];
     
     if (CFStringCompare ((__bridge CFStringRef) media_type, kUTTypeMovie, 0) == kCFCompareEqualTo)
@@ -258,6 +260,8 @@ static ViewController* instance = NULL;
             }
         }
     }
+    
+#endif
 }
 
 -(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
