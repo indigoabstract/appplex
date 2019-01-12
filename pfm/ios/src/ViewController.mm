@@ -24,8 +24,12 @@ std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_file
 
 @end
 
-static EAGLContext* eagl_context_inst = NULL;
-static ViewController* instance = NULL;
+static EAGLContext* eagl_context_inst = nullptr;
+static ViewController* instance = nullptr;
+static NSInteger fbo_width = 0;
+static NSInteger fbo_height = 0;
+static GLKView* glk_view = nullptr;
+static float native_scale = 0.f;
 
 @implementation ViewController
 
@@ -52,36 +56,30 @@ static ViewController* instance = NULL;
         NSLog(@"Failed to create ES context");
     }
     
-    GLKView *view = (GLKView *)self.view;
-    view.context = self.context;
-    view.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
-    view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-    view.drawableMultisample = GLKViewDrawableMultisample4X;
-    view.contentScaleFactor = 2.0;
+    glk_view = (GLKView*)self.view;
+    glk_view.context = self.context;
+    glk_view.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
+    glk_view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+    glk_view.drawableMultisample = GLKViewDrawableMultisample4X;
+    glk_view.contentScaleFactor = 2.0;
     
     // Set animation frame rate
     self.preferredFramesPerSecond = 60;
 
 	{
-		float scale = [UIScreen mainScreen].scale;
-		ios_main::get_instance()->screen_scale = scale;
+		native_scale = [UIScreen mainScreen].nativeScale;
+		ios_main::get_instance()->screen_scale = native_scale;
 	}
 	
-	{
-		CGRect screen_rect = [[UIScreen mainScreen] bounds];
-		CGFloat screen_width = screen_rect.size.width;
-		CGFloat screen_height = screen_rect.size.height;
-		unit_ctrl::inst()->resize_app(screen_width, screen_height);
-	}
-
     // this is needed to find out the default framebuffer's id
-    [view bindDrawable];
+    [glk_view bindDrawable];
     [self setupGL];
 }
 
 - (void)dealloc
 {
-    if ([EAGLContext currentContext] == self.context) {
+    if ([EAGLContext currentContext] == self.context)
+    {
         [EAGLContext setCurrentContext:nil];
     }
 }
@@ -89,6 +87,10 @@ static ViewController* instance = NULL;
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:self.context];
+    
+    fbo_width = (int)glk_view.drawableWidth;
+    fbo_height = (int)glk_view.drawableHeight;
+    unit_ctrl::inst()->resize_app(fbo_width, fbo_height);
     ios_main::get_instance()->init();
     ios_main::get_instance()->start();
 }
@@ -99,7 +101,7 @@ static ViewController* instance = NULL;
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 }
 
 - (void) handle_touch_event:(pointer_evt::e_touch_type)type with_touches:(NSSet*)touches with_event:(UIEvent*)event
@@ -119,8 +121,8 @@ static ViewController* instance = NULL;
             pointer_evt::touch_point& current_point = evt->points[evt->touch_count++];
             
             current_point.identifier = (uintptr_t) current_touch;
-            current_point.x = pos.x;
-            current_point.y = pos.y;
+            current_point.x = pos.x * native_scale;
+            current_point.y = pos.y * native_scale;
             current_point.is_changed = [touches containsObject:current_touch];
         }
     }
@@ -168,6 +170,13 @@ static ViewController* instance = NULL;
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    if(glk_view.drawableWidth != fbo_width || glk_view.drawableHeight != fbo_height)
+    {
+        fbo_width = glk_view.drawableWidth;
+        fbo_height = glk_view.drawableHeight;
+        unit_ctrl::inst()->resize_app((int)fbo_width, (int)fbo_height);
+    }
+
     ios_main::get_instance()->run();
 }
 
