@@ -236,6 +236,7 @@ void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::vector<std::string>
 
 enum class kxmd_elem_type
 {
+   kxe_invalid,
    kxe_block,
    kxe_symbol,
    kxe_text,
@@ -249,32 +250,13 @@ enum class kxmd_elem_type
 };
 class kxmd_process;
 
-class kxs_elem : public kxmd_elem, public std::enable_shared_from_this<kxs_elem>
+class kxs_elem : public kxmd_elem
 {
 public:
-   virtual ~kxs_elem() {}
-
-   mws_sp<kxs_elem> get_inst() { return shared_from_this(); }
-   virtual bool is_block() const { return false; }
-   virtual bool is_process() const { return false; }
-   virtual std::string print(int ilevel = 0) { return "kxs_elem"; }
-   virtual void eval() {}
-
-   kxmd_elem_type type;
+   virtual kxmd_elem_type get_type() const { return kxmd_elem_type::kxe_invalid; }
 
 protected:
    kxs_elem() {}
-   std::string indent_by_level(int ilevel)
-   {
-      std::string ret;
-
-      for (int k = 0; k < ilevel; k++)
-      {
-         ret += indent_str_2;
-      }
-
-      return ret;
-   }
 };
 
 
@@ -282,14 +264,12 @@ class kxmd_whitespace : public kxs_elem
 {
 public:
    static mws_sp<kxmd_whitespace> nwi() { return mws_sp<kxmd_whitespace>(new kxmd_whitespace()); }
-   virtual ~kxmd_whitespace() {}
-
-   //virtual std::string print(int ilevel = 0);
-
-   std::string data;
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_whitespace; }
+   virtual bool is_leaf() const override { return false; };
+   virtual bool is_node() const override { return false; };
 
 private:
-   kxmd_whitespace() { type = kxmd_elem_type::kxe_whitespace; }
+   kxmd_whitespace() {}
 };
 
 
@@ -297,12 +277,12 @@ class kxmd_comma : public kxs_elem
 {
 public:
    static mws_sp<kxmd_comma> nwi() { return mws_sp<kxmd_comma>(new kxmd_comma()); }
-   virtual ~kxmd_comma() {}
-
-   //virtual std::string print(int ilevel = 0);
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_comma; }
+   virtual bool is_leaf() const override { return false; };
+   virtual bool is_node() const override { return false; };
 
 private:
-   kxmd_comma() { type = kxmd_elem_type::kxe_comma; }
+   kxmd_comma() {}
 };
 
 
@@ -316,9 +296,7 @@ public:
    };
 
    static mws_sp<kxmd_async_flowop> nwi() { return mws_sp<kxmd_async_flowop>(new kxmd_async_flowop()); }
-   virtual ~kxmd_async_flowop() {}
-
-   //virtual std::string print(int ilevel = 0);
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_async_flowop; }
 
    int fltype;
    std::vector<mws_sp<kxmd_process> > cnx;
@@ -327,7 +305,6 @@ public:
 private:
    kxmd_async_flowop()
    {
-      type = kxmd_elem_type::kxe_async_flowop;
       fltype = afl_left;
       capacity = 1;
    }
@@ -343,9 +320,7 @@ public:
    };
 
    static mws_sp<kxmd_flowop> nwi() { return mws_sp<kxmd_flowop>(new kxmd_flowop()); }
-   virtual ~kxmd_flowop() {}
-
-   //virtual std::string print(int ilevel = 0);
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_flowop; }
 
    int fltype;
    weak_ptr<kxmd_process> src, dst;
@@ -355,7 +330,6 @@ public:
 private:
    kxmd_flowop()
    {
-      type = kxmd_elem_type::kxe_flowop;
       fltype = fl_left;
       capacity = 1;
    }
@@ -365,22 +339,8 @@ private:
 class kxmd_process : public kxs_elem
 {
 public:
-   virtual ~kxmd_process() {}
-
-   virtual bool is_process() const { return true; }
-   //virtual std::string print(int ilevel = 0);
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_invalid; }
    virtual std::string get_name()const = 0;
-   // direct subelements(subblocks)
-   virtual int get_elem_list_size() const { return 0; }
-   virtual mws_sp<kxs_elem> get_elem_at(int i_idx) const { return nullptr; }
-   // search inside the component for a process with the given name
-   // if recursive, searches all subcomponents too
-   //virtual mws_sp<kxmd_process> find_by_name(const std::string& iname, bool i_recursive) const { return nullptr; }
-   // get index of a subelement in the list by name. returns index or -1 if not found
-   //virtual int index_of_name(const std::string& iname) const { return -1; }
-
-   mws_sp<kxmd_flowop> in, ex;
-   bool is_arranged;
 
 protected:
    kxmd_process() {}
@@ -391,16 +351,11 @@ class kxmd_symbol : public kxmd_process
 {
 public:
    static mws_sp<kxmd_symbol> nwi() { return mws_sp<kxmd_symbol>(new kxmd_symbol()); }
-   virtual ~kxmd_symbol() {}
-
-   //virtual std::string print(int ilevel = 0);
-   //virtual void eval();
-   virtual std::string get_name()const { return name; }
-
-   std::string name;
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_symbol; }
+   virtual std::string get_name()const { return val; }
 
 private:
-   kxmd_symbol() { type = kxmd_elem_type::kxe_symbol; }
+   kxmd_symbol() {}
 };
 
 
@@ -408,16 +363,11 @@ class kxmd_text : public kxmd_process
 {
 public:
    static mws_sp<kxmd_text> nwi() { return mws_sp<kxmd_text>(new kxmd_text()); }
-   virtual ~kxmd_text() {}
-
-   //virtual std::string print(int ilevel = 0);
-   //virtual void eval();
-   virtual std::string get_name()const { return data; }
-
-   std::string data;
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_text; }
+   virtual std::string get_name()const { return val; }
 
 private:
-   kxmd_text() { type = kxmd_elem_type::kxe_text; }
+   kxmd_text() {}
 };
 
 
@@ -425,28 +375,15 @@ class kxmd_block : public kxmd_process
 {
 public:
    static mws_sp<kxmd_block> nwi() { return mws_sp<kxmd_block>(new kxmd_block()); }
-   virtual ~kxmd_block() {}
-
-   virtual bool is_block() const override { return true; }
-   //virtual std::string print(int ilevel = 0);
-   //virtual void eval();
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_block; }
    virtual std::string get_name()const
    {
-      if (!name) { return "block-nn/a"; }
-      return name->name;
+      if (val.empty()) { return "block-nn/a"; }
+      return val;
    }
-   //virtual int get_elem_list_size() const override { return list.size(); }
-   //virtual mws_sp<kxs_elem> get_elem_at(int i_idx) const override { return list[i_idx]; }
-   virtual int get_elem_list_size() const override { return vect.size(); }
-   //virtual mws_sp<kxs_elem> get_elem_at(int i_idx) const override { return std::dynamic_pointer_cast<kxs_elem>(vect[i_idx]); }
-   //virtual mws_sp<kxmd_process> find_by_name(const std::string& iname, bool i_recursive) const override;
-   //virtual int index_of_name(const std::string& iname) const override;
-
-   mws_sp<kxmd_symbol> name;
-   //std::vector<mws_sp<kxs_elem> > list;
 
 protected:
-   kxmd_block() { type = kxmd_elem_type::kxe_block; }
+   kxmd_block() {}
 };
 
 
@@ -454,17 +391,11 @@ class kxmd_ignore_block : public kxmd_process
 {
 public:
    static mws_sp<kxmd_ignore_block> nwi() { return mws_sp<kxmd_ignore_block>(new kxmd_ignore_block()); }
-   virtual ~kxmd_ignore_block() {}
-
-   virtual bool is_block() const override { return true; }
-   //virtual std::string print(int ilevel = 0);
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_ignore_block; }
    virtual std::string get_name()const { return "comment"; }
 
-   mws_sp<kxmd_symbol> name;
-   std::string body;
-
 private:
-   kxmd_ignore_block() { type = kxmd_elem_type::kxe_ignore_block; }
+   kxmd_ignore_block() {}
 };
 
 
@@ -472,16 +403,11 @@ class kxmd_match_block : public kxmd_process
 {
 public:
    static mws_sp<kxmd_match_block> nwi() { return mws_sp<kxmd_match_block>(new kxmd_match_block()); }
-   virtual ~kxmd_match_block() {}
-
-   virtual bool is_block() const override { return true; }
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_match_block; }
    virtual std::string get_name()const { return "match-block"; }
 
-   mws_sp<kxmd_symbol> name;
-   mws_sp<kxmd_block> blk;
-
 private:
-   kxmd_match_block() { type = kxmd_elem_type::kxe_match_block; }
+   kxmd_match_block() {}
 };
 
 
@@ -489,16 +415,11 @@ class kxmd_meta_block : public kxmd_process
 {
 public:
    static mws_sp<kxmd_meta_block> nwi() { return mws_sp<kxmd_meta_block>(new kxmd_meta_block()); }
-   virtual ~kxmd_meta_block() {}
-
-   virtual bool is_block() const override { return true; }
+   virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_meta_block; }
    virtual std::string get_name()const { return "meta-block"; }
 
-   mws_sp<kxmd_symbol> name;
-   mws_sp<kxmd_block> blk;
-
 private:
-   kxmd_meta_block() { type = kxmd_elem_type::kxe_meta_block; }
+   kxmd_meta_block() {}
 };
 
 
@@ -641,7 +562,6 @@ class kxmd_scn_whitespace : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_whitespace> nwi() { return mws_sp<kxmd_scn_whitespace>(new kxmd_scn_whitespace()); }
-   virtual ~kxmd_scn_whitespace() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -662,7 +582,7 @@ public:
                token_found = true;
 
                mws_sp<kxmd_whitespace> ke = kxmd_whitespace::nwi();
-               ke->data = ss->src->substr(start_idx, ss->crt_idx - start_idx);
+               ke->val = ss->src->substr(start_idx, ss->crt_idx - start_idx);
 
                return ke;
             }
@@ -680,7 +600,6 @@ class kxmd_scn_comma : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_comma> nwi() { return mws_sp<kxmd_scn_comma>(new kxmd_scn_comma()); }
-   virtual ~kxmd_scn_comma() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -704,7 +623,6 @@ class kxmd_scn_symbol : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_symbol> nwi() { return mws_sp<kxmd_scn_symbol>(new kxmd_scn_symbol()); }
-   virtual ~kxmd_scn_symbol() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -736,7 +654,6 @@ public:
 
       mws_sp<kxmd_symbol> ke = kxmd_symbol::nwi();
       ke->val = ss->src->substr(start_idx, ss->crt_idx - start_idx);
-      ke->name = ss->src->substr(start_idx, ss->crt_idx - start_idx);
 
       return ke;
    }
@@ -747,7 +664,6 @@ class kxmd_scn_text : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_text> nwi() { return mws_sp<kxmd_scn_text>(new kxmd_scn_text()); }
-   virtual ~kxmd_scn_text() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -772,7 +688,7 @@ public:
             token_found = true;
 
             mws_sp<kxmd_text> ke = kxmd_text::nwi();
-            ke->data = ss->src->substr(start_idx, ss->crt_idx - start_idx);
+            ke->val = ss->src->substr(start_idx, ss->crt_idx - start_idx);
 
             return ke;
          }
@@ -796,7 +712,6 @@ class kxmd_scn_async_flowop : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_async_flowop> nwi() { return mws_sp<kxmd_scn_async_flowop>(new kxmd_scn_async_flowop()); }
-   virtual ~kxmd_scn_async_flowop() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -853,7 +768,6 @@ class kxmd_scn_flowop : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_flowop> nwi() { return mws_sp<kxmd_scn_flowop>(new kxmd_scn_flowop()); }
-   virtual ~kxmd_scn_flowop() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -900,7 +814,6 @@ class kxmd_scn_match_block : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_match_block> nwi() { return mws_sp<kxmd_scn_match_block>(new kxmd_scn_match_block()); }
-   virtual ~kxmd_scn_match_block() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -927,7 +840,7 @@ public:
 
       if (kxt)
       {
-         ke->name = static_pointer_cast<kxmd_symbol>(kxt);
+         ke->val = kxt->val;
       }
 
       sc = kxmd_scn_factory::nwi(kxs_whitespace, ss);
@@ -956,7 +869,7 @@ public:
 
       if (kxt)
       {
-         ke->blk = static_pointer_cast<kxmd_block>(kxt);
+         ke->vect.push_back(kxt);
       }
 
       ss->crt_idx++;
@@ -971,7 +884,6 @@ class kxmd_scn_meta_block : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_meta_block> nwi() { return mws_sp<kxmd_scn_meta_block>(new kxmd_scn_meta_block()); }
-   virtual ~kxmd_scn_meta_block() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -1005,7 +917,7 @@ public:
 
       if (kxt)
       {
-         ke->name = static_pointer_cast<kxmd_symbol>(kxt);
+         ke->val = kxt->val;
       }
 
       sc = kxmd_scn_factory::nwi(kxs_whitespace, ss);
@@ -1046,7 +958,7 @@ public:
 
       if (kxt)
       {
-         ke->blk = static_pointer_cast<kxmd_block>(kxt);
+         ke->vect.push_back(kxt);
       }
 
       ss->crt_idx++;
@@ -1061,7 +973,6 @@ class kxmd_scn_ignore_block : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_ignore_block> nwi() { return mws_sp<kxmd_scn_ignore_block>(new kxmd_scn_ignore_block()); }
-   virtual ~kxmd_scn_ignore_block() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -1095,7 +1006,7 @@ public:
 
       if (kxt)
       {
-         ke->name = static_pointer_cast<kxmd_symbol>(kxt);
+         ke->val = kxt->val;
       }
 
       sc = kxmd_scn_factory::nwi(kxs_whitespace, ss);
@@ -1131,7 +1042,9 @@ public:
       }
 
       mws_sp<kxmd_text> body = static_pointer_cast<kxmd_text>(kxt);
-      ke->body = body->data;
+      mws_sp<kxmd_elem> text = kxmd_elem::nwi();
+      ke->vect.push_back(text);
+      text->val = body->val;
       token_found = true;
 
       return ke;
@@ -1143,7 +1056,6 @@ class kxmd_scn_ignore_block_body : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_ignore_block_body> nwi() { return mws_sp<kxmd_scn_ignore_block_body>(new kxmd_scn_ignore_block_body()); }
-   virtual ~kxmd_scn_ignore_block_body() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -1221,7 +1133,7 @@ public:
       }
 
       mws_sp<kxmd_text> ke = kxmd_text::nwi();
-      ke->data = ss->src->substr(start_idx + 1, ss->crt_idx - start_idx - 2);
+      ke->val = ss->src->substr(start_idx + 1, ss->crt_idx - start_idx - 2);
 
       return ke;
    }
@@ -1232,7 +1144,6 @@ class kxmd_scn_block : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_block> nwi() { return mws_sp<kxmd_scn_block>(new kxmd_scn_block()); }
-   virtual ~kxmd_scn_block() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {
@@ -1281,7 +1192,6 @@ class kxmd_scn_main : public kxmd_scn
 {
 public:
    static mws_sp<kxmd_scn_main> nwi() { return mws_sp<kxmd_scn_main>(new kxmd_scn_main()); }
-   virtual ~kxmd_scn_main() {}
 
    virtual mws_sp<kxs_elem> scan_impl()
    {

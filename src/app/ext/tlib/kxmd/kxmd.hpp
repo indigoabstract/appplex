@@ -53,9 +53,10 @@ public:
    std::vector<mws_sp<kxmd_elem>> vect;
 
    static mws_sp<kxmd_elem> nwi() { return mws_sp<kxmd_elem>(new kxmd_elem()); }
+   virtual ~kxmd_elem() {}
    int elem_count() const { return vect.size(); }
-   bool is_leaf() const { return vect.empty() && !val.empty(); };
-   bool is_node() const { return !vect.empty(); };
+   virtual bool is_leaf() const { return vect.empty() && !val.empty(); };
+   virtual bool is_node() const { return !vect.empty(); };
 
    std::string to_string() const
    {
