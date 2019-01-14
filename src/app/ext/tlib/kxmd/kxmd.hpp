@@ -45,4 +45,111 @@ public:
 };
 
 
+static const std::string indent_str_2 = "    ";
+class kxmd_elem
+{
+public:
+   std::string val;
+   std::vector<mws_sp<kxmd_elem>> vect;
+
+   static mws_sp<kxmd_elem> nwi() { return mws_sp<kxmd_elem>(new kxmd_elem()); }
+   int elem_count() const { return vect.size(); }
+   bool is_leaf() const { return vect.empty() && !val.empty(); };
+   bool is_node() const { return !vect.empty(); };
+
+   std::string to_string() const
+   {
+      return to_string_impl(0);
+   }
+
+   std::string to_string_list() const
+   {
+      std::string s;
+      int size = vect.size();
+
+      for (int k = 0; k < size; k++)
+      {
+         auto& ke = vect[k];
+         s += ke->to_string();
+
+         if (k < (size - 1))
+         {
+            s += ", ";
+
+            if (ke->is_node())
+            {
+               s += "\n";
+            }
+         }
+      }
+
+      return s;
+   }
+
+   std::string indent_by_level(int i_level) const
+   {
+      std::string ret;
+
+      for (int k = 0; k < i_level; k++)
+      {
+         ret += indent_str_2;
+      }
+
+      return ret;
+   }
+
+   std::string to_string_impl(int i_level) const
+   {
+      std::string s;
+
+      if (!val.empty())
+      {
+         s += val;
+      }
+
+      if (!vect.empty())
+      {
+         int size = vect.size();
+
+         s += "\n";
+         s += indent_by_level(i_level);
+         s += "[\n";
+         s += indent_by_level(i_level + 1);
+
+         for (int k = 0; k < size; k++)
+         {
+            auto& ke = vect[k];
+            s += ke->to_string_impl(i_level + 1);
+
+            if (k < (size - 1))
+            {
+               s += ", ";
+
+               if (ke->is_node())
+               {
+                  s += "\n";
+                  s += indent_by_level(i_level + 1);
+               }
+            }
+         }
+
+         s += "\n";
+         s += indent_by_level(i_level);
+         s += "]";
+      }
+
+      return s;
+   }
+
+protected:
+   kxmd_elem() {}
+};
+
+
+class kxmd_parser
+{
+public:
+   mws_sp<kxmd_elem> parse(mws_sp<std::string> i_src);
+};
+
 #endif
