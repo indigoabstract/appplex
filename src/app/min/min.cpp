@@ -198,7 +198,7 @@ template<typename T2, typename T1, class unary_operation> std::vector<T2> mws_st
 
 std::string mws_str::escape_char(char character)
 {
-   const std::unordered_map<char, std::string> escaped_special_characters =
+   static const std::unordered_map<char, std::string> escaped_special_characters =
    {
       { '.', "\\." },{ '|', "\\|" },{ '*', "\\*" },{ '?', "\\?" },
       { '+', "\\+" },{ '(', "\\(" },{ ')', "\\)" },{ '{', "\\{" },
