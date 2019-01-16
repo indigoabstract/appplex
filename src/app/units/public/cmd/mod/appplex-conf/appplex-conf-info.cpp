@@ -44,9 +44,9 @@ void appplex_conf::update()
    info->krt = std::make_shared<kx_krte>();
    info->krt->set_src(sgmd_txt);
    info->krt->run();
-   auto kxmd = info->krt->kxb;
-   auto paths_proj_rel_src_path = kxmd_ops::get_kxmd_str_seq("paths.proj-rel-src-path", kxmd);
-   auto paths_proj_rel_units_path = kxmd_ops::get_kxmd_str_seq("paths.proj-rel-units-path", kxmd);
+   auto kxmdi = info->krt->kxb;
+   auto paths_proj_rel_src_path = kxmd_ops::get_kxmd_str_seq("paths.proj-rel-src-path", kxmdi);
+   auto paths_proj_rel_units_path = kxmd_ops::get_kxmd_str_seq("paths.proj-rel-units-path", kxmdi);
 
    trx("\nloading the source file tree.\n");
 
@@ -63,19 +63,19 @@ void appplex_conf::update()
    trx("\nupdating appplex configuration.\n");
 
 
-   std::vector<std::string> default_uses = kxmd_ops::get_kxmd_str_seq("default.uses", kxmd, { "gfx", "boost" });
-   bool default_enabled = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.enabled", kxmd, { "true" }));
-   std::vector<std::string> start_unit_list = kxmd_ops::get_kxmd_str_seq("default.start.unit-list", kxmd, { "test" });
-   bool launch_unit = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.start.launch-unit", kxmd, { "true" }));
-   std::vector<std::string> default_platf = kxmd_ops::get_kxmd_str_seq("default.platf", kxmd, { "all" });
-   bool default_exclusive = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.start.exclusive", kxmd, { "false" }));
+   std::vector<std::string> default_uses = kxmd_ops::get_kxmd_str_seq("default.uses", kxmdi, { "gfx", "boost" });
+   bool default_enabled = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.enabled", kxmdi, { "true" }));
+   std::vector<std::string> start_unit_list = kxmd_ops::get_kxmd_str_seq("default.start.unit-list", kxmdi, { "test" });
+   bool launch_unit = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.start.launch-unit", kxmdi, { "true" }));
+   std::vector<std::string> default_platf = kxmd_ops::get_kxmd_str_seq("default.platf", kxmdi, { "all" });
+   bool default_exclusive = kxmd_ops::get_bool_from_list(kxmd_ops::get_kxmd_str_seq("default.start.exclusive", kxmdi, { "false" }));
    bool single_unit_build = (start_unit_list.size() == 1) && default_exclusive && launch_unit;
    std::unordered_map<std::string, bool> dependencies_def_map;
    std::unordered_map<std::string, bool> unit_dependencies_def_map;
 
-   bfs::path appplex_conf_path = info->proj_path / kxmd_ops::get_kxmd_str_seq("paths.proj-rel-appplex-conf-path", kxmd, { "" })[0];
-   std::string appplex_conf_hpp = kxmd_ops::get_kxmd_str_seq("paths.appplex-conf-hpp-name", kxmd, { "" })[0];
-   std::string appplex_conf_cpp = kxmd_ops::get_kxmd_str_seq("paths.appplex-conf-cpp-name", kxmd, { "" })[0];
+   bfs::path appplex_conf_path = info->proj_path / kxmd_ops::get_kxmd_str_seq("paths.proj-rel-appplex-conf-path", kxmdi, { "" })[0];
+   std::string appplex_conf_hpp = kxmd_ops::get_kxmd_str_seq("paths.appplex-conf-hpp-name", kxmdi, { "" })[0];
+   std::string appplex_conf_cpp = kxmd_ops::get_kxmd_str_seq("paths.appplex-conf-cpp-name", kxmdi, { "" })[0];
    auto hpp = pfm_file::get_inst(appplex_conf_hpp, appplex_conf_path.generic_string());
    auto cpp = pfm_file::get_inst(appplex_conf_cpp, appplex_conf_path.generic_string());
 
@@ -86,7 +86,7 @@ void appplex_conf::update()
    auto rw_cpp = rw_file_sequence::nwi(cpp);
 
    {
-      auto px_names = kxmd_ops::get_kxmd_str_seq("units", kxmd);
+      auto px_names = kxmd_ops::get_kxmd_str_seq("units", kxmdi);
       std::string unit_list;
 
       rw_hpp->w.write_line(auto_gen);
@@ -104,7 +104,7 @@ void appplex_conf::update()
          std::string hpp_name = "unit-" + file_name + ".hpp";
          std::string unit_path = "units." + file_name;
          bool enabled = default_enabled;
-         auto enabled_seq = kxmd_ops::get_kxmd_str_seq(unit_path + ".enabled", kxmd);
+         auto enabled_seq = kxmd_ops::get_kxmd_str_seq(unit_path + ".enabled", kxmdi);
          bool define_active = true;
 
          std::string def = file_name;
@@ -125,8 +125,8 @@ void appplex_conf::update()
             if (ue)
             {
                enabled = false;
-               std::vector<std::string> uses = kxmd_ops::get_kxmd_str_seq(unit_path + ".uses", kxmd);
-               auto platf_seq = kxmd_ops::get_kxmd_str_seq(unit_path + ".platf", kxmd);
+               std::vector<std::string> uses = kxmd_ops::get_kxmd_str_seq(unit_path + ".uses", kxmdi);
+               auto platf_seq = kxmd_ops::get_kxmd_str_seq(unit_path + ".platf", kxmdi);
                auto platf = platf_seq;
                std::string line;
 
@@ -363,8 +363,8 @@ void android_studio_project_conf::update_project()
 {
    trx("\nupdating the android studio project.\n");
 
-   auto kxmd = info->krt->kxb;
-   auto platforms_android_root_path = kxmd_ops::get_kxmd_str_seq("platforms.android.root-path", kxmd);
+   auto kxmdi = info->krt->kxb;
+   auto platforms_android_root_path = kxmd_ops::get_kxmd_str_seq("platforms.android.root-path", kxmdi);
 
    int unit_count = unit_entry_map->size();
    bfs::path and_proj_path_rel_to_appplex;
@@ -386,13 +386,13 @@ void android_studio_project_conf::update_project()
       // check if there's a custom android project for this unit, otherwise use the default project
       auto ue = unit_entry_map->begin()->second;
       and_proj_path_rel_to_appplex = platforms_android_root_path[0] / ue->unit_path;
-      auto platforms_android_gradle_gradle_path = kxmd_ops::get_kxmd_str_seq("platforms.android.gradle.gradle-path", kxmd);
+      auto platforms_android_gradle_gradle_path = kxmd_ops::get_kxmd_str_seq("platforms.android.gradle.gradle-path", kxmdi);
       auto android_gradle_path = info->proj_path / and_proj_path_rel_to_appplex / platforms_android_gradle_gradle_path[0];
       auto gradle_file = pfm_file::get_inst(android_gradle_path.generic_string());
 
       if (gradle_file->exists())
       {
-         auto platforms_android_rel_proj_path = kxmd_ops::get_kxmd_str_seq("platforms.android.rel-proj-path", kxmd);
+         auto platforms_android_rel_proj_path = kxmd_ops::get_kxmd_str_seq("platforms.android.rel-proj-path", kxmdi);
          appplex_path_rel_to_and_proj = platforms_android_rel_proj_path[0];
          // find out how many parent dirs we have to go up until we arrive at the directory containing all the android projects
          auto itp = ue->unit_path.begin();
@@ -421,8 +421,8 @@ void android_studio_project_conf::update_project()
 
    if (use_default_project)
    {
-      auto platforms_android_default_proj_name = kxmd_ops::get_kxmd_str_seq("platforms.android.default-proj-name", kxmd);
-      auto platforms_android_rel_proj_path = kxmd_ops::get_kxmd_str_seq("platforms.android.rel-proj-path", kxmd);
+      auto platforms_android_default_proj_name = kxmd_ops::get_kxmd_str_seq("platforms.android.default-proj-name", kxmdi);
+      auto platforms_android_rel_proj_path = kxmd_ops::get_kxmd_str_seq("platforms.android.rel-proj-path", kxmdi);
 
       and_proj_path_rel_to_appplex = platforms_android_root_path[0];
       and_proj_path_rel_to_appplex /= platforms_android_default_proj_name[0];
@@ -431,7 +431,7 @@ void android_studio_project_conf::update_project()
       trx("using default android project.");
    }
 
-   update_project_files(and_proj_path_rel_to_appplex, appplex_path_rel_to_and_proj, kxmd);
+   update_project_files(and_proj_path_rel_to_appplex, appplex_path_rel_to_and_proj, kxmdi);
 }
 
 void android_studio_project_conf::update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> ikxmd)

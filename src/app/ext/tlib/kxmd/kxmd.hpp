@@ -12,6 +12,7 @@
 class kx_process;
 class kx_block;
 class kx_elem;
+class kxmd_elem;
 
 
 class kxmd_ops
@@ -45,6 +46,21 @@ public:
 };
 
 
+class kxmd
+{
+public:
+   // gets a reference to a kxmd_elem that's inside the given kxmd_elem
+   // i_path is like xxx.yyy.zzz.etc
+   static mws_sp<kxmd_elem> get_elem(const std::string& i_path, mws_sp<kxmd_elem> i_root);
+   // checks if path exists, starting from a given root
+   // path is like xxx.yyy.zzz.etc
+   static bool path_exists(const std::string& i_path, mws_sp<kxmd_elem> i_root);
+   static void push_back(mws_sp<kxmd_elem> i_root, const mws_sp<kxmd_elem> i_val);
+   static void push_back(mws_sp<kxmd_elem> i_root, const std::string& i_val);
+   static void push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i_list);
+};
+
+
 static const std::string indent_str_2 = "    ";
 class kxmd_elem
 {
@@ -57,6 +73,32 @@ public:
    int elem_count() const { return vect.size(); }
    virtual bool is_leaf() const { return vect.empty() && !val.empty(); };
    virtual bool is_node() const { return !vect.empty(); };
+
+   mws_sp<kxmd_elem> find_by_name(const std::string& i_name, bool i_recursive = false) const
+   {
+      for (auto& ke : vect)
+      {
+         if (ke)
+         {
+            if (ke->val == i_name)
+            {
+               return ke;
+            }
+
+            if (i_recursive)
+            {
+               mws_sp<kxmd_elem> tke = ke->find_by_name(i_name, true);
+
+               if (tke)
+               {
+                  return tke;
+               }
+            }
+         }
+      }
+
+      return nullptr;
+   }
 
    std::string to_string() const
    {

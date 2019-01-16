@@ -233,6 +233,67 @@ void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::vector<std::string>
 }
 
 
+mws_sp<kxmd_elem> kxmd::get_elem(const std::string& i_path, mws_sp<kxmd_elem> i_root)
+{
+   mws_sp<kxmd_elem> ke = i_root;
+   std::vector<std::string> tokens = str_split(i_path, ".");
+
+   for (auto& ke_name : tokens)
+   {
+      ke = ke->find_by_name(ke_name, false);
+
+      if (!ke)
+      {
+         return nullptr;
+      }
+   }
+
+   return ke;
+}
+
+bool kxmd::path_exists(const std::string& i_path, mws_sp<kxmd_elem> i_root)
+{
+   mws_sp<kxmd_elem> ke = i_root;
+   std::vector<std::string> tokens = str_split(i_path, ".");
+
+   for (auto& ke_name : tokens)
+   {
+      ke = ke->find_by_name(ke_name, false);
+
+      if (!ke)
+      {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+void kxmd::push_back(mws_sp<kxmd_elem> i_root, const mws_sp<kxmd_elem> i_val)
+{
+   i_root->vect.push_back(i_val);
+}
+
+void kxmd::push_back(mws_sp<kxmd_elem> i_root, const std::string& i_val)
+{
+   auto val = kxmd_elem::nwi();
+
+   val->val = i_val;
+   i_root->vect.push_back(val);
+}
+
+void kxmd::push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i_list)
+{
+   for (auto& str : i_list)
+   {
+      auto val = kxmd_elem::nwi();
+
+      val->val = str;
+      i_root->vect.push_back(val);
+   }
+}
+
+
 
 enum class kxmd_elem_type
 {
