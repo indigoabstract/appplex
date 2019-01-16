@@ -99,7 +99,7 @@ public:
 
 		if (iopen_mode[0] == 'w' && path[0] != '/')
 		{
-			return nullptr;
+			return false;
 		}
 
 		if(path[0] == '/')
