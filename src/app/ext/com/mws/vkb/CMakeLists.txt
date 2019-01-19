@@ -1,12 +1,10 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-param-surface.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-surface.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-trail.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb-visual.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb-diagram.hpp"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-param-surface.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-surface.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-trail.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb.cpp"
 )
 target_sources(app_plex_main
     PUBLIC

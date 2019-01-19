@@ -1,20 +1,4 @@
-target_sources(app_plex_main
-    PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/gfx.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-camera.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-color.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-material.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-obj.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-pbo.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-quad-2d.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-rt.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-scene.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-shader.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-state.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-tex.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-util.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/gfx-vxo.cpp"
-    PUBLIC
+set(headers
 	"${CMAKE_CURRENT_LIST_DIR}/gfx.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/gfx-camera.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/gfx-color.hpp"
@@ -32,5 +16,30 @@ target_sources(app_plex_main
 	"${CMAKE_CURRENT_LIST_DIR}/gfx-util.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/gfx-vxo.hpp"
 )
+set(sources
+	"${CMAKE_CURRENT_LIST_DIR}/gfx.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-camera.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-color.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-material.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-obj.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-pbo.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-quad-2d.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-rt.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-scene.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-shader.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-state.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-tex.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-util.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gfx-vxo.cpp"
+)
+target_sources(app_plex_main
+    PUBLIC
+	${headers}
+    PRIVATE
+	${sources}
+)
+
+get_filename_component(dirname ${CMAKE_CURRENT_LIST_DIR} NAME)
+source_group("mod/${dirname}" FILES ${headers} ${sources})
 
 include("${CMAKE_CURRENT_LIST_DIR}/ext/CMakeLists.txt")

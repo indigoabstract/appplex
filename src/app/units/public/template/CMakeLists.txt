@@ -12,4 +12,4 @@ target_sources(app_plex_main
 )
 
 get_filename_component(dirname ${CMAKE_CURRENT_LIST_DIR} NAME)
-source_group("app/${dirname}" FILES ${headers} ${sources})
+source_group("mod/${dirname}" FILES ${headers} ${sources})

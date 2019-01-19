@@ -117,7 +117,7 @@ public:
 
 protected:
    mws(mws_sp<gfx> i_gi = nullptr);
-   virtual void setup(){}
+   virtual void setup() {}
 
    bool enabled = true;
    bool is_opaque = true;
@@ -229,4 +229,25 @@ protected:
    void setup() override;
 
    void add_to_page();
+};
+
+
+class mws_text_box : public mws_page_item
+{
+public:
+   virtual ~mws_text_box() {}
+
+protected:
+   mws_text_box() {}
+};
+
+
+class mws_virtual_keyboard : public mws
+{
+public:
+   virtual ~mws_virtual_keyboard() {}
+   virtual void set_target(mws_sp<mws_text_box> i_txe) = 0;
+
+protected:
+   mws_virtual_keyboard() {}
 };
