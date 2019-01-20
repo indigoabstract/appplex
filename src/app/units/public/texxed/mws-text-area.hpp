@@ -13,7 +13,7 @@
 #include "min.hpp"
 
 
-class text_area_impl : public mws_page_item
+class text_area_impl : public mws_text_box
 {
 public:
    static shared_ptr<text_area_impl> nwi()
@@ -273,10 +273,14 @@ public:
          {
          case pointer_evt::touch_began:
          {
+            auto inst = static_pointer_cast<mws_text_box>(get_instance());
+
             ks.grab(x, y);
             select_char_at(glm::vec2(x, y));
-            if (!ts->is_processed()) { ts->process(); }
+            get_mws_root()->show_keyboard(inst);
             mws_print("touch [%f, %f]\n", ts->points[0].x, ts->points[0].y);
+
+            if (!ts->is_processed()) { ts->process(); }
             break;
          }
 

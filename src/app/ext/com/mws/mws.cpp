@@ -8,6 +8,7 @@
 #include "mws-camera.hpp"
 #include "mws-font.hpp"
 #include "text-vxo.hpp"
+#include "vkb/mws-vkb.hpp"
 #include "gfx.hpp"
 #include "gfx-tex.hpp"
 #include "gfx-vxo.hpp"
@@ -387,20 +388,27 @@ mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
 
 void mws_page_tab::receive(mws_sp<iadp> idp)
 {
-   if (receive_handler)
+   if (vkb && vkb->visible)
    {
-      receive_handler(get_instance(), idp);
+      vkb->receive(idp);
    }
    else
    {
-      if (idp->is_processed())
+      if (receive_handler)
       {
-         return;
+         receive_handler(get_instance(), idp);
       }
-
-      if (!is_empty())
+      else
       {
-         send(page_tab.back(), idp);
+         if (idp->is_processed())
+         {
+            return;
+         }
+
+         if (!is_empty())
+         {
+            send(page_tab.back(), idp);
+         }
       }
    }
 }
@@ -440,6 +448,11 @@ void mws_page_tab::on_resize()
    for (auto p : page_tab)
    {
       p->on_resize();
+   }
+
+   if (vkb)
+   {
+      vkb->on_resize();
    }
 }
 
@@ -491,6 +504,23 @@ void mws_page_tab::new_instance_helper()
       tab_text_vxo->camera_id_list.clear();
       tab_text_vxo->camera_id_list.push_back("mws_cam");
    }
+#endif
+}
+void mws_page_tab::show_keyboard(mws_sp<mws_text_box> i_tbx)
+{
+#if defined MOD_VKB
+
+   mws_println("mws_page_tab::show_keyboard");
+
+   if (!vkb)
+   {
+      vkb = mws_vkb::gi();
+      attach(vkb);
+   }
+
+   vkb->visible = true;
+   vkb->set_target(i_tbx);
+
 #endif
 }
 

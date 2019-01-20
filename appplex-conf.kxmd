@@ -67,7 +67,7 @@ units
 	metrolife[ uses[ gfx, ffmpeg, unit-texxed, unit-test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts, zlib ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
-	voronoi-keyboard[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts, unit-texxed ] ],
+	voronoi-keyboard[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts, vkb, unit-texxed ] ],
 	kxmdb[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts ] ],
 
 	@@[ npw ],

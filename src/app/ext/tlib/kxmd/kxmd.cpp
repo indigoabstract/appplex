@@ -294,6 +294,122 @@ void kxmd::push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i
 }
 
 
+mws_sp<kxmd_elem> kxmd_elem::find_by_name(const std::string& i_name, bool i_recursive) const
+{
+   for (auto& ke : vect)
+   {
+      if (ke)
+      {
+         if (ke->val == i_name)
+         {
+            return ke;
+         }
+
+         if (i_recursive)
+         {
+            mws_sp<kxmd_elem> tke = ke->find_by_name(i_name, true);
+
+            if (tke)
+            {
+               return tke;
+            }
+         }
+      }
+   }
+
+   return nullptr;
+}
+
+std::string kxmd_elem::to_string() const
+{
+   return to_string_impl(0);
+}
+
+std::string kxmd_elem::to_string_list() const
+{
+   std::string s;
+   int size = vect.size();
+
+   for (int k = 0; k < size; k++)
+   {
+      auto& ke = vect[k];
+      s += ke->to_string();
+
+      if (k < (size - 1))
+      {
+         s += ", ";
+
+         if (ke->is_node())
+         {
+            s += "\n";
+         }
+      }
+   }
+
+   return s;
+}
+
+std::string kxmd_elem::indent_by_level(int i_level) const
+{
+   static const std::string indent_str = "    ";
+   std::string ret;
+
+   for (int k = 0; k < i_level; k++)
+   {
+      ret += indent_str;
+   }
+
+   return ret;
+}
+
+std::string kxmd_elem::to_string_impl(int i_level) const
+{
+   std::string s;
+
+   if (!val.empty())
+   {
+      s += val;
+   }
+
+   if (!vect.empty())
+   {
+      int size = vect.size();
+
+      if (!val.empty())
+      {
+         s += "\n";
+         s += indent_by_level(i_level);
+      }
+
+      s += "[\n";
+      s += indent_by_level(i_level + 1);
+
+      for (int k = 0; k < size; k++)
+      {
+         auto& ke = vect[k];
+         s += ke->to_string_impl(i_level + 1);
+
+         if (k < (size - 1))
+         {
+            s += ", ";
+
+            if (ke->is_node())
+            {
+               s += "\n";
+               s += indent_by_level(i_level + 1);
+            }
+         }
+      }
+
+      s += "\n";
+      s += indent_by_level(i_level);
+      s += "]";
+   }
+
+   return s;
+}
+
+
 
 enum class kxmd_elem_type
 {

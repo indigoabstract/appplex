@@ -27,6 +27,8 @@ class mws_list;
 class mws_tree;
 class mws_font;
 class mws_camera;
+class mws_text_box;
+class mws_virtual_keyboard;
 class gfx_vxo;
 class text_vxo;
 
@@ -133,6 +135,18 @@ private:
 };
 
 
+class mws_virtual_keyboard : public mws
+{
+public:
+   virtual ~mws_virtual_keyboard() {}
+   virtual void on_resize() = 0;
+   virtual void set_target(mws_sp<mws_text_box> i_tbx) = 0;
+
+protected:
+   mws_virtual_keyboard() {}
+};
+
+
 class mws_page_tab : public mws
 {
 public:
@@ -156,6 +170,7 @@ public:
    virtual void on_resize();
    virtual void add_page(mws_sp<mws_page> i_page);
    template <typename T> mws_sp<T> new_page() { mws_sp<T> p(new T()); add_page(p); return p; }
+   virtual void show_keyboard(mws_sp<mws_text_box> i_tbx);
 
    std::vector<mws_sp<mws_page> > page_tab;
 
@@ -170,6 +185,7 @@ private:
    int get_page_index(mws_sp<mws_page> p);
    void new_instance_helper();
 
+   mws_sp<mws_virtual_keyboard> vkb;
    mws_sp<text_vxo> tab_text_vxo;
    mws_wp<unit> u;
 };
@@ -239,15 +255,4 @@ public:
 
 protected:
    mws_text_box() {}
-};
-
-
-class mws_virtual_keyboard : public mws
-{
-public:
-   virtual ~mws_virtual_keyboard() {}
-   virtual void set_target(mws_sp<mws_text_box> i_txe) = 0;
-
-protected:
-   mws_virtual_keyboard() {}
 };
