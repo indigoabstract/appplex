@@ -20,13 +20,6 @@
 #include <algorithm>
 #include <cstdio>
 
-#ifdef MOD_BOOST
-
-#include <boost/filesystem.hpp>
-namespace bfs = ::boost::filesystem;
-
-#endif // MOD_BOOST
-
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
 #include "gfx-quad-2d.hpp"
@@ -564,7 +557,7 @@ void unit::app_storage::save_screenshot(std::string ifilename)
 
          //screenshot_file = dst_dir / bfs::path(trs("%1%%2%") % idx_nr % img_ext);
          std::string file_name = mws_to_str("%s%s", idx_nr.c_str(), img_ext.c_str());
-         screenshot_file = pfm_file::get_inst(dir_name + "\\" + file_name);
+         screenshot_file = pfm_file::get_inst(dir_name + "/" + file_name);
          screenshot_idx++;
       }
       //while (bfs::exists(screenshot_file));
@@ -714,7 +707,7 @@ bool unit::update()
    //for (int k = 0; k < updateCount; k++)
    {
       touch_ctrl->update();
-      key_ctrl->update();
+      key_ctrl_inst->update();
       game_time += update_ctrl->getTimeStepDuration();
    }
 
@@ -865,7 +858,7 @@ void unit::base_init()
    {
       update_ctrl = updatectrl::nwi();
       touch_ctrl = touchctrl::nwi();
-      key_ctrl = keyctrl::nwi();
+      key_ctrl_inst = key_ctrl::nwi();
       gfx_scene_inst = shared_ptr<gfx_scene>(new gfx_scene());
       gfx_scene_inst->init();
    }
@@ -881,7 +874,7 @@ void unit::base_init()
    if (is_gfx_unit())
    {
       touch_ctrl->add_receiver(get_smtp_instance());
-      key_ctrl->add_receiver(get_smtp_instance());
+      key_ctrl_inst->add_receiver(get_smtp_instance());
 
 #if defined MOD_MWS
 
@@ -985,7 +978,12 @@ bool unit::back()
 
    return false;
 #else
+
+#if defined MOD_MWS
+   return !mws_root->handle_back_evt();
+#else
    return true;
+#endif
 #endif
 }
 

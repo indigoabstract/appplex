@@ -64,7 +64,7 @@ shared_ptr<unit_test_kube_sphere> unit_test_kube_sphere::nwi()
 void unit_test_kube_sphere::init()
 {
 	//touch_ctrl->add_receiver(get_smtp_instance());
-	//key_ctrl->add_receiver(get_smtp_instance());
+	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
 void unit_test_kube_sphere::load()
@@ -351,7 +351,7 @@ void unit_test_kube_sphere::receive(shared_ptr<iadp> idp)
 						//vdec->play_pause();
 						break;
 
-					case KEY_BACK:
+					case KEY_BACKSPACE:
 					case KEY_F2:
 						//vdec->stop();
 						break;

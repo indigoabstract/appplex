@@ -24,6 +24,10 @@
 #define WM_TRAYICON						(WM_USER + 1)
 
 
+const int shift_key_down = (1 << 0);
+const int ctrl_key_down = (1 << 1);
+const int alt_key_down = (1 << 2);
+static int mod_keys_down = 0;
 
 // app entry points
 int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpcmd_line, int ncmd_show)
@@ -1307,19 +1311,54 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYDOWN:
    case WM_SYSKEYDOWN:
    {
-      unit_ctrl::inst()->key_action(KEY_PRESS, get_key(wparam));
+      int key = get_key(wparam);
+
+      switch (wparam)
+      {
+      case VK_SHIFT:
+         mod_keys_down |= shift_key_down;
+         break;
+
+      case VK_CONTROL:
+         mod_keys_down |= ctrl_key_down;
+         break;
+
+      case VK_MENU:
+         mod_keys_down |= alt_key_down;
+         break;
+      }
+
+      unit_ctrl::inst()->key_action(KEY_PRESS, key);
+
       return 0;
    }
 
    case WM_KEYUP:
    case WM_SYSKEYUP:
    {
-      unit_ctrl::inst()->key_action(KEY_RELEASE, get_key(wparam));
+      int key = get_key(wparam);
 
-      if (get_key(wparam) == KEY_ESCAPE)
+      unit_ctrl::inst()->key_action(KEY_RELEASE, key);
+
+      if (key == KEY_ESCAPE)
       {
          bool back = unit_ctrl::inst()->back_evt();
          unit_ctrl::inst()->set_app_exit_on_next_run(back);
+      }
+
+      switch (wparam)
+      {
+      case VK_SHIFT:
+         mod_keys_down &= ~shift_key_down;
+         break;
+
+      case VK_CONTROL:
+         mod_keys_down &= ~ctrl_key_down;
+         break;
+
+      case VK_MENU:
+         mod_keys_down &= ~alt_key_down;
+         break;
       }
 
       return 0;
@@ -1349,89 +1388,83 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    return DefWindowProc(hwnd, message, wparam, lparam);
 }
 
+
 int get_key(int i_key)
 {
+   bool shift_held = (mod_keys_down & shift_key_down != 0);
+
    if (i_key >= '0' && i_key <= '9')
    {
       int diff = i_key - '0';
-      return KEY_0 + diff;
+
+      if (shift_held)
+      {
+
+         switch (diff)
+         {
+         case 1: return KEY_EXCLAMATION;
+         case 2: return KEY_AT_SYMBOL;
+         case 3: return KEY_NUMBER_SIGN;
+         case 4: return KEY_DOLLAR_SIGN;
+         case 5: return KEY_PERCENT_SIGN;
+         case 6: return KEY_CIRCUMFLEX;
+         case 7: return KEY_AMPERSAND;
+         case 8: return KEY_ASTERISK;
+         case 9: return KEY_LEFT_PARENTHESIS;
+         case 0: return KEY_RIGHT_PARENTHESIS;
+         }
+      }
+      else
+      {
+         return KEY_0 + diff;
+      }
    }
    else if (i_key >= 'A' && i_key <= 'Z')
    {
       int diff = i_key - 'A';
+
       return KEY_A + diff;
    }
 
    switch (i_key)
    {
-   case VK_SHIFT:
-      return KEY_SHIFT;
-
-   case VK_CONTROL:
-      return KEY_CONTROL;
-
-   case VK_MENU:
-      return KEY_ALT;
-
-   case VK_UP:
-      return KEY_UP;
-
-   case VK_DOWN:
-      return KEY_DOWN;
-
-   case VK_LEFT:
-      return KEY_LEFT;
-
-   case VK_RIGHT:
-      return KEY_RIGHT;
-
-   case VK_RETURN:
-      return KEY_SELECT;
-
-   case VK_BACK:
-      return KEY_BACK;
-
-   case VK_ESCAPE:
-      return KEY_ESCAPE;
-
-   case VK_SPACE:
-      return KEY_SPACE;
-
-   case VK_F1:
-      return KEY_F1;
-
-   case VK_F2:
-      return KEY_F2;
-
-   case VK_F3:
-      return KEY_F3;
-
-   case VK_F4:
-      return KEY_F4;
-
-   case VK_F5:
-      return KEY_F5;
-
-   case VK_F6:
-      return KEY_F6;
-
-   case VK_F7:
-      return KEY_F7;
-
-   case VK_F8:
-      return KEY_F8;
-
-   case VK_F9:
-      return KEY_F9;
-
-   case VK_F10:
-      return KEY_F10;
-
-   case VK_F11:
-      return KEY_F11;
-
-   case VK_F12:
-      return KEY_F12;
+   case VK_BACK: return KEY_BACKSPACE;
+   case VK_TAB: return KEY_TAB;
+   case VK_RETURN: return KEY_ENTER;
+   case VK_SHIFT: return KEY_SHIFT;
+   case VK_CONTROL: return KEY_CONTROL;
+   case VK_MENU: return KEY_ALT;
+   case VK_ESCAPE: return KEY_ESCAPE;
+   case VK_SPACE: return KEY_SPACE;
+   case VK_END: return KEY_END;
+   case VK_HOME: return KEY_HOME;
+   case VK_LEFT: return KEY_LEFT;
+   case VK_UP: return KEY_UP;
+   case VK_RIGHT: return KEY_RIGHT;
+   case VK_DOWN: return KEY_DOWN;
+   case VK_F1: return KEY_F1;
+   case VK_F2: return KEY_F2;
+   case VK_F3: return KEY_F3;
+   case VK_F4: return KEY_F4;
+   case VK_F5: return KEY_F5;
+   case VK_F6: return KEY_F6;
+   case VK_F7: return KEY_F7;
+   case VK_F8: return KEY_F8;
+   case VK_F9: return KEY_F9;
+   case VK_F10: return KEY_F10;
+   case VK_F11: return KEY_F11;
+   case VK_F12: return KEY_F12;
+   case VK_OEM_1: return (shift_held) ? KEY_COLON : KEY_SEMICOLON; // ';:' for US
+   case VK_OEM_PLUS: return (shift_held) ? KEY_PLUS_SIGN : KEY_EQUAL_SIGN; // '+' any country
+   case VK_OEM_COMMA: return (shift_held) ? KEY_LESS_THAN_SIGN : KEY_COMMA; // ',' any country
+   case VK_OEM_MINUS: return (shift_held) ? KEY_UNDERSCORE : KEY_MINUS_SIGN; // '-' any country
+   case VK_OEM_PERIOD: return (shift_held) ? KEY_GREATER_THAN_SIGN : KEY_PERIOD; // '.' any country
+   case VK_OEM_2: return (shift_held) ? KEY_QUESTION_MARK : KEY_SLASH; // '/?' for US
+   case VK_OEM_3: return (shift_held) ? KEY_TILDE_SIGN : KEY_GRAVE_ACCENT; // '`~' for US
+   case VK_OEM_4: return (shift_held) ? KEY_LEFT_BRACE : KEY_LEFT_BRACKET; //  '[{' for US
+   case VK_OEM_5: return (shift_held) ? KEY_VERTICAL_BAR : KEY_BACKSLASH; //  '\|' for US
+   case VK_OEM_6: return (shift_held) ? KEY_RIGHT_BRACE : KEY_RIGHT_BRACKET; //  ']}' for US
+   case VK_OEM_7: return (shift_held) ? KEY_DOUBLE_QUOTE : KEY_SINGLE_QUOTE; //  ''"' for US
    }
 
    return KEY_INVALID;

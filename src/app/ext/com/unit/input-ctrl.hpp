@@ -8,7 +8,7 @@
 #include <vector>
 #include <glm/inc.hpp>
 
-class keyctrl;
+class key_ctrl;
 class touchctrl;
 
 
@@ -123,47 +123,47 @@ public:
    static const std::string KEYEVT_RELEASED;
 
    static shared_ptr<key_evt> as_key_evt(shared_ptr<iadp> idp);
-   static shared_ptr<key_evt> nwi(std::weak_ptr<keyctrl> isrc, key_evt_types itype, int ikey);
+   static shared_ptr<key_evt> nwi(std::weak_ptr<key_ctrl> isrc, key_evt_types itype, key_types i_key);
    shared_ptr<key_evt> get_instance();
 
    static const std::string& get_type_name(key_evt_types tstype);
-   std::shared_ptr<keyctrl> get_src();
+   std::shared_ptr<key_ctrl> get_src();
    bool is_pressed() const;
    bool is_repeated() const;
    bool is_released() const;
    key_evt_types get_type()  const;
-   int get_key() const;
+   key_types get_key() const;
    virtual void process();
 
 private:
 
-   key_evt(std::weak_ptr<keyctrl> isrc, key_evt_types itype, int ikey);
+   key_evt(std::weak_ptr<key_ctrl> isrc, key_evt_types itype, key_types i_key);
 
    key_evt_types type;
-   int key;
-   std::weak_ptr<keyctrl> src;
+   key_types key;
+   std::weak_ptr<key_ctrl> src;
 };
 
 
-class keyctrl : public enable_shared_from_this<keyctrl>, public ia_broadcaster
+class key_ctrl : public enable_shared_from_this<key_ctrl>, public ia_broadcaster
 {
 public:
-   static shared_ptr<keyctrl> nwi();
-   shared_ptr<keyctrl> get_instance();
+   static shared_ptr<key_ctrl> nwi();
+   shared_ptr<key_ctrl> get_instance();
 
    void update();
-   bool key_is_held(key_types ikey);
-   void key_pressed(int ikey);
-   void key_released(int ikey);
+   bool key_is_held(key_types i_key);
+   void key_pressed(int i_key);
+   void key_released(int i_key);
 
 private:
-   keyctrl();
+   key_ctrl();
 
    virtual shared_ptr<ia_sender> sender_inst();
    void new_key_event(shared_ptr<key_evt> ts);
 
    bool events_pending;
    // common for all instances
-   static char key_status[KEY_COUNT];
-   static unsigned long key_status_time[KEY_COUNT];
+   static uint8 keys_status[KEY_COUNT];
+   static uint32 keys_status_time[KEY_COUNT];
 };

@@ -165,11 +165,13 @@ public:
    mws_sp<text_vxo> get_text_vxo() const;
 
    virtual void receive(mws_sp<iadp> idp);
-   virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
+   virtual void update_state() override;
+   virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize();
    virtual void add_page(mws_sp<mws_page> i_page);
    template <typename T> mws_sp<T> new_page() { mws_sp<T> p(new T()); add_page(p); return p; }
+   // returns true if it handled(consumed) the back event, false otherwise
+   virtual bool handle_back_evt();
    virtual void show_keyboard(mws_sp<mws_text_box> i_tbx);
 
    std::vector<mws_sp<mws_page> > page_tab;
@@ -211,8 +213,8 @@ public:
    virtual void receive(mws_sp<iadp> idp);
    virtual void update_input_sub_mws(mws_sp<iadp> idp);
    virtual void update_input_std_behaviour(mws_sp<iadp> idp);
-   virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
+   virtual void update_state() override;
+   virtual void update_view(mws_sp<mws_camera> g) override;
    mws_sp<mws> get_mws_at(int idx);
 
 protected:

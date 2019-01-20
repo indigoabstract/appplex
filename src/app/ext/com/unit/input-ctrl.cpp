@@ -236,11 +236,11 @@ const std::string key_evt::KEYEVT_REPEATED = "ke-repeated";
 const std::string key_evt::KEYEVT_RELEASED = "ke-released";
 
 
-key_evt::key_evt(std::weak_ptr<keyctrl> isrc, key_evt::key_evt_types itype, int ikey) : iadp(get_type_name(itype))
+key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key) : iadp(get_type_name(itype))
 {
    src = isrc;
    type = itype;
-   key = ikey;
+   key = i_key;
    //trx("newkeyevt %x") % this;
 }
 
@@ -249,9 +249,9 @@ shared_ptr<key_evt> key_evt::as_key_evt(shared_ptr<iadp> idp)
    return static_pointer_cast<key_evt>(idp);
 }
 
-shared_ptr<key_evt> key_evt::nwi(std::weak_ptr<keyctrl> isrc, key_evt::key_evt_types itype, int ikey)
+shared_ptr<key_evt> key_evt::nwi(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key)
 {
-   return shared_ptr<key_evt>(new key_evt(isrc, itype, ikey));
+   return shared_ptr<key_evt>(new key_evt(isrc, itype, i_key));
 }
 
 shared_ptr<key_evt> key_evt::get_instance()
@@ -271,7 +271,7 @@ const std::string& key_evt::get_type_name(key_evt_types tstype)
    return types[tstype];
 }
 
-std::shared_ptr<keyctrl> key_evt::get_src()
+std::shared_ptr<key_ctrl> key_evt::get_src()
 {
    return src.lock();
 }
@@ -296,7 +296,7 @@ key_evt::key_evt_types key_evt::get_type() const
    return type;
 }
 
-int key_evt::get_key() const
+key_types key_evt::get_key() const
 {
    return key;
 }
@@ -308,7 +308,7 @@ void key_evt::process()
 }
 
 
-enum keystatus
+enum key_status
 {
    KEY_IDLE,
    KEY_PRESSED,
@@ -319,77 +319,71 @@ enum keystatus
 };
 
 
-char keyctrl::key_status[KEY_COUNT] = { KEY_IDLE };
-unsigned long keyctrl::key_status_time[KEY_COUNT] = { 0 };
-//for(int  k = 0; k < KEY_COUNT; k++)
-//{
-//	keyStatus[k] = KEY_IDLE;
-//	keyStatusTime[k] = 0;
-//}
+uint8 key_ctrl::keys_status[KEY_COUNT] = { KEY_IDLE };
+uint32 key_ctrl::keys_status_time[KEY_COUNT] = { 0 };
 
-
-keyctrl::keyctrl()
+key_ctrl::key_ctrl()
 {
    events_pending = false;
 }
 
-shared_ptr<keyctrl> keyctrl::nwi()
+shared_ptr<key_ctrl> key_ctrl::nwi()
 {
-   return shared_ptr<keyctrl>(new keyctrl());
+   return shared_ptr<key_ctrl>(new key_ctrl());
 }
 
-shared_ptr<keyctrl> keyctrl::get_instance()
+shared_ptr<key_ctrl> key_ctrl::get_instance()
 {
    return shared_from_this();
 }
 
-void keyctrl::update()
+void key_ctrl::update()
 {
    if (events_pending)
    {
       auto inst = get_instance();
-      uint32 crtTime = pfm::time::get_time_millis();
+      uint32 crt_time = pfm::time::get_time_millis();
       bool events_still_pending = false;
 
       for (int k = KEY_INVALID; k < KEY_COUNT; k++)
       {
-         switch (key_status[k])
+         switch (keys_status[k])
          {
          case KEY_PRESSED:
-            new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, k));
-            key_status[k] = KEY_FIRST_PRESSED;
+            new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, (key_types)k));
+            keys_status[k] = KEY_FIRST_PRESSED;
             events_still_pending = true;
             break;
 
          case KEY_FIRST_PRESSED:
-            if (crtTime - key_status_time[k] > 400)
+            if (crt_time - keys_status_time[k] > 400)
             {
-               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, k));
-               key_status[k] = KEY_REPEATED;
-               key_status_time[k] = crtTime;
+               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, (key_types)k));
+               keys_status[k] = KEY_REPEATED;
+               keys_status_time[k] = crt_time;
             }
 
             events_still_pending = true;
             break;
 
          case KEY_REPEATED:
-            if (crtTime - key_status_time[k] > 25)
+            if (crt_time - keys_status_time[k] > 25)
             {
-               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, k));
-               key_status_time[k] = crtTime;
+               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, (key_types)k));
+               keys_status_time[k] = crt_time;
             }
 
             events_still_pending = true;
             break;
 
          case KEY_RELEASED:
-            key_status[k] = KEY_RELEASED_IDLE;
-            new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, k));
+            keys_status[k] = KEY_RELEASED_IDLE;
+            new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, (key_types)k));
             events_still_pending = true;
             break;
 
          case KEY_RELEASED_IDLE:
-            key_status[k] = KEY_IDLE;
+            keys_status[k] = KEY_IDLE;
             break;
          }
       }
@@ -398,38 +392,38 @@ void keyctrl::update()
    }
 }
 
-bool keyctrl::key_is_held(key_types ikey)
+bool key_ctrl::key_is_held(key_types i_key)
 {
-   mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
 
-   return key_status[ikey] != KEY_IDLE;
+   return keys_status[i_key] != KEY_IDLE;
 }
 
-void keyctrl::key_pressed(int ikey)
+void key_ctrl::key_pressed(int i_key)
 {
-   mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
    events_pending = true;
 
-   if (key_status[ikey] != KEY_FIRST_PRESSED && key_status[ikey] != KEY_REPEATED)
+   if (keys_status[i_key] != KEY_FIRST_PRESSED && keys_status[i_key] != KEY_REPEATED)
    {
-      key_status[ikey] = KEY_PRESSED;
-      key_status_time[ikey] = pfm::time::get_time_millis();
+      keys_status[i_key] = KEY_PRESSED;
+      keys_status_time[i_key] = pfm::time::get_time_millis();
    }
 }
 
-void keyctrl::key_released(int ikey)
+void key_ctrl::key_released(int i_key)
 {
-   mws_assert(ikey >= KEY_INVALID && ikey < KEY_COUNT);
+   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
    events_pending = true;
-   key_status[ikey] = KEY_RELEASED;
+   keys_status[i_key] = KEY_RELEASED;
 }
 
-shared_ptr<ia_sender> keyctrl::sender_inst()
+shared_ptr<ia_sender> key_ctrl::sender_inst()
 {
    return get_instance();
 }
 
-void keyctrl::new_key_event(shared_ptr<key_evt> ke)
+void key_ctrl::new_key_event(shared_ptr<key_evt> ke)
 {
    //trx("keyevt type %1%) ke->getName();
    broadcast(ke->get_src(), ke);

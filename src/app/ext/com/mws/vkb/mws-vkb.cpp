@@ -8,8 +8,9 @@
 #include "mws-vkb-diagram.hpp"
 #include "mws-vkb-visual.hpp"
 #include "../mws-camera.hpp"
+#include "com/mws/text-vxo.hpp"
+#include "com/mws/mws-font.hpp"
 #include "unit.hpp"
-#include "gfx-quad-2d.hpp"
 #include <kxmd/kxmd.hpp>
 
 
@@ -29,14 +30,23 @@ void mws_vkb::receive(mws_sp<iadp> i_dp)
 {
    if (i_dp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(i_dp);
+      mws_sp<pointer_evt> pe = pointer_evt::as_pointer_evt(i_dp);
 
-      switch (ts->type)
+      switch (pe->type)
       {
       case pointer_evt::touch_began:
       {
-         visible = false;
-         tbx = nullptr;
+         auto& pt = pe->points[0];
+         auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
+
+         current_key_idx = selected_kernel_idx = ret.idx;
+         {
+            auto vd = vk->get_diag_data();
+            int id = vd->geom.kernel_points[selected_kernel_idx].id;
+            key_types key_id = key_vect[selected_kernel_idx];
+            std::string key_name = get_key_name(key_id);
+            mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
+         }
          break;
       }
 
@@ -46,8 +56,16 @@ void mws_vkb::receive(mws_sp<iadp> i_dp)
       }
       }
 
-      ts->process();
+      pe->process();
    }
+}
+
+void mws_vkb::update_state()
+{
+}
+
+void mws_vkb::update_view(mws_sp<mws_camera> g)
+{
 }
 
 void mws_vkb::on_resize()
@@ -74,12 +92,91 @@ void mws_vkb::load(std::string i_filename)
    {
       vk = vkb_voronoi_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
       attach(vk->vgeom);
+      vk_keys = text_vxo::nwi();
+      attach(vk_keys);
+      vk_keys->camera_id_list.clear();
+      vk_keys->camera_id_list.push_back(mws_cam.lock()->camera_id);
+
+      key_map =
+      {
+         {KEY_BACKSPACE, "backsp"},
+         { KEY_ENTER, "enter" },
+         { KEY_SHIFT, "shift" },
+         { KEY_ESCAPE, "escape" },
+         { KEY_END, "done" },
+         { KEY_SPACE, "space" },
+         { KEY_EXCLAMATION, "!" },
+         { KEY_DOUBLE_QUOTE, "\"" },
+         { KEY_NUMBER_SIGN, "#" },
+         { KEY_DOLLAR_SIGN, "$" },
+         { KEY_PERCENT_SIGN, "%" },
+         { KEY_AMPERSAND, "&" },
+         { KEY_SINGLE_QUOTE, "'" },
+         { KEY_LEFT_PARENTHESIS, "(" },
+         { KEY_RIGHT_PARENTHESIS, ")" },
+         { KEY_ASTERISK, "*" },
+         { KEY_PLUS_SIGN, "+" },
+         { KEY_COMMA, "," },
+         { KEY_MINUS_SIGN, "-" },
+         { KEY_PERIOD, "." },
+         { KEY_SLASH, "/" },
+         { KEY_0, "0" },
+         { KEY_1, "1" },
+         { KEY_2, "2" },
+         { KEY_3, "3" },
+         { KEY_4, "4" },
+         { KEY_5, "5" },
+         { KEY_6, "6" },
+         { KEY_7, "7" },
+         { KEY_8, "8" },
+         { KEY_9, "9" },
+         { KEY_COLON, ":" },
+         { KEY_SEMICOLON, ";" },
+         { KEY_LESS_THAN_SIGN, "<" },
+         { KEY_EQUAL_SIGN, "=" },
+         { KEY_GREATER_THAN_SIGN, ">" },
+         { KEY_QUESTION_MARK, "?" },
+         { KEY_AT_SYMBOL, "@" },
+         { KEY_A, "A" },
+         { KEY_B, "B" },
+         { KEY_C, "C" },
+         { KEY_D, "D" },
+         { KEY_E, "E" },
+         { KEY_F, "F" },
+         { KEY_G, "G" },
+         { KEY_H, "H" },
+         { KEY_I, "I" },
+         { KEY_J, "J" },
+         { KEY_K, "K" },
+         { KEY_L, "L" },
+         { KEY_M, "M" },
+         { KEY_N, "N" },
+         { KEY_O, "O" },
+         { KEY_P, "P" },
+         { KEY_Q, "Q" },
+         { KEY_R, "R" },
+         { KEY_S, "S" },
+         { KEY_T, "T" },
+         { KEY_U, "U" },
+         { KEY_V, "V" },
+         { KEY_W, "W" },
+         { KEY_X, "X" },
+         { KEY_Y, "Y" },
+         { KEY_Z, "Z" },
+         { KEY_LEFT_BRACKET, "[" },
+         { KEY_BACKSLASH, "\\" },
+         { KEY_RIGHT_BRACKET, "]" },
+         { KEY_CIRCUMFLEX, "^" },
+         { KEY_UNDERSCORE, "_" },
+         { KEY_GRAVE_ACCENT, "`" },
+         { KEY_LEFT_BRACE, "{" },
+         { KEY_VERTICAL_BAR, "|" },
+         { KEY_RIGHT_BRACE, "}" },
+         { KEY_TILDE_SIGN, "~" },
+      };
    }
 
    vkb_filename = i_filename;
-   std::vector<int> key_vect;
-   mws_sp<mws_font> key_font;
-   mws_sp<mws_font> selected_key_font;
    mws_sp<std::vector<uint8> > res = get_unit()->storage.load_unit_byte_vect(vkb_filename);
    mws_sp<std::string> src(new std::string((const char*)begin_ptr(res), res->size()));
    kxmd_parser parser;
@@ -95,8 +192,8 @@ void mws_vkb::load(std::string i_filename)
 
       for (int k = 0; k < kernel_point_keys->elem_count(); k++)
       {
-         int key_id = std::stoi(kernel_point_keys->vect[k]->val);
-         key_vect[k] = key_id;
+         const std::string& key_name = kernel_point_keys->vect[k]->val;
+         key_vect[k] = get_key_type(key_name);
       }
    }
 
@@ -194,6 +291,37 @@ void mws_vkb::load(std::string i_filename)
    }
 
    vk->update_geometry();
+
+   {
+      auto vd = vk->get_diag_data();
+      auto& kp_vect = vd->geom.kernel_points;
+
+      key_font = mws_font::nwi(48.f);
+      //key_font->set_color(gfx_color::colors::slate_gray);
+      key_font->set_color(gfx_color::colors::white);
+      selected_key_font = mws_font::nwi(48.f);
+      selected_key_font->set_color(gfx_color::colors::red);
+
+      for (size_t k = 0; k < key_vect.size(); k++)
+      {
+         mws_sp<mws_font> font = key_font;
+
+         if (k == current_key_idx)
+         {
+            font = selected_key_font;
+         }
+
+         key_types key_id = key_vect[k];
+         std::string key = get_key_name(key_id);
+         auto& kp = kp_vect[k];
+         glm::vec2 dim = font->get_text_dim(key);
+         glm::vec2 pos(kp.position.x, kp.position.y);
+
+         pos -= dim / 2.f;
+         vk_keys->add_text(key, pos, font);
+      }
+   }
+
    mws_println("finished loading keyboard from [ %s ]", vkb_filename.c_str());
 }
 
@@ -202,6 +330,37 @@ void mws_vkb::setup()
    mws_virtual_keyboard::setup();
    position = glm::vec3(position().x, position().y, 1.f);
    on_resize();
+}
+
+void mws_vkb::done()
+{
+   visible = false;
+   tbx = nullptr;
+}
+
+std::string mws_vkb::get_key_name(key_types i_key_id) const
+{
+   auto it = key_map.find(i_key_id);
+
+   if (it != key_map.end())
+   {
+      return it->second;
+   }
+
+   return "";
+}
+
+key_types mws_vkb::get_key_type(const std::string& i_key_name) const
+{
+   for (auto it = key_map.begin(); it != key_map.end(); ++it)
+   {
+      if (it->second == i_key_name)
+      {
+         return it->first;
+      }
+   }
+
+   return KEY_INVALID;
 }
 
 #endif

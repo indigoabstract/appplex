@@ -415,6 +415,11 @@ void mws_page_tab::receive(mws_sp<iadp> idp)
 
 void mws_page_tab::update_state()
 {
+   if (vkb)
+   {
+      vkb->update_state();
+   }
+
    if (tab_text_vxo)
    {
       tab_text_vxo->clear_text();
@@ -431,6 +436,11 @@ void mws_page_tab::update_state()
 
 void mws_page_tab::update_view(mws_sp<mws_camera> g)
 {
+   if (vkb)
+   {
+      vkb->update_view(g);
+   }
+
    for (auto p : page_tab)
    {
       if (p->visible)
@@ -506,6 +516,20 @@ void mws_page_tab::new_instance_helper()
    }
 #endif
 }
+
+bool mws_page_tab::handle_back_evt()
+{
+   if (vkb && vkb->visible)
+   {
+      vkb->visible = false;
+      vkb->set_target(nullptr);
+
+      return true;
+   }
+
+   return false;
+}
+
 void mws_page_tab::show_keyboard(mws_sp<mws_text_box> i_tbx)
 {
 #if defined MOD_VKB

@@ -1697,7 +1697,7 @@ namespace shivavg_tp6
 				code = 'y';
 				break;
 
-			case KEY_BACK:
+			case KEY_BACKSPACE:
 				/* Reset value */
 				switch (mode)
 				{
@@ -1728,7 +1728,7 @@ namespace shivavg_tp6
 				updateOverlayString();
 				break;
 
-			case KEY_SELECT:
+			case KEY_ENTER:
 				/* Cycle spread mode */
 				sindex = (sindex+1) % ssize;
 				createLinear();
@@ -2046,7 +2046,7 @@ namespace shivavg_tp7
 				code = 'y';
 				break;
 
-			case KEY_BACK:
+			case KEY_BACKSPACE:
 				/* Reset value */
 				switch (mode)
 				{
@@ -2065,7 +2065,7 @@ namespace shivavg_tp7
 				updateOverlayString();
 				break;
 
-			case KEY_SELECT:
+			case KEY_ENTER:
 				/* Cycle spread mode */
 				tindex = (tindex+1) % tsize;
 				createPattern();
@@ -2458,7 +2458,7 @@ namespace shivavg_tp8
 				code = 'y';
 				break;
 
-			case KEY_BACK:
+			case KEY_BACKSPACE:
 				/* Reset value */
 				switch (mode)
 				{
@@ -2487,7 +2487,7 @@ namespace shivavg_tp8
 				updateOverlayString();
 				break;
 
-			case KEY_SELECT:
+			case KEY_ENTER:
 				/* Cycle spread mode */
 				sindex = (sindex+1) % ssize;
 				createRadial();
@@ -2768,7 +2768,7 @@ namespace shivavg_tp9
 				code = 'p';
 				break;
 
-			case KEY_SELECT:
+			case KEY_ENTER:
 				/* Toggle animation */
 				animate = !animate;
 				overlay = trs("%s\n") % (animate ? "Play" : "Pause");

@@ -480,7 +480,7 @@ shared_ptr<unit_test_trail> unit_test_trail::nwi()
 void unit_test_trail::init()
 {
    //touch_ctrl->add_receiver(get_smtp_instance());
-   //key_ctrl->add_receiver(get_smtp_instance());
+   //key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
 void unit_test_trail::load()
@@ -825,7 +825,7 @@ void unit_test_trail::receive(shared_ptr<iadp> idp)
                   //vdec->play_pause();
                   break;
 
-               case KEY_BACK:
+               case KEY_BACKSPACE:
                case KEY_F2:
                   //vdec->stop();
                   break;

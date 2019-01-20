@@ -189,17 +189,11 @@ public:
       vkb_point_vect kernel_points;
       // corners for all the cells in the map
       vkb_point_vect nexus_points;
-
       // corners for each cell (for building triangles)
-      //picking_vec3 cell_points;
       vkb_cell_point_id_vector cell_points_ids;
       std::vector<int> cell_point_count;
-
       // lines delimiting the cells
       std::vector<vkb_nexus_pair> nexus_pairs;
-
-      // value of the last id (out of all ids. the first value is always 1 (value of picking_start_idx))
-      int last_geom_id = -1;
    };
 
    // return if a kernel or a nexus point based on id value

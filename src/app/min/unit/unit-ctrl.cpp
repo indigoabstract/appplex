@@ -245,11 +245,11 @@ void unit_ctrl::key_action(key_actions iaction_type, int ikey)
       switch (iaction_type)
       {
       case KEY_PRESS:
-         u->key_ctrl->key_pressed(ikey);
+         u->key_ctrl_inst->key_pressed(ikey);
          break;
 
       case KEY_RELEASE:
-         u->key_ctrl->key_released(ikey);
+         u->key_ctrl_inst->key_released(ikey);
          break;
       }
    }

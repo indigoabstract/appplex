@@ -11,7 +11,7 @@
 class unit_ctrl;
 class unit_list;
 class mws_page_tab;
-class keyctrl;
+class key_ctrl;
 class touchctrl;
 class updatectrl;
 class gfx_scene;
@@ -112,7 +112,7 @@ public:
    int game_time;
    std::shared_ptr<updatectrl> update_ctrl;
    std::shared_ptr<touchctrl> touch_ctrl;
-   std::shared_ptr<keyctrl> key_ctrl;
+   std::shared_ptr<key_ctrl> key_ctrl_inst;
    std::shared_ptr<gfx_scene> gfx_scene_inst;
    std::shared_ptr<mws_camera> mws_cam;
    std::shared_ptr<mws_page_tab> mws_root;

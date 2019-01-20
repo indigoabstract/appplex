@@ -74,7 +74,7 @@ shared_ptr<unit_test_grid> unit_test_grid::nwi()
 void unit_test_grid::init()
 {
 	//touch_ctrl->add_receiver(get_smtp_instance());
-	//key_ctrl->add_receiver(get_smtp_instance());
+	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
 void unit_test_grid::load()

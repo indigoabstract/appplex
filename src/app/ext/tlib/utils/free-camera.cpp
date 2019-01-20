@@ -30,7 +30,7 @@ void free_camera::update_input(shared_ptr<iadp> idp)
       return;
    }
 
-   bool ctrl_held = u.lock()->key_ctrl->key_is_held(KEY_CONTROL);
+   bool ctrl_held = u.lock()->key_ctrl_inst->key_is_held(KEY_CONTROL);
 
    if (ctrl_held)
    {

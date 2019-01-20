@@ -10,11 +10,11 @@
 class unit_template : public unit
 {
 public:
-   static shared_ptr<unit_template> nwi();
+   static mws_sp<unit_template> nwi();
 
-   void init() override;
-   void init_mws() override;
-   void load() override;
+   virtual void init() override;
+   virtual void init_mws() override;
+   virtual void load() override;
 
 private:
    unit_template();

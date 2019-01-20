@@ -1006,7 +1006,7 @@ shared_ptr<unit_test_normal_mapping> unit_test_normal_mapping::nwi()
 void unit_test_normal_mapping::init()
 {
 	//touch_ctrl->add_receiver(get_smtp_instance());
-	//key_ctrl->add_receiver(get_smtp_instance());
+	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
 bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file> ispec_file)
