@@ -14,6 +14,7 @@
 #include <kxmd/kxmd.hpp>
 
 
+const key_types KEY_DONE = KEY_END;
 mws_sp<mws_vkb> mws_vkb::inst;
 mws_sp<mws_vkb> mws_vkb::gi()
 {
@@ -36,6 +37,11 @@ void mws_vkb::receive(mws_sp<iadp> i_dp)
       {
       case pointer_evt::touch_began:
       {
+         break;
+      }
+
+      case pointer_evt::touch_ended:
+      {
          auto& pt = pe->points[0];
          auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
 
@@ -46,12 +52,12 @@ void mws_vkb::receive(mws_sp<iadp> i_dp)
             key_types key_id = key_vect[selected_kernel_idx];
             std::string key_name = get_key_name(key_id);
             mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
-         }
-         break;
-      }
 
-      case pointer_evt::touch_ended:
-      {
+            if (key_id == KEY_DONE)
+            {
+               done();
+            }
+         }
          break;
       }
       }

@@ -89,7 +89,10 @@ public:
    virtual ~pfm_file();
 
    bool remove();
-   bool exists();
+   bool make_dir();
+   bool is_directory() const;
+   bool is_regular_file() const;
+   bool exists() const;
    bool is_opened()const;
    bool is_writable()const;
    uint64 length();

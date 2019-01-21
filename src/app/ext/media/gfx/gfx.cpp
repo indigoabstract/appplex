@@ -154,6 +154,20 @@ void gfx::global_init()
    main_instance->init(main_instance);
 }
 
+void gfx::on_destroy()
+{
+   main_instance->rt_list.clear();
+   main_instance->shader_list.clear();
+   main_instance->tex_list.clear();
+
+   main_instance->black_shader = nullptr;
+   main_instance->wireframe_shader = nullptr;
+   main_instance->basic_tex_shader = nullptr;
+   main_instance->mws_shader = nullptr;
+   main_instance->c_o_shader = nullptr;
+   main_instance = nullptr;
+}
+
 void gfx::on_resize(int i_width, int i_height)
 {
    glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
@@ -771,7 +785,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
          bool operator()(std::weak_ptr<gfx_rt> wp) { return wp.expired(); }
       };
       auto it = std::find_if(rt_list.begin(), rt_list.end(), pred());
-      rt_list.erase(it);
+      if (it != rt_list.end())rt_list.erase(it);
       break;
    }
 
@@ -782,7 +796,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
          bool operator()(std::weak_ptr<gfx_shader> wp) { return wp.expired(); }
       };
       auto it = std::find_if(shader_list.begin(), shader_list.end(), pred());
-      shader_list.erase(it);
+      if(it != shader_list.end())shader_list.erase(it);
       break;
    }
 
@@ -793,7 +807,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
          bool operator()(std::weak_ptr<gfx_tex> wp) { return wp.expired(); }
       };
       auto it = std::find_if(tex_list.begin(), tex_list.end(), pred());
-      tex_list.erase(it);
+      if (it != tex_list.end())tex_list.erase(it);
       break;
    }
    }

@@ -279,9 +279,9 @@ private:
       float alpha_val = 0.8f;
       float line_thickness = 6.f;
 
-      diag_data->info.nexus_points_visible = true;
+      diag_data->info.nexus_points_visible = false;
       diag_data->info.nexus_pairs_visible = true;
-      diag_data->info.kernel_points_visible = true;
+      diag_data->info.kernel_points_visible = false;
       diag_data->info.cell_triangles_visible = true;
 
       // cache the shaders, to prevent recompiling

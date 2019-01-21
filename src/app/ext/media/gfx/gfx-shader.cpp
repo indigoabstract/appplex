@@ -824,9 +824,11 @@ gfx_shader::gfx_shader(const std::string& iprg_name, std::shared_ptr<gfx> i_gi) 
 
 void gfx_shader::release()
 {
+   mws_report_gfx_errs();
    p->release();
    gi()->remove_gfx_obj(this);
    mws_print("shader [%s] released.\n", get_program_name().c_str());
+   mws_report_gfx_errs();
 }
 
 bool gfx_shader::make_current()

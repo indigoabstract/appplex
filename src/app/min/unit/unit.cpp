@@ -503,7 +503,7 @@ shared_ptr<pfm_file> unit::app_storage::random_access(std::string name)
 
 void unit::app_storage::save_screenshot(std::string ifilename)
 {
-#if defined MODE_GFX && defined MOD_BOOST
+#if defined MOD_GFX && defined MOD_PNG
    if (!p->u.lock()->is_gfx_unit())
    {
       return;
@@ -520,20 +520,24 @@ void unit::app_storage::save_screenshot(std::string ifilename)
       {
          "00", "0"
       };
-      std::string dir_name = mws_to_str("f:\\data\\media\\work\\screens\\%s", p->u.lock()->get_name().c_str());
-      //shared_ptr<pfm_file> dir = pfm_file::get_inst(dir_name);
-      bfs::path dst_dir(dir_name);
-      //bfs::path screenshot_file;
+      std::string dir_name = pfm::filesystem::get_writable_path(p->u.lock()->get_name());// mws_to_str("f:/data/media/work/screens/%s", p->u.lock()->get_name().c_str());
+      auto dir = pfm_file::get_inst(dir_name);
       int screenshot_idx = 0;
 
-      if (!bfs::exists(dst_dir))
-         // if dir doesn't exist, create it
+      // if dir doesn't exist, create it
+      if (!dir->exists())
       {
-         bfs::create_directory(dst_dir);
+         bool success = dir->make_dir();
+
+         if (!success)
+         {
+            mws_println("dir [ %s ] doesn't exist", dir_name.c_str());
+            return;
+         }
       }
 
+      // find the first available file name.
       do
-         // find the first available file name.
       {
          string idx_nr = "";
          int digits = 0;
@@ -555,12 +559,10 @@ void unit::app_storage::save_screenshot(std::string ifilename)
             idx_nr = mws_to_str("%s%d", file_root.c_str(), screenshot_idx);
          }
 
-         //screenshot_file = dst_dir / bfs::path(trs("%1%%2%") % idx_nr % img_ext);
          std::string file_name = mws_to_str("%s%s", idx_nr.c_str(), img_ext.c_str());
          screenshot_file = pfm_file::get_inst(dir_name + "/" + file_name);
          screenshot_idx++;
       }
-      //while (bfs::exists(screenshot_file));
       while (screenshot_file->exists());
    }
    else
@@ -568,7 +570,12 @@ void unit::app_storage::save_screenshot(std::string ifilename)
       screenshot_file = pfm_file::get_inst(ifilename);
    }
 
-   res_ld::inst()->save_image(screenshot_file, gfx::i()->rt.get_screen_width(), gfx::i()->rt.get_screen_height(), (uint8*)begin_ptr(pixels), res_ld::e_vertical_flip);
+   {
+      int w = gfx::i()->rt.get_screen_width();
+      int h = gfx::i()->rt.get_screen_height();
+      uint8* pix = (uint8*)begin_ptr(pixels);
+      res_ld::inst()->save_image(screenshot_file, w, h, pix, res_ld::e_vertical_flip);
+   }
 #endif
 }
 

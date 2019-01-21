@@ -148,20 +148,10 @@ void write_png_file(mws_sp<pfm_file> file_name, int iwidth, int iheight, uint8* 
       for (int x = 0; x < width; x++)
       {
          png_byte* ptr = &(row[x * 4]);
-         ////printf("Pixel at position [ %d - %d ] has RGBA values: %d - %d - %d - %d\n", x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
-
-         ///* set red value to 0 and green value to the blue one */
-         //ptr[0] = 0;
-         //ptr[1] = ptr[2];
          ptr[0] = ibuffer[l++];
          ptr[1] = ibuffer[l++];
          ptr[2] = ibuffer[l++];
          ptr[3] = ibuffer[l++];
-         //int r= ptr[0];
-         //int g= ptr[1];
-         //int b= ptr[2];
-         //int a= ptr[3];
-         //int xy = 3;
       }
    }
 
