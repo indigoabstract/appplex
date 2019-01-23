@@ -11,6 +11,12 @@ units
 [
 	@@[ public units ],
 
+	@@[ lib ],
+	
+	png[ uses[ gfx, fonts, freetype, freetype_gl, mws, vector-fonts ] ],
+	
+	@@[ misc ],
+	
 	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png, zlib ], platf[ windows, android ], ],
 	template[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, zlib, vector-fonts ] ],
