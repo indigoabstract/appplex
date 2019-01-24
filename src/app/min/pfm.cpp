@@ -711,7 +711,7 @@ bool pfm_file::exists() const
 
    if (stat(get_full_path().c_str(), &info) != 0)
    {
-      return false;
+      return io.impl->exists();
    }
 
    return true;

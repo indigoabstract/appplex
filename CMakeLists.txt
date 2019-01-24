@@ -49,8 +49,6 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(ADDITIONAL_LIBRARIES wsock32)
 	
 	find_library(GLEW_LIB glew32)
-	find_library(PNG_LIB libpng16)
-	find_library(ZLIB_LIB zlib)
 	find_library(FMODEX_LIB fmodex_vc)
 	find_library(FREETYPE_LIB freetype.lib)
 	
@@ -112,9 +110,8 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
     find_library(EGL_LIB EGL)
     find_library(OPENSLES_LIB OpenSLES)
 	# app bundled libs
-	find_library(PNG_LIB libpng_renamed.so)
-	find_library(ZIP_LIB libzip.so)
 	find_library(FREETYPE_LIB libfreetype2-static.so)
+	find_library(ZIP_LIB libzip.so)
 	#find_library(FFMPEG_LIB libffmpeg.so)
 	#find_library(STK_LIB libstk.a)
 	
@@ -125,7 +122,6 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	target_link_libraries(app_plex_main ${OPENGL_LIB})
 	target_link_libraries(app_plex_main ${OPENSLES_LIB})
 	# app bundled libs
-	target_link_libraries(app_plex_main ${PNG_LIB})
 	target_link_libraries(app_plex_main ${ZIP_LIB})
 	target_link_libraries(app_plex_main ${FREETYPE_LIB})
 	#target_link_libraries(app_plex_main ${FFMPEG_LIB})
@@ -210,36 +206,36 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.mm"
 	)
 
-        set(
-        IMAGES
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default@2x.png # Retina, 640x960
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default-568h@2x.png # Retina 4-inch, 640x1136
-        # See plist.in:
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait~ipad.png # Portrait Non-Retina, 768x1024
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait@2x~ipad.png # Portrait Retina, 1536x2048
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape~ipad.png # Landscape Non-Retina, 1024x768
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape@2x~ipad.png # Landscape Retina, 2048x1536
-        )
+	set(
+	IMAGES
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default@2x.png # Retina, 640x960
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/iphone/Default-568h@2x.png # Retina 4-inch, 640x1136
+	# See plist.in:
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait~ipad.png # Portrait Non-Retina, 768x1024
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Portrait@2x~ipad.png # Portrait Retina, 1536x2048
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape~ipad.png # Landscape Non-Retina, 1024x768
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/images/ipad/Default-Landscape@2x~ipad.png # Landscape Retina, 2048x1536
+	)
 
-        set(
-        ICONS
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~iphone.png # iPhone Retina, 120x120
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~ipad.png # iPad Non-Retina, 76x76
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon@2x~ipad.png # iPad Retina, 152x152
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-87.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-80.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-60.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-58.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-40.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-180.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-121.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-120.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-1024.png
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon.png # iPhone/iPad Retina, 80x80
-        #${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon@2x.png # iPhone Retina, 58x58
-        ${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon-Small.png # iPad Non-Retina 29x29
-        )
+	set(
+	ICONS
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~iphone.png # iPhone Retina, 120x120
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon~ipad.png # iPad Non-Retina, 76x76
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon@2x~ipad.png # iPad Retina, 152x152
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-87.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-80.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-60.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-58.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-40.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-180.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-121.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-120.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/app/Icon-1024.png
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon.png # iPhone/iPad Retina, 80x80
+	#${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/spotlight/Icon~ipad.png # iPad Non-Retina, 40x40
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon@2x.png # iPhone Retina, 58x58
+	${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/icons/settings/Icon-Small.png # iPad Non-Retina 29x29
+	)
 
 	set(STORYBOARDS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/storyboards/Main.storyboard"
@@ -255,11 +251,6 @@ else() # Assume iOS
 	PROPERTIES
 	MACOSX_PACKAGE_LOCATION Resources
 	)
-
-        #set(APP_RESOURCES "${STORYBOARDS};${res_files}")
-
-        #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/rectangle.png)
-        #LIST(APPEND APP_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/tests/test-res-ld/res/basic_tex.fsh)
 
 	add_executable(
 		${APP_NAME}
@@ -316,14 +307,13 @@ else() # Assume iOS
 	find_library(CFNETWORK CFNetwork)
 	find_library(SYSTEMCONFIGURATION SystemConfiguration)
 	FIND_LIBRARY(AV_FOUNDATION_LIB AVFoundation)
-        FIND_LIBRARY(CORE_GRAPHICS_LIB CoreGraphics)
-        FIND_LIBRARY(CORE_VIDEO_LIB CoreVideo)
-        FIND_LIBRARY(CORE_MEDIA_LIB CoreMedia)
-        FIND_LIBRARY(CORE_IMAGE_LIB CoreImage)
-        FIND_LIBRARY(QUARTZ_CORE_LIB QuartzCore)
+	FIND_LIBRARY(CORE_GRAPHICS_LIB CoreGraphics)
+	FIND_LIBRARY(CORE_VIDEO_LIB CoreVideo)
+	FIND_LIBRARY(CORE_MEDIA_LIB CoreMedia)
+	FIND_LIBRARY(CORE_IMAGE_LIB CoreImage)
+	FIND_LIBRARY(QUARTZ_CORE_LIB QuartzCore)
 	# app bundled libs
-	find_library(PNG_LIB libpng.a)
-        find_library(FREETYPE_LIB libfreetype.a)
+	find_library(FREETYPE_LIB libfreetype.a)
 
 
 	# link the frameworks located above
@@ -336,14 +326,13 @@ else() # Assume iOS
 	target_link_libraries(${APP_NAME} ${CFNETWORK})
 	target_link_libraries(${APP_NAME} ${SYSTEMCONFIGURATION})
 	target_link_libraries(${APP_NAME} ${AV_FOUNDATION_LIB})
-        target_link_libraries(${APP_NAME} ${CORE_GRAPHICS_LIB})
-        target_link_libraries(${APP_NAME} ${CORE_VIDEO_LIB})
-        target_link_libraries(${APP_NAME} ${CORE_MEDIA_LIB})
-        target_link_libraries(${APP_NAME} ${CORE_IMAGE_LIB})
-        target_link_libraries(${APP_NAME} ${QUARTZ_CORE_LIB})
+	target_link_libraries(${APP_NAME} ${CORE_GRAPHICS_LIB})
+	target_link_libraries(${APP_NAME} ${CORE_VIDEO_LIB})
+	target_link_libraries(${APP_NAME} ${CORE_MEDIA_LIB})
+	target_link_libraries(${APP_NAME} ${CORE_IMAGE_LIB})
+	target_link_libraries(${APP_NAME} ${QUARTZ_CORE_LIB})
 	# app bundled libs
-	target_link_libraries(${APP_NAME} ${PNG_LIB})
-        target_link_libraries(${APP_NAME} ${FREETYPE_LIB})
+    target_link_libraries(${APP_NAME} ${FREETYPE_LIB})
 
 	# Link the framework to the app
 	#set_target_properties(${APP_NAME} PROPERTIES
