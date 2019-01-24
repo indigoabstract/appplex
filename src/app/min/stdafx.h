@@ -2,6 +2,10 @@
 
 #if defined WIN32
 
+#ifndef _HAS_AUTO_PTR_ETC
+#define _HAS_AUTO_PTR_ETC 1
+#endif
+
 #define _UNICODE
 #define UNICODE
 #define NOMINMAX

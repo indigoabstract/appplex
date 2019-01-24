@@ -7,14 +7,6 @@
 #include "unit-ctrl.hpp"
 #include "min.hpp"
 
-#if defined MOD_BOOST
-#include <boost/date_time.hpp>
-//#include <boost/filesystem.hpp>
-
-//using namespace boost::filesystem;
-boost::posix_time::ptime time_start;
-#endif
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -87,8 +79,6 @@ gfx_type_id pfm::get_gfx_type_id()
 #define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
 #define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
 
-#if !defined MOD_BOOST
-
 uint32 pfm::time::get_time_millis()
 {
    struct timespec ts;
@@ -100,8 +90,6 @@ uint32 pfm::time::get_time_millis()
 
    return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
-
-#endif
 
 bool pfm_file::make_dir()
 {
@@ -213,14 +201,10 @@ gfx_type_id pfm::get_gfx_type_id()
    return gfx_type_opengl;
 }
 
-#if !defined MOD_BOOST
-
 uint32 pfm::time::get_time_millis()
 {
    return GetTickCount();
 }
-
-#endif
 
 bool pfm_file::make_dir()
 {
@@ -236,7 +220,6 @@ bool pfm_file::make_dir()
 int arg_count = 0;
 unicodestring app_path;
 vector<unicodestring> arg_vector;
-//boost::posix_time::ptime time_start;
 
 
 namespace pfm_impl
@@ -1009,11 +992,6 @@ pfm_data::pfm_data()
    screen_width = 1280;
    screen_height = 720;
    gfx_available = true;
-   //console = shared_ptr<ia_console>(new ia_console());
-
-#if defined MOD_BOOST
-   time_start = boost::posix_time::ptime(boost::gregorian::day_clock::local_day());
-#endif
 }
 
 
@@ -1337,15 +1315,6 @@ shared_ptr<pfm_file> pfm::filesystem::random_access(shared_ptr<unit> iu, std::st
    //return get_random_access(get_path(ifilename.c_str()), true);
    return shared_ptr<pfm_file>();
 }
-
-#if defined MOD_BOOST
-
-uint32 pfm::time::get_time_millis()
-{
-   return uint32((boost::posix_time::microsec_clock::local_time() - time_start).total_milliseconds());
-}
-
-#endif
 
 shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 {

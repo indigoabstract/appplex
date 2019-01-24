@@ -1,11 +1,11 @@
 #pragma once
 
 #include "pfm.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <string>
 
 
-inline const unicodestring& path2string(const boost::filesystem::path& p)
+inline unicodestring path2string(const std::filesystem::path& p)
 {
 #if defined UNICODE_USING_STD_STRING
 

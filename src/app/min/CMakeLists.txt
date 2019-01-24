@@ -16,4 +16,7 @@ target_sources(app_plex_main
 	"${CMAKE_CURRENT_LIST_DIR}/pfm.hpp"
 )
 
+get_filename_component(dirname ${CMAKE_CURRENT_LIST_DIR} NAME)
+source_group("mod/${dirname}" FILES "${CMAKE_CURRENT_LIST_DIR}/appplex-conf.hpp" "${CMAKE_CURRENT_LIST_DIR}/appplex-conf.cpp") 
+
 include("${CMAKE_CURRENT_LIST_DIR}/unit/CMakeLists.txt")  

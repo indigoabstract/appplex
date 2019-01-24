@@ -99,6 +99,10 @@ void unit_ctrl::set_app_exit_on_next_run(bool iexit_app_on_next_run)
 void unit_ctrl::destroy_app()
 {
    ul->on_destroy();
+
+#ifdef MOD_GFX
+   gfx::on_destroy();
+#endif
 }
 
 void unit_ctrl::pre_init_app()

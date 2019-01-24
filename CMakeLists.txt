@@ -42,6 +42,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc/ffmpeg")
+	#include_directories("${CMAKE_CURRENT_LIST_DIR}/src/lib/ext/inc/boost")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	
