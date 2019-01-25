@@ -530,7 +530,7 @@ bool mws_page_tab::handle_back_evt()
    return false;
 }
 
-void mws_page_tab::show_keyboard(mws_sp<mws_text_box> i_tbx)
+void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
 {
 #if defined MOD_VKB
 

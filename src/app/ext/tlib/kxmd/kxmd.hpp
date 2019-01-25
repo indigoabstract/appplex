@@ -58,6 +58,7 @@ public:
    static void push_back(mws_sp<kxmd_elem> i_root, const mws_sp<kxmd_elem> i_val);
    static void push_back(mws_sp<kxmd_elem> i_root, const std::string& i_val);
    static void push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i_list);
+   static mws_sp<kxmd_elem> parse(mws_sp<std::string> i_src);
 };
 
 
@@ -81,13 +82,6 @@ public:
 
 protected:
    kxmd_elem() {}
-};
-
-
-class kxmd_parser
-{
-public:
-   mws_sp<kxmd_elem> parse(mws_sp<std::string> i_src);
 };
 
 #endif

@@ -22,7 +22,7 @@ public:
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize() override;
-   virtual void set_target(mws_sp<mws_text_box> i_tbx) override;
+   virtual void set_target(mws_sp<mws_text_area> i_tbx) override;
    void load(std::string i_filename);
 
 protected:
@@ -33,7 +33,7 @@ protected:
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
 
-   mws_sp<mws_text_box> tbx;
+   mws_sp<mws_text_area> tbx;
    mws_sp<vkb_voronoi_main> vk;
    mws_sp<text_vxo> vk_keys;
    std::unordered_map<key_types, std::string> key_map;

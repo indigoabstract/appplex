@@ -27,7 +27,7 @@ class mws_list;
 class mws_tree;
 class mws_font;
 class mws_camera;
-class mws_text_box;
+class mws_text_area;
 class mws_virtual_keyboard;
 class gfx_vxo;
 class text_vxo;
@@ -140,7 +140,7 @@ class mws_virtual_keyboard : public mws
 public:
    virtual ~mws_virtual_keyboard() {}
    virtual void on_resize() = 0;
-   virtual void set_target(mws_sp<mws_text_box> i_tbx) = 0;
+   virtual void set_target(mws_sp<mws_text_area> i_tbx) = 0;
 
 protected:
    mws_virtual_keyboard() {}
@@ -172,7 +172,7 @@ public:
    template <typename T> mws_sp<T> new_page() { mws_sp<T> p(new T()); add_page(p); return p; }
    // returns true if it handled(consumed) the back event, false otherwise
    virtual bool handle_back_evt();
-   virtual void show_keyboard(mws_sp<mws_text_box> i_tbx);
+   virtual void show_keyboard(mws_sp<mws_text_area> i_tbx);
 
    std::vector<mws_sp<mws_page> > page_tab;
 
@@ -250,11 +250,11 @@ protected:
 };
 
 
-class mws_text_box : public mws_page_item
+class mws_text_area : public mws_page_item
 {
 public:
-   virtual ~mws_text_box() {}
+   virtual ~mws_text_area() {}
 
 protected:
-   mws_text_box() {}
+   mws_text_area() {}
 };

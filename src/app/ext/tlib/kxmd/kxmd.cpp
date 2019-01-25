@@ -1544,7 +1544,7 @@ mws_sp<kxmd_scn> kxmd_scn_factory::nwi(kxmd_scanner_type type, mws_sp<kxmd_share
 }
 
 
-mws_sp<kxmd_elem> kxmd_parser::parse(mws_sp<std::string> src)
+mws_sp<kxmd_elem> kxmd::parse(mws_sp<std::string> src)
 {
    mws_sp<kxmd_scn> sc;
    mws_sp<kxmd_shared_state> ss;

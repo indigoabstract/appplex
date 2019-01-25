@@ -82,7 +82,7 @@ void mws_vkb::on_resize()
    mws_r.h = (float)pfm::screen::get_height();
 }
 
-void mws_vkb::set_target(mws_sp<mws_text_box> i_tbx)
+void mws_vkb::set_target(mws_sp<mws_text_area> i_tbx)
 {
    tbx = i_tbx;
 
@@ -185,9 +185,7 @@ void mws_vkb::load(std::string i_filename)
    vkb_filename = i_filename;
    mws_sp<std::vector<uint8> > res = get_unit()->storage.load_unit_byte_vect(vkb_filename);
    mws_sp<std::string> src(new std::string((const char*)begin_ptr(res), res->size()));
-   kxmd_parser parser;
-
-   mws_sp<kxmd_elem> kxmdi = parser.parse(src);
+   mws_sp<kxmd_elem> kxmdi = kxmd::parse(src);
    mws_sp<vkb_voronoi_data> diag_data = vk->diag_data;
    vkb_voronoi_data::vkb_voronoi_geometry_data& gd = diag_data->geom;
 
