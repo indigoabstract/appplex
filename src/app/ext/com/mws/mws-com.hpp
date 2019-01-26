@@ -205,7 +205,7 @@ protected:
 };
 
 
-class text_area_model
+class mws_text_area_model
 {
 public:
    virtual bool get_word_wrap() = 0;

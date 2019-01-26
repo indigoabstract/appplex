@@ -290,6 +290,7 @@ public:
 
 
    static platform_id get_platform_id();
+   static bool has_touchscreen();
    static gfx_type_id get_gfx_type_id();
    static shared_ptr<pfm_main> get_pfm_main_inst();
    //static shared_ptr<ia_console> get_console();

@@ -31,7 +31,7 @@ namespace unit_texxed_ns
 				return;
 			}
 
-			ta = text_box::nwi();
+			ta = mws_text_box::nwi();
 			ta->set_position(glm::vec2(50, 70));
 			ta->set_dimension(glm::vec2(w - 80, h - 130));
 			ta->set_text(*tx_res);
@@ -84,7 +84,7 @@ namespace unit_texxed_ns
 			g->drawText(text, 10, 20);
 		}
 
-		shared_ptr<text_box> ta;
+		shared_ptr<mws_text_box> ta;
 		shared_ptr<std::string > tx_res;
 	};
 }

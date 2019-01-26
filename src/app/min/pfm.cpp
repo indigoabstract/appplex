@@ -1316,6 +1316,20 @@ shared_ptr<pfm_file> pfm::filesystem::random_access(shared_ptr<unit> iu, std::st
    return shared_ptr<pfm_file>();
 }
 
+bool pfm::has_touchscreen()
+{
+   switch (get_platform_id())
+   {
+   case platform_android: return true;
+   case platform_ios:  return true;
+   case platform_emscripten: return false;
+   case platform_qt_windows_pc: return false;
+   case platform_windows_pc: return false;
+   }
+
+   return false;
+}
+
 shared_ptr<pfm_main> pfm::get_pfm_main_inst()
 {
    if (!pfm_impl::res_files_map)

@@ -12,10 +12,10 @@
 #include "min.hpp"
 
 
-class text_area_model_ro : public text_area_model
+class mws_text_area_model_ro : public mws_text_area_model
 {
 public:
-   text_area_model_ro();
+   mws_text_area_model_ro();
    virtual bool get_word_wrap() override;
    virtual void set_word_wrap(bool i_word_wrap) override;
    virtual int get_line_count() override;
@@ -48,10 +48,10 @@ private:
 };
 
 
-class text_area_model_rw : public text_area_model
+class mws_text_area_model_rw : public mws_text_area_model
 {
 public:
-   text_area_model_rw();
+   mws_text_area_model_rw();
    virtual bool get_word_wrap() override;
    virtual void set_word_wrap(bool i_word_wrap) override;
    virtual int get_line_count() override;
@@ -78,10 +78,10 @@ private:
 };
 
 
-class text_box : public mws_text_area
+class mws_text_box : public mws_text_area
 {
 public:
-   static mws_sp<text_box> nwi();
+   static mws_sp<mws_text_box> nwi();
    void setup() override;
    virtual bool is_editable() const;
    virtual void set_editable(bool i_is_editable);
@@ -99,11 +99,13 @@ public:
    virtual void receive(mws_sp<iadp> idp);
 
 protected:
-   text_box();
-   mws_sp<text_area_model> new_model();
+   mws_text_box();
+   mws_sp<mws_text_area_model> new_model();
+   virtual void handle_pointer_evt(mws_sp<pointer_evt> i_pe);
+   virtual void handle_key_evt(mws_sp<key_evt> i_ke);
 
    bool editable = false;
-   mws_sp<text_area_model> tx_src;
+   mws_sp<mws_text_area_model> tx_src;
    mws_sp<text_vxo> tx_vxo;
    mws_sp<mws_font> font;
    glm::vec2 pos;
