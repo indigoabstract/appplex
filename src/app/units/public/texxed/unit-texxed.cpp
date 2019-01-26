@@ -4,7 +4,7 @@
 
 #ifdef UNIT_TEXXED
 
-#include "mws-text-box.hpp"
+#include "com/mws/mws-text-box.hpp"
 #include "com/mws/mws-camera.hpp"
 
 

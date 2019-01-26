@@ -15,9 +15,24 @@
 #include "unit.hpp"
 #include "com/unit/transitions.hpp"
 #include <algorithm>
+#ifdef MWS_USES_EXCEPTIONS
+#include <exception>
+#endif
 
-using std::string;
-using std::vector;
+
+mws_rect::mws_rect() {}
+mws_rect::mws_rect(float i_x, float i_y, float i_w, float i_h)
+{
+   set(i_x, i_y, i_w, i_h);
+}
+
+void mws_rect::set(float i_x, float i_y, float i_w, float i_h)
+{
+   x = i_x;
+   y = i_y;
+   w = i_w;
+   h = i_h;
+}
 
 
 mws_sp<mws_model> mws_model::get_instance()
@@ -145,22 +160,22 @@ bool mws::is_visible()const
    return visible;
 }
 
-void mws::set_id(string iid)
+void mws::set_id(std::string iid)
 {
    id = iid;
 }
 
-const string& mws::get_id()
+const std::string& mws::get_id()
 {
    return id;
 }
 
-mws_sp<mws> mws::find_by_id(const string& iid)
+mws_sp<mws> mws::find_by_id(const std::string& iid)
 {
    return mwsroot.lock()->contains_id(iid);
 }
 
-mws_sp<mws> mws::contains_id(const string& iid)
+mws_sp<mws> mws::contains_id(const std::string& iid)
 {
    if (iid == id)
    {
@@ -330,7 +345,7 @@ void mws_page_tab::on_destroy()
    }
 }
 
-mws_sp<mws> mws_page_tab::contains_id(const string& iid)
+mws_sp<mws> mws_page_tab::contains_id(const std::string& iid)
 {
    if (iid.length() > 0)
    {
@@ -571,7 +586,7 @@ void mws_page::on_destroy()
    }
 }
 
-mws_sp<mws> mws_page::contains_id(const string& iid)
+mws_sp<mws> mws_page::contains_id(const std::string& iid)
 {
    if (iid.length() > 0)
    {
@@ -596,11 +611,16 @@ mws_sp<mws> mws_page::contains_id(const string& iid)
 
 bool mws_page::contains_mws(const mws_sp<mws> i_mws)
 {
-   for (auto p : mlist)
+   for (auto& c : children)
    {
-      if (i_mws == p)
+      if (c->get_type() == gfx_obj::e_mws)
       {
-         return true;
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         if (w == i_mws || w->contains_mws(i_mws))
+         {
+            return true;
+         }
       }
    }
 
@@ -653,6 +673,7 @@ void mws_page::update_input_sub_mws(mws_sp<iadp> idp)
       };
 
       std::sort(children.begin(), children.end(), z_sort);
+      selected_item = nullptr;
 
       for (auto& c : children)
       {
@@ -666,12 +687,21 @@ void mws_page::update_input_sub_mws(mws_sp<iadp> idp)
 
                if (idp->is_processed())
                {
+                  selected_item = w;
                   break;
                }
             }
          }
       }
    }
+   else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   {
+      if (selected_item)
+      {
+         selected_item->receive(idp);
+      }
+   }
+
 }
 
 void mws_page::update_input_std_behaviour(mws_sp<iadp> idp)
@@ -835,6 +865,18 @@ mws_sp<mws> mws_page::get_mws_at(int idx)
    return mlist[idx];
 }
 
+void mws_page::select(mws_sp<mws> i_item)
+{
+   if (contains_mws(i_item))
+   {
+      selected_item = i_item;
+   }
+   else
+   {
+      mws_println("mws_page::select[ i_item is not in mws_page ]");
+   }
+}
+
 void mws_page::on_resize()
 {
    mws_sp<mws_page_tab> parent = get_mws_page_parent();
@@ -875,6 +917,11 @@ void mws_page_item::set_size(float i_width, float i_height)
 mws_sp<mws_page> mws_page_item::get_mws_page_item_parent()
 {
    return static_pointer_cast<mws_page>(get_mws_parent());
+}
+
+void mws_page_item::select()
+{
+   get_mws_page_item_parent()->select(get_instance());
 }
 
 mws_page_item::mws_page_item() {}

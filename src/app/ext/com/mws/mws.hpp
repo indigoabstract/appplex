@@ -5,12 +5,8 @@
 #include "com/util/util.hpp"
 #include "com/unit/input-ctrl.hpp"
 #include "media/gfx/gfx-scene.hpp"
-#include <unordered_map>
 #include <string>
 #include <vector>
-#ifdef MWS_USES_EXCEPTIONS
-#include <exception>
-#endif
 
 
 class unitctrl;
@@ -40,25 +36,14 @@ const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
 class mws_rect
 {
 public:
-   mws_rect()
-   {
-      set(0, 0, 0, 0);
-   }
+   mws_rect();
+   mws_rect(float i_x, float i_y, float i_w, float i_h);
+   void set(float i_x, float i_y, float i_w, float i_h);
 
-   mws_rect(float ix, float iy, float iw, float ih)
-   {
-      set(ix, iy, iw, ih);
-   }
-
-   void set(float ix, float iy, float iw, float ih)
-   {
-      x = ix;
-      y = iy;
-      w = iw;
-      h = ih;
-   }
-
-   float x, y, w, h;
+   float x = 0.f;
+   float y = 0.f;
+   float w = 0.f;
+   float h = 0.f;
 };
 
 
@@ -140,7 +125,7 @@ class mws_virtual_keyboard : public mws
 public:
    virtual ~mws_virtual_keyboard() {}
    virtual void on_resize() = 0;
-   virtual void set_target(mws_sp<mws_text_area> i_tbx) = 0;
+   virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
 
 protected:
    mws_virtual_keyboard() {}
@@ -216,11 +201,13 @@ public:
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    mws_sp<mws> get_mws_at(int idx);
+   virtual void select(mws_sp<mws> i_item);
 
 protected:
    mws_page();
    virtual void on_resize();
    std::vector<mws_sp<mws> > mws_subobj_list;
+   mws_sp<mws> selected_item;
 
 private:
    friend class mws_page_tab;
@@ -241,6 +228,7 @@ public:
    virtual void set_rect(const mws_rect& i_rect);
    virtual void set_size(float i_width, float i_height);
    mws_sp<mws_page> get_mws_page_item_parent();
+   virtual void select();
 
 protected:
    mws_page_item();

@@ -1442,6 +1442,7 @@ int get_key(int i_key)
    case VK_UP: return KEY_UP;
    case VK_RIGHT: return KEY_RIGHT;
    case VK_DOWN: return KEY_DOWN;
+   case VK_DELETE: return KEY_DELETE;
    case VK_F1: return KEY_F1;
    case VK_F2: return KEY_F2;
    case VK_F3: return KEY_F3;

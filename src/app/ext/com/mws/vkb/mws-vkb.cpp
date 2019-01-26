@@ -82,9 +82,9 @@ void mws_vkb::on_resize()
    mws_r.h = (float)pfm::screen::get_height();
 }
 
-void mws_vkb::set_target(mws_sp<mws_text_area> i_tbx)
+void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 {
-   tbx = i_tbx;
+   ta = i_ta;
 
    if (vkb_filename.empty())
    {
@@ -339,7 +339,7 @@ void mws_vkb::setup()
 void mws_vkb::done()
 {
    visible = false;
-   tbx = nullptr;
+   ta = nullptr;
 }
 
 std::string mws_vkb::get_key_name(key_types i_key_id) const

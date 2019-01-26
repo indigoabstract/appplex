@@ -33,7 +33,7 @@ protected:
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
 
-   mws_sp<mws_text_area> tbx;
+   mws_sp<mws_text_area> ta;
    mws_sp<vkb_voronoi_main> vk;
    mws_sp<text_vxo> vk_keys;
    std::unordered_map<key_types, std::string> key_map;

@@ -213,8 +213,13 @@ public:
    virtual int get_line_count() = 0;
    virtual std::string get_line_at(int i_idx, bool i_keep_line_break = true) = 0;
    virtual std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) = 0;
+   virtual std::string get_text() = 0;
    virtual void push_back(const char* i_text, int i_length) = 0;
    virtual void push_front(const char* i_text, int i_length) = 0;
+   virtual void insert_at_cursor(const std::string& i_text) = 0;
+   virtual void delete_at_cursor(int32 i_count) = 0;
+   virtual uint32 get_cursor_pos() = 0;
+   virtual void set_cursor_pos(uint32 i_cursor_pos) = 0;
    virtual void set_text(const std::string& i_text) = 0;
    virtual void set_text(const char* i_text, int i_length) = 0;
    virtual void set_size(int i_width, int i_height) = 0;
