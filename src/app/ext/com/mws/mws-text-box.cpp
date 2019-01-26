@@ -14,6 +14,540 @@
 #include "min.hpp"
 
 
+mws_sp<mws_text_box> mws_text_box::nwi()
+{
+   mws_sp<mws_text_box> inst(new mws_text_box());
+   inst->setup();
+   return inst;
+}
+
+void mws_text_box::setup()
+{
+   mws_page_item::setup();
+   tx_vxo = text_vxo::nwi();
+   tx_vxo->camera_id_list.push_back("mws_cam");
+   (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
+   font = mws_font::nwi(36.f);
+   font->set_color(gfx_color::colors::white);
+   left_char_rect = std::make_shared<mws_rect>();
+   right_char_rect = std::make_shared<mws_rect>();
+   attach(tx_vxo);
+}
+
+bool mws_text_box::is_editable() const
+{
+   return editable;
+}
+
+void mws_text_box::set_editable(bool i_is_editable)
+{
+   if (editable != i_is_editable)
+   {
+      auto src = new_model();
+
+      if (tx_src)
+      {
+         std::string text = tx_src->get_text();
+         src->set_text(text);
+      }
+
+      tx_src = src;
+      editable = i_is_editable;
+   }
+}
+
+void mws_text_box::set_text(const std::string& i_text)
+{
+   tx_src = new_model();
+   tx_src->set_text(i_text);
+   tx_vxo->clear_text();
+   tx_vxo->add_text(i_text, glm::vec2(), font);
+   scroll_text(glm::vec2());
+   select_char_at(glm::vec2());
+}
+
+void mws_text_box::push_back_text(const std::string& i_text)
+{
+   if (!tx_src)
+   {
+      set_text(i_text);
+   }
+   else
+   {
+      tx_src->push_back(i_text.c_str(), i_text.length());
+
+      int line_count = tx_src->get_line_count();
+      std::string text;
+
+      for (int k = 0; k < line_count; k++)
+      {
+         text += tx_src->get_line_at(k);// +"\n";
+      }
+
+      tx_vxo->clear_text();
+      tx_vxo->add_text(text, glm::vec2(), font);
+      scroll_text(glm::vec2());
+      select_char_at(glm::vec2());
+   }
+}
+
+void mws_text_box::push_front_text(const std::string& i_text)
+{
+   if (!tx_src)
+   {
+      set_text(i_text);
+   }
+   else
+   {
+      tx_src->push_front(i_text.c_str(), i_text.length());
+
+      int line_count = tx_src->get_line_count();
+      std::string text;
+
+      for (int k = 0; k < line_count; k++)
+      {
+         text += tx_src->get_line_at(k);// +"\n";
+      }
+
+      tx_vxo->clear_text();
+      tx_vxo->add_text(text, glm::vec2(), font);
+      scroll_text(glm::vec2());
+      select_char_at(glm::vec2());
+   }
+}
+
+void mws_text_box::insert_at_cursor(const std::string& i_text)
+{
+   tx_src->insert_at_cursor(i_text);
+   scroll_text(glm::vec2(0.f));
+}
+
+void mws_text_box::delete_at_cursor(int32 i_count)
+{
+   tx_src->delete_at_cursor(i_count);
+   scroll_text(glm::vec2(0.f));
+}
+
+void mws_text_box::scroll_text(const glm::vec2& ioff)
+{
+   //tx_vxo->position += glm::vec3(ioff, 0);
+   glm::vec2 prev_off = text_offset;
+   text_offset -= ioff;
+   text_offset = glm::max(text_offset, glm::vec2());
+   tx_vxo->clear_text();
+   line_idx = int(text_offset.y / font->get_height());
+
+   if (line_idx + text_rows > tx_src->get_line_count())
+   {
+      text_offset = prev_off;
+      line_idx = int(text_offset.y / font->get_height());
+      //line_idx = tx_src->get_line_count() - text_rows;
+   }
+
+   int rows = std::min(text_rows, tx_src->get_line_count());
+
+   if (line_idx + rows >= tx_src->get_line_count())
+   {
+      line_idx = tx_src->get_line_count() - rows;
+   }
+
+   tx_rows = tx_src->get_lines_at(line_idx, rows);
+   float rem = glm::mod(text_offset.y, font->get_height());
+   tx_vxo->position = glm::vec3(pos.x - text_offset.x, pos.y - rem, 0);
+
+   for (size_t k = 0; k < tx_rows.size(); k++)
+   {
+      tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font->get_height()), font);
+   }
+}
+
+void mws_text_box::set_position(const glm::vec2& ipos)
+{
+   pos = ipos;
+   tx_vxo->position = glm::vec3(ipos, 0.f);
+   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
+}
+
+void mws_text_box::set_dimension(const glm::vec2& idim)
+{
+   dim = idim;
+   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
+   text_rows = int(dim.y / font->get_height() + 1);
+   mws_r = mws_rect(pos.x, pos.y, dim.x, dim.y);
+
+   if (tx_src)
+   {
+      scroll_text(glm::vec2());
+      select_char_at(glm::vec2());
+   }
+}
+
+void mws_text_box::select_char_at(const glm::vec2& ipos)
+{
+   static const std::string nl_char_size = "n";
+   float rem = glm::mod(text_offset.y, font->get_height());
+   size_t row_idx = size_t((ipos.y + rem) / font->get_height());
+
+   *left_char_rect = *right_char_rect = mws_rect();
+   left_char_rect->h = right_char_rect->h = font->get_height();
+
+   if (row_idx >= tx_rows.size())
+   {
+      row_idx = std::max(0, int(tx_rows.size() - 1));
+      cursor_left = left_char_rect;
+      left_char_rect->x = 0.f;
+      left_char_rect->y = row_idx * font->get_height() - rem;
+      left_char_rect->w = font->get_text_width(nl_char_size);
+      cursor_right = nullptr;
+      return;
+   }
+
+   std::string& text = tx_rows[row_idx];
+
+   if (text.empty())
+   {
+      cursor_left = left_char_rect;
+      left_char_rect->x = 0.f;
+      left_char_rect->y = row_idx * font->get_height() - rem;
+      left_char_rect->w = font->get_text_width(nl_char_size);
+      cursor_right = nullptr;
+      return;
+   }
+
+   auto& glyphs = font_db::inst()->get_glyph_vect(font->get_inst(), text);
+   float x_off = -text_offset.x;
+   size_t text_length = (text.back() != '\n') ? text.length() : text.length() - 1;
+   size_t k = 0;
+
+   for (k = 0; k < text_length; k++)
+   {
+      font_glyph glyph = glyphs[k];
+
+      if (glyph.is_valid())
+      {
+         float span = get_span(glyph, text, k);
+         float delta = x_off + span - ipos.x;
+
+         if (delta > 0.f)
+         {
+            // cursor falls to the left of this character
+            if (delta > span / 2.f)
+            {
+               if (k == 0)
+               {
+                  cursor_left = nullptr;
+
+                  right_char_rect->x = x_off;
+                  right_char_rect->y = row_idx * font->get_height() - rem;
+                  right_char_rect->w = span;
+                  cursor_right = right_char_rect;
+               }
+               else
+               {
+                  left_char_rect->y = row_idx * font->get_height() - rem;
+                  left_char_rect->w = get_span(glyphs[k - 1], text, k - 1);
+                  cursor_left = left_char_rect;
+
+                  right_char_rect->x = x_off;
+                  right_char_rect->y = row_idx * font->get_height() - rem;
+                  right_char_rect->w = span;
+                  cursor_right = right_char_rect;
+               }
+            }
+            // cursor falls to the right of this character
+            else
+            {
+               left_char_rect->x = x_off;
+               left_char_rect->y = row_idx * font->get_height() - rem;
+               left_char_rect->w = span;
+               cursor_left = left_char_rect;
+
+               right_char_rect->x = x_off + span;
+               right_char_rect->y = row_idx * font->get_height() - rem;
+               right_char_rect->w = (k < text_length - 1) ? get_span(glyphs[k + 1], text, k + 1) : font->get_text_width(nl_char_size);
+               cursor_right = right_char_rect;
+            }
+            break;
+         }
+         else
+         {
+            left_char_rect->x = x_off;
+            x_off += span;
+         }
+      }
+   }
+
+   if (k >= text_length)
+   {
+      k = text_length - 1;
+      float span = get_span(glyphs[k], text, k);
+      left_char_rect->y = row_idx * font->get_height() - rem;
+      left_char_rect->w = span;
+      cursor_left = left_char_rect;
+
+      right_char_rect->x = left_char_rect->x + span;
+      right_char_rect->y = row_idx * font->get_height() - rem;
+      right_char_rect->w = font->get_text_width(nl_char_size);
+      cursor_right = right_char_rect;
+   }
+}
+
+void mws_text_box::update_state()
+{
+   if (ks.is_active())
+   {
+      point2d scroll_pos = ks.update();
+      scroll_text(glm::vec2(scroll_pos.x, scroll_pos.y));
+   }
+}
+
+void mws_text_box::update_view(mws_sp<mws_camera> g)
+{
+   g->drawRect(pos.x, pos.y, dim.x, dim.y);
+
+   if (cursor_left && cursor_right)
+   {
+      mws_rect cursor_rect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
+      g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
+   }
+   else if (cursor_left || cursor_right)
+   {
+      if (cursor_left)
+      {
+         g->drawRect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_left->w, cursor_left->h);
+      }
+      else if (cursor_right)
+      {
+         g->drawRect(cursor_right->x + pos.x, cursor_right->y + pos.y, cursor_right->w, cursor_right->h);
+      }
+   }
+}
+
+void mws_text_box::receive(mws_sp<iadp> idp)
+{
+   if (idp->is_processed())
+   {
+      return;
+   }
+
+   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   {
+      handle_pointer_evt(pointer_evt::as_pointer_evt(idp));
+   }
+   else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   {
+      handle_key_evt(key_evt::as_key_evt(idp));
+   }
+}
+
+mws_text_box::mws_text_box()
+{
+}
+
+mws_sp<mws_text_area_model> mws_text_box::new_model()
+{
+   if (editable)
+   {
+      return std::make_shared<mws_text_area_model_rw>();
+   }
+
+   return std::make_shared<mws_text_area_model_ro>();
+}
+
+void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
+{
+   bool hit = is_inside_box(i_pe->points[0].x, i_pe->points[0].y, pos.x, pos.y, mws_r.w, mws_r.h);
+
+   if (!hit)
+   {
+      return;
+   }
+   //mws_print("hit at [%f, %f]\n", ts->points[0].x, ts->points[0].y);
+
+   float x = i_pe->points[0].x - mws_r.x;
+   float y = i_pe->points[0].y - mws_r.y;
+   bool dragging_detected = dragging_det.detect_helper(i_pe);
+
+   if (dragging_detected)
+   {
+      if (dragging_det.is_finished())
+      {
+         uint32 delta_t = i_pe->time - dragging_det.last_move_pos_time;
+
+         if (delta_t < 150)
+         {
+            ks.start_slowdown();
+         }
+         else
+         {
+            ks.reset();
+         }
+      }
+      else
+      {
+         ks.begin(i_pe->points[0].x, i_pe->points[0].y);
+      }
+
+      scroll_text(dragging_det.drag_diff);
+      i_pe->process();
+   }
+
+   switch (i_pe->type)
+   {
+   case pointer_evt::touch_began:
+   {
+      if (pfm::has_touchscreen() || get_unit()->get_preferences()->emulate_mobile_screen())
+      {
+         auto inst = static_pointer_cast<mws_text_area>(get_instance());
+         get_mws_root()->show_keyboard(inst);
+      }
+
+      ks.grab(x, y);
+      select_char_at(glm::vec2(x, y));
+      //mws_print("touch [%f, %f]\n", i_pe->points[0].x, i_pe->points[0].y);
+
+      if (!i_pe->is_processed()) { i_pe->process(); }
+      break;
+   }
+
+   case pointer_evt::touch_ended:
+   {
+      if (!i_pe->is_processed()) { i_pe->process(); }
+      break;
+   }
+   }
+}
+
+void mws_text_box::handle_key_evt(mws_sp<key_evt> i_ke)
+{
+   if (i_ke->get_type() != key_evt::KE_RELEASED)
+   {
+      key_types key = i_ke->get_key();
+
+      if (key >= KEY_SPACE && key <= KEY_TILDE_SIGN)
+      {
+         if (editable)
+         {
+            if (key >= KEY_A && key <= KEY_Z)
+            {
+               if (editable)
+               {
+                  bool shift_held = get_unit()->key_ctrl_inst->key_is_held(KEY_SHIFT);
+                  char key_char = char(key + ('a' - 'A'));
+
+                  if (shift_held)
+                  {
+                     key_char = (char)key;
+                  }
+
+                  std::string key_str(1, key_char);
+
+                  insert_at_cursor(key_str);
+               }
+            }
+            else
+            {
+               char key_char = (char)key;
+               std::string key_str(1, key_char);
+
+               insert_at_cursor(key_str);
+            }
+         }
+      }
+      else
+      {
+         float off = 51.175f;
+
+         if (i_ke->get_type() == key_evt::KE_PRESSED)
+         {
+            off = 21.175f;
+         }
+
+         switch (key)
+         {
+         case KEY_LEFT:
+         {
+            scroll_text(glm::vec2(off, 0));
+            break;
+         }
+
+         case KEY_UP:
+         {
+            scroll_text(glm::vec2(0, off));
+            break;
+         }
+
+         case KEY_RIGHT:
+         {
+            scroll_text(glm::vec2(-off, 0));
+            break;
+         }
+
+         case KEY_DOWN:
+         {
+            scroll_text(glm::vec2(0, -off));
+            break;
+         }
+
+         case KEY_DELETE:
+         {
+            if (editable)
+            {
+               delete_at_cursor(1);
+            }
+            break;
+         }
+
+         case KEY_BACKSPACE:
+         {
+            if (editable)
+            {
+               delete_at_cursor(-1);
+            }
+            break;
+         }
+
+         case KEY_TAB:
+         {
+            if (editable)
+            {
+               insert_at_cursor("   ");
+            }
+            break;
+         }
+
+         case KEY_ENTER:
+         {
+            if (editable)
+            {
+               insert_at_cursor("\n");
+            }
+            break;
+         }
+         }
+      }
+   }
+}
+
+float mws_text_box::get_span(const font_glyph & i_glyph, std::string & i_text, int i_idx) const
+{
+   float span = 0.f;
+   char ch = i_text[i_idx];
+
+   if (ch == '\t')
+   {
+      span = font->get_text_width("   ");
+   }
+   else
+   {
+      float kerning = (i_idx > 0) ? i_glyph.get_kerning(i_text[i_idx - 1]) : 0.0f;
+      span = kerning + i_glyph.get_advance_x();
+   }
+
+   return span;
+}
+
+
 mws_text_area_model_ro::mws_text_area_model_ro()
 {
    update_line_offsets();
@@ -194,33 +728,36 @@ int mws_text_area_model_rw::get_line_count()
 std::string mws_text_area_model_rw::get_line_at(int i_idx, bool i_keep_line_break)
 {
    int length = text.length();
-   int line_count = 0;
+   int line_count = 1;
    int idx = 0;
-   int crt_idx = 0;
+   int crt_idx = length;
    std::string line;
 
    for (int k = 0; k < length; k++)
    {
-      crt_idx = k + 1;
-
       if (text[k] == '\n')
       {
-         if (i_idx == line_count)
+         if (i_idx == (line_count - 1))
          {
-            if (!i_keep_line_break)
-            {
-               // if not empty line, discard the new line character at the end
-               if (crt_idx > 0)
-               {
-                  crt_idx--;
-               }
-            }
+            crt_idx = k + 1;
 
             break;
          }
 
          line_count++;
-         idx = k;
+         idx = k + 1;
+      }
+   }
+
+   if (!i_keep_line_break)
+   {
+      // if not empty line, discard the new line character at the end
+      if (crt_idx - idx > 0)
+      {
+         if (text[crt_idx - 1] == '\n')
+         {
+            crt_idx--;
+         }
       }
    }
 
@@ -309,456 +846,5 @@ void mws_text_area_model_rw::set_text(const char* i_text, int i_length)
 void mws_text_area_model_rw::set_size(int i_width, int i_height) {}
 void mws_text_area_model_rw::set_font(mws_sp<mws_font> i_font) {}
 int mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
-
-
-mws_sp<mws_text_box> mws_text_box::nwi()
-{
-   mws_sp<mws_text_box> inst(new mws_text_box());
-   inst->setup();
-   return inst;
-}
-
-void mws_text_box::setup()
-{
-   mws_page_item::setup();
-   attach(tx_vxo);
-}
-
-bool mws_text_box::is_editable() const
-{
-   return editable;
-}
-
-void mws_text_box::set_editable(bool i_is_editable)
-{
-   if (editable != i_is_editable)
-   {
-      auto src = new_model();
-
-      if (tx_src)
-      {
-         std::string text = tx_src->get_text();
-         src->set_text(text);
-      }
-
-      tx_src = src;
-      editable = i_is_editable;
-   }
-}
-
-void mws_text_box::set_text(const std::string& i_text)
-{
-   tx_src = new_model();
-   tx_src->set_text(i_text);
-   tx_vxo->clear_text();
-   tx_vxo->add_text(i_text, glm::vec2(), font);
-   scroll_text(glm::vec2());
-   select_char_at(glm::vec2());
-}
-
-void mws_text_box::push_back_text(const std::string& i_text)
-{
-   if (!tx_src)
-   {
-      set_text(i_text);
-   }
-   else
-   {
-      tx_src->push_back(i_text.c_str(), i_text.length());
-
-      int line_count = tx_src->get_line_count();
-      std::string text;
-
-      for (int k = 0; k < line_count; k++)
-      {
-         text += tx_src->get_line_at(k);// +"\n";
-      }
-
-      tx_vxo->clear_text();
-      tx_vxo->add_text(text, glm::vec2(), font);
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
-   }
-}
-
-void mws_text_box::push_front_text(const std::string& i_text)
-{
-   if (!tx_src)
-   {
-      set_text(i_text);
-   }
-   else
-   {
-      tx_src->push_front(i_text.c_str(), i_text.length());
-
-      int line_count = tx_src->get_line_count();
-      std::string text;
-
-      for (int k = 0; k < line_count; k++)
-      {
-         text += tx_src->get_line_at(k);// +"\n";
-      }
-
-      tx_vxo->clear_text();
-      tx_vxo->add_text(text, glm::vec2(), font);
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
-   }
-}
-
-void mws_text_box::insert_at_cursor(const std::string& i_text)
-{
-   tx_src->insert_at_cursor(i_text);
-   scroll_text(glm::vec2(0.f));
-}
-
-void mws_text_box::delete_at_cursor(int32 i_count)
-{
-   tx_src->delete_at_cursor(i_count);
-   scroll_text(glm::vec2(0.f));
-}
-
-void mws_text_box::scroll_text(const glm::vec2& ioff)
-{
-   //tx_vxo->position += glm::vec3(ioff, 0);
-   glm::vec2 prev_off = text_offset;
-   text_offset -= ioff;
-   text_offset = glm::max(text_offset, glm::vec2());
-   tx_vxo->clear_text();
-   int line_idx = int(text_offset.y / font->get_height());
-
-   if (line_idx + text_rows > tx_src->get_line_count())
-   {
-      text_offset = prev_off;
-      line_idx = int(text_offset.y / font->get_height());
-      //line_idx = tx_src->get_line_count() - text_rows;
-   }
-
-   int rows = std::min(text_rows, tx_src->get_line_count());
-
-   if (line_idx + rows >= tx_src->get_line_count())
-   {
-      line_idx = tx_src->get_line_count() - rows;
-   }
-
-   tx_rows = tx_src->get_lines_at(line_idx, rows);
-   float rem = glm::mod(text_offset.y, font->get_height());
-   tx_vxo->position = glm::vec3(pos.x - text_offset.x, pos.y - rem, 0);
-
-   for (size_t k = 0; k < tx_rows.size(); k++)
-   {
-      tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font->get_height()), font);
-   }
-}
-
-void mws_text_box::set_position(const glm::vec2& ipos)
-{
-   pos = ipos;
-   tx_vxo->position = glm::vec3(ipos, 0.f);
-   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
-}
-
-void mws_text_box::set_dimension(const glm::vec2& idim)
-{
-   dim = idim;
-   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
-   text_rows = int(dim.y / font->get_height() + 1);
-   mws_r = mws_rect(pos.x, pos.y, dim.x, dim.y);
-
-   if (tx_src)
-   {
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
-   }
-}
-
-void mws_text_box::select_char_at(const glm::vec2& ipos)
-{
-   float rem = glm::mod(text_offset.y, font->get_height());
-   size_t row_idx = size_t((ipos.y + rem) / font->get_height());
-
-   if (row_idx >= tx_rows.size())
-   {
-      select_char_rect = glm::vec4(0.f);
-      return;
-   }
-
-   std::string& text = tx_rows[row_idx];
-   auto& glyphs = font_db::inst()->get_glyph_vect(font->get_inst(), text);
-   float x_off = -text_offset.x;
-   size_t k = 0;
-
-   for (k = 0; k < text.length(); k++)
-   {
-      font_glyph glyph = glyphs[k];
-
-      if (glyph.is_valid())
-      {
-         float span = 0;
-         char ch = text[k];
-         if (ch == '\t')
-         {
-            span = 2 * font->get_height();
-         }
-         else
-         {
-            float kerning = 0.0f;
-            if (k > 0)
-            {
-               kerning = glyph.get_kerning(text[k - 1]);
-            }
-            span = kerning + glyph.get_advance_x();
-         }
-
-         if (x_off + span > ipos.x)
-         {
-            break;
-         }
-         else
-         {
-            x_off += span;
-         }
-      }
-   }
-
-   if (k < text.length())
-   {
-      char c = text[k];
-      //mws_print("%c %d %d\n", c, row_idx, k);
-      select_char_rect.x = x_off;
-      select_char_rect.y = row_idx * font->get_height() - rem;
-      select_char_rect.z = (glyphs.size() > k) ? glyphs[k].get_advance_x() : 0;
-      select_char_rect.w = font->get_height();
-   }
-   else
-   {
-      select_char_rect = glm::vec4(0.f);
-   }
-}
-
-void mws_text_box::update_state()
-{
-   if (ks.is_active())
-   {
-      point2d scroll_pos = ks.update();
-      scroll_text(glm::vec2(scroll_pos.x, scroll_pos.y));
-   }
-}
-
-void mws_text_box::update_view(mws_sp<mws_camera> g)
-{
-   g->drawRect(pos.x, pos.y, dim.x, dim.y);
-   g->drawRect(select_char_rect.x + pos.x, select_char_rect.y + pos.y, select_char_rect.z, select_char_rect.w);
-}
-
-void mws_text_box::receive(mws_sp<iadp> idp)
-{
-   if (idp->is_processed())
-   {
-      return;
-   }
-
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
-   {
-      handle_pointer_evt(pointer_evt::as_pointer_evt(idp));
-   }
-   else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
-   {
-      handle_key_evt(key_evt::as_key_evt(idp));
-   }
-}
-
-mws_text_box::mws_text_box()
-{
-   tx_vxo = text_vxo::nwi();
-   tx_vxo->camera_id_list.push_back("mws_cam");
-   (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
-   font = mws_font::nwi(48);
-}
-
-mws_sp<mws_text_area_model> mws_text_box::new_model()
-{
-   if (editable)
-   {
-      return std::make_shared<mws_text_area_model_rw>();
-   }
-
-   return std::make_shared<mws_text_area_model_ro>();
-}
-
-void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
-{
-   bool hit = is_inside_box(i_pe->points[0].x, i_pe->points[0].y, pos.x, pos.y, mws_r.w, mws_r.h);
-
-   if (!hit)
-   {
-      return;
-   }
-   //mws_print("hit at [%f, %f]\n", ts->points[0].x, ts->points[0].y);
-
-   float x = i_pe->points[0].x - mws_r.x;
-   float y = i_pe->points[0].y - mws_r.y;
-   bool dragging_detected = dragging_det.detect_helper(i_pe);
-
-   if (dragging_detected)
-   {
-      if (dragging_det.is_finished())
-      {
-         uint32 delta_t = i_pe->time - dragging_det.last_move_pos_time;
-
-         if (delta_t < 150)
-         {
-            ks.start_slowdown();
-         }
-         else
-         {
-            ks.reset();
-         }
-      }
-      else
-      {
-         ks.begin(i_pe->points[0].x, i_pe->points[0].y);
-      }
-
-      scroll_text(dragging_det.drag_diff);
-      i_pe->process();
-   }
-
-   switch (i_pe->type)
-   {
-   case pointer_evt::touch_began:
-   {
-      if (pfm::has_touchscreen() || get_unit()->get_preferences()->emulate_mobile_screen())
-      {
-         auto inst = static_pointer_cast<mws_text_area>(get_instance());
-         get_mws_root()->show_keyboard(inst);
-      }
-
-      ks.grab(x, y);
-      select_char_at(glm::vec2(x, y));
-      mws_print("touch [%f, %f]\n", i_pe->points[0].x, i_pe->points[0].y);
-
-      if (!i_pe->is_processed()) { i_pe->process(); }
-      break;
-   }
-
-   case pointer_evt::touch_ended:
-   {
-      if (!i_pe->is_processed()) { i_pe->process(); }
-      break;
-   }
-   }
-}
-
-void mws_text_box::handle_key_evt(mws_sp<key_evt> i_ke)
-{
-   if (i_ke->get_type() != key_evt::KE_RELEASED)
-   {
-      key_types key = i_ke->get_key();
-
-      if (key >= KEY_SPACE && key <= KEY_TILDE_SIGN)
-      {
-         if (editable)
-         {
-            if (key >= KEY_A && key <= KEY_Z)
-            {
-               if (editable)
-               {
-                  bool shift_held = get_unit()->key_ctrl_inst->key_is_held(KEY_SHIFT);
-                  char key_char = char(key + ('a' - 'A'));
-
-                  if (shift_held)
-                  {
-                     key_char = (char)key;
-                  }
-
-                  std::string key_str(1, key_char);
-
-                  insert_at_cursor(key_str);
-               }
-            }
-            else
-            {
-               char key_char = (char)key;
-               std::string key_str(1, key_char);
-
-               insert_at_cursor(key_str);
-            }
-         }
-      }
-      else
-      {
-         float off = 51.175f;
-
-         if (i_ke->get_type() == key_evt::KE_PRESSED)
-         {
-            off = 21.175f;
-         }
-
-         switch (key)
-         {
-         case KEY_LEFT:
-         {
-            scroll_text(glm::vec2(off, 0));
-            break;
-         }
-
-         case KEY_UP:
-         {
-            scroll_text(glm::vec2(0, off));
-            break;
-         }
-
-         case KEY_RIGHT:
-         {
-            scroll_text(glm::vec2(-off, 0));
-            break;
-         }
-
-         case KEY_DOWN:
-         {
-            scroll_text(glm::vec2(0, -off));
-            break;
-         }
-
-         case KEY_DELETE:
-         {
-            if (editable)
-            {
-               delete_at_cursor(1);
-            }
-            break;
-         }
-
-         case KEY_BACKSPACE:
-         {
-            if (editable)
-            {
-               delete_at_cursor(-1);
-            }
-            break;
-         }
-
-         case KEY_TAB:
-         {
-            if (editable)
-            {
-               insert_at_cursor("   ");
-            }
-            break;
-         }
-
-         case KEY_ENTER:
-         {
-            if (editable)
-            {
-               insert_at_cursor("\n");
-            }
-            break;
-         }
-         }
-      }
-   }
-}
 
 #endif
