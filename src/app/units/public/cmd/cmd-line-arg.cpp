@@ -140,7 +140,7 @@ public:
 			}
 			else
 			{
-            mws_throw ia_exception(trs("module [{0}] does not exist. valid modules [{1}]", modNameVal, get_module_list()));
+            mws_throw mws_exception(trs("module [{0}] does not exist. valid modules [{1}]", modNameVal, get_module_list()));
 			}
 
 			return shared_ptr<long_operation>();
@@ -191,12 +191,12 @@ public:
 			}
 			else
 			{
-            mws_throw ia_exception(trs("module [{0}] does not exist. valid modules [{1}]", mod_name_val, get_module_list()));
+            mws_throw mws_exception(trs("module [{0}] does not exist. valid modules [{1}]", mod_name_val, get_module_list()));
 			}
 		}
 		else
 		{
-         mws_throw ia_exception("module was not set. call with --help for more information");
+         mws_throw mws_exception("module was not set. call with --help for more information");
 		}
 
 		return shared_ptr<long_operation>();
@@ -230,7 +230,7 @@ private:
 
 		if(modules.find(moduleName) != modules.end())
 		{
-         mws_throw ia_exception(trs("dispatcher::addModule. module [{}] has already been added", moduleName));
+         mws_throw mws_exception(trs("dispatcher::addModule. module [{}] has already been added", moduleName));
 		}
 
 		modules[moduleName] = module;

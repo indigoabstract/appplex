@@ -59,15 +59,15 @@ namespace appplex_conf_ns
                }
                else
                {
-                  mws_throw ia_exception(trs("mod-appplex-conf: {} is not a directory", info->proj_path.string()));
+                  mws_throw mws_exception(trs("mod-appplex-conf: {} is not a directory", info->proj_path.string()));
                }
             }
             else
             {
-               mws_throw ia_exception(trs("mod-appplex-conf: {} does not exist", info->proj_path.string()));
+               mws_throw mws_exception(trs("mod-appplex-conf: {} does not exist", info->proj_path.string()));
             }
          }
-            mws_catch(ia_exception& e)
+            mws_catch(mws_exception& e)
          {
             trx("exception {}", e.what());
          }

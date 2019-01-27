@@ -985,7 +985,7 @@ namespace global_flight_paths_ns
          mws_report_gfx_errs();
       }
 
-      virtual void receive(shared_ptr<iadp> idp)
+      virtual void receive(shared_ptr<mws_dp> idp)
       {
          free_cam->update_input(idp);
 

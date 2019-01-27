@@ -91,7 +91,7 @@ void unit_exercise::init_mws()
 			reset();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{
@@ -102,7 +102,7 @@ void unit_exercise::init_mws()
 			{
 				bool record = false;
 				const std::string& evtName = idp->get_name();
-				shared_ptr<ia_sender> source = idp->source();
+				shared_ptr<mws_sender> source = idp->source();
 
 				if (evtName == transition_evt::TRANSITION_STOPPED || evtName == transition_evt::TRANSITION_FINISHED)
 				{
@@ -317,7 +317,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<iadp> idp)
+				virtual void receive(shared_ptr<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -364,7 +364,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<iadp> idp)
+				virtual void receive(shared_ptr<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -532,7 +532,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<iadp> idp)
+				virtual void receive(shared_ptr<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -579,7 +579,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<iadp> idp)
+				virtual void receive(shared_ptr<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 

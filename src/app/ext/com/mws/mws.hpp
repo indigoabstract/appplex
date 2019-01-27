@@ -47,13 +47,13 @@ public:
 };
 
 
-class mws_model : public enable_shared_from_this<mws_model>, public ia_node
+class mws_model : public enable_shared_from_this<mws_model>, public mws_node
 {
 public:
    virtual ~mws_model() {}
    mws_sp<mws_model> get_instance();
 
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    virtual void notify_update();
    void set_view(mws_sp<mws> iview);
    mws_sp<mws> get_view();
@@ -61,13 +61,13 @@ public:
 protected:
    mws_model() {}
 
-   mws_sp<ia_sender> sender_inst();
+   mws_sp<mws_sender> sender_inst();
 
    mws_wp<mws> view;
 };
 
 
-class mws : public gfx_node, public ia_node
+class mws : public gfx_node, public mws_node
 {
 public:
    static mws_sp<mws> nwi();
@@ -94,8 +94,8 @@ public:
    mws_sp<mws_page_tab> get_mws_root();
    virtual mws_sp<unit> get_unit();
 
-   virtual void receive(mws_sp<iadp> idp);
-   virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> i_receive_handler);
+   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
    mws_rect get_pos();
@@ -111,10 +111,10 @@ protected:
    mws_rect mws_r;
    mws_wp<mws_page_tab> mwsroot;
    mws_wp<mws_camera> mws_cam;
-   std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> receive_handler;
+   std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
 
 private:
-   virtual mws_sp<ia_sender> sender_inst();
+   virtual mws_sp<mws_sender> sender_inst();
 
    std::string id;
 };
@@ -149,7 +149,7 @@ public:
    bool is_empty();
    mws_sp<text_vxo> get_text_vxo() const;
 
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize();
@@ -195,9 +195,9 @@ public:
    virtual void on_show_transition(const mws_sp<linear_transition> itransition);
    virtual void on_hide_transition(const mws_sp<linear_transition> itransition);
 
-   virtual void receive(mws_sp<iadp> idp);
-   virtual void update_input_sub_mws(mws_sp<iadp> idp);
-   virtual void update_input_std_behaviour(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void update_input_sub_mws(mws_sp<mws_dp> idp);
+   virtual void update_input_std_behaviour(mws_sp<mws_dp> idp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    mws_sp<mws> get_mws_at(int idx);

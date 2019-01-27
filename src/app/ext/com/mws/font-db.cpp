@@ -370,7 +370,7 @@ void font_db::resize_db(int ipow_of_two)
 {
    if (ipow_of_two < 6 || ipow_of_two > 13)
    {
-      mws_throw ia_exception("6 <= ipow_of_two <= 13");
+      mws_throw mws_exception("6 <= ipow_of_two <= 13");
    }
 
    p->pow_of_two = ipow_of_two;

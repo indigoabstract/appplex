@@ -185,14 +185,14 @@ std::shared_ptr<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
 
    if (!mws_str::starts_with(iattribute, "a_"))
    {
-      mws_throw ia_exception("invalid iattribute");
+      mws_throw mws_exception("invalid iattribute");
    }
 
    int idx = iattribute.find('_', 2);
 
    if (idx == std::string::npos)
    {
-      mws_throw ia_exception("invalid iattribute2");
+      mws_throw mws_exception("invalid iattribute2");
    }
 
    std::string type = iattribute.substr(2, idx - 2);
@@ -200,7 +200,7 @@ std::shared_ptr<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
 
    if (it == gfx_types.end() || it->second == gfx_input::s2d || it->second == gfx_input::scm)
    {
-      mws_throw ia_exception("invalid iattribute3");
+      mws_throw mws_exception("invalid iattribute3");
    }
 
    a = std::shared_ptr<vx_attribute>(new vx_attribute(iattribute, it->second));
@@ -247,14 +247,14 @@ std::shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
 
    if (!mws_str::starts_with(iuniform, "u_"))
    {
-      mws_throw ia_exception("invalid uniform");
+      mws_throw mws_exception("invalid uniform");
    }
 
    int idx = iuniform.find('_', 2);
 
    if (idx == std::string::npos)
    {
-      mws_throw ia_exception("invalid uniform2");
+      mws_throw mws_exception("invalid uniform2");
    }
 
    std::string type = iuniform.substr(2, idx - 2);
@@ -262,7 +262,7 @@ std::shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
 
    if (it == gfx_types.end())
    {
-      mws_throw ia_exception("invalid uniform3");
+      mws_throw mws_exception("invalid uniform3");
    }
 
    v = std::shared_ptr<gfx_uniform>(new gfx_uniform(iuniform, it->second));

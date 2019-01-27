@@ -282,7 +282,7 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
          case gfx_input::s3d:
          {
             value_type = gfx_input::s3d;
-            mws_throw ia_exception("s3d not implemented");
+            mws_throw mws_exception("s3d not implemented");
             break;
          }
 

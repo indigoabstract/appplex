@@ -150,7 +150,7 @@ void unit_test_ffmpeg::update_view(int update_count)
 	mws_report_gfx_errs();
 }
 
-void unit_test_ffmpeg::receive(shared_ptr<iadp> idp)
+void unit_test_ffmpeg::receive(shared_ptr<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{

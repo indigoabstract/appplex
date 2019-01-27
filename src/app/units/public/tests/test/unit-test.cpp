@@ -150,7 +150,7 @@ namespace unit_test_main_page
 			mws_page::init();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}

@@ -667,7 +667,7 @@ public:
 
    void not_implemented()
    {
-      mws_throw ia_exception("renderer-state: not implemented!");
+      mws_throw mws_exception("renderer-state: not implemented!");
    }
 
    GLuint rsv_active_texture;

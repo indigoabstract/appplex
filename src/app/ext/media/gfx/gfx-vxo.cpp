@@ -723,7 +723,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
             break;
 
          default:
-            mws_throw ia_exception("unknown value");
+            mws_throw mws_exception("unknown value");
          }
 
          glEnableVertexAttribArray(loc_idx);
@@ -765,7 +765,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
             break;
 
          default:
-            mws_throw ia_exception("unknown value");
+            mws_throw mws_exception("unknown value");
          }
 
          glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.aux_vertex_size, (const void*)offset_aux);

@@ -34,7 +34,7 @@ namespace unit_png_ns
          encode("pentagon-out.png", png_data, img->get_width(), img->get_height());
       }
 
-      virtual void receive(mws_sp<iadp> i_dp) override
+      virtual void receive(mws_sp<mws_dp> i_dp) override
       {
          mws_page::receive(i_dp);
       }

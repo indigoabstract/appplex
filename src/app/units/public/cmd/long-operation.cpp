@@ -19,7 +19,7 @@ void long_operation::run_on_separate_thread(shared_ptr<long_operation> lop)
 {
    if (lop->is_active())
    {
-      mws_throw ia_exception("thread is still active");
+      mws_throw mws_exception("thread is still active");
    }
 
    lop->active = true;
@@ -48,7 +48,7 @@ void long_operation::run_impl()
       run();
       active = false;
    }
-      mws_catch(ia_exception& e)
+      mws_catch(mws_exception& e)
    {
       active = false;
       trx("op error. [{}]", e.what());

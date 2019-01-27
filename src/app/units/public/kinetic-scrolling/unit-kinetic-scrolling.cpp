@@ -280,7 +280,7 @@ void unit_kinetic_scrolling::init_mws()
 	public:
 		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{

@@ -38,7 +38,7 @@ std::string mws_util::path::get_directory_from_path(const std::string& file_path
    return std::string(file_path.begin(), file_path.begin() + (size_t)pos);
 }
 
-std::string mws_util::path::get_filename_from_path(const std::string& file_path)
+std::string mws_util::path::get_filename_from_path(const std::string & file_path)
 {
    auto pos_0 = file_path.find_last_of('\\');
    auto pos_1 = file_path.find_last_of('/');
@@ -66,7 +66,7 @@ std::string mws_util::path::get_filename_from_path(const std::string& file_path)
    return std::string(file_path.begin() + idx, file_path.end());
 }
 
-std::string mws_util::path::get_filename_without_extension(const std::string& file_path)
+std::string mws_util::path::get_filename_without_extension(const std::string & file_path)
 {
    auto filename = get_filename_from_path(file_path);
    auto last_index = filename.find_last_of('.');
@@ -113,7 +113,7 @@ std::string mws_util::time::get_duration_as_string(uint32 i_duration)
 
 
 
-bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
+bool mws_str::starts_with(const std::string & istr, const std::string & ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -134,7 +134,7 @@ bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
    return true;
 }
 
-bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
+bool mws_str::ends_with(const std::string & istr, const std::string & ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -155,26 +155,26 @@ bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
    return true;
 }
 
-std::string mws_str::ltrim(const std::string& is)
+std::string mws_str::ltrim(const std::string & is)
 {
    std::string s(is);
    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
    return s;
 }
 
-std::string mws_str::rtrim(const std::string& is)
+std::string mws_str::rtrim(const std::string & is)
 {
    std::string s(is);
    s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
    return s;
 }
 
-std::string mws_str::trim(const std::string& is)
+std::string mws_str::trim(const std::string & is)
 {
    return ltrim(rtrim(is));
 }
 
-std::string mws_str::replace_string(std::string subject, const std::string& search, const std::string& replace)
+std::string mws_str::replace_string(std::string subject, const std::string & search, const std::string & replace)
 {
    size_t pos = 0;
 
@@ -216,7 +216,7 @@ std::string mws_str::escape_char(char character)
    return it->second;
 }
 
-std::string mws_str::escape_string(const std::string& str)
+std::string mws_str::escape_string(const std::string & str)
 {
    std::stringstream stream;
 
@@ -225,22 +225,22 @@ std::string mws_str::escape_string(const std::string& str)
    return stream.str();
 }
 
-std::vector<std::string> mws_str::escape_strings(const std::vector<std::string>& delimiters)
+std::vector<std::string> mws_str::escape_strings(const std::vector<std::string> & delimiters)
 {
    return map<std::string>(delimiters, escape_string);
 }
 
-std::string mws_str::str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
+std::string mws_str::str_join(const std::vector<std::string> & tokens, const std::string & delimiter)
 {
    std::stringstream stream;
 
    stream << tokens.front();
-   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string &elem) { stream << delimiter << elem; });
+   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string & elem) { stream << delimiter << elem; });
 
    return stream.str();
 }
 
-std::vector<std::string> mws_str::str_split(const std::string& str, const std::vector<std::string> & delimiters)
+std::vector<std::string> mws_str::str_split(const std::string & str, const std::vector<std::string> & delimiters)
 {
    std::regex rgx(str_join(escape_strings(delimiters), "|"));
 
@@ -249,7 +249,7 @@ std::vector<std::string> mws_str::str_split(const std::string& str, const std::v
    return{ first, last };
 }
 
-std::vector<std::string> mws_str::str_split(const std::string& str, const std::string& delimiter)
+std::vector<std::string> mws_str::str_split(const std::string & str, const std::string & delimiter)
 {
    std::vector<std::string> delimiters = { delimiter };
 
@@ -257,100 +257,110 @@ std::vector<std::string> mws_str::str_split(const std::string& str, const std::s
 }
 
 
-ia_exception::ia_exception()
+mws_exception::mws_exception()
+{
+   set_msg("");
+}
+
+mws_exception::mws_exception(const std::string & i_msg)
+{
+   set_msg(i_msg.c_str());
+}
+
+mws_exception::mws_exception(const char* i_msg)
+{
+   set_msg(i_msg);
+}
+
+mws_exception::~mws_exception()
 {
 }
 
-ia_exception::ia_exception(const std::string& msg)
+const char* mws_exception::what() const noexcept
 {
-   exmsg = msg;
+   return msg.c_str();
 }
 
-ia_exception::ia_exception(const char* msg)
+void mws_exception::set_msg(const char* i_msg)
 {
-   exmsg = msg;
-}
+   msg = i_msg;
 
-ia_exception::~ia_exception()
-{
-}
-
-const char* ia_exception::what() const noexcept
-{
-   return exmsg.c_str();
+#ifndef MWS_USES_EXCEPTIONS
+   mws_assert(false);
+#endif
 }
 
 
-iadp::iadp(const std::string& iname)
+mws_dp::mws_dp(const std::string & i_name)
 {
-   set_name(iname);
+   set_name(i_name);
    processed = false;
 }
 
-shared_ptr<iadp> iadp::nwi(std::string iname)
+mws_sp<mws_dp> mws_dp::nwi(std::string i_name)
 {
-   return shared_ptr<iadp>(new iadp(iname));
+   return mws_sp<mws_dp>(new mws_dp(i_name));
 }
 
-const std::string& iadp::get_name()
+const std::string& mws_dp::get_name()
 {
    return name;
 }
 
-bool iadp::is_type(const std::string& itype)
+bool mws_dp::is_type(const std::string & i_type)
 {
-   return mws_str::starts_with(get_name(), itype);
+   return mws_str::starts_with(get_name(), i_type);
 }
 
-bool iadp::is_processed()
+bool mws_dp::is_processed()
 {
    return processed;
 }
 
-void iadp::process()
+void mws_dp::process()
 {
    if (processed)
    {
-      mws_throw ia_exception("datapacket is already processed");
+      mws_throw mws_exception("datapacket is already processed");
    }
 
    processed = true;
 }
 
-shared_ptr<ia_sender> iadp::source()
+mws_sp<mws_sender> mws_dp::source()
 {
    return src.lock();
 }
 
-shared_ptr<ia_receiver> iadp::destination()
+mws_sp<mws_receiver> mws_dp::destination()
 {
    return dst.lock();
 }
 
-void iadp::set_name(const std::string& iname)
+void mws_dp::set_name(const std::string & i_name)
 {
-   name = iname;
+   name = i_name;
 }
 
 
-void ia_sender::send(shared_ptr<ia_receiver> dst, shared_ptr<iadp> idp)
+void mws_sender::send(mws_sp<mws_receiver> i_dst, mws_sp<mws_dp> i_dp)
 {
-   idp->src = sender_inst();
-   idp->dst = dst;
-   dst->receive(idp);
+   i_dp->src = sender_inst();
+   i_dp->dst = i_dst;
+   i_dst->receive(i_dp);
 }
 
 
-void ia_broadcaster::add_receiver(shared_ptr<ia_receiver> ir)
+void mws_broadcaster::add_receiver(mws_sp<mws_receiver> i_recv)
 {
    bool exists = false;
    int size = receivers.size();
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<ia_receiver> sr = receivers[k].lock();
+      mws_sp<mws_receiver> sr = receivers[k].lock();
 
-      if (sr == ir)
+      if (sr == i_recv)
       {
          exists = true;
          break;
@@ -359,11 +369,11 @@ void ia_broadcaster::add_receiver(shared_ptr<ia_receiver> ir)
 
    if (!exists)
    {
-      receivers.push_back(ir);
+      receivers.push_back(i_recv);
    }
 }
 
-void ia_broadcaster::remove_receiver(shared_ptr<ia_receiver> ir)
+void mws_broadcaster::remove_receiver(mws_sp<mws_receiver> i_recv)
 {
    int idx = -1;
    int k = 0;
@@ -371,9 +381,9 @@ void ia_broadcaster::remove_receiver(shared_ptr<ia_receiver> ir)
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<ia_receiver> sr = receivers[k].lock();
+      mws_sp<mws_receiver> sr = receivers[k].lock();
 
-      if (sr == ir)
+      if (sr == i_recv)
       {
          idx = k;
          break;
@@ -386,23 +396,23 @@ void ia_broadcaster::remove_receiver(shared_ptr<ia_receiver> ir)
    }
 }
 
-void ia_broadcaster::broadcast(shared_ptr<ia_sender> src, shared_ptr<iadp> idp)
+void mws_broadcaster::broadcast(mws_sp<mws_sender> i_src, mws_sp<mws_dp> i_dp)
 {
    int size = receivers.size();
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<ia_receiver> dst = receivers[k].lock();
+      mws_sp<mws_receiver> dst = receivers[k].lock();
 
       if (dst)
       {
-         send(dst, idp);
+         send(dst, i_dp);
       }
    }
 }
 
 
-bool ends_with(const std::string& istr, const std::string& ifind)
+bool ends_with(const std::string & istr, const std::string & ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -424,7 +434,7 @@ bool ends_with(const std::string& istr, const std::string& ifind)
 }
 
 
-std::string replace_string(std::string subject, const std::string& search, const std::string& replace)
+std::string replace_string(std::string subject, const std::string & search, const std::string & replace)
 {
    size_t pos = 0;
 
@@ -466,7 +476,7 @@ std::string escape_char(char character)
    return it->second;
 }
 
-std::string escape_string(const std::string& str)
+std::string escape_string(const std::string & str)
 {
    std::stringstream stream;
 
@@ -475,22 +485,22 @@ std::string escape_string(const std::string& str)
    return stream.str();
 }
 
-std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters)
+std::vector<std::string> escape_strings(const std::vector<std::string> & delimiters)
 {
    return map<std::string>(delimiters, escape_string);
 }
 
-std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
+std::string str_join(const std::vector<std::string> & tokens, const std::string & delimiter)
 {
    std::stringstream stream;
 
    stream << tokens.front();
-   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string &elem) { stream << delimiter << elem; });
+   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string & elem) { stream << delimiter << elem; });
 
    return stream.str();
 }
 
-std::vector<std::string> str_split(const std::string& str, const std::vector<std::string> & delimiters)
+std::vector<std::string> str_split(const std::string & str, const std::vector<std::string> & delimiters)
 {
    std::regex rgx(str_join(escape_strings(delimiters), "|"));
 
@@ -499,7 +509,7 @@ std::vector<std::string> str_split(const std::string& str, const std::vector<std
    return{ first, last };
 }
 
-std::vector<std::string> str_split(const std::string& str, const std::string& delimiter)
+std::vector<std::string> str_split(const std::string & str, const std::string & delimiter)
 {
    std::vector<std::string> delimiters = { delimiter };
 

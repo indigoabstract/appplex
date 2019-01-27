@@ -18,7 +18,7 @@ class mws_vkb : public mws_virtual_keyboard
 public:
    static mws_sp<mws_vkb> gi();
    virtual ~mws_vkb() {}
-   virtual void receive(mws_sp<iadp> i_dp) override;
+   virtual void receive(mws_sp<mws_dp> i_dp) override;
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize() override;

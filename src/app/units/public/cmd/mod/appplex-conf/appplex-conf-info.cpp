@@ -38,7 +38,7 @@ void appplex_conf::update()
 
    if (!sgmd_txt)
    {
-      mws_throw ia_exception(trs("error: cannot find {}.", info->appplex_conf_name));
+      mws_throw mws_exception(trs("error: cannot find {}.", info->appplex_conf_name));
    }
 
    info->krt = std::make_shared<kx_krte>();
@@ -442,7 +442,7 @@ void android_studio_project_conf::update_project_files(const bfs::path& and_proj
 
    if (!gradle_file->exists())
    {
-      mws_throw ia_exception(trs("error: cannot find android gradle file [{}]", gradle_file->get_full_path()));
+      mws_throw mws_exception(trs("error: cannot find android gradle file [{}]", gradle_file->get_full_path()));
    }
 
    auto paths_proj_rel_units_path = kxmd_ops::get_kxmd_str_seq("paths.proj-rel-units-path", ikxmd);

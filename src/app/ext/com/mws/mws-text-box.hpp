@@ -9,7 +9,7 @@
 #include <glm/vec2.hpp>
 
 
-class iadp;
+class mws_dp;
 class font_glyph;
 class mws_font;
 class mws_camera;
@@ -35,7 +35,7 @@ public:
    virtual void select_char_at(const glm::vec2& ipos);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
 
 protected:
    mws_text_box();

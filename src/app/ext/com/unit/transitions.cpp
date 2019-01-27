@@ -16,7 +16,7 @@ const string transition_evt::TRANSITION_UPDATE						= "tr-update";
 const string transition_evt::TRANSITION_INTERVAL_CHANGED			= "tr-interval-changed";
 
 
-transition_evt::transition_evt(transition_evt_types itype) : iadp(get_type_name(itype))
+transition_evt::transition_evt(transition_evt_types itype) : mws_dp(get_type_name(itype))
 {
 	set_type(itype);
 }
@@ -57,7 +57,7 @@ linear_transition::linear_transition(int durationms)
 {
 	if(durationms <= 0)
 	{
-      mws_throw ia_exception("duration must be greater than 0");
+      mws_throw mws_exception("duration must be greater than 0");
 	}
 
 	reset();
@@ -113,7 +113,7 @@ void linear_transition::pause()
 {
 	if(paused || finished)
 	{
-      mws_throw ia_exception();//trs("transition cannot be paused. invalid state [paused %1%, finished %2%]") % paused % finished);
+      mws_throw mws_exception();//trs("transition cannot be paused. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
 	pause_time = pfm::time::get_time_millis();
@@ -124,7 +124,7 @@ void linear_transition::resume()
 {
 	if(!paused || finished)
 	{
-      mws_throw ia_exception();//trs("transition cannot be resumed. invalid state [paused %1%, finished %2%]") % paused % finished);
+      mws_throw mws_exception();//trs("transition cannot be resumed. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
 	pause_duration += pfm::time::get_time_millis() - pause_time;
@@ -287,7 +287,7 @@ void ms_linear_transition::update()
 	}
 }
 
-shared_ptr<ia_sender> ms_linear_transition::sender_inst()
+shared_ptr<mws_sender> ms_linear_transition::sender_inst()
 {
 	return get_instance();
 }

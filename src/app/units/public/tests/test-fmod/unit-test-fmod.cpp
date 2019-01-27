@@ -310,7 +310,7 @@ void unit_test_fmod::init_mws()
 			generator = std::make_shared<Generator>(fmodSystem, generators[generatorId], frequency, sampleRate, channels, soundLengthSeconds, volume);
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{

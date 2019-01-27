@@ -275,7 +275,7 @@ namespace shivavg_tp1
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -715,7 +715,7 @@ namespace shivavg_tp2
 		{
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -842,7 +842,7 @@ namespace shivavg_tp3
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -1005,7 +1005,7 @@ namespace shivavg_tp4
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -1317,7 +1317,7 @@ namespace shivavg_tp5
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -1558,7 +1558,7 @@ namespace shivavg_tp6
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -1925,7 +1925,7 @@ namespace shivavg_tp7
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -2307,7 +2307,7 @@ namespace shivavg_tp8
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -2658,7 +2658,7 @@ namespace shivavg_tp9
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{

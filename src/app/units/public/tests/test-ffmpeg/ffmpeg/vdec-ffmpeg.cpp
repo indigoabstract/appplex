@@ -114,7 +114,7 @@ public:
 	{
       if (video_path.empty())
       {
-         mws_throw ia_exception("vdec-ffmpeg [video_path is empty]");
+         mws_throw mws_exception("vdec-ffmpeg [video_path is empty]");
       }
 
 		free_memory();

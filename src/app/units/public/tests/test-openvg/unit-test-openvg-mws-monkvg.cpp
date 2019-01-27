@@ -228,7 +228,7 @@ namespace MonkVG
 		{
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}

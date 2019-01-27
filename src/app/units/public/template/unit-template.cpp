@@ -30,7 +30,7 @@ namespace unit_template_ns
          mws_page::init();
       }
 
-      virtual void receive(mws_sp<iadp> i_dp) override
+      virtual void receive(mws_sp<mws_dp> i_dp) override
       {
          mws_page::receive(i_dp);
       }

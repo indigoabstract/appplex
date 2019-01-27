@@ -157,7 +157,7 @@ gfx_readback::gfx_readback(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
 
 void gfx_readback::set_dimensions(int i_width, int i_height)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void gfx_readback::set_pbo_count(int i_pbo_count)

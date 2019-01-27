@@ -263,7 +263,7 @@ void snd::init()
 	{
 		mws_print("gl_ctrl::init: this method must only be called once\n");
 
-      mws_throw ia_exception("this method must only be called once");
+      mws_throw mws_exception("this method must only be called once");
 	}
 }
 

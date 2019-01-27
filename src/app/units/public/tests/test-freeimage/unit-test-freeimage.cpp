@@ -239,7 +239,7 @@ namespace unit_freeimage_page1
 		{
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -286,7 +286,7 @@ namespace unit_freeimage_page2
 		{
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{

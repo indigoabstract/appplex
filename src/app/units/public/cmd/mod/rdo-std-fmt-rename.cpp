@@ -143,12 +143,12 @@ void long_op_std_fmt_rename::run()
       }
       else
       {
-         mws_throw ia_exception(trs("longOpStdFmtRename: {} is not a directory", dst_path.string()));
+         mws_throw mws_exception(trs("longOpStdFmtRename: {} is not a directory", dst_path.string()));
       }
    }
    else
    {
-      mws_throw ia_exception(trs("longOpStdFmtRename: {} does not exist", dst_path.string()));
+      mws_throw mws_exception(trs("longOpStdFmtRename: {} does not exist", dst_path.string()));
    }
 }
 
@@ -256,7 +256,7 @@ void rec_dir_op_std_fmt_rename::rename_path(const path& irel_path, unicodestring
       //utrx(untr("%1% [%2%] already in standard format")) % fileType % newFilename;
    }
    }
-      mws_catch(ia_exception& e)
+      mws_catch(mws_exception& e)
    {
       path oldRelPath = irel_path / iold_filename;
       path newRelPath = irel_path / inew_filename;

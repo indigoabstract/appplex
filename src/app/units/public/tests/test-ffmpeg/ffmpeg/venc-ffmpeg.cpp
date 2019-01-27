@@ -304,7 +304,7 @@ void venc_ffmpeg::start_encoding(const mws_video_params& i_prm, mws_vid_enc_meth
 {
    if (video_path.empty())
    {
-      mws_throw ia_exception("venc-ffmpeg [video_path is empty]");
+      mws_throw mws_exception("venc-ffmpeg [video_path is empty]");
    }
 
    int ret = 0;

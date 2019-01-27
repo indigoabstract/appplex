@@ -688,7 +688,7 @@ void unit::set_internal_name_from_include_guard(const char* i_include_guard)
 
    if (idx <= 0)
    {
-      mws_throw ia_exception("invalid format for the include guard");
+      mws_throw mws_exception("invalid format for the include guard");
    }
 
    std::string internal_name = name.substr(idx + 1, std::string::npos);
@@ -791,7 +791,7 @@ void unit::on_resume()
 {
 }
 
-void unit::receive(shared_ptr<iadp> idp)
+void unit::receive(shared_ptr<mws_dp> idp)
 {
 #ifdef MOD_MWS
 
@@ -1009,7 +1009,7 @@ bool unit::is_init()
    return init_val;
 }
 
-shared_ptr<ia_sender> unit::sender_inst()
+shared_ptr<mws_sender> unit::sender_inst()
 {
    return get_smtp_instance();
 }
@@ -1161,7 +1161,7 @@ void unit_list::on_resize()
    }
 }
 
-void unit_list::receive(shared_ptr<iadp> idp)
+void unit_list::receive(shared_ptr<mws_dp> idp)
 {
    if (!idp->is_processed() && idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {

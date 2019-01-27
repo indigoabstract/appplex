@@ -20,7 +20,7 @@ public:
 
 private:
 	unit_test_dyn_geometry();
-	virtual void receive(shared_ptr<iadp> idp);
+	virtual void receive(shared_ptr<mws_dp> idp);
 
 	shared_ptr<unit_test_dyn_geometry_impl> p;
 };

@@ -23,7 +23,7 @@ free_camera::free_camera(std::shared_ptr<unit> i_u)
    mov_type = e_roll_view_axis;
 }
 
-void free_camera::update_input(shared_ptr<iadp> idp)
+void free_camera::update_input(shared_ptr<mws_dp> idp)
 {
    if (idp->is_processed())
    {

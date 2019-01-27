@@ -110,7 +110,7 @@ void long_op_recursive_copy::run()
 		{
 			if(src_path == dst_path)
 			{
-            mws_throw ia_exception(trs("longOpRecursiveCopy: cannot copy a directory to itself. [{0}] must not be the same as [{1}]", SOURCE_PATH, DESTINATION_PATH));
+            mws_throw mws_exception(trs("longOpRecursiveCopy: cannot copy a directory to itself. [{0}] must not be the same as [{1}]", SOURCE_PATH, DESTINATION_PATH));
 			}
 
 			utrx(untr("starting longOpRecursiveCopy from [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
@@ -122,12 +122,12 @@ void long_op_recursive_copy::run()
 		}
 		else
 		{
-         mws_throw ia_exception(trs("longOpRecursiveCopy: {} is not a directory", src_path.string()));
+         mws_throw mws_exception(trs("longOpRecursiveCopy: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-      mws_throw ia_exception(trs("longOpRecursiveCopy: {} does not exist", src_path.string()));
+      mws_throw mws_exception(trs("longOpRecursiveCopy: {} does not exist", src_path.string()));
 	}
 }
 
@@ -146,7 +146,7 @@ void rec_dir_op_copy::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-      mws_throw ia_exception(trs("failed to create directory {}!", dst_path.string()));
+      mws_throw mws_exception(trs("failed to create directory {}!", dst_path.string()));
 	}
 
 	utrx(untr("copying files from directory [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));

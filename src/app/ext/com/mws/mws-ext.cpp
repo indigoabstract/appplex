@@ -107,7 +107,7 @@ shared_ptr<mws_list_menu_page> mws_list_menu_page::nwi(shared_ptr<mws_page_tab> 
    return u;
 }
 
-void mws_list_menu_page::receive(shared_ptr<iadp> idp)
+void mws_list_menu_page::receive(shared_ptr<mws_dp> idp)
 {
    mws_page::receive(idp);
 }

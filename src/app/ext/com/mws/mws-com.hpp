@@ -33,7 +33,7 @@ public:
    void set_enabled(bool i_is_enabled) override;
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void set_img_name(std::string i_img_name);
-   virtual void receive(mws_sp<iadp> idp) override;
+   virtual void receive(mws_sp<mws_dp> idp) override;
    virtual bool is_hit(float x, float y);
    virtual void on_click();
    virtual mws_sp<gfx_quad_2d> get_vxo();
@@ -55,7 +55,7 @@ public:
    static mws_sp<mws_button> nwi();
    void set_enabled(bool i_is_enabled);
    virtual void set_rect(const mws_rect& i_rect) override;
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    virtual bool is_hit(float x, float y);
    virtual void update_state() override;
    virtual void set_text(std::string i_text);
@@ -88,7 +88,7 @@ public:
    void set_value(float i_value);
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
-   virtual void receive(mws_sp<iadp> idp) override;
+   virtual void receive(mws_sp<mws_dp> idp) override;
    virtual bool is_hit(float x, float y, bool& i_ball_hit, bool& i_bar_hit);
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
@@ -130,7 +130,7 @@ public:
    virtual ~mws_list() {}
    static mws_sp<mws_list> nwi();
 
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    virtual bool is_hit(float x, float y);
 
    virtual void update_state();
@@ -187,7 +187,7 @@ public:
    static mws_sp<mws_tree> new_shared_instance(mws_tree* newTreeClassInstance);
    virtual void init();
 
-   virtual void receive(mws_sp<iadp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
 
    virtual void update_state();
    //virtual void update_view(mws_sp<mws_camera> g);

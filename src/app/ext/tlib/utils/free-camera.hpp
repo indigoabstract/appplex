@@ -21,7 +21,7 @@ public:
 
    free_camera(std::shared_ptr<unit> i_u);
 
-	void update_input(shared_ptr<iadp> idp);
+	void update_input(shared_ptr<mws_dp> idp);
 	void update();
 
 	std::shared_ptr<gfx_camera> persp_cam;

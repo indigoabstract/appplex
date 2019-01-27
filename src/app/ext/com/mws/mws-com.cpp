@@ -106,7 +106,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
-void mws_img_btn::receive(mws_sp<iadp> idp)
+void mws_img_btn::receive(mws_sp<mws_dp> idp)
 {
    if (!is_enabled())
    {
@@ -209,7 +209,7 @@ void mws_button::set_rect(const mws_rect& i_rect)
    mws_r = i_rect;
 }
 
-void mws_button::receive(mws_sp<iadp> idp)
+void mws_button::receive(mws_sp<mws_dp> idp)
 {
    if (!is_enabled())
    {
@@ -362,7 +362,7 @@ void mws_slider::set_rect(const mws_rect& i_rect)
    set_value(value);
 }
 
-void mws_slider::receive(mws_sp<iadp> idp)
+void mws_slider::receive(mws_sp<mws_dp> idp)
 {
    if (!is_enabled())
    {
@@ -563,7 +563,7 @@ mws_sp<mws_list> mws_list::nwi()
    return inst;
 }
 
-void mws_list::receive(mws_sp<iadp> idp)
+void mws_list::receive(mws_sp<mws_dp> idp)
 {
    if (!is_enabled())
    {
@@ -736,7 +736,7 @@ void mws_tree::init()
 {
 }
 
-void mws_tree::receive(mws_sp<iadp> idp)
+void mws_tree::receive(mws_sp<mws_dp> idp)
 {
    if (!is_enabled())
    {

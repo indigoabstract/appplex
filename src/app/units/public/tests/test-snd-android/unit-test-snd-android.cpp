@@ -96,7 +96,7 @@ namespace unit_test_snd_android_ns
 			player2->set_note(musical_note::get_note(musical_note::g_note, 3));
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}

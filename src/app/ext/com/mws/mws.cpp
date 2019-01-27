@@ -40,7 +40,7 @@ mws_sp<mws_model> mws_model::get_instance()
    return shared_from_this();
 }
 
-void mws_model::receive(mws_sp<iadp> idp)
+void mws_model::receive(mws_sp<mws_dp> idp)
 {
 }
 
@@ -54,7 +54,7 @@ void mws_model::notify_update()
 {
    if (get_view())
    {
-      send(get_view(), iadp::nwi(MWS_EVT_MODEL_UPDATE));
+      send(get_view(), mws_dp::nwi(MWS_EVT_MODEL_UPDATE));
    }
 }
 
@@ -63,7 +63,7 @@ mws_sp<mws> mws_model::get_view()
    return view.lock();
 }
 
-mws_sp<ia_sender> mws_model::sender_inst()
+mws_sp<mws_sender> mws_model::sender_inst()
 {
    return get_instance();
 }
@@ -205,7 +205,7 @@ mws_sp<unit> mws::get_unit()
    return std::static_pointer_cast<unit>(mwsroot.lock()->get_unit());
 }
 
-void mws::receive(mws_sp<iadp> idp)
+void mws::receive(mws_sp<mws_dp> idp)
 {
    if (receive_handler)
    {
@@ -233,7 +233,7 @@ void mws::receive(mws_sp<iadp> idp)
    }
 }
 
-void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<iadp> i_idp)> i_receive_handler)
+void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler)
 {
    receive_handler = i_receive_handler;
 }
@@ -286,7 +286,7 @@ void mws::set_z(float i_z_position)
 }
 
 
-mws_sp<ia_sender> mws::sender_inst()
+mws_sp<mws_sender> mws::sender_inst()
 {
    return get_instance();
 }
@@ -296,7 +296,7 @@ mws_page_tab::mws_page_tab(mws_sp<unit> iu)
 {
    if (!iu)
    {
-      mws_throw ia_exception("unit cannot be null");
+      mws_throw mws_exception("unit cannot be null");
    }
 
    u = iu;
@@ -401,7 +401,7 @@ mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
    return tab_text_vxo;
 }
 
-void mws_page_tab::receive(mws_sp<iadp> idp)
+void mws_page_tab::receive(mws_sp<mws_dp> idp)
 {
    if (vkb && vkb->visible)
    {
@@ -491,7 +491,7 @@ void mws_page_tab::add(mws_sp<mws_page> p)
 {
    if (contains_mws(p))
    {
-      mws_throw ia_exception();//trs("page with id [%1%] already exists") % p->get_id());
+      mws_throw mws_exception();//trs("page with id [%1%] already exists") % p->get_id());
    }
 
    page_tab.push_back(p);
@@ -641,7 +641,7 @@ void mws_page::on_visibility_changed(bool iis_visible) {}
 void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {}
 void mws_page::on_hide_transition(const mws_sp<linear_transition> itransition) {}
 
-void mws_page::receive(mws_sp<iadp> idp)
+void mws_page::receive(mws_sp<mws_dp> idp)
 {
    if (receive_handler)
    {
@@ -654,7 +654,7 @@ void mws_page::receive(mws_sp<iadp> idp)
    }
 }
 
-void mws_page::update_input_sub_mws(mws_sp<iadp> idp)
+void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
 {
    if (idp->is_processed())
    {
@@ -704,7 +704,7 @@ void mws_page::update_input_sub_mws(mws_sp<iadp> idp)
 
 }
 
-void mws_page::update_input_std_behaviour(mws_sp<iadp> idp)
+void mws_page::update_input_std_behaviour(mws_sp<mws_dp> idp)
 {
    if (idp->is_processed())
    {
@@ -896,7 +896,7 @@ void mws_page::add(mws_sp<mws_page_item> b)
 {
    if (contains_mws(b))
    {
-      mws_throw ia_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
+      mws_throw mws_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
    }
 
    mlist.push_back(b);

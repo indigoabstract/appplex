@@ -14,11 +14,9 @@
 #include <exception>
 #endif
 
-using std::shared_ptr;
-using std::weak_ptr;
 
-class ia_sender;
-class ia_receiver;
+class mws_sender;
+class mws_receiver;
 
 
 struct mws_str
@@ -47,9 +45,9 @@ class mws_util
 public:
    struct path
    {
-      static std::string get_directory_from_path(const std::string& file_path);
-      static std::string get_filename_from_path(const std::string& file_path);
-      static std::string get_filename_without_extension(const std::string& file_path);
+      static std::string get_directory_from_path(const std::string& i_file_path);
+      static std::string get_filename_from_path(const std::string& i_file_path);
+      static std::string get_filename_without_extension(const std::string& i_file_path);
    };
 
    struct time
@@ -60,96 +58,98 @@ public:
 };
 
 
-class ia_exception
+class mws_exception
 #ifdef MWS_USES_EXCEPTIONS
    : public std::exception
 #endif
 {
 public:
-   ia_exception();
-   ia_exception(const std::string& msg);
-   ia_exception(const char* msg);
-   virtual ~ia_exception();
+   mws_exception();
+   mws_exception(const std::string& i_msg);
+   mws_exception(const char* i_msg);
+   virtual ~mws_exception();
 
    // returns a C-style character string describing the general cause of the current error
    virtual const char* what() const noexcept;
 
 private:
-   std::string exmsg;
+   void set_msg(const char* i_msg);
+
+   std::string msg;
 };
 
 
-class iadp
+class mws_dp
 {
 public:
-   virtual ~iadp() {}
-   static shared_ptr<iadp> nwi(std::string iname);
+   virtual ~mws_dp() {}
+   static mws_sp<mws_dp> nwi(std::string i_name);
 
    virtual const std::string& get_name();
-   virtual bool is_type(const std::string& itype);
+   virtual bool is_type(const std::string& i_type);
    virtual bool is_processed();
    virtual void process();
-   virtual shared_ptr<ia_sender> source();
-   virtual shared_ptr<ia_receiver> destination();
+   virtual mws_sp<mws_sender> source();
+   virtual mws_sp<mws_receiver> destination();
 
 protected:
-   iadp(const std::string& iname);
-   virtual void set_name(const std::string&);
+   mws_dp(const std::string& iname);
+   virtual void set_name(const std::string& i_name);
 
 private:
-   friend class ia_sender;
+   friend class mws_sender;
 
    std::string name;
    bool processed;
-   weak_ptr<ia_sender> src;
-   weak_ptr<ia_receiver> dst;
+   mws_wp<mws_sender> src;
+   mws_wp<mws_receiver> dst;
 };
 
 
-class ia_receiver
+class mws_receiver
 {
 public:
-   ia_receiver() {}
-   virtual ~ia_receiver() {}
+   mws_receiver() {}
+   virtual ~mws_receiver() {}
 
-   virtual void receive(shared_ptr<iadp> idp) = 0;
+   virtual void receive(mws_sp<mws_dp> i_dp) = 0;
 };
 
 
-class ia_sender
+class mws_sender
 {
 public:
-   ia_sender() {}
-   virtual ~ia_sender() {}
+   mws_sender() {}
+   virtual ~mws_sender() {}
 
-   virtual void send(shared_ptr<ia_receiver> dst, shared_ptr<iadp> idp);
+   virtual void send(mws_sp<mws_receiver> i_dst, mws_sp<mws_dp> i_dp);
 
 protected:
-   virtual shared_ptr<ia_sender> sender_inst() = 0;
+   virtual mws_sp<mws_sender> sender_inst() = 0;
 };
 
 
-class ia_broadcaster : public ia_sender
+class mws_broadcaster : public mws_sender
 {
 public:
-   ia_broadcaster() {}
-   virtual ~ia_broadcaster() {}
+   mws_broadcaster() {}
+   virtual ~mws_broadcaster() {}
 
-   virtual void add_receiver(shared_ptr<ia_receiver> ir);
-   virtual void remove_receiver(shared_ptr<ia_receiver> ir);
+   virtual void add_receiver(mws_sp<mws_receiver> i_recv);
+   virtual void remove_receiver(mws_sp<mws_receiver> i_recv);
 
 protected:
-   virtual void broadcast(shared_ptr<ia_sender> src, shared_ptr<iadp> idp);
+   virtual void broadcast(mws_sp<mws_sender> i_src, mws_sp<mws_dp> i_dp);
 
-   std::vector<weak_ptr<ia_receiver> > receivers;
+   std::vector<mws_wp<mws_receiver> > receivers;
 };
 
 
-class ia_node : public ia_sender, public ia_receiver
+class mws_node : public mws_sender, public mws_receiver
 {
 public:
-   ia_node() {}
-   virtual ~ia_node() {}
+   mws_node() {}
+   virtual ~mws_node() {}
 };
 
 
@@ -226,7 +226,7 @@ template <typename T> T const& mws_any_cast(mws_any const& a)
 #define int_vect_pass(name) name, sizeof(name) / sizeof(int)
 
 
-template <class T, class TAl> inline T* begin_ptr(shared_ptr<std::vector<T, TAl> > v) { return v->empty() ? 0 : &v->front(); }
+template <class T, class TAl> inline T* begin_ptr(mws_sp<std::vector<T, TAl> > v) { return v->empty() ? 0 : &v->front(); }
 template <class T, class TAl> inline T* begin_ptr(std::vector<T, TAl>* v) { return v->empty() ? 0 : &v->front(); }
 template <class T, class TAl> inline T* begin_ptr(std::vector<T, TAl>& v) { return v.empty() ? 0 : &v.front(); }
 template <class T, class TAl> inline const T* begin_ptr(const std::vector<T, TAl>& v) { return v.empty() ? 0 : &v.front(); }
@@ -241,10 +241,10 @@ inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
 
-bool ends_with(const std::string& istr, const std::string& ifind);
+bool ends_with(const std::string & istr, const std::string & ifind);
 
 // trim from start
-inline std::string ltrim(const std::string& is)
+inline std::string ltrim(const std::string & is)
 {
    std::string s(is);
    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
@@ -252,7 +252,7 @@ inline std::string ltrim(const std::string& is)
 }
 
 // trim from end
-inline std::string rtrim(const std::string& is)
+inline std::string rtrim(const std::string & is)
 {
    std::string s(is);
    s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
@@ -260,16 +260,16 @@ inline std::string rtrim(const std::string& is)
 }
 
 // trim from both ends
-inline std::string trim(const std::string& is)
+inline std::string trim(const std::string & is)
 {
    return ltrim(rtrim(is));
 }
 
-std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
-template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1>& original, unary_operation mapping_function);
+std::string replace_string(std::string subject, const std::string & search, const std::string & replace);
+template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1> & original, unary_operation mapping_function);
 std::string escape_char(char character);
-std::string escape_string(const std::string& str);
-std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
-std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
-std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
-std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+std::string escape_string(const std::string & str);
+std::vector<std::string> escape_strings(const std::vector<std::string> & delimiters);
+std::string str_join(const std::vector<std::string> & tokens, const std::string & delimiter);
+std::vector<std::string> str_split(const std::string & str, const std::vector<std::string> & delimiters);
+std::vector<std::string> str_split(const std::string & str, const std::string & delimiter);

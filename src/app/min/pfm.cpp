@@ -308,7 +308,7 @@ namespace pfm_impl
       }
       }
 
-      mws_throw ia_exception("undefined platform");
+      mws_throw mws_exception("undefined platform");
    }
 
    const std::string& get_common_res_path()
@@ -354,7 +354,7 @@ namespace pfm_impl
       }
       }
 
-      mws_throw ia_exception("undefined platform");
+      mws_throw mws_exception("undefined platform");
    }
 
    const std::string& get_unit_res_path(std::shared_ptr<unit> iu)
@@ -399,7 +399,7 @@ namespace pfm_impl
       }
       }
 
-      mws_throw ia_exception("undefined platform");
+      mws_throw mws_exception("undefined platform");
    }
 
    shared_ptr<pfm_file> get_res_file(const std::string& ifilename)
@@ -434,7 +434,7 @@ namespace pfm_impl
       {
          std::string msg = "duplicate filename: " + it->first;
 
-         mws_throw ia_exception(msg.c_str());
+         mws_throw mws_exception(msg.c_str());
       }
 
       (*res_files_map)[ifilename] = ifile;
@@ -558,7 +558,7 @@ namespace pfm_impl
       {
          std::string msg = "file " + ppath.filename + " is not open";
 
-         mws_throw ia_exception(msg.c_str());
+         mws_throw mws_exception(msg.c_str());
       }
    }
 
@@ -649,7 +649,7 @@ shared_ptr<pfm_file> pfm_file::get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimp
 
 bool pfm_file::remove()
 {
-   mws_throw ia_exception("not implemented");
+   mws_throw mws_exception("not implemented");
 
    return false;
 }

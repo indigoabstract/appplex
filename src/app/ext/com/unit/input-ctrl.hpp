@@ -12,7 +12,7 @@ class key_ctrl;
 class touchctrl;
 
 
-class pointer_evt : public iadp
+class pointer_evt : public mws_dp
 {
 public:
    static const std::string TOUCHSYM_EVT_TYPE;
@@ -44,7 +44,7 @@ public:
    pointer_evt();
    // used for debugging!
    virtual void process() override;
-   static mws_sp<pointer_evt> as_pointer_evt(shared_ptr<iadp> idp);
+   static mws_sp<pointer_evt> as_pointer_evt(shared_ptr<mws_dp> idp);
    bool is_multitouch();
 
    // pointer_down_count
@@ -73,7 +73,7 @@ public:
 };
 
 
-class touchctrl : public enable_shared_from_this<touchctrl>, public ia_broadcaster
+class touchctrl : public enable_shared_from_this<touchctrl>, public mws_broadcaster
 {
 public:
    static shared_ptr<touchctrl> nwi();
@@ -88,7 +88,7 @@ public:
 private:
    touchctrl();
 
-   virtual shared_ptr<ia_sender> sender_inst();
+   virtual shared_ptr<mws_sender> sender_inst();
 
    void on_pointer_action_pressed(std::shared_ptr<pointer_evt> pa);
    void on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa);
@@ -107,7 +107,7 @@ private:
 };
 
 
-class key_evt : public enable_shared_from_this<key_evt>, public iadp
+class key_evt : public enable_shared_from_this<key_evt>, public mws_dp
 {
 public:
    enum key_evt_types
@@ -122,7 +122,7 @@ public:
    static const std::string KEYEVT_REPEATED;
    static const std::string KEYEVT_RELEASED;
 
-   static shared_ptr<key_evt> as_key_evt(shared_ptr<iadp> idp);
+   static shared_ptr<key_evt> as_key_evt(shared_ptr<mws_dp> idp);
    static shared_ptr<key_evt> nwi(std::weak_ptr<key_ctrl> isrc, key_evt_types itype, key_types i_key);
    shared_ptr<key_evt> get_instance();
 
@@ -145,7 +145,7 @@ private:
 };
 
 
-class key_ctrl : public enable_shared_from_this<key_ctrl>, public ia_broadcaster
+class key_ctrl : public enable_shared_from_this<key_ctrl>, public mws_broadcaster
 {
 public:
    static shared_ptr<key_ctrl> nwi();
@@ -159,7 +159,7 @@ public:
 private:
    key_ctrl();
 
-   virtual shared_ptr<ia_sender> sender_inst();
+   virtual shared_ptr<mws_sender> sender_inst();
    void new_key_event(shared_ptr<key_evt> ts);
 
    bool events_pending;

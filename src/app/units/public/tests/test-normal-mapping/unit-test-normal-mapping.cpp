@@ -1351,7 +1351,7 @@ bool unit_test_normal_mapping::update()
 	return unit::update();
 }
 
-void unit_test_normal_mapping::receive(shared_ptr<iadp> idp)
+void unit_test_normal_mapping::receive(shared_ptr<mws_dp> idp)
 {
 	if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 	{

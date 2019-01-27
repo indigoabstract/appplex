@@ -24,7 +24,7 @@ public:
 
 private:
 	unit_test_normal_mapping();
-	virtual void receive(shared_ptr<iadp> idp);
+	virtual void receive(shared_ptr<mws_dp> idp);
 
 	shared_ptr<ns_unit_test_normal_mapping::impl> p;
 };

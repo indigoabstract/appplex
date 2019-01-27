@@ -163,7 +163,7 @@ namespace unit_test_touch_input_ns
          get_unit()->mws_cam->sort_function = get_unit()->mws_cam->z_order_sort_function;
       }
 
-      virtual void receive(mws_sp<iadp> idp)
+      virtual void receive(mws_sp<mws_dp> idp)
       {
          if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {

@@ -46,7 +46,7 @@ public:
 };
 
 
-class unit : public std::enable_shared_from_this<unit>, public ia_node
+class unit : public std::enable_shared_from_this<unit>, public mws_node
 {
 public:
    enum unit_type
@@ -132,7 +132,7 @@ protected:
    virtual void on_resize();
    virtual void on_pause();
    virtual void on_resume();
-   virtual void receive(std::shared_ptr<iadp> idp);
+   virtual void receive(std::shared_ptr<mws_dp> idp);
    // finish-constructor. here you can use things that won't work in the constructor, ie shared_from_this(), etc
    virtual void base_init();
    virtual void init();
@@ -140,7 +140,7 @@ protected:
    virtual void init_mws();
    virtual void load();
    virtual void unload();
-   virtual std::shared_ptr<ia_sender> sender_inst();
+   virtual std::shared_ptr<mws_sender> sender_inst();
    virtual void update_view(int update_count);
    virtual void post_update_view();
 
@@ -186,7 +186,7 @@ public:
    std::shared_ptr<unit> unit_by_name(std::string i_name);
    int get_unit_count()const;
    virtual void on_resize();
-   virtual void receive(std::shared_ptr<iadp> idp);
+   virtual void receive(std::shared_ptr<mws_dp> idp);
    void forward();
    static void up_one_level();
 

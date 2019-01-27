@@ -27,7 +27,7 @@ mws_sp<mws_vkb> mws_vkb::gi()
    return inst;
 }
 
-void mws_vkb::receive(mws_sp<iadp> i_dp)
+void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 {
    if (i_dp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {

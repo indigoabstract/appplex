@@ -6,7 +6,7 @@
 #include <vector>
 
 
-class transition_evt : public iadp
+class transition_evt : public mws_dp
 {
 public:
 	enum transition_evt_types
@@ -116,7 +116,7 @@ protected:
 
 class ms_transition_data;
 
-class ms_linear_transition : public linear_transition, public ia_broadcaster, public enable_shared_from_this<ms_linear_transition>
+class ms_linear_transition : public linear_transition, public mws_broadcaster, public enable_shared_from_this<ms_linear_transition>
 	// multi-step fixed-time transition, in milliseconds
 {
 public:
@@ -137,7 +137,7 @@ public:
 protected:
 	ms_linear_transition();
 
-	virtual shared_ptr<ia_sender> sender_inst();
+	virtual shared_ptr<mws_sender> sender_inst();
 	void reset();
 
 	int interval_idx;

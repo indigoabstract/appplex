@@ -323,7 +323,7 @@ void mws_text_box::update_view(mws_sp<mws_camera> g)
    }
 }
 
-void mws_text_box::receive(mws_sp<iadp> idp)
+void mws_text_box::receive(mws_sp<mws_dp> idp)
 {
    if (idp->is_processed())
    {
@@ -611,22 +611,22 @@ void mws_text_area_model_ro::push_front(const char* i_text, int i_length)
 
 void mws_text_area_model_ro::insert_at_cursor(const std::string& i_text)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void mws_text_area_model_ro::delete_at_cursor(int32 i_count)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 uint32 mws_text_area_model_ro::get_cursor_pos()
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void mws_text_area_model_ro::set_cursor_pos(uint32 i_cursor_pos)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void mws_text_area_model_ro::set_text(const std::string& i_text)
@@ -785,12 +785,12 @@ std::string mws_text_area_model_rw::get_text()
 
 void mws_text_area_model_rw::push_back(const char* i_text, int i_length)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void mws_text_area_model_rw::push_front(const char* i_text, int i_length)
 {
-   mws_throw ia_exception("n/a");
+   mws_throw mws_exception("n/a");
 }
 
 void mws_text_area_model_rw::insert_at_cursor(const std::string& i_text)

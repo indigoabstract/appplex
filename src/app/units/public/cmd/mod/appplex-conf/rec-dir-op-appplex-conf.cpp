@@ -30,7 +30,7 @@ rec_dir_op_appplex_conf::rec_dir_op_appplex_conf(bfs::path isrc_path, std::vecto
 
       if (!p.is_relative())
       {
-         mws_throw ia_exception(trs("path [{0}] is not relative to [{1}]", p.generic_string(), src_path.generic_string()));
+         mws_throw mws_exception(trs("path [{0}] is not relative to [{1}]", p.generic_string(), src_path.generic_string()));
       }
 
       utrx(untr("{0} {1}"), k, s);

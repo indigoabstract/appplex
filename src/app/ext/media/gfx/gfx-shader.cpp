@@ -227,7 +227,7 @@ public:
             mws_print("shader [%s] compiled.\n", program_name.c_str());
          }
       }
-         mws_catch(ia_exception e)
+         mws_catch(mws_exception e)
       {
          is_validated = false;
          mws_signal_error(e.what());
@@ -385,7 +385,7 @@ public:
    {
       if (!icondition)
       {
-         mws_throw ia_exception(msg);
+         mws_throw mws_exception(msg);
       }
    }
 
@@ -600,7 +600,7 @@ void gfx_shader::update_uniform(std::shared_ptr<gfx_input> i_input, const mws_an
       case gfx_input::ivec2:
       case gfx_input::ivec3:
       case gfx_input::ivec4:
-         mws_throw ia_exception("glsl_program::update_uniform n/i");
+         mws_throw mws_exception("glsl_program::update_uniform n/i");
          break;
 
       case gfx_input::vec1:
@@ -687,7 +687,7 @@ void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
       case gfx_input::ivec2:
       case gfx_input::ivec3:
       case gfx_input::ivec4:
-         mws_throw ia_exception("glsl_program::update_uniform n/i");
+         mws_throw mws_exception("glsl_program::update_uniform n/i");
          break;
 
       case gfx_input::vec1:

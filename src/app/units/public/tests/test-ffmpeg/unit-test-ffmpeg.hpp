@@ -18,7 +18,7 @@ public:
 
 private:
    unit_test_ffmpeg();
-   virtual void receive(shared_ptr<iadp> idp);
+   virtual void receive(shared_ptr<mws_dp> idp);
 };
 
 #endif

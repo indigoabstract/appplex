@@ -127,12 +127,12 @@ void long_op_ffmpeg::run()
 	{
 		if (!is_regular_file(process_path))
 		{
-         mws_throw ia_exception(trs("longOpFfmpeg: {} is not a regular file", process_path.string()));
+         mws_throw mws_exception(trs("longOpFfmpeg: {} is not a regular file", process_path.string()));
 		}
 	}
 	else
 	{
-      mws_throw ia_exception(trs("longOpFfmpeg: {} does not exist", process_path.string()));
+      mws_throw mws_exception(trs("longOpFfmpeg: {} does not exist", process_path.string()));
 	}
 
 	if (exists(src_path))
@@ -148,12 +148,12 @@ void long_op_ffmpeg::run()
 		}
 		else
 		{
-         mws_throw ia_exception(trs("longOpFfmpeg: {} is not a directory", src_path.string()));
+         mws_throw mws_exception(trs("longOpFfmpeg: {} is not a directory", src_path.string()));
 		}
 	}
 	else
 	{
-      mws_throw ia_exception(trs("longOpFfmpeg: {} does not exist", src_path.string()));
+      mws_throw mws_exception(trs("longOpFfmpeg: {} does not exist", src_path.string()));
 	}
 }
 
@@ -175,7 +175,7 @@ void rec_dir_op_flac_to_mp3::on_start(shared_ptr<dir_node> dir)
 
 	if(!result && !exists(dst_path))
 	{
-      mws_throw ia_exception(trs("failed to create directory {}!", dst_path.string()));
+      mws_throw mws_exception(trs("failed to create directory {}!", dst_path.string()));
 	}
 }
 
@@ -190,7 +190,7 @@ bool rec_dir_op_flac_to_mp3::on_entering_dir(shared_ptr<dir_node> dir)
 
 		if(!result && !exists(dst_path))
 		{
-         mws_throw ia_exception(trs("failed to create directory {}!", tp.string()));
+         mws_throw mws_exception(trs("failed to create directory {}!", tp.string()));
 		}
 
 		return true;

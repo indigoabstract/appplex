@@ -50,7 +50,7 @@ namespace unit_abstract_racing_main_page
 			last_time = pfm::time::get_time_millis();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{

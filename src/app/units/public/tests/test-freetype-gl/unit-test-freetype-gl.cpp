@@ -114,7 +114,7 @@ bool unit_test_freetype_gl::update()
 	return unit::update();
 }
 
-void unit_test_freetype_gl::receive(shared_ptr<iadp> idp)
+void unit_test_freetype_gl::receive(shared_ptr<mws_dp> idp)
 {
 }
 

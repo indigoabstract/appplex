@@ -328,7 +328,7 @@ namespace test_video_recording
          frame_idx++;
       }
 
-      void receive(shared_ptr<iadp> idp)
+      void receive(shared_ptr<mws_dp> idp)
       {
          if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
@@ -439,7 +439,7 @@ void unit_test_video_recording::post_update_view()
    i.post_update_view(mws_cam);
 }
 
-void unit_test_video_recording::receive(shared_ptr<iadp> idp)
+void unit_test_video_recording::receive(shared_ptr<mws_dp> idp)
 {
    if (!idp->is_processed())
    {

@@ -188,7 +188,7 @@ int file_data_sequence::read_int8(int8* s, int elem_count, int offset)
 
    if (bytes_read != elem_count)
    {
-      mws_throw ia_exception("reached end of file");
+      mws_throw mws_exception("reached end of file");
    }
 
    return bytes_read;

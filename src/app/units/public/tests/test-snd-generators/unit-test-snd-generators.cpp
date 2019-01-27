@@ -339,7 +339,7 @@ namespace unit_test_snd_generators_ns
 				return orange;
 			}
 
-         mws_throw ia_exception("illegal value for note");
+         mws_throw mws_exception("illegal value for note");
 		}
 
 	private:
@@ -426,7 +426,7 @@ namespace unit_test_snd_generators_ns
 			note_font->set_color(gfx_color::colors::black);
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{

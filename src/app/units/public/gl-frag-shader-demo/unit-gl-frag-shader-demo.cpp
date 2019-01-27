@@ -518,7 +518,7 @@ public:
 		reset();
 	}
 
-	virtual void receive(shared_ptr<iadp> idp)
+	virtual void receive(shared_ptr<mws_dp> idp)
 	{
 		mws_page::update_input_sub_mws(idp);
 

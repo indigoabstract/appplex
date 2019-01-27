@@ -9,7 +9,7 @@
 const std::string pointer_evt::TOUCHSYM_EVT_TYPE = "ts-";
 
 
-pointer_evt::pointer_evt() : iadp("ts-")
+pointer_evt::pointer_evt() : mws_dp("ts-")
 {
    type = touch_invalid;
    time = 0;
@@ -19,7 +19,7 @@ pointer_evt::pointer_evt() : iadp("ts-")
 
 void pointer_evt::process()
 {
-   iadp::process();
+   mws_dp::process();
 
    //if (type == touch_ended)
    //{
@@ -28,7 +28,7 @@ void pointer_evt::process()
    //mws_print("%s\n", get_name().c_str());
 }
 
-mws_sp<pointer_evt> pointer_evt::as_pointer_evt(shared_ptr<iadp> idp)
+mws_sp<pointer_evt> pointer_evt::as_pointer_evt(shared_ptr<mws_dp> idp)
 {
    return static_pointer_cast<pointer_evt>(idp);
 }
@@ -199,7 +199,7 @@ void touchctrl::enqueue_pointer_event(std::shared_ptr<pointer_evt> ite)
    (*queue_ptr).push_back(ite);
 }
 
-shared_ptr<ia_sender> touchctrl::sender_inst()
+shared_ptr<mws_sender> touchctrl::sender_inst()
 {
    return get_instance();
 }
@@ -236,7 +236,7 @@ const std::string key_evt::KEYEVT_REPEATED = "ke-repeated";
 const std::string key_evt::KEYEVT_RELEASED = "ke-released";
 
 
-key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key) : iadp(get_type_name(itype))
+key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key) : mws_dp(get_type_name(itype))
 {
    src = isrc;
    type = itype;
@@ -244,7 +244,7 @@ key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key
    //trx("newkeyevt %x") % this;
 }
 
-shared_ptr<key_evt> key_evt::as_key_evt(shared_ptr<iadp> idp)
+shared_ptr<key_evt> key_evt::as_key_evt(shared_ptr<mws_dp> idp)
 {
    return static_pointer_cast<key_evt>(idp);
 }
@@ -304,7 +304,7 @@ key_types key_evt::get_key() const
 void key_evt::process()
 {
    //trx("keyevt process %x") % getInst().get();
-   iadp::process();
+   mws_dp::process();
 }
 
 
@@ -418,7 +418,7 @@ void key_ctrl::key_released(int i_key)
    keys_status[i_key] = KEY_RELEASED;
 }
 
-shared_ptr<ia_sender> key_ctrl::sender_inst()
+shared_ptr<mws_sender> key_ctrl::sender_inst()
 {
    return get_instance();
 }

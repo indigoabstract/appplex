@@ -55,7 +55,7 @@ namespace unit_texxed_ns
          b->set_bg_color(gfx_color(0xff8200b4));
       }
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{

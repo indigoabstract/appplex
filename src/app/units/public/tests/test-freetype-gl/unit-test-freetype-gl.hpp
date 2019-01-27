@@ -19,7 +19,7 @@ public:
 
 private:
 	unit_test_freetype_gl();
-	void receive(shared_ptr<iadp> idp) override;
+	void receive(shared_ptr<mws_dp> idp) override;
 
 	shared_ptr<unit_test_freetype_gl_impl> p;
 };

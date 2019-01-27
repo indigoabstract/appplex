@@ -620,7 +620,7 @@ bool unit_test_trail::update()
    return unit::update();
 }
 
-void unit_test_trail::receive(shared_ptr<iadp> idp)
+void unit_test_trail::receive(shared_ptr<mws_dp> idp)
 {
    if (!idp->is_processed())
    {

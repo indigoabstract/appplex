@@ -63,7 +63,7 @@ void gfx_rt::check_valid_state()
 {
    if (!is_valid_state)
    {
-      mws_throw ia_exception("the render target is not in a valid state");
+      mws_throw mws_exception("the render target is not in a valid state");
    }
 }
 

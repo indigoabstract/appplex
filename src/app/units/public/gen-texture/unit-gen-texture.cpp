@@ -99,7 +99,7 @@ namespace unit_gen_texture_rtt_screen
 			//signal_opengl_error();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -153,7 +153,7 @@ namespace unit_gen_texture_rtt_fbo
 			//signal_opengl_error();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -189,7 +189,7 @@ namespace unit_gen_texture_mainpage
 			mws_page::init();
 		}
 
-		virtual void receive(shared_ptr<iadp> idp)
+		virtual void receive(shared_ptr<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
