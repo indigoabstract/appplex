@@ -50,10 +50,11 @@ public:
    mws_sp<gfx_tex> load_tex(std::string i_filename);
    mws_sp<raw_img_data> load_image(mws_sp<pfm_file> i_file);
    mws_sp<raw_img_data> load_image(std::string i_filename);
-   bool save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8* i_buffer, uint32 i_flip = e_no_flip);
+   bool save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip = e_no_flip);
 
 private:
    res_ld();
+   static mws_sp<std::vector<uint8>> flip_buffer(int i_width, int i_height, uint8* i_buffer, flip_types i_flip);
 
    static mws_sp<res_ld> res_loader_inst;
 };

@@ -501,7 +501,7 @@ mws_sp<pfm_file> unit::app_storage::random_access(std::string name)
    return pfm::filesystem::random_access(p->u.lock(), name);
 }
 
-void unit::app_storage::save_screenshot(std::string ifilename)
+void unit::app_storage::save_screenshot(std::string i_filename)
 {
 #if defined MOD_GFX && defined MOD_PNG
    if (!p->u.lock()->is_gfx_unit())
@@ -512,7 +512,7 @@ void unit::app_storage::save_screenshot(std::string ifilename)
    mws_sp<std::vector<uint32> > pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
    mws_sp<pfm_file> screenshot_file;
 
-   if (ifilename.empty())
+   if (i_filename.empty())
    {
       string file_root = mws_to_str("%s-", p->u.lock()->get_name().c_str());
       string img_ext = ".png";
@@ -567,14 +567,16 @@ void unit::app_storage::save_screenshot(std::string ifilename)
    }
    else
    {
-      screenshot_file = pfm_file::get_inst(ifilename);
+      screenshot_file = pfm_file::get_inst(i_filename);
    }
 
    {
+      mws_print("saving screenshot to [ %s ] ... ", screenshot_file->get_full_path().c_str());
       int w = gfx::i()->rt.get_screen_width();
       int h = gfx::i()->rt.get_screen_height();
       uint8* pix = (uint8*)begin_ptr(pixels);
       res_ld::inst()->save_image(screenshot_file, w, h, pix, res_ld::e_vertical_flip);
+      mws_println("done.");
    }
 #endif
 }

@@ -69,7 +69,7 @@ public:
       mws_sp<pfm_file> random_access(std::string name);
 
       // screenshot
-      void save_screenshot(std::string ifilename = "");
+      void save_screenshot(std::string i_filename = "");
 
       // screen video recording
       void start_recording_screen(std::string i_filename = "", const mws_video_params* i_params = nullptr);
