@@ -30,13 +30,42 @@ struct mws_str
    // trim from both ends
    static std::string trim(const std::string& is);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
-   template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function);
+   template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function)
+   {
+      std::vector<T2> mapped;
+      std::transform(begin(original), end(original), std::back_inserter(mapped), mapping_function);
+      return mapped;
+   }
    static std::string escape_char(char character);
    static std::string escape_string(const std::string& str);
    static std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
    static std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
    static std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
    static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+   // removes all the occurrences of the string from the input. the input sequence is modified in-place.
+   template<typename sequence, typename range> void static erase_all(sequence& i_input, const range& i_search)
+   {
+      std::size_t search_idx = 0;
+      std::size_t found_idx = 0;
+
+      while ((found_idx = i_input.find(i_search, search_idx)) != std::string::npos)
+      {
+         i_input.erase(found_idx, i_search.size());
+         search_idx = found_idx;
+      }
+   }
+   // replaces all occurrences of the search string in the input with the format string. the input sequence is modified in-place.
+   template<typename sequence, typename range_0, typename range_1> void static replace_all(sequence& i_input, const range_0& i_search, const range_1& i_fmt)
+   {
+      std::size_t search_idx = 0;
+      std::size_t found_idx = 0;
+
+      while ((found_idx = i_input.find(i_search, search_idx)) != std::string::npos)
+      {
+         i_input.replace(found_idx, i_search.size(), i_fmt);
+         search_idx = found_idx + i_fmt.size();
+      }
+   }
 };
 
 

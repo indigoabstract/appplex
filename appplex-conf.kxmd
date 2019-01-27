@@ -19,7 +19,7 @@ units
 	
 	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png ], platf[ windows, android ], ],
-	template[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, vector-fonts ] ],
+	template[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ ],
@@ -61,7 +61,7 @@ units
 	@@[ private units ],
 	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
 
-	appplexx-conf[ uses[ boost, format, kxmd ], platf[ windows ], ],
+	appplexx-conf[ uses[ format, kxmd ], platf[ windows ], ],
 	barnes-hut[ ],
 	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ ],

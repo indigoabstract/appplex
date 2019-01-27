@@ -241,7 +241,7 @@ void appplex_conf::update()
          rw_hpp->w.write_line("");
       }
 
-      rw_cpp->w.write_line("\nvoid app_units_setup::create_units(mws_sp<unit_list> ul0)\n{\n\tul = ul0;\n");
+      rw_cpp->w.write_line("\nvoid app_units_setup::create_units(mws_sp<unit_list> i_unit_list)\n{\n\tul = i_unit_list;\n");
       rw_cpp->w.write_line(unit_list + "}");
    }
 }

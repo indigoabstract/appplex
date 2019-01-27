@@ -212,7 +212,7 @@ private:
    friend class unit_ctrl;
    friend class unit_ctrl_ext;
 
-   static void create_units(mws_sp<unit_list> ul0);
+   static void create_units(mws_sp<unit_list> i_unit_list);
    static mws_sp<unit_list> get_unit_list();
    static void add_unit(mws_sp<unit> iu, std::string iunit_path, bool iset_current = false);
 
