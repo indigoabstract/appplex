@@ -19,6 +19,15 @@ class mws_sender;
 class mws_receiver;
 
 
+enum dir_types
+{
+   DIR_LEFT,
+   DIR_UP,
+   DIR_RIGHT,
+   DIR_DOWN,
+};
+
+
 struct mws_str
 {
    static bool starts_with(const std::string& istr, const std::string& ifind);

@@ -208,21 +208,30 @@ protected:
 class mws_text_area_model
 {
 public:
+   // common
    virtual bool get_word_wrap() = 0;
    virtual void set_word_wrap(bool i_word_wrap) = 0;
-   virtual int get_line_count() = 0;
-   virtual std::string get_line_at(int i_idx, bool i_keep_line_break = true) = 0;
-   virtual std::vector<std::string> get_lines_at(int i_idx, int i_line_count, bool i_keep_line_break = true) = 0;
-   virtual std::string get_text() = 0;
-   virtual void push_back(const char* i_text, int i_length) = 0;
-   virtual void push_front(const char* i_text, int i_length) = 0;
+   virtual uint32 get_line_count() = 0;
+   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) = 0;
+   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) = 0;
+   virtual const std::string& get_text() = 0;
+   virtual void set_text(const std::string& i_text) = 0;
+   virtual void set_text(const char* i_text, uint32 i_length) = 0;
+   virtual void set_size(uint32 i_width, uint32 i_height) = 0;
+   virtual void set_font(mws_sp<mws_font> i_font) = 0;
+   virtual int get_char_at_pixel(float i_x, float i_y) = 0;
+
+   // viewer only
+   virtual void push_back(const char* i_text, uint32 i_length) = 0;
+   virtual void push_front(const char* i_text, uint32 i_length) = 0;
+
+   // editor only
    virtual void insert_at_cursor(const std::string& i_text) = 0;
    virtual void delete_at_cursor(int32 i_count) = 0;
    virtual uint32 get_cursor_pos() = 0;
    virtual void set_cursor_pos(uint32 i_cursor_pos) = 0;
-   virtual void set_text(const std::string& i_text) = 0;
-   virtual void set_text(const char* i_text, int i_length) = 0;
-   virtual void set_size(int i_width, int i_height) = 0;
-   virtual void set_font(mws_sp<mws_font> i_font) = 0;
-   virtual int get_char_at_pixel(float i_x, float i_y) = 0;
+   virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) = 0;
+   // returns [ horizontal, vertical ] position of the cursor
+   virtual glm::ivec2 get_cursor_coord() = 0;
+   virtual void advance_cursor(dir_types i_direction) = 0;
 };

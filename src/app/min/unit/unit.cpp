@@ -335,14 +335,14 @@ public:
 #endif
    }
 
-   void start_recording_screen(std::string i_filename = "", const mws_video_params* i_params = nullptr)
+   void start_recording_screen(std::string i_filename = "", const mws_video_params * i_params = nullptr)
    {
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
       int video_width = gfx::i()->rt.get_screen_width();
       int video_height = gfx::i()->rt.get_screen_height();
 
-      if (venc && venc->is_encoding())
+      if (venc&& venc->is_encoding())
       {
          venc->stop_encoding();
       }
@@ -486,12 +486,12 @@ mws_sp<std::vector<uint8> > unit::app_storage::load_unit_byte_vect(string name)
 //	return pfm::storage::load_unit_byte_array(u.lock(), name, size);
 //}
 
-bool unit::app_storage::store_unit_byte_array(string name, const uint8* resPtr, int size)
+bool unit::app_storage::store_unit_byte_array(string name, const uint8 * resPtr, int size)
 {
    return pfm::filesystem::store_unit_byte_array(p->u.lock(), name, resPtr, size);
 }
 
-bool unit::app_storage::store_unit_byte_vect(string name, const std::vector<uint8>& resPtr)
+bool unit::app_storage::store_unit_byte_vect(string name, const std::vector<uint8> & resPtr)
 {
    return pfm::filesystem::store_unit_byte_vect(p->u.lock(), name, resPtr);
 }
@@ -509,7 +509,6 @@ void unit::app_storage::save_screenshot(std::string i_filename)
       return;
    }
 
-   mws_sp<std::vector<uint32> > pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
    mws_sp<pfm_file> screenshot_file;
 
    if (i_filename.empty())
@@ -562,8 +561,7 @@ void unit::app_storage::save_screenshot(std::string i_filename)
          std::string file_name = mws_to_str("%s%s", idx_nr.c_str(), img_ext.c_str());
          screenshot_file = pfm_file::get_inst(dir_name + "/" + file_name);
          screenshot_idx++;
-      }
-      while (screenshot_file->exists());
+      } while (screenshot_file->exists());
    }
    else
    {
@@ -574,15 +572,15 @@ void unit::app_storage::save_screenshot(std::string i_filename)
       mws_print("saving screenshot to [ %s ] ... ", screenshot_file->get_full_path().c_str());
       int w = gfx::i()->rt.get_screen_width();
       int h = gfx::i()->rt.get_screen_height();
-      uint8* pix = (uint8*)begin_ptr(pixels);
-      res_ld::inst()->save_image(screenshot_file, w, h, pix, res_ld::e_vertical_flip);
+      mws_sp<std::vector<uint32>> pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
+      res_ld::inst()->save_image(screenshot_file, w, h, (uint8*)pixels->data(), res_ld::e_vertical_flip);
       mws_println("done.");
    }
 #endif
 }
 
 
-void unit::app_storage::start_recording_screen(std::string i_filename, const mws_video_params* i_params)
+void unit::app_storage::start_recording_screen(std::string i_filename, const mws_video_params * i_params)
 {
    p->start_recording_screen(i_filename, i_params);
 }
@@ -958,7 +956,7 @@ bool unit::rsk_was_hit(int x0, int y0)
    int dx = cx - x0;
    int dy = cy - y0;
 
-   if ((int)sqrtf(float(dx * dx + dy * dy)) <= radius)
+   if ((int)sqrtf(float(dx* dx + dy * dy)) <= radius)
    {
       return true;
    }
@@ -966,7 +964,7 @@ bool unit::rsk_was_hit(int x0, int y0)
    return false;
 }
 
-int unit::schedule_operation(const std::function<void()> &ioperation)
+int unit::schedule_operation(const std::function<void()> & ioperation)
 {
    operation_mutex.lock();
    operation_list.push_back(ioperation);
@@ -1032,7 +1030,7 @@ void unit::run_step()
       operation_list.clear();
       operation_mutex.unlock();
 
-      for (const auto &function : temp)
+      for (const auto& function : temp)
       {
          function();
       }

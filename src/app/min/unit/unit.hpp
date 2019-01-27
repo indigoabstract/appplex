@@ -103,7 +103,7 @@ public:
    // true to exit app, false to continue
    virtual bool back();
    bool rsk_was_hit(int x0, int y0);
-   int schedule_operation(const std::function<void()> &ioperation);
+   int schedule_operation(const std::function<void()>& ioperation);
    bool cancel_operation(int ioperation_id);
    /// return a reference to the app_impl implementation
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
