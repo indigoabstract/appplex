@@ -19,17 +19,17 @@ static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha,
 static int blending_list_length = sizeof(blending_list) / sizeof(gfx_uint);
 
 
-shared_ptr<gfx_material_entry> gfx_material_entry::nwi(std::string iname, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
+mws_sp<gfx_material_entry> gfx_material_entry::nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent)
 {
-   return shared_ptr<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, iparent));
+   return mws_sp<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, iparent));
 }
 
-shared_ptr<gfx_material_entry> gfx_material_entry::get_inst()
+mws_sp<gfx_material_entry> gfx_material_entry::get_inst()
 {
    return shared_from_this();
 }
 
-gfx_material_entry::gfx_material_entry(std::string i_name, shared_ptr<gfx_material> imaterial_inst, shared_ptr<gfx_material_entry> iparent)
+gfx_material_entry::gfx_material_entry(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent)
 {
    root = imaterial_inst;
    parent = iparent;
@@ -172,7 +172,7 @@ gfx_material_entry& gfx_material_entry::operator=(const glm::mat4& ivalue)
    return *this;
 }
 
-gfx_material_entry& gfx_material_entry::operator=(const shared_ptr<gfx_tex> ivalue)
+gfx_material_entry& gfx_material_entry::operator=(const mws_sp<gfx_tex> ivalue)
 {
    parent.lock()->value_type = gfx_input::s2d;
    value_type = gfx_input::s2d;
@@ -181,7 +181,7 @@ gfx_material_entry& gfx_material_entry::operator=(const shared_ptr<gfx_tex> ival
    return *this;
 }
 
-gfx_material_entry& gfx_material_entry::operator=(shared_ptr<gfx_shader> ivalue)
+gfx_material_entry& gfx_material_entry::operator=(mws_sp<gfx_shader> ivalue)
 {
    value_type = gfx_input::e_invalid;
    value = ivalue;
@@ -254,8 +254,8 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
    else
       // custom parameter
    {
-      shared_ptr<gfx_shader> sh = get_material()->shader;
-      shared_ptr<gfx_input> param = sh->get_param(name);
+      mws_sp<gfx_shader> sh = get_material()->shader;
+      mws_sp<gfx_input> param = sh->get_param(name);
 
       value_type = gfx_input::e_invalid;
 
@@ -308,7 +308,7 @@ gfx_material_entry& gfx_material_entry::operator=(const std::string& ivalue)
    return *this;
 }
 
-shared_ptr<gfx_material> gfx_material_entry::get_material()
+mws_sp<gfx_material> gfx_material_entry::get_material()
 {
    return root.lock();
 }
@@ -327,7 +327,7 @@ gfx_input::e_data_type gfx_material_entry::get_value_type()
 
 void gfx_material_entry::debug_print()
 {
-   std::unordered_map<std::string, shared_ptr<gfx_material_entry> >::iterator it = entries.begin();
+   std::unordered_map<std::string, mws_sp<gfx_material_entry> >::iterator it = entries.begin();
 
    mws_print("[");
    for (; it != entries.end(); it++)
@@ -362,24 +362,24 @@ void gfx_material_entry::debug_print()
    mws_print("]");
 }
 
-std::unordered_map<std::string, shared_ptr<gfx_material_entry> > gfx_material::static_std_param;
+std::unordered_map<std::string, mws_sp<gfx_material_entry> > gfx_material::static_std_param;
 
-gfx_material::gfx_material(std::shared_ptr<gfx> i_gi)
+gfx_material::gfx_material(mws_sp<gfx> i_gi)
 {
    shader_compile_time = 0;
    fsh_last_write = 0;
    vsh_last_write = 0;
 }
 
-shared_ptr<gfx_material> gfx_material::nwi(std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_material> gfx_material::nwi(mws_sp<gfx> i_gi)
 {
-   shared_ptr<gfx_material> m(new gfx_material(i_gi));
+   mws_sp<gfx_material> m(new gfx_material(i_gi));
    gfx_material& inst = *m;
 
    return m;
 }
 
-shared_ptr<gfx_material> gfx_material::get_inst()
+mws_sp<gfx_material> gfx_material::get_inst()
 {
    return shared_from_this();
 }
@@ -389,7 +389,7 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
    if (is_std_param(iname))
       // if it's a standard parameter
    {
-      shared_ptr<gfx_material_entry> me = std_params[iname];
+      mws_sp<gfx_material_entry> me = std_params[iname];
 
       if (!me)
       {
@@ -413,12 +413,12 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
    return *other_params[iname];
 }
 
-shared_ptr<gfx_shader> gfx_material::get_shader()
+mws_sp<gfx_shader> gfx_material::get_shader()
 {
    return load_shader();
 }
 
-void gfx_material::set_mesh(shared_ptr<gfx_vxo> imesh)
+void gfx_material::set_mesh(mws_sp<gfx_vxo> imesh)
 {
    mesh = imesh;
 }
@@ -430,7 +430,7 @@ void gfx_material::clear_entries()
 
 void gfx_material::debug_print()
 {
-   std::unordered_map<std::string, shared_ptr<gfx_material_entry> >::iterator it = other_params.begin();
+   std::unordered_map<std::string, mws_sp<gfx_material_entry> >::iterator it = other_params.begin();
 
    mws_print("[\n");
 
@@ -449,7 +449,7 @@ bool gfx_material::is_std_param(const std::string& iparam_name)
    return static_std_param.find(iparam_name) != static_std_param.end();
 }
 
-shared_ptr<gfx_shader> gfx_material::load_shader()
+mws_sp<gfx_shader> gfx_material::load_shader()
 {
    if (!shader)
    {
@@ -497,7 +497,7 @@ shared_ptr<gfx_shader> gfx_material::load_shader()
 
 void gfx_material::init()
 {
-   shared_ptr<gfx_material> mi;
+   mws_sp<gfx_material> mi;
 
    static_std_param[MP_BLENDING] = gfx_material_entry::nwi(MP_BLENDING, mi, nullptr);
    static_std_param[MP_COLOR_WRITE] = gfx_material_entry::nwi(MP_COLOR_WRITE, mi, nullptr);

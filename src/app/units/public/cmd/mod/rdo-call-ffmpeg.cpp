@@ -28,10 +28,10 @@ class rec_dir_op_flac_to_mp3: public recursive_dir_op
 public:
 	rec_dir_op_flac_to_mp3(bfs::path& iprocess_path, unicodestring& iprocess_arguments, bfs::path& isrc_path, bfs::path& idst_path,
 		unicodestring& iformat_extension, int imilliseconds_to_wait);
-	void on_start(shared_ptr<dir_node> dir);
-	bool on_entering_dir(shared_ptr<dir_node> dir);
-	void on_leaving_dir(shared_ptr<dir_node> dir);
-	void apply_to_file(shared_ptr<file_node> file);
+	void on_start(mws_sp<dir_node> dir);
+	bool on_entering_dir(mws_sp<dir_node> dir);
+	void on_leaving_dir(mws_sp<dir_node> dir);
+	void apply_to_file(mws_sp<file_node> file);
 
 private:
 	bfs::path process_path;
@@ -73,7 +73,7 @@ boost::program_options::options_description mod_cmd_start_process::get_options_d
 	return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_start_process::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_start_process::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -104,7 +104,7 @@ shared_ptr<long_operation> mod_cmd_start_process::run(const vector<unicodestring
 		dst_path = src_path / dst_path;
 	}
 
-	shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_ffmpeg(process_path, process_arguments, src_path, dst_path, format_extension, milliseconds_to_wait));
+	mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_ffmpeg(process_path, process_arguments, src_path, dst_path, format_extension, milliseconds_to_wait));
 
 	return lop;
 }
@@ -141,7 +141,7 @@ void long_op_ffmpeg::run()
 		{
 			utrx(untr("starting longOpFfmpeg from [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 
-			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
+			mws_sp<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_flac_to_mp3 rdo(process_path, process_arguments, src_path, dst_path, format_extension, milliseconds_to_wait);
 
 			dirtree->recursive_apply(rdo);
@@ -169,7 +169,7 @@ rec_dir_op_flac_to_mp3::rec_dir_op_flac_to_mp3(bfs::path& iprocess_path, unicode
 	milliseconds_to_wait = imilliseconds_to_wait;
 }
 
-void rec_dir_op_flac_to_mp3::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_flac_to_mp3::on_start(mws_sp<dir_node> dir)
 {
 	bool result = create_directory(dst_path);
 
@@ -179,7 +179,7 @@ void rec_dir_op_flac_to_mp3::on_start(shared_ptr<dir_node> dir)
 	}
 }
 
-bool rec_dir_op_flac_to_mp3::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_flac_to_mp3::on_entering_dir(mws_sp<dir_node> dir)
 {
 	if(dir->abs_dir_path != dst_path)
 	{
@@ -199,11 +199,11 @@ bool rec_dir_op_flac_to_mp3::on_entering_dir(shared_ptr<dir_node> dir)
 	return false;
 }
 
-void rec_dir_op_flac_to_mp3::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_flac_to_mp3::on_leaving_dir(mws_sp<dir_node> dir)
 {
 }
 
-void rec_dir_op_flac_to_mp3::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_flac_to_mp3::apply_to_file(mws_sp<file_node> file)
 {
 	static const unicodestring REPL_SOURCE_PATH			= utrs(untr("[{}]"), string2unicodestring(SOURCE_PATH));
 	static const unicodestring REPL_DESTINATION_PATH	= utrs(untr("[{}]"), string2unicodestring(DESTINATION_PATH));

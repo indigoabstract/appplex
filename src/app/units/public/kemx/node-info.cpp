@@ -78,7 +78,7 @@ node_info::~node_info()
 {
 }
 
-int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >& list, int level)
+int node_info::parseBlock(std::string& exp, std::vector<mws_sp<node_info> >& list, int level)
 {
 	int expLen = exp.length();
 	int blockLen = 1;
@@ -117,7 +117,7 @@ int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >&
 			//	mws_throw new IllegalStateException("invalid name: " + exp);
 			//}
 
-			shared_ptr<node_info> kv(new node_info());
+			mws_sp<node_info> kv(new node_info());
 
 			kv->name = name;
 			list.push_back(kv);
@@ -148,7 +148,7 @@ int node_info::parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >&
 
 	if (isSimple)
 	{
-		shared_ptr<node_info> kv(new node_info());
+		mws_sp<node_info> kv(new node_info());
 
 		kv->name = exp;
 		list.push_back(kv);
@@ -172,13 +172,13 @@ void print_level_offset(int ilevel)
 	}
 }
 
-void node_info::printList(vector<shared_ptr<node_info> >& list, int ilevel)
+void node_info::printList(vector<mws_sp<node_info> >& list, int ilevel)
 {
 	int size = list.size();
 
 	for (int k = 0; k < size; k++)
 	{
-		shared_ptr<node_info> kv = list[k];
+		mws_sp<node_info> kv = list[k];
 		bool new_line_block = (kv->list.size() > 0);
 
 		if (kv->name.length() > 0)

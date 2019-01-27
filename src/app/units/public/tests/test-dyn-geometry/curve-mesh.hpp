@@ -46,17 +46,17 @@ public:
 
 	void sample_touch_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list);
 	void sample_ncs_points(int istart_idx, int iend_idx, std::vector<pointer_evt::touch_point>& ipoint_list);
-	virtual void draw_in_sync(shared_ptr<gfx_camera> icamera);
-	void draw_using_va(shared_ptr<gfx_camera> icamera);
-	void draw_using_vbo(shared_ptr<gfx_camera> icamera);
-	void draw_unsynchronized(shared_ptr<gfx_camera> icamera);
+	virtual void draw_in_sync(mws_sp<gfx_camera> icamera);
+	void draw_using_va(mws_sp<gfx_camera> icamera);
+	void draw_using_vbo(mws_sp<gfx_camera> icamera);
+	void draw_unsynchronized(mws_sp<gfx_camera> icamera);
 
 	std::vector<gfx_uint> buffer_id_list;
 	bool drawing_mode_changed;
 	curve_types curve_type;
 	curve_mobility_types curve_mobility;
 	geometry_update_types geometry_update_type;
-	shared_ptr<NatCubic> curve;
+	mws_sp<NatCubic> curve;
 	std::vector<pointer_evt::touch_point> point_list;
 	std::vector<glm::vec3> sampled_point_list;
 	std::vector<vx_fmt_p3f_t2f> vx_tab;

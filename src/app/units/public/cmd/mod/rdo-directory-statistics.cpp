@@ -29,11 +29,11 @@ class rec_dir_op_dir_statistics: public recursive_dir_op
 {
 public:
 	rec_dir_op_dir_statistics(bfs::path& isrc_dir);
-	void on_start(shared_ptr<dir_node> dir);
-	void on_finish(shared_ptr<dir_node> dir);
-	bool on_entering_dir(shared_ptr<dir_node> dir);
-	void on_leaving_dir(shared_ptr<dir_node> dir);
-	void apply_to_file(shared_ptr<file_node> file);
+	void on_start(mws_sp<dir_node> dir);
+	void on_finish(mws_sp<dir_node> dir);
+	bool on_entering_dir(mws_sp<dir_node> dir);
+	void on_leaving_dir(mws_sp<dir_node> dir);
+	void apply_to_file(mws_sp<file_node> file);
 
 private:
 	bfs::path src_dir;
@@ -67,7 +67,7 @@ boost::program_options::options_description mod_cmd_dir_statistics::get_options_
 	return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_dir_statistics::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_dir_statistics::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -78,7 +78,7 @@ shared_ptr<long_operation> mod_cmd_dir_statistics::run(const vector<unicodestrin
 
 	boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
 
-	shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_dir_statistics(srcPath));
+	mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_dir_statistics(srcPath));
 
 	return lop;
 }
@@ -97,7 +97,7 @@ void long_op_dir_statistics::run()
 		{
 			utrx(untr("starting longOpDirStatistics in directory [{}]"), path2string(src_path));
 
-			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
+			mws_sp<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_dir_statistics rdo(src_path);
 
 			dirtree->recursive_apply(rdo);
@@ -119,30 +119,30 @@ rec_dir_op_dir_statistics::rec_dir_op_dir_statistics(path& isrc_dir)
 	src_dir = isrc_dir;
 }
 
-void rec_dir_op_dir_statistics::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_dir_statistics::on_start(mws_sp<dir_node> dir)
 {
 	file_count = directory_count = total_file_size = 0;
     min_file_size = 0xffffffffU;
 	max_file_size = 0;
 }
 
-void rec_dir_op_dir_statistics::on_finish(shared_ptr<dir_node> dir)
+void rec_dir_op_dir_statistics::on_finish(mws_sp<dir_node> dir)
 {
 	trx("directories [{0}], files [{1}], all-file size [{2}]", directory_count, file_count, total_file_size);
 	utrx(untr("smallest file [{0}] size [{1}], largest file [{2}] size [{3}]"), path2string(min_file), min_file_size, path2string(max_file), max_file_size);
 }
 
-bool rec_dir_op_dir_statistics::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_dir_statistics::on_entering_dir(mws_sp<dir_node> dir)
 {
 	return true;
 }
 
-void rec_dir_op_dir_statistics::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_dir_statistics::on_leaving_dir(mws_sp<dir_node> dir)
 {
 	directory_count++;
 }
 
-void rec_dir_op_dir_statistics::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_dir_statistics::apply_to_file(mws_sp<file_node> file)
 {
 	uint64 fileSize = file_size(file->abs_file_path);
 

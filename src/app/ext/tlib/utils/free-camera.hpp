@@ -19,12 +19,12 @@ public:
       e_roll_view_axis,
    };
 
-   free_camera(std::shared_ptr<unit> i_u);
+   free_camera(mws_sp<unit> i_u);
 
-	void update_input(shared_ptr<mws_dp> idp);
+	void update_input(mws_sp<mws_dp> idp);
 	void update();
 
-	std::shared_ptr<gfx_camera> persp_cam;
+	mws_sp<gfx_camera> persp_cam;
 	glm::vec3 look_at_dir = glm::vec3(0.f);
 	glm::vec3 up_dir = glm::vec3(0.f);
    glm::vec3 target_ref_point = glm::vec3(0.f);
@@ -41,6 +41,6 @@ private:
    float sign_phi = 0.f;
    e_movement_types mov_type = e_movement_types::e_translation;
    dragging_detector dragging_det;
-   std::shared_ptr<kinetic_scrolling> ks;
-   std::weak_ptr<unit> u;
+   mws_sp<kinetic_scrolling> ks;
+   mws_wp<unit> u;
 };

@@ -13,7 +13,7 @@ dragging_detector::dragging_detector()
    reset();
 }
 
-bool dragging_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
+bool dragging_detector::detect_helper(mws_sp<pointer_evt> evt)
 {
    bool gesture_detected = false;
    auto dragging_state = detect(evt);
@@ -50,7 +50,7 @@ bool dragging_detector::is_finished() const
    return det_state == tap_detector_state::ST_READY;
 }
 
-gesture_state dragging_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state dragging_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // only one finger press is allowed for dragging
    if (new_event->pointer_down_count() != 1)
@@ -128,13 +128,13 @@ double_tap_detector::double_tap_detector()
    reset();
 }
 
-bool double_tap_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
+bool double_tap_detector::detect_helper(mws_sp<pointer_evt> evt)
 {
    gesture_state gs = detect(evt);
    return gs == GS_ACTION;
 }
 
-gesture_state double_tap_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // only one finger press is allowed for taps
    if (new_event->pointer_down_count() != 1)
@@ -246,7 +246,7 @@ pinch_zoom_detector::pinch_zoom_detector()
    start_event = dummy_event;
 }
 
-bool pinch_zoom_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
+bool pinch_zoom_detector::detect_helper(mws_sp<pointer_evt> evt)
 {
    bool gesture_detected = false;
    auto pinch_state = detect(evt);
@@ -281,7 +281,7 @@ bool pinch_zoom_detector::detect_helper(std::shared_ptr<pointer_evt> evt)
    return gesture_detected;
 }
 
-gesture_state pinch_zoom_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state pinch_zoom_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // check for cancelled event
    if (new_event->type == pointer_evt::touch_cancelled)
@@ -379,7 +379,7 @@ anchor_rotation_one_finger_detector::anchor_rotation_one_finger_detector()
    start_event = dummy_event;
 }
 
-gesture_state anchor_rotation_one_finger_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state anchor_rotation_one_finger_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // this is a one finger gesture
    if (new_event->touch_count != 1)
@@ -450,7 +450,7 @@ axis_roll_detector::axis_roll_detector()
    reset();
 }
 
-bool axis_roll_detector::detect_helper(std::shared_ptr<pointer_evt> evt, float& rotation_angle)
+bool axis_roll_detector::detect_helper(mws_sp<pointer_evt> evt, float& rotation_angle)
 {
    bool gesture_detected = false;
    auto pinch_state = detect(evt);
@@ -497,7 +497,7 @@ bool axis_roll_detector::detect_helper(std::shared_ptr<pointer_evt> evt, float& 
    return gesture_detected;
 }
 
-gesture_state axis_roll_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state axis_roll_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // check for cancelled event
    if (new_event->type == pointer_evt::touch_cancelled)
@@ -613,7 +613,7 @@ panning_tilting_detector::panning_tilting_detector()
    start_event = dummy_event;
 }
 
-gesture_state panning_tilting_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+gesture_state panning_tilting_detector::detect(const mws_sp<pointer_evt> new_event)
 {
    // check for cancelled event
    if (new_event->type == pointer_evt::touch_cancelled)

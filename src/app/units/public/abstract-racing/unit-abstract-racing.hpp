@@ -9,14 +9,14 @@
 class unit_abstract_racing : public unit
 {
 public:
-	static shared_ptr<unit_abstract_racing> nwi();
+   static mws_sp<unit_abstract_racing> nwi();
 
-    virtual void init();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void init_mws();
+   virtual void load();
 
 private:
-	unit_abstract_racing();
+   unit_abstract_racing();
 };
 
 #endif

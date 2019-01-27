@@ -29,11 +29,11 @@ class rec_dir_op_std_fmt_rename : public recursive_dir_op
 {
 public:
    rec_dir_op_std_fmt_rename(path& isrc_path);
-   void on_start(shared_ptr<dir_node> dir);
-   void on_finish(shared_ptr<dir_node> dir);
-   bool on_entering_dir(shared_ptr<dir_node> dir);
-   void on_leaving_dir(shared_ptr<dir_node> dir);
-   void apply_to_file(shared_ptr<file_node> file);
+   void on_start(mws_sp<dir_node> dir);
+   void on_finish(mws_sp<dir_node> dir);
+   bool on_entering_dir(mws_sp<dir_node> dir);
+   void on_leaving_dir(mws_sp<dir_node> dir);
+   void apply_to_file(mws_sp<file_node> file);
 
 private:
    void rename_path(const path& irel_path, unicodestring& iold_filename, unicodestring& inew_filename, bool iis_directory);
@@ -75,7 +75,7 @@ boost::program_options::options_description mod_cmd_std_fmt_filenames::get_optio
    return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodestring>& args)
 {
    options_description desc = get_options_description();
    variables_map vm;
@@ -104,7 +104,7 @@ shared_ptr<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodest
       copyOnly = true;
    }
 
-   shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_std_fmt_rename(srcPath, dstPath, copyOnly));
+   mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_std_fmt_rename(srcPath, dstPath, copyOnly));
 
    return lop;
 }
@@ -136,7 +136,7 @@ void long_op_std_fmt_rename::run()
       {
          utrx(untr("starting longOpStdFmtRename in directory [{}]"), path2string(dst_path));
 
-         shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(dst_path);
+         mws_sp<directory_tree> dirtree = directory_tree::new_directory_tree(dst_path);
          rec_dir_op_std_fmt_rename rdo(dst_path);
 
          dirtree->recursive_apply(rdo);
@@ -158,25 +158,25 @@ rec_dir_op_std_fmt_rename::rec_dir_op_std_fmt_rename(path& srcPath)
    src_dir = srcPath;
 }
 
-void rec_dir_op_std_fmt_rename::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_std_fmt_rename::on_start(mws_sp<dir_node> dir)
 {
    file_count = directory_count = total_file_size = ren_exception_count = files_renamed_count = directories_renamed_count = 0;
 
    utrx(untr("renaming files from directory [{}]"), path2string(src_dir));
 }
 
-void rec_dir_op_std_fmt_rename::on_finish(shared_ptr<dir_node> dir)
+void rec_dir_op_std_fmt_rename::on_finish(mws_sp<dir_node> dir)
 {
    trx("directories [{0}], files [{1}], all-files size [{2}]", directory_count, file_count, total_file_size);
    trx("renamed directories [{0}], renamed files [{1}], rename exceptions [{2}]", directories_renamed_count, files_renamed_count, ren_exception_count);
 }
 
-bool rec_dir_op_std_fmt_rename::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_std_fmt_rename::on_entering_dir(mws_sp<dir_node> dir)
 {
    return true;
 }
 
-void rec_dir_op_std_fmt_rename::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_std_fmt_rename::on_leaving_dir(mws_sp<dir_node> dir)
 {
    unicodestring iFilename = path2string(dir->rel_dir_path.filename());
    unicodestring filename = apply_standard_format(iFilename, true);
@@ -185,7 +185,7 @@ void rec_dir_op_std_fmt_rename::on_leaving_dir(shared_ptr<dir_node> dir)
    directory_count++;
 }
 
-void rec_dir_op_std_fmt_rename::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_std_fmt_rename::apply_to_file(mws_sp<file_node> file)
 {
    // something will probably break if these file types are renamed
    unicodestring exceptions[] =
@@ -210,7 +210,7 @@ void rec_dir_op_std_fmt_rename::apply_to_file(shared_ptr<file_node> file)
    }
 
    unicodestring filename = apply_standard_format(iFilename);
-   shared_ptr<dir_node> dtn = file->parent_dir.lock();
+   mws_sp<dir_node> dtn = file->parent_dir.lock();
 
    rename_path(dtn->rel_dir_path, iFilename, filename, false);
    file_count++;

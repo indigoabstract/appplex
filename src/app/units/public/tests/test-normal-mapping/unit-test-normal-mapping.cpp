@@ -28,7 +28,7 @@ namespace ns_unit_test_normal_mapping
 	class mws_select_button : public gfx_plane
 	{
 	public:
-		mws_select_button(shared_ptr<unit_test_normal_mapping> iunit, int ibutton_id, std::string itex_name)
+		mws_select_button(mws_sp<unit_test_normal_mapping> iunit, int ibutton_id, std::string itex_name)
 		{
 			unit = iunit;
 			button_id = ibutton_id;
@@ -37,7 +37,7 @@ namespace ns_unit_test_normal_mapping
 			is_init = false;
 		}
 
-		shared_ptr<unit_test_normal_mapping> get_unit()
+		mws_sp<unit_test_normal_mapping> get_unit()
 		{
 			return unit.lock();
 		}
@@ -83,7 +83,7 @@ namespace ns_unit_test_normal_mapping
 			if(!is_init)
 			{
 				is_init = true;
-				mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
+				mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_mws_sp());
 
 				inst[MP_SHADER_NAME] = "basic-tex-shader";
 				inst[MP_BLENDING] = MV_ALPHA;
@@ -98,19 +98,19 @@ namespace ns_unit_test_normal_mapping
 		float x_percent_pos, y_percent_pos;
 		float x_percent_size, y_percent_size;
 		bool is_init;
-		weak_ptr<unit_test_normal_mapping> unit;
+		mws_wp<unit_test_normal_mapping> unit;
 	};
 
 
 	struct obj_tf
 	{
-		obj_tf(std::vector<shared_ptr<gfx_vxo> > imesh_list, glm::quat iinit_orientation)
+		obj_tf(std::vector<mws_sp<gfx_vxo> > imesh_list, glm::quat iinit_orientation)
 		{
 			mesh_list = imesh_list;
 			init_orientation = iinit_orientation;
 		}
 
-		std::vector<shared_ptr<gfx_vxo> > mesh_list;
+		std::vector<mws_sp<gfx_vxo> > mesh_list;
 		glm::quat init_orientation;
 	};
 
@@ -132,56 +132,56 @@ namespace ns_unit_test_normal_mapping
 			mt_car_interior,
 		};
 
-		impl(shared_ptr<unit_test_normal_mapping> iunit)
+		impl(mws_sp<unit_test_normal_mapping> iunit)
 		{
 			unit = iunit;
 			t = 0;
-			skybox = shared_ptr<gfx_box>(new gfx_box());
-			s_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
-			plane_mesh = shared_ptr<gfx_plane>(new gfx_plane());
+			skybox = mws_sp<gfx_box>(new gfx_box());
+			s_mesh = mws_sp<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
+			plane_mesh = mws_sp<gfx_plane>(new gfx_plane());
 			persp_cam = gfx_camera::nwi();
 			free_cam = std::make_shared<free_camera>(iunit);
 			is_paused = false;
 			current_car_idx = 0;
 			draw_axis = false;
 
-			mat_car_windows = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_tyres = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_carbon_fiber = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_wheel_rims = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_body = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_body_3 = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_chassis = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_interior = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_headlights = shared_ptr<gfx_material>(new gfx_material());
-			mat_car_headlights_glass = shared_ptr<gfx_material>(new gfx_material());
+			mat_car_windows = mws_sp<gfx_material>(new gfx_material());
+			mat_car_tyres = mws_sp<gfx_material>(new gfx_material());
+			mat_car_carbon_fiber = mws_sp<gfx_material>(new gfx_material());
+			mat_car_wheel_rims = mws_sp<gfx_material>(new gfx_material());
+			mat_car_body = mws_sp<gfx_material>(new gfx_material());
+			mat_car_body_3 = mws_sp<gfx_material>(new gfx_material());
+			mat_car_chassis = mws_sp<gfx_material>(new gfx_material());
+			mat_car_interior = mws_sp<gfx_material>(new gfx_material());
+			mat_car_headlights = mws_sp<gfx_material>(new gfx_material());
+			mat_car_headlights_glass = mws_sp<gfx_material>(new gfx_material());
 
-			shared_ptr<mws_select_button> b;
+			mws_sp<mws_select_button> b;
 			float y = 0.01;
 			float off = 0.14;
 
-			b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 0, "button-left"));
+			b = mws_sp<mws_select_button>(new mws_select_button(iunit, 0, "button-left"));
 			b->set_dim(0.01, y, 0.2, 0.1);
 			//button_list.push_back(b);
 
-			b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 1, "button-right"));
+			b = mws_sp<mws_select_button>(new mws_select_button(iunit, 1, "button-right"));
 			y += off;
 			b->set_dim(0.01, y, 0.2, 0.1);
 			//button_list.push_back(b);
 		}
 
-		shared_ptr<unit_test_normal_mapping> get_unit()
+		mws_sp<unit_test_normal_mapping> get_unit()
 		{
 			return unit.lock();
 		}
 
-		void set_car_idx(int icar_idx, shared_ptr<gfx_scene> gfx_scene_inst)
+		void set_car_idx(int icar_idx, mws_sp<gfx_scene> gfx_scene_inst)
 		{
-			std::vector<shared_ptr<gfx_vxo> > mesh_tab;
+			std::vector<mws_sp<gfx_vxo> > mesh_tab;
 
 			if(obj_tf_inst)
 			{
-				std::vector<shared_ptr<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
+				std::vector<mws_sp<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
 
 				for(int k = 0; k < mesh_list.size(); k++)
 				{
@@ -194,7 +194,7 @@ namespace ns_unit_test_normal_mapping
 			std::string scene_name = scene_idx_map[icar_idx];
 			obj_tf_inst = obj_map[scene_name];
 
-			std::vector<shared_ptr<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
+			std::vector<mws_sp<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
 
 			for(int k = 0; k < mesh_list.size(); k++)
 			{
@@ -212,7 +212,7 @@ namespace ns_unit_test_normal_mapping
 			case 0:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint";
@@ -241,7 +241,7 @@ namespace ns_unit_test_normal_mapping
 			case 1:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint";
@@ -270,7 +270,7 @@ namespace ns_unit_test_normal_mapping
 			case 2:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint2";
@@ -299,7 +299,7 @@ namespace ns_unit_test_normal_mapping
 			case 3:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint2";
@@ -328,7 +328,7 @@ namespace ns_unit_test_normal_mapping
 			case 4:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint2";
@@ -357,7 +357,7 @@ namespace ns_unit_test_normal_mapping
 			case 5:
 				{
 					mesh_tab.push_back(s_mesh);
-					shared_ptr<gfx_material> new_mat(new gfx_material());
+					mws_sp<gfx_material> new_mat(new gfx_material());
 					gfx_material& mat = *new_mat;
 
 					mat[MP_SHADER_NAME] = "metallic-paint2";
@@ -700,7 +700,7 @@ namespace ns_unit_test_normal_mapping
 			}
 		}
 
-		void init(shared_ptr<gfx_scene> gfx_scene_inst)
+		void init(mws_sp<gfx_scene> gfx_scene_inst)
 		{
 			persp_cam->camera_id = "default";
 			persp_cam->rendering_priority = 0;
@@ -757,29 +757,29 @@ namespace ns_unit_test_normal_mapping
 				rs_mesh.set_dimensions(100, 75);
 				rs_mesh.position = glm::vec3(0.f, 0.f, -500.f);
 
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 				mesh_list.push_back(s_mesh);
-				obj_map["test_sphere"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, s_mesh->orientation));
+				obj_map["test_sphere"] = mws_sp<obj_tf>(new obj_tf(mesh_list, s_mesh->orientation));
 			}
 
 
-			shared_ptr<gfx_obj_vxo> obj_mesh;
+			mws_sp<gfx_obj_vxo> obj_mesh;
 			// ferrari model
 			{
-				obj_mesh = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+				obj_mesh = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 				gfx_obj_vxo& r_obj_mesh = *obj_mesh;
 				r_obj_mesh.scaling = glm::vec3(150.f);
 				r_obj_mesh.look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, -1));
 				r_obj_mesh = "car.obj";
 
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 				mesh_list.push_back(obj_mesh);
-				obj_map["ferrari_car"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["ferrari_car"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 			// car wheel rim
 			{
-				obj_mesh = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+				obj_mesh = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 				gfx_obj_vxo& r_obj_mesh = *obj_mesh;
 				r_obj_mesh.scaling = glm::vec3(0.7f);
 				r_obj_mesh.look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, 1));
@@ -787,14 +787,14 @@ namespace ns_unit_test_normal_mapping
 				//r_obj_mesh = "w1.obj";
 				r_obj_mesh = "Agile_01_Rims_HD.obj";
 
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 				mesh_list.push_back(obj_mesh);
-				obj_map["car_wheel_rim"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["car_wheel_rim"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 			// car wheel tyre
 			{
-				obj_mesh = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+				obj_mesh = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 				gfx_obj_vxo& r_obj_mesh = *obj_mesh;
 				r_obj_mesh.scaling = glm::vec3(0.7f);
 				r_obj_mesh.look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, 1));
@@ -802,30 +802,30 @@ namespace ns_unit_test_normal_mapping
 				//r_obj_mesh = "w1.obj";
 				r_obj_mesh = "Agile_01_Tyres_HD.obj";
 
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 				mesh_list.push_back(obj_mesh);
-				obj_map["car_wheel_tyre"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["car_wheel_tyre"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 			// car glass
 			{
-				obj_mesh = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+				obj_mesh = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 				gfx_obj_vxo& r_obj_mesh = *obj_mesh;
 				r_obj_mesh.scaling = glm::vec3(0.5f);
 				//r_obj_mesh.look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, 1));
 				r_obj_mesh.look_at(glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
 				r_obj_mesh = "mustang_garage.obj";
 
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 				mesh_list.push_back(obj_mesh);
-				obj_map["car_glass"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["car_glass"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 
 			// watchdogs car1
 			{
 				const int DIM = 8;
-				const shared_ptr<gfx_material> mesh_materials[DIM] =
+				const mws_sp<gfx_material> mesh_materials[DIM] =
 				{
 					mat_car_body, mat_car_chassis, mat_car_headlights,
 					mat_car_headlights_glass, mat_car_interior, mat_car_wheel_rims,
@@ -837,12 +837,12 @@ namespace ns_unit_test_normal_mapping
 					"Agile_01_HeadlightsGlass_HD.obj", "Agile_01_Interior_HD.obj", "Agile_01_Rims_HD.obj",
 					"Agile_01_Tyres_HD.obj", "Agile_01_Windows_HD.obj",
 				};
-				shared_ptr<gfx_obj_vxo> obj_mesh_tab[DIM];
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				mws_sp<gfx_obj_vxo> obj_mesh_tab[DIM];
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 
 				for (int k = 0; k < DIM; k++)
 				{
-					obj_mesh_tab[k] = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+					obj_mesh_tab[k] = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 					gfx_obj_vxo& r_obj_mesh = *obj_mesh_tab[k];
 
 					r_obj_mesh.scaling = glm::vec3(0.7f);
@@ -852,13 +852,13 @@ namespace ns_unit_test_normal_mapping
 					mesh_list.push_back(obj_mesh_tab[k]);
 				}
 
-				obj_map["watchdogs_car1"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["watchdogs_car1"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 			// mustang
 			{
 				const int DIM = 10;
-				const shared_ptr<gfx_material> mesh_materials[DIM] =
+				const mws_sp<gfx_material> mesh_materials[DIM] =
 				{
 					mat_car_body_3, mat_car_chassis, mat_car_headlights_glass,
 					mat_car_headlights, mat_car_headlights, mat_car_interior,
@@ -872,12 +872,12 @@ namespace ns_unit_test_normal_mapping
 					"Mustang_Metal_HD001.obj", "Mustang_Plastic_HD001.obj", "Mustang_Tyres_HD001.obj",
 					"Mustang_Windows_HD001.obj",
 				};
-				shared_ptr<gfx_obj_vxo> obj_mesh_tab[DIM];
-				std::vector<shared_ptr<gfx_vxo> > mesh_list;
+				mws_sp<gfx_obj_vxo> obj_mesh_tab[DIM];
+				std::vector<mws_sp<gfx_vxo> > mesh_list;
 
 				for (int k = 0; k < DIM; k++)
 				{
-					obj_mesh_tab[k] = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+					obj_mesh_tab[k] = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 					gfx_obj_vxo& r_obj_mesh = *obj_mesh_tab[k];
 
 					r_obj_mesh.scaling = glm::vec3(0.5f);
@@ -888,7 +888,7 @@ namespace ns_unit_test_normal_mapping
 					mesh_list.push_back(obj_mesh_tab[k]);
 				}
 
-				obj_map["mustang"] = shared_ptr<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
+				obj_map["mustang"] = mws_sp<obj_tf>(new obj_tf(mesh_list, obj_mesh->orientation));
 			}
 
 			scene_idx_map[0] = "ferrari_car";
@@ -932,7 +932,7 @@ namespace ns_unit_test_normal_mapping
 
 			for(int k = 0; k < button_list.size(); k++)
 			{
-				shared_ptr<mws_select_button> btn = button_list[k];
+				mws_sp<mws_select_button> btn = button_list[k];
 
 				if(btn->is_hit(ipoint.x, ipoint.y))
 				{
@@ -960,35 +960,35 @@ namespace ns_unit_test_normal_mapping
 			return true;
 		}
 
-		shared_ptr<gfx_box> skybox;
-		shared_ptr<gfx_plane> plane_mesh;
-		shared_ptr<gfx_vpc_ring_sphere> s_mesh;
-		shared_ptr<obj_tf> obj_tf_inst;
-		shared_ptr<gfx_camera> persp_cam;
-		shared_ptr<gfx_camera> ortho_cam;
+		mws_sp<gfx_box> skybox;
+		mws_sp<gfx_plane> plane_mesh;
+		mws_sp<gfx_vpc_ring_sphere> s_mesh;
+		mws_sp<obj_tf> obj_tf_inst;
+		mws_sp<gfx_camera> persp_cam;
+		mws_sp<gfx_camera> ortho_cam;
 		glm::vec3 u_v3_light_dir;
 		bool draw_axis;
 		float t;
-		shared_ptr<free_camera> free_cam;
+		mws_sp<free_camera> free_cam;
 		bool is_paused;
 		int current_car_idx;
 		int car_count;
-		std::vector<shared_ptr<mws_select_button> > button_list;
+		std::vector<mws_sp<mws_select_button> > button_list;
 
-		shared_ptr<gfx_material> mat_car_windows;
-		shared_ptr<gfx_material> mat_car_tyres;
-		shared_ptr<gfx_material> mat_car_carbon_fiber;
-		shared_ptr<gfx_material> mat_car_wheel_rims;
-		shared_ptr<gfx_material> mat_car_body;
-		shared_ptr<gfx_material> mat_car_body_3;
-		shared_ptr<gfx_material> mat_car_chassis;
-		shared_ptr<gfx_material> mat_car_interior;
-		shared_ptr<gfx_material> mat_car_headlights;
-		shared_ptr<gfx_material> mat_car_headlights_glass;
+		mws_sp<gfx_material> mat_car_windows;
+		mws_sp<gfx_material> mat_car_tyres;
+		mws_sp<gfx_material> mat_car_carbon_fiber;
+		mws_sp<gfx_material> mat_car_wheel_rims;
+		mws_sp<gfx_material> mat_car_body;
+		mws_sp<gfx_material> mat_car_body_3;
+		mws_sp<gfx_material> mat_car_chassis;
+		mws_sp<gfx_material> mat_car_interior;
+		mws_sp<gfx_material> mat_car_headlights;
+		mws_sp<gfx_material> mat_car_headlights_glass;
 
 		std::map<uint32, std::string> scene_idx_map;
-		std::map<std::string, shared_ptr<obj_tf> > obj_map;
-		weak_ptr<unit_test_normal_mapping> unit;
+		std::map<std::string, mws_sp<obj_tf> > obj_map;
+		mws_wp<unit_test_normal_mapping> unit;
 	};
 }
 
@@ -998,9 +998,9 @@ using namespace ns_unit_test_normal_mapping;
 
 unit_test_normal_mapping::unit_test_normal_mapping() : unit(mws_stringify(UNIT_TEST_NORMAL_MAPPING)) {}
 
-shared_ptr<unit_test_normal_mapping> unit_test_normal_mapping::nwi()
+mws_sp<unit_test_normal_mapping> unit_test_normal_mapping::nwi()
 {
-	return shared_ptr<unit_test_normal_mapping>(new unit_test_normal_mapping());
+	return mws_sp<unit_test_normal_mapping>(new unit_test_normal_mapping());
 }
 
 void unit_test_normal_mapping::init()
@@ -1009,7 +1009,7 @@ void unit_test_normal_mapping::init()
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
-bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file> ispec_file)
+bool merge_diffuse_specular(mws_sp<pfm_file> idiff_file, mws_sp<pfm_file> ispec_file)
 {
 	union color32
 	{
@@ -1023,9 +1023,9 @@ bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file
 		};
 	};
 
-	shared_ptr<raw_img_data> diffmap = res_ld::inst()->load_image(idiff_file);
+	mws_sp<raw_img_data> diffmap = res_ld::inst()->load_image(idiff_file);
 	color32* diffmap_ptr = (color32*)diffmap->data;
-	shared_ptr<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
+	mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
 	color32* specularmap_ptr = (color32*)specularmap->data;
 
 	int width = diffmap->width;
@@ -1050,7 +1050,7 @@ bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file
 	}
 
 	std::string new_filename = "new_diff_" + idiff_file->get_file_name();
-	shared_ptr<pfm_file> f = pfm_file::get_inst(new_filename);
+	mws_sp<pfm_file> f = pfm_file::get_inst(new_filename);
 	res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
 
 	return true;
@@ -1058,8 +1058,8 @@ bool merge_diffuse_specular(shared_ptr<pfm_file> idiff_file, shared_ptr<pfm_file
 
 bool merge_diffuse_specular(std::string idiff_fname, std::string ispec_fname)
 {
-	shared_ptr<pfm_file> idiff_file = pfm_file::get_inst(idiff_fname);
-	shared_ptr<pfm_file> ispec_file = pfm_file::get_inst(ispec_fname);
+	mws_sp<pfm_file> idiff_file = pfm_file::get_inst(idiff_fname);
+	mws_sp<pfm_file> ispec_file = pfm_file::get_inst(ispec_fname);
 
 	return merge_diffuse_specular(idiff_file, ispec_file);
 }
@@ -1078,7 +1078,7 @@ void extract_alpha_channel()
 		};
 	};
 
-	shared_ptr<raw_img_data> img = res_ld::inst()->load_image("trail.png");
+	mws_sp<raw_img_data> img = res_ld::inst()->load_image("trail.png");
 	color32* img_ptr = (color32*)img->data;
 	int size = img->width * img->height;
 
@@ -1088,7 +1088,7 @@ void extract_alpha_channel()
 		img_ptr[k].r = img_ptr[k].g = img_ptr[k].b = 255;
 	}
 
-	shared_ptr<pfm_file> f = pfm_file::get_inst("trail-2.png");
+	mws_sp<pfm_file> f = pfm_file::get_inst("trail-2.png");
 	res_ld::inst()->save_image(f, img->width, img->height, img->data);
 }
 
@@ -1106,9 +1106,9 @@ void combine_lightmaps()
 		};
 	};
 
-	shared_ptr<raw_img_data> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
-	shared_ptr<raw_img_data> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
-	shared_ptr<raw_img_data> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
+	mws_sp<raw_img_data> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
+	mws_sp<raw_img_data> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
+	mws_sp<raw_img_data> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
 	color32* img_day_ptr = (color32*)img_day->data;
 	color32* img_night_ptr = (color32*)img_night->data;
 	color32* img_overcast_ptr = (color32*)img_overcast->data;
@@ -1124,7 +1124,7 @@ void combine_lightmaps()
 		img_ptr[k].b = img_day_ptr[k].a;
 	}
 
-	shared_ptr<pfm_file> f = pfm_file::get_inst("Track25_Lightmap2.png");
+	mws_sp<pfm_file> f = pfm_file::get_inst("Track25_Lightmap2.png");
 	res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
 }
 
@@ -1142,8 +1142,8 @@ void combine_trail()
 		};
 	};
 
-	shared_ptr<raw_img_data> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
-	shared_ptr<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
+	mws_sp<raw_img_data> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
+	mws_sp<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
 	color32* img_alpha_ptr = (color32*)img_alpha->data;
 	color32* img_outline_ptr = (color32*)img_outline->data;
 	int size = img_alpha->width * img_alpha->height;
@@ -1158,7 +1158,7 @@ void combine_trail()
 		img_ptr[k].r = 0;
 	}
 
-	shared_ptr<pfm_file> f = pfm_file::get_inst("trail-new.png");
+	mws_sp<pfm_file> f = pfm_file::get_inst("trail-new.png");
 	res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
 }
 
@@ -1205,15 +1205,15 @@ void unit_test_normal_mapping::load()
 
 	if (false)
 	{
-		shared_ptr<pfm_path> path = pfm_path::get_inst("", "png");
-		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(get_smtp_instance(), true);
+		mws_sp<pfm_path> path = pfm_path::get_inst("", "png");
+		mws_sp<std::vector<mws_sp<pfm_file> > > file_list = path->list_directory(get_smtp_instance(), true);
 		std::vector<std::string> spec_file_list;
 		std::vector<std::string> diff_file_list;
 		auto it = file_list->begin();
 
 		for (; it != file_list->end(); it++)
 		{
-			shared_ptr<pfm_file> file = *it;
+			mws_sp<pfm_file> file = *it;
 			std::string fname = file->get_file_name();
 
 			if (ends_with(fname, "_S.png"))
@@ -1243,12 +1243,12 @@ void unit_test_normal_mapping::load()
 
 			for (; it2 != file_list->end(); it2++)
 			{
-				shared_ptr<pfm_file> diff_file = *it2;
+				mws_sp<pfm_file> diff_file = *it2;
 				std::string diff_fname = diff_file->get_file_name();
 
 				if (mws_str::starts_with(diff_fname, root) && !ends_with(diff_fname, "_S.png") && (std::find(diff_file_list.begin(), diff_file_list.end(), diff_fname) == diff_file_list.end()))
 				{
-					shared_ptr<pfm_file> specular_file = pfm_file::get_inst(fname);
+					mws_sp<pfm_file> specular_file = pfm_file::get_inst(fname);
 					//int idx = fname.length() - 6;
 					//std::string diff_fname_last = diff_fname.substr(idx, diff_fname.length() - idx);
 					diff_file_list.push_back(diff_fname);
@@ -1276,7 +1276,7 @@ void unit_test_normal_mapping::load()
 	//	//rgba[k] = 0x707abcde;
 	//}
 
-	//shared_ptr<pfm_file> f = pfm_file::get_inst("sparkle-normal-map.png");
+	//mws_sp<pfm_file> f = pfm_file::get_inst("sparkle-normal-map.png");
 	//res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
 	
 	//union color32
@@ -1291,9 +1291,9 @@ void unit_test_normal_mapping::load()
 	//	};
 	//};
 
-	//shared_ptr<raw_img_data> diffmap = res_ld::inst()->load_image("earth_diffmap.png");
+	//mws_sp<raw_img_data> diffmap = res_ld::inst()->load_image("earth_diffmap.png");
 	//color32* diffmap_ptr = (color32*)diffmap->data;
-	//shared_ptr<raw_img_data> specularmap = res_ld::inst()->load_image("earth_flat_map_spec.png");
+	//mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image("earth_flat_map_spec.png");
 	//color32* specularmap_ptr = (color32*)specularmap->data;
 
 	//for (int k = 0; k < size; k++)
@@ -1304,10 +1304,10 @@ void unit_test_normal_mapping::load()
 	//	rgba[k] = normal | ((specular << 24) & 0xff000000);
 	//}
 
-	//shared_ptr<pfm_file> f = pfm_file::get_inst("earth_normal_spec_map.png");
+	//mws_sp<pfm_file> f = pfm_file::get_inst("earth_normal_spec_map.png");
 	//res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
 
-	p = shared_ptr<impl>(new impl(static_pointer_cast<unit_test_normal_mapping>(get_smtp_instance())));
+	p = mws_sp<impl>(new impl(static_pointer_cast<unit_test_normal_mapping>(get_smtp_instance())));
 	p->init(gfx_scene_inst);
 
 	mws_report_gfx_errs();
@@ -1320,7 +1320,7 @@ bool unit_test_normal_mapping::update()
 	p->skybox->position = p->persp_cam->position;
 	p->s_mesh->orientation = glm::quat(glm::vec3(0, t, 0));
 
-	std::vector<shared_ptr<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
+	std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
 
 	for(int k = 0; k < mesh_list.size(); k++)
 	{
@@ -1351,11 +1351,11 @@ bool unit_test_normal_mapping::update()
 	return unit::update();
 }
 
-void unit_test_normal_mapping::receive(shared_ptr<mws_dp> idp)
+void unit_test_normal_mapping::receive(mws_sp<mws_dp> idp)
 {
 	if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 	{
-		shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+		mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 		switch(ts->get_type())
 		{
@@ -1370,7 +1370,7 @@ void unit_test_normal_mapping::receive(shared_ptr<mws_dp> idp)
 	}
 	else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 	{
-		shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+		mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 		if(ke->get_type() != key_evt::KE_RELEASED)
 		{
@@ -1408,9 +1408,9 @@ void unit_test_normal_mapping::receive(shared_ptr<mws_dp> idp)
          {
             if (p->current_car_idx == 10)
             {
-               std::vector<shared_ptr<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
+               std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
                gfx_vxo& mesh = *mesh_list[0];
-               std::vector<std::shared_ptr<gfx_material> > mesh_materials = { p->mat_car_body_3, p->mat_car_body };
+               std::vector<mws_sp<gfx_material> > mesh_materials = { p->mat_car_body_3, p->mat_car_body };
                static int idx = 1;
 
                mesh.set_material(mesh_materials[idx++]);
@@ -1427,7 +1427,7 @@ void unit_test_normal_mapping::receive(shared_ptr<mws_dp> idp)
 
 			case KEY_W:
 				{
-					std::vector<shared_ptr<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
+					std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
 
 					for(int k = 0; k < mesh_list.size(); k++)
 					{

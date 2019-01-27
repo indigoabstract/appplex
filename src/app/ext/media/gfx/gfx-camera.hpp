@@ -21,12 +21,12 @@ class gfx_material;
 
 namespace seq_util
 {
-   inline float read_float(shared_ptr<rw_sequence> isq)
+   inline float read_float(mws_sp<rw_sequence> isq)
    {
       return isq->r.read_real32();
    }
 
-   inline glm::vec2 read_vec2(shared_ptr<rw_sequence> isq)
+   inline glm::vec2 read_vec2(mws_sp<rw_sequence> isq)
    {
       glm::vec2 val;
 
@@ -36,7 +36,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec3 read_vec3(shared_ptr<rw_sequence> isq)
+   inline glm::vec3 read_vec3(mws_sp<rw_sequence> isq)
    {
       glm::vec3 val;
 
@@ -47,7 +47,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec4 read_vec4(shared_ptr<rw_sequence> isq)
+   inline glm::vec4 read_vec4(mws_sp<rw_sequence> isq)
    {
       glm::vec4 val;
 
@@ -59,7 +59,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::quat read_quat(shared_ptr<rw_sequence> isq)
+   inline glm::quat read_quat(mws_sp<rw_sequence> isq)
    {
       glm::quat val;
 
@@ -71,25 +71,25 @@ namespace seq_util
       return val;
    }
 
-   inline void write_float(shared_ptr<rw_sequence> isq, float ival)
+   inline void write_float(mws_sp<rw_sequence> isq, float ival)
    {
       isq->w.write_real32(ival);
    }
 
-   inline void write_vec2(shared_ptr<rw_sequence> isq, glm::vec2& ival)
+   inline void write_vec2(mws_sp<rw_sequence> isq, glm::vec2& ival)
    {
       isq->w.write_real32(ival.x);
       isq->w.write_real32(ival.y);
    }
 
-   inline void write_vec3(shared_ptr<rw_sequence> isq, glm::vec3& ival)
+   inline void write_vec3(mws_sp<rw_sequence> isq, glm::vec3& ival)
    {
       isq->w.write_real32(ival.x);
       isq->w.write_real32(ival.y);
       isq->w.write_real32(ival.z);
    }
 
-   inline void write_vec4(shared_ptr<rw_sequence> isq, glm::vec4& ival)
+   inline void write_vec4(mws_sp<rw_sequence> isq, glm::vec4& ival)
    {
       isq->w.write_real32(ival.x);
       isq->w.write_real32(ival.y);
@@ -97,7 +97,7 @@ namespace seq_util
       isq->w.write_real32(ival.w);
    }
 
-   inline void write_quat(shared_ptr<rw_sequence> isq, glm::quat& ival)
+   inline void write_quat(mws_sp<rw_sequence> isq, glm::quat& ival)
    {
       isq->w.write_real32(ival.x);
       isq->w.write_real32(ival.y);
@@ -127,23 +127,23 @@ public:
 class draw_context
 {
 public:
-   draw_context(shared_ptr<gfx_camera> icam);
-   shared_ptr<gfx_camera> get_cam() { return cam.lock(); }
+   draw_context(mws_sp<gfx_camera> icam);
+   mws_sp<gfx_camera> get_cam() { return cam.lock(); }
    void draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4& color, float thickness);
    void draw_texture(std::string tex_name, float ix, float iy, float iwidth, float iheight);
 
-   weak_ptr<gfx_camera> cam;
-   shared_ptr<gfx_vxo> line_mesh;
-   shared_ptr<gfx_vxo> img_mesh;
+   mws_wp<gfx_camera> cam;
+   mws_sp<gfx_vxo> line_mesh;
+   mws_sp<gfx_vxo> img_mesh;
 };
 
 
 class draw_op
 {
 public:
-   virtual void read_data(shared_ptr<rw_sequence> seq) = 0;
-   virtual void write_data(shared_ptr<rw_sequence> seq) = 0;
-   virtual void draw(shared_ptr<draw_context> idc) = 0;
+   virtual void read_data(mws_sp<rw_sequence> seq) = 0;
+   virtual void write_data(mws_sp<rw_sequence> seq) = 0;
+   virtual void draw(mws_sp<draw_context> idc) = 0;
 };
 
 
@@ -157,22 +157,22 @@ public:
       e_custom_proj
    };
 
-   static shared_ptr<gfx_camera> nwi(std::shared_ptr<gfx> i_gi = nullptr);
+   static mws_sp<gfx_camera> nwi(mws_sp<gfx> i_gi = nullptr);
    virtual e_gfx_obj_type get_type()const override;
    void clear_buffers();
-   void update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp);
+   void update_glp_params(mws_sp<gfx_vxo> imesh, mws_sp<gfx_shader> glp);
    void draw_arc(glm::vec3 position, float radius, glm::quat orientation, float startAngle, float stopAngle, const glm::vec4& color, float precision, float thickness);
    void draw_axes(const glm::vec3& istart, float length, float thickness);
    void draw_box(glm::vec3 position, glm::vec3 size, glm::quat orientation, const glm::vec4& color, float thickness);
    void draw_circle(glm::vec3 position, float radius, glm::vec3 normal, const glm::vec4& color, float precision, float thickness);
    void draw_grid(glm::vec3 position, glm::vec3 size, glm::quat orientation, const glm::vec4& color, float precision, float thickness);
-   void draw_image(shared_ptr<gfx_tex> img, float x, float y, float width = 0.f, float height = 0.f);
+   void draw_image(mws_sp<gfx_tex> img, float x, float y, float width = 0.f, float height = 0.f);
    void draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4& color, float thickness);
    void draw_plane(glm::vec3 center, glm::vec3 look_at_dir, glm::vec2 size, const glm::vec4& color);
    void draw_point(glm::vec3 center, const glm::vec4& color, float thickness);
    void draw_sphere(glm::vec3 position, float radius, glm::quat orientation, const glm::vec4& color, float precision, float thickness);
    void draw_text_2d(glm::vec3 position, std::string text, const glm::vec4& color, glm::vec2 size, std::string fontName, glm::vec2 scale);
-   void draw_mesh(shared_ptr<gfx_vxo> imesh);
+   void draw_mesh(mws_sp<gfx_vxo> imesh);
    virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) override;
    virtual void update_camera_state();
 
@@ -200,17 +200,17 @@ public:
 protected:
    friend class gfx_scene;
    friend class gfx_camera_impl;
-   gfx_camera(std::shared_ptr<gfx> i_gi = nullptr);
-   virtual void load(shared_ptr<gfx_camera> inst);
+   gfx_camera(mws_sp<gfx> i_gi = nullptr);
+   virtual void load(mws_sp<gfx_camera> inst);
    virtual void update_camera_state_impl();
-   shared_ptr<draw_context> draw_ctx;
-   shared_ptr<rw_sequence> draw_ops;
+   mws_sp<draw_context> draw_ctx;
+   mws_sp<rw_sequence> draw_ops;
 
 public:
    glm::mat4 camera_mx = glm::mat4(1.f);
    glm::mat4 view_mx = glm::mat4(1.f);
    glm::mat4 projection_mx;
-   shared_ptr<gfx_camera_impl> p;
+   mws_sp<gfx_camera_impl> p;
 
    static int camera_idx;
 };

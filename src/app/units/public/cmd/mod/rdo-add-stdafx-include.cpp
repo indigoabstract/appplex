@@ -31,11 +31,11 @@ class rec_dir_op_add_stdafx_include: public recursive_dir_op
 {
 public:
 	rec_dir_op_add_stdafx_include(path isrc_path, vector<unicodestring> iexclude_path);
-	void on_start(shared_ptr<dir_node> dir);
-	void on_finish(shared_ptr<dir_node> dir);
-	bool on_entering_dir(shared_ptr<dir_node> dir);
-	void on_leaving_dir(shared_ptr<dir_node> dir);
-	void apply_to_file(shared_ptr<file_node> file);
+	void on_start(mws_sp<dir_node> dir);
+	void on_finish(mws_sp<dir_node> dir);
+	bool on_entering_dir(mws_sp<dir_node> dir);
+	void on_leaving_dir(mws_sp<dir_node> dir);
+	void apply_to_file(mws_sp<file_node> file);
 
 private:
 	path src_path;
@@ -67,7 +67,7 @@ boost::program_options::options_description mod_cmd_add_stdafx_include::get_opti
 	return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_add_stdafx_include::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_add_stdafx_include::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -86,7 +86,7 @@ shared_ptr<long_operation> mod_cmd_add_stdafx_include::run(const vector<unicodes
 		excludePath = vm[EXCLUDE_PATH].as<vector<unicodestring> >();
 	}
 
-	shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_add_stdafx_include(vm[SOURCE_PATH].as<unicodestring>(), excludePath));
+	mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_add_stdafx_include(vm[SOURCE_PATH].as<unicodestring>(), excludePath));
 
 	return lop;
 }
@@ -106,7 +106,7 @@ void long_op_add_stdafx_include::run()
 		{
 			utrx(untr("starting longOpAddStdafxInclude in directory [{}]"), path2string(src_path));
 
-			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
+			mws_sp<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_add_stdafx_include rdo(src_path, exclude_path);
 
 			dirtree->recursive_apply(rdo);
@@ -143,13 +143,13 @@ rec_dir_op_add_stdafx_include::rec_dir_op_add_stdafx_include(path iSrcPath, vect
 	}
 }
 
-void rec_dir_op_add_stdafx_include::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_add_stdafx_include::on_start(mws_sp<dir_node> dir)
 {
 	file_count = 0;
 	has_changes = false;
 }
 
-void rec_dir_op_add_stdafx_include::on_finish(shared_ptr<dir_node> dir)
+void rec_dir_op_add_stdafx_include::on_finish(mws_sp<dir_node> dir)
 {
 	if(!has_changes)
 	{
@@ -159,7 +159,7 @@ void rec_dir_op_add_stdafx_include::on_finish(shared_ptr<dir_node> dir)
 	trx("cpp files [{}]", file_count);
 }
 
-bool rec_dir_op_add_stdafx_include::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_add_stdafx_include::on_entering_dir(mws_sp<dir_node> dir)
 {
 	path& relPath = dir->rel_dir_path;
 
@@ -176,11 +176,11 @@ bool rec_dir_op_add_stdafx_include::on_entering_dir(shared_ptr<dir_node> dir)
 	return true;
 }
 
-void rec_dir_op_add_stdafx_include::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_add_stdafx_include::on_leaving_dir(mws_sp<dir_node> dir)
 {
 }
 
-void rec_dir_op_add_stdafx_include::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_add_stdafx_include::apply_to_file(mws_sp<file_node> file)
 {
 	unicodestring ext = path2string(file->rel_file_path.extension());
 

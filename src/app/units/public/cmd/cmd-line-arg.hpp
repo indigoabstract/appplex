@@ -14,7 +14,7 @@
 class cmd_line_arg
 {
 public:
-	static shared_ptr<long_operation> run(const std::vector<unicodestring>& args);
+	static mws_sp<long_operation> run(const std::vector<unicodestring>& args);
 };
 
 
@@ -23,7 +23,7 @@ class mod_cmd
 public:
 	virtual std::string get_module_name() = 0;
 	virtual boost::program_options::options_description get_options_description() = 0;
-	virtual shared_ptr<long_operation> run(const std::vector<unicodestring>& args) = 0;
+	virtual mws_sp<long_operation> run(const std::vector<unicodestring>& args) = 0;
 };
 
 #endif

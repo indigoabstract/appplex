@@ -12,16 +12,16 @@ class unit_test_shadow_map_impl;
 class unit_test_shadow_map : public unit
 {
 public:
-	static shared_ptr<unit_test_shadow_map> nwi();
+   static mws_sp<unit_test_shadow_map> nwi();
 
-    virtual void init();
-    virtual void load();
-	virtual bool update();
+   virtual void init();
+   virtual void load();
+   virtual bool update();
 
 private:
-	unit_test_shadow_map();
+   unit_test_shadow_map();
 
-	shared_ptr<unit_test_shadow_map_impl> p;
+   mws_sp<unit_test_shadow_map_impl> p;
 };
 
 #endif

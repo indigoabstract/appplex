@@ -36,7 +36,7 @@ int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpc
    UNREFERENCED_PARAMETER(hprev_instance);
    UNREFERENCED_PARAMETER(lpcmd_line);
 
-   shared_ptr<msvc_main> app = msvc_main::get_instance();
+   mws_sp<msvc_main> app = msvc_main::get_instance();
 
    app->set_params(hinstance, ncmd_show, subsys_windows);
 
@@ -52,7 +52,7 @@ int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpc
 int main(int argc, char** argv)
 // console subsystem entry point
 {
-   shared_ptr<msvc_main> app = msvc_main::get_instance();
+   mws_sp<msvc_main> app = msvc_main::get_instance();
    HINSTANCE hinstance = GetModuleHandle(NULL);
    bool nCmdShow = true;
 
@@ -164,7 +164,7 @@ LRESULT CALLBACK	wnd_proc(HWND, UINT, WPARAM, LPARAM);
 int					get_key(int key);
 
 
-shared_ptr<msvc_main> msvc_main::instance;
+mws_sp<msvc_main> msvc_main::instance;
 
 
 msvc_main::msvc_main()
@@ -194,17 +194,17 @@ msvc_main::~msvc_main()
 {
 }
 
-shared_ptr<msvc_main> msvc_main::get_instance()
+mws_sp<msvc_main> msvc_main::get_instance()
 {
    if (!instance)
    {
-      instance = shared_ptr<msvc_main>(new msvc_main());
+      instance = mws_sp<msvc_main>(new msvc_main());
    }
 
    return instance;
 }
 
-shared_ptr<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
 {
    return std::make_shared<msvc_file_impl>(ifilename, iroot_dir);
 }
@@ -381,7 +381,7 @@ umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_lis
                   mws_signal_error(std::string("duplicate filename: " + key).c_str());
                }
 
-               shared_ptr<msvc_file_impl> file_impl(new msvc_file_impl(key, dir));
+               mws_sp<msvc_file_impl> file_impl(new msvc_file_impl(key, dir));
 
                list[key] = pfm_file::get_inst(file_impl);
             }
@@ -1131,7 +1131,7 @@ POINT get_pointer_coord(HWND hwnd)
 LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 // processes messages for the main window
 {
-   shared_ptr<msvc_main> app = msvc_main::get_instance();
+   mws_sp<msvc_main> app = msvc_main::get_instance();
 
    //mws_print("message 0x%04x") % message;
 

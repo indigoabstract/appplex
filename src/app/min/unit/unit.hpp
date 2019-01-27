@@ -62,11 +62,11 @@ public:
       app_storage();
 
       // file access
-      std::shared_ptr<std::vector<uint8> > load_unit_byte_vect(std::string name);
+      mws_sp<std::vector<uint8> > load_unit_byte_vect(std::string name);
       //shared_array<uint8> load_unit_byte_array(std::string name, int& size);
       bool store_unit_byte_array(std::string name, const uint8* res_ptr, int size);
       bool store_unit_byte_vect(std::string name, const std::vector<uint8>& res_ptr);
-      std::shared_ptr<pfm_file> random_access(std::string name);
+      mws_sp<pfm_file> random_access(std::string name);
 
       // screenshot
       void save_screenshot(std::string ifilename = "");
@@ -99,7 +99,7 @@ public:
    const std::string& get_proj_rel_path();
    void set_proj_rel_path(std::string ipath);
    bool is_gfx_unit();
-   std::shared_ptr<unit_preferences> get_preferences();
+   mws_sp<unit_preferences> get_preferences();
    // true to exit app, false to continue
    virtual bool back();
    bool rsk_was_hit(int x0, int y0);
@@ -110,18 +110,18 @@ public:
    bool i_m_is_null() const { return p.get() == nullptr; }
 
    int game_time;
-   std::shared_ptr<updatectrl> update_ctrl;
-   std::shared_ptr<touchctrl> touch_ctrl;
-   std::shared_ptr<key_ctrl> key_ctrl_inst;
-   std::shared_ptr<gfx_scene> gfx_scene_inst;
-   std::shared_ptr<mws_camera> mws_cam;
-   std::shared_ptr<mws_page_tab> mws_root;
+   mws_sp<updatectrl> update_ctrl;
+   mws_sp<touchctrl> touch_ctrl;
+   mws_sp<key_ctrl> key_ctrl_inst;
+   mws_sp<gfx_scene> gfx_scene_inst;
+   mws_sp<mws_camera> mws_cam;
+   mws_sp<mws_page_tab> mws_root;
    app_storage storage;
 
 protected:
    unit(const char* i_include_guard);
 
-   std::shared_ptr<unit> get_smtp_instance();
+   mws_sp<unit> get_smtp_instance();
    void set_internal_name_from_include_guard(const char* i_include_guard);
 
    static void set_app_exit_on_next_run(bool iapp_exit_on_next_run);
@@ -132,7 +132,7 @@ protected:
    virtual void on_resize();
    virtual void on_pause();
    virtual void on_resume();
-   virtual void receive(std::shared_ptr<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    // finish-constructor. here you can use things that won't work in the constructor, ie shared_from_this(), etc
    virtual void base_init();
    virtual void init();
@@ -140,12 +140,12 @@ protected:
    virtual void init_mws();
    virtual void load();
    virtual void unload();
-   virtual std::shared_ptr<mws_sender> sender_inst();
+   virtual mws_sp<mws_sender> sender_inst();
    virtual void update_view(int update_count);
    virtual void post_update_view();
 
    std::unique_ptr<app_impl> p;
-   std::shared_ptr<unit_preferences> prefs;
+   mws_sp<unit_preferences> prefs;
    int frame_count;
    float fps;
    uint32 last_frame_time;
@@ -166,7 +166,7 @@ private:
    std::string external_name;
    // unit path, relative to project (appplex) path
    std::string proj_rel_path;
-   std::weak_ptr<unit> parent;
+   mws_wp<unit> parent;
    bool init_val;
    std::vector<std::function<void()> > operation_list;
    std::mutex operation_mutex;
@@ -178,15 +178,15 @@ private:
 class unit_list : public unit
 {
 public:
-   static std::shared_ptr<unit_list> nwi();
+   static mws_sp<unit_list> nwi();
 
    unit_type get_unit_type();
-   void add(std::shared_ptr<unit> i_unit);
-   std::shared_ptr<unit> unit_at(int i_index);
-   std::shared_ptr<unit> unit_by_name(std::string i_name);
+   void add(mws_sp<unit> i_unit);
+   mws_sp<unit> unit_at(int i_index);
+   mws_sp<unit> unit_by_name(std::string i_name);
    int get_unit_count()const;
    virtual void on_resize();
-   virtual void receive(std::shared_ptr<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
    void forward();
    static void up_one_level();
 
@@ -200,8 +200,8 @@ private:
    friend class unit_ctrl;
    friend class unit_ctrl_ext;
 
-   std::vector<std::shared_ptr<unit> > ulist;
-   weak_ptr<mws_list_model> ulmodel;
+   std::vector<mws_sp<unit> > ulist;
+   mws_wp<mws_list_model> ulmodel;
    static int unit_list_count;
 };
 
@@ -212,10 +212,10 @@ private:
    friend class unit_ctrl;
    friend class unit_ctrl_ext;
 
-   static void create_units(std::shared_ptr<unit_list> ul0);
-   static std::shared_ptr<unit_list> get_unit_list();
-   static void add_unit(std::shared_ptr<unit> iu, std::string iunit_path, bool iset_current = false);
+   static void create_units(mws_sp<unit_list> ul0);
+   static mws_sp<unit_list> get_unit_list();
+   static void add_unit(mws_sp<unit> iu, std::string iunit_path, bool iset_current = false);
 
-   static std::weak_ptr<unit_list> ul;
-   static std::weak_ptr<unit> next_crt_unit;
+   static mws_wp<unit_list> ul;
+   static mws_wp<unit> next_crt_unit;
 };

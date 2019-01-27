@@ -17,9 +17,9 @@
 
 unit_test_res_ld::unit_test_res_ld() : unit(mws_stringify(UNIT_TEST_RES_LD)) {}
 
-shared_ptr<unit_test_res_ld> unit_test_res_ld::nwi()
+mws_sp<unit_test_res_ld> unit_test_res_ld::nwi()
 {
-	return shared_ptr<unit_test_res_ld>(new unit_test_res_ld());
+	return mws_sp<unit_test_res_ld>(new unit_test_res_ld());
 }
 
 void unit_test_res_ld::init()
@@ -28,8 +28,8 @@ void unit_test_res_ld::init()
 
 namespace test_gl
 {
-   shared_ptr<gfx_camera> ortho_cam;
-	shared_ptr<gfx_quad_2d> quad_mesh;
+   mws_sp<gfx_camera> ortho_cam;
+	mws_sp<gfx_quad_2d> quad_mesh;
 }
 
 using namespace test_gl;

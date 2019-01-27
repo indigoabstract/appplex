@@ -15,7 +15,7 @@ long_operation::long_operation()
    active = false;
 }
 
-void long_operation::run_on_separate_thread(shared_ptr<long_operation> lop)
+void long_operation::run_on_separate_thread(mws_sp<long_operation> lop)
 {
    if (lop->is_active())
    {
@@ -23,7 +23,7 @@ void long_operation::run_on_separate_thread(shared_ptr<long_operation> lop)
    }
 
    lop->active = true;
-   lop->threadp = shared_ptr<std::thread>(new std::thread(&long_operation::run_impl, lop.get()));
+   lop->threadp = mws_sp<std::thread>(new std::thread(&long_operation::run_impl, lop.get()));
 }
 
 void long_operation::run()

@@ -12,16 +12,16 @@
 class unit_test_freeimage : public unit
 {
 public:
-	static shared_ptr<unit_test_freeimage> nwi();
+   static mws_sp<unit_test_freeimage> nwi();
 
-    virtual void init();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void init_mws();
+   virtual void load();
 
-	static void save_image(std::string ifilename, shared_ptr<std::vector<uint32> > ibgra);
+   static void save_image(std::string ifilename, mws_sp<std::vector<uint32> > ibgra);
 
 private:
-	unit_test_freeimage();
+   unit_test_freeimage();
 };
 
 #endif

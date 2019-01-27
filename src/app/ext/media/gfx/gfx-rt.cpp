@@ -34,12 +34,12 @@ int gfx_rt::get_height()
    return color_att->get_height();
 }
 
-std::shared_ptr<gfx_tex> gfx_rt::get_color_attachment()
+mws_sp<gfx_tex> gfx_rt::get_color_attachment()
 {
    return color_att;
 }
 
-void gfx_rt::set_color_attachment(std::shared_ptr<gfx_tex> icolor_att)
+void gfx_rt::set_color_attachment(mws_sp<gfx_tex> icolor_att)
 {
    color_att = icolor_att;
    is_valid_state = false;
@@ -67,7 +67,7 @@ void gfx_rt::check_valid_state()
    }
 }
 
-gfx_rt::gfx_rt(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_rt::gfx_rt(mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    glGenFramebuffers(1, &framebuffer);
    is_valid_state = false;

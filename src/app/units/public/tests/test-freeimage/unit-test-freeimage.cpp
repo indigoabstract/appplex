@@ -22,16 +22,16 @@ using std::vector;
 
 unit_test_freeimage::unit_test_freeimage() : unit(mws_stringify(UNIT_TEST_FREEIMAGE)) {}
 
-shared_ptr<unit_test_freeimage> unit_test_freeimage::nwi()
+mws_sp<unit_test_freeimage> unit_test_freeimage::nwi()
 {
-	return shared_ptr<unit_test_freeimage>(new unit_test_freeimage());
+	return mws_sp<unit_test_freeimage>(new unit_test_freeimage());
 }
 
 void unit_test_freeimage::init()
 {
 }
 
-void unit_test_freeimage::save_image(string ifilename, shared_ptr<vector<uint32> > ibgra)
+void unit_test_freeimage::save_image(string ifilename, mws_sp<vector<uint32> > ibgra)
 {
 	int width = pfm::screen::get_width();
 	int height = pfm::screen::get_height();
@@ -137,26 +137,26 @@ private:
 };
 
 
-shared_ptr<std::vector<uint8> > loadByteVect(bfs::path& p)
+mws_sp<std::vector<uint8> > loadByteVect(bfs::path& p)
 {
-	shared_ptr<vector<uint8> > res;
+	mws_sp<vector<uint8> > res;
 
 	if(exists(p))
 	{
-		shared_ptr<pfm_file> fs = pfm_file::get_inst(p.string());
+		mws_sp<pfm_file> fs = pfm_file::get_inst(p.string());
 		fs->io.open();
 		int size = file_size(p);
 
-		res = shared_ptr<vector<uint8> >(new vector<uint8>(size));
+		res = mws_sp<vector<uint8> >(new vector<uint8>(size));
 		fs->io.read(begin_ptr(res), size);
 	}
 
 	return res;
 }
 
-shared_ptr<gfx_tex> newImage(const char *filename, shared_ptr<vector<uint8> > dt)
+mws_sp<gfx_tex> newImage(const char *filename, mws_sp<vector<uint8> > dt)
 {
-	shared_ptr<gfx_tex> img;
+	mws_sp<gfx_tex> img;
 	FIBITMAP* fbmp = 0;
 
 	if(!dt)
@@ -225,7 +225,7 @@ namespace unit_freeimage_page1
 	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -239,7 +239,7 @@ namespace unit_freeimage_page1
 		{
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -249,7 +249,7 @@ namespace unit_freeimage_page1
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -259,7 +259,7 @@ namespace unit_freeimage_page1
 			g->drawText(text, 10, 10);
 		}
 
-		shared_ptr<gfx_tex> imgxxx;
+		mws_sp<gfx_tex> imgxxx;
 	};
 }
 
@@ -269,7 +269,7 @@ namespace unit_freeimage_page2
 	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -286,14 +286,14 @@ namespace unit_freeimage_page2
 		{
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
 			}
 			else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
-				shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 				if(ke->get_type() != key_evt::KE_RELEASED)
 				{
@@ -336,7 +336,7 @@ namespace unit_freeimage_page2
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -348,15 +348,15 @@ namespace unit_freeimage_page2
 
 		void load_img()
 		{
-			shared_ptr<dir_node> rootNode = dirtree->get_root_node();
+			mws_sp<dir_node> rootNode = dirtree->get_root_node();
 			bfs::path p2 = rootNode->files[fidx]->abs_file_path;
-			shared_ptr<vector<uint8> > dt = loadByteVect(p2);
+			mws_sp<vector<uint8> > dt = loadByteVect(p2);
 
 			imgxxx = newImage(p2.string().c_str(), dt);
 		}
 
-		shared_ptr<gfx_tex> imgxxx;
-		shared_ptr<directory_tree> dirtree;
+		mws_sp<gfx_tex> imgxxx;
+		mws_sp<directory_tree> dirtree;
 		int fidx;
 	};
 }

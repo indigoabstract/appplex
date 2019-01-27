@@ -9,13 +9,13 @@
 class unit_test_fmod : public unit
 {
 public:
-	static shared_ptr<unit_test_fmod> nwi();
+   static mws_sp<unit_test_fmod> nwi();
 
-    virtual void init();
-	virtual void init_mws();
+   virtual void init();
+   virtual void init_mws();
 
 private:
-	unit_test_fmod();
+   unit_test_fmod();
 };
 
 #endif

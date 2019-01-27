@@ -10,7 +10,7 @@
 class unit_test_ffmpeg : public unit
 {
 public:
-   static shared_ptr<unit_test_ffmpeg> nwi();
+   static mws_sp<unit_test_ffmpeg> nwi();
 
    virtual void init();
    virtual void load();
@@ -18,7 +18,7 @@ public:
 
 private:
    unit_test_ffmpeg();
-   virtual void receive(shared_ptr<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> idp);
 };
 
 #endif

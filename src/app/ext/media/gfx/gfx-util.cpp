@@ -179,9 +179,9 @@ void gfx_util::init()
  attempt to read from or write / render to a framebuffer that is not complete.";
 }
 
-std::shared_ptr<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
+mws_sp<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
 {
-   std::shared_ptr<vx_attribute> a;
+   mws_sp<vx_attribute> a;
 
    if (!mws_str::starts_with(iattribute, "a_"))
    {
@@ -203,14 +203,14 @@ std::shared_ptr<vx_attribute> gfx_util::parse_attribute(std::string iattribute)
       mws_throw mws_exception("invalid iattribute3");
    }
 
-   a = std::shared_ptr<vx_attribute>(new vx_attribute(iattribute, it->second));
+   a = mws_sp<vx_attribute>(new vx_attribute(iattribute, it->second));
 
    return a;
 }
 
-std::vector<std::shared_ptr<vx_attribute> > gfx_util::parse_attribute_list(std::string iattr_list)
+std::vector<mws_sp<vx_attribute> > gfx_util::parse_attribute_list(std::string iattr_list)
 {
-   std::vector<std::shared_ptr<vx_attribute> > v;
+   std::vector<mws_sp<vx_attribute> > v;
 
    int current_pos = 0;
    int size = iattr_list.length();
@@ -241,9 +241,9 @@ std::vector<std::shared_ptr<vx_attribute> > gfx_util::parse_attribute_list(std::
    return v;
 }
 
-std::shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
+mws_sp<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
 {
-   std::shared_ptr<gfx_uniform> v;
+   mws_sp<gfx_uniform> v;
 
    if (!mws_str::starts_with(iuniform, "u_"))
    {
@@ -265,7 +265,7 @@ std::shared_ptr<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
       mws_throw mws_exception("invalid uniform3");
    }
 
-   v = std::shared_ptr<gfx_uniform>(new gfx_uniform(iuniform, it->second));
+   v = mws_sp<gfx_uniform>(new gfx_uniform(iuniform, it->second));
 
    return v;
 }

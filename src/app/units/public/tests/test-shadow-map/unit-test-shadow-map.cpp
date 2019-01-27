@@ -26,17 +26,17 @@ public:
 		t = 0;
 	}
 
-	shared_ptr<gfx_rt> rt;
-	shared_ptr<gfx_tex> rt_tex;
-	shared_ptr<gfx_tex> rt_tex_globe;
-	shared_ptr<gfx_plane> quad_mesh;
-	shared_ptr<gfx_box> cube_mesh;
-	shared_ptr<gfx_vpc_box> vpc_b_mesh;
-	shared_ptr<gfx_vpc_kubic_sphere> vpc_ks_mesh;
-	shared_ptr<gfx_vpc_ring_sphere> vpc_rs_mesh;
-	shared_ptr<gfx_obj_vxo> obj_mesh[6];
-	shared_ptr<gfx_camera> ortho_cam;
-	shared_ptr<gfx_camera> persp_cam;
+	mws_sp<gfx_rt> rt;
+	mws_sp<gfx_tex> rt_tex;
+	mws_sp<gfx_tex> rt_tex_globe;
+	mws_sp<gfx_plane> quad_mesh;
+	mws_sp<gfx_box> cube_mesh;
+	mws_sp<gfx_vpc_box> vpc_b_mesh;
+	mws_sp<gfx_vpc_kubic_sphere> vpc_ks_mesh;
+	mws_sp<gfx_vpc_ring_sphere> vpc_rs_mesh;
+	mws_sp<gfx_obj_vxo> obj_mesh[6];
+	mws_sp<gfx_camera> ortho_cam;
+	mws_sp<gfx_camera> persp_cam;
 	glm::vec3 u_v3_light_dir;
 	float t;
 };
@@ -44,9 +44,9 @@ public:
 
 unit_test_shadow_map::unit_test_shadow_map() : unit(mws_stringify(UNIT_TEST_SHADOW_MAP)) {}
 
-shared_ptr<unit_test_shadow_map> unit_test_shadow_map::nwi()
+mws_sp<unit_test_shadow_map> unit_test_shadow_map::nwi()
 {
-	return shared_ptr<unit_test_shadow_map>(new unit_test_shadow_map());
+	return mws_sp<unit_test_shadow_map>(new unit_test_shadow_map());
 }
 
 void unit_test_shadow_map::init()
@@ -56,7 +56,7 @@ void unit_test_shadow_map::init()
 
 void unit_test_shadow_map::load()
 {
-	p = shared_ptr<unit_test_shadow_map_impl>(new unit_test_shadow_map_impl());
+	p = mws_sp<unit_test_shadow_map_impl>(new unit_test_shadow_map_impl());
 	p->ortho_cam = gfx_camera::nwi();
 	p->ortho_cam->camera_id = "ortho_camera";
 	p->ortho_cam->rendering_priority = 1;
@@ -102,7 +102,7 @@ void unit_test_shadow_map::load()
 	p->rt = gfx::i()->rt.new_rt();
 	p->rt->set_color_attachment(p->rt_tex);
 
-	shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+	mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
 	gfx::i()->rt.set_current_render_target(p->rt);
 	decl_scgfxpl(pl1)
@@ -113,13 +113,13 @@ void unit_test_shadow_map::load()
 	};
 	gl_st->set_state(pl1);
 
-	gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
+	gfx::i()->rt.set_current_render_target(mws_sp<gfx_rt>());
 
 	p->u_v3_light_dir = -glm::vec3(-1.f, 1.f, 1.f);
 	//std::string shader_name = "basic-tex-shader";
 	std::string shader_name = "l_d_o";
 
-	p->quad_mesh = shared_ptr<gfx_plane>(new gfx_plane());
+	p->quad_mesh = mws_sp<gfx_plane>(new gfx_plane());
 	gfx_plane& r_quad_mesh = *p->quad_mesh;
 	//r_quad_mesh.camera_id_list.clear();
 	r_quad_mesh.camera_id_list.push_back(p->ortho_cam->camera_id());
@@ -132,7 +132,7 @@ void unit_test_shadow_map::load()
 	r_quad_mesh.scaling = glm::vec3(1, 10, 1);
 	//r_quad_mesh.orientation = glm::quat(glm::vec3(3.1415f / 3, 0.f, 0.f));
 
-	p->cube_mesh = shared_ptr<gfx_box>(new gfx_box());
+	p->cube_mesh = mws_sp<gfx_box>(new gfx_box());
 	gfx_box& r_cube_mesh = *p->cube_mesh;
 	r_cube_mesh.set_dimensions(50, 50, 50);
 	r_cube_mesh.position = glm::vec3(0.f, 50.f, 0.f);
@@ -140,7 +140,7 @@ void unit_test_shadow_map::load()
 	r_cube_mesh["u_s2d_tex"] = p->rt_tex->get_name();
 	r_cube_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
 
-	p->vpc_b_mesh = shared_ptr<gfx_vpc_box>(new gfx_vpc_box());
+	p->vpc_b_mesh = mws_sp<gfx_vpc_box>(new gfx_vpc_box());
 	gfx_vpc_box& r_vpc_b_mesh = *p->vpc_b_mesh;
 	r_vpc_b_mesh.render_method = GLPT_LINES;
 	r_vpc_b_mesh.set_dimensions(50, 15);
@@ -149,7 +149,7 @@ void unit_test_shadow_map::load()
 	r_vpc_b_mesh["u_s2d_tex"] = p->rt_tex->get_name();
 	r_vpc_b_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
 
-	p->vpc_ks_mesh = shared_ptr<gfx_vpc_kubic_sphere>(new gfx_vpc_kubic_sphere());
+	p->vpc_ks_mesh = mws_sp<gfx_vpc_kubic_sphere>(new gfx_vpc_kubic_sphere());
 	gfx_vpc_kubic_sphere& r_vpc_ks_mesh = *p->vpc_ks_mesh;
 	//r_vpc_ks_mesh.render_method = GLPT_LINES;
 	r_vpc_ks_mesh.set_dimensions(110, 15);
@@ -158,7 +158,7 @@ void unit_test_shadow_map::load()
 	r_vpc_ks_mesh["u_s2d_tex"] = p->rt_tex->get_name();
 	r_vpc_ks_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
 
-	p->vpc_rs_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
+	p->vpc_rs_mesh = mws_sp<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
 	gfx_vpc_ring_sphere& r_vpc_rs_mesh = *p->vpc_rs_mesh;
 	//r_vpc_rs_mesh.render_method = GLPT_LINES;
 	r_vpc_rs_mesh.set_dimensions(100, 75);
@@ -171,7 +171,7 @@ void unit_test_shadow_map::load()
 
 	for (int k = 0; k < 6; k++)
 	{
-		p->obj_mesh[k] = shared_ptr<gfx_obj_vxo>(new gfx_obj_vxo());
+		p->obj_mesh[k] = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
 	}
 
 	glm::vec3 pos_data[6] =
@@ -241,7 +241,7 @@ bool unit_test_shadow_map::update()
 	p->vpc_ks_mesh->orientation = glm::quat(glm::vec3(0, t, 0));
 	(*p->vpc_rs_mesh)["u_v3_light_dir"] = p->u_v3_light_dir;
 	p->t += 0.01f;
-	//shared_ptr<gl_state> gl_st = gl_ctrl::get_gl_state();
+	//mws_sp<gl_state> gl_st = gl_ctrl::get_gl_state();
 	//decl_scglpl(pl1)
 	//{
 	//	{gl::COLOR_CLEAR_VALUE, 1.f, 0.f, 1.f, 1.f},

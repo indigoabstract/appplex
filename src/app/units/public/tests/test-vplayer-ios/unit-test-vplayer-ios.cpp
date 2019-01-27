@@ -9,9 +9,9 @@ using std::string;
 
 unit_test_vplayer_ios::unit_test_vplayer_ios() : unit(mws_stringify(UNIT_TEST_VPLAYER_IOS)) {}
 
-shared_ptr<unit_test_vplayer_ios> unit_test_vplayer_ios::nwi()
+mws_sp<unit_test_vplayer_ios> unit_test_vplayer_ios::nwi()
 {
-	return shared_ptr<unit_test_vplayer_ios>(new unit_test_vplayer_ios());
+	return mws_sp<unit_test_vplayer_ios>(new unit_test_vplayer_ios());
 }
 
 void unit_test_vplayer_ios::init()

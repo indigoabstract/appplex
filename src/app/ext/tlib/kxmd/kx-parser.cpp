@@ -78,12 +78,12 @@ public:
 class kx_shared_state : public enable_shared_from_this < kx_shared_state >
 {
 public:
-   static shared_ptr<kx_shared_state> nwi() { return shared_ptr<kx_shared_state>(new kx_shared_state()); }
-   shared_ptr<kx_shared_state> get_instance() { return shared_from_this(); }
+   static mws_sp<kx_shared_state> nwi() { return mws_sp<kx_shared_state>(new kx_shared_state()); }
+   mws_sp<kx_shared_state> get_instance() { return shared_from_this(); }
 
-   shared_ptr<kx_shared_state> clone()
+   mws_sp<kx_shared_state> clone()
    {
-      shared_ptr<kx_shared_state> ss = kx_shared_state::nwi();
+      mws_sp<kx_shared_state> ss = kx_shared_state::nwi();
 
       *ss = *get_instance();
 
@@ -97,10 +97,10 @@ public:
       return crt_idx >= src->length();
    }
 
-   shared_ptr<std::string> src;
+   mws_sp<std::string> src;
    int start_idx;
    int crt_idx;
-   shared_ptr<kx_elem> kxel;
+   mws_sp<kx_elem> kxel;
 
 private:
    kx_shared_state() { start_idx = crt_idx = 0; }
@@ -127,7 +127,7 @@ enum kx_scanner_type
 class kx_scn_factory
 {
 public:
-   static shared_ptr<kx_scn> nwi(kx_scanner_type type, shared_ptr<kx_shared_state> ss);
+   static mws_sp<kx_scn> nwi(kx_scanner_type type, mws_sp<kx_shared_state> ss);
 };
 
 
@@ -136,24 +136,24 @@ class kx_scn
 public:
    virtual ~kx_scn() {}
 
-   shared_ptr<kx_elem> scan()
+   mws_sp<kx_elem> scan()
    {
       if (ss->crt_idx < ss->src->length())
       {
          return scan_impl();
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 
-   void setState(shared_ptr<kx_shared_state> iss)
+   void setState(mws_sp<kx_shared_state> iss)
    {
       ss = iss;
    }
 
-   virtual shared_ptr<kx_elem> scan_impl() { return shared_ptr<kx_elem>(); }
+   virtual mws_sp<kx_elem> scan_impl() { return mws_sp<kx_elem>(); }
 
-   shared_ptr<kx_shared_state> ss;
+   mws_sp<kx_shared_state> ss;
    bool tokenFound;
 
 protected:
@@ -164,10 +164,10 @@ protected:
 class kx_scn_whitespace : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_whitespace> nwi() { return shared_ptr<kx_scn_whitespace>(new kx_scn_whitespace()); }
+   static mws_sp<kx_scn_whitespace> nwi() { return mws_sp<kx_scn_whitespace>(new kx_scn_whitespace()); }
    virtual ~kx_scn_whitespace() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
 
@@ -186,7 +186,7 @@ public:
                tokenFound = true;
                //trc("ws%1%-%2% ") % startidx % ss->crtidx;
 
-               shared_ptr<kx_whitespace> ke = kx_whitespace::nwi();
+               mws_sp<kx_whitespace> ke = kx_whitespace::nwi();
                ke->data = ss->src->substr(startidx, ss->crt_idx - startidx);
 
                return ke;
@@ -196,7 +196,7 @@ public:
          }
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 };
 
@@ -204,10 +204,10 @@ public:
 class kx_scn_comma : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_comma> nwi() { return shared_ptr<kx_scn_comma>(new kx_scn_comma()); }
+   static mws_sp<kx_scn_comma> nwi() { return mws_sp<kx_scn_comma>(new kx_scn_comma()); }
    virtual ~kx_scn_comma() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
@@ -221,7 +221,7 @@ public:
          return kx_comma::nwi();
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 };
 
@@ -229,17 +229,17 @@ public:
 class kx_scn_symbol : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_symbol> nwi() { return shared_ptr<kx_scn_symbol>(new kx_scn_symbol()); }
+   static mws_sp<kx_scn_symbol> nwi() { return mws_sp<kx_scn_symbol>(new kx_scn_symbol()); }
    virtual ~kx_scn_symbol() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
 
       if (!kx_util::is_symbol_start_char(c))
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
       ss->crt_idx++;
@@ -261,7 +261,7 @@ public:
       tokenFound = true;
       //trc("sym %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-      shared_ptr<kx_symbol> ke = kx_symbol::nwi();
+      mws_sp<kx_symbol> ke = kx_symbol::nwi();
       ke->name = ss->src->substr(startidx, ss->crt_idx - startidx);
 
       return ke;
@@ -272,17 +272,17 @@ public:
 class kx_scn_text : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_text> nwi() { return shared_ptr<kx_scn_text>(new kx_scn_text()); }
+   static mws_sp<kx_scn_text> nwi() { return mws_sp<kx_scn_text>(new kx_scn_text()); }
    virtual ~kx_scn_text() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
 
       if (c != '"' && c != '\'')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
       char end = c;
@@ -298,7 +298,7 @@ public:
             tokenFound = true;
             //trc("txt %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-            shared_ptr<kx_text> ke = kx_text::nwi();
+            mws_sp<kx_text> ke = kx_text::nwi();
             ke->data = ss->src->substr(startidx, ss->crt_idx - startidx);
 
             return ke;
@@ -314,7 +314,7 @@ public:
          mws_throw mws_exception("unterminated text quote");
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 };
 
@@ -322,10 +322,10 @@ public:
 class kx_scn_async_flowop : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_async_flowop> nwi() { return shared_ptr<kx_scn_async_flowop>(new kx_scn_async_flowop()); }
+   static mws_sp<kx_scn_async_flowop> nwi() { return mws_sp<kx_scn_async_flowop>(new kx_scn_async_flowop()); }
    virtual ~kx_scn_async_flowop() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
@@ -344,7 +344,7 @@ public:
                tokenFound = true;
                //trc("flow [%1%] ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-               shared_ptr<kx_async_flowop> ke = kx_async_flowop::nwi();
+               mws_sp<kx_async_flowop> ke = kx_async_flowop::nwi();
                ke->fltype = kx_async_flowop::afl_left;
 
                return ke;
@@ -365,7 +365,7 @@ public:
                tokenFound = true;
                //trc("flow %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-               shared_ptr<kx_async_flowop> ke = kx_async_flowop::nwi();
+               mws_sp<kx_async_flowop> ke = kx_async_flowop::nwi();
                ke->fltype = kx_async_flowop::afl_right;
 
                return ke;
@@ -373,7 +373,7 @@ public:
          }
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 };
 
@@ -381,10 +381,10 @@ public:
 class kx_scn_flowop : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_flowop> nwi() { return shared_ptr<kx_scn_flowop>(new kx_scn_flowop()); }
+   static mws_sp<kx_scn_flowop> nwi() { return mws_sp<kx_scn_flowop>(new kx_scn_flowop()); }
    virtual ~kx_scn_flowop() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
@@ -399,7 +399,7 @@ public:
             tokenFound = true;
             //trc("flow [%1%] ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-            shared_ptr<kx_flowop> ke = kx_flowop::nwi();
+            mws_sp<kx_flowop> ke = kx_flowop::nwi();
             ke->fltype = kx_flowop::fl_left;
 
             return ke;
@@ -415,14 +415,14 @@ public:
             tokenFound = true;
             //trc("flow %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-            shared_ptr<kx_flowop> ke = kx_flowop::nwi();
+            mws_sp<kx_flowop> ke = kx_flowop::nwi();
             ke->fltype = kx_flowop::fl_right;
 
             return ke;
          }
       }
 
-      return shared_ptr<kx_elem>();
+      return mws_sp<kx_elem>();
    }
 };
 
@@ -430,24 +430,24 @@ public:
 class kx_scn_match_block : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_match_block> nwi() { return shared_ptr<kx_scn_match_block>(new kx_scn_match_block()); }
+   static mws_sp<kx_scn_match_block> nwi() { return mws_sp<kx_scn_match_block>(new kx_scn_match_block()); }
    virtual ~kx_scn_match_block() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = 0;
-      shared_ptr<kx_scn> sc;
+      mws_sp<kx_scn> sc;
 
       c = ss->src->at(startidx);
 
       if (c != '?')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
-      shared_ptr<kx_match_block> ke = kx_match_block::nwi();
-      shared_ptr<kx_elem> kxt;
+      mws_sp<kx_match_block> ke = kx_match_block::nwi();
+      mws_sp<kx_elem> kxt;
 
       ss->crt_idx++;
       sc = kx_scn_factory::nwi(kxs_whitespace, ss);
@@ -512,31 +512,31 @@ public:
 class kx_scn_meta_block : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_meta_block> nwi() { return shared_ptr<kx_scn_meta_block>(new kx_scn_meta_block()); }
+   static mws_sp<kx_scn_meta_block> nwi() { return mws_sp<kx_scn_meta_block>(new kx_scn_meta_block()); }
    virtual ~kx_scn_meta_block() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = 0;
-      shared_ptr<kx_scn> sc;
+      mws_sp<kx_scn> sc;
 
       c = ss->src->at(startidx);
 
       if (c != '@')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
       c = ss->src->at(startidx + 1);
 
       if (c == '@')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
-      shared_ptr<kx_meta_block> ke = kx_meta_block::nwi();
-      shared_ptr<kx_elem> kxt;
+      mws_sp<kx_meta_block> ke = kx_meta_block::nwi();
+      mws_sp<kx_elem> kxt;
 
       ss->crt_idx++;
       sc = kx_scn_factory::nwi(kxs_whitespace, ss);
@@ -604,31 +604,31 @@ public:
 class kx_scn_ignore_block : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_ignore_block> nwi() { return shared_ptr<kx_scn_ignore_block>(new kx_scn_ignore_block()); }
+   static mws_sp<kx_scn_ignore_block> nwi() { return mws_sp<kx_scn_ignore_block>(new kx_scn_ignore_block()); }
    virtual ~kx_scn_ignore_block() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = 0;
-      shared_ptr<kx_scn> sc;
+      mws_sp<kx_scn> sc;
 
       c = ss->src->at(startidx);
 
       if (c != '@')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
       c = ss->src->at(startidx + 1);
 
       if (c != '@')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
-      shared_ptr<kx_ignore_block> ke = kx_ignore_block::nwi();
-      shared_ptr<kx_elem> kxt;
+      mws_sp<kx_ignore_block> ke = kx_ignore_block::nwi();
+      mws_sp<kx_elem> kxt;
 
       ss->crt_idx += 2;
       sc = kx_scn_factory::nwi(kxs_whitespace, ss);
@@ -675,7 +675,7 @@ public:
          mws_throw mws_exception(msg);
       }
 
-      shared_ptr<kx_text> body = static_pointer_cast<kx_text>(kxt);
+      mws_sp<kx_text> body = static_pointer_cast<kx_text>(kxt);
       ke->body = body->data;
       tokenFound = true;
       //trc("ignblk %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
@@ -688,16 +688,16 @@ public:
 class kx_scn_ignore_block_body : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_ignore_block_body> nwi() { return shared_ptr<kx_scn_ignore_block_body>(new kx_scn_ignore_block_body()); }
+   static mws_sp<kx_scn_ignore_block_body> nwi() { return mws_sp<kx_scn_ignore_block_body>(new kx_scn_ignore_block_body()); }
    virtual ~kx_scn_ignore_block_body() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
 
       if (ss->src->at(startidx) != '[')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
       ss->crt_idx++;
@@ -722,7 +722,7 @@ public:
                // check every character for start / end of text / blocks pairs : {", ', [, ]},
                // to make sure they are matched correctly. ignore everything else
             {
-               shared_ptr<kx_scn> scn = kx_scn_factory::nwi(et, ss);
+               mws_sp<kx_scn> scn = kx_scn_factory::nwi(et, ss);
                scn->scan();
 
                if (scn->tokenFound)
@@ -768,7 +768,7 @@ public:
 
       //trc("ignblk_body %1% ") % ss->src->substr(startidx, ss->crtidx - startidx);
 
-      shared_ptr<kx_text> ke = kx_text::nwi();
+      mws_sp<kx_text> ke = kx_text::nwi();
       ke->data = ss->src->substr(startidx + 1, ss->crt_idx - startidx - 2);
 
       return ke;
@@ -779,25 +779,25 @@ public:
 class kx_scn_block : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_block> nwi() { return shared_ptr<kx_scn_block>(new kx_scn_block()); }
+   static mws_sp<kx_scn_block> nwi() { return mws_sp<kx_scn_block>(new kx_scn_block()); }
    virtual ~kx_scn_block() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
 
       if (c != '[')
       {
-         return shared_ptr<kx_elem>();
+         return mws_sp<kx_elem>();
       }
 
-      shared_ptr<kx_block> ke = kx_block::nwi();
-      shared_ptr<kx_elem> kxt;
+      mws_sp<kx_block> ke = kx_block::nwi();
+      mws_sp<kx_elem> kxt;
 
       ss->crt_idx++;
 
-      shared_ptr<kx_scn> sc = kx_scn_factory::nwi(kxs_main, ss);
+      mws_sp<kx_scn> sc = kx_scn_factory::nwi(kxs_main, ss);
       kxt = sc->scan();
 
       c = ss->src->at(ss->crt_idx);
@@ -825,10 +825,10 @@ public:
 class kx_scn_main : public kx_scn
 {
 public:
-   static shared_ptr<kx_scn_main> nwi() { return shared_ptr<kx_scn_main>(new kx_scn_main()); }
+   static mws_sp<kx_scn_main> nwi() { return mws_sp<kx_scn_main>(new kx_scn_main()); }
    virtual ~kx_scn_main() {}
 
-   virtual shared_ptr<kx_elem> scan_impl()
+   virtual mws_sp<kx_elem> scan_impl()
    {
       int startidx = ss->crt_idx;
       char c = ss->src->at(startidx);
@@ -847,8 +847,8 @@ public:
          kxs_meta_block,
       };
 
-      shared_ptr<kx_block> ke = kx_block::nwi();
-      shared_ptr<kx_elem> kxt;
+      mws_sp<kx_block> ke = kx_block::nwi();
+      mws_sp<kx_elem> kxt;
 
       while (!ss->is_end_of_line())
       {
@@ -856,7 +856,7 @@ public:
 
          for (auto et : sct)
          {
-            shared_ptr<kx_scn> scn = kx_scn_factory::nwi(et, ss);
+            mws_sp<kx_scn> scn = kx_scn_factory::nwi(et, ss);
             kxt = scn->scan();
 
             if (scn->tokenFound)
@@ -866,7 +866,7 @@ public:
                if (kxt->type == kxe_block && ke->list.size() >= 1)
                   // find out if this block has a name
                {
-                  shared_ptr<kx_block> kb = static_pointer_cast<kx_block>(kxt);
+                  mws_sp<kx_block> kb = static_pointer_cast<kx_block>(kxt);
 
                   if (ke->list.back()->type == kxe_symbol)
                   {
@@ -895,9 +895,9 @@ public:
                      {
                         //trx("%1%%2%%3%") % ke->list[idx - 2]->print() % ke->list[idx - 1]->print() % ke->list[idx]->print();
 
-                        shared_ptr<kx_process> kxleft = static_pointer_cast<kx_process>(ke->list[idx - 2]);
-                        shared_ptr<kx_flowop> kfl = static_pointer_cast<kx_flowop>(ke->list[idx - 1]);
-                        shared_ptr<kx_process> kxright = static_pointer_cast<kx_process>(ke->list[idx]);
+                        mws_sp<kx_process> kxleft = static_pointer_cast<kx_process>(ke->list[idx - 2]);
+                        mws_sp<kx_flowop> kfl = static_pointer_cast<kx_flowop>(ke->list[idx - 1]);
+                        mws_sp<kx_process> kxright = static_pointer_cast<kx_process>(ke->list[idx]);
 
                         switch (kfl->fltype)
                         {
@@ -976,9 +976,9 @@ public:
 };
 
 
-shared_ptr<kx_scn> kx_scn_factory::nwi(kx_scanner_type type, shared_ptr<kx_shared_state> ss)
+mws_sp<kx_scn> kx_scn_factory::nwi(kx_scanner_type type, mws_sp<kx_shared_state> ss)
 {
-   shared_ptr<kx_scn> inst;
+   mws_sp<kx_scn> inst;
 
    switch (type)
    {
@@ -1040,10 +1040,10 @@ shared_ptr<kx_scn> kx_scn_factory::nwi(kx_scanner_type type, shared_ptr<kx_share
 }
 
 
-shared_ptr<kx_elem> kx_parser::parse_src(shared_ptr<std::string> src)
+mws_sp<kx_elem> kx_parser::parse_src(mws_sp<std::string> src)
 {
-   shared_ptr<kx_scn> sc;
-   shared_ptr<kx_shared_state> ss;
+   mws_sp<kx_scn> sc;
+   mws_sp<kx_shared_state> ss;
 
    ss = kx_shared_state::nwi();
    ss->src = src;

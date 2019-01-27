@@ -216,7 +216,7 @@ namespace MonkVG
 	class monkvgpage : public mws_page
 	{
 	public:
-		monkvgpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		monkvgpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -228,7 +228,7 @@ namespace MonkVG
 		{
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -238,7 +238,7 @@ namespace MonkVG
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw();

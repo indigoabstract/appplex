@@ -37,14 +37,14 @@ public:
 	~node_info();
 	const std::string& getName()const{ return name; }
 	//const std::string& getVal()const{return val;}
-	const std::vector<shared_ptr<node_info> > getList()const{ return list; }
-	static int parseBlock(std::string& exp, std::vector<shared_ptr<node_info> >& list, int level);
-	static void printList(std::vector<shared_ptr<node_info> >& list, int ilevel);
+	const std::vector<mws_sp<node_info> > getList()const{ return list; }
+	static int parseBlock(std::string& exp, std::vector<mws_sp<node_info> >& list, int level);
+	static void printList(std::vector<mws_sp<node_info> >& list, int ilevel);
 
 private:
 	std::string name;
 	//std::string val;
-	std::vector<shared_ptr<node_info> > list;
+	std::vector<mws_sp<node_info> > list;
 };
 
 #endif

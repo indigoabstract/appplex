@@ -38,7 +38,7 @@ gfx_debug_vxo::gfx_debug_vxo(vx_info ivxi, bool iis_submesh) : gfx_vxo(ivxi, iis
 {
 }
 
-void gfx_debug_vxo::draw_in_sync(shared_ptr<gfx_camera> icamera)
+void gfx_debug_vxo::draw_in_sync(mws_sp<gfx_camera> icamera)
 {
    gfx_vxo::draw_in_sync(icamera);
 }
@@ -54,9 +54,9 @@ void gfx_obj_vxo::operator=(const std::string& imesh_name)
    set_mesh_name(imesh_name);
 }
 
-//void gfx_obj_mesh::draw_in_sync(shared_ptr<gfx_camera> icamera)
+//void gfx_obj_mesh::draw_in_sync(mws_sp<gfx_camera> icamera)
 //{
-//	std::vector<shared_ptr<gfx_mesh> >::iterator it = mesh_list.begin();
+//	std::vector<mws_sp<gfx_mesh> >::iterator it = mesh_list.begin();
 //
 //	for(; it != mesh_list.end(); it++)
 //	{
@@ -65,7 +65,7 @@ void gfx_obj_vxo::operator=(const std::string& imesh_name)
 //}
 
 
-gfx_plane::gfx_plane(std::shared_ptr<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"), i_gi)
+gfx_plane::gfx_plane(mws_sp<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"), i_gi)
 {
 }
 
@@ -88,7 +88,7 @@ void gfx_plane::set_dimensions(float idx, float idy, float i_z_val)
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -157,7 +157,7 @@ void gfx_grid::set_dimensions(int i_h_point_count, int i_v_point_count)
    }
 
    set_mesh_data((const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f) * tvertices_data.size(),
-      tindices_data.data(), sizeof(gfx_indices_type) * tindices_data.size(), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+      tindices_data.data(), sizeof(gfx_indices_type) * tindices_data.size(), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -220,7 +220,7 @@ void gfx_box::set_dimensions(float idx, float idy, float idz)
       pos.z *= idz;
    }
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -285,7 +285,7 @@ void gfx_icosahedron::set_dimensions(float iradius)
       9, 8, 1,
    };
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -394,7 +394,7 @@ void gfx_vpc_box::set_dimensions(float iradius, int isegments)
 
    int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
    int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -667,7 +667,7 @@ void gfx_vpc_kubic_sphere::set_dimensions(float iradius, int isegments)
 
    int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_c4b_n3f_t2f);
    int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -805,6 +805,6 @@ void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
 
    int vdata_size = rs_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
    int idata_size = rs_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(rs_vertices_data), vdata_size, begin_ptr(rs_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)begin_ptr(rs_vertices_data), vdata_size, begin_ptr(rs_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
    //mws_print("ind length %d") % indicesLength;
 }

@@ -59,7 +59,7 @@ public:
 class mws_video_enc
 {
 public:
-   static std::shared_ptr<mws_video_enc> nwi();
+   static mws_sp<mws_video_enc> nwi();
 
    virtual ~mws_video_enc() {}
    virtual bool is_encoding() const { return get_state() == mws_vid_enc_st::e_st_encoding; }
@@ -70,7 +70,7 @@ public:
    virtual void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) = 0;
    virtual void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) = 0;
    virtual void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length) = 0;
-   virtual void encode_frame_m2_rbga(std::shared_ptr<gfx_tex> i_frame_tex) = 0;
+   virtual void encode_frame_m2_rbga(mws_sp<gfx_tex> i_frame_tex) = 0;
    virtual void stop_encoding() = 0;
 
 protected:
@@ -84,14 +84,14 @@ public:
    // i_rt - you can draw to this FBO and use the attached texture as the next frame to be encoded
    // i_video_frame - a frame of the original video
    // return true to use as the frame the texture attached to i_rt, false will discard the frame in i_rt and use i_video_frame for encoding the next frame
-   virtual bool on_reencode_frame(std::shared_ptr<gfx_rt> i_rt, std::shared_ptr<gfx_tex> i_video_frame) { return false; }
+   virtual bool on_reencode_frame(mws_sp<gfx_rt> i_rt, mws_sp<gfx_tex> i_video_frame) { return false; }
 };
 
 
 class mws_video_reencoder
 {
 public:
-   static std::shared_ptr<mws_video_reencoder> nwi();
+   static mws_sp<mws_video_reencoder> nwi();
 
    virtual ~mws_video_reencoder() {}
    virtual bool is_decoding() const;
@@ -106,8 +106,8 @@ public:
    virtual void start_encoding(const mws_video_params& i_prm) = 0;
    virtual void stop_encoding() = 0;
    virtual void update() = 0;
-   virtual void set_listener(std::shared_ptr<mws_vdec_listener> i_listener) = 0;
-   virtual void set_reencode_listener(std::shared_ptr<mws_vreencoder_listener> i_listener) = 0;
+   virtual void set_listener(mws_sp<mws_vdec_listener> i_listener) = 0;
+   virtual void set_reencode_listener(mws_sp<mws_vreencoder_listener> i_listener) = 0;
 
 protected:
    mws_video_reencoder() {}

@@ -10,14 +10,14 @@
 class unit_test_snd_generators : public unit
 {
 public:
-	static std::shared_ptr<unit_test_snd_generators> nwi();
+   static mws_sp<unit_test_snd_generators> nwi();
 
-    virtual void init();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void init_mws();
+   virtual void load();
 
 private:
-	unit_test_snd_generators();
+   unit_test_snd_generators();
 };
 
 #endif // UNIT_TEST_SND_GENERATORS

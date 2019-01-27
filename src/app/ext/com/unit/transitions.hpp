@@ -29,7 +29,7 @@ public:
 	static const std::string TRANSITION_UPDATE;
 	static const std::string TRANSITION_INTERVAL_CHANGED;
 
-	static shared_ptr<transition_evt> nwi(transition_evt_types itype);
+	static mws_sp<transition_evt> nwi(transition_evt_types itype);
 	static const std::string& get_type_name(transition_evt_types itype);
 	transition_evt_types get_type();
 
@@ -120,13 +120,13 @@ class ms_linear_transition : public linear_transition, public mws_broadcaster, p
 	// multi-step fixed-time transition, in milliseconds
 {
 public:
-	static shared_ptr<ms_linear_transition> nwi(shared_ptr<ms_transition_data> td);
-	shared_ptr<ms_linear_transition> get_instance();
+	static mws_sp<ms_linear_transition> nwi(mws_sp<ms_transition_data> td);
+	mws_sp<ms_linear_transition> get_instance();
 
 	transition_type get_transition_type()const;
 	int get_interval_index()const;
 	int length()const;
-	const shared_ptr<linear_transition> get_transition_at(int index)const;
+	const mws_sp<linear_transition> get_transition_at(int index)const;
 
 	void start();
 	void stop();
@@ -137,11 +137,11 @@ public:
 protected:
 	ms_linear_transition();
 
-	virtual shared_ptr<mws_sender> sender_inst();
+	virtual mws_sp<mws_sender> sender_inst();
 	void reset();
 
 	int interval_idx;
-	std::vector<shared_ptr<linear_transition> > transitions;
+	std::vector<mws_sp<linear_transition> > transitions;
 };
 
 
@@ -150,17 +150,17 @@ class ms_transition_data
 {
 public:
 	// transition data
-	static shared_ptr<ms_transition_data> new_transition_data(const std::vector<shared_ptr<linear_transition> >& itransitions);
+	static mws_sp<ms_transition_data> new_transition_data(const std::vector<mws_sp<linear_transition> >& itransitions);
 	// position data [500, 2500, 10500, 14500, 15000]
-	static shared_ptr<ms_transition_data> new_position_data(const std::vector<int>& tposition);
-	static shared_ptr<ms_transition_data> new_position_data(const int tposition[], int tlength);
+	static mws_sp<ms_transition_data> new_position_data(const std::vector<int>& tposition);
+	static mws_sp<ms_transition_data> new_position_data(const int tposition[], int tlength);
 	// duration data [500, 2000, 8000, 4000, 500]
-	static shared_ptr<ms_transition_data> new_duration_data(const std::vector<int>& tduration);
-	static shared_ptr<ms_transition_data> new_duration_data(const int tduration[], int tlength);
+	static mws_sp<ms_transition_data> new_duration_data(const std::vector<int>& tduration);
+	static mws_sp<ms_transition_data> new_duration_data(const int tduration[], int tlength);
 
 private:
 	friend class ms_linear_transition;
 	ms_transition_data();
 
-	std::vector<shared_ptr<linear_transition> > transitions;
+	std::vector<mws_sp<linear_transition> > transitions;
 };

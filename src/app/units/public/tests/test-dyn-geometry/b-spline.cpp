@@ -28,7 +28,7 @@ float Bspline::b(int i, float t)
 }
 
 //evaluate a point on the B spline
-shared_ptr<control_curve_ns::Point> Bspline::p(int i, float t)
+mws_sp<control_curve_ns::Point> Bspline::p(int i, float t)
 {
 	float px = 0;
 	float py = 0;
@@ -39,8 +39,8 @@ shared_ptr<control_curve_ns::Point> Bspline::p(int i, float t)
 		py += b(j,t) * pts.ypoints[i+j];
 	}
 
-	//return shared_ptr<Point>(new Point((int)glm::round(px),(int)glm::round(py)));
-	return shared_ptr<control_curve_ns::Point>(new control_curve_ns::Point(px, py));
+	//return mws_sp<Point>(new Point((int)glm::round(px),(int)glm::round(py)));
+	return mws_sp<control_curve_ns::Point>(new control_curve_ns::Point(px, py));
 }
 
 void Bspline::paint()

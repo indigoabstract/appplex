@@ -71,7 +71,7 @@ mws_sp<mws_sender> mws_model::sender_inst()
 
 mws_sp<mws> mws::nwi()
 {
-   auto inst = std::shared_ptr<mws>(new mws());
+   auto inst = mws_sp<mws>(new mws());
    inst->setup();
    return inst;
 }

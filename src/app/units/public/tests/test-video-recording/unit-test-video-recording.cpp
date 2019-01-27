@@ -15,9 +15,9 @@
 
 unit_test_video_recording::unit_test_video_recording() : unit(mws_stringify(UNIT_TEST_VIDEO_RECORDING)) {}
 
-shared_ptr<unit_test_video_recording> unit_test_video_recording::nwi()
+mws_sp<unit_test_video_recording> unit_test_video_recording::nwi()
 {
-   return shared_ptr<unit_test_video_recording>(new unit_test_video_recording());
+   return mws_sp<unit_test_video_recording>(new unit_test_video_recording());
 }
 
 void unit_test_video_recording::init()
@@ -59,7 +59,7 @@ namespace test_video_recording
             rt = gfx::i()->rt.new_rt();
             rt->set_color_attachment(rt_tex);
 
-            shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+            mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
             gfx::i()->rt.set_current_render_target(rt);
             decl_scgfxpl(pl1)
@@ -260,7 +260,7 @@ namespace test_video_recording
          mws_report_gfx_errs();
       }
 
-      void update_view(std::shared_ptr<mws_camera> mws_cam)
+      void update_view(mws_sp<mws_camera> mws_cam)
       {
          std::string frame_counter = mws_to_str("frame count: [%d]", frame_idx);
 
@@ -270,7 +270,7 @@ namespace test_video_recording
          mws_report_gfx_errs();
       }
 
-      void post_update_view(std::shared_ptr<mws_camera> mws_cam)
+      void post_update_view(mws_sp<mws_camera> mws_cam)
       {
          mws_report_gfx_errs();
          scr_mirror_tex->set_active(0);
@@ -300,17 +300,17 @@ namespace test_video_recording
             {
                gfx::i()->rt.set_current_render_target(rt_u);
                rt_u_quad->draw_out_of_sync(mws_cam);
-               shared_ptr<std::vector<uint8> > pixels_u_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_u);
+               mws_sp<std::vector<uint8> > pixels_u_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_u);
                gfx::i()->rt.set_current_render_target();
                mws_report_gfx_errs();
 
                gfx::i()->rt.set_current_render_target(rt_y);
                rt_y_quad->draw_out_of_sync(mws_cam);
-               shared_ptr<std::vector<uint8> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_y);
+               mws_sp<std::vector<uint8> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_y);
 
                gfx::i()->rt.set_current_render_target(rt_v);
                rt_v_quad->draw_out_of_sync(mws_cam);
-               shared_ptr<std::vector<uint8> > pixels_v_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_v);
+               mws_sp<std::vector<uint8> > pixels_v_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_v);
 
                mws_report_gfx_errs();
 
@@ -328,15 +328,15 @@ namespace test_video_recording
          frame_idx++;
       }
 
-      void receive(shared_ptr<mws_dp> idp)
+      void receive(mws_sp<mws_dp> idp)
       {
          if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
-            shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+            mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
          }
          else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
          {
-            shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+            mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
             if (ke->is_pressed())
             {
@@ -375,25 +375,25 @@ namespace test_video_recording
          }
       }
 
-      shared_ptr<gfx_rt> rt;
-      shared_ptr<gfx_tex> rt_tex;
-      shared_ptr<gfx_quad_2d> quad_mesh;
+      mws_sp<gfx_rt> rt;
+      mws_sp<gfx_tex> rt_tex;
+      mws_sp<gfx_quad_2d> quad_mesh;
 
-      shared_ptr<gfx_tex> scr_mirror_tex;
-      shared_ptr<gfx_quad_2d> scr_mirror_mesh;
-      shared_ptr<gfx_quad_2d> scr_mirror_bg_mesh;
+      mws_sp<gfx_tex> scr_mirror_tex;
+      mws_sp<gfx_quad_2d> scr_mirror_mesh;
+      mws_sp<gfx_quad_2d> scr_mirror_bg_mesh;
 
       // data for converting rgb to yuv420
       // sync readback
-      shared_ptr<gfx_rt> rt_y;
-      shared_ptr<gfx_tex> rt_y_tex;
-      shared_ptr<gfx_quad_2d> rt_y_quad;
-      shared_ptr<gfx_rt> rt_u;
-      shared_ptr<gfx_tex> rt_u_tex;
-      shared_ptr<gfx_quad_2d> rt_u_quad;
-      shared_ptr<gfx_rt> rt_v;
-      shared_ptr<gfx_tex> rt_v_tex;
-      shared_ptr<gfx_quad_2d> rt_v_quad;
+      mws_sp<gfx_rt> rt_y;
+      mws_sp<gfx_tex> rt_y_tex;
+      mws_sp<gfx_quad_2d> rt_y_quad;
+      mws_sp<gfx_rt> rt_u;
+      mws_sp<gfx_tex> rt_u_tex;
+      mws_sp<gfx_quad_2d> rt_u_quad;
+      mws_sp<gfx_rt> rt_v;
+      mws_sp<gfx_tex> rt_v_tex;
+      mws_sp<gfx_quad_2d> rt_v_quad;
 
       // async readback
       mws_sp<mws_pbo_bundle> pbo_b_y;
@@ -401,7 +401,7 @@ namespace test_video_recording
       mws_sp<mws_pbo_bundle> pbo_b_v;
       bool uses_async_readback = true;
 
-      shared_ptr<venc_ffmpeg> venc;
+      mws_sp<venc_ffmpeg> venc;
       std::string video_path;
       mws_video_params video_params;
 
@@ -439,7 +439,7 @@ void unit_test_video_recording::post_update_view()
    i.post_update_view(mws_cam);
 }
 
-void unit_test_video_recording::receive(shared_ptr<mws_dp> idp)
+void unit_test_video_recording::receive(mws_sp<mws_dp> idp)
 {
    if (!idp->is_processed())
    {

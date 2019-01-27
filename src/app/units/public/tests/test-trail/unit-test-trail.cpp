@@ -46,7 +46,7 @@ namespace ns_test_trail
       }
 
       /// feed new touch event and return detected state
-      gesture_state::e_code detect(const std::shared_ptr<pointer_evt> newEvent);
+      gesture_state::e_code detect(const mws_sp<pointer_evt> newEvent);
       /// reset the detector
       void reset();
 
@@ -59,7 +59,7 @@ namespace ns_test_trail
       /// get start position of second touch
       glm::vec2 start_position1;
 
-      std::shared_ptr<pointer_evt> start_event;
+      mws_sp<pointer_evt> start_event;
    };
 
    void pinch_detector::reset()
@@ -70,7 +70,7 @@ namespace ns_test_trail
       }
    }
 
-   gesture_state::e_code pinch_detector::detect(const std::shared_ptr<pointer_evt> new_event)
+   gesture_state::e_code pinch_detector::detect(const mws_sp<pointer_evt> new_event)
    {
       // check for cancelled event
       if (new_event->type == pointer_evt::touch_cancelled)
@@ -152,7 +152,7 @@ namespace ns_test_trail
       }
 
       /// feed new touch event and return detected state
-      gesture_state::e_code detect(const std::shared_ptr<pointer_evt> new_event)
+      gesture_state::e_code detect(const mws_sp<pointer_evt> new_event)
       {
          // check for cancelled event
          if (new_event->type == pointer_evt::touch_cancelled)
@@ -249,7 +249,7 @@ namespace ns_test_trail
       /// get start position of second touch
       glm::vec2 start_position1;
 
-      std::shared_ptr<pointer_evt> start_event;
+      mws_sp<pointer_evt> start_event;
    };
 }
 using namespace ns_test_trail;
@@ -311,7 +311,7 @@ void gfx_tube::add_position(glm::vec3 ipos)
       return;
    }
 
-   auto inst = std::static_pointer_cast<gfx_vxo>(get_shared_ptr());
+   auto inst = std::static_pointer_cast<gfx_vxo>(get_mws_sp());
    std::vector<float> tvertices_data;
 
    glm::vec3 x_axis(1, 0, 0);
@@ -442,9 +442,9 @@ public:
       }
    }
 
-   shared_ptr<gfx_trail> trail_mesh;
-   shared_ptr<gfx_tube> tube_mesh;
-   shared_ptr<gfx_camera> persp_cam;
+   mws_sp<gfx_trail> trail_mesh;
+   mws_sp<gfx_tube> tube_mesh;
+   mws_sp<gfx_camera> persp_cam;
    float t;
    float t2;
    float phi;
@@ -472,9 +472,9 @@ public:
 
 unit_test_trail::unit_test_trail() : unit(mws_stringify(UNIT_TEST_TRAIL)) {}
 
-shared_ptr<unit_test_trail> unit_test_trail::nwi()
+mws_sp<unit_test_trail> unit_test_trail::nwi()
 {
-   return shared_ptr<unit_test_trail>(new unit_test_trail());
+   return mws_sp<unit_test_trail>(new unit_test_trail());
 }
 
 void unit_test_trail::init()
@@ -485,7 +485,7 @@ void unit_test_trail::init()
 
 void unit_test_trail::load()
 {
-   p = shared_ptr<unit_test_trail_impl>(new unit_test_trail_impl());
+   p = mws_sp<unit_test_trail_impl>(new unit_test_trail_impl());
 
    {
       p->persp_cam = gfx_camera::nwi();
@@ -501,7 +501,7 @@ void unit_test_trail::load()
    }
 
    {
-      p->trail_mesh = shared_ptr<gfx_trail>(new gfx_trail());
+      p->trail_mesh = mws_sp<gfx_trail>(new gfx_trail());
       gfx_trail& r_trail_mesh = *p->trail_mesh;
       r_trail_mesh[MP_SHADER_NAME] = "trail";
       r_trail_mesh[MP_CULL_BACK] = false;
@@ -512,7 +512,7 @@ void unit_test_trail::load()
    }
 
    {
-      p->tube_mesh = shared_ptr<gfx_tube>(new gfx_tube());
+      p->tube_mesh = mws_sp<gfx_tube>(new gfx_tube());
       gfx_tube& r_tube_mesh = *p->tube_mesh;
       r_tube_mesh[MP_SHADER_NAME] = "tube";
       r_tube_mesh[MP_CULL_BACK] = false;
@@ -620,13 +620,13 @@ bool unit_test_trail::update()
    return unit::update();
 }
 
-void unit_test_trail::receive(shared_ptr<mws_dp> idp)
+void unit_test_trail::receive(mws_sp<mws_dp> idp)
 {
    if (!idp->is_processed())
    {
       if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
       {
-         shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+         mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
          switch (ts->get_type())
          {
@@ -755,7 +755,7 @@ void unit_test_trail::receive(shared_ptr<mws_dp> idp)
             }
             else if (ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
             {
-               shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+               mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
                p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
                ts->process();
@@ -764,7 +764,7 @@ void unit_test_trail::receive(shared_ptr<mws_dp> idp)
       }
       else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
       {
-         shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+         mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
          if (ke->get_type() != key_evt::KE_RELEASED)
          {

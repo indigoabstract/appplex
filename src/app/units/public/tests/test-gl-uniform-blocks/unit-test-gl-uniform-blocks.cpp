@@ -39,10 +39,10 @@ namespace unit_test_gl_uniform_blocks_ns
       // timing
       float deltaTime = 0.0f;
       float lastFrame = 0.0f;
-      std::shared_ptr<gfx_shader> red_shader;
-      std::shared_ptr<gfx_shader> green_shader;
-      std::shared_ptr<gfx_shader> blue_shader;
-      std::shared_ptr<gfx_shader> yellow_shader;
+      mws_sp<gfx_shader> red_shader;
+      mws_sp<gfx_shader> green_shader;
+      mws_sp<gfx_shader> blue_shader;
+      mws_sp<gfx_shader> yellow_shader;
       unsigned int cubeVAO, cubeVBO;
       unsigned int uniformBlockIndexRed;
       unsigned int material_block_index_red;

@@ -34,12 +34,12 @@ public:
 
 unit_mx_lisp::unit_mx_lisp() : unit(mws_stringify(UNIT_MX_LISP))
 {
-	prefs = shared_ptr<unit_preferences>(new unit_mx_lisp_pref::unit_preferences_detail());
+	prefs = mws_sp<unit_preferences>(new unit_mx_lisp_pref::unit_preferences_detail());
 }
 
-shared_ptr<unit_mx_lisp> unit_mx_lisp::nwi()
+mws_sp<unit_mx_lisp> unit_mx_lisp::nwi()
 {
-	return shared_ptr<unit_mx_lisp>(new unit_mx_lisp());
+	return mws_sp<unit_mx_lisp>(new unit_mx_lisp());
 }
 
 bool unit_mx_lisp::update()

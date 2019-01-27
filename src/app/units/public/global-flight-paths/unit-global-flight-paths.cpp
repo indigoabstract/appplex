@@ -65,7 +65,7 @@ namespace global_flight_paths_ns
       position = normal * globe_radius;
    }
 
-   std::shared_ptr<hot_spot> new_hot_spot(float latitude, float longitude, float globe_radius)
+   mws_sp<hot_spot> new_hot_spot(float latitude, float longitude, float globe_radius)
    {
       glm::vec3 position;
       glm::vec3 normal;
@@ -75,7 +75,7 @@ namespace global_flight_paths_ns
       return std::make_shared<hot_spot>(latitude, longitude, position, normal);
    }
 
-   std::shared_ptr<hot_spot> new_random_hot_spot(float globe_radius)
+   mws_sp<hot_spot> new_random_hot_spot(float globe_radius)
    {
       static RNG rng;
       float sign_lat = 1.f;
@@ -116,8 +116,8 @@ namespace global_flight_paths_ns
       };
 
       int step_count;
-      std::shared_ptr<hot_spot> start_point;
-      std::shared_ptr<hot_spot> end_point;
+      mws_sp<hot_spot> start_point;
+      mws_sp<hot_spot> end_point;
       glm::vec3 base;
       glm::vec3 base_ortho;
       std::vector<float> distances;
@@ -139,7 +139,7 @@ namespace global_flight_paths_ns
          return cumulated_distances[step_count - 1];
       }
 
-      void gen_link(std::shared_ptr<hot_spot> i_start_point, std::shared_ptr<hot_spot> i_end_point, float i_globe_radius)
+      void gen_link(mws_sp<hot_spot> i_start_point, mws_sp<hot_spot> i_end_point, float i_globe_radius)
       {
          start_point = i_start_point;
          end_point = i_end_point;
@@ -305,7 +305,7 @@ namespace global_flight_paths_ns
 
          gfx_vxo_util::set_mesh_data(
             (const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f_t2f) * tvertices_data.size(),
-            indices.data(), indices.size() * sizeof(gfx_indices_type), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+            indices.data(), indices.size() * sizeof(gfx_indices_type), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
       }
 
       void set_visible_vertices(int sv_idx, int ev_idx)
@@ -324,7 +324,7 @@ namespace global_flight_paths_ns
          r["u_v3_end_vertex_seg_dir"] = eseg_dir;
       }
 
-      void draw_link(std::shared_ptr<gfx_camera> camera, const glm::mat4& i_globe_tf)
+      void draw_link(mws_sp<gfx_camera> camera, const glm::mat4& i_globe_tf)
       {
          float s = 0.05f;
          glm::vec3 bsize(s, s, s);
@@ -404,14 +404,14 @@ namespace global_flight_paths_ns
       float chain_distance;
       int last_link_idx;
       float current_position;
-      std::vector<std::shared_ptr<hot_spot_link> > hot_spot_link_list;
+      std::vector<mws_sp<hot_spot_link> > hot_spot_link_list;
       std::vector<float> cumulated_distances;
       bool l_makevisible;
       int loop_count;
       int loop_index;
       bool l_show;
 
-      void add_link(std::shared_ptr<hot_spot_link> _link)
+      void add_link(mws_sp<hot_spot_link> _link)
       {
          int sv_idx = 0;
          int ev_idx = _link->step_count - 1;
@@ -427,7 +427,7 @@ namespace global_flight_paths_ns
          chain_distance = cumulated_distances[hot_spot_link_list.size() - 1];
       }
 
-      void set_hot_spot_link_list(std::vector<std::shared_ptr<hot_spot_link> > i_hot_spot_link_list)
+      void set_hot_spot_link_list(std::vector<mws_sp<hot_spot_link> > i_hot_spot_link_list)
       {
          int hot_spot_link_list_length = i_hot_spot_link_list.size();
 
@@ -544,7 +544,7 @@ namespace global_flight_paths_ns
          set_visible(false);
       }
 
-      std::shared_ptr<hot_spot> get_last_hot_spot()
+      mws_sp<hot_spot> get_last_hot_spot()
       {
          int idx = hot_spot_link_list.size() - 1;
 
@@ -653,12 +653,12 @@ namespace global_flight_paths_ns
    {
    public:
       float globe_radius;
-      std::vector<std::shared_ptr<hot_spot_chain> > hot_spot_chain_list;
+      std::vector<mws_sp<hot_spot_chain> > hot_spot_chain_list;
       bool is_init;
       bool visible;
-      std::shared_ptr<gfx_vxo> globe;
+      mws_sp<gfx_vxo> globe;
 
-      hot_spot_connector(std::shared_ptr<gfx_vxo> i_globe, float i_globe_radius)
+      hot_spot_connector(mws_sp<gfx_vxo> i_globe, float i_globe_radius)
       {
          globe = i_globe;
          globe_radius = i_globe_radius;
@@ -794,7 +794,7 @@ namespace global_flight_paths_ns
 
       void set_hot_spots(std::vector<glm::vec2> globe_hot_spot_list)
       {
-         std::vector<std::shared_ptr<hot_spot> > globe_hot_spot_data_list;
+         std::vector<mws_sp<hot_spot> > globe_hot_spot_data_list;
 
          for (size_t k = 0; k < globe_hot_spot_list.size(); k++)
          {
@@ -823,9 +823,9 @@ namespace global_flight_paths_ns
 
             for (int i = 0; i < hot_spot_chain_list_length; i++)
             {
-               std::vector<std::shared_ptr<hot_spot> > hot_spot_list;
+               std::vector<mws_sp<hot_spot> > hot_spot_list;
                int hot_spot_list_length = 6 + rng.nextInt(5);
-               std::vector<std::shared_ptr<hot_spot_link> > hot_spot_link_list;
+               std::vector<mws_sp<hot_spot_link> > hot_spot_link_list;
 
                hot_spot_chain_list.push_back(std::make_shared<hot_spot_chain>());
                hot_spot_chain_list[i]->loop_count = -1;
@@ -861,9 +861,9 @@ namespace global_flight_paths_ns
          }
          else
          {
-            std::vector<std::shared_ptr<hot_spot> > hot_spot_list;
+            std::vector<mws_sp<hot_spot> > hot_spot_list;
             int hot_spot_list_length = globe_hot_spot_list.size();
-            std::vector<std::shared_ptr<hot_spot_link> > hot_spot_link_list;
+            std::vector<mws_sp<hot_spot_link> > hot_spot_link_list;
             auto scene = globe->get_scene();
             auto hot_spot_chain_inst = std::make_shared<hot_spot_chain>();
 
@@ -933,7 +933,7 @@ namespace global_flight_paths_ns
 
          u_v3_light_dir = -glm::vec3(-1.f, 0.f, 0.5f);
 
-         skybox = shared_ptr<gfx_box>(new gfx_box());
+         skybox = mws_sp<gfx_box>(new gfx_box());
          gfx_box& r_cube_mesh = *skybox;
          float s = persp_cam->far_clip_distance * 0.5f;
          r_cube_mesh.set_dimensions(s, s, s);
@@ -943,7 +943,7 @@ namespace global_flight_paths_ns
          r_cube_mesh[MP_CULL_FRONT] = true;
 
          globe_radius = 100.f;
-         vpc_rs_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
+         vpc_rs_mesh = mws_sp<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
          gfx_vpc_ring_sphere& r_vpc_rs_mesh = *vpc_rs_mesh;
          r_vpc_rs_mesh.get_vx_info().uses_tangent_basis = true;
          //r_vpc_rs_mesh.render_method = GLPT_LINES;
@@ -956,7 +956,7 @@ namespace global_flight_paths_ns
          r_vpc_rs_mesh["u_s2d_normal_specular_map"] = "earth-normal-spec-map.png";
          r_vpc_rs_mesh["u_v3_light_dir"] = u_v3_light_dir;
 
-         //s_mesh = shared_ptr<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
+         //s_mesh = mws_sp<gfx_vpc_ring_sphere>(new gfx_vpc_ring_sphere());
          //gfx_vpc_ring_sphere& rs_mesh = *s_mesh;
          //rs_mesh.set_dimensions(100, 75);
          //rs_mesh.position = glm::vec3(0.f, 0.f, 0.f);
@@ -985,7 +985,7 @@ namespace global_flight_paths_ns
          mws_report_gfx_errs();
       }
 
-      virtual void receive(shared_ptr<mws_dp> idp)
+      virtual void receive(mws_sp<mws_dp> idp)
       {
          free_cam->update_input(idp);
 
@@ -993,7 +993,7 @@ namespace global_flight_paths_ns
          {
             if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
             {
-               shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+               mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
                if (ke->is_pressed())
                {
@@ -1046,20 +1046,20 @@ namespace global_flight_paths_ns
          mws_report_gfx_errs();
       }
 
-      virtual void update_view(shared_ptr<mws_camera> g)
+      virtual void update_view(mws_sp<mws_camera> g)
       {
          mws_page::update_view(g);
       }
 
-      shared_ptr<gfx_box> skybox;
-      shared_ptr<gfx_vpc_ring_sphere> vpc_rs_mesh;
+      mws_sp<gfx_box> skybox;
+      mws_sp<gfx_vpc_ring_sphere> vpc_rs_mesh;
       float globe_radius;
-      shared_ptr<gfx_vpc_ring_sphere> s_mesh;
-      shared_ptr<gfx_camera> persp_cam;
+      mws_sp<gfx_vpc_ring_sphere> s_mesh;
+      mws_sp<gfx_camera> persp_cam;
       glm::vec3 u_v3_light_dir;
       float t;
-      shared_ptr<free_camera> free_cam;
-      std::shared_ptr<hot_spot_connector> hot_spot_connex;
+      mws_sp<free_camera> free_cam;
+      mws_sp<hot_spot_connector> hot_spot_connex;
    };
 }
 using namespace global_flight_paths_ns;
@@ -1067,9 +1067,9 @@ using namespace global_flight_paths_ns;
 
 unit_global_flight_paths::unit_global_flight_paths() : unit(mws_stringify(UNIT_GLOBAL_FLIGHT_PATHS)) {}
 
-shared_ptr<unit_global_flight_paths> unit_global_flight_paths::nwi()
+mws_sp<unit_global_flight_paths> unit_global_flight_paths::nwi()
 {
-   return shared_ptr<unit_global_flight_paths>(new unit_global_flight_paths());
+   return mws_sp<unit_global_flight_paths>(new unit_global_flight_paths());
 }
 
 void unit_global_flight_paths::init_mws()

@@ -720,7 +720,7 @@ public:
 
 gfx_state::gfx_state()
 {
-   rsi = shared_ptr<gl_state_impl>(new gl_state_impl());
+   rsi = mws_sp<gl_state_impl>(new gl_state_impl());
 }
 
 bool gfx_state::is_enabled(gl::rsv_states istate)

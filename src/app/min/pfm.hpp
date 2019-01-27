@@ -62,19 +62,19 @@ namespace pfm_impl
 class pfm_path
 {
 public:
-   static std::shared_ptr<pfm_path> get_inst(std::string ifile_path, std::string i_aux_root_dir = "");
+   static mws_sp<pfm_path> get_inst(std::string ifile_path, std::string i_aux_root_dir = "");
    std::string get_full_path()const;
    const std::string& get_file_name()const;
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   shared_ptr<std::vector<shared_ptr<pfm_file> > > list_directory(std::shared_ptr<unit> iu = nullptr, bool recursive = false)const;
+   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<unit> iu = nullptr, bool recursive = false)const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
    pfm_path() {}
    void make_standard_path();
-   void list_directory_impl(std::string ibase_dir, std::shared_ptr<std::vector<std::shared_ptr<pfm_file> > > ifile_list, bool irecursive) const;
+   void list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > ifile_list, bool irecursive) const;
 
    std::string filename;
    std::string aux_root_dir;
@@ -84,8 +84,8 @@ private:
 class pfm_file
 {
 public:
-   static shared_ptr<pfm_file> get_inst(std::string ifilename, std::string iroot_dir = "");
-   static shared_ptr<pfm_file> get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimpl);
+   static mws_sp<pfm_file> get_inst(std::string ifilename, std::string iroot_dir = "");
+   static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl);
    virtual ~pfm_file();
 
    bool remove();
@@ -123,7 +123,7 @@ public:
    private:
       friend class pfm_file;
       io_op();
-      shared_ptr<pfm_impl::pfm_file_impl> impl;
+      mws_sp<pfm_impl::pfm_file_impl> impl;
    };
    io_op io;
 
@@ -133,8 +133,8 @@ private:
 };
 
 
-using umf_r = std::unordered_map < std::string, shared_ptr<pfm_file> >;
-using umf_list = shared_ptr < umf_r >;
+using umf_r = std::unordered_map < std::string, mws_sp<pfm_file> >;
+using umf_list = mws_sp < umf_r >;
 
 
 namespace pfm_impl
@@ -202,7 +202,7 @@ public:
    bool gfx_available;
    int screen_width;
    int screen_height;
-   //shared_ptr<ia_console> console;
+   //mws_sp<ia_console> console;
 };
 
 
@@ -264,22 +264,22 @@ public:
    public:
       static std::string get_writable_path(std::string iname);
       static std::string get_path(std::string iname);
-      static void load_res_file_map(shared_ptr<unit> iu = nullptr);
+      static void load_res_file_map(mws_sp<unit> iu = nullptr);
       //static shared_array<uint8> load_res_byte_array(std::string ifile_name, int& isize);
-      static shared_ptr<std::vector<uint8> > load_res_byte_vect(shared_ptr<pfm_file> ifile);
-      static shared_ptr<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);
-      static shared_ptr<std::string> load_res_as_string(shared_ptr<pfm_file> ifile);
-      static shared_ptr<std::string> load_res_as_string(std::string ifilename);
+      static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> ifile);
+      static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);
+      static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> ifile);
+      static mws_sp<std::string> load_res_as_string(std::string ifilename);
 
    private:
 
       friend class unit;
 
-      static shared_ptr<std::vector<uint8> > load_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name);
-      //static shared_array<uint8> load_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, int& isize);
-      static bool store_unit_byte_array(shared_ptr<unit> iu, std::string ifile_name, const uint8* ires, int isize);
-      static bool store_unit_byte_vect(shared_ptr<unit> iu, std::string ifile_name, const std::vector<uint8>& ires);
-      static shared_ptr<pfm_file> random_access(shared_ptr<unit> iu, std::string ifile_name);
+      static mws_sp<std::vector<uint8> > load_unit_byte_vect(mws_sp<unit> iu, std::string ifile_name);
+      //static shared_array<uint8> load_unit_byte_array(mws_sp<unit> iu, std::string ifile_name, int& isize);
+      static bool store_unit_byte_array(mws_sp<unit> iu, std::string ifile_name, const uint8* ires, int isize);
+      static bool store_unit_byte_vect(mws_sp<unit> iu, std::string ifile_name, const std::vector<uint8>& ires);
+      static mws_sp<pfm_file> random_access(mws_sp<unit> iu, std::string ifile_name);
    };
 
 
@@ -292,8 +292,8 @@ public:
    static platform_id get_platform_id();
    static bool has_touchscreen();
    static gfx_type_id get_gfx_type_id();
-   static shared_ptr<pfm_main> get_pfm_main_inst();
-   //static shared_ptr<ia_console> get_console();
+   static mws_sp<pfm_main> get_pfm_main_inst();
+   //static mws_sp<ia_console> get_console();
 
 private:
    friend class unit_ctrl;

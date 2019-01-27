@@ -97,22 +97,22 @@ private:
 class font_db
 {
 public:
-   static shared_ptr<font_db> inst();
+   static mws_sp<font_db> inst();
    void clear_db();
    void resize_db(int ipow_of_two);
-   shared_ptr<std::string> get_db_font_name(const std::string& ifont_name);
-   const std::vector<font_glyph>& get_glyph_vect(shared_ptr<mws_font> ifont, const std::string& itext);
-   shared_ptr<gfx_tex> get_texture_atlas();
-   float get_ascender(shared_ptr<mws_font> ifont);
-   float get_descender(shared_ptr<mws_font> ifont);
-   float get_height(shared_ptr<mws_font> ifont);
-   glm::vec2 get_text_dim(shared_ptr<mws_font> ifont, const std::string& itext);
+   mws_sp<std::string> get_db_font_name(const std::string& ifont_name);
+   const std::vector<font_glyph>& get_glyph_vect(mws_sp<mws_font> ifont, const std::string& itext);
+   mws_sp<gfx_tex> get_texture_atlas();
+   float get_ascender(mws_sp<mws_font> ifont);
+   float get_descender(mws_sp<mws_font> ifont);
+   float get_height(mws_sp<mws_font> ifont);
+   glm::vec2 get_text_dim(mws_sp<mws_font> ifont, const std::string& itext);
 
 private:
    friend class unit;
    font_db();
    void on_frame_start();
 
-   static shared_ptr<font_db> instance;
-   shared_ptr<font_db_impl> p;
+   static mws_sp<font_db> instance;
+   mws_sp<font_db_impl> p;
 };

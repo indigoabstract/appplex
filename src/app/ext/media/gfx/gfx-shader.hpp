@@ -128,10 +128,10 @@ protected:
 class gfx_shader_listener
 {
 public:
-   virtual const std::shared_ptr<std::string> on_before_submit_vsh_source
-   (std::shared_ptr<gfx_shader> gp, const std::shared_ptr<std::string> ishader_src) = 0;
-   virtual const std::shared_ptr<std::string> on_before_submit_fsh_source
-   (std::shared_ptr<gfx_shader> gp, const std::shared_ptr<std::string> ishader_src) = 0;
+   virtual const mws_sp<std::string> on_before_submit_vsh_source
+   (mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src) = 0;
+   virtual const mws_sp<std::string> on_before_submit_fsh_source
+   (mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src) = 0;
 };
 
 
@@ -139,26 +139,26 @@ class gfx_shader : public gfx_obj
 {
 public:
    ~gfx_shader();
-   static std::shared_ptr<gfx_shader> nwi
+   static mws_sp<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ishader_name,
-      std::shared_ptr<gfx_shader_listener> ilistener = nullptr, std::shared_ptr<gfx> i_gi = nullptr
+      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
    );
-   static std::shared_ptr<gfx_shader> nwi
+   static mws_sp<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name,
-      std::shared_ptr<gfx_shader_listener> ilistener = nullptr, std::shared_ptr<gfx> i_gi = nullptr
+      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
    );
-   static std::shared_ptr<gfx_shader> new_inst_inline
+   static mws_sp<gfx_shader> new_inst_inline
    (
-      const std::string& iprg_name, const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src,
-      std::shared_ptr<gfx_shader_listener> ilistener = nullptr, std::shared_ptr<gfx> i_gi = nullptr
+      const std::string& iprg_name, const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src,
+      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
    );
 
    static std::string create_shader_id(std::string ivertex_shader_name, std::string ifragment_shader_name);
    virtual gfx_obj::e_gfx_obj_type get_type()const;
    virtual bool is_valid()const;
-   std::shared_ptr<gfx_shader> get_inst();
+   mws_sp<gfx_shader> get_inst();
    const std::string& get_program_name();
    const std::string& get_shader_id();
    const std::string& get_fragment_shader_file_name();
@@ -170,21 +170,21 @@ public:
    // SLOWEST method for updating uniforms!
    void update_uniform(std::string i_uni_name, const void* i_val);
    void update_uniform(std::string i_uni_name, const mws_any* i_val);
-   std::shared_ptr<gfx_input> get_param(std::string ikey);
-   std::shared_ptr<gfx_input> remove_param(std::string ikey);
+   mws_sp<gfx_input> get_param(std::string ikey);
+   mws_sp<gfx_input> remove_param(std::string ikey);
    gfx_int get_param_location(std::string ikey);
    bool contains_param(std::string iparam_name);
    void reload();
    void reload_on_modifications();
-   void set_listener(std::shared_ptr<gfx_shader_listener> ilistener);
+   void set_listener(mws_sp<gfx_shader_listener> ilistener);
 
 private:
    friend class gfx;
 
-   gfx_shader(const std::string& iprg_name, std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_shader(const std::string& iprg_name, mws_sp<gfx> i_gi = nullptr);
    void release();
    bool make_current();
-   void update_uniform(std::shared_ptr<gfx_input> i_input, const mws_any* i_val);
+   void update_uniform(mws_sp<gfx_input> i_input, const mws_any* i_val);
 
-   std::shared_ptr<gfx_shader_impl> p;
+   mws_sp<gfx_shader_impl> p;
 };

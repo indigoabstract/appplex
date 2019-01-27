@@ -500,7 +500,7 @@ public:
    virtual kxmd_elem_type get_type() const override { return kxmd_elem_type::kxe_flowop; }
 
    int fltype;
-   weak_ptr<kxmd_process> src, dst;
+   mws_wp<kxmd_process> src, dst;
    std::vector<mws_sp<kxmd_process> > cnx;
    int capacity;
 

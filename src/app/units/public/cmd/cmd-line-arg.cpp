@@ -24,7 +24,7 @@ using namespace boost::program_options;
 using std::string;
 using std::vector;
 
-using smap = std::unordered_map<std::string, shared_ptr<mod_cmd> >;
+using smap = std::unordered_map<std::string, mws_sp<mod_cmd> >;
 
 
 const string HELP			= "help";
@@ -39,7 +39,7 @@ public:
 	// --source-path="C:\\Users\\indigoabstract\\Desktop\\t s t\\JUN FUKAMACHI and AKIRA WADA--DIGIT CAFE 2005" --destination-path="to-mp3"
 	// appplex --module=standard-format-filenames --source-path="C:\Users\indigoabstract\Desktop\tmedia" --destination-path="C:\Users\indigoabstract\Desktop\tmedia\std-fmt"
 	// appplex --module=standard-format-filenames --source-path="C:\Users\indigoabstract\Desktop\tmedia" --destination-path="std-fmt"
-	static shared_ptr<long_operation> test_run(const vector<unicodestring>& args)
+	static mws_sp<long_operation> test_run(const vector<unicodestring>& args)
 	{
 		vector<unicodestring>* v = 0;
 		vector<unicodestring> v1;
@@ -107,7 +107,7 @@ public:
 		return dispatcher::run(v7);
 	}
 
-	static shared_ptr<long_operation> run(const vector<unicodestring>& args)
+	static mws_sp<long_operation> run(const vector<unicodestring>& args)
 	{
 		init_module_map();
 
@@ -127,7 +127,7 @@ public:
 		{
 			trx("{}", general);
 
-			return shared_ptr<long_operation>();
+			return mws_sp<long_operation>();
 		}
 
 		if(vm.count(HELP_MODULE))
@@ -143,7 +143,7 @@ public:
             mws_throw mws_exception(trs("module [{0}] does not exist. valid modules [{1}]", modNameVal, get_module_list()));
 			}
 
-			return shared_ptr<long_operation>();
+			return mws_sp<long_operation>();
 		}
 
 		if(vm.count(MODULE))
@@ -199,7 +199,7 @@ public:
          mws_throw mws_exception("module was not set. call with --help for more information");
 		}
 
-		return shared_ptr<long_operation>();
+		return mws_sp<long_operation>();
 	}
 
 	static string get_module_list()
@@ -224,7 +224,7 @@ public:
 	}
 
 private:
-	static void add_module(shared_ptr<mod_cmd> module)
+	static void add_module(mws_sp<mod_cmd> module)
 	{
         const string& moduleName = module->get_module_name();
 
@@ -242,13 +242,13 @@ private:
 		{
 			is_init = true;
 
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_start_process()));
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_dir_statistics()));
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_std_fmt_filenames()));
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_add_stdafx_include()));
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_recursive_copy()));
-			add_module(shared_ptr<mod_cmd>(new mod_cmd_appplex_conf()));
-			//add_module(shared_ptr<mod_cmd>(new mod_cmd_sherlock()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_start_process()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_dir_statistics()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_std_fmt_filenames()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_add_stdafx_include()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_recursive_copy()));
+			add_module(mws_sp<mod_cmd>(new mod_cmd_appplex_conf()));
+			//add_module(mws_sp<mod_cmd>(new mod_cmd_sherlock()));
 		}
 	}
 
@@ -260,7 +260,7 @@ smap dispatcher::modules;
 bool dispatcher::is_init = false;
 
 
-shared_ptr<long_operation> cmd_line_arg::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_line_arg::run(const vector<unicodestring>& args)
 {
     //return dispatcher::test_run(args);
     return dispatcher::run(args);

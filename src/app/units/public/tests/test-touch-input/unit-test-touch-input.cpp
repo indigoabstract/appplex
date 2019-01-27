@@ -167,7 +167,7 @@ namespace unit_test_touch_input_ns
       {
          if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
          {
-            shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+            mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
             bool dragging_detected = dragging_dt.detect_helper(ts);
             bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts);
             auto double_tap_gs = double_tap_dt.detect(ts);
@@ -239,7 +239,7 @@ namespace unit_test_touch_input_ns
          }
          else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
          {
-            shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+            mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
             if (ke->is_pressed())
             {
@@ -316,7 +316,7 @@ namespace unit_test_touch_input_ns
             gfx::i()->rt.set_current_render_target(picking_rt);
 
             mws_report_gfx_errs();
-            shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+            mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
             decl_scgfxpl(plist)
             {
                { gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f }, { gl::CLEAR_MASK, gl::COLOR_BUFFER_BIT_GL | gl::DEPTH_BUFFER_BIT_GL }, {},
@@ -523,7 +523,7 @@ namespace unit_test_touch_input_ns
       }
 
       uint32 frame_idx;
-      std::vector<std::shared_ptr<gfx_quad_2d> > obj_vect;
+      std::vector<mws_sp<gfx_quad_2d> > obj_vect;
       float obj_scaling;
       glm::vec2 last_click;
       glm::vec2 init_scale_factor;
@@ -535,10 +535,10 @@ namespace unit_test_touch_input_ns
       bool gpu_readback_init;
       bool gpu_readback_enabled;
       glm::vec2 picking_tex_dim;
-      std::shared_ptr<gfx_quad_2d> picking_dgb_q2d;
-      std::shared_ptr<gfx_tex> picking_tex;
-      std::shared_ptr<gfx_rt> picking_rt;
-      std::shared_ptr<gfx_shader> picking_shader;
+      mws_sp<gfx_quad_2d> picking_dgb_q2d;
+      mws_sp<gfx_tex> picking_tex;
+      mws_sp<gfx_rt> picking_rt;
+      mws_sp<gfx_shader> picking_shader;
       const uint32 PBO_COUNT = 2;
       std::vector<gfx_uint> pbo_id_vect;
       int pbo_index;

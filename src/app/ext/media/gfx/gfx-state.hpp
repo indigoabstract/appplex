@@ -61,5 +61,5 @@ public:
 private:
    friend class gfx;
    gfx_state();
-   shared_ptr<gl_state_impl> rsi;
+   mws_sp<gl_state_impl> rsi;
 };

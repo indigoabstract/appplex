@@ -35,16 +35,16 @@ namespace unit_test_gl_outlines_ns
       float lastX = 0;
       float lastY = 0;
       bool firstMouse = true;
-      std::shared_ptr<gfx_tex> cubeTexture;
-      std::shared_ptr<gfx_tex> floorTexture;
+      mws_sp<gfx_tex> cubeTexture;
+      mws_sp<gfx_tex> floorTexture;
       unsigned int cubeVAO, cubeVBO;
       unsigned int planeVAO, planeVBO;
 
       // timing
       float deltaTime = 0.0f;
       float lastFrame = 0.0f;
-      std::shared_ptr<gfx_shader> shader;
-      std::shared_ptr<gfx_shader> shaderSingleColor;
+      mws_sp<gfx_shader> shader;
+      mws_sp<gfx_shader> shaderSingleColor;
       glm::mat4 projection;
 
       void load_ubo(int i_width, int i_height)

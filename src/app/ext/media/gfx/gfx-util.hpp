@@ -132,9 +132,9 @@ class gfx_util
 {
 public:
    static mws_sp<gfx_tex_info> get_tex_info(std::string i_format);
-   static std::shared_ptr<vx_attribute> parse_attribute(std::string iattribute);
-   static std::vector<std::shared_ptr<vx_attribute> > parse_attribute_list(std::string iattr_list);
-   static std::shared_ptr<gfx_uniform> parse_uniform(std::string iuniform);
+   static mws_sp<vx_attribute> parse_attribute(std::string iattribute);
+   static std::vector<mws_sp<vx_attribute> > parse_attribute_list(std::string iattr_list);
+   static mws_sp<gfx_uniform> parse_uniform(std::string iuniform);
    static void draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity);
    static void draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity, float iw, float ih);
    static const glm::vec4& get_pos_from_tf_mx(const glm::mat4& i_tranform);

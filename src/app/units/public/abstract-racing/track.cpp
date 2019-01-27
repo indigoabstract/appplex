@@ -41,7 +41,7 @@ void track::loadTrackData(char* track_name)
 	tex = gi()->tex.nwi("square.png");
 
 	std::string fn = trs("abstract-racing/{}", track_name);
-	shared_ptr<std::vector<uint8> > res = pfm::filesystem::load_res_byte_vect(fn);
+	mws_sp<std::vector<uint8> > res = pfm::filesystem::load_res_byte_vect(fn);
 	memory_data_sequence mds(begin_ptr(res), res->size());
 	data_sequence_reader_big_endian dsr(&mds);
 
@@ -237,7 +237,7 @@ glm::vec3& track::get_segment_pos_at(int isegment_idx)
 	return segment_crd[isegment_idx];
 }
 
-void track::drawTrack(shared_ptr<gfx_camera> r)
+void track::drawTrack(mws_sp<gfx_camera> r)
 {
 	//r->tx.set_texture_id(tex->get_texture_id());
 

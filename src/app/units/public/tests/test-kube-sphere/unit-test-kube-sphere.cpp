@@ -35,13 +35,13 @@ public:
 		sphere_radius = 1500;
 	}
 
-	shared_ptr<gfx_rt> rt;
-	shared_ptr<gfx_tex> rt_tex;
-	shared_ptr<gfx_box> skybox;
-	shared_ptr<gfx_vpc_kubic_sphere> vpc_ks_mesh;
-	shared_ptr<icosphere> ico_sphere;
-	shared_ptr<gfx_camera> ortho_cam;
-	shared_ptr<gfx_camera> persp_cam;
+	mws_sp<gfx_rt> rt;
+	mws_sp<gfx_tex> rt_tex;
+	mws_sp<gfx_box> skybox;
+	mws_sp<gfx_vpc_kubic_sphere> vpc_ks_mesh;
+	mws_sp<icosphere> ico_sphere;
+	mws_sp<gfx_camera> ortho_cam;
+	mws_sp<gfx_camera> persp_cam;
 	glm::vec3 u_v3_light_dir;
 	float t;
 	float t2;
@@ -56,9 +56,9 @@ public:
 
 unit_test_kube_sphere::unit_test_kube_sphere() : unit(mws_stringify(UNIT_TEST_KUBE_SPHERE)) {}
 
-shared_ptr<unit_test_kube_sphere> unit_test_kube_sphere::nwi()
+mws_sp<unit_test_kube_sphere> unit_test_kube_sphere::nwi()
 {
-	return shared_ptr<unit_test_kube_sphere>(new unit_test_kube_sphere());
+	return mws_sp<unit_test_kube_sphere>(new unit_test_kube_sphere());
 }
 
 void unit_test_kube_sphere::init()
@@ -69,7 +69,7 @@ void unit_test_kube_sphere::init()
 
 void unit_test_kube_sphere::load()
 {
-	p = shared_ptr<unit_test_kube_sphere_impl>(new unit_test_kube_sphere_impl());
+	p = mws_sp<unit_test_kube_sphere_impl>(new unit_test_kube_sphere_impl());
 	p->ortho_cam = gfx_camera::nwi();
 	p->ortho_cam->camera_id = "ortho_camera";
 	p->ortho_cam->rendering_priority = 1;
@@ -97,7 +97,7 @@ void unit_test_kube_sphere::load()
 	p->rt = gfx::i()->rt.new_rt();
 	p->rt->set_color_attachment(p->rt_tex);
 
-	shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+	mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
 	gfx::i()->rt.set_current_render_target(p->rt);
 	decl_scgfxpl(pl1)
@@ -108,11 +108,11 @@ void unit_test_kube_sphere::load()
 	};
 	gl_st->set_state(pl1);
 
-	gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
+	gfx::i()->rt.set_current_render_target(mws_sp<gfx_rt>());
 
 	p->u_v3_light_dir = -glm::vec3(-1.f, 1.f, 1.f);
 
-	p->skybox = shared_ptr<gfx_box>(new gfx_box());
+	p->skybox = mws_sp<gfx_box>(new gfx_box());
 	gfx_box& r_cube_mesh = *p->skybox;
 	float s = p->persp_cam->far_clip_distance * 0.5;
 	r_cube_mesh.set_dimensions(s, s, s);
@@ -121,7 +121,7 @@ void unit_test_kube_sphere::load()
 	r_cube_mesh[MP_CULL_BACK] = false;
 	r_cube_mesh[MP_CULL_FRONT] = true;
 
-	p->vpc_ks_mesh = shared_ptr<gfx_vpc_kubic_sphere>(new gfx_vpc_kubic_sphere());
+	p->vpc_ks_mesh = mws_sp<gfx_vpc_kubic_sphere>(new gfx_vpc_kubic_sphere());
 	gfx_vpc_kubic_sphere& r_vpc_ks_mesh = *p->vpc_ks_mesh;
 	r_vpc_ks_mesh.set_dimensions(p->sphere_radius, 50);
 	r_vpc_ks_mesh.position = glm::vec3(-p->sphere_radius * 3.f, 0.f, 0.f);
@@ -130,7 +130,7 @@ void unit_test_kube_sphere::load()
 	r_vpc_ks_mesh["u_v3_light_dir"] = p->u_v3_light_dir;
 	//r_vpc_ks_mesh[MP_WIREFRAME_MODE] = MV_WF_OVERLAY;
 
-	p->ico_sphere = shared_ptr<icosphere>(new icosphere());
+	p->ico_sphere = mws_sp<icosphere>(new icosphere());
 	icosphere& r_ico_sphere = *p->ico_sphere;
 	r_ico_sphere.set_dimensions(p->sphere_radius / 2, 150);
 	r_ico_sphere.position = glm::vec3(0.f, 0.f, 0.f);
@@ -188,7 +188,7 @@ bool unit_test_kube_sphere::update()
 
 	for(int k = 0; k < fc; k++)
 	{
-		shared_ptr<icosphere_face> face = p->ico_sphere->get_face_at(k);
+		mws_sp<icosphere_face> face = p->ico_sphere->get_face_at(k);
 		bool visible = false;
 
 		for (int k = 0; k < 3; k++)
@@ -248,13 +248,13 @@ bool unit_test_kube_sphere::update()
 	return unit::update();
 }
 
-void unit_test_kube_sphere::receive(shared_ptr<mws_dp> idp)
+void unit_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
 		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
@@ -283,14 +283,14 @@ void unit_test_kube_sphere::receive(shared_ptr<mws_dp> idp)
 			}
 			else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
 			{
-				shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
 				p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
 			}
 		}
 		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 			if(ke->get_type() != key_evt::KE_RELEASED)
 			{

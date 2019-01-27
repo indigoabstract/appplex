@@ -38,9 +38,9 @@ unit_kemx::unit_kemx() : unit(mws_stringify(UNIT_KEMX))
    is_valid_expression = false;
 }
 
-shared_ptr<unit_kemx> unit_kemx::nwi()
+mws_sp<unit_kemx> unit_kemx::nwi()
 {
-   return shared_ptr<unit_kemx>(new unit_kemx());
+   return mws_sp<unit_kemx>(new unit_kemx());
 }
 
 void unit_kemx::init()
@@ -49,7 +49,7 @@ void unit_kemx::init()
    int kemxSize = kemx->size();
    data = "[ " + *kemx + " ]";
 
-   shared_ptr<memory_data_sequence> mds1(new memory_data_sequence());
+   mws_sp<memory_data_sequence> mds1(new memory_data_sequence());
    data_sequence_writer dsw(mds1);
    int8 t1 = -1;
    uint8 t2 = 177;
@@ -77,7 +77,7 @@ void unit_kemx::init()
    bool x = storage.store_unit_byte_array("ds-test", s, mds1->get_size());
    mws_print("store ds-test %d\n", (int)x);
 
-   shared_ptr<memory_data_sequence> mds2(new memory_data_sequence(s, mds1->get_size()));
+   mws_sp<memory_data_sequence> mds2(new memory_data_sequence(s, mds1->get_size()));
    data_sequence_reader dsr(mds2);
 
    int8 s1 = dsr.read_int8();
@@ -116,9 +116,9 @@ void unit_kemx::init()
 
 void unit_kemx::init_mws()
 {
-   shared_ptr<mws_page> up = mws_page::nwi(mws_root);
-   shared_ptr<mws_tree> tree = mws_tree::nwi(up);
-   shared_ptr<mws_tree_model> mwstm(new mws_tree_model());
+   mws_sp<mws_page> up = mws_page::nwi(mws_root);
+   mws_sp<mws_tree> tree = mws_tree::nwi(up);
+   mws_sp<mws_tree_model> mwstm(new mws_tree_model());
 
    tree->set_id("kemxtree");
    tree->set_model(mwstm);
@@ -139,10 +139,10 @@ void unit_kemx::load()
       trn();
       is_valid_expression = true;
 
-      shared_ptr<mws_tree_model_node> node(new mws_tree_model_node("root"));
+      mws_sp<mws_tree_model_node> node(new mws_tree_model_node("root"));
       int length = 0;
-      shared_ptr<mws_tree> tree = static_pointer_cast<mws_tree>(mws_root->find_by_id("kemxtree"));
-      shared_ptr<mws_tree_model> treemodel = tree->get_model();
+      mws_sp<mws_tree> tree = static_pointer_cast<mws_tree>(mws_root->find_by_id("kemxtree"));
+      mws_sp<mws_tree_model> treemodel = tree->get_model();
 
       create_mws_tree_model(node_list, node, length);
       treemodel->set_length(length);
@@ -160,14 +160,14 @@ void unit_kemx::unload()
    node_list.clear();
 }
 
-void unit_kemx::create_mws_tree_model(const vector<shared_ptr<node_info> >& list, shared_ptr<mws_tree_model_node> node, int& length)
+void unit_kemx::create_mws_tree_model(const vector<mws_sp<node_info> >& list, mws_sp<mws_tree_model_node> node, int& length)
 {
    int size = list.size();
 
    for (int k = 0; k < size; k++)
    {
-      shared_ptr<node_info> kv = list[k];
-      shared_ptr<mws_tree_model_node> nn(new mws_tree_model_node(kv->getName()));
+      mws_sp<node_info> kv = list[k];
+      mws_sp<mws_tree_model_node> nn(new mws_tree_model_node(kv->getName()));
 
       node->nodes.push_back(nn);
       length++;

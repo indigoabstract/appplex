@@ -10,8 +10,8 @@
 // http://www.cse.unsw.edu.au/~lambert/splines/
 void NatCubic::calcFinalPoints()
 {
-	shared_ptr<std::vector<shared_ptr<Cubic> > > vx = calcNaturalCubic(pts.npoints - 1, pts.xpoints);
-	shared_ptr<std::vector<shared_ptr<Cubic> > > vy = calcNaturalCubic(pts.npoints - 1, pts.ypoints);
+	mws_sp<std::vector<mws_sp<Cubic> > > vx = calcNaturalCubic(pts.npoints - 1, pts.xpoints);
+	mws_sp<std::vector<mws_sp<Cubic> > > vy = calcNaturalCubic(pts.npoints - 1, pts.ypoints);
 	glm::vec3 p0((*vx)[0]->eval(0), (*vy)[0]->eval(0), 0);
 
 	final_point_list.push_back(p0);
@@ -28,7 +28,7 @@ void NatCubic::calcFinalPoints()
 	}
 }
 
-shared_ptr<std::vector<shared_ptr<Cubic> > > NatCubic::calcNaturalCubic(int n, std::vector<float>& x)
+mws_sp<std::vector<mws_sp<Cubic> > > NatCubic::calcNaturalCubic(int n, std::vector<float>& x)
 {
 	std::vector<float> gamma(n + 1);
 	std::vector<float> delta(n + 1);
@@ -73,17 +73,17 @@ shared_ptr<std::vector<shared_ptr<Cubic> > > NatCubic::calcNaturalCubic(int n, s
 	}
 
 	/* now compute the coefficients of the cubics */
-	shared_ptr<std::vector<shared_ptr<Cubic> > > C(new std::vector<shared_ptr<Cubic> >(n));
+	mws_sp<std::vector<mws_sp<Cubic> > > C(new std::vector<mws_sp<Cubic> >(n));
 
 	for(i = 0; i < n; i++)
 	{
-		(*C)[i] = shared_ptr<Cubic>(new Cubic((float)x[i], D[i], 3*(x[i+1] - x[i]) - 2*D[i] - D[i+1], 2*(x[i] - x[i+1]) + D[i] + D[i+1]));
+		(*C)[i] = mws_sp<Cubic>(new Cubic((float)x[i], D[i], 3*(x[i+1] - x[i]) - 2*D[i] - D[i+1], 2*(x[i] - x[i+1]) + D[i] + D[i+1]));
 	}
 
 	return C;
 }
 
-shared_ptr<std::vector<shared_ptr<Cubic> > > NatCubic::calcClosedNaturalCubic(int n, std::vector<float>& x)
+mws_sp<std::vector<mws_sp<Cubic> > > NatCubic::calcClosedNaturalCubic(int n, std::vector<float>& x)
 {
 	std::vector<float> w(n + 1);
 	std::vector<float> v(n + 1);
@@ -132,15 +132,15 @@ shared_ptr<std::vector<shared_ptr<Cubic> > > NatCubic::calcClosedNaturalCubic(in
 	}
 
 
-	shared_ptr<std::vector<shared_ptr<Cubic> > > C(new std::vector<shared_ptr<Cubic> >(n + 1));
+	mws_sp<std::vector<mws_sp<Cubic> > > C(new std::vector<mws_sp<Cubic> >(n + 1));
 
 	/* now compute the coefficients of the cubics */
 	for ( k = 0; k < n; k++)
 	{
-		(*C)[k] = shared_ptr<Cubic>(new Cubic((float)x[k], D[k], 3*(x[k+1] - x[k]) - 2*D[k] - D[k+1], 2*(x[k] - x[k+1]) + D[k] + D[k+1]));
+		(*C)[k] = mws_sp<Cubic>(new Cubic((float)x[k], D[k], 3*(x[k+1] - x[k]) - 2*D[k] - D[k+1], 2*(x[k] - x[k+1]) + D[k] + D[k+1]));
 	}
 
-	(*C)[n] = shared_ptr<Cubic>(new Cubic((float)x[n], D[n], 3*(x[0] - x[n]) - 2*D[n] - D[0], 2*(x[n] - x[0]) + D[n] + D[0]));
+	(*C)[n] = mws_sp<Cubic>(new Cubic((float)x[n], D[n], 3*(x[0] - x[n]) - 2*D[n] - D[0], 2*(x[n] - x[0]) + D[n] + D[0]));
 
 	return C;
 }

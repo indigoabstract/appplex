@@ -28,7 +28,7 @@ void gfx_trail::add_position(glm::vec3 ipos)
       return;
    }
 
-   auto inst = std::static_pointer_cast<gfx_vxo>(get_shared_ptr());
+   auto inst = std::static_pointer_cast<gfx_vxo>(get_mws_sp());
    float vertices_data[] =
    {
       0, 0, 0,		0, 0, 0,	-1, 0,

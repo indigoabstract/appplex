@@ -46,8 +46,8 @@ long_op_print_process_output::long_op_print_process_output(bp::child& c) : chp(c
 void long_op_print_process_output::run()
 {
    std::string line;
-   shared_ptr<bp::pistream> isStdout = chp.get_stdout();
-   shared_ptr<bp::pistream> isStderr = chp.get_stderr();
+   mws_sp<bp::pistream> isStdout = chp.get_stdout();
+   mws_sp<bp::pistream> isStderr = chp.get_stderr();
 
 
    if (isStderr)
@@ -124,7 +124,7 @@ void start_process::exe_shell(unicodestring& exec, int ms_to_wait_for_process)
 
 void start_process::print_process_output(bp::child& c)
 {
-   shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_print_process_output(c));
+   mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_print_process_output(c));
 
    long_operation::run_on_separate_thread(lop);
    // sleep a bit to let the process output thread finish

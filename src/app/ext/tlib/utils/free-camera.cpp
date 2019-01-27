@@ -8,7 +8,7 @@
 #include "unit.hpp"
 
 
-free_camera::free_camera(std::shared_ptr<unit> i_u)
+free_camera::free_camera(mws_sp<unit> i_u)
 {
    u = i_u;
    look_at_dir = glm::vec3(0.f, 0.f, -1.f);
@@ -23,7 +23,7 @@ free_camera::free_camera(std::shared_ptr<unit> i_u)
    mov_type = e_roll_view_axis;
 }
 
-void free_camera::update_input(shared_ptr<mws_dp> idp)
+void free_camera::update_input(mws_sp<mws_dp> idp)
 {
    if (idp->is_processed())
    {
@@ -43,7 +43,7 @@ void free_camera::update_input(shared_ptr<mws_dp> idp)
 
    if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
       bool dragging_detected = dragging_det.detect_helper(ts);
 
@@ -125,7 +125,7 @@ void free_camera::update_input(shared_ptr<mws_dp> idp)
    }
    else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
    {
-      shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+      mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
       if (!ke->is_released())
       {

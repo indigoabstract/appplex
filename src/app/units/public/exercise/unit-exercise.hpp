@@ -12,7 +12,7 @@ class long_operation;
 class unit_exercise : public unit
 {
 public:
-	static shared_ptr<unit_exercise> nwi();
+	static mws_sp<unit_exercise> nwi();
 
 	virtual bool update();
 	virtual void init();
@@ -23,7 +23,7 @@ public:
 private:
 	unit_exercise();
 
-	shared_ptr<long_operation> lop;
+	mws_sp<long_operation> lop;
 };
 
 #endif

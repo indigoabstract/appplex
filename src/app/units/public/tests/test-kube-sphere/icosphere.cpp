@@ -171,7 +171,7 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 
 	int vdata_size = vx_data.size() * sizeof(vx_fmt_p3f_c4b_n3f_t2f);
 	int idata_size = ind_data.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_data), vdata_size, begin_ptr(ind_data), idata_size, static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_data), vdata_size, begin_ptr(ind_data), idata_size, static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -181,9 +181,9 @@ icosphere::icosphere() : gfx_vxo(vx_info("a_v3_position, a_iv4_color, a_v3_norma
 
 void icosphere::update()
 {
-	std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
-	shared_ptr<gfx_node> n = get_root()->find_node_by_name("defcam");
-	shared_ptr<gfx_camera> camera;
+	std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
+	mws_sp<gfx_node> n = get_root()->find_node_by_name("defcam");
+	mws_sp<gfx_camera> camera;
 
 	if(n)
 	{
@@ -196,7 +196,7 @@ void icosphere::update()
 
 		if(camera)
 		{
-			shared_ptr<icosphere_face> face = static_pointer_cast<icosphere_face>(*it);
+			mws_sp<icosphere_face> face = static_pointer_cast<icosphere_face>(*it);
 			camera->draw_line(position, face->face_normal * radius * 1.5f, glm::vec4(1, 0, 0.f, 1.f), 1.f);
 
 			//for (int k = 0; k < 3; k++)
@@ -212,9 +212,9 @@ int icosphere::get_face_count()
 	return children.size();
 }
 
-shared_ptr<icosphere_face> icosphere::get_face_at(int iidx)
+mws_sp<icosphere_face> icosphere::get_face_at(int iidx)
 {
-	shared_ptr<gfx_node> n = children[iidx];
+	mws_sp<gfx_node> n = children[iidx];
 
 	return static_pointer_cast<icosphere_face>(n);
 }
@@ -310,7 +310,7 @@ void icosphere::set_dimensions(float iradius, int isubdiv_count)
 
 	for (int k = 0; k < 20; k++)
 	{
-		shared_ptr<icosphere_face> face(new icosphere_face());
+		mws_sp<icosphere_face> face(new icosphere_face());
 
 		face->middle_point = face->face_normal = glm::vec3(0.f);
 

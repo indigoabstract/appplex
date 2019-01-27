@@ -84,21 +84,21 @@ public:
       regular_node,
    };
 
-   gfx_node(std::shared_ptr<gfx> i_gi);
+   gfx_node(mws_sp<gfx> i_gi);
    virtual e_gfx_obj_type get_type()const override;
-   std::shared_ptr<gfx_node> get_shared_ptr();
-   std::shared_ptr<gfx_node> get_parent();
-   std::shared_ptr<gfx_node> get_root();
-   std::shared_ptr<gfx_scene> get_scene();
+   mws_sp<gfx_node> get_mws_sp();
+   mws_sp<gfx_node> get_parent();
+   mws_sp<gfx_node> get_root();
+   mws_sp<gfx_scene> get_scene();
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
-   virtual void draw_in_sync(std::shared_ptr<gfx_camera> i_cam);
-   virtual void draw_out_of_sync(std::shared_ptr<gfx_camera> i_cam);
-   virtual void attach(shared_ptr<gfx_node> inode);
+   virtual void draw_in_sync(mws_sp<gfx_camera> i_cam);
+   virtual void draw_out_of_sync(mws_sp<gfx_camera> i_cam);
+   virtual void attach(mws_sp<gfx_node> inode);
    virtual void detach();
    virtual void on_attach();
    virtual void on_detach();
-   bool contains(const shared_ptr<gfx_node> inode);
-   shared_ptr<gfx_node> find_node_by_name(const std::string& iname);
+   bool contains(const mws_sp<gfx_node> inode);
+   mws_sp<gfx_node> find_node_by_name(const std::string& iname);
    // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
    virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx);
 
@@ -121,19 +121,19 @@ public:
 
 protected:
    e_node_type node_type;
-   std::vector<shared_ptr<gfx_node> > children;
+   std::vector<mws_sp<gfx_node> > children;
 
 private:
    friend class gfx_scene;
-   weak_ptr<gfx_node> parent;
-   weak_ptr<gfx_scene> root;
+   mws_wp<gfx_node> parent;
+   mws_wp<gfx_scene> root;
 };
 
 
 class gfx_scene : public gfx_node
 {
 public:
-   gfx_scene(std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_scene(mws_sp<gfx> i_gi = nullptr);
    void init();
    virtual void update();
    void draw();
@@ -141,9 +141,9 @@ public:
 
 private:
    friend class gfx_node;
-   void add_camera_node(shared_ptr<gfx_camera> icamera);
-   void remove_camera_node(shared_ptr<gfx_camera> icamera);
+   void add_camera_node(mws_sp<gfx_camera> icamera);
+   void remove_camera_node(mws_sp<gfx_camera> icamera);
 
-   std::vector<shared_ptr<gfx_camera> > camera_list;
+   std::vector<mws_sp<gfx_camera> > camera_list;
    std::vector<gfx_param> plist;
 };

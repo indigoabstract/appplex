@@ -13,19 +13,19 @@ public:
    virtual bool is_valid()const;
    int get_width();
    int get_height();
-   std::shared_ptr<gfx_tex> get_color_attachment();
-   void set_color_attachment(std::shared_ptr<gfx_tex> icolor_att);
-   void set_depth_stencil_attachment(std::shared_ptr<gfx_tex> idepth_stencil_att);
+   mws_sp<gfx_tex> get_color_attachment();
+   void set_color_attachment(mws_sp<gfx_tex> icolor_att);
+   void set_depth_stencil_attachment(mws_sp<gfx_tex> idepth_stencil_att);
    void reload();
    void check_valid_state();
 
    unsigned int framebuffer;
-   std::shared_ptr<gfx_tex> color_att;
+   mws_sp<gfx_tex> color_att;
    gfx_uint depth_buffer_id;
    bool is_valid_state;
 
 protected:
    friend class gfx;
-   gfx_rt(std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_rt(mws_sp<gfx> i_gi = nullptr);
    void release();
 };

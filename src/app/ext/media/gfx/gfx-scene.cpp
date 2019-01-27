@@ -52,7 +52,7 @@ const glm::mat4& gfx_transform::get_global_tf_mx() const
 }
 
 
-gfx_node::gfx_node(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi), name(this)
+gfx_node::gfx_node(mws_sp<gfx> i_gi) : gfx_obj(i_gi), name(this)
 {
    node_type = regular_node;
    visible = true;
@@ -63,22 +63,22 @@ gfx_obj::e_gfx_obj_type gfx_node::get_type()const
    return e_node;
 }
 
-std::shared_ptr<gfx_node> gfx_node::get_shared_ptr()
+mws_sp<gfx_node> gfx_node::get_mws_sp()
 {
    return std::static_pointer_cast<gfx_node>(get_inst());
 }
 
-std::shared_ptr<gfx_node> gfx_node::get_parent()
+mws_sp<gfx_node> gfx_node::get_parent()
 {
    return parent.lock();
 }
 
-std::shared_ptr<gfx_node> gfx_node::get_root()
+mws_sp<gfx_node> gfx_node::get_root()
 {
    return root.lock();
 }
 
-std::shared_ptr<gfx_scene> gfx_node::get_scene()
+mws_sp<gfx_scene> gfx_node::get_scene()
 {
    return std::static_pointer_cast<gfx_scene>(root.lock());
 }
@@ -91,7 +91,7 @@ void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_
    }
 }
 
-void gfx_node::draw_in_sync(std::shared_ptr<gfx_camera> i_cam)
+void gfx_node::draw_in_sync(mws_sp<gfx_camera> i_cam)
 {
    for (auto it = children.begin(); it != children.end(); it++)
    {
@@ -99,7 +99,7 @@ void gfx_node::draw_in_sync(std::shared_ptr<gfx_camera> i_cam)
    }
 }
 
-void gfx_node::draw_out_of_sync(std::shared_ptr<gfx_camera> i_cam)
+void gfx_node::draw_out_of_sync(mws_sp<gfx_camera> i_cam)
 {
    i_cam->update_camera_state();
    update_recursive(glm::mat4(1.f), true);
@@ -110,7 +110,7 @@ void gfx_node::draw_out_of_sync(std::shared_ptr<gfx_camera> i_cam)
    }
 }
 
-void gfx_node::attach(shared_ptr<gfx_node> inode)
+void gfx_node::attach(mws_sp<gfx_node> inode)
 {
    if (inode->parent.lock())
    {
@@ -120,12 +120,12 @@ void gfx_node::attach(shared_ptr<gfx_node> inode)
    {
       if (inode->node_type == camera_node)
       {
-         shared_ptr<gfx_camera> icamera = static_pointer_cast<gfx_camera>(inode);
+         mws_sp<gfx_camera> icamera = static_pointer_cast<gfx_camera>(inode);
          root.lock()->add_camera_node(icamera);
       }
 
       children.push_back(inode);
-      inode->parent = get_shared_ptr();
+      inode->parent = get_mws_sp();
       inode->root = root;
       inode->on_attach();
    }
@@ -133,20 +133,20 @@ void gfx_node::attach(shared_ptr<gfx_node> inode)
 
 void gfx_node::detach()
 {
-   shared_ptr<gfx_node> parent_node = parent.lock();
+   mws_sp<gfx_node> parent_node = parent.lock();
 
    if (parent_node)
    {
       if (node_type == camera_node)
       {
-         shared_ptr<gfx_camera> icamera = static_pointer_cast<gfx_camera>(get_shared_ptr());
+         mws_sp<gfx_camera> icamera = static_pointer_cast<gfx_camera>(get_mws_sp());
 
          root.lock()->remove_camera_node(icamera);
       }
 
-      parent_node->children.erase(std::find(parent_node->children.begin(), parent_node->children.end(), get_shared_ptr()));
-      parent = shared_ptr<gfx_node>();
-      root = shared_ptr<gfx_scene>();
+      parent_node->children.erase(std::find(parent_node->children.begin(), parent_node->children.end(), get_mws_sp()));
+      parent = mws_sp<gfx_node>();
+      root = mws_sp<gfx_scene>();
       on_detach();
    }
    else
@@ -159,14 +159,14 @@ void gfx_node::on_attach() {}
 
 void gfx_node::on_detach() {}
 
-bool gfx_node::contains(const shared_ptr<gfx_node> inode)
+bool gfx_node::contains(const mws_sp<gfx_node> inode)
 {
-   if (inode == get_shared_ptr())
+   if (inode == get_mws_sp())
    {
       return true;
    }
 
-   std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
+   std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
    for (; it != children.end(); it++)
    {
@@ -181,18 +181,18 @@ bool gfx_node::contains(const shared_ptr<gfx_node> inode)
    return false;
 }
 
-shared_ptr<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
+mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
 {
-   if (iname == get_shared_ptr()->name())
+   if (iname == get_mws_sp()->name())
    {
-      return get_shared_ptr();
+      return get_mws_sp();
    }
 
-   std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
+   std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
    for (; it != children.end(); it++)
    {
-      shared_ptr<gfx_node> node = (*it)->find_node_by_name(iname);
+      mws_sp<gfx_node> node = (*it)->find_node_by_name(iname);
 
       if (node)
       {
@@ -200,7 +200,7 @@ shared_ptr<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
       }
    }
 
-   return shared_ptr<gfx_node>();
+   return mws_sp<gfx_node>();
 }
 
 void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
@@ -259,13 +259,13 @@ void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_g
    }
 }
 
-gfx_scene::gfx_scene(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
+gfx_scene::gfx_scene(mws_sp<gfx> i_gi) : gfx_node(i_gi)
 {
 }
 
 void gfx_scene::init()
 {
-   root = static_pointer_cast<gfx_scene>(get_shared_ptr());
+   root = static_pointer_cast<gfx_scene>(get_mws_sp());
 }
 
 void gfx_scene::update()
@@ -275,10 +275,10 @@ void gfx_scene::update()
 
 void gfx_scene::draw()
 {
-   shared_ptr<gfx_state> gl_st = gi()->get_gfx_state();
+   mws_sp<gfx_state> gl_st = gi()->get_gfx_state();
    struct pred
    {
-      bool operator()(const shared_ptr<gfx_camera> a, const shared_ptr<gfx_camera> b) const
+      bool operator()(const mws_sp<gfx_camera> a, const mws_sp<gfx_camera> b) const
       {
          return a->rendering_priority < b->rendering_priority;
       }
@@ -299,7 +299,7 @@ void gfx_scene::draw()
 
    for (auto it = camera_list.begin(); it != camera_list.end(); it++)
    {
-      shared_ptr<gfx_camera> cam = *it;
+      mws_sp<gfx_camera> cam = *it;
 
       if (!cam->enabled)
       {
@@ -361,7 +361,7 @@ void gfx_scene::draw()
       {
          for (auto it = opaque_obj_list.begin(); it != opaque_obj_list.end(); it++)
          {
-            shared_ptr<gfx_vxo> mesh = *it;
+            mws_sp<gfx_vxo> mesh = *it;
 
             if (!mesh->visible)
             {
@@ -369,7 +369,7 @@ void gfx_scene::draw()
             }
 
             gfx_material& mat = *mesh->get_material();
-            shared_ptr<gfx_shader> shader = mat.get_shader();
+            mws_sp<gfx_shader> shader = mat.get_shader();
 
             if (shader)
             {
@@ -386,7 +386,7 @@ void gfx_scene::draw()
       {
          for (auto it = translucent_obj_list.begin(); it != translucent_obj_list.end(); it++)
          {
-            shared_ptr<gfx_vxo> mesh = *it;
+            mws_sp<gfx_vxo> mesh = *it;
 
             if (!mesh->visible)
             {
@@ -394,7 +394,7 @@ void gfx_scene::draw()
             }
 
             gfx_material& mat = *mesh->get_material();
-            shared_ptr<gfx_shader> shader = mat.get_shader();
+            mws_sp<gfx_shader> shader = mat.get_shader();
 
             if (shader)
             {
@@ -413,7 +413,7 @@ void gfx_scene::post_draw()
 {
    for (auto it = camera_list.begin(); it != camera_list.end(); it++)
    {
-      shared_ptr<gfx_camera> cam = *it;
+      mws_sp<gfx_camera> cam = *it;
 
       if (!cam->enabled)
       {
@@ -424,12 +424,12 @@ void gfx_scene::post_draw()
    }
 }
 
-void gfx_scene::add_camera_node(shared_ptr<gfx_camera> icamera)
+void gfx_scene::add_camera_node(mws_sp<gfx_camera> icamera)
 {
    camera_list.push_back(icamera);
 }
 
-void gfx_scene::remove_camera_node(shared_ptr<gfx_camera> icamera)
+void gfx_scene::remove_camera_node(mws_sp<gfx_camera> icamera)
 {
    camera_list.erase(std::find(camera_list.begin(), camera_list.end(), icamera));
 }

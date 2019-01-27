@@ -26,8 +26,8 @@ class msvc_main : public pfm_main
 {
 public:
    virtual ~msvc_main();
-   static shared_ptr<msvc_main> get_instance();
-   static shared_ptr<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
+   static mws_sp<msvc_main> get_instance();
+   static mws_sp<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
    virtual void init() override;
    virtual void start() override;
    virtual void run() override;
@@ -66,7 +66,7 @@ private:
    bool create_open_gl_glew_ctx();
    void destroy_open_gl_context();
 
-   static shared_ptr<msvc_main> instance;
+   static mws_sp<msvc_main> instance;
    bool is_full_screen;
    bool is_window_flipped = false;
    bool emulate_mobile_screen = false;

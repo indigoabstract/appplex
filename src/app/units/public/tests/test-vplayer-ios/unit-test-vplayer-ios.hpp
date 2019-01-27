@@ -10,14 +10,14 @@
 class unit_test_vplayer_ios : public unit
 {
 public:
-	static shared_ptr<unit_test_vplayer_ios> nwi(){ return shared_ptr<unit_test_vplayer_ios>(); }
+   static mws_sp<unit_test_vplayer_ios> nwi() { return mws_sp<unit_test_vplayer_ios>(); }
 
-    virtual void init();
-    virtual void load();
-	virtual bool update();
+   virtual void init();
+   virtual void load();
+   virtual bool update();
 
 private:
-	unit_test_vplayer_ios();
+   unit_test_vplayer_ios();
 };
 
 #endif

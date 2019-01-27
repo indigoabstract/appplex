@@ -14,7 +14,7 @@
 
 curve_mesh::curve_mesh() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord"))
 {
-	curve = shared_ptr<NatCubic>(new NatCubic());
+	curve = mws_sp<NatCubic>(new NatCubic());
 	curve_type = e_touch_points;
 	curve_mobility = e_mobile;
 	geometry_update_type = e_vertex_arrays;
@@ -191,7 +191,7 @@ void curve_mesh::calc_geometry()
 
 	int vdata_size = vx_tab.size() * sizeof(vx_fmt_p3f_t2f);
 	int idata_size = ix_tab.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_tab), vdata_size, begin_ptr(ix_tab), idata_size, std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_tab), vdata_size, begin_ptr(ix_tab), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 	drawing_mode_changed = true;
 }
 
@@ -265,7 +265,7 @@ void curve_mesh::sample_ncs_points(int istart_idx, int iend_idx, std::vector<poi
 	}
 }
 
-void curve_mesh::draw_in_sync(shared_ptr<gfx_camera> icamera)
+void curve_mesh::draw_in_sync(mws_sp<gfx_camera> icamera)
 {
 	if(!visible || vertices_buffer.empty() || indices_buffer.empty())
 	{
@@ -291,17 +291,17 @@ void curve_mesh::draw_in_sync(shared_ptr<gfx_camera> icamera)
 	drawing_mode_changed = false;
 }
 
-void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
+void curve_mesh::draw_using_va(mws_sp<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
-	shared_ptr<gfx_shader> glp = mat.get_shader();
+	mws_sp<gfx_shader> glp = mat.get_shader();
 	wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_value<int>());
 	int offset = 0;
 	gfx_uint method = method_type[render_method];
 
-	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+	for(std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
 	{
-		shared_ptr<vx_attribute> at = *it;
+		mws_sp<vx_attribute> at = *it;
 		gfx_int loc_idx = glp->get_param_location(at->get_name());
 
 		if(loc_idx != -1)
@@ -342,7 +342,7 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		shared_ptr<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
+		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
 
 		gfx::i()->shader.set_current_program(p);
 
@@ -352,14 +352,14 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 		}
 		else
 		{
-			icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), p);
+			icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
 		}
 
 		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
 		gfx::i()->shader.set_current_program(glp);
 	}
 
-	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+	for(std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
 	{
 		gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -370,10 +370,10 @@ void curve_mesh::draw_using_va(shared_ptr<gfx_camera> icamera)
 	}
 }
 
-void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
+void curve_mesh::draw_using_vbo(mws_sp<gfx_camera> icamera)
 {
 	gfx_material& mat = *get_material();
-	shared_ptr<gfx_shader> glp = mat.get_shader();
+	mws_sp<gfx_shader> glp = mat.get_shader();
    wireframe_mode wf_mode = static_cast<wireframe_mode>(mat[MP_WIREFRAME_MODE].get_value<int>());
 	gfx_uint offset = 0;
 	gfx_uint method = method_type[render_method];
@@ -400,9 +400,9 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * indices_buffer.size(), begin_ptr(indices_buffer), GL_DYNAMIC_DRAW);
 	}
 
-	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+	for(std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
 	{
-		shared_ptr<vx_attribute> at = *it;
+		mws_sp<vx_attribute> at = *it;
 		gfx_int loc_idx = glp->get_param_location(at->get_name());
 
 		if(loc_idx != -1)
@@ -443,7 +443,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		shared_ptr<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
+		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
 
 		gfx::i()->shader.set_current_program(p);
 
@@ -453,14 +453,14 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 		}
 		else
 		{
-			icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), p);
+			icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
 		}
 
 		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, 0);
 		gfx::i()->shader.set_current_program(glp);
 	}
 
-	for(std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+	for(std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
 	{
 		gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -474,7 +474,7 @@ void curve_mesh::draw_using_vbo(shared_ptr<gfx_camera> icamera)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void curve_mesh::draw_unsynchronized(shared_ptr<gfx_camera> icamera)
+void curve_mesh::draw_unsynchronized(mws_sp<gfx_camera> icamera)
 {
 	draw_using_va(icamera);
 }

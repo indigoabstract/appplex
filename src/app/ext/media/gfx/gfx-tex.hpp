@@ -96,10 +96,10 @@ public:
 protected:
    friend class gfx;
 
-   gfx_tex(const gfx_tex_params* i_prm = nullptr, std::shared_ptr<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr, std::shared_ptr<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, std::shared_ptr<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_tex(const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string iuni_tex_name, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
 
    void set_texture_name(std::string iuni_tex_name);
    void init_dimensions(int iwidth, int iheight);
@@ -127,7 +127,7 @@ public:
    virtual ~gfx_tex_2d();
 
 protected:
-   gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm = nullptr, std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };
@@ -139,7 +139,7 @@ public:
    virtual ~gfx_tex_3d();
 
 protected:
-   gfx_tex_3d(std::string itex_name, std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_tex_3d(std::string itex_name, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };
@@ -151,8 +151,8 @@ public:
    virtual ~gfx_tex_cube_map();
 
 protected:
-   gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i_gi = nullptr);
-   gfx_tex_cube_map(uint32 isize, std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex_cube_map(uint32 isize, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };

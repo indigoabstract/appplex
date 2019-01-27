@@ -8,7 +8,7 @@
 #include "app/units/public/tests/test-ffmpeg/ffmpeg/vdec-ffmpeg.hpp"
 
 
-std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
+mws_sp<mws_video_dec> mws_video_dec::nwi()
 {
    return std::make_shared<vdec_ffmpeg>();
 }
@@ -18,7 +18,7 @@ std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
 #include "ios/vid/ios-video-dec.hpp"
 
 
-std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
+mws_sp<mws_video_dec> mws_video_dec::nwi()
 {
    return ios_video_dec::nwi();
 }

@@ -71,12 +71,12 @@ gfx_input::e_data_type gfx_input::from_gl_data_type(gfx_enum gl_data_type)
 class gfx_shader_impl
 {
 public:
-   gfx_shader_impl(std::shared_ptr<gfx> i_gi)
+   gfx_shader_impl(mws_sp<gfx> i_gi)
    {
       g = i_gi;
    }
 
-   void load(const std::shared_ptr<std::string> ivs_shader_src = nullptr, const std::shared_ptr<std::string> ifs_shader_src = nullptr)
+   void load(const mws_sp<std::string> ivs_shader_src = nullptr, const mws_sp<std::string> ifs_shader_src = nullptr)
    {
       if (vsh_file_name.length() > 0 && fsh_file_name.length() > 0)
       {
@@ -88,7 +88,7 @@ public:
       }
    }
 
-   std::shared_ptr<std::string> add_platform_code(const std::shared_ptr<std::string> ishader_src)
+   mws_sp<std::string> add_platform_code(const mws_sp<std::string> ishader_src)
    {
       std::string tag;
       std::string version;
@@ -145,13 +145,13 @@ public:
       return ishader_src;
    }
 
-   void create_program(const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src, const std::string& i_shader_id)
+   void create_program(const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src, const std::string& i_shader_id)
    {
       mws_try
       {
          int linked = 0;
-         std::shared_ptr<std::string> vs_shader_src = ivs_shader_src;
-         std::shared_ptr<std::string> fs_shader_src = ifs_shader_src;
+         mws_sp<std::string> vs_shader_src = ivs_shader_src;
+         mws_sp<std::string> fs_shader_src = ifs_shader_src;
 
          if (listener)
          {
@@ -234,7 +234,7 @@ public:
       }
    }
 
-   int compile_shader(int ishader_type, const std::shared_ptr<std::string> ishader_src)
+   int compile_shader(int ishader_type, const mws_sp<std::string> ishader_src)
    {
       int shader = 0;
       int compiled;
@@ -289,8 +289,8 @@ public:
       vsh_file_name = append_if_missing_ext(vsh_file_name, VS_EXT);
       fsh_file_name = append_if_missing_ext(fsh_file_name, FS_EXT);
 
-      const std::shared_ptr<std::string> vs_shader_src = pfm::filesystem::load_res_as_string(vsh_file_name);
-      const std::shared_ptr<std::string> fs_shader_src = pfm::filesystem::load_res_as_string(fsh_file_name);
+      const mws_sp<std::string> vs_shader_src = pfm::filesystem::load_res_as_string(vsh_file_name);
+      const mws_sp<std::string> fs_shader_src = pfm::filesystem::load_res_as_string(fsh_file_name);
 
       if (!vs_shader_src)
       {
@@ -348,7 +348,7 @@ public:
          gfx_input::e_data_type data_type = gfx_input::from_gl_data_type(type);
 
          attrib_list.push_back(name);
-         std::shared_ptr<gfx_input> input(new gfx_input(name, gfx_input::e_attribute, data_type, array_size, location));
+         mws_sp<gfx_input> input(new gfx_input(name, gfx_input::e_attribute, data_type, array_size, location));
          input_list[name] = input;
       }
 
@@ -374,7 +374,7 @@ public:
          }
 
          uniform_list.push_back(name);
-         std::shared_ptr<gfx_input> input(new gfx_input(name, gfx_input::e_uniform, data_type, array_size, location));
+         mws_sp<gfx_input> input(new gfx_input(name, gfx_input::e_uniform, data_type, array_size, location));
          input_list[name] = input;
       }
 
@@ -445,7 +445,7 @@ public:
    mws_sp<gfx> gi() { return g.lock(); }
 
    mws_wp<gfx> g;
-   weak_ptr<gfx_shader> parent;
+   mws_wp<gfx_shader> parent;
    bool is_activated;
    bool is_validated;
    std::string program_name;
@@ -460,13 +460,13 @@ public:
    uint32 last_compile_time;
    uint64 fsh_last_write;
    uint64 vsh_last_write;
-   std::unordered_map<std::string, std::shared_ptr<gfx_input> > input_list;
-   std::shared_ptr<gfx_shader_listener> listener;
+   std::unordered_map<std::string, mws_sp<gfx_input> > input_list;
+   mws_sp<gfx_shader_listener> listener;
 
    static int shader_idx;
    static uint32 wait_for_modifications_interval;
-   static std::shared_ptr<gfx_shader> black_shader;
-   static std::shared_ptr<gfx_shader> wireframe_shader;
+   static mws_sp<gfx_shader> black_shader;
+   static mws_sp<gfx_shader> wireframe_shader;
 };
 
 
@@ -479,18 +479,18 @@ gfx_shader::~gfx_shader()
    release();
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::nwi(const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst)
+mws_sp<gfx_shader> gfx_shader::nwi(const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener, mws_sp<gfx> gfx_inst)
 {
    return nwi(iprg_name, ishader_name, ishader_name, nullptr, gfx_inst);
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::nwi
+mws_sp<gfx_shader> gfx_shader::nwi
 (
-   const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name, std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst
+   const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name, mws_sp<gfx_shader_listener> ilistener, mws_sp<gfx> gfx_inst
 )
 {
-   std::shared_ptr<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
-   std::shared_ptr<gfx_shader_impl> p = inst->p;
+   mws_sp<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
+   mws_sp<gfx_shader_impl> p = inst->p;
 
    p->vsh_name = ivertex_shader_name;
    p->vsh_file_name = ivertex_shader_name;
@@ -502,14 +502,14 @@ std::shared_ptr<gfx_shader> gfx_shader::nwi
    return inst;
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::new_inst_inline
+mws_sp<gfx_shader> gfx_shader::new_inst_inline
 (
-   const std::string& iprg_name, const std::shared_ptr<std::string> ivs_shader_src, const std::shared_ptr<std::string> ifs_shader_src,
-   std::shared_ptr<gfx_shader_listener> ilistener, std::shared_ptr<gfx> gfx_inst
+   const std::string& iprg_name, const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src,
+   mws_sp<gfx_shader_listener> ilistener, mws_sp<gfx> gfx_inst
 )
 {
-   std::shared_ptr<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
-   std::shared_ptr<gfx_shader_impl> p = inst->p;
+   mws_sp<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
+   mws_sp<gfx_shader_impl> p = inst->p;
 
    inst->set_listener(ilistener);
    p->load(ivs_shader_src, ifs_shader_src);
@@ -540,7 +540,7 @@ bool gfx_shader::is_valid()const
    return p->is_validated;
 }
 
-std::shared_ptr<gfx_shader> gfx_shader::get_inst()
+mws_sp<gfx_shader> gfx_shader::get_inst()
 {
    return std::static_pointer_cast<gfx_shader>(gfx_obj::get_inst());
 }
@@ -580,7 +580,7 @@ unsigned int gfx_shader::get_program_id()
    return p->program_id;
 }
 
-void gfx_shader::update_uniform(std::shared_ptr<gfx_input> i_input, const mws_any* i_val)
+void gfx_shader::update_uniform(mws_sp<gfx_input> i_input, const mws_any* i_val)
 {
    if (i_input && i_input->get_location() != -1)
    {
@@ -655,7 +655,7 @@ void gfx_shader::update_uniform(gfx_std_uni i_std_uni, const mws_any* i_val)
       return;
    }
 
-   update_uniform(std::shared_ptr<gfx_input>(), i_val);
+   update_uniform(mws_sp<gfx_input>(), i_val);
 }
 
 void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
@@ -667,7 +667,7 @@ void gfx_shader::update_uniform(std::string i_uni_name, const void* i_val)
    }
 
 
-   std::shared_ptr<gfx_input> input = get_param(i_uni_name);
+   mws_sp<gfx_input> input = get_param(i_uni_name);
 
    if (input && input->get_location() != -1)
    {
@@ -743,12 +743,12 @@ void gfx_shader::update_uniform(std::string i_uni_name, const mws_any* i_val)
    }
 
 
-   std::shared_ptr<gfx_input> input = get_param(i_uni_name);
+   mws_sp<gfx_input> input = get_param(i_uni_name);
 
    update_uniform(input, i_val);
 }
 
-std::shared_ptr<gfx_input> gfx_shader::get_param(std::string ikey)
+mws_sp<gfx_input> gfx_shader::get_param(std::string ikey)
 {
    auto input = p->input_list.find(ikey);
 
@@ -757,12 +757,12 @@ std::shared_ptr<gfx_input> gfx_shader::get_param(std::string ikey)
       return input->second;
    }
 
-   return std::shared_ptr<gfx_input>();
+   return mws_sp<gfx_input>();
 }
 
-std::shared_ptr<gfx_input> gfx_shader::remove_param(std::string ikey)
+mws_sp<gfx_input> gfx_shader::remove_param(std::string ikey)
 {
-   std::shared_ptr<gfx_input> input = get_param(ikey);
+   mws_sp<gfx_input> input = get_param(ikey);
 
    if (input)
    {
@@ -781,7 +781,7 @@ gfx_int gfx_shader::get_param_location(std::string ikey)
       return bs->get_param_location(ikey);
    }
 
-   std::shared_ptr<gfx_input> input = get_param(ikey);
+   mws_sp<gfx_input> input = get_param(ikey);
 
    if (input)
    {
@@ -809,14 +809,14 @@ void gfx_shader::reload_on_modifications()
    }
 }
 
-void gfx_shader::set_listener(std::shared_ptr<gfx_shader_listener> ilistener)
+void gfx_shader::set_listener(mws_sp<gfx_shader_listener> ilistener)
 {
    p->listener = ilistener;
 }
 
-gfx_shader::gfx_shader(const std::string& iprg_name, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_shader::gfx_shader(const std::string& iprg_name, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
-   p = std::shared_ptr<gfx_shader_impl>(new gfx_shader_impl(i_gi));
+   p = mws_sp<gfx_shader_impl>(new gfx_shader_impl(i_gi));
    p->program_name = iprg_name;
    p->is_activated = false;
    p->is_validated = false;

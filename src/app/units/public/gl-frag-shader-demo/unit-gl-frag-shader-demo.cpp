@@ -44,14 +44,14 @@ public:
 	class shader_channel
 	{
 	public:
-		static shared_ptr<shader_channel> nwi()
+		static mws_sp<shader_channel> nwi()
 		{
-			return shared_ptr<shader_channel>(new shader_channel("", e_no_input));
+			return mws_sp<shader_channel>(new shader_channel("", e_no_input));
 		}
 
-		static shared_ptr<shader_channel> nwi(std::string iinput_name, e_input_type iinput_type)
+		static mws_sp<shader_channel> nwi(std::string iinput_name, e_input_type iinput_type)
 		{
-			return shared_ptr<shader_channel>(new shader_channel(iinput_name, iinput_type));
+			return mws_sp<shader_channel>(new shader_channel(iinput_name, iinput_type));
 		}
 
 		std::string get_uniform_value()
@@ -113,7 +113,7 @@ public:
 
 	std::string name;
 	bool needs_update;
-	std::vector<shared_ptr<shader_channel> > channel_list;
+	std::vector<mws_sp<shader_channel> > channel_list;
 	uint32 start_time;
 	uint32 stop_time;
 	uint32 pause_time;
@@ -129,7 +129,7 @@ public:
 
 		if (idx != input_list.end())
 		{
-			shared_ptr<shader_channel> ichannel = idx->second;
+			mws_sp<shader_channel> ichannel = idx->second;
 
 			channel_list[ichannel_idx] = ichannel;
 		}
@@ -141,7 +141,7 @@ public:
 
 private:
 	friend class unit_gl_frag_shader_demo;
-	static std::unordered_map<std::string, shared_ptr<shader_channel> > input_list;
+	static std::unordered_map<std::string, mws_sp<shader_channel> > input_list;
 
 	static void init()
 	{
@@ -184,23 +184,23 @@ private:
 	}
 };
 
-std::unordered_map<std::string, shared_ptr<shader_state::shader_channel> > shader_state::input_list;
+std::unordered_map<std::string, mws_sp<shader_state::shader_channel> > shader_state::input_list;
 
 
 class add_header_uniforms : public gfx_shader_listener
 {
 public:
-	static shared_ptr<add_header_uniforms> nwi(shared_ptr<shader_state> istate)
+	static mws_sp<add_header_uniforms> nwi(mws_sp<shader_state> istate)
 	{
-		return shared_ptr<add_header_uniforms>(new add_header_uniforms(istate));
+		return mws_sp<add_header_uniforms>(new add_header_uniforms(istate));
 	}
 
-	virtual const shared_ptr<std::string> on_before_submit_vsh_source(shared_ptr<gfx_shader> gp, const shared_ptr<std::string> ishader_src)
+	virtual const mws_sp<std::string> on_before_submit_vsh_source(mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src)
 	{
 		return ishader_src;
 	}
 
-	virtual const shared_ptr<std::string> on_before_submit_fsh_source(shared_ptr<gfx_shader> gp, const shared_ptr<std::string> ishader_src)
+	virtual const mws_sp<std::string> on_before_submit_fsh_source(mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src)
 	{
 		std::string fsh =
       "#ifdef GL_ES\n\
@@ -268,47 +268,47 @@ public:
 		
 		state->needs_update = true;
 
-		shared_ptr<std::string> src = shared_ptr<std::string>(new std::string(fsh));
+		mws_sp<std::string> src = mws_sp<std::string>(new std::string(fsh));
 		//mws_print("%s\n", src->c_str());
 
 		return src;
 	}
 
 private:
-	add_header_uniforms(shared_ptr<shader_state> istate)
+	add_header_uniforms(mws_sp<shader_state> istate)
 	{
 		state = istate;
 	}
 
-	shared_ptr<shader_state> state;
+	mws_sp<shader_state> state;
 };
 
 
 class unit_gl_frag_shader_demo_impl
 {
 public:
-	unit_gl_frag_shader_demo_impl(shared_ptr<unit_gl_frag_shader_demo> iunit)
+	unit_gl_frag_shader_demo_impl(mws_sp<unit_gl_frag_shader_demo> iunit)
 	{
 		unit = iunit;
 		current_fx_index = 0;
 		is_active = true;
 	}
 
-	void load(shared_ptr<unit_gl_frag_shader_demo> u)
+	void load(mws_sp<unit_gl_frag_shader_demo> u)
 	{
 		std::string active_shader = "Antialiasing";
 		active_shader = "";
-		std::shared_ptr<pfm_path> path = pfm_path::get_inst("", "fx-shaders");
-		shared_ptr<std::vector<shared_ptr<pfm_file> > > file_list = path->list_directory(unit.lock(), true);
+		mws_sp<pfm_path> path = pfm_path::get_inst("", "fx-shaders");
+		mws_sp<std::vector<mws_sp<pfm_file> > > file_list = path->list_directory(unit.lock(), true);
 		auto it = file_list->begin();
 
 		shader_state_list.clear();
 
 		for (; it != file_list->end(); it++)
 		{
-			shared_ptr<pfm_file> file = *it;
-			shader_state_list.push_back(shared_ptr<shader_state>(new shader_state()));
-			shared_ptr<shader_state> ss = shader_state_list.back();
+			mws_sp<pfm_file> file = *it;
+			shader_state_list.push_back(mws_sp<shader_state>(new shader_state()));
+			mws_sp<shader_state> ss = shader_state_list.back();
 
 			ss->name = file->get_file_stem();
 			ss->pause_time = ss->start_time = ss->stop_time = 0;
@@ -354,8 +354,8 @@ public:
 		}
 
 		gfx::i()->rt.set_current_render_target(nullptr);
-		fx_quad = shared_ptr<gfx_plane>(new gfx_plane());
-		screen_quad = shared_ptr<gfx_plane>(new gfx_plane());
+		fx_quad = mws_sp<gfx_plane>(new gfx_plane());
+		screen_quad = mws_sp<gfx_plane>(new gfx_plane());
 
 		gfx_plane& rfx_quad = *fx_quad;
 		rfx_quad.set_dimensions(2, 2);
@@ -378,7 +378,7 @@ public:
 		mws_report_gfx_errs();
 	}
 
-	shared_ptr<shader_state> get_shader_state()
+	mws_sp<shader_state> get_shader_state()
 	{
 		return shader_state_list[current_fx_index];
 	}
@@ -402,9 +402,9 @@ public:
 
 	void set_fx(int ifx_index)
 	{
-		shared_ptr<shader_state> ss_old = shader_state_list[current_fx_index];
+		mws_sp<shader_state> ss_old = shader_state_list[current_fx_index];
 		current_fx_index = ifx_index;
-		shared_ptr<shader_state> ss = get_shader_state();
+		mws_sp<shader_state> ss = get_shader_state();
 		const std::string& shader_name = ss->name;
 
 		fx_glsl = gfx::i()->shader.get_program_by_name(shader_name);
@@ -428,7 +428,7 @@ public:
 
 	void reset_time()
 	{
-		shared_ptr<shader_state> ss = shader_state_list[current_fx_index];
+		mws_sp<shader_state> ss = shader_state_list[current_fx_index];
 		uint32 crt_time = pfm::time::get_time_millis();
 
 		ss->pause_time = 0;
@@ -439,7 +439,7 @@ public:
 	{
 		if (is_active != iis_active)
 		{
-			shared_ptr<shader_state> ss = shader_state_list[current_fx_index];
+			mws_sp<shader_state> ss = shader_state_list[current_fx_index];
 			uint32 crt_time = pfm::time::get_time_millis();
 
 			is_active = iis_active;
@@ -457,7 +457,7 @@ public:
 
 	void update_params()
 	{
-		shared_ptr<shader_state> ss = get_shader_state();
+		mws_sp<shader_state> ss = get_shader_state();
 		gfx_plane& rfx_quad = *fx_quad;
 
 		//rfx_quad[MP_SHADER_INST] = fx_glsl;
@@ -473,7 +473,7 @@ public:
 
 		for (int k = 0; k < ss->channel_list.size(); k++)
 		{
-			shared_ptr<shader_state::shader_channel> ch = ss->channel_list[k];
+			mws_sp<shader_state::shader_channel> ch = ss->channel_list[k];
 			std::string name = trs("iChannel{}", k);
 			std::string val = ch->get_uniform_value();
 
@@ -488,18 +488,18 @@ public:
 
 	int tex_width;
 	int tex_height;
-	shared_ptr<gfx_camera> ortho_cam;
-	shared_ptr<gfx_shader> fx_glsl;
-	shared_ptr<gfx_shader> texture_display;
-	shared_ptr<gfx_plane> fx_quad;
-	shared_ptr<gfx_plane> screen_quad;
-	shared_ptr<gfx_rt> rt_vect[2];
-	shared_ptr<gfx_tex> rt_tex_vect[2];
+	mws_sp<gfx_camera> ortho_cam;
+	mws_sp<gfx_shader> fx_glsl;
+	mws_sp<gfx_shader> texture_display;
+	mws_sp<gfx_plane> fx_quad;
+	mws_sp<gfx_plane> screen_quad;
+	mws_sp<gfx_rt> rt_vect[2];
+	mws_sp<gfx_tex> rt_tex_vect[2];
 	int current_rt_index;
 	int current_fx_index;
-	std::vector<shared_ptr<shader_state> > shader_state_list;
+	std::vector<mws_sp<shader_state> > shader_state_list;
 	bool is_active;
-	std::weak_ptr<unit_gl_frag_shader_demo> unit;
+	mws_wp<unit_gl_frag_shader_demo> unit;
 };
 
 
@@ -518,7 +518,7 @@ public:
 		reset();
 	}
 
-	virtual void receive(shared_ptr<mws_dp> idp)
+	virtual void receive(mws_sp<mws_dp> idp)
 	{
 		mws_page::update_input_sub_mws(idp);
 
@@ -529,7 +529,7 @@ public:
 
 		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 			int tsh = 5;
 
 			switch (ts->type)
@@ -543,7 +543,7 @@ public:
 
 			case pointer_evt::touch_ended:
 			{
-				shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+				mws_sp<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
 				glm::vec2 screen_size((float)u->get_width(), (float)u->get_height());
 
 				pressed_pos = glm::vec2(0.f, screen_size.y);
@@ -565,7 +565,7 @@ public:
 		}
 		else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 			if (ke->get_type() == key_evt::KE_PRESSED)
 			{
@@ -613,9 +613,9 @@ public:
 
 	void update_state() override
 	{
-		shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = u->p;
-		shared_ptr<shader_state> ss = p->shader_state_list[p->current_fx_index];
+		mws_sp<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = u->p;
+		mws_sp<shader_state> ss = p->shader_state_list[p->current_fx_index];
 
 		if (p->is_active)
 		{
@@ -659,7 +659,7 @@ public:
 
 			p->current_rt_index = next_rt_index;
 
-			shared_ptr<shader_state> ss = p->get_shader_state();
+			mws_sp<shader_state> ss = p->get_shader_state();
 			gfx_plane& fx_quad = *p->fx_quad;
 
 			if (ss->needs_update)
@@ -692,7 +692,7 @@ public:
 
 			gfx::i()->rt.set_current_render_target(p->rt_vect[rt_index]);
 			// draw into the frontbuffer
-			shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+			mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
 			decl_scgfxpl(plist)
 			{
 				{ gl::COLOR_CLEAR_VALUE, 0.f, 0.f, 0.f, 1.f }, { gl::CLEAR_MASK, gl::COLOR_BUFFER_BIT_GL }, {},
@@ -710,11 +710,11 @@ public:
 		mws_page::update_state();
 	}
 
-	virtual void update_view(shared_ptr<mws_camera> g)
+	virtual void update_view(mws_sp<mws_camera> g)
 	{
-		shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = u->p;
-		shared_ptr<shader_state> ss = p->shader_state_list[p->current_fx_index];
+		mws_sp<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = u->p;
+		mws_sp<shader_state> ss = p->shader_state_list[p->current_fx_index];
 
 		g->drawText(ss->name, 10, 10);
 
@@ -725,8 +725,8 @@ public:
 
 	void reset()
 	{
-		shared_ptr<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = u->p;
+		mws_sp<unit_gl_frag_shader_demo> u = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = u->p;
 		glm::vec2 screen_size((float)u->get_width(), (float)u->get_height());
 
 		pressed_pos = pointer_pos = glm::vec2(0.f, screen_size.y);
@@ -736,38 +736,38 @@ public:
 
 	void prev_fx()
 	{
-		shared_ptr<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = unit->p;
+		mws_sp<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = unit->p;
 
 		p->prev_fx();
 	}
 
 	void next_fx()
 	{
-		shared_ptr<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = unit->p;
+		mws_sp<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = unit->p;
 
 		p->next_fx();
 	}
 
 	void reset_time()
 	{
-		shared_ptr<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = unit->p;
+		mws_sp<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = unit->p;
 
 		p->reset_time();
 	}
 
 	void toggle_active()
 	{
-		shared_ptr<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
-		shared_ptr<unit_gl_frag_shader_demo_impl> p = unit->p;
+		mws_sp<unit_gl_frag_shader_demo> unit = static_pointer_cast<unit_gl_frag_shader_demo>(get_unit());
+		mws_sp<unit_gl_frag_shader_demo_impl> p = unit->p;
 
 		p->set_active(!p->is_active);
 	}
 
-	shared_ptr<gfx_tex> back_buffer;
-	shared_ptr<gfx_tex> front_buffer;
+	mws_sp<gfx_tex> back_buffer;
+	mws_sp<gfx_tex> front_buffer;
 	glm::vec2 pressed_pos;
 	glm::vec2 pointer_pos;
 };
@@ -782,10 +782,10 @@ void unit_gl_frag_shader_demo::init_mws()
 
 unit_gl_frag_shader_demo::unit_gl_frag_shader_demo() : unit(mws_stringify(UNIT_GL_FRAG_SHADER_DEMO)) {}
 
-shared_ptr<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::nwi()
+mws_sp<unit_gl_frag_shader_demo> unit_gl_frag_shader_demo::nwi()
 {
-	shared_ptr<unit_gl_frag_shader_demo> inst(new unit_gl_frag_shader_demo());
-	inst->p = shared_ptr<unit_gl_frag_shader_demo_impl>(new unit_gl_frag_shader_demo_impl(inst));
+	mws_sp<unit_gl_frag_shader_demo> inst(new unit_gl_frag_shader_demo());
+	inst->p = mws_sp<unit_gl_frag_shader_demo_impl>(new unit_gl_frag_shader_demo_impl(inst));
 	return inst;
 }
 
@@ -797,7 +797,7 @@ void unit_gl_frag_shader_demo::init()
 
 void unit_gl_frag_shader_demo::load()
 {
-	shared_ptr<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(mws_root->page_tab[0]);
+	mws_sp<unit_gl_frag_shader_demo_page> page = static_pointer_cast<unit_gl_frag_shader_demo_page>(mws_root->page_tab[0]);
 
 	p->load(static_pointer_cast<unit_gl_frag_shader_demo>(get_smtp_instance()));
 	page->on_load();

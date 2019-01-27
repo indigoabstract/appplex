@@ -12,7 +12,7 @@ class long_operation;
 class unit_cmd : public unit
 {
 public:
-	static shared_ptr<unit_cmd> nwi();
+	static mws_sp<unit_cmd> nwi();
 
     virtual bool update();
     virtual void load();
@@ -20,7 +20,7 @@ public:
 private:
 	unit_cmd();
 
-	shared_ptr<long_operation> lop;
+	mws_sp<long_operation> lop;
 };
 
 #endif

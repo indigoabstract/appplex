@@ -15,7 +15,7 @@ class kx_elem;
 class kx_parser
 {
 public:
-   std::shared_ptr<kx_elem> parse_src(std::shared_ptr<std::string> src);
+   mws_sp<kx_elem> parse_src(mws_sp<std::string> src);
 };
 
 #endif

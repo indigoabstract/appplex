@@ -128,7 +128,7 @@ public:
    virtual std::string print(int ilevel = 0);
 
    int fltype;
-   weak_ptr<kx_process> src, dst;
+   mws_wp<kx_process> src, dst;
    std::vector<mws_sp<kx_process> > cnx;
    int capacity;
 

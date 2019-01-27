@@ -30,7 +30,7 @@ public:
    std::vector<std::string> uses;
    std::vector<std::string> platforms;
 };
-using unit_entry_map_type = std::unordered_map < std::string, shared_ptr<unit_entry> >;
+using unit_entry_map_type = std::unordered_map < std::string, mws_sp<unit_entry> >;
 
 
 class conf_info
@@ -41,43 +41,43 @@ public:
    bfs::path src_path;
    bfs::path proj_rel_units_path;
    std::vector<unicodestring> exclude_path;
-   shared_ptr<directory_tree> dir_tree;
-   shared_ptr<rec_dir_op_appplex_conf> rdo;
-   shared_ptr<kx_krte> krt;
+   mws_sp<directory_tree> dir_tree;
+   mws_sp<rec_dir_op_appplex_conf> rdo;
+   mws_sp<kx_krte> krt;
 };
 
 
 class appplex_conf
 {
 public:
-   appplex_conf(std::shared_ptr<conf_info> iinfo);
+   appplex_conf(mws_sp<conf_info> iinfo);
    void update();
 
-   shared_ptr<unit_entry_map_type> unit_entry_map;
-   shared_ptr<unit_entry_map_type> unit_entry_map_android;
+   mws_sp<unit_entry_map_type> unit_entry_map;
+   mws_sp<unit_entry_map_type> unit_entry_map_android;
 
 protected:
 
-   std::string get_define_unit_line(shared_ptr<unit_entry> iue, const std::string& idef, const std::string& ifile_name, const std::vector<std::string>& iplatf);
-   std::string get_new_unit_line(shared_ptr<unit_entry> iue, const std::string& ifile_name, bool is_selected = false);
-   void update_dependencies(shared_ptr<unit_entry> ue, std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map);
+   std::string get_define_unit_line(mws_sp<unit_entry> iue, const std::string& idef, const std::string& ifile_name, const std::vector<std::string>& iplatf);
+   std::string get_new_unit_line(mws_sp<unit_entry> iue, const std::string& ifile_name, bool is_selected = false);
+   void update_dependencies(mws_sp<unit_entry> ue, std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map);
 
-   std::shared_ptr<conf_info> info;
+   mws_sp<conf_info> info;
 };
 
 
 class platform_project_conf
 {
 public:
-   platform_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map);
+   platform_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map);
    bool uses_mod(std::string imod_name);
    virtual void update_project() = 0;
 
 protected:
    void calc_modules_used();
 
-   std::shared_ptr<conf_info> info;
-   shared_ptr<unit_entry_map_type> unit_entry_map;
+   mws_sp<conf_info> info;
+   mws_sp<unit_entry_map_type> unit_entry_map;
    std::unordered_map<std::string, bool> uses_mod_map;
 };
 
@@ -85,18 +85,18 @@ protected:
 class android_studio_project_conf : public platform_project_conf
 {
 public:
-   android_studio_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map);
+   android_studio_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map);
    virtual void update_project() override;
 
 private:
-   void update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> ikxmd);
+   void update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, mws_sp<kx_block> ikxmd);
 };
 
 
 class windows_pc_project_conf : public platform_project_conf
 {
 public:
-   windows_pc_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map);
+   windows_pc_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map);
    virtual void update_project() override;
 };
 

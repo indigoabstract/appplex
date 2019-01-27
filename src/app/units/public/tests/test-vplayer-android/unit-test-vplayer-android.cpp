@@ -9,9 +9,9 @@ using std::string;
 
 unit_test_vplayer_android::unit_test_vplayer_android() : unit(mws_stringify(UNIT_TEST_VPLAYER_ANDROID)) {}
 
-shared_ptr<unit_test_vplayer_android> unit_test_vplayer_android::nwi()
+mws_sp<unit_test_vplayer_android> unit_test_vplayer_android::nwi()
 {
-	return shared_ptr<unit_test_vplayer_android>(new unit_test_vplayer_android());
+	return mws_sp<unit_test_vplayer_android>(new unit_test_vplayer_android());
 }
 
 void unit_test_vplayer_android::init()

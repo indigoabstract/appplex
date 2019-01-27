@@ -265,9 +265,9 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	vghandle = vgCreatePaint();
 //}
 //
-//shared_ptr<vg_paint> vg_paint::nwi()
+//mws_sp<vg_paint> vg_paint::nwi()
 //{
-//	return shared_ptr<vg_paint>(new vg_paint());
+//	return mws_sp<vg_paint>(new vg_paint());
 //}
 //
 //vg_paint::~vg_paint()
@@ -314,14 +314,14 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	vghandle = vgCreateImage((VGImageFormat)iimg_format, iwidth, iheight, VG_IMAGE_QUALITY_BETTER);
 //}
 //
-//shared_ptr<vg_image> vg_image::nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
+//mws_sp<vg_image> vg_image::nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
 //{
-//	return shared_ptr<vg_image>(new vg_image(iwidth, iheight, iimg_format));
+//	return mws_sp<vg_image>(new vg_image(iwidth, iheight, iimg_format));
 //}
 //
-//shared_ptr<vg_image> vg_image::nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
+//mws_sp<vg_image> vg_image::nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
 //{
-//	shared_ptr<vg_image> img(new vg_image(iwidth, iheight, iimg_format));
+//	mws_sp<vg_image> img(new vg_image(iwidth, iheight, iimg_format));
 //	unsigned int dbpp = 4;
 //	unsigned int dstride = iwidth * dbpp;
 //
@@ -365,9 +365,9 @@ int vg_image::get_texture_height()
 	return 0;// ((SHImage*)vghandle)->texheight;
 }
 
-shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
+mws_sp<vg_image> vg_image::load_image(std::string iimg_path)
 {
-	shared_ptr<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(iimg_path);
+   mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(iimg_path);
 	spvg_image img;
 
 	if (data)
@@ -375,7 +375,7 @@ shared_ptr<vg_image> vg_image::load_image(std::string iimg_path)
 		//PngDecoder png;
 		//unsigned long width, height;
 		//bool hasAlpha;
-		//shared_ptr<std::vector<uint8> > rgb(png.decodePNG(width, height, hasAlpha, begin_ptr(data), data->size()));
+		//mws_sp<std::vector<uint8> > rgb(png.decodePNG(width, height, hasAlpha, begin_ptr(data), data->size()));
 		//unsigned int dbpp = 4;
 		//unsigned int dstride = width * dbpp;
 		//vg::image_format::e_image_format rgbaFormat = vg::image_format::sABGR_8888;

@@ -28,7 +28,7 @@ void pointer_evt::process()
    //mws_print("%s\n", get_name().c_str());
 }
 
-mws_sp<pointer_evt> pointer_evt::as_pointer_evt(shared_ptr<mws_dp> idp)
+mws_sp<pointer_evt> pointer_evt::as_pointer_evt(mws_sp<mws_dp> idp)
 {
    return static_pointer_cast<pointer_evt>(idp);
 }
@@ -143,12 +143,12 @@ touchctrl::touchctrl()
    queue_ptr = &queue_tab[queue_idx];
 }
 
-shared_ptr<touchctrl> touchctrl::nwi()
+mws_sp<touchctrl> touchctrl::nwi()
 {
-   return shared_ptr<touchctrl>(new touchctrl());
+   return mws_sp<touchctrl>(new touchctrl());
 }
 
-shared_ptr<touchctrl> touchctrl::get_instance()
+mws_sp<touchctrl> touchctrl::get_instance()
 {
    return shared_from_this();
 }
@@ -161,7 +161,7 @@ bool touchctrl::is_pointer_released()
 void touchctrl::update()
 {
    // set the current input queue as the queue for processing the input
-   std::vector<std::shared_ptr<pointer_evt> >* input_queue_ptr = &queue_tab[queue_idx];
+   std::vector<mws_sp<pointer_evt> >* input_queue_ptr = &queue_tab[queue_idx];
 
    // switch queues, so the currently empty queue is used for taking input events
    queue_idx = (queue_idx + 1) % 2;
@@ -194,23 +194,23 @@ void touchctrl::update()
    }
 }
 
-void touchctrl::enqueue_pointer_event(std::shared_ptr<pointer_evt> ite)
+void touchctrl::enqueue_pointer_event(mws_sp<pointer_evt> ite)
 {
    (*queue_ptr).push_back(ite);
 }
 
-shared_ptr<mws_sender> touchctrl::sender_inst()
+mws_sp<mws_sender> touchctrl::sender_inst()
 {
    return get_instance();
 }
 
-void touchctrl::on_pointer_action_pressed(std::shared_ptr<pointer_evt> pa)
+void touchctrl::on_pointer_action_pressed(mws_sp<pointer_evt> pa)
 {
    is_pointer_down = true;
    broadcast(get_instance(), pa);
 }
 
-void touchctrl::on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa)
+void touchctrl::on_pointer_action_dragged(mws_sp<pointer_evt> pa)
 {
    if (is_pointer_down)
    {
@@ -218,13 +218,13 @@ void touchctrl::on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa)
    }
 }
 
-void touchctrl::on_pointer_action_released(std::shared_ptr<pointer_evt> pa)
+void touchctrl::on_pointer_action_released(mws_sp<pointer_evt> pa)
 {
    is_pointer_down = false;
    broadcast(get_instance(), pa);
 }
 
-void touchctrl::on_pointer_action_mouse_wheel(std::shared_ptr<pointer_evt> pa)
+void touchctrl::on_pointer_action_mouse_wheel(mws_sp<pointer_evt> pa)
 {
    broadcast(get_instance(), pa);
 }
@@ -236,7 +236,7 @@ const std::string key_evt::KEYEVT_REPEATED = "ke-repeated";
 const std::string key_evt::KEYEVT_RELEASED = "ke-released";
 
 
-key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key) : mws_dp(get_type_name(itype))
+key_evt::key_evt(mws_wp<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key) : mws_dp(get_type_name(itype))
 {
    src = isrc;
    type = itype;
@@ -244,17 +244,17 @@ key_evt::key_evt(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key
    //trx("newkeyevt %x") % this;
 }
 
-shared_ptr<key_evt> key_evt::as_key_evt(shared_ptr<mws_dp> idp)
+mws_sp<key_evt> key_evt::as_key_evt(mws_sp<mws_dp> idp)
 {
    return static_pointer_cast<key_evt>(idp);
 }
 
-shared_ptr<key_evt> key_evt::nwi(std::weak_ptr<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key)
+mws_sp<key_evt> key_evt::nwi(mws_wp<key_ctrl> isrc, key_evt::key_evt_types itype, key_types i_key)
 {
-   return shared_ptr<key_evt>(new key_evt(isrc, itype, i_key));
+   return mws_sp<key_evt>(new key_evt(isrc, itype, i_key));
 }
 
-shared_ptr<key_evt> key_evt::get_instance()
+mws_sp<key_evt> key_evt::get_instance()
 {
    return shared_from_this();
 }
@@ -271,7 +271,7 @@ const std::string& key_evt::get_type_name(key_evt_types tstype)
    return types[tstype];
 }
 
-std::shared_ptr<key_ctrl> key_evt::get_src()
+mws_sp<key_ctrl> key_evt::get_src()
 {
    return src.lock();
 }
@@ -327,12 +327,12 @@ key_ctrl::key_ctrl()
    events_pending = false;
 }
 
-shared_ptr<key_ctrl> key_ctrl::nwi()
+mws_sp<key_ctrl> key_ctrl::nwi()
 {
-   return shared_ptr<key_ctrl>(new key_ctrl());
+   return mws_sp<key_ctrl>(new key_ctrl());
 }
 
-shared_ptr<key_ctrl> key_ctrl::get_instance()
+mws_sp<key_ctrl> key_ctrl::get_instance()
 {
    return shared_from_this();
 }
@@ -418,12 +418,12 @@ void key_ctrl::key_released(int i_key)
    keys_status[i_key] = KEY_RELEASED;
 }
 
-shared_ptr<mws_sender> key_ctrl::sender_inst()
+mws_sp<mws_sender> key_ctrl::sender_inst()
 {
    return get_instance();
 }
 
-void key_ctrl::new_key_event(shared_ptr<key_evt> ke)
+void key_ctrl::new_key_event(mws_sp<key_evt> ke)
 {
    //trx("keyevt type %1%) ke->getName();
    broadcast(ke->get_src(), ke);

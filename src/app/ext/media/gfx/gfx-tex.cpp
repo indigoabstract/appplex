@@ -268,7 +268,7 @@ void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_inde
 {
    check_valid_state();
 
-   shared_ptr<gfx_shader> glp = gi()->shader.get_current_program();
+   mws_sp<gfx_shader> glp = gi()->shader.get_current_program();
    gfx_int param_location = glp->get_param_location(iuniform_name);
 
    if (param_location != -1)
@@ -387,14 +387,14 @@ void gfx_tex::reload()
    }
 }
 
-gfx_tex::gfx_tex(const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = false;
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = false;
@@ -403,7 +403,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
 
 #if defined MOD_PNG
 
-   shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
+   mws_sp<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
 
 #else
 
@@ -454,7 +454,7 @@ gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, std::shared
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = true;
@@ -476,7 +476,7 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_heig
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = false;
@@ -584,7 +584,7 @@ gfx_tex_2d::~gfx_tex_2d()
    release();
 }
 
-gfx_tex_2d::gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm, std::shared_ptr<gfx> i_gi) : gfx_tex(itex_name, i_prm, i_gi)
+gfx_tex_2d::gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_tex(itex_name, i_prm, i_gi)
 {
 }
 
@@ -594,7 +594,7 @@ gfx_tex_3d::~gfx_tex_3d()
    release();
 }
 
-gfx_tex_3d::gfx_tex_3d(std::string itex_name, std::shared_ptr<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_3d::gfx_tex_3d(std::string itex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
 }
 
@@ -604,7 +604,7 @@ gfx_tex_cube_map::~gfx_tex_cube_map()
    release();
 }
 
-gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
    {
       gfx_tex_params t_prm;
@@ -632,7 +632,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
 
 #if defined MOD_PNG
 
-      std::shared_ptr<raw_img_data> rid = res_ld::inst()->load_image(img_name);
+      mws_sp<raw_img_data> rid = res_ld::inst()->load_image(img_name);
 
 #else
 
@@ -680,6 +680,6 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, std::shared_ptr<gfx> i
    is_valid_state = true;
 }
 
-gfx_tex_cube_map::gfx_tex_cube_map(uint32 isize, std::shared_ptr<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_cube_map::gfx_tex_cube_map(uint32 isize, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
 }

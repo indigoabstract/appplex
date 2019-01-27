@@ -66,13 +66,13 @@ const uint8* memory_data_sequence::get_data_as_byte_array()
    return (const uint8*)begin_ptr(sequence);
 }
 
-shared_ptr<std::vector<uint8> > memory_data_sequence::get_data_as_byte_vector()
+mws_sp<std::vector<uint8> > memory_data_sequence::get_data_as_byte_vector()
 {
-   shared_ptr<std::vector<uint8> > s;
+   mws_sp<std::vector<uint8> > s;
 
    if (get_size() > 0)
    {
-      s = shared_ptr<std::vector<uint8> >(new std::vector<uint8>(get_size()));
+      s = mws_sp<std::vector<uint8> >(new std::vector<uint8>(get_size()));
       memcpy(begin_ptr(s), begin_ptr(sequence), get_size());
    }
 
@@ -124,7 +124,7 @@ int memory_data_sequence::write_int8(const int8* s, int elem_count, int offset)
 }
 
 
-file_data_sequence::file_data_sequence(shared_ptr<pfm_file> ifile)
+file_data_sequence::file_data_sequence(mws_sp<pfm_file> ifile)
 {
    file = ifile;
 }

@@ -31,7 +31,7 @@ struct vertex_t
 class text_vxo_impl
 {
 public:
-   text_vxo_impl(shared_ptr<text_vxo> inst)
+   text_vxo_impl(mws_sp<text_vxo> inst)
    {
       mIs3D = false;
       text_vxo& ti = *inst;
@@ -61,7 +61,7 @@ public:
    }
 
    std::string mtext;
-   void add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<mws_font> ifont)
+   void add_text(const std::string& itext, const glm::vec2& ipos, const mws_sp<mws_font> ifont)
    {
       mtext = itext;
       auto& glyphs = font_db::inst()->get_glyph_vect(ifont->get_inst(), itext);
@@ -72,7 +72,7 @@ public:
       //add_text_2d(text, pen, ifont);
    }
 
-   void draw_in_sync(shared_ptr<text_vxo> inst, shared_ptr<gfx_camera> icamera, const glm::vec3& ipos)
+   void draw_in_sync(mws_sp<text_vxo> inst, mws_sp<gfx_camera> icamera, const glm::vec3& ipos)
    {
       if (vbuffer->vertices->size == 0)
       {
@@ -80,11 +80,11 @@ public:
       }
 
       gfx_material& mat = *inst->get_material();
-      shared_ptr<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
+      mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
 
       if (atlas && atlas->is_valid())
       {
-         shared_ptr<gfx_shader> shader = mat.get_shader();
+         mws_sp<gfx_shader> shader = mat.get_shader();
 
          mat["texture"][MP_TEXTURE_INST] = atlas;
          inst->push_material_params(inst->get_material());
@@ -120,7 +120,7 @@ public:
       mws_report_gfx_errs();
    }
 
-   void add_text_2d(const std::string& Text, const glm::vec2& Pos, const std::shared_ptr<mws_font> Fnt)
+   void add_text_2d(const std::string& Text, const glm::vec2& Pos, const mws_sp<mws_font> Fnt)
    {
       auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
 
@@ -135,7 +135,7 @@ public:
       AddTextImpl(vbuffer, glyphs, Text, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), Fnt, 1.f);
    }
 
-   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, std::shared_ptr<mws_font> Fnt)
+   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, mws_sp<mws_font> Fnt)
    {
       auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
       glm::vec2 pen(0.f);
@@ -152,7 +152,7 @@ public:
    }
 
    void AddTextImpl(vertex_buffer_t* Buffer, const std::vector<font_glyph>& Glyphs, const std::string& Text,
-      const glm::vec3& HDir, const glm::vec3& VDir, const std::shared_ptr<mws_font> Fnt, float Scale)
+      const glm::vec3& HDir, const glm::vec3& VDir, const mws_sp<mws_font> Fnt, float Scale)
    {
       //auto crt_ctx = GraphicsContext::GetCurrentGraphicsContext();
       //UpdateParams(crt_ctx->GetWidth(), crt_ctx->GetHeight());
@@ -220,7 +220,7 @@ public:
    }
 
    void add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::string& text,
-      const glm::vec2& ipen, float irt_height, const shared_ptr<mws_font> ifont)
+      const glm::vec2& ipen, float irt_height, const mws_sp<mws_font> ifont)
    {
       int len = glm::min(text.length(), glyphs.size());
       glm::vec4 c = ifont->get_color().to_vec4();
@@ -306,9 +306,9 @@ public:
 };
 
 
-shared_ptr<text_vxo> text_vxo::nwi()
+mws_sp<text_vxo> text_vxo::nwi()
 {
-   shared_ptr<text_vxo> inst(new text_vxo());
+   mws_sp<text_vxo> inst(new text_vxo());
    inst->p = std::make_shared<text_vxo_impl>(inst);
    return inst;
 }
@@ -318,19 +318,19 @@ void text_vxo::clear_text()
    p->clear_text();
 }
 
-void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const shared_ptr<mws_font> ifont)
+void text_vxo::add_text(const std::string& itext, const glm::vec2& ipos, const mws_sp<mws_font> ifont)
 {
    p->add_text(itext, ipos, ifont);
 }
 
-void text_vxo::draw_in_sync(shared_ptr<gfx_camera> icamera)
+void text_vxo::draw_in_sync(mws_sp<gfx_camera> icamera)
 {
    if (!visible)
    {
       return;
    }
 
-   p->draw_in_sync(static_pointer_cast<text_vxo>(get_shared_ptr()), icamera, position());
+   p->draw_in_sync(static_pointer_cast<text_vxo>(get_mws_sp()), icamera, position());
 }
 
 text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color, a_v1_shift, a_v1_gamma"))

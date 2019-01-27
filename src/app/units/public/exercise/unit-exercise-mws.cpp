@@ -15,7 +15,7 @@ using boost::posix_time::milliseconds;
 
 namespace unit_exercise_impl
 {
-	void draw_bar(shared_ptr<mws_camera> g, int x, int y, int w, int h, int color)
+	void draw_bar(mws_sp<mws_camera> g, int x, int y, int w, int h, int color)
 	{
 		//gfx_ubyte ca[] = { 15, 255, 205, 0 };
 		//ia_color cl(color);
@@ -42,13 +42,13 @@ void unit_exercise::init_mws()
 	class expage : public mws_page
 	{
 	public:
-		expage(shared_ptr<mws_page_tab> iu) : mws_page(iu)
+		expage(mws_sp<mws_page_tab> iu) : mws_page(iu)
 		{
 			d = total = milliseconds(0);
 			runCount = 0;
 		}
 
-		void on_hide_transition(const shared_ptr<linear_transition> itransition)
+		void on_hide_transition(const mws_sp<linear_transition> itransition)
 		{
 			if (itransition->get_position() == 0 && !mst->is_finished() && !mst->is_paused())
 			{
@@ -56,13 +56,13 @@ void unit_exercise::init_mws()
 			}
 		}
 
-		shared_ptr<ms_linear_transition> getTransition()
+		mws_sp<ms_linear_transition> getTransition()
 		{
 			return mst;
 		}
 
 	protected:
-		shared_ptr<ms_linear_transition> mst;
+		mws_sp<ms_linear_transition> mst;
 		time_duration d;
 		time_duration total;
 		int runCount;
@@ -72,13 +72,13 @@ void unit_exercise::init_mws()
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<mws_page_tab> ipt) : mws_page(ipt){ is_init_pages = false; }
+		mainpage(mws_sp<mws_page_tab> ipt) : mws_page(ipt){ is_init_pages = false; }
 
 		virtual void init()
 		{
 			struct breset : mws_button
 			{
-				breset(shared_ptr<mws_page> p) : mws_button(p){}
+				breset(mws_sp<mws_page> p) : mws_button(p){}
 				void on_click()
 				{
 					mainpage* m = (mainpage*)get_parent().get();
@@ -86,12 +86,12 @@ void unit_exercise::init_mws()
 				}
 			};
 
-			shared_ptr<mws_button> b1 = mws_button::new_shared_instance(new breset(get_mws_page_instance()));
+			mws_sp<mws_button> b1 = mws_button::new_shared_instance(new breset(get_mws_page_instance()));
 			b1->init(mws_rect(100, 300, 200, 100), 0x8200b4, "reset");
 			reset();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{
@@ -102,7 +102,7 @@ void unit_exercise::init_mws()
 			{
 				bool record = false;
 				const std::string& evtName = idp->get_name();
-				shared_ptr<mws_sender> source = idp->source();
+				mws_sp<mws_sender> source = idp->source();
 
 				if (evtName == transition_evt::TRANSITION_STOPPED || evtName == transition_evt::TRANSITION_FINISHED)
 				{
@@ -157,7 +157,7 @@ void unit_exercise::init_mws()
 			}
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -200,7 +200,7 @@ void unit_exercise::init_mws()
 
 		void init_pages()
 		{
-			shared_ptr<mws_page_tab> ptab = get_mws_page_parent();
+			mws_sp<mws_page_tab> ptab = get_mws_page_parent();
 			expage* ep1 = (expage*)ptab->get_page_at(1).get();
 			expage* ep2 = (expage*)ptab->get_page_at(2).get();
 			expage* ep3 = (expage*)ptab->get_page_at(3).get();
@@ -218,9 +218,9 @@ void unit_exercise::init_mws()
 			}
 		}
 
-		weak_ptr<ms_linear_transition> t1;
-		weak_ptr<ms_linear_transition> t2;
-		weak_ptr<ms_linear_transition> t3;
+		mws_wp<ms_linear_transition> t1;
+		mws_wp<ms_linear_transition> t2;
+		mws_wp<ms_linear_transition> t3;
 		int d1;
 		int d2;
 		int d3;
@@ -238,12 +238,12 @@ void unit_exercise::init_mws()
 	{
 	public:
 		enum extype{ type1, type2, };
-		ex1page(shared_ptr<mws_page_tab> iu, extype iExtype) : expage(iu), et(iExtype){}
+		ex1page(mws_sp<mws_page_tab> iu, extype iExtype) : expage(iu), et(iExtype){}
 
 		virtual void init()
 		{
 			std::vector<int> tduration;
-			std::vector<shared_ptr<linear_transition> > tr;
+			std::vector<mws_sp<linear_transition> > tr;
 
 			switch (et)
 			{
@@ -286,7 +286,7 @@ void unit_exercise::init_mws()
 
 			for (int k = 0; k < 5; k++)
 			{
-				shared_ptr<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration));
+				mws_sp<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration));
 				tr.push_back(tt);
 			}
 
@@ -297,7 +297,7 @@ void unit_exercise::init_mws()
 
 			struct bstart : mws_button
 			{
-				bstart(shared_ptr<mws_page> p) : mws_button(p){}
+				bstart(mws_sp<mws_page> p) : mws_button(p){}
 
 				virtual void on_click()
 				{
@@ -317,7 +317,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<mws_dp> idp)
+				virtual void receive(mws_sp<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -348,7 +348,7 @@ void unit_exercise::init_mws()
 
 			struct bpause : mws_button
 			{
-				bpause(shared_ptr<mws_page> p) : mws_button(p){ enabled = false; }
+				bpause(mws_sp<mws_page> p) : mws_button(p){ enabled = false; }
 
 				virtual void on_click()
 				{
@@ -364,7 +364,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<mws_dp> idp)
+				virtual void receive(mws_sp<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -398,7 +398,7 @@ void unit_exercise::init_mws()
 
 			struct breset : mws_button
 			{
-				breset(shared_ptr<mws_page> p) : mws_button(p){}
+				breset(mws_sp<mws_page> p) : mws_button(p){}
 
 				void on_click()
 				{
@@ -410,7 +410,7 @@ void unit_exercise::init_mws()
 				}
 			};
 
-			shared_ptr<mws_button> b;
+			mws_sp<mws_button> b;
 
 			b = mws_button::new_shared_instance(new bstart(get_mws_page_instance()));
 			b->init(mws_rect(100, 300, 200, 100), 0x8200b4, "start");
@@ -431,7 +431,7 @@ void unit_exercise::init_mws()
 			mst->update();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			expage::update_view(g);
 
@@ -447,9 +447,9 @@ void unit_exercise::init_mws()
 
 				for (int k = 0; k <= mst->get_interval_index(); k++)
 				{
-					shared_ptr<ms_linear_transition> tr = static_pointer_cast<ms_linear_transition>(mst->get_transition_at(k));
+					mws_sp<ms_linear_transition> tr = static_pointer_cast<ms_linear_transition>(mst->get_transition_at(k));
 					int iidx = tr->get_interval_index();
-					shared_ptr<linear_transition> tr2 = tr->get_transition_at(iidx);
+					mws_sp<linear_transition> tr2 = tr->get_transition_at(iidx);
 					float bw1 = uw * interpolate_smooth_step(tr2->get_position(), limits[iidx], limits[iidx + 1], 1);
 					float bw2 = uw * interpolate_smooth_step(tr->get_position(), 0, 1, 0);
 
@@ -480,7 +480,7 @@ void unit_exercise::init_mws()
 	class ex3page : public expage
 	{
 	public:
-		ex3page(shared_ptr<mws_page_tab> iu) : expage(iu){}
+		ex3page(mws_sp<mws_page_tab> iu) : expage(iu){}
 
 		virtual void init()
 		{
@@ -489,11 +489,11 @@ void unit_exercise::init_mws()
 			float t1lim[] = { 0, 0, 1, 1, 0, 0 };
 			float t2lim[] = { 0, 0, 0, 1, 0, 0 };
 
-			std::vector<shared_ptr<linear_transition> > tr;
+			std::vector<mws_sp<linear_transition> > tr;
 
 			for (int k = 0; k < 5; k++)
 			{
-				shared_ptr<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration, tdurationLength));
+				mws_sp<linear_transition> tt = ms_linear_transition::nwi(ms_transition_data::new_duration_data(tduration, tdurationLength));
 				tr.push_back(tt);
 			}
 
@@ -513,7 +513,7 @@ void unit_exercise::init_mws()
 
 			struct bstart : mws_button
 			{
-				bstart(shared_ptr<mws_page> p) : mws_button(p){}
+				bstart(mws_sp<mws_page> p) : mws_button(p){}
 				virtual void on_click()
 				{
 					ex3page* p = (ex3page*)get_parent().get();
@@ -532,7 +532,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<mws_dp> idp)
+				virtual void receive(mws_sp<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -563,7 +563,7 @@ void unit_exercise::init_mws()
 
 			struct bpause : mws_button
 			{
-				bpause(shared_ptr<mws_page> p) : mws_button(p){ enabled = false; }
+				bpause(mws_sp<mws_page> p) : mws_button(p){ enabled = false; }
 
 				virtual void on_click()
 				{
@@ -579,7 +579,7 @@ void unit_exercise::init_mws()
 					}
 				}
 
-				virtual void receive(shared_ptr<mws_dp> idp)
+				virtual void receive(mws_sp<mws_dp> idp)
 				{
 					mws_button::receive(idp);
 
@@ -613,7 +613,7 @@ void unit_exercise::init_mws()
 
 			struct breset : mws_button
 			{
-				breset(shared_ptr<mws_page> p) : mws_button(p){}
+				breset(mws_sp<mws_page> p) : mws_button(p){}
 
 				void on_click()
 				{
@@ -625,7 +625,7 @@ void unit_exercise::init_mws()
 				}
 			};
 
-			shared_ptr<mws_button> b;
+			mws_sp<mws_button> b;
 
 			b = mws_button::new_shared_instance(new bstart(get_mws_page_instance()));
 			b->init(mws_rect(100, 300, 200, 100), 0x8200b4, "start");
@@ -646,7 +646,7 @@ void unit_exercise::init_mws()
 			mst->update();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			expage::update_view(g);
 
@@ -662,9 +662,9 @@ void unit_exercise::init_mws()
 
 				for (int k = 0; k <= mst->get_interval_index(); k++)
 				{
-					shared_ptr<ms_linear_transition> tr = static_pointer_cast<ms_linear_transition>(mst->get_transition_at(k));
+					mws_sp<ms_linear_transition> tr = static_pointer_cast<ms_linear_transition>(mst->get_transition_at(k));
 					int iidx = tr->get_interval_index();
-					shared_ptr<linear_transition> tr2 = tr->get_transition_at(iidx);
+					mws_sp<linear_transition> tr2 = tr->get_transition_at(iidx);
 					float bw1 = uw * interpolate_smooth_step(tr2->get_position(), limits1[iidx], limits1[iidx + 1], 0);
 					float bw2 = uw * interpolate_smooth_step(tr2->get_position(), limits2[iidx], limits2[iidx + 1], 0);
 					float bw3 = uw * interpolate_smooth_step(tr->get_position(), 0, 1, 0);
@@ -697,7 +697,7 @@ void unit_exercise::init_mws()
 	class astropage : public mws_page
 	{
 	public:
-		astropage(shared_ptr<mws_page_tab> iu) : mws_page(iu){}
+		astropage(mws_sp<mws_page_tab> iu) : mws_page(iu){}
 
 		virtual void init()
 		{
@@ -725,7 +725,7 @@ void unit_exercise::init_mws()
 			mslt->update();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -759,7 +759,7 @@ void unit_exercise::init_mws()
 			g->fillRect(315, 150, 2, 2);
 
 			int intervalIdx = mslt->get_interval_index();
-			const shared_ptr<linear_transition> lt = mslt->get_transition_at(intervalIdx);
+			const mws_sp<linear_transition> lt = mslt->get_transition_at(intervalIdx);
 			float miw = uw * interpolate_smooth_step(lt->get_position(), limits[intervalIdx], limits[intervalIdx + 1], 0);
 			float miw2 = uw * interpolate_smooth_step(mslt->get_position(), 0, 1, 0);
 
@@ -768,7 +768,7 @@ void unit_exercise::init_mws()
 		}
 
 	private:
-		shared_ptr<ms_linear_transition> mslt;
+		mws_sp<ms_linear_transition> mslt;
 		std::vector<float> limits;
 	};
 

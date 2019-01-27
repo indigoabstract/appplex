@@ -21,7 +21,7 @@ std::unordered_map<std::string, std::string> platf_def_map =
 };
 
 
-appplex_conf::appplex_conf(std::shared_ptr<conf_info> iinfo)
+appplex_conf::appplex_conf(mws_sp<conf_info> iinfo)
 {
    info = iinfo;
 }
@@ -241,12 +241,12 @@ void appplex_conf::update()
          rw_hpp->w.write_line("");
       }
 
-      rw_cpp->w.write_line("\nvoid app_units_setup::create_units(shared_ptr<unit_list> ul0)\n{\n\tul = ul0;\n");
+      rw_cpp->w.write_line("\nvoid app_units_setup::create_units(mws_sp<unit_list> ul0)\n{\n\tul = ul0;\n");
       rw_cpp->w.write_line(unit_list + "}");
    }
 }
 
-std::string appplex_conf::get_define_unit_line(shared_ptr<unit_entry> iue, const std::string& idef, const std::string& ifile_name, const std::vector<std::string>& iplatf)
+std::string appplex_conf::get_define_unit_line(mws_sp<unit_entry> iue, const std::string& idef, const std::string& ifile_name, const std::vector<std::string>& iplatf)
 {
    std::string def = idef;
 
@@ -271,7 +271,7 @@ std::string appplex_conf::get_define_unit_line(shared_ptr<unit_entry> iue, const
    return def;
 }
 
-std::string appplex_conf::get_new_unit_line(shared_ptr<unit_entry> iue, const std::string& ifile_name, bool is_selected)
+std::string appplex_conf::get_new_unit_line(mws_sp<unit_entry> iue, const std::string& ifile_name, bool is_selected)
 {
    std::string line;
    std::string def = ifile_name;
@@ -295,7 +295,7 @@ std::string appplex_conf::get_new_unit_line(shared_ptr<unit_entry> iue, const st
    return line;
 }
 
-void appplex_conf::update_dependencies(shared_ptr<unit_entry> ue, std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map)
+void appplex_conf::update_dependencies(mws_sp<unit_entry> ue, std::vector<std::string>& iuses, std::unordered_map<std::string, bool>& idependencies_def_map)
 {
    auto& pf = ue->platforms;
    bool add_android = false;
@@ -326,7 +326,7 @@ void appplex_conf::update_dependencies(shared_ptr<unit_entry> ue, std::vector<st
 }
 
 
-platform_project_conf::platform_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map)
+platform_project_conf::platform_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map)
 {
    info = iinfo;
    unit_entry_map = iunit_entry_map;
@@ -356,7 +356,7 @@ void platform_project_conf::calc_modules_used()
 }
 
 
-android_studio_project_conf::android_studio_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map) :
+android_studio_project_conf::android_studio_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map) :
    platform_project_conf(iinfo, iunit_entry_map) {}
 
 void android_studio_project_conf::update_project()
@@ -434,7 +434,7 @@ void android_studio_project_conf::update_project()
    update_project_files(and_proj_path_rel_to_appplex, appplex_path_rel_to_and_proj, kxmdi);
 }
 
-void android_studio_project_conf::update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, std::shared_ptr<kx_block> ikxmd)
+void android_studio_project_conf::update_project_files(const bfs::path& and_proj_path_rel_to_appplex, const bfs::path& appplex_path_rel_to_and_proj, mws_sp<kx_block> ikxmd)
 {
    auto platforms_android_gradle_gradle_path = kxmd_ops::get_kxmd_str_seq("platforms.android.gradle.gradle-path", ikxmd);
    auto android_gradle_path = info->proj_path / and_proj_path_rel_to_appplex / platforms_android_gradle_gradle_path[0];
@@ -545,7 +545,7 @@ void android_studio_project_conf::update_project_files(const bfs::path& and_proj
 }
 
 
-windows_pc_project_conf::windows_pc_project_conf(std::shared_ptr<conf_info> iinfo, shared_ptr<unit_entry_map_type> iunit_entry_map) :
+windows_pc_project_conf::windows_pc_project_conf(mws_sp<conf_info> iinfo, mws_sp<unit_entry_map_type> iunit_entry_map) :
    platform_project_conf(iinfo, iunit_entry_map) {}
 
 void windows_pc_project_conf::update_project()

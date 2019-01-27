@@ -29,17 +29,17 @@ public:
    //const std::string& get_id();
    virtual e_gfx_obj_type get_type()const = 0;
    virtual bool is_valid()const { return true; }
-   std::shared_ptr<gfx> gi();
+   mws_sp<gfx> gi();
 
 protected:
-   gfx_obj(std::shared_ptr<gfx> i_gi);
-   std::shared_ptr<gfx_obj> get_inst();
+   gfx_obj(mws_sp<gfx> i_gi);
+   mws_sp<gfx_obj> get_inst();
 
    //std::string oid;
 
 private:
    friend class gfx;
 
-   std::weak_ptr<gfx> g;
+   mws_wp<gfx> g;
    static uint32 obj_idx;
 };

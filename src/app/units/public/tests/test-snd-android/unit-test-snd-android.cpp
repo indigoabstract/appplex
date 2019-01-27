@@ -15,9 +15,9 @@
 
 unit_test_snd_android::unit_test_snd_android() : unit(mws_stringify(UNIT_TEST_SND_ANDROID)) {}
 
-shared_ptr<unit_test_snd_android> unit_test_snd_android::nwi()
+mws_sp<unit_test_snd_android> unit_test_snd_android::nwi()
 {
-	return shared_ptr<unit_test_snd_android>(new unit_test_snd_android());
+	return mws_sp<unit_test_snd_android>(new unit_test_snd_android());
 }
 
 void unit_test_snd_android::init()
@@ -30,7 +30,7 @@ namespace unit_test_snd_android_ns
 	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -41,7 +41,7 @@ namespace unit_test_snd_android_ns
 
 			struct b_toggle_ui : mws_button
 			{
-				b_toggle_ui(shared_ptr<mws_page> ip, std::shared_ptr<guitar_note_player> ipl) : p(ipl), snd_is_playing(false), mws_button(ip) {}
+				b_toggle_ui(mws_sp<mws_page> ip, mws_sp<guitar_note_player> ipl) : p(ipl), snd_is_playing(false), mws_button(ip) {}
 
 				virtual void init(mws_rect i_mwsr, int icolor)
 				{
@@ -76,7 +76,7 @@ namespace unit_test_snd_android_ns
 					}
 				}
 
-				std::weak_ptr<guitar_note_player> p;
+				mws_wp<guitar_note_player> p;
 				bool snd_is_playing;
 			};
 
@@ -84,19 +84,19 @@ namespace unit_test_snd_android_ns
 			int h = 200;
 			mws_rect toggle_ui_rect1 = mws_rect(100, get_unit()->get_height() - h - 100, w, h);
 			auto b1 = mws_button::new_shared_instance(new b_toggle_ui(get_mws_page_instance(), player1));
-			shared_ptr<b_toggle_ui> bui1 = std::static_pointer_cast<b_toggle_ui>(b1);
+			mws_sp<b_toggle_ui> bui1 = std::static_pointer_cast<b_toggle_ui>(b1);
 			bui1->init(toggle_ui_rect1, 0x8200b4);
 
 			mws_rect toggle_ui_rect2 = mws_rect(500, get_unit()->get_height() - h - 100, w, h);
 			auto b2 = mws_button::new_shared_instance(new b_toggle_ui(get_mws_page_instance(), player2));
-			shared_ptr<b_toggle_ui> bui2 = std::static_pointer_cast<b_toggle_ui>(b2);
+			mws_sp<b_toggle_ui> bui2 = std::static_pointer_cast<b_toggle_ui>(b2);
 			bui2->init(toggle_ui_rect2, 0x8200b4);
 
 			player1->set_note(musical_note::get_note(musical_note::a_note, 2));
 			player2->set_note(musical_note::get_note(musical_note::g_note, 3));
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -106,7 +106,7 @@ namespace unit_test_snd_android_ns
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -115,8 +115,8 @@ namespace unit_test_snd_android_ns
 			g->drawText(text, 10, 20);
 		}
 
-		std::shared_ptr<guitar_note_player> player1;
-		std::shared_ptr<guitar_note_player> player2;
+		mws_sp<guitar_note_player> player1;
+		mws_sp<guitar_note_player> player2;
 	};
 }
 

@@ -7,7 +7,7 @@ class mws_list_menu_item
 {
 public:
    mws_list_menu_item(std::string idisplay, std::string iid = "");
-   mws_list_menu_item(std::string idisplay, shared_ptr<mws_page> ipage);
+   mws_list_menu_item(std::string idisplay, mws_sp<mws_page> ipage);
    virtual ~mws_list_menu_item() {}
 
    std::string display;
@@ -35,7 +35,7 @@ protected:
    std::vector<mws_list_menu_item> elems;
 
 private:
-   void set_data_helper(shared_ptr<mws_page_tab> mws_root, mws_list_menu_item& ulmi);
+   void set_data_helper(mws_sp<mws_page_tab> mws_root, mws_list_menu_item& ulmi);
 };
 
 
@@ -43,13 +43,13 @@ class mws_list_menu_page : public mws_page
 {
 public:
    virtual ~mws_list_menu_page() {}
-   static shared_ptr<mws_list_menu_page> nwi(shared_ptr<mws_page_tab> iparent, std::string iid);
+   static mws_sp<mws_list_menu_page> nwi(mws_sp<mws_page_tab> iparent, std::string iid);
 
-   virtual void receive(shared_ptr<mws_dp> idp);
-   shared_ptr<mws_list_menu_model> get_list_menu_model();
+   virtual void receive(mws_sp<mws_dp> idp);
+   mws_sp<mws_list_menu_model> get_list_menu_model();
 
 protected:
    mws_list_menu_page();
 
-   shared_ptr<mws_list> item_list;
+   mws_sp<mws_list> item_list;
 };

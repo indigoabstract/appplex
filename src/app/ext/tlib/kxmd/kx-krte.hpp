@@ -17,14 +17,14 @@ public:
    kx_krte() {}
    virtual ~kx_krte() {}
 
-   void set_src(std::shared_ptr<std::string> isrc);
+   void set_src(mws_sp<std::string> isrc);
    void run();
    std::string to_string();
    void print();
 
 public:
-   std::shared_ptr<std::string> src;
-   std::shared_ptr<kx_block> kxb;
+   mws_sp<std::string> src;
+   mws_sp<kx_block> kxb;
    kx_parser kxp;
 };
 

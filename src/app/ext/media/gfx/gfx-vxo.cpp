@@ -19,10 +19,10 @@
 
 namespace gfx_vxo_util
 {
-   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, std::shared_ptr<gfx_vxo> imesh)
+   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, mws_sp<gfx_vxo> imesh)
    {
-      std::shared_ptr<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
-      std::shared_ptr<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
+      mws_sp<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
+      mws_sp<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
 
       memcpy(begin_ptr(*vertices_data), tvertices_data, tvertices_data_size);
       memcpy(begin_ptr(*indices_data), tindices_data, tindices_data_size);
@@ -43,7 +43,7 @@ gfx_uint gfx_vxo::method_type[] =
 };
 
 
-gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
+gfx_vxo::gfx_vxo(vx_info i_vxi, mws_sp<gfx> i_gi) : gfx_node(i_gi)
 {
    keep_geometry_data = false;
    vx_count = 0;
@@ -65,7 +65,7 @@ gfx_vxo::gfx_vxo(vx_info i_vxi, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
    }
 }
 
-gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, std::shared_ptr<gfx> i_gi) : gfx_node(i_gi)
+gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, mws_sp<gfx> i_gi) : gfx_node(i_gi)
 {
    keep_geometry_data = false;
    vx_count = 0;
@@ -163,7 +163,7 @@ gfx_material_entry& gfx_vxo::operator[](const std::string iname)
    return (*get_material())[iname];
 }
 
-shared_ptr<gfx_material> gfx_vxo::get_material()
+mws_sp<gfx_material> gfx_vxo::get_material()
 {
    if (is_submesh)
    {
@@ -171,7 +171,7 @@ shared_ptr<gfx_material> gfx_vxo::get_material()
    }
    else if (!material->mesh.lock())
    {
-      shared_ptr<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(get_shared_ptr());
+      mws_sp<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(get_mws_sp());
 
       material->set_mesh(mesh);
    }
@@ -179,10 +179,10 @@ shared_ptr<gfx_material> gfx_vxo::get_material()
    return material;
 }
 
-void gfx_vxo::set_material(shared_ptr<gfx_material> imaterial)
+void gfx_vxo::set_material(mws_sp<gfx_material> imaterial)
 {
    material = imaterial;
-   material->set_mesh(static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   material->set_mesh(static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 vx_info& gfx_vxo::get_vx_info()
@@ -196,7 +196,7 @@ void gfx_vxo::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_s
 
    if (it != camera_id_list.end())
    {
-      shared_ptr<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(get_shared_ptr());
+      mws_sp<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(get_mws_sp());
 
       if (is_translucent())
       {
@@ -209,24 +209,24 @@ void gfx_vxo::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_s
    }
 }
 
-void gfx_vxo::draw_out_of_sync(std::shared_ptr<gfx_camera> i_camera)
+void gfx_vxo::draw_out_of_sync(mws_sp<gfx_camera> i_camera)
 {
    i_camera->update_camera_state();
    update_recursive(glm::mat4(1.f), true);
    draw_in_sync(i_camera);
 }
 
-void gfx_vxo::draw_in_sync(shared_ptr<gfx_camera> i_camera)
+void gfx_vxo::draw_in_sync(mws_sp<gfx_camera> i_camera)
 {
    render_mesh_impl(i_camera);
 
    if (!children.empty())
    {
-      std::vector<shared_ptr<gfx_node> >::iterator it = children.begin();
+      std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
       for (; it != children.end(); it++)
       {
-         shared_ptr<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(*it);
+         mws_sp<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(*it);
 
          mesh->draw_in_sync(i_camera);
       }
@@ -236,11 +236,11 @@ void gfx_vxo::draw_in_sync(shared_ptr<gfx_camera> i_camera)
 void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 {
    gfx_material& mat = *i_mat;
-   shared_ptr<gfx_shader> shader = mat.get_shader();
+   mws_sp<gfx_shader> shader = mat.get_shader();
 
    if (shader)
    {
-      shared_ptr<gfx_state> gl_st = gi()->get_gfx_state();
+      mws_sp<gfx_state> gl_st = gi()->get_gfx_state();
 
       plist.clear();
       gi()->shader.set_current_program(shader);
@@ -381,12 +381,12 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 #if defined MOD_OBJ_LOADER
 
          name_changed = false;
-         shared_ptr<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_shared_ptr());
+         mws_sp<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_mws_sp());
 
          if (obj_mesh && !obj_mesh->is_loaded)
          {
             std::vector<tinyobj::shape_t> shapes;
-            shared_ptr<pfm_file> f = pfm_file::get_inst(mesh_name);
+            mws_sp<pfm_file> f = pfm_file::get_inst(mesh_name);
             std::string path = f->get_full_path();
 
             mws_print("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
@@ -425,7 +425,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                      filepath = matId;
                   }
 
-                  shared_ptr<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
+                  mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
                   membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
                   std::istream matIStream(&sbuf);
                   //std::ifstream matIStream(filepath.c_str());
@@ -436,7 +436,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                std::string name;
             };
 
-            shared_ptr<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
+            mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
             membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
             std::istream in(&sbuf);
             //std::string err = tinyobj::LoadObj(shapes, f->get_full_path().c_str(), f->get_root_directory().c_str());
@@ -450,7 +450,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                for (size_t i = 0; i < 1/*shapes.size()*/; i++)
                {
-                  //shared_ptr<gl_mesh> mesh(new gl_mesh(vxi));
+                  //mws_sp<gl_mesh> mesh(new gl_mesh(vxi));
                   std::vector<vx_fmt_p3f_n3f_t2f> ks_vertices_data;
                   std::vector<gfx_indices_type> ks_indices_data;
 
@@ -527,7 +527,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
       for (auto it4 = mat.other_params.begin(); it4 != mat.other_params.end(); it4++)
       {
          const std::string& uniform_name = it4->first;
-         shared_ptr<gfx_material_entry> e = it4->second;
+         mws_sp<gfx_material_entry> e = it4->second;
          mws_any* value = e->get_any();
          gfx_input::e_data_type value_type = e->get_value_type();
 
@@ -536,11 +536,11 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
          case gfx_input::s2d:
          {
             gfx_material_entry& e2 = mat[uniform_name][MP_TEXTURE_INST];
-            shared_ptr<gfx_tex> tex;
+            mws_sp<gfx_tex> tex;
 
             if (!e2.empty_value())
             {
-               tex = e2.get_value<std::shared_ptr<gfx_tex> >();
+               tex = e2.get_value<mws_sp<gfx_tex> >();
             }
             else
             {
@@ -577,11 +577,11 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
          case gfx_input::scm:
          {
             gfx_material_entry& e2 = mat[uniform_name][MP_TEXTURE_INST];
-            shared_ptr<gfx_tex> tex;
+            mws_sp<gfx_tex> tex;
 
             if (!e2.empty_value())
             {
-               tex = e2.get_value<std::shared_ptr<gfx_tex> >();
+               tex = e2.get_value<mws_sp<gfx_tex> >();
             }
             else
             {
@@ -613,7 +613,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
    }
    else
    {
-      mws_print("mesh object at [%p] has null shader\n", get_shared_ptr().get());
+      mws_print("mesh object at [%p] has null shader\n", get_mws_sp().get());
    }
 }
 
@@ -626,7 +626,7 @@ void gfx_vxo::set_size(int ivx_count, int iidx_count)
    index_count = indices_buffer.size();
 }
 
-void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
+void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> icamera)
 {
    if (!visible)
    {
@@ -635,7 +635,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    mws_sp<gfx_material> mat_sp = (icamera->overriding_mat) ? icamera->overriding_mat : get_material();
    gfx_material& mat = *mat_sp;
-   shared_ptr<gfx_shader> glp = mat.get_shader();
+   mws_sp<gfx_shader> glp = mat.get_shader();
 
    if (is_submesh)
    {
@@ -644,7 +644,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    else
    {
       push_material_params(mat_sp);
-      icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), glp);
+      icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
    }
 
    if (buffer_changed)
@@ -689,9 +689,9 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    mws_report_gfx_errs();
 
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
    {
-      shared_ptr<vx_attribute> at = *it;
+      mws_sp<vx_attribute> at = *it;
       gfx_int loc_idx = glp->get_param_location(at->get_name());
 
       if (loc_idx != -1)
@@ -736,9 +736,9 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
 
    // aux vertex attribs
    int offset_aux = 0;
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
    {
-      shared_ptr<vx_attribute> at = *it;
+      mws_sp<vx_attribute> at = *it;
       gfx_int loc_idx = glp->get_param_location(at->get_name());
 
       if (loc_idx != -1)
@@ -786,7 +786,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    {
    case MV_WF_OVERLAY:
    {
-      shared_ptr<gfx_shader> p = gi()->shader.get_program_by_name("wireframe-shader");
+      mws_sp<gfx_shader> p = gi()->shader.get_program_by_name("wireframe-shader");
 
       gi()->shader.set_current_program(p);
 
@@ -796,7 +796,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       }
       else
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), p);
+         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
       }
 
       glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
@@ -812,7 +812,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       }
       else
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_shared_ptr()), glp);
+         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
       }
 
       glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
@@ -823,7 +823,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
    mws_report_gfx_errs();
 
    // aux vertex attribs
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
    {
       gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -833,7 +833,7 @@ void gfx_vxo::render_mesh_impl(shared_ptr<gfx_camera> icamera)
       }
    }
 
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
    {
       gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -857,9 +857,9 @@ void gfx_vxo::compute_tangent_basis()
    int aux_total_size = 0;
    int offset = 0;
 
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
    {
-      shared_ptr<vx_attribute> at = *it;
+      mws_sp<vx_attribute> at = *it;
       const std::string& attr_name = at->get_name();
 
       if (attr_name == "a_v3_position")
@@ -882,9 +882,9 @@ void gfx_vxo::compute_tangent_basis()
    int vertex_count = vertices_buffer.size() / total_size;
    int triangle_count = index_count / 3;
 
-   for (std::vector<shared_ptr<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
    {
-      shared_ptr<vx_attribute> at = *it;
+      mws_sp<vx_attribute> at = *it;
       aux_total_size += at->get_aligned_size();
    }
 

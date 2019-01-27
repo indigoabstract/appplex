@@ -27,12 +27,12 @@ namespace unit_cmd_pref
 
 unit_cmd::unit_cmd() : unit(mws_stringify(UNIT_CMD))
 {
-   prefs = shared_ptr<unit_preferences>(new unit_cmd_pref::unit_preferences_detail());
+   prefs = mws_sp<unit_preferences>(new unit_cmd_pref::unit_preferences_detail());
 }
 
-shared_ptr<unit_cmd> unit_cmd::nwi()
+mws_sp<unit_cmd> unit_cmd::nwi()
 {
-   return shared_ptr<unit_cmd>(new unit_cmd());
+   return mws_sp<unit_cmd>(new unit_cmd());
 }
 
 bool unit_cmd::update()
@@ -62,7 +62,7 @@ bool unit_cmd::update()
 void unit_cmd::load()
 {
    const std::vector<unicodestring>& args = pfm::params::get_app_argument_vector();
-   //shared_ptr<directoryTree> dirtree = directoryTree::newDirectoryTree(srcPath);
+   //mws_sp<directoryTree> dirtree = directoryTree::newDirectoryTree(srcPath);
    //rdoListFiles rlf;
    //dirtree->recursiveApply(rlf);
 

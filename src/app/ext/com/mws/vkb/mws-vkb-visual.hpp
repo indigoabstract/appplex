@@ -336,7 +336,7 @@ private:
       (*voronoi_cell_faces_mesh)[MP_BLENDING] = MV_ALPHA;
       voronoi_cell_faces_mesh->camera_id_list = { i_cam->camera_id() };
 
-      auto node = get_shared_ptr();
+      auto node = get_mws_sp();
       node->attach(nexus_pairs_mesh);
       node->attach(voronoi_kernels_mesh);
       node->attach(voronoi_nexus_mesh);

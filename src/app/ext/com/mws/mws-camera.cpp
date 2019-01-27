@@ -21,7 +21,7 @@ namespace ns_mws_camera
          tx_vxo = text_vxo::nwi();
       }
 
-      void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<mws_font> ifont)
+      void push_data(mws_sp<rw_sequence> seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
       {
          tx = text;
          x = ix;
@@ -32,7 +32,7 @@ namespace ns_mws_camera
          write_data(seq);
       }
 
-      virtual void read_data(shared_ptr<rw_sequence> seq)
+      virtual void read_data(mws_sp<rw_sequence> seq)
       {
          int length = seq->r.read_uint32();
          std::vector<char> txt(length);
@@ -43,7 +43,7 @@ namespace ns_mws_camera
          font_idx = seq->r.read_uint32();
       }
 
-      virtual void write_data(shared_ptr<rw_sequence> seq)
+      virtual void write_data(mws_sp<rw_sequence> seq)
       {
          seq->w.write_uint32(tx.length());
          seq->w.write_int8((int8*)tx.c_str(), tx.length() * sizeof(char), 0);
@@ -52,12 +52,12 @@ namespace ns_mws_camera
          seq->w.write_uint32(font_idx);
       }
 
-      void on_update_start(shared_ptr<draw_context> idc)
+      void on_update_start(mws_sp<draw_context> idc)
       {
          tx_vxo->clear_text();
       }
 
-      void draw(shared_ptr<draw_context> idc)
+      void draw(mws_sp<draw_context> idc)
       {
          if (!tx.empty())
          {
@@ -65,30 +65,30 @@ namespace ns_mws_camera
          }
       }
 
-      void on_update_end(shared_ptr<draw_context> idc)
+      void on_update_end(mws_sp<draw_context> idc)
       {
          tx_vxo->draw_in_sync(idc->get_cam());
          fonts.clear();
          tx.clear();
       }
 
-      shared_ptr<text_vxo> tx_vxo;
+      mws_sp<text_vxo> tx_vxo;
       std::string tx;
       float x;
       float y;
       int font_idx;
       // hold refs to the fonts, so they don't get destroyed before they're used for drawing
-      std::vector<shared_ptr<mws_font> > fonts;
+      std::vector<mws_sp<mws_font> > fonts;
 
 #elif defined MOD_BITMAP_FONTS
 
       draw_text_op() {}
-      void push_data(shared_ptr<rw_sequence> seq, const std::string& text, float ix, float iy, const shared_ptr<mws_font> ifont) {}
-      virtual void read_data(shared_ptr<rw_sequence> seq) {}
-      virtual void write_data(shared_ptr<rw_sequence> seq) {}
-      void on_update_start(shared_ptr<draw_context> idc) {}
-      void draw(shared_ptr<draw_context> idc) {}
-      void on_update_end(shared_ptr<draw_context> idc) {}
+      void push_data(mws_sp<rw_sequence> seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont) {}
+      virtual void read_data(mws_sp<rw_sequence> seq) {}
+      virtual void write_data(mws_sp<rw_sequence> seq) {}
+      void on_update_start(mws_sp<draw_context> idc) {}
+      void draw(mws_sp<draw_context> idc) {}
+      void on_update_end(mws_sp<draw_context> idc) {}
 
 #endif
    };
@@ -105,20 +105,20 @@ public:
       font->set_color(gfx_color::colors::cyan);
    }
 
-   shared_ptr<mws_font> font;
+   mws_sp<mws_font> font;
    gfx_color color;
    draw_text_op d_text;
 };
 
 
-shared_ptr<mws_camera> mws_camera::nwi(std::shared_ptr<gfx> i_gi)
+mws_sp<mws_camera> mws_camera::nwi(mws_sp<gfx> i_gi)
 {
-   shared_ptr<mws_camera> inst(new mws_camera(i_gi));
+   mws_sp<mws_camera> inst(new mws_camera(i_gi));
    inst->load(inst);
    return inst;
 }
 
-void mws_camera::drawImage(shared_ptr<gfx_tex> img, float x, float y, float width, float height)
+void mws_camera::drawImage(mws_sp<gfx_tex> img, float x, float y, float width, float height)
 {
    draw_image(img, x, y, width, height);
 }
@@ -144,21 +144,21 @@ void mws_camera::fillRect(float x, float y, float width, float height)
    //draw_line(glm::vec3(10, 50, 0.f), glm::vec3(100, 50, 0.f), ia_color::colors::blue.to_vec4(), 1.f);
 }
 
-shared_ptr<mws_font> mws_camera::get_font()const
+mws_sp<mws_font> mws_camera::get_font()const
 {
    return p->font;
 }
 
-void mws_camera::set_font(shared_ptr<mws_font> ifont)
+void mws_camera::set_font(mws_sp<mws_font> ifont)
 {
    p->font = ifont;
 }
 
-void mws_camera::drawText(const std::string& text, float x, float y, const shared_ptr<mws_font> ifnt)
+void mws_camera::drawText(const std::string& text, float x, float y, const mws_sp<mws_font> ifnt)
 {
    if (enabled)
    {
-      const shared_ptr<mws_font> fnt = (ifnt) ? ifnt : p->font;
+      const mws_sp<mws_font> fnt = (ifnt) ? ifnt : p->font;
       p->d_text.push_data(draw_ops, text, x, y, fnt);
    }
 }
@@ -203,15 +203,15 @@ void mws_camera::translate(float tx, float ty)
 
 }
 
-mws_camera::mws_camera(std::shared_ptr<gfx> i_gi) : gfx_camera(i_gi)
+mws_camera::mws_camera(mws_sp<gfx> i_gi) : gfx_camera(i_gi)
 {
    sort_function = z_order_sort_function;
 }
 
-void mws_camera::load(shared_ptr<gfx_camera> inst)
+void mws_camera::load(mws_sp<gfx_camera> inst)
 {
    gfx_camera::load(inst);
-   p = shared_ptr<mws_camera_impl>(new mws_camera_impl());
+   p = mws_sp<mws_camera_impl>(new mws_camera_impl());
    projection_type = gfx_camera::e_orthographic_proj;
    rendering_priority = 0xffff;
 }

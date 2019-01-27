@@ -10,9 +10,9 @@
 
 unit_test_audioengine::unit_test_audioengine() : unit(mws_stringify(UNIT_TEST_AUDIOENGINE)) {}
 
-shared_ptr<unit_test_audioengine> unit_test_audioengine::nwi()
+mws_sp<unit_test_audioengine> unit_test_audioengine::nwi()
 {
-	return shared_ptr<unit_test_audioengine>(new unit_test_audioengine());
+	return mws_sp<unit_test_audioengine>(new unit_test_audioengine());
 }
 
 void unit_test_audioengine::init()
@@ -25,14 +25,14 @@ namespace unit_test_audioengine_ns
 	class main_page : public mws_page
 	{
 	public:
-		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
 			mws_page::init();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -42,7 +42,7 @@ namespace unit_test_audioengine_ns
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 

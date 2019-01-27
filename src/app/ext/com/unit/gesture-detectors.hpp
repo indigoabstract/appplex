@@ -34,10 +34,10 @@ class dragging_detector
 {
 public:
    dragging_detector();
-   bool detect_helper(std::shared_ptr<pointer_evt> evt);
+   bool detect_helper(mws_sp<pointer_evt> evt);
    // returns true if the dragging gesture is finished, false if it is in progress
    bool is_finished() const;
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
    glm::vec2 drag_diff = glm::vec2(0.f);
@@ -58,7 +58,7 @@ private:
    void set_state(tap_detector_state i_st);
    std::string to_string(tap_detector_state i_st) const;
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
    tap_detector_state det_state;
 };
 
@@ -67,8 +67,8 @@ class double_tap_detector
 {
 public:
    double_tap_detector();
-   bool detect_helper(std::shared_ptr<pointer_evt> evt);
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   bool detect_helper(mws_sp<pointer_evt> evt);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
 private:
@@ -86,7 +86,7 @@ private:
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
    tap_detector_state det_state;
 };
 
@@ -95,8 +95,8 @@ class pinch_zoom_detector
 {
 public:
    pinch_zoom_detector();
-   bool detect_helper(std::shared_ptr<pointer_evt> evt);
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   bool detect_helper(mws_sp<pointer_evt> evt);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
    // position of first touch
@@ -114,7 +114,7 @@ public:
    float zoom_factor = 0.f;
    float last_dist = 0.f;
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
    gesture_state det_state;
 };
 
@@ -124,7 +124,7 @@ class anchor_rotation_one_finger_detector
 public:
    anchor_rotation_one_finger_detector();
 
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
    // position of finger
@@ -135,7 +135,7 @@ public:
    glm::vec2 start_position = glm::vec2(0.f);
    unsigned long start_time = 0;
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
 };
 
 
@@ -144,8 +144,8 @@ class axis_roll_detector
 public:
    axis_roll_detector();
 
-   bool detect_helper(std::shared_ptr<pointer_evt> evt, float& rotation_angle);
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   bool detect_helper(mws_sp<pointer_evt> evt, float& rotation_angle);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
    // position of first touch
@@ -161,7 +161,7 @@ public:
    glm::vec2 roll_touch_prev_position = glm::vec2(0.f);
    glm::vec2 roll_touch_position = glm::vec2(0.f);
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
    gesture_state det_state;
 };
 
@@ -170,7 +170,7 @@ class panning_tilting_detector
 {
 public:
    panning_tilting_detector();
-   gesture_state detect(const std::shared_ptr<pointer_evt> new_event);
+   gesture_state detect(const mws_sp<pointer_evt> new_event);
    gesture_state reset();
 
    // position of first touch
@@ -188,5 +188,5 @@ public:
    // start position of third touch
    glm::vec2 start_position_2 = glm::vec2(0.f);
 
-   std::shared_ptr<pointer_evt> start_event;
+   mws_sp<pointer_evt> start_event;
 };

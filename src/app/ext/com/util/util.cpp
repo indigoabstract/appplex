@@ -37,7 +37,7 @@ float interpolate_smooth_step(float intervalPosition, float start, float end, in
 	return (end * v) + (start * (1 - v));
 }
 
-//void draw_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor)
+//void draw_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
@@ -58,7 +58,7 @@ float interpolate_smooth_step(float intervalPosition, float start, float end, in
 //	g->fillRect(x - hbs, y - hbs, w + borderSize, borderSize);
 //}
 //
-//void fill_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
+//void fill_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
@@ -251,7 +251,7 @@ void slide_scrolling::update()
 	}
 }
 
-const shared_ptr<ms_linear_transition> slide_scrolling::get_transition()
+const mws_sp<ms_linear_transition> slide_scrolling::get_transition()
 {
 	return mslt;
 }
@@ -264,14 +264,14 @@ void slide_scrolling::set_scroll_dir(scroll_dir itype)
 
 ia_console::ia_console()
 {
-	//lines = shared_ptr<boost::circular_buffer<text_line> >(new boost::circular_buffer<text_line>(5));
+	//lines = mws_sp<boost::circular_buffer<text_line> >(new boost::circular_buffer<text_line>(5));
 }
 
 void ia_console::add_line(const std::string& iline)
 {
 	text_line line;
 
-	line.line = shared_ptr<string>(new string(iline));
+	line.line = mws_sp<string>(new string(iline));
 	//lines->push_back(line);
 }
 
@@ -280,7 +280,7 @@ void ia_console::clear()
 	//lines->clear();
 }
 
-//void ia_console::draw(shared_ptr<mws_camera> g)
+//void ia_console::draw(mws_sp<mws_camera> g)
 //{
 //	int size = lines->size();
 //	float text_dy = get_text_height(g->getFont(), "Mp");

@@ -17,7 +17,7 @@ public:
       e_btm_center,
    };
 
-   static std::shared_ptr<gfx_quad_2d> nwi(std::shared_ptr<gfx> i_gi = nullptr);
+   static mws_sp<gfx_quad_2d> nwi(mws_sp<gfx> i_gi = nullptr);
    void set_anchor(e_anchor_types ianchor_type);
    virtual float get_z() const;
    virtual void set_z(float i_z_position);
@@ -35,7 +35,7 @@ public:
    virtual void set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::vec2 lb);
 
 protected:
-   gfx_quad_2d(std::shared_ptr<gfx> i_gi);
+   gfx_quad_2d(mws_sp<gfx> i_gi);
 
    e_anchor_types anchor_type;
    float dx, dy;
@@ -49,7 +49,7 @@ protected:
 class gfx_2d_sprite : public gfx_quad_2d
 {
 public:
-   gfx_2d_sprite(std::shared_ptr<gfx> gfx_inst) : gfx_quad_2d(gfx_inst)
+   gfx_2d_sprite(mws_sp<gfx> gfx_inst) : gfx_quad_2d(gfx_inst)
    {
       sx_factor = sy_factor = 1.f;
       anchor_type = e_center;

@@ -28,11 +28,11 @@ class rec_dir_op_copy: public recursive_dir_op
 {
 public:
 	rec_dir_op_copy(bfs::path& isrc_path, bfs::path& idst_path);
-	void on_start(shared_ptr<dir_node> dir);
-	void on_finish(shared_ptr<dir_node> dir);
-	bool on_entering_dir(shared_ptr<dir_node> dir);
-	void on_leaving_dir(shared_ptr<dir_node> dir);
-	void apply_to_file(shared_ptr<file_node> file);
+	void on_start(mws_sp<dir_node> dir);
+	void on_finish(mws_sp<dir_node> dir);
+	bool on_entering_dir(mws_sp<dir_node> dir);
+	void on_leaving_dir(mws_sp<dir_node> dir);
+	void apply_to_file(mws_sp<file_node> file);
 
 private:
 	static void copy_path(bfs::path& srcPath, bfs::path& dstPath, bool isDirectory);
@@ -68,7 +68,7 @@ boost::program_options::options_description mod_cmd_recursive_copy::get_options_
 	return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -90,7 +90,7 @@ shared_ptr<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestrin
 		dstPath = srcPath / dstPath;
 	}
 
-	shared_ptr<long_operation> lop = shared_ptr<long_operation>(new long_op_recursive_copy(srcPath, dstPath));
+	mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_recursive_copy(srcPath, dstPath));
 
 	return lop;
 }
@@ -115,7 +115,7 @@ void long_op_recursive_copy::run()
 
 			utrx(untr("starting longOpRecursiveCopy from [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 
-			shared_ptr<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
+			mws_sp<directory_tree> dirtree = directory_tree::new_directory_tree(src_path);
 			rec_dir_op_copy rdo(src_path, dst_path);
 
 			dirtree->recursive_apply(rdo);
@@ -138,7 +138,7 @@ rec_dir_op_copy::rec_dir_op_copy(path& iSrcPath, path& iDstPath)
 	dst_path = iDstPath;
 }
 
-void rec_dir_op_copy::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_copy::on_start(mws_sp<dir_node> dir)
 {
 	file_count = directory_count = total_file_size = 0;
 
@@ -152,12 +152,12 @@ void rec_dir_op_copy::on_start(shared_ptr<dir_node> dir)
 	utrx(untr("copying files from directory [{0}] to [{1}]"), path2string(src_path), path2string(dst_path));
 }
 
-void rec_dir_op_copy::on_finish(shared_ptr<dir_node> dir)
+void rec_dir_op_copy::on_finish(mws_sp<dir_node> dir)
 {
 	utrx(untr("total directories [{0}], total files [{1}], total file size [{2}]"), directory_count, file_count, total_file_size);
 }
 
-bool rec_dir_op_copy::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_copy::on_entering_dir(mws_sp<dir_node> dir)
 {
 	path sp = src_path / dir->rel_dir_path;
 	path dp = dst_path / dir->rel_dir_path;
@@ -167,7 +167,7 @@ bool rec_dir_op_copy::on_entering_dir(shared_ptr<dir_node> dir)
 	return true;
 }
 
-void rec_dir_op_copy::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_copy::on_leaving_dir(mws_sp<dir_node> dir)
 {
 	path sp = src_path / dir->rel_dir_path;
 	path dp = dst_path / dir->rel_dir_path;
@@ -182,7 +182,7 @@ void rec_dir_op_copy::on_leaving_dir(shared_ptr<dir_node> dir)
 	directory_count++;
 }
 
-void rec_dir_op_copy::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_copy::apply_to_file(mws_sp<file_node> file)
 {
 	path sp = src_path / file->rel_file_path;
 	path dp = dst_path / file->rel_file_path;

@@ -73,7 +73,7 @@ namespace appplex_conf_ns
          }
       }
 
-      std::shared_ptr<conf_info> info;
+      mws_sp<conf_info> info;
    };
 }
 using namespace appplex_conf_ns;
@@ -97,7 +97,7 @@ boost::program_options::options_description mod_cmd_appplex_conf::get_options_de
    return desc;
 }
 
-shared_ptr<long_operation> mod_cmd_appplex_conf::run(const vector<unicodestring>& args)
+mws_sp<long_operation> mod_cmd_appplex_conf::run(const vector<unicodestring>& args)
 {
    bpo::options_description desc = get_options_description();
    bpo::variables_map vm;

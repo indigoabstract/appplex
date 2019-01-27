@@ -45,12 +45,12 @@ mws_video_params::mws_video_params()
 }
 
 
-std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
+mws_sp<mws_video_enc> mws_video_enc::nwi()
 {
    return std::make_shared<venc_ffmpeg>();
 }
 
-std::shared_ptr<mws_video_reencoder> mws_video_reencoder::nwi()
+mws_sp<mws_video_reencoder> mws_video_reencoder::nwi()
 {
    return mws_ffmpeg_reencoder::nwi();
 }
@@ -80,12 +80,12 @@ mws_video_params::mws_video_params()
 }
 
 
-std::shared_ptr<mws_video_enc> mws_video_enc::nwi()
+mws_sp<mws_video_enc> mws_video_enc::nwi()
 {
    return ios_video_enc::nwi();
 }
 
-std::shared_ptr<mws_video_reencoder> mws_video_reencoder::nwi()
+mws_sp<mws_video_reencoder> mws_video_reencoder::nwi()
 {
    return ios_video_reencoder::nwi();
 }

@@ -25,20 +25,20 @@ using std::string;
 
 namespace test_ffmpeg
 {
-   shared_ptr<vdec_ffmpeg> vdec;
-   shared_ptr<venc_ffmpeg> venc;
-   shared_ptr<mws_vdec_listener> vdec_listener;
-   shared_ptr<gfx_quad_2d> q2d_tex;
-	shared_ptr<gfx_quad_2d> q2d_rt_tex;
+   mws_sp<vdec_ffmpeg> vdec;
+   mws_sp<venc_ffmpeg> venc;
+   mws_sp<mws_vdec_listener> vdec_listener;
+   mws_sp<gfx_quad_2d> q2d_tex;
+	mws_sp<gfx_quad_2d> q2d_rt_tex;
 }
 
 using namespace test_ffmpeg;
 
 unit_test_ffmpeg::unit_test_ffmpeg() : unit(mws_stringify(UNIT_TEST_FFMPEG)) {}
 
-shared_ptr<unit_test_ffmpeg> unit_test_ffmpeg::nwi()
+mws_sp<unit_test_ffmpeg> unit_test_ffmpeg::nwi()
 {
-	return shared_ptr<unit_test_ffmpeg>(new unit_test_ffmpeg());
+	return mws_sp<unit_test_ffmpeg>(new unit_test_ffmpeg());
 }
 
 void unit_test_ffmpeg::init()
@@ -75,7 +75,7 @@ void unit_test_ffmpeg::load()
       class vdec_ffmpeg_listener_impl : public mws_vdec_listener
       {
       public:
-         virtual void on_start(std::shared_ptr<mws_video_params> i_params) override
+         virtual void on_start(mws_sp<mws_video_params> i_params) override
          {
             venc->set_video_path("test-vid.mp4");
             venc->start_encoding(*i_params, mws_vid_enc_method::e_enc_m0);
@@ -97,10 +97,10 @@ void unit_test_ffmpeg::load()
       vdec_listener = std::make_shared<mws_vdec_listener>();
    }
    {
-      shared_ptr<pfm_file> raf = pfm_file::get_inst("video.mp4");
+      mws_sp<pfm_file> raf = pfm_file::get_inst("video.mp4");
 
       std::string fpath = raf->get_full_path();
-      vdec = shared_ptr<vdec_ffmpeg>(new vdec_ffmpeg());
+      vdec = mws_sp<vdec_ffmpeg>(new vdec_ffmpeg());
       // get notified when a frame is ready and then encode it
       //vdec->set_listener(vdec_listener);
       vdec->set_video_path(fpath);
@@ -122,8 +122,8 @@ void unit_test_ffmpeg::load()
 
 void unit_test_ffmpeg::update_view(int update_count)
 {
-	shared_ptr<mws_media_info> mi = vdec->get_media_info();
-	shared_ptr<gfx_tex> tex = mi->get_current_frame();
+	mws_sp<mws_media_info> mi = vdec->get_media_info();
+	mws_sp<gfx_tex> tex = mi->get_current_frame();
 	float p = float(mi->get_current_frame_index()) / mi->get_frame_count();
 	float tw = (float)mi->get_width();
    float th = (float)tex->get_height();
@@ -150,17 +150,17 @@ void unit_test_ffmpeg::update_view(int update_count)
 	mws_report_gfx_errs();
 }
 
-void unit_test_ffmpeg::receive(shared_ptr<mws_dp> idp)
+void unit_test_ffmpeg::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
 		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 		}
 		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 			if(ke->get_type() != key_evt::KE_RELEASED)
 			{

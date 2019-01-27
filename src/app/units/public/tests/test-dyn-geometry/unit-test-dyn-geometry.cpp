@@ -79,7 +79,7 @@ float clip(float x, float min, float max)
 	return x;
 }
 
-shared_ptr<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, float aveRadius, float irregularity, float spikeyness, int numVerts)
+mws_sp<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, float aveRadius, float irregularity, float spikeyness, int numVerts)
 {
 	//Start with the centre of the polygon at ctrX, ctrY, 
 	//then creates the polygon by sampling points on a circle around the centre.
@@ -120,7 +120,7 @@ shared_ptr<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, floa
 	}
 
 	// now generate the points
-	shared_ptr<std::vector<glm::vec2> > point_list(new std::vector<glm::vec2>());
+	mws_sp<std::vector<glm::vec2> > point_list(new std::vector<glm::vec2>());
 	std::vector<glm::vec2>& points = *point_list;
 	float angle = random.range_float(0, 2 * glm::pi<float>());
 
@@ -141,7 +141,7 @@ shared_ptr<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, floa
 class mws_select_button : public gfx_plane
 {
 public:
-	mws_select_button(shared_ptr<unit_test_dyn_geometry> iunit, int ibutton_id, std::vector<std::string>& istate_list)
+	mws_select_button(mws_sp<unit_test_dyn_geometry> iunit, int ibutton_id, std::vector<std::string>& istate_list)
 	{
 		unit = iunit;
 		button_id = ibutton_id;
@@ -151,7 +151,7 @@ public:
 		is_init = false;
 	}
 
-	shared_ptr<unit_test_dyn_geometry> get_unit()
+	mws_sp<unit_test_dyn_geometry> get_unit()
 	{
 		return unit.lock();
 	}
@@ -194,7 +194,7 @@ public:
 
 	void next_state()
 	{
-		mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
+		mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_mws_sp());
 
 		state_id++;
 		state_id %= state_list.size();
@@ -206,7 +206,7 @@ public:
 		if (!is_init)
 		{
 			is_init = true;
-			mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_shared_ptr());
+			mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_mws_sp());
 
 			inst[MP_SHADER_NAME] = "basic-tex-shader";
 			inst[MP_BLENDING] = MV_ALPHA;
@@ -222,34 +222,34 @@ public:
 	float x_percent_size, y_percent_size;
 	std::vector<std::string> state_list;
 	bool is_init;
-	weak_ptr<unit_test_dyn_geometry> unit;
+	mws_wp<unit_test_dyn_geometry> unit;
 };
 
 
 class unit_test_dyn_geometry_impl
 {
 public:
-	unit_test_dyn_geometry_impl(shared_ptr<unit_test_dyn_geometry> iunit)
+	unit_test_dyn_geometry_impl(mws_sp<unit_test_dyn_geometry> iunit)
 	{
 		unit = iunit;
 		recalc_points = false;
-		cm = shared_ptr<curve_mesh>(new curve_mesh());
+		cm = mws_sp<curve_mesh>(new curve_mesh());
 
-		shared_ptr<mws_select_button> b;
+		mws_sp<mws_select_button> b;
 		std::vector<std::string> state_list;
 		float y = 0.01;
 		float off = 0.14;
 
 		state_list.push_back("wireframe_off");
 		state_list.push_back("wireframe_on");
-		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 0, state_list));
+		b = mws_sp<mws_select_button>(new mws_select_button(iunit, 0, state_list));
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
 
 		state_list.clear();
 		state_list.push_back("touch_points");
 		state_list.push_back("ncs_points");
-		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 1, state_list));
+		b = mws_sp<mws_select_button>(new mws_select_button(iunit, 1, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -257,7 +257,7 @@ public:
 		state_list.clear();
 		state_list.push_back("mobile");
 		state_list.push_back("fixed");
-		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 2, state_list));
+		b = mws_sp<mws_select_button>(new mws_select_button(iunit, 2, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -266,7 +266,7 @@ public:
 		state_list.push_back("vertex-arrays");
 		state_list.push_back("vertex-buffer-objects");
 		state_list.push_back("unsynchronized");
-		b = shared_ptr<mws_select_button>(new mws_select_button(iunit, 3, state_list));
+		b = mws_sp<mws_select_button>(new mws_select_button(iunit, 3, state_list));
 		y += off;
 		b->set_dim(0.01, y, 0.2, 0.1);
 		button_list.push_back(b);
@@ -279,7 +279,7 @@ public:
 		//calc_points();
 	}
 
-	shared_ptr<unit_test_dyn_geometry> get_unit()
+	mws_sp<unit_test_dyn_geometry> get_unit()
 	{
 		return unit.lock();
 	}
@@ -331,7 +331,7 @@ public:
 
 		for (int k = 0; k < button_list.size(); k++)
 		{
-			shared_ptr<mws_select_button> btn = button_list[k];
+			mws_sp<mws_select_button> btn = button_list[k];
 
 			if (btn->is_hit(ipoint.x, ipoint.y))
 			{
@@ -421,24 +421,24 @@ public:
 		return true;
 	}
 
-	shared_ptr<gfx_plane> q2d;
-	shared_ptr<gfx_shader> texture_display;
-	std::vector<shared_ptr<mws_select_button> > button_list;
+	mws_sp<gfx_plane> q2d;
+	mws_sp<gfx_shader> texture_display;
+	std::vector<mws_sp<mws_select_button> > button_list;
 	bool recalc_points;
-	shared_ptr<curve_mesh> cm;
+	mws_sp<curve_mesh> cm;
 	std::vector<pointer_evt::touch_point> point_list;
-	shared_ptr<gfx_camera> persp_cam;
-	shared_ptr<mws_camera> ortho_cam;
-	shared_ptr<std::vector<glm::vec2> > poly;
-	weak_ptr<unit_test_dyn_geometry> unit;
+	mws_sp<gfx_camera> persp_cam;
+	mws_sp<mws_camera> ortho_cam;
+	mws_sp<std::vector<glm::vec2> > poly;
+	mws_wp<unit_test_dyn_geometry> unit;
 };
 
 
 unit_test_dyn_geometry::unit_test_dyn_geometry() : unit(mws_stringify(UNIT_TEST_DYN_GEOMETRY)) {}
 
-shared_ptr<unit_test_dyn_geometry> unit_test_dyn_geometry::nwi()
+mws_sp<unit_test_dyn_geometry> unit_test_dyn_geometry::nwi()
 {
-	return shared_ptr<unit_test_dyn_geometry>(new unit_test_dyn_geometry());
+	return mws_sp<unit_test_dyn_geometry>(new unit_test_dyn_geometry());
 }
 
 void unit_test_dyn_geometry::init()
@@ -449,7 +449,7 @@ void unit_test_dyn_geometry::init()
 
 void unit_test_dyn_geometry::load()
 {
-	p = shared_ptr<unit_test_dyn_geometry_impl>(new unit_test_dyn_geometry_impl(static_pointer_cast<unit_test_dyn_geometry>(get_smtp_instance())));
+	p = mws_sp<unit_test_dyn_geometry_impl>(new unit_test_dyn_geometry_impl(static_pointer_cast<unit_test_dyn_geometry>(get_smtp_instance())));
 
 	float ctrX = 600;
 	float ctrY = 310;
@@ -490,7 +490,7 @@ void unit_test_dyn_geometry::load()
 	r_cm[MP_WIREFRAME_MODE] = MV_WF_NONE;
 
 	p->texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
-	p->q2d = shared_ptr<gfx_plane>(new gfx_plane());
+	p->q2d = mws_sp<gfx_plane>(new gfx_plane());
 	gfx_plane& rq2d = *p->q2d;
 	rq2d.set_dimensions(2, 2);
 	rq2d[MP_CULL_BACK] = false;
@@ -524,7 +524,7 @@ bool unit_test_dyn_geometry::update()
 		p->calc_points();
 	}
 
-	shared_ptr<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
+	mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
 
 	if (atlas && atlas->is_valid())
 	{
@@ -549,13 +549,13 @@ bool unit_test_dyn_geometry::update()
 	return unit::update();
 }
 
-void unit_test_dyn_geometry::receive(shared_ptr<mws_dp> idp)
+void unit_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 {
 	if (!idp->is_processed())
 	{
 		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			switch (ts->get_type())
@@ -572,7 +572,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<mws_dp> idp)
 
 			case touch_sym_evt::TS_MOUSE_WHEEL:
 			{
-				shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
 				break;
 			}
@@ -602,7 +602,7 @@ void unit_test_dyn_geometry::receive(shared_ptr<mws_dp> idp)
 		}
 		else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 			if (ke->get_type() != key_evt::KE_RELEASED)
 			{

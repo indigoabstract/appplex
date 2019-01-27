@@ -10,15 +10,15 @@
 
 unit_test_mws::unit_test_mws() : unit(mws_stringify(UNIT_TEST_MWS)) {}
 
-shared_ptr<unit_test_mws> unit_test_mws::nwi()
+mws_sp<unit_test_mws> unit_test_mws::nwi()
 {
-	return shared_ptr<unit_test_mws>(new unit_test_mws());
+	return mws_sp<unit_test_mws>(new unit_test_mws());
 }
 
 void unit_test_mws::init_mws()
 {
-	shared_ptr<mws_list_menu_page> up;
-	shared_ptr<mws_list_menu_model> ulmm;
+	mws_sp<mws_list_menu_page> up;
+	mws_sp<mws_list_menu_model> ulmm;
 
 	{
 		up = mws_list_menu_page::nwi(mws_root, "p0");

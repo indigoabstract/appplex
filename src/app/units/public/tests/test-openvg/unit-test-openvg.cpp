@@ -7,9 +7,9 @@
 
 unit_test_openvg::unit_test_openvg() : unit(mws_stringify(UNIT_TEST_OPENVG)) {}
 
-shared_ptr<unit_test_openvg> unit_test_openvg::nwi()
+mws_sp<unit_test_openvg> unit_test_openvg::nwi()
 {
-	return shared_ptr<unit_test_openvg>(new unit_test_openvg());
+	return mws_sp<unit_test_openvg>(new unit_test_openvg());
 }
 
 void unit_test_openvg::init()

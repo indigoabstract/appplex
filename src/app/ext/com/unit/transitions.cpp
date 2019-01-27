@@ -21,9 +21,9 @@ transition_evt::transition_evt(transition_evt_types itype) : mws_dp(get_type_nam
 	set_type(itype);
 }
 
-shared_ptr<transition_evt> transition_evt::nwi(transition_evt_types itype)
+mws_sp<transition_evt> transition_evt::nwi(transition_evt_types itype)
 {
-	return shared_ptr<transition_evt>(new transition_evt(itype));
+	return mws_sp<transition_evt>(new transition_evt(itype));
 }
 
 const std::string& transition_evt::get_type_name(transition_evt::transition_evt_types itype)
@@ -170,9 +170,9 @@ void linear_transition::start(uint32 offset)
 
 ms_linear_transition::ms_linear_transition() : linear_transition(1){}
 
-shared_ptr<ms_linear_transition> ms_linear_transition::nwi(shared_ptr<ms_transition_data> td)
+mws_sp<ms_linear_transition> ms_linear_transition::nwi(mws_sp<ms_transition_data> td)
 {
-	shared_ptr<ms_linear_transition> mslt(new ms_linear_transition());
+	mws_sp<ms_linear_transition> mslt(new ms_linear_transition());
 
 	mslt->duration = 0;
 
@@ -185,7 +185,7 @@ shared_ptr<ms_linear_transition> ms_linear_transition::nwi(shared_ptr<ms_transit
 	return mslt;
 }
 
-shared_ptr<ms_linear_transition> ms_linear_transition::get_instance()
+mws_sp<ms_linear_transition> ms_linear_transition::get_instance()
 {
 	return shared_from_this();
 }
@@ -205,7 +205,7 @@ int ms_linear_transition::length()const
 	return transitions.size();
 }
 
-const shared_ptr<linear_transition> ms_linear_transition::get_transition_at(int index)const
+const mws_sp<linear_transition> ms_linear_transition::get_transition_at(int index)const
 {
 	return transitions[index];
 }
@@ -246,7 +246,7 @@ void ms_linear_transition::update()
 	}
 
 	int tms = get_elapsed_time();
-	shared_ptr<linear_transition> tr = transitions[interval_idx];
+	mws_sp<linear_transition> tr = transitions[interval_idx];
 
 	tr->update();
 
@@ -287,7 +287,7 @@ void ms_linear_transition::update()
 	}
 }
 
-shared_ptr<mws_sender> ms_linear_transition::sender_inst()
+mws_sp<mws_sender> ms_linear_transition::sender_inst()
 {
 	return get_instance();
 }
@@ -301,9 +301,9 @@ void ms_linear_transition::reset()
 
 ms_transition_data::ms_transition_data(){}
 
-shared_ptr<ms_transition_data> ms_transition_data::new_transition_data(const vector<shared_ptr<linear_transition> >& itransitions)
+mws_sp<ms_transition_data> ms_transition_data::new_transition_data(const vector<mws_sp<linear_transition> >& itransitions)
 {
-	shared_ptr<ms_transition_data> td(new ms_transition_data());
+	mws_sp<ms_transition_data> td(new ms_transition_data());
 
 	for(auto t : itransitions)
 	{
@@ -313,14 +313,14 @@ shared_ptr<ms_transition_data> ms_transition_data::new_transition_data(const vec
 	return td;
 }
 
-shared_ptr<ms_transition_data> ms_transition_data::new_position_data(const vector<int>& tposition)
+mws_sp<ms_transition_data> ms_transition_data::new_position_data(const vector<int>& tposition)
 {
-	shared_ptr<ms_transition_data> td(new ms_transition_data());
+	mws_sp<ms_transition_data> td(new ms_transition_data());
 	int deltat = 0;
 
 	for(int position : tposition)
 	{
-		shared_ptr<linear_transition> lt(new linear_transition(position - deltat));
+		mws_sp<linear_transition> lt(new linear_transition(position - deltat));
 
 		td->transitions.push_back(lt);
 		deltat = position;
@@ -329,15 +329,15 @@ shared_ptr<ms_transition_data> ms_transition_data::new_position_data(const vecto
 	return td;
 }
 
-shared_ptr<ms_transition_data> ms_transition_data::new_position_data(const int tposition[], int tlength)
+mws_sp<ms_transition_data> ms_transition_data::new_position_data(const int tposition[], int tlength)
 {
-	shared_ptr<ms_transition_data> td(new ms_transition_data());
+	mws_sp<ms_transition_data> td(new ms_transition_data());
 	int deltat = 0;
 
 	for(int k = 0; k < tlength; k++)
 	{
 		int position = tposition[k];
-		shared_ptr<linear_transition> lt(new linear_transition(position - deltat));
+		mws_sp<linear_transition> lt(new linear_transition(position - deltat));
 
 		td->transitions.push_back(lt);
 		deltat = position;
@@ -346,13 +346,13 @@ shared_ptr<ms_transition_data> ms_transition_data::new_position_data(const int t
 	return td;
 }
 
-shared_ptr<ms_transition_data> ms_transition_data::new_duration_data(const vector<int>& tduration)
+mws_sp<ms_transition_data> ms_transition_data::new_duration_data(const vector<int>& tduration)
 {
-	shared_ptr<ms_transition_data> td(new ms_transition_data());
+	mws_sp<ms_transition_data> td(new ms_transition_data());
 
 	for(int duration : tduration)
 	{
-		shared_ptr<linear_transition> lt(new linear_transition(duration));
+		mws_sp<linear_transition> lt(new linear_transition(duration));
 
 		td->transitions.push_back(lt);
 	}
@@ -360,13 +360,13 @@ shared_ptr<ms_transition_data> ms_transition_data::new_duration_data(const vecto
 	return td;
 }
 
-shared_ptr<ms_transition_data> ms_transition_data::new_duration_data(const int tduration[], int tlength)
+mws_sp<ms_transition_data> ms_transition_data::new_duration_data(const int tduration[], int tlength)
 {
-	shared_ptr<ms_transition_data> td(new ms_transition_data());
+	mws_sp<ms_transition_data> td(new ms_transition_data());
 
 	for(int k = 0; k < tlength; k++)
 	{
-		shared_ptr<linear_transition> lt(new linear_transition(tduration[k]));
+		mws_sp<linear_transition> lt(new linear_transition(tduration[k]));
 
 		td->transitions.push_back(lt);
 	}

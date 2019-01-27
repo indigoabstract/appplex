@@ -10,9 +10,9 @@
 
 using gfx_vxo_util::set_mesh_data;
 
-std::shared_ptr<gfx_quad_2d> gfx_quad_2d::nwi(std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_quad_2d> gfx_quad_2d::nwi(mws_sp<gfx> i_gi)
 {
-   return std::shared_ptr<gfx_quad_2d>(new gfx_quad_2d(i_gi));
+   return mws_sp<gfx_quad_2d>(new gfx_quad_2d(i_gi));
 }
 
 void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
@@ -119,7 +119,7 @@ void gfx_quad_2d::set_h_flip(bool i_flip)
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 void gfx_quad_2d::set_v_flip(bool iv_flip)
@@ -153,7 +153,7 @@ void gfx_quad_2d::set_v_flip(bool iv_flip)
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 void gfx_quad_2d::set_dimensions(float idx, float idy, float i_z_val)
@@ -176,7 +176,7 @@ void gfx_quad_2d::set_dimensions(float idx, float idy, float i_z_val)
 
    dx = idx;
    dy = idy;
-   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 void gfx_quad_2d::set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::vec2 lb)
@@ -195,10 +195,10 @@ void gfx_quad_2d::set_tex_coord(glm::vec2 lt, glm::vec2 rt, glm::vec2 rb, glm::v
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_shared_ptr()));
+   set_mesh_data((const uint8*)vx_data.data(), vx_data.size() * sizeof(vx_fmt_p3f_n3f_t2f), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
-gfx_quad_2d::gfx_quad_2d(std::shared_ptr<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"), i_gi)
+gfx_quad_2d::gfx_quad_2d(mws_sp<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord"), i_gi)
 {
    anchor_type = e_top_left;
    tr = glm::vec2(0.f);

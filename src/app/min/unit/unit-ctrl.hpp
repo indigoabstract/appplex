@@ -13,7 +13,7 @@ class gfx;
 class unit_ctrl
 {
 public:
-   static std::shared_ptr<unit_ctrl> inst();
+   static mws_sp<unit_ctrl> inst();
    // returns a shared pointer to the current app
    static mws_sp<unit> get_app();
    bool back_evt();
@@ -29,24 +29,24 @@ public:
    void pause();
    void resume();
    void resize_app(int i_width, int i_height);
-   void pointer_action(std::shared_ptr<pointer_evt> ite);
+   void pointer_action(mws_sp<pointer_evt> ite);
    void key_action(key_actions iaction_type, int ikey);
-   std::shared_ptr<unit> get_current_unit();
-   void set_next_unit(std::shared_ptr<unit> iunit);
+   mws_sp<unit> get_current_unit();
+   void set_next_unit(mws_sp<unit> iunit);
    void destroy_app();
    void start_app();
-   std::shared_ptr<unit> get_app_start_unit();
+   mws_sp<unit> get_app_start_unit();
    void set_gfx_available(bool iis_gfx_available);
 
 private:
    unit_ctrl();
 
-   void set_current_unit(std::shared_ptr<unit> unit0);
+   void set_current_unit(mws_sp<unit> unit0);
 
-   std::weak_ptr<unit> crt_unit;
-   std::weak_ptr<unit> next_unit;
-   std::shared_ptr<unit_list> ul;
+   mws_wp<unit> crt_unit;
+   mws_wp<unit> next_unit;
+   mws_sp<unit_list> ul;
    bool exit_app_on_next_run;
    bool app_started;
-   static std::shared_ptr<unit_ctrl> instance;
+   static mws_sp<unit_ctrl> instance;
 };

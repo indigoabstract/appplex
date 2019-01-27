@@ -31,10 +31,10 @@ public:
 		last_time = 0;
 	}
 
-	shared_ptr<gfx_plane> q2d;
-	shared_ptr<gfx_shader> texture_display;
+	mws_sp<gfx_plane> q2d;
+	mws_sp<gfx_shader> texture_display;
 	uint32 last_time;
-	shared_ptr<mws_font> f;
+	mws_sp<mws_font> f;
 	std::string tx;
 
 };
@@ -42,9 +42,9 @@ public:
 
 unit_test_freetype_gl::unit_test_freetype_gl() : unit(mws_stringify(UNIT_TEST_FREETYPE_GL)) {}
 
-shared_ptr<unit_test_freetype_gl> unit_test_freetype_gl::nwi()
+mws_sp<unit_test_freetype_gl> unit_test_freetype_gl::nwi()
 {
-	return shared_ptr<unit_test_freetype_gl>(new unit_test_freetype_gl());
+	return mws_sp<unit_test_freetype_gl>(new unit_test_freetype_gl());
 }
 
 void unit_test_freetype_gl::load()
@@ -52,10 +52,10 @@ void unit_test_freetype_gl::load()
    mws_cam->clear_color = true;
    mws_cam->clear_color_value = gfx_color::colors::indigo;
   
-   p = shared_ptr<unit_test_freetype_gl_impl>(new unit_test_freetype_gl_impl());
+   p = mws_sp<unit_test_freetype_gl_impl>(new unit_test_freetype_gl_impl());
 
 	p->texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
-	p->q2d = shared_ptr<gfx_plane>(new gfx_plane());
+	p->q2d = mws_sp<gfx_plane>(new gfx_plane());
 	gfx_plane& rq2d = *p->q2d;
 	rq2d.set_dimensions(2, 2);
 	rq2d[MP_CULL_BACK] = false;
@@ -70,7 +70,7 @@ void unit_test_freetype_gl::load()
 
 bool unit_test_freetype_gl::update()
 {
-	shared_ptr<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
+	mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
 
 	if (atlas && atlas->is_valid())
 	{
@@ -114,7 +114,7 @@ bool unit_test_freetype_gl::update()
 	return unit::update();
 }
 
-void unit_test_freetype_gl::receive(shared_ptr<mws_dp> idp)
+void unit_test_freetype_gl::receive(mws_sp<mws_dp> idp)
 {
 }
 

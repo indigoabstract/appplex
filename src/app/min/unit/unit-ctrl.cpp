@@ -11,7 +11,7 @@
 #include <cstdlib>
 
 
-shared_ptr<unit_ctrl> unit_ctrl::instance;
+mws_sp<unit_ctrl> unit_ctrl::instance;
 
 unit_ctrl::unit_ctrl()
 {
@@ -19,11 +19,11 @@ unit_ctrl::unit_ctrl()
    app_started = false;
 }
 
-shared_ptr<unit_ctrl> unit_ctrl::inst()
+mws_sp<unit_ctrl> unit_ctrl::inst()
 {
    if (!instance)
    {
-      instance = shared_ptr<unit_ctrl>(new unit_ctrl());
+      instance = mws_sp<unit_ctrl>(new unit_ctrl());
    }
 
    return instance;
@@ -163,12 +163,12 @@ void unit_ctrl::update()
    snd::update();
 #endif // MOD_SND
 
-   shared_ptr<unit> u = get_current_unit();
+   mws_sp<unit> u = get_current_unit();
    mws_assert(u != nullptr);
 
 #ifndef SINGLE_UNIT_BUILD
 
-   shared_ptr<unit> nu = next_unit.lock();
+   mws_sp<unit> nu = next_unit.lock();
 
    if (nu && nu != u)
    {
@@ -183,6 +183,7 @@ void unit_ctrl::update()
 
 void unit_ctrl::pause()
 {
+   //mws_log::i()->push("unit_ctrl::pause()");
    auto u = get_current_unit();
 
    if (u)
@@ -193,6 +194,7 @@ void unit_ctrl::pause()
 
 void unit_ctrl::resume()
 {
+   //mws_log::i()->push("unit_ctrl::resume()");
    auto u = get_current_unit();
 
    if (u)
@@ -219,6 +221,7 @@ void unit_ctrl::resize_app(int i_width, int i_height)
 
       if (u && u->is_init())
       {
+         //mws_log::i()->push("unit_ctrl::resize_app()");
          u->on_resize();
       }
    }
@@ -226,11 +229,11 @@ void unit_ctrl::resize_app(int i_width, int i_height)
 #endif
 }
 
-void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
+void unit_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 {
 #ifdef MOD_GFX
 
-   shared_ptr<unit> u = get_current_unit();
+   mws_sp<unit> u = get_current_unit();
 
    if (u)
    {
@@ -242,7 +245,7 @@ void unit_ctrl::pointer_action(std::shared_ptr<pointer_evt> ite)
 
 void unit_ctrl::key_action(key_actions iaction_type, int ikey)
 {
-   shared_ptr<unit> u = get_current_unit();
+   mws_sp<unit> u = get_current_unit();
 
    if (u)
    {
@@ -259,12 +262,12 @@ void unit_ctrl::key_action(key_actions iaction_type, int ikey)
    }
 }
 
-shared_ptr<unit> unit_ctrl::get_current_unit()
+mws_sp<unit> unit_ctrl::get_current_unit()
 {
    return crt_unit.lock();
 }
 
-void unit_ctrl::set_next_unit(std::shared_ptr<unit> iunit)
+void unit_ctrl::set_next_unit(mws_sp<unit> iunit)
 {
    next_unit = iunit;
 }
@@ -274,12 +277,13 @@ void unit_ctrl::start_app()
    auto u = app_units_setup::next_crt_unit.lock();
 
    unit_ctrl::set_current_unit(u);
+   //mws_log::i()->push("unit_ctrl::start_app()");
    u->on_resize();
 
    app_started = true;
 }
 
-shared_ptr<unit> unit_ctrl::get_app_start_unit()
+mws_sp<unit> unit_ctrl::get_app_start_unit()
 {
    auto u = app_units_setup::next_crt_unit.lock();
 
@@ -296,7 +300,7 @@ void unit_ctrl::set_gfx_available(bool iis_gfx_available)
    pfm::data.gfx_available = iis_gfx_available;
 }
 
-void unit_ctrl::set_current_unit(shared_ptr<unit> unit0)
+void unit_ctrl::set_current_unit(mws_sp<unit> unit0)
 {
    if (unit0)
    {

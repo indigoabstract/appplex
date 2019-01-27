@@ -7,7 +7,7 @@
 #include "pfm.hpp"
 
 
-std::vector< std::vector<std::shared_ptr<musical_note> > > musical_note::note_table;
+std::vector< std::vector<mws_sp<musical_note> > > musical_note::note_table;
 std::vector<musical_note::note_ids> musical_note::note_list = { c_note, c_sharp, d_note, d_sharp, e_note, f_note, f_sharp, g_note, g_sharp, a_note, a_sharp, b_note };
 std::vector<std::string> musical_note::note_names = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 std::vector<float> musical_note::the_8th_octave_pitches = { 4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902 };
@@ -19,7 +19,7 @@ musical_note::musical_note(note_ids inote, int ioctave)
 	octave = ioctave;
 }
 
-std::shared_ptr<musical_note> musical_note::get_note(note_ids inote, int ioctave)
+mws_sp<musical_note> musical_note::get_note(note_ids inote, int ioctave)
 {
 	if (ioctave >= 0 && ioctave < NUMBER_OF_OCTAVES);
 	{
@@ -30,12 +30,12 @@ std::shared_ptr<musical_note> musical_note::get_note(note_ids inote, int ioctave
 
 			for (int k = 0; k < NUMBER_OF_OCTAVES; k++)
 			{
-				std::vector<std::shared_ptr<musical_note> >& octave_notes = note_table[k];
+				std::vector<mws_sp<musical_note> >& octave_notes = note_table[k];
 				octave_notes.resize(NUMBER_OF_NOTES);
 
 				for (int i = 0; i < NUMBER_OF_NOTES; i++)
 				{
-					octave_notes[i] = std::shared_ptr<musical_note>(new musical_note(note_list[i], k));
+					octave_notes[i] = mws_sp<musical_note>(new musical_note(note_list[i], k));
 				}
 			}
 		}
@@ -82,12 +82,12 @@ int musical_note::get_octave()
 	return octave;
 }
 
-bool musical_note::equal_to(std::shared_ptr<musical_note> inote)
+bool musical_note::equal_to(mws_sp<musical_note> inote)
 {
 	return note_id == inote->note_id && octave == inote->octave;
 }
 
-bool musical_note::lower_than(std::shared_ptr<musical_note> inote)
+bool musical_note::lower_than(mws_sp<musical_note> inote)
 {
 	if (octave < inote->octave)
 	{
@@ -101,12 +101,12 @@ bool musical_note::lower_than(std::shared_ptr<musical_note> inote)
 	return false;
 }
 
-bool musical_note::higher_than(std::shared_ptr<musical_note> inote)
+bool musical_note::higher_than(mws_sp<musical_note> inote)
 {
 	return !equal_to(inote) && !lower_than(inote);
 }
 
-std::shared_ptr<musical_note> musical_note::next_note()
+mws_sp<musical_note> musical_note::next_note()
 {
 	int t_octave = octave;
 	note_ids t_note = note_id;
@@ -131,7 +131,7 @@ std::shared_ptr<musical_note> musical_note::next_note()
 	return musical_note::get_note(t_note, t_octave);
 }
 
-std::shared_ptr<musical_note> musical_note::prev_note()
+mws_sp<musical_note> musical_note::prev_note()
 {
 	int t_octave = octave;
 	note_ids t_note = note_id;
@@ -156,9 +156,9 @@ std::shared_ptr<musical_note> musical_note::prev_note()
 	return musical_note::get_note(t_note, t_octave);
 }
 
-std::shared_ptr<musical_note> musical_note::get_lower_note(int itone_count)
+mws_sp<musical_note> musical_note::get_lower_note(int itone_count)
 {
-	std::shared_ptr<musical_note> nr = get_note(note_id, octave);
+	mws_sp<musical_note> nr = get_note(note_id, octave);
 
 	for (int k = 0; k < itone_count && nr; k++)
 	{
@@ -168,9 +168,9 @@ std::shared_ptr<musical_note> musical_note::get_lower_note(int itone_count)
 	return nr;
 }
 
-std::shared_ptr<musical_note> musical_note::get_higher_note(int itone_count)
+mws_sp<musical_note> musical_note::get_higher_note(int itone_count)
 {
-	std::shared_ptr<musical_note> nr = get_note(note_id, octave);
+	mws_sp<musical_note> nr = get_note(note_id, octave);
 
 	for (int k = 0; k < itone_count && nr; k++)
 	{
@@ -180,7 +180,7 @@ std::shared_ptr<musical_note> musical_note::get_higher_note(int itone_count)
 	return nr;
 }
 
-int musical_note::tones_between(std::shared_ptr<musical_note> inote)
+int musical_note::tones_between(mws_sp<musical_note> inote)
 {
 	int delta = 0;
 

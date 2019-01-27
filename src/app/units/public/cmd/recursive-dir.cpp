@@ -14,24 +14,24 @@ using namespace boost::algorithm;
 using namespace boost::filesystem;
 
 
-void recursive_dir_op::on_start(shared_ptr<dir_node> dir)
+void recursive_dir_op::on_start(mws_sp<dir_node> dir)
 {
 }
 
-void recursive_dir_op::on_finish(shared_ptr<dir_node> dir)
+void recursive_dir_op::on_finish(mws_sp<dir_node> dir)
 {
 }
 
-bool recursive_dir_op::on_entering_dir(shared_ptr<dir_node> dir)
+bool recursive_dir_op::on_entering_dir(mws_sp<dir_node> dir)
 {
 	return true;
 }
 
-void recursive_dir_op::on_leaving_dir(shared_ptr<dir_node> dir)
+void recursive_dir_op::on_leaving_dir(mws_sp<dir_node> dir)
 {
 }
 
-void recursive_dir_op::apply_to_file(shared_ptr<file_node> file)
+void recursive_dir_op::apply_to_file(mws_sp<file_node> file)
 {
 }
 
@@ -40,32 +40,32 @@ rdo_list_files::rdo_list_files()
 {
 }
 
-void rdo_list_files::on_start(shared_ptr<dir_node> dir)
+void rdo_list_files::on_start(mws_sp<dir_node> dir)
 {
 	file_count = directory_count = total_file_size = 0;
 	utrx(untr("started file list for directory [{}]"), path2string(dir->abs_dir_path));
 }
 
-void rdo_list_files::on_finish(shared_ptr<dir_node> dir)
+void rdo_list_files::on_finish(mws_sp<dir_node> dir)
 {
 	utrx(untr("finished file list for directory [{}]"), path2string(dir->abs_dir_path));
 	utrx(untr("total directories [{0}], total files [{1}], total file size [{2}]"), directory_count, file_count, total_file_size);
 }
 
-bool rdo_list_files::on_entering_dir(shared_ptr<dir_node> dir)
+bool rdo_list_files::on_entering_dir(mws_sp<dir_node> dir)
 {
 	utrx(untr("directory [{}]\n["), path2string(dir->rel_dir_path));
 
 	return true;
 }
 
-void rdo_list_files::on_leaving_dir(shared_ptr<dir_node> dir)
+void rdo_list_files::on_leaving_dir(mws_sp<dir_node> dir)
 {
 	utrx(untr("]"));
 	directory_count++;
 }
 
-void rdo_list_files::apply_to_file(shared_ptr<file_node> file)
+void rdo_list_files::apply_to_file(mws_sp<file_node> file)
 {
 	utrx(untr("[{}]"), path2string(file->rel_file_path.filename()));
 	file_count++;
@@ -77,22 +77,22 @@ directory_tree::directory_tree()
 {
 }
 
-shared_ptr<directory_tree> directory_tree::new_directory_tree(path& iroot_path, const std::vector<unicodestring>& iexclude_path)
+mws_sp<directory_tree> directory_tree::new_directory_tree(path& iroot_path, const std::vector<unicodestring>& iexclude_path)
 {
 	if (!exists(iroot_path))
 	{
 		utrx(untr("error [{} doesn't exist]"), iroot_path.native());
-		return shared_ptr<directory_tree>();
+		return mws_sp<directory_tree>();
 	}
 
 	if (!is_directory(iroot_path))
 	{
 		utrx(untr("error [{} is not a directory]"), iroot_path.native());
-		return shared_ptr<directory_tree>();
+		return mws_sp<directory_tree>();
 	}
 
-	shared_ptr<directory_tree> d(new directory_tree());
-	shared_ptr<dir_node> rootNode(new dir_node());
+	mws_sp<directory_tree> d(new directory_tree());
+	mws_sp<dir_node> rootNode(new dir_node());
 
 	rootNode->abs_dir_path = iroot_path;
 	rootNode->root = rootNode;
@@ -126,16 +126,16 @@ void directory_tree::recursive_apply(recursive_dir_op& rdo)
 	rdo.on_finish(root_node);
 }
 
-shared_ptr<dir_node> directory_tree::get_root_node()
+mws_sp<dir_node> directory_tree::get_root_node()
 {
 	return root_node;
 }
 
-void directory_tree::recursive_apply(shared_ptr<dir_node> dtn, recursive_dir_op& rdo)
+void directory_tree::recursive_apply(mws_sp<dir_node> dtn, recursive_dir_op& rdo)
 {
 	for (int k = 0; k < dtn->directories.size(); k++)
 	{
-		shared_ptr<dir_node> rd = dtn->directories[k];
+		mws_sp<dir_node> rd = dtn->directories[k];
 
 		bool apply = rdo.on_entering_dir(rd);
 
@@ -149,13 +149,13 @@ void directory_tree::recursive_apply(shared_ptr<dir_node> dtn, recursive_dir_op&
 
 	for (int k = 0; k < dtn->files.size(); k++)
 	{
-		shared_ptr<file_node> fn = dtn->files[k];
+		mws_sp<file_node> fn = dtn->files[k];
 
 		rdo.apply_to_file(fn);
 	}
 }
 
-void directory_tree::recursive_read(shared_ptr<directory_tree> dt, shared_ptr<dir_node> dtn, directory_iterator& di)
+void directory_tree::recursive_read(mws_sp<directory_tree> dt, mws_sp<dir_node> dtn, directory_iterator& di)
 {
 	static directory_iterator end_iter;
 
@@ -163,14 +163,14 @@ void directory_tree::recursive_read(shared_ptr<directory_tree> dt, shared_ptr<di
 	{
 		const path& abs_path = di->path();
 		unicodestring relativePath = path2string(abs_path);
-		shared_ptr<dir_node> root = dtn->root.lock();
+		mws_sp<dir_node> root = dtn->root.lock();
 
 		erase_all(relativePath, path2string(root->abs_dir_path));
 		path rel_path(relativePath);
 
 		if (is_regular_file(abs_path))
 		{
-			shared_ptr<file_node> fn(new file_node());
+			mws_sp<file_node> fn(new file_node());
 
 			fn->abs_file_path = abs_path;
 			fn->rel_file_path = rel_path.relative_path();
@@ -182,7 +182,7 @@ void directory_tree::recursive_read(shared_ptr<directory_tree> dt, shared_ptr<di
 		}
 		else if (is_directory(abs_path))
 		{
-			shared_ptr<dir_node> dx(new dir_node());
+			mws_sp<dir_node> dx(new dir_node());
 			directory_iterator dit(abs_path);
 
 			dx->abs_dir_path = abs_path;

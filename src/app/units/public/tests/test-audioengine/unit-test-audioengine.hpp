@@ -10,14 +10,14 @@
 class unit_test_audioengine : public unit
 {
 public:
-	static shared_ptr<unit_test_audioengine> nwi();
+   static mws_sp<unit_test_audioengine> nwi();
 
-    virtual void init();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void init_mws();
+   virtual void load();
 
 private:
-	unit_test_audioengine();
+   unit_test_audioengine();
 };
 
 #endif

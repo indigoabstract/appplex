@@ -20,7 +20,7 @@ class mod_cmd_std_fmt_filenames : public mod_cmd
 public:
 	std::string get_module_name();
 	boost::program_options::options_description get_options_description();
-	shared_ptr<long_operation> run(const std::vector<unicodestring>& args);
+	mws_sp<long_operation> run(const std::vector<unicodestring>& args);
 };
 
 

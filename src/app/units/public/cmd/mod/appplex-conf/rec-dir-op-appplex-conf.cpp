@@ -13,7 +13,7 @@
 #include "../rdo-recursive-copy.hpp"
 
 
-rec_dir_op_appplex_conf::rec_dir_op_appplex_conf(bfs::path isrc_path, std::vector<unicodestring> iexclude_path, shared_ptr<kx_krte> ikrt, shared_ptr<unit_entry_map_type> iunit_entry_map)
+rec_dir_op_appplex_conf::rec_dir_op_appplex_conf(bfs::path isrc_path, std::vector<unicodestring> iexclude_path, mws_sp<kx_krte> ikrt, mws_sp<unit_entry_map_type> iunit_entry_map)
 {
    is_inside_units_dir = false;
    src_path = isrc_path;
@@ -38,16 +38,16 @@ rec_dir_op_appplex_conf::rec_dir_op_appplex_conf(bfs::path isrc_path, std::vecto
    }
 }
 
-void rec_dir_op_appplex_conf::on_start(shared_ptr<dir_node> dir)
+void rec_dir_op_appplex_conf::on_start(mws_sp<dir_node> dir)
 {
 }
 
-void rec_dir_op_appplex_conf::on_finish(shared_ptr<dir_node> dir)
+void rec_dir_op_appplex_conf::on_finish(mws_sp<dir_node> dir)
 {
 }
 
 // return false to skip this directory
-bool rec_dir_op_appplex_conf::on_entering_dir(shared_ptr<dir_node> dir)
+bool rec_dir_op_appplex_conf::on_entering_dir(mws_sp<dir_node> dir)
 {
    is_inside_units_dir = false;
    bfs::path& crt_path = dir->rel_dir_path;
@@ -68,11 +68,11 @@ bool rec_dir_op_appplex_conf::on_entering_dir(shared_ptr<dir_node> dir)
    return true;
 }
 
-void rec_dir_op_appplex_conf::on_leaving_dir(shared_ptr<dir_node> dir)
+void rec_dir_op_appplex_conf::on_leaving_dir(mws_sp<dir_node> dir)
 {
 }
 
-void rec_dir_op_appplex_conf::apply_to_file(shared_ptr<file_node> file)
+void rec_dir_op_appplex_conf::apply_to_file(mws_sp<file_node> file)
 {
    const std::string unit_pfx = "unit-";
    const std::string unit_sfx = ".hpp";

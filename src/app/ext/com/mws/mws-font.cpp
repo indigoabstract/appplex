@@ -16,41 +16,41 @@
 class mws_font_impl
 {
 public:
-   mws_font_impl(shared_ptr<mws_font> ifont, const std::string& ifont_path)
+   mws_font_impl(mws_sp<mws_font> ifont, const std::string& ifont_path)
    {
       mws_font_ref = ifont;
-      color = shared_ptr<gfx_color>(new gfx_color(gfx_color::colors::blue_violet));
+      color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::blue_violet));
       ppath = pfm_path::get_inst(ifont_path);
       font_name = font_db::inst()->get_db_font_name(ppath->get_file_name());
       font_path = ppath->get_full_path();
    }
 
-   weak_ptr<mws_font> mws_font_ref;
-   shared_ptr<pfm_path> ppath;
-   shared_ptr<std::string> font_name;
+   mws_wp<mws_font> mws_font_ref;
+   mws_sp<pfm_path> ppath;
+   mws_sp<std::string> font_name;
    std::string font_path;
    float size;
-   shared_ptr<gfx_color> color;
+   mws_sp<gfx_color> color;
 };
 
 
-shared_ptr<mws_font> mws_font::nwi(std::shared_ptr<mws_font> i_fnt)
+mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt)
 {
    return nwi(i_fnt->p->size, i_fnt->get_full_path());
 }
 
-shared_ptr<mws_font> mws_font::nwi(float isize, const std::string& ifont_path)
+mws_sp<mws_font> mws_font::nwi(float isize, const std::string& ifont_path)
 {
-   shared_ptr<mws_font> font(new mws_font());
+   mws_sp<mws_font> font(new mws_font());
    std::string font_path = ifont_path.empty() ? "vera.ttf" : ifont_path;
 
-   font->p = shared_ptr<mws_font_impl>(new mws_font_impl(font, font_path));
+   font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path));
    font->p->size = isize;
 
    return font;
 }
 
-shared_ptr<mws_font> mws_font::get_inst()
+mws_sp<mws_font> mws_font::get_inst()
 {
    return shared_from_this();
 }

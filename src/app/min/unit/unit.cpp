@@ -226,7 +226,7 @@ public:
 
       struct helper
       {
-         static void read_pixels_helper(bool pbo_supported, std::shared_ptr<gfx_tex> i_tex, gfx_uint pbo_id, gfx_uint pbo_next_id, std::vector<uint8>& i_data_dst)
+         static void read_pixels_helper(bool pbo_supported, mws_sp<gfx_tex> i_tex, gfx_uint pbo_id, gfx_uint pbo_next_id, std::vector<uint8>& i_data_dst)
          {
             const gfx_tex_params& tex_prm = i_tex->get_params();
 
@@ -437,16 +437,16 @@ public:
 #if defined MOD_FFMPEG && defined UNIT_TEST_FFMPEG && defined MOD_GFX
 
    // data for converting rgb to yuv420
-   std::shared_ptr<gfx_tex> scr_mirror_tex;
-   std::shared_ptr<gfx_rt> rt_y;
-   std::shared_ptr<gfx_tex> rt_y_tex;
-   std::shared_ptr<gfx_quad_2d> rt_y_quad;
-   std::shared_ptr<gfx_rt> rt_u;
-   std::shared_ptr<gfx_tex> rt_u_tex;
-   std::shared_ptr<gfx_quad_2d> rt_u_quad;
-   std::shared_ptr<gfx_rt> rt_v;
-   std::shared_ptr<gfx_tex> rt_v_tex;
-   std::shared_ptr<gfx_quad_2d> rt_v_quad;
+   mws_sp<gfx_tex> scr_mirror_tex;
+   mws_sp<gfx_rt> rt_y;
+   mws_sp<gfx_tex> rt_y_tex;
+   mws_sp<gfx_quad_2d> rt_y_quad;
+   mws_sp<gfx_rt> rt_u;
+   mws_sp<gfx_tex> rt_u_tex;
+   mws_sp<gfx_quad_2d> rt_u_quad;
+   mws_sp<gfx_rt> rt_v;
+   mws_sp<gfx_tex> rt_v_tex;
+   mws_sp<gfx_quad_2d> rt_v_quad;
    std::vector<uint8> pixels_y_tex;
    std::vector<uint8> pixels_u_tex;
    std::vector<uint8> pixels_v_tex;
@@ -457,17 +457,17 @@ public:
    int frame_index;
    int pbo_index;
 
-   std::shared_ptr<venc_ffmpeg> venc;
+   mws_sp<venc_ffmpeg> venc;
    mws_video_params default_video_params;
-   std::shared_ptr<mws_font> date_fnt;
-   std::shared_ptr<mws_font> recording_fnt;
+   mws_sp<mws_font> date_fnt;
+   mws_sp<mws_font> recording_fnt;
    std::string recording_txt;
    glm::vec2 recording_txt_dim;
    ping_pong_time_slider<float> rec_txt_slider;
 
 #endif
 
-   std::weak_ptr<unit> u;
+   mws_wp<unit> u;
 };
 
 
@@ -476,7 +476,7 @@ unit::app_storage::app_storage()
    p = std::make_unique<app_storage_impl>();
 }
 
-shared_ptr<std::vector<uint8> > unit::app_storage::load_unit_byte_vect(string name)
+mws_sp<std::vector<uint8> > unit::app_storage::load_unit_byte_vect(string name)
 {
    return pfm::filesystem::load_unit_byte_vect(p->u.lock(), name);
 }
@@ -496,7 +496,7 @@ bool unit::app_storage::store_unit_byte_vect(string name, const std::vector<uint
    return pfm::filesystem::store_unit_byte_vect(p->u.lock(), name, resPtr);
 }
 
-shared_ptr<pfm_file> unit::app_storage::random_access(std::string name)
+mws_sp<pfm_file> unit::app_storage::random_access(std::string name)
 {
    return pfm::filesystem::random_access(p->u.lock(), name);
 }
@@ -509,8 +509,8 @@ void unit::app_storage::save_screenshot(std::string ifilename)
       return;
    }
 
-   shared_ptr<std::vector<uint32> > pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
-   shared_ptr<pfm_file> screenshot_file;
+   mws_sp<std::vector<uint32> > pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
+   mws_sp<pfm_file> screenshot_file;
 
    if (ifilename.empty())
    {
@@ -676,7 +676,7 @@ bool unit::gfx_available()
    return pfm::screen::is_gfx_available();
 }
 
-shared_ptr<unit> unit::get_smtp_instance()
+mws_sp<unit> unit::get_smtp_instance()
 {
    return shared_from_this();
 }
@@ -762,7 +762,7 @@ void unit::on_resize()
 
    if (is_gfx_unit() && gfx::i())
    {
-      shared_ptr<gfx_state> gfx_st = gfx::i()->get_gfx_state();
+      mws_sp<gfx_state> gfx_st = gfx::i()->get_gfx_state();
       int w = get_width();
       int h = get_height();
 
@@ -791,7 +791,7 @@ void unit::on_resume()
 {
 }
 
-void unit::receive(shared_ptr<mws_dp> idp)
+void unit::receive(mws_sp<mws_dp> idp)
 {
 #ifdef MOD_MWS
 
@@ -803,7 +803,7 @@ void unit::receive(shared_ptr<mws_dp> idp)
    {
       if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
       {
-         shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+         mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
          if (ke->get_type() != key_evt::KE_RELEASED)
          {
@@ -866,7 +866,7 @@ void unit::base_init()
       update_ctrl = updatectrl::nwi();
       touch_ctrl = touchctrl::nwi();
       key_ctrl_inst = key_ctrl::nwi();
-      gfx_scene_inst = shared_ptr<gfx_scene>(new gfx_scene());
+      gfx_scene_inst = mws_sp<gfx_scene>(new gfx_scene());
       gfx_scene_inst->init();
    }
 
@@ -999,7 +999,7 @@ bool unit::is_gfx_unit()
    return get_preferences()->requires_gfx();
 }
 
-shared_ptr<unit_preferences> unit::get_preferences()
+mws_sp<unit_preferences> unit::get_preferences()
 {
    return prefs;
 }
@@ -1009,7 +1009,7 @@ bool unit::is_init()
    return init_val;
 }
 
-shared_ptr<mws_sender> unit::sender_inst()
+mws_sp<mws_sender> unit::sender_inst()
 {
    return get_smtp_instance();
 }
@@ -1102,9 +1102,9 @@ unit_list::unit_list() : unit(mws_to_str("unit_app_list_#%d", unit_list::unit_li
    unit_list_count++;
 }
 
-shared_ptr<unit_list> unit_list::nwi()
+mws_sp<unit_list> unit_list::nwi()
 {
-   return shared_ptr<unit_list>(new unit_list());
+   return mws_sp<unit_list>(new unit_list());
 }
 
 unit::unit_type unit_list::get_unit_type()
@@ -1112,27 +1112,27 @@ unit::unit_type unit_list::get_unit_type()
    return e_unit_list;
 }
 
-void unit_list::add(shared_ptr<unit> iunit)
+void unit_list::add(mws_sp<unit> iunit)
 {
-   mws_assert(iunit != shared_ptr<unit>());
+   mws_assert(iunit != mws_sp<unit>());
 
    iunit->parent = get_smtp_instance();
    ulist.push_back(iunit);
    //ulmodel.lock()->notify_update();
 }
 
-shared_ptr<unit> unit_list::unit_at(int i_index)
+mws_sp<unit> unit_list::unit_at(int i_index)
 {
    return ulist[i_index];
 }
 
-shared_ptr<unit> unit_list::unit_by_name(string iname)
+mws_sp<unit> unit_list::unit_by_name(string iname)
 {
    int size = ulist.size();
 
    for (int i = 0; i < size; i++)
    {
-      shared_ptr<unit> u = ulist[i];
+      mws_sp<unit> u = ulist[i];
 
       if (u->get_name().compare(iname) == 0)
       {
@@ -1140,7 +1140,7 @@ shared_ptr<unit> unit_list::unit_by_name(string iname)
       }
    }
 
-   return shared_ptr<unit>();
+   return mws_sp<unit>();
 }
 
 int unit_list::get_unit_count()const
@@ -1161,11 +1161,11 @@ void unit_list::on_resize()
    }
 }
 
-void unit_list::receive(shared_ptr<mws_dp> idp)
+void unit_list::receive(mws_sp<mws_dp> idp)
 {
    if (!idp->is_processed() && idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
-      shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
    }
 
    if (!idp->is_processed())
@@ -1178,7 +1178,7 @@ void unit_list::forward()
 {
    if (ulist.size() > 0)
    {
-      shared_ptr<unit> u = ulist[ulmodel.lock()->get_selected_elem()];
+      mws_sp<unit> u = ulist[ulmodel.lock()->get_selected_elem()];
       unit_ctrl::inst()->set_next_unit(u);
    }
 }
@@ -1186,14 +1186,14 @@ void unit_list::forward()
 void unit_list::up_one_level()
 {
 #ifndef SINGLE_UNIT_BUILD
-   shared_ptr<unit> u = unit_ctrl::inst()->get_current_unit();
-   shared_ptr<unit> parent = u->parent.lock();
+   mws_sp<unit> u = unit_ctrl::inst()->get_current_unit();
+   mws_sp<unit> parent = u->parent.lock();
 
    if (parent != NULL)
    {
       if (parent->get_unit_type() == e_unit_list)
       {
-         shared_ptr<unit_list> ul = static_pointer_cast<unit_list>(parent);
+         mws_sp<unit_list> ul = static_pointer_cast<unit_list>(parent);
          int idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
 
          if (idx < ul->ulist.size())
@@ -1219,7 +1219,7 @@ void unit_list::init_mws()
    class lmodel : public mws_list_model
    {
    public:
-      lmodel(shared_ptr<unit_list> i_ul) : ul(i_ul) {}
+      lmodel(mws_sp<unit_list> i_ul) : ul(i_ul) {}
 
       int get_length()
       {
@@ -1233,25 +1233,25 @@ void unit_list::init_mws()
 
       void on_elem_selected(int idx)
       {
-         shared_ptr<unit> u = get_unit_list()->ulist[idx];
+         mws_sp<unit> u = get_unit_list()->ulist[idx];
 
          //trx("item %1%") % elemAt(idx);
          unit_ctrl::inst()->set_next_unit(u);
       }
 
    private:
-      shared_ptr<unit_list> get_unit_list()
+      mws_sp<unit_list> get_unit_list()
       {
          return ul.lock();
       }
 
-      weak_ptr<unit_list> ul;
+      mws_wp<unit_list> ul;
    };
 
-   shared_ptr<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
-   shared_ptr<mws_list_model> lm((mws_list_model*)new lmodel(ul));
-   shared_ptr<mws_page> p = mws_page::nwi(mws_root);
-   shared_ptr<mws_list> l = mws_list::nwi();
+   mws_sp<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
+   mws_sp<mws_list_model> lm((mws_list_model*)new lmodel(ul));
+   mws_sp<mws_page> p = mws_page::nwi(mws_root);
+   mws_sp<mws_list> l = mws_list::nwi();
 
    ulmodel = lm;
    l->set_model(lm);
@@ -1262,16 +1262,16 @@ void unit_list::init_mws()
 }
 
 
-weak_ptr<unit_list> app_units_setup::ul;
-weak_ptr<unit> app_units_setup::next_crt_unit;
+mws_wp<unit_list> app_units_setup::ul;
+mws_wp<unit> app_units_setup::next_crt_unit;
 
 
-shared_ptr<unit_list> app_units_setup::get_unit_list()
+mws_sp<unit_list> app_units_setup::get_unit_list()
 {
    return ul.lock();
 }
 
-void app_units_setup::add_unit(std::shared_ptr<unit> i_u, std::string i_unit_path, bool i_set_current)
+void app_units_setup::add_unit(mws_sp<unit> i_u, std::string i_unit_path, bool i_set_current)
 {
    i_u->set_proj_rel_path(i_unit_path);
 

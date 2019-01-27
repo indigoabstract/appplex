@@ -18,7 +18,7 @@ public:
 	float b(int i, float t);
 
 	//evaluate a point on the B spline
-	shared_ptr<control_curve_ns::Point> p(int i, float t);
+	mws_sp<control_curve_ns::Point> p(int i, float t);
 
 	void paint();
 };

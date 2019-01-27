@@ -10,10 +10,10 @@
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
 
-draw_context::draw_context(shared_ptr<gfx_camera> icam)
+draw_context::draw_context(mws_sp<gfx_camera> icam)
 {
    cam = icam;
-   line_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
+   line_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
    (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
    (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
    (*line_mesh)[MP_DEPTH_TEST] = true;
@@ -24,7 +24,7 @@ draw_context::draw_context(shared_ptr<gfx_camera> icam)
    (*line_mesh)[MP_CULL_FRONT] = false;
    //line_mesh->render_method = GLPT_POINTS;
 
-   img_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
+   img_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
    (*img_mesh)[MP_SHADER_NAME] = "basic-tex-shader";
    (*img_mesh)["u_s2d_tex"] = "";
    (*img_mesh)[MP_DEPTH_TEST] = true;
@@ -38,7 +38,7 @@ draw_context::draw_context(shared_ptr<gfx_camera> icam)
 
 void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4& color, float thickness)
 {
-   shared_ptr<gfx_camera> cam = get_cam();
+   mws_sp<gfx_camera> cam = get_cam();
    glm::vec3 n = glm::normalize(start - finish);
    glm::vec3 bl;
    glm::vec3 tl;
@@ -101,7 +101,7 @@ void draw_context::draw_texture(std::string tex_name, float ix, float iy, float 
       float tex_w = (iwidth > 0) ? iwidth : tex->get_width();
       float tex_h = (iheight > 0) ? iheight : tex->get_height();
 
-      shared_ptr<gfx_camera> cam = get_cam();
+      mws_sp<gfx_camera> cam = get_cam();
       glm::vec3 bl;
       glm::vec3 tl;
       glm::vec3 tr;
@@ -137,7 +137,7 @@ void draw_context::draw_texture(std::string tex_name, float ix, float iy, float 
 class draw_axes_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, const glm::vec3& istart, float ilength, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, const glm::vec3& istart, float ilength, float ithickness)
    {
       start = istart;
       length = ilength;
@@ -146,21 +146,21 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       start = seq_util::read_vec3(seq);
       length = seq_util::read_float(seq);
       thickness = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, start);
       seq_util::write_float(seq, length);
       seq_util::write_float(seq, thickness);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
       idc->draw_line(start, start + glm::vec3(1, 0, 0) * length, gfx_color::colors::red.to_vec4(), thickness);
       idc->draw_line(start, start + glm::vec3(0, 1, 0) * length, gfx_color::colors::green.to_vec4(), thickness);
@@ -176,7 +176,7 @@ public:
 class draw_box_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, glm::vec3& iposition, glm::vec3& isize, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& iposition, glm::vec3& isize, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
    {
       position = iposition;
       size = isize;
@@ -187,7 +187,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       position = seq_util::read_vec3(seq);
       size = seq_util::read_vec3(seq);
@@ -196,7 +196,7 @@ public:
       thickness = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, position);
       seq_util::write_vec3(seq, size);
@@ -205,7 +205,7 @@ public:
       seq_util::write_float(seq, thickness);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
       glm::vec3 points[8] =
       {
@@ -245,7 +245,7 @@ public:
 class draw_circle_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, glm::vec3& iposition, float iradius, glm::vec3& inormal, const glm::vec4& icolor, float iprecision, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& iposition, float iradius, glm::vec3& inormal, const glm::vec4& icolor, float iprecision, float ithickness)
    {
       position = iposition;
       radius = iradius;
@@ -257,7 +257,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       position = seq_util::read_vec3(seq);
       radius = seq_util::read_float(seq);
@@ -267,7 +267,7 @@ public:
       thickness = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, position);
       seq_util::write_float(seq, radius);
@@ -277,7 +277,7 @@ public:
       seq_util::write_float(seq, thickness);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
    }
 
@@ -293,7 +293,7 @@ public:
 class draw_line_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, glm::vec3& istart, glm::vec3& ifinish, const glm::vec4& icolor, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& istart, glm::vec3& ifinish, const glm::vec4& icolor, float ithickness)
    {
       start = istart;
       finish = ifinish;
@@ -303,7 +303,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       start = seq_util::read_vec3(seq);
       finish = seq_util::read_vec3(seq);
@@ -311,7 +311,7 @@ public:
       thickness = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, start);
       seq_util::write_vec3(seq, finish);
@@ -319,7 +319,7 @@ public:
       seq_util::write_float(seq, thickness);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
       idc->draw_line(start, finish, color, thickness);
    }
@@ -334,7 +334,7 @@ public:
 class draw_image_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, shared_ptr<gfx_tex> img, float ix, float iy, float iwidth, float iheight)
+   void push_data(mws_sp<rw_sequence> seq, mws_sp<gfx_tex> img, float ix, float iy, float iwidth, float iheight)
    {
       name = img->get_name();
       x = ix;
@@ -345,7 +345,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       name = seq->r.read_string();
       x = seq_util::read_float(seq);
@@ -354,7 +354,7 @@ public:
       height = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq->w.write_string(name);
       seq_util::write_float(seq, x);
@@ -363,7 +363,7 @@ public:
       seq_util::write_float(seq, height);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
       idc->draw_texture(name, x, y, width, height);
    }
@@ -379,7 +379,7 @@ public:
 class draw_plane_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& isize, const glm::vec4& icolor)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& isize, const glm::vec4& icolor)
    {
       center = icenter;
       look_at_dir = ilook_at_dir;
@@ -389,7 +389,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       center = seq_util::read_vec3(seq);
       look_at_dir = seq_util::read_vec3(seq);
@@ -397,7 +397,7 @@ public:
       color = seq_util::read_vec4(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, center);
       seq_util::write_vec3(seq, look_at_dir);
@@ -405,9 +405,9 @@ public:
       seq_util::write_vec4(seq, color);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
-      shared_ptr<gfx_camera> cam = idc->get_cam();
+      mws_sp<gfx_camera> cam = idc->get_cam();
       look_at_dir = glm::normalize(look_at_dir);
       glm::vec3 up;
       glm::vec3 right;
@@ -448,7 +448,7 @@ public:
          //2, 0, 1, 0, 2, 3,
       };
 
-      shared_ptr<gfx_vxo> line_mesh = idc->line_mesh;
+      mws_sp<gfx_vxo> line_mesh = idc->line_mesh;
 
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
@@ -466,7 +466,7 @@ public:
 class draw_point_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, glm::vec3& icenter, const glm::vec4& icolor, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& icenter, const glm::vec4& icolor, float ithickness)
    {
       center = icenter;
       color = icolor;
@@ -475,23 +475,23 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       center = seq_util::read_vec3(seq);
       color = seq_util::read_vec4(seq);
       thickness = seq_util::read_float(seq);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq_util::write_vec3(seq, center);
       seq_util::write_vec4(seq, color);
       seq_util::write_float(seq, thickness);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
-      shared_ptr<gfx_camera> cam = idc->get_cam();
+      mws_sp<gfx_camera> cam = idc->get_cam();
       glm::mat4& camera = cam->camera_mx;
       glm::vec3 up;
       glm::vec3 right;
@@ -532,7 +532,7 @@ public:
          1, 0, 2, 2, 0, 3,
       };
 
-      shared_ptr<gfx_vxo> line_mesh = idc->line_mesh;
+      mws_sp<gfx_vxo> line_mesh = idc->line_mesh;
 
       gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
@@ -549,24 +549,24 @@ public:
 class draw_mesh_op : public draw_op
 {
 public:
-   void push_data(shared_ptr<rw_sequence> seq, shared_ptr<gfx_vxo> imesh)
+   void push_data(mws_sp<rw_sequence> seq, mws_sp<gfx_vxo> imesh)
    {
       mesh = imesh.get();
       seq->w.write_pointer(this);
       write_data(seq);
    }
 
-   virtual void read_data(shared_ptr<rw_sequence> seq)
+   virtual void read_data(mws_sp<rw_sequence> seq)
    {
       seq->r.read_pointer(mesh);
    }
 
-   virtual void write_data(shared_ptr<rw_sequence> seq)
+   virtual void write_data(mws_sp<rw_sequence> seq)
    {
       seq->w.write_pointer(mesh);
    }
 
-   virtual void draw(shared_ptr<draw_context> idc)
+   virtual void draw(mws_sp<draw_context> idc)
    {
       mesh->draw_in_sync(idc->cam.lock());
    }
@@ -580,7 +580,7 @@ class gfx_camera_impl
 public:
    gfx_camera_impl()
    {
-      line_mesh = shared_ptr<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
+      line_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
       (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
       (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
       (*line_mesh)[MP_DEPTH_TEST] = true;
@@ -592,9 +592,9 @@ public:
       //line_mesh->render_method = GLPT_POINTS;
    }
 
-   void flush_commands(shared_ptr<gfx_camera> icam)
+   void flush_commands(mws_sp<gfx_camera> icam)
    {
-      shared_ptr<rw_sequence> draw_ops = icam->draw_ops;
+      mws_sp<rw_sequence> draw_ops = icam->draw_ops;
       int size = draw_ops->get_size();
 
       draw_ops->rewind();
@@ -615,8 +615,8 @@ public:
       draw_ops->reset();
    }
 
-   weak_ptr<gfx_camera> camera;
-   shared_ptr<gfx_vxo> line_mesh;
+   mws_wp<gfx_camera> camera;
+   mws_sp<gfx_vxo> line_mesh;
 
    draw_axes_op d_axes;
    draw_box_op d_box;
@@ -626,7 +626,7 @@ public:
    draw_plane_op d_plane;
    draw_point_op d_point;
    draw_mesh_op d_mesh;
-   std::weak_ptr<gfx_rt> last_rt;
+   mws_wp<gfx_rt> last_rt;
 };
 
 void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
@@ -646,9 +646,9 @@ void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opa
 std::function<void(mws_sp<gfx_camera>, std::vector<mws_sp<gfx_vxo> >&, std::vector<mws_sp<gfx_vxo> >&)> gfx_camera::z_order_sort_function = z_order_sort;
 int gfx_camera::camera_idx = 0;
 
-shared_ptr<gfx_camera> gfx_camera::nwi(std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_camera> gfx_camera::nwi(mws_sp<gfx> i_gi)
 {
-   shared_ptr<gfx_camera> inst(new gfx_camera(i_gi));
+   mws_sp<gfx_camera> inst(new gfx_camera(i_gi));
    inst->load(inst);
    return inst;
 }
@@ -686,7 +686,7 @@ void gfx_camera::clear_buffers()
    }
 }
 
-void gfx_camera::update_glp_params(shared_ptr<gfx_vxo> imesh, shared_ptr<gfx_shader> glp)
+void gfx_camera::update_glp_params(mws_sp<gfx_vxo> imesh, mws_sp<gfx_shader> glp)
 {
    if (update_rt_cam_state)
    {
@@ -736,7 +736,7 @@ void gfx_camera::draw_circle(glm::vec3 iposition, float radius, glm::vec3 normal
    }
 }
 
-void gfx_camera::draw_image(shared_ptr<gfx_tex> img, float x, float y, float width, float height)
+void gfx_camera::draw_image(mws_sp<gfx_tex> img, float x, float y, float width, float height)
 {
    if (enabled)
    {
@@ -768,19 +768,19 @@ void gfx_camera::draw_point(glm::vec3 center, const glm::vec4& color, float thic
    }
 }
 
-void gfx_camera::draw_mesh(shared_ptr<gfx_vxo> imesh)
+void gfx_camera::draw_mesh(mws_sp<gfx_vxo> imesh)
 {
    if (enabled)
    {
       p->d_mesh.push_data(draw_ops, imesh);
    }
-   //shared_ptr<glsl_program> glp = imesh->get_material()->get_shader();
+   //mws_sp<glsl_program> glp = imesh->get_material()->get_shader();
 
    //update_glp_params(imesh, glp);
-   //imesh->draw_in_sync(static_pointer_cast<gfx_camera>(get_shared_ptr()));
+   //imesh->draw_in_sync(static_pointer_cast<gfx_camera>(get_mws_sp()));
 }
 
-gfx_camera::gfx_camera(std::shared_ptr<gfx> i_gi) : gfx_node(i_gi), camera_id(this)
+gfx_camera::gfx_camera(mws_sp<gfx> i_gi) : gfx_node(i_gi), camera_id(this)
 {
    update_rt_cam_state = true;
    node_type = camera_node;
@@ -839,12 +839,12 @@ void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update
    }
 }
 
-void gfx_camera::load(shared_ptr<gfx_camera> inst)
+void gfx_camera::load(mws_sp<gfx_camera> inst)
 {
-   draw_ctx = shared_ptr<draw_context>(new draw_context(shared_ptr<gfx_camera>()));
+   draw_ctx = mws_sp<draw_context>(new draw_context(mws_sp<gfx_camera>()));
    draw_ops = rw_sequence::nwi();
 
-   p = shared_ptr<gfx_camera_impl>(new gfx_camera_impl());
+   p = mws_sp<gfx_camera_impl>(new gfx_camera_impl());
    p->camera = inst;
 
    if (camera_idx == 0)
@@ -888,7 +888,7 @@ void gfx_camera::update_camera_state()
    if (update_rt_cam_state)
    {
       update_camera_state_impl();
-      shared_ptr<gfx_camera> inst = static_pointer_cast<gfx_camera>(get_shared_ptr());
+      mws_sp<gfx_camera> inst = static_pointer_cast<gfx_camera>(get_mws_sp());
 
       p->flush_commands(inst);
    }

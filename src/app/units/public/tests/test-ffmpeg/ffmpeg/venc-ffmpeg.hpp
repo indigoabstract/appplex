@@ -118,7 +118,7 @@ private:
 class mws_ffmpeg_reencoder : public mws_video_reencoder
 {
 public:
-   static std::shared_ptr<mws_ffmpeg_reencoder> nwi();
+   static mws_sp<mws_ffmpeg_reencoder> nwi();
 
    virtual ~mws_ffmpeg_reencoder() {}
    virtual mws_vdec_state get_dec_state() const override;
@@ -137,7 +137,7 @@ protected:
    mws_ffmpeg_reencoder() {}
 
 private:
-   std::shared_ptr<mws_ffmpeg_reencoder_impl> p;
+   mws_sp<mws_ffmpeg_reencoder_impl> p;
 };
 
 #endif

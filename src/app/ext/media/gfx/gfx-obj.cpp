@@ -6,7 +6,7 @@
 
 uint32 gfx_obj::obj_idx = 0;
 
-std::shared_ptr<gfx_obj> gfx_obj::get_inst()
+mws_sp<gfx_obj> gfx_obj::get_inst()
 {
    return shared_from_this();
 }
@@ -16,7 +16,7 @@ std::shared_ptr<gfx_obj> gfx_obj::get_inst()
 //   return oid;
 //}
 
-gfx_obj::gfx_obj(std::shared_ptr<gfx> i_gi)
+gfx_obj::gfx_obj(mws_sp<gfx> i_gi)
 {
    mws_assert(gfx::i() != nullptr);
 
@@ -32,7 +32,7 @@ gfx_obj::gfx_obj(std::shared_ptr<gfx> i_gi)
    obj_idx++;
 }
 
-std::shared_ptr<gfx> gfx_obj::gi()
+mws_sp<gfx> gfx_obj::gi()
 {
    return g.lock();
 }

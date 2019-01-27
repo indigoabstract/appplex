@@ -17,7 +17,7 @@ class node_info;
 class unit_kemx : public unit
 {
 public:
-	static shared_ptr<unit_kemx> nwi();
+	static mws_sp<unit_kemx> nwi();
 
 	virtual void init();
 	virtual void init_mws();
@@ -27,10 +27,10 @@ public:
 private:
 	unit_kemx();
 
-	static void create_mws_tree_model(const std::vector<shared_ptr<node_info> >& list, shared_ptr<mws_tree_model_node> node, int& length);
+	static void create_mws_tree_model(const std::vector<mws_sp<node_info> >& list, mws_sp<mws_tree_model_node> node, int& length);
 
 	std::string data;
-	std::vector<shared_ptr<node_info> > node_list;
+	std::vector<mws_sp<node_info> > node_list;
 	bool is_valid_expression;
 };
 

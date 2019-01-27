@@ -262,7 +262,7 @@ namespace shivavg_tp1
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -275,7 +275,7 @@ namespace shivavg_tp1
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -287,7 +287,7 @@ namespace shivavg_tp1
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -702,7 +702,7 @@ namespace shivavg_tp2
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -715,11 +715,11 @@ namespace shivavg_tp2
 		{
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 				if(ts->get_type() == touch_sym_evt::TS_FIRST_TAP)
 				{
@@ -735,7 +735,7 @@ namespace shivavg_tp2
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -829,7 +829,7 @@ namespace shivavg_tp3
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -842,7 +842,7 @@ namespace shivavg_tp3
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -852,7 +852,7 @@ namespace shivavg_tp3
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -992,7 +992,7 @@ namespace shivavg_tp4
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -1005,7 +1005,7 @@ namespace shivavg_tp4
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -1024,7 +1024,7 @@ namespace shivavg_tp4
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -1033,7 +1033,7 @@ namespace shivavg_tp4
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<pointer_evt> ts)
+		void on_touch_evt(mws_sp<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -1096,7 +1096,7 @@ namespace shivavg_tp4
 			}
 		}
 
-		void on_key_evt(shared_ptr<key_evt> ke)
+		void on_key_evt(mws_sp<key_evt> ke)
 		{
 			if(ke->get_type() == key_evt::KE_RELEASED)
 			{
@@ -1304,7 +1304,7 @@ namespace shivavg_tp5
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -1317,7 +1317,7 @@ namespace shivavg_tp5
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -1327,7 +1327,7 @@ namespace shivavg_tp5
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y, 0.03f);
@@ -1545,7 +1545,7 @@ namespace shivavg_tp6
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -1558,7 +1558,7 @@ namespace shivavg_tp6
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -1577,7 +1577,7 @@ namespace shivavg_tp6
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -1586,7 +1586,7 @@ namespace shivavg_tp6
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<pointer_evt> ts)
+		void on_touch_evt(mws_sp<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -1669,7 +1669,7 @@ namespace shivavg_tp6
 			}
 		}
 
-		void on_key_evt(shared_ptr<key_evt> ke)
+		void on_key_evt(mws_sp<key_evt> ke)
 		{
 			if(ke->get_type() == key_evt::KE_RELEASED)
 			{
@@ -1912,7 +1912,7 @@ namespace shivavg_tp7
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -1925,7 +1925,7 @@ namespace shivavg_tp7
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -1944,7 +1944,7 @@ namespace shivavg_tp7
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -1953,7 +1953,7 @@ namespace shivavg_tp7
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<pointer_evt> ts)
+		void on_touch_evt(mws_sp<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -2022,7 +2022,7 @@ namespace shivavg_tp7
 			}
 		}
 
-		void on_key_evt(shared_ptr<key_evt> ke)
+		void on_key_evt(mws_sp<key_evt> ke)
 		{
 			if(ke->get_type() == key_evt::KE_RELEASED)
 			{
@@ -2294,7 +2294,7 @@ namespace shivavg_tp8
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -2307,7 +2307,7 @@ namespace shivavg_tp8
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -2326,7 +2326,7 @@ namespace shivavg_tp8
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y);
@@ -2335,7 +2335,7 @@ namespace shivavg_tp8
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<pointer_evt> ts)
+		void on_touch_evt(mws_sp<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -2426,7 +2426,7 @@ namespace shivavg_tp8
 			}
 		}
 
-		void on_key_evt(shared_ptr<key_evt> ke)
+		void on_key_evt(mws_sp<key_evt> ke)
 		{
 			if(ke->get_type() == key_evt::KE_RELEASED)
 			{
@@ -2645,7 +2645,7 @@ namespace shivavg_tp9
 	class shivavg_page : public mws_page
 	{
 	public:
-		shivavg_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		shivavg_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -2658,7 +2658,7 @@ namespace shivavg_tp9
 			testopenvgDestroy();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
@@ -2677,7 +2677,7 @@ namespace shivavg_tp9
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 			testopenvgDraw(mws_r.x, mws_r.y, 0.01f);
@@ -2686,7 +2686,7 @@ namespace shivavg_tp9
 			g->drawText(overlay, 10, 50);
 		}
 
-		void on_touch_evt(shared_ptr<pointer_evt> ts)
+		void on_touch_evt(mws_sp<pointer_evt> ts)
 		{
 			switch(ts->get_type())
 			{
@@ -2748,7 +2748,7 @@ namespace shivavg_tp9
 			}
 		}
 
-		void on_key_evt(shared_ptr<key_evt> ke)
+		void on_key_evt(mws_sp<key_evt> ke)
 		{
 			if(ke->get_type() == key_evt::KE_RELEASED)
 			{

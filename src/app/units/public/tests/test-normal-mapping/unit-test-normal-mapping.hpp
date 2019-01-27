@@ -16,7 +16,7 @@ namespace ns_unit_test_normal_mapping
 class unit_test_normal_mapping : public unit
 {
 public:
-	static shared_ptr<unit_test_normal_mapping> nwi();
+	static mws_sp<unit_test_normal_mapping> nwi();
 
 	virtual void init();
 	virtual void load();
@@ -24,9 +24,9 @@ public:
 
 private:
 	unit_test_normal_mapping();
-	virtual void receive(shared_ptr<mws_dp> idp);
+	virtual void receive(mws_sp<mws_dp> idp);
 
-	shared_ptr<ns_unit_test_normal_mapping::impl> p;
+	mws_sp<ns_unit_test_normal_mapping::impl> p;
 };
 
 #endif

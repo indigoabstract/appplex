@@ -306,14 +306,14 @@ public:
 	void stop();
 	void update();
 
-	const shared_ptr<ms_linear_transition> get_transition();
+	const mws_sp<ms_linear_transition> get_transition();
 	void set_scroll_dir(scroll_dir itype);
 
 	point2d srcpos;
 	point2d dstpos;
 
 private:
-	shared_ptr<ms_linear_transition> mslt;
+	mws_sp<ms_linear_transition> mslt;
 	scroll_dir type;
 	float pstart, pstop;
 };
@@ -324,7 +324,7 @@ class ia_console
 public:
 	struct text_line
 	{
-		shared_ptr<std::string> line;
+		mws_sp<std::string> line;
 	};
 
 	ia_console();
@@ -332,9 +332,9 @@ public:
 
 	void add_line(const std::string& iline);
 	void clear();
-	//void draw(shared_ptr<mws_camera> g);
+	//void draw(mws_sp<mws_camera> g);
 
-	//shared_ptr<boost::circular_buffer<text_line> > lines;
+	//mws_sp<boost::circular_buffer<text_line> > lines;
 };
 
 float sigmoid(float v, float vmax);
@@ -347,6 +347,6 @@ inline float smooth_step(float x)
 }
 
 float interpolate_smooth_step(float intervalPosition, float start, float end, int octaveCount);
-//void draw_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor);
-//void fill_border_rect(shared_ptr<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
-//void draw_bar(shared_ptr<mws_camera> g, int x, int y, int w, int h, int color);
+//void draw_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor);
+//void fill_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
+//void draw_bar(mws_sp<mws_camera> g, int x, int y, int w, int h, int color);

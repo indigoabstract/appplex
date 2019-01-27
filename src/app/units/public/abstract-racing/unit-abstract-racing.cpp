@@ -20,9 +20,9 @@ using std::string;
 
 unit_abstract_racing::unit_abstract_racing() : unit(mws_stringify(UNIT_ABSTRACT_RACING)) {}
 
-shared_ptr<unit_abstract_racing> unit_abstract_racing::nwi()
+mws_sp<unit_abstract_racing> unit_abstract_racing::nwi()
 {
-	return shared_ptr<unit_abstract_racing>(new unit_abstract_racing());
+	return mws_sp<unit_abstract_racing>(new unit_abstract_racing());
 }
 
 namespace unit_abstract_racing_main_page
@@ -30,7 +30,7 @@ namespace unit_abstract_racing_main_page
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -50,11 +50,11 @@ namespace unit_abstract_racing_main_page
 			last_time = pfm::time::get_time_millis();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
-				shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 				if(ke->get_type() != key_evt::KE_RELEASED)
 				{
@@ -107,10 +107,10 @@ namespace unit_abstract_racing_main_page
 			}
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			/*
-			shared_ptr<unit_abstract_racing> u = ar_unit();
+			mws_sp<unit_abstract_racing> u = ar_unit();
 			renderer& r = *renderer::get_instance();
 
 			decl_scgfxpl(pl1)
@@ -196,7 +196,7 @@ namespace unit_abstract_racing_main_page
 			camera = glm::perspectiveFov(cfovy, (float)ar_unit()->get_width(), (float)ar_unit()->get_height(), cnear, cfar);
 		}
 
-		shared_ptr<unit_abstract_racing> ar_unit()
+		mws_sp<unit_abstract_racing> ar_unit()
 		{
 			return static_pointer_cast<unit_abstract_racing>(get_unit());
 		}
@@ -208,7 +208,7 @@ namespace unit_abstract_racing_main_page
 		glm::vec3 crtPos;
 		bool duringSegmentCrossing;
 		uint32 last_time;
-		shared_ptr<gfx_box> cube1, cube2;
+		mws_sp<gfx_box> cube1, cube2;
 	};
 }
 

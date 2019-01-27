@@ -54,7 +54,7 @@ void init_fmod()
 
 struct snd_context
 {
-	std::weak_ptr<guitar_note_player_impl> gnp;
+	mws_wp<guitar_note_player_impl> gnp;
 };
 
 
@@ -105,7 +105,7 @@ public:
 		guitar_inst.setLoopGain(0.9999);
 	}
 
-	void set_note(std::shared_ptr<musical_note> inote)
+	void set_note(mws_sp<musical_note> inote)
 	{
 		note = inote;
 		guitar_inst.noteOn(note->get_pitch(), 2.);
@@ -160,7 +160,7 @@ public:
 	snd_context ctx;
 	stk::Guitar guitar_inst;
 	stk::StkFrames me_frm;
-	std::shared_ptr<musical_note> note;
+	mws_sp<musical_note> note;
 	FMOD::Sound* genSound;
 	FMOD::Channel* channel;
 };
@@ -172,7 +172,7 @@ FMOD_RESULT F_CALLBACK PCMRead32(FMOD_SOUND *sound, void *data, unsigned int len
 	// Note that FMOD_Sound * must be cast to FMOD::Sound * to access it
 	snd_context *ctx = nullptr;
 	((FMOD::Sound *) sound)->getUserData((void **)&ctx);
-	std::shared_ptr<guitar_note_player_impl> gnp = ctx ? ctx->gnp.lock() : nullptr;
+	mws_sp<guitar_note_player_impl> gnp = ctx ? ctx->gnp.lock() : nullptr;
 
 	if (gnp)
 	{
@@ -232,7 +232,7 @@ void guitar_note_player::stop()
 	p->stop();
 }
 
-void guitar_note_player::set_note(std::shared_ptr<musical_note> inote)
+void guitar_note_player::set_note(mws_sp<musical_note> inote)
 {
 	p->set_note(inote);
 }
@@ -241,7 +241,7 @@ void guitar_note_player::set_note(std::shared_ptr<musical_note> inote)
 
 
 // snd code
-std::shared_ptr<snd> snd::inst;
+mws_sp<snd> snd::inst;
 
 snd::snd()
 {
@@ -256,7 +256,7 @@ void snd::init()
 {
 	if (!is_init())
 	{
-		inst = std::shared_ptr<snd>(new snd());
+		inst = mws_sp<snd>(new snd());
 		init_fmod();
 	}
 	else

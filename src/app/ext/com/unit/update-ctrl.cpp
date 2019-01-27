@@ -9,12 +9,12 @@ updatectrl::updatectrl()
 	state = GAME_STOPPED;
 }
 
-shared_ptr<updatectrl> updatectrl::nwi()
+mws_sp<updatectrl> updatectrl::nwi()
 {
-	return shared_ptr<updatectrl>(new updatectrl());
+	return mws_sp<updatectrl>(new updatectrl());
 }
 
-shared_ptr<updatectrl> updatectrl::getInst()
+mws_sp<updatectrl> updatectrl::getInst()
 {
 	return shared_from_this();
 }

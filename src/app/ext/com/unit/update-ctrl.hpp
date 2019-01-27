@@ -13,8 +13,8 @@ public:
 		GAME_PAUSED,
 	};
 
-	static shared_ptr<updatectrl> nwi();
-	shared_ptr<updatectrl> getInst();
+	static mws_sp<updatectrl> nwi();
+	mws_sp<updatectrl> getInst();
 
 	int update();
 

@@ -21,7 +21,7 @@ enum class mws_read_method
 class gfx_readback : public gfx_obj
 {
 public:
-   static std::shared_ptr<gfx_readback> nwi(std::shared_ptr<gfx> i_gi = nullptr);
+   static mws_sp<gfx_readback> nwi(mws_sp<gfx> i_gi = nullptr);
    e_gfx_obj_type get_type()const override;
    int get_pbo_size() const;
    const std::vector<uint8>& get_pbo_pixels() const;
@@ -34,7 +34,7 @@ public:
    std::function<void(const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)> on_data_recv_handler;
 
 private:
-   gfx_readback(std::shared_ptr<gfx> i_gi);
+   gfx_readback(mws_sp<gfx> i_gi);
    void set_dimensions(int i_width, int i_height);
    void set_pbo_count(int i_pbo_count);
 
@@ -56,8 +56,8 @@ class mws_pbo_bundle
 public:
    mws_pbo_bundle(mws_sp<gfx> i_gfx_inst, int i_width, int i_height, std::string i_format);
    void set_on_data_recv_handler(std::function<void(const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)> i_handler);
-   void set_tex(std::shared_ptr<gfx_tex> i_tex);
-   void update(std::shared_ptr<gfx_camera> i_cam);
+   void set_tex(mws_sp<gfx_tex> i_tex);
+   void update(mws_sp<gfx_camera> i_cam);
 
    mws_sp<gfx_rt> rt;
    mws_sp<gfx_tex> rt_tex;

@@ -44,7 +44,7 @@ public:
    pointer_evt();
    // used for debugging!
    virtual void process() override;
-   static mws_sp<pointer_evt> as_pointer_evt(shared_ptr<mws_dp> idp);
+   static mws_sp<pointer_evt> as_pointer_evt(mws_sp<mws_dp> idp);
    bool is_multitouch();
 
    // pointer_down_count
@@ -76,27 +76,27 @@ public:
 class touchctrl : public enable_shared_from_this<touchctrl>, public mws_broadcaster
 {
 public:
-   static shared_ptr<touchctrl> nwi();
-   shared_ptr<touchctrl> get_instance();
+   static mws_sp<touchctrl> nwi();
+   mws_sp<touchctrl> get_instance();
 
    bool is_pointer_released();
    void update();
-   void enqueue_pointer_event(std::shared_ptr<pointer_evt> ite);
+   void enqueue_pointer_event(mws_sp<pointer_evt> ite);
 
-   std::atomic<std::vector<std::shared_ptr<pointer_evt> >*> queue_ptr;
+   std::atomic<std::vector<mws_sp<pointer_evt> >*> queue_ptr;
 
 private:
    touchctrl();
 
-   virtual shared_ptr<mws_sender> sender_inst();
+   virtual mws_sp<mws_sender> sender_inst();
 
-   void on_pointer_action_pressed(std::shared_ptr<pointer_evt> pa);
-   void on_pointer_action_dragged(std::shared_ptr<pointer_evt> pa);
-   void on_pointer_action_released(std::shared_ptr<pointer_evt> pa);
-   void on_pointer_action_mouse_wheel(std::shared_ptr<pointer_evt> pa);
+   void on_pointer_action_pressed(mws_sp<pointer_evt> pa);
+   void on_pointer_action_dragged(mws_sp<pointer_evt> pa);
+   void on_pointer_action_released(mws_sp<pointer_evt> pa);
+   void on_pointer_action_mouse_wheel(mws_sp<pointer_evt> pa);
 
    int queue_idx;
-   std::vector<std::vector<std::shared_ptr<pointer_evt> > > queue_tab;
+   std::vector<std::vector<mws_sp<pointer_evt> > > queue_tab;
 
    static bool is_pointer_down;
    static point2d first_press;
@@ -122,12 +122,12 @@ public:
    static const std::string KEYEVT_REPEATED;
    static const std::string KEYEVT_RELEASED;
 
-   static shared_ptr<key_evt> as_key_evt(shared_ptr<mws_dp> idp);
-   static shared_ptr<key_evt> nwi(std::weak_ptr<key_ctrl> isrc, key_evt_types itype, key_types i_key);
-   shared_ptr<key_evt> get_instance();
+   static mws_sp<key_evt> as_key_evt(mws_sp<mws_dp> idp);
+   static mws_sp<key_evt> nwi(mws_wp<key_ctrl> isrc, key_evt_types itype, key_types i_key);
+   mws_sp<key_evt> get_instance();
 
    static const std::string& get_type_name(key_evt_types tstype);
-   std::shared_ptr<key_ctrl> get_src();
+   mws_sp<key_ctrl> get_src();
    bool is_pressed() const;
    bool is_repeated() const;
    bool is_released() const;
@@ -137,19 +137,19 @@ public:
 
 private:
 
-   key_evt(std::weak_ptr<key_ctrl> isrc, key_evt_types itype, key_types i_key);
+   key_evt(mws_wp<key_ctrl> isrc, key_evt_types itype, key_types i_key);
 
    key_evt_types type;
    key_types key;
-   std::weak_ptr<key_ctrl> src;
+   mws_wp<key_ctrl> src;
 };
 
 
 class key_ctrl : public enable_shared_from_this<key_ctrl>, public mws_broadcaster
 {
 public:
-   static shared_ptr<key_ctrl> nwi();
-   shared_ptr<key_ctrl> get_instance();
+   static mws_sp<key_ctrl> nwi();
+   mws_sp<key_ctrl> get_instance();
 
    void update();
    bool key_is_held(key_types i_key);
@@ -159,8 +159,8 @@ public:
 private:
    key_ctrl();
 
-   virtual shared_ptr<mws_sender> sender_inst();
-   void new_key_event(shared_ptr<key_evt> ts);
+   virtual mws_sp<mws_sender> sender_inst();
+   void new_key_event(mws_sp<key_evt> ts);
 
    bool events_pending;
    // common for all instances

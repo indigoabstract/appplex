@@ -9,13 +9,13 @@
 class unit_test_video_recording : public unit
 {
 public:
-   static std::shared_ptr<unit_test_video_recording> nwi();
+   static mws_sp<unit_test_video_recording> nwi();
 
    void init() override;
    void load() override;
    void update_view(int update_count) override;
    void post_update_view() override;
-   void receive(std::shared_ptr<mws_dp> idp) override;
+   void receive(mws_sp<mws_dp> idp) override;
 
 private:
    unit_test_video_recording();

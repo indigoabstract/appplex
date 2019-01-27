@@ -48,14 +48,14 @@ namespace unit_texxed_ns
          ta->push_back_text("nl 11\n");
          attach(ta);
 
-			shared_ptr<mws_button> b = mws_button::nwi();
+			mws_sp<mws_button> b = mws_button::nwi();
          attach(b);
          b->set_rect(mws_rect(10, h - 50.f, 50, 20));
          b->set_text("btn");
          b->set_bg_color(gfx_color(0xff8200b4));
       }
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{
@@ -75,7 +75,7 @@ namespace unit_texxed_ns
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -84,17 +84,17 @@ namespace unit_texxed_ns
 			g->drawText(text, 10, 20);
 		}
 
-		shared_ptr<mws_text_box> ta;
-		shared_ptr<std::string > tx_res;
+		mws_sp<mws_text_box> ta;
+		mws_sp<std::string > tx_res;
 	};
 }
 
 
 unit_texxed::unit_texxed() : unit(mws_stringify(UNIT_TEXXED)) {}
 
-shared_ptr<unit_texxed> unit_texxed::nwi()
+mws_sp<unit_texxed> unit_texxed::nwi()
 {
-	return shared_ptr<unit_texxed>(new unit_texxed());
+	return mws_sp<unit_texxed>(new unit_texxed());
 }
 
 void unit_texxed::init()

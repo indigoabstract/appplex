@@ -9,14 +9,14 @@
 using std::string;
 
 
-void kx_krte::set_src(shared_ptr<std::string> isrc)
+void kx_krte::set_src(mws_sp<std::string> isrc)
 {
    src = isrc;
 }
 
 void kx_krte::run()
 {
-   shared_ptr<kx_elem> kxe;
+   mws_sp<kx_elem> kxe;
 
    kxe = kxp.parse_src(src);
 
@@ -28,7 +28,7 @@ void kx_krte::run()
 
    kxb = static_pointer_cast<kx_block>(kxe);
 
-   shared_ptr<kx_symbol> name(kx_symbol::nwi());
+   mws_sp<kx_symbol> name(kx_symbol::nwi());
    name->name = "main-program";
    kxb->name = name;
 

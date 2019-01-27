@@ -25,7 +25,7 @@ public:
 private:
 	snd();
 
-	static std::shared_ptr<snd> inst;
+	static mws_sp<snd> inst;
 };
 
 
@@ -33,8 +33,8 @@ private:
 class snd_src
 {
 public:
-	virtual void link(std::shared_ptr<snd_dst> idst) = 0;
-	virtual void link(std::shared_ptr<snd_tf> idst) = 0;
+	virtual void link(mws_sp<snd_dst> idst) = 0;
+	virtual void link(mws_sp<snd_tf> idst) = 0;
 };
 
 
@@ -49,8 +49,8 @@ public:
 class snd_tf
 {
 public:
-	virtual void link(std::shared_ptr<snd_dst> idst) = 0;
-	virtual void link(std::shared_ptr<snd_tf> idst) = 0;
+	virtual void link(mws_sp<snd_dst> idst) = 0;
+	virtual void link(mws_sp<snd_tf> idst) = 0;
 };
 
 
@@ -76,10 +76,10 @@ public:
 	void pause() override;
 	void resume() override;
 	void stop() override;
-	void set_note(std::shared_ptr<musical_note> inote);
+	void set_note(mws_sp<musical_note> inote);
 
 private:
-	std::shared_ptr<guitar_note_player_impl> p;
+	mws_sp<guitar_note_player_impl> p;
 };
 
 
@@ -95,24 +95,24 @@ public:
 		c_note, c_sharp, d_note, d_sharp, e_note, f_note, f_sharp, g_note, g_sharp, a_note, a_sharp, b_note,
 	};
 
-	static std::shared_ptr<musical_note> get_note(note_ids inote, int ioctave);
+	static mws_sp<musical_note> get_note(note_ids inote, int ioctave);
 	static float get_pitch(note_ids inote, int ioctave);
 	std::string get_name();
 	std::string get_full_name();
 	float get_pitch();
 	note_ids get_note_id();
 	int get_octave();
-	bool equal_to(std::shared_ptr<musical_note> inote);
-	bool lower_than(std::shared_ptr<musical_note> inote);
-	bool higher_than(std::shared_ptr<musical_note> inote);
-	std::shared_ptr<musical_note> next_note();
-	std::shared_ptr<musical_note> prev_note();
+	bool equal_to(mws_sp<musical_note> inote);
+	bool lower_than(mws_sp<musical_note> inote);
+	bool higher_than(mws_sp<musical_note> inote);
+	mws_sp<musical_note> next_note();
+	mws_sp<musical_note> prev_note();
 	// get a lower note offset by itone_count tones from this note.
-	std::shared_ptr<musical_note> get_lower_note(int itone_count);
+	mws_sp<musical_note> get_lower_note(int itone_count);
 	// get a higher note offset by itone_count tones from this note.
-	std::shared_ptr<musical_note> get_higher_note(int itone_count);
+	mws_sp<musical_note> get_higher_note(int itone_count);
 	// ex 2 tones between A4 and B4, 1 tone between B4 and C5, etc.
-	int tones_between(std::shared_ptr<musical_note> inote);
+	int tones_between(mws_sp<musical_note> inote);
 
 private:
 	musical_note(note_ids inote, int ioctave);
@@ -120,7 +120,7 @@ private:
 	note_ids note_id;
 	uint8 octave;
 
-	static std::vector< std::vector<std::shared_ptr<musical_note> > > note_table;
+	static std::vector< std::vector<mws_sp<musical_note> > > note_table;
 	static std::vector<note_ids> note_list;
 	static std::vector<std::string> note_names;
 	static std::vector<float> the_8th_octave_pitches;

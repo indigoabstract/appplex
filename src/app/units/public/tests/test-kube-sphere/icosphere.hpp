@@ -35,7 +35,7 @@ public:
 	icosphere();
 	virtual void update();
 	int get_face_count();
-	shared_ptr<icosphere_face> get_face_at(int iidx);
+	mws_sp<icosphere_face> get_face_at(int iidx);
 	void set_dimensions(float iradius, int isubdiv_count);
 
 	std::vector<gfx_color> face_colors;

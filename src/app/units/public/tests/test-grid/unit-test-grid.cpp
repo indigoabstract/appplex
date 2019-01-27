@@ -49,8 +49,8 @@ public:
 		}
 	}
 
-	shared_ptr<gfx_camera> ortho_cam;
-	shared_ptr<gfx_camera> persp_cam;
+	mws_sp<gfx_camera> ortho_cam;
+	mws_sp<gfx_camera> persp_cam;
 	glm::vec3 u_v3_light_dir;
 	float t;
 	glm::vec3 look_at_dir;
@@ -66,9 +66,9 @@ const float unit_test_grid_impl::GRID_SIZE = 500.f;
 
 unit_test_grid::unit_test_grid() : unit(mws_stringify(UNIT_TEST_GRID)) {}
 
-shared_ptr<unit_test_grid> unit_test_grid::nwi()
+mws_sp<unit_test_grid> unit_test_grid::nwi()
 {
-	return shared_ptr<unit_test_grid>(new unit_test_grid());
+	return mws_sp<unit_test_grid>(new unit_test_grid());
 }
 
 void unit_test_grid::init()
@@ -79,7 +79,7 @@ void unit_test_grid::init()
 
 void unit_test_grid::load()
 {
-	p = shared_ptr<unit_test_grid_impl>(new unit_test_grid_impl());
+	p = mws_sp<unit_test_grid_impl>(new unit_test_grid_impl());
 
 	p->persp_cam = gfx_camera::nwi();
 	p->persp_cam->camera_id = "default";
@@ -130,13 +130,13 @@ bool unit_test_grid::update()
 	return unit::update();
 }
 
-void unit_test_grid::receive(shared_ptr<mws_dp> idp)
+void unit_test_grid::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
 		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 		{
-			shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
 			{
@@ -156,14 +156,14 @@ void unit_test_grid::receive(shared_ptr<mws_dp> idp)
 			}
 			else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
 			{
-				shared_ptr<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
 				p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
 			}
 		}
 		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 		{
-			shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 			if(ke->get_type() != key_evt::KE_RELEASED)
 			{

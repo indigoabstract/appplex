@@ -12,17 +12,17 @@ class unit_test_grid_impl;
 class unit_test_grid : public unit
 {
 public:
-	static shared_ptr<unit_test_grid> nwi();
+   static mws_sp<unit_test_grid> nwi();
 
-    virtual void init();
-    virtual void load();
-	virtual bool update();
+   virtual void init();
+   virtual void load();
+   virtual bool update();
 
 private:
-	unit_test_grid();
-	virtual void receive(shared_ptr<mws_dp> idp);
+   unit_test_grid();
+   virtual void receive(mws_sp<mws_dp> idp);
 
-	shared_ptr<unit_test_grid_impl> p;
+   mws_sp<unit_test_grid_impl> p;
 };
 
 #endif

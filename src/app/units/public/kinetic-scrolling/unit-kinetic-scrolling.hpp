@@ -9,13 +9,13 @@
 class unit_kinetic_scrolling : public unit
 {
 public:
-	static shared_ptr<unit_kinetic_scrolling> nwi();
+   static mws_sp<unit_kinetic_scrolling> nwi();
 
-    virtual void init();
-	virtual void init_mws();
+   virtual void init();
+   virtual void init_mws();
 
 private:
-	unit_kinetic_scrolling();
+   unit_kinetic_scrolling();
 };
 
 #endif

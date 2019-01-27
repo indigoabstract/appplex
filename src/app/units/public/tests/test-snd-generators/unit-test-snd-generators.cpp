@@ -353,7 +353,7 @@ namespace unit_test_snd_generators_ns
 	public:
 		std::vector<std::vector<colored_note> > note_tab;
 
-		main_page(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -426,7 +426,7 @@ namespace unit_test_snd_generators_ns
 			note_font->set_color(gfx_color::colors::black);
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{
@@ -435,7 +435,7 @@ namespace unit_test_snd_generators_ns
 
 			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
@@ -452,7 +452,7 @@ namespace unit_test_snd_generators_ns
 			}
 			else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
-				shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 				if (ke->get_type() == key_evt::KE_PRESSED)
 				{
@@ -522,7 +522,7 @@ namespace unit_test_snd_generators_ns
 			fmodSystem->update();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -572,20 +572,20 @@ namespace unit_test_snd_generators_ns
 		FMOD::Sound* actionSound;
 		FMOD::Channel* musicChannel;
 		FMOD::DSP* dspecho;
-		shared_ptr<Generator> generator;
-		shared_ptr<musical_note> last_played_note;
+		mws_sp<Generator> generator;
+		mws_sp<musical_note> last_played_note;
 		std::string show_note;
-		std::vector<shared_ptr<musical_note> > tuning;
-		shared_ptr<mws_font> note_font;
+		std::vector<mws_sp<musical_note> > tuning;
+		mws_sp<mws_font> note_font;
 	};
 }
 
 
 unit_test_snd_generators::unit_test_snd_generators() : unit(mws_stringify(UNIT_TEST_SND_GENERATORS)) {}
 
-shared_ptr<unit_test_snd_generators> unit_test_snd_generators::nwi()
+mws_sp<unit_test_snd_generators> unit_test_snd_generators::nwi()
 {
-	return shared_ptr<unit_test_snd_generators>(new unit_test_snd_generators());
+	return mws_sp<unit_test_snd_generators>(new unit_test_snd_generators());
 }
 
 void unit_test_snd_generators::init()

@@ -45,7 +45,7 @@ public:
    virtual uint64 get_size()const { return sequence.size(); }
    virtual void reset() { rewind(); sequence.clear(); }
    const uint8* get_data_as_byte_array();
-   shared_ptr<std::vector<uint8> > get_data_as_byte_vector();
+   mws_sp<std::vector<uint8> > get_data_as_byte_vector();
    virtual void rewind() override { set_read_position(0); set_write_position(0); }
    void set_read_position(uint64 position);
    void set_write_position(uint64 position);
@@ -62,7 +62,7 @@ private:
 class file_data_sequence : public data_sequence
 {
 public:
-   file_data_sequence(shared_ptr<pfm_file> ifile);
+   file_data_sequence(mws_sp<pfm_file> ifile);
    ~file_data_sequence();
    bool reached_end_of_sequence() override;
    void close();
@@ -76,7 +76,7 @@ protected:
    int write_int8(const int8* s, int elem_count, int offset);
 
 private:
-   shared_ptr<pfm_file> file;
+   mws_sp<pfm_file> file;
    uint64 file_size = 0;
 };
 
@@ -85,11 +85,11 @@ class data_sequence_reader
 {
 public:
    data_sequence_reader() {}
-   data_sequence_reader(shared_ptr<data_sequence> isequence) : sequence(isequence) {}
+   data_sequence_reader(mws_sp<data_sequence> isequence) : sequence(isequence) {}
    ~data_sequence_reader() {}
 
-   shared_ptr<data_sequence> get_data_sequence() { return sequence.lock(); }
-   void set_data_sequence(shared_ptr<data_sequence> isequence) { sequence = isequence; }
+   mws_sp<data_sequence> get_data_sequence() { return sequence.lock(); }
+   void set_data_sequence(mws_sp<data_sequence> isequence) { sequence = isequence; }
 
    // single data versions
    int8 read_int8();
@@ -119,7 +119,7 @@ public:
    int read_real64(real64* s, int elem_count, int offset);
 
 private:
-   weak_ptr<data_sequence> sequence;
+   mws_wp<data_sequence> sequence;
 };
 
 
@@ -127,11 +127,11 @@ class data_sequence_writer
 {
 public:
    data_sequence_writer() {}
-   data_sequence_writer(shared_ptr<data_sequence> isequence) : sequence(isequence) {}
+   data_sequence_writer(mws_sp<data_sequence> isequence) : sequence(isequence) {}
    ~data_sequence_writer() {}
 
-   shared_ptr<data_sequence> get_data_sequence() { return sequence.lock(); }
-   void set_data_sequence(shared_ptr<data_sequence> isequence) { sequence = isequence; }
+   mws_sp<data_sequence> get_data_sequence() { return sequence.lock(); }
+   void set_data_sequence(mws_sp<data_sequence> isequence) { sequence = isequence; }
 
    // single data versions
    void write_int8(int8 d);
@@ -161,7 +161,7 @@ public:
    void write_real64(const real64* s, int elem_count, int offset);
 
 private:
-   weak_ptr<data_sequence> sequence;
+   mws_wp<data_sequence> sequence;
 };
 
 
@@ -170,9 +170,9 @@ class rw_sequence : public memory_data_sequence
 public:
    ~rw_sequence() {}
 
-   static shared_ptr<rw_sequence> nwi()
+   static mws_sp<rw_sequence> nwi()
    {
-      shared_ptr<rw_sequence> inst(new rw_sequence());
+      mws_sp<rw_sequence> inst(new rw_sequence());
       inst->r.set_data_sequence(inst);
       inst->w.set_data_sequence(inst);
       return inst;
@@ -191,9 +191,9 @@ class rw_file_sequence : public file_data_sequence
 public:
    ~rw_file_sequence() {}
 
-   static shared_ptr<rw_file_sequence> nwi(shared_ptr<pfm_file> ifile)
+   static mws_sp<rw_file_sequence> nwi(mws_sp<pfm_file> ifile)
    {
-      shared_ptr<rw_file_sequence> inst(new rw_file_sequence(ifile));
+      mws_sp<rw_file_sequence> inst(new rw_file_sequence(ifile));
       inst->r.set_data_sequence(inst);
       inst->w.set_data_sequence(inst);
       return inst;
@@ -203,7 +203,7 @@ public:
    data_sequence_writer w;
 
 private:
-   rw_file_sequence(shared_ptr<pfm_file> ifile) : file_data_sequence(ifile) {}
+   rw_file_sequence(mws_sp<pfm_file> ifile) : file_data_sequence(ifile) {}
 };
 
 
@@ -309,16 +309,16 @@ inline std::string data_sequence_reader::read_line()
    return text;
 }
 
-template<int> void read_pointer_helper(shared_ptr<data_sequence> sequence, void* p);
+template<int> void read_pointer_helper(mws_sp<data_sequence> sequence, void* p);
 
 // 32-bit systems
-template<> inline void read_pointer_helper<4>(shared_ptr<data_sequence> sequence, void* p)
+template<> inline void read_pointer_helper<4>(mws_sp<data_sequence> sequence, void* p)
 {
    sequence->read_bytes((int8*)p, 4, 0);
 }
 
 // 64-bit systems
-template<> inline void read_pointer_helper<8>(shared_ptr<data_sequence> sequence, void* p)
+template<> inline void read_pointer_helper<8>(mws_sp<data_sequence> sequence, void* p)
 {
    sequence->read_bytes((int8*)p, 8, 0);
 }
@@ -445,16 +445,16 @@ inline void data_sequence_writer::write_line(const std::string& itext, bool inew
    }
 }
 
-template<int> void write_pointer_helper(shared_ptr<data_sequence> sequence, void* s);
+template<int> void write_pointer_helper(mws_sp<data_sequence> sequence, void* s);
 
 // 32-bit systems
-template<> inline void write_pointer_helper<4>(shared_ptr<data_sequence> sequence, void* s)
+template<> inline void write_pointer_helper<4>(mws_sp<data_sequence> sequence, void* s)
 {
    sequence->write_bytes((int8*)s, 4, 0);
 }
 
 // 64-bit systems
-template<> inline void write_pointer_helper<8>(shared_ptr<data_sequence> sequence, void* s)
+template<> inline void write_pointer_helper<8>(mws_sp<data_sequence> sequence, void* s)
 {
    sequence->write_bytes((int8*)s, 8, 0);
 }

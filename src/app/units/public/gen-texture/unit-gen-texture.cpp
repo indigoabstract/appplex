@@ -13,9 +13,9 @@
 
 unit_gen_texture::unit_gen_texture() : unit(mws_stringify(UNIT_GEN_TEXTURE)) {}
 
-shared_ptr<unit_gen_texture> unit_gen_texture::nwi()
+mws_sp<unit_gen_texture> unit_gen_texture::nwi()
 {
-	return shared_ptr<unit_gen_texture>(new unit_gen_texture());
+	return mws_sp<unit_gen_texture>(new unit_gen_texture());
 }
 
 void unit_gen_texture::init()
@@ -25,7 +25,7 @@ void unit_gen_texture::init()
 
 namespace unit_gen_texture_texture
 {
-	void draw_texture(shared_ptr<mws_camera> g, int iwidth, int iheight)
+	void draw_texture(mws_sp<mws_camera> g, int iwidth, int iheight)
 	{
 		//spvg_path fg = vg_util::new_ellipse(0,0, 100, 60);
 		//VGfloat white[] = {0,0,1,1};
@@ -74,12 +74,12 @@ namespace unit_gen_texture_texture
 
 namespace unit_gen_texture_rtt_screen
 {
-	shared_ptr<gfx_tex> shvg_tex;
+	mws_sp<gfx_tex> shvg_tex;
 
 	class page_rtt_screen : public mws_page
 	{
 	public:
-		page_rtt_screen(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		page_rtt_screen(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -88,7 +88,7 @@ namespace unit_gen_texture_rtt_screen
 			//int width = 256;
 			//int height = 256;
 			//shvg_tex = vg_image::nwi(width, height);
-			//shared_ptr<renderer> r = renderer::get_instance();
+			//mws_sp<renderer> r = renderer::get_instance();
 
 			//r->rtt.start_rtt_screen_from_image(shvg_tex);
 
@@ -99,7 +99,7 @@ namespace unit_gen_texture_rtt_screen
 			//signal_opengl_error();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -109,11 +109,11 @@ namespace unit_gen_texture_rtt_screen
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
-			//shared_ptr<renderer> r = renderer::get_instance();
+			//mws_sp<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
 			//r->g2d.draw_quad(0, 0, shvg_tex->get_width(), shvg_tex->get_height());
 
@@ -125,12 +125,12 @@ namespace unit_gen_texture_rtt_screen
 
 namespace unit_gen_texture_rtt_fbo
 {
-	shared_ptr<gfx_tex> shvg_tex;
+	mws_sp<gfx_tex> shvg_tex;
 
 	class page_rtt_fbo : public mws_page
 	{
 	public:
-		page_rtt_fbo(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		page_rtt_fbo(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -140,7 +140,7 @@ namespace unit_gen_texture_rtt_fbo
 			//int height = width;
 			//shvg_tex = vg_image::nwi(width, height);
 			//float d = 0.25;
-			//shared_ptr<renderer> r = renderer::get_instance();
+			//mws_sp<renderer> r = renderer::get_instance();
 
 			//r->rtt.start_rtt_fbo_from_image(rtt_fbo::FBO_STENCIL_ATTACHMENT, shvg_tex);
 
@@ -153,7 +153,7 @@ namespace unit_gen_texture_rtt_fbo
 			//signal_opengl_error();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -163,11 +163,11 @@ namespace unit_gen_texture_rtt_fbo
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
-			//shared_ptr<renderer> r = renderer::get_instance();
+			//mws_sp<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
 			//r->g2d.draw_quad(0, 0, shvg_tex->get_width(), shvg_tex->get_height());
 
@@ -182,14 +182,14 @@ namespace unit_gen_texture_mainpage
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
 			mws_page::init();
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			mws_page::receive(idp);
 		}
@@ -199,11 +199,11 @@ namespace unit_gen_texture_mainpage
 			mws_page::update_state();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
-			//shared_ptr<renderer> r = renderer::get_instance();
+			//mws_sp<renderer> r = renderer::get_instance();
 			////unitgentexture_texture::draw_texture(gfx_openvg::get_instance(), 256, 256);
 			//decl_scgfxpl(pl1)
 			//{

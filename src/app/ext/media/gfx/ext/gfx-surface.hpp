@@ -8,7 +8,7 @@ class gfx_debug_vxo : public gfx_vxo
 public:
    gfx_debug_vxo(vx_info ivxi, bool iis_submesh = false);
 
-   virtual void draw_in_sync(shared_ptr<gfx_camera> icamera);
+   virtual void draw_in_sync(mws_sp<gfx_camera> icamera);
 };
 
 
@@ -17,9 +17,9 @@ class gfx_obj_vxo : public gfx_vxo
 public:
    gfx_obj_vxo();
    void operator=(const std::string& imesh_name);
-   //virtual void draw_in_sync(shared_ptr<gl_camera> icamera);
+   //virtual void draw_in_sync(mws_sp<gl_camera> icamera);
 
-   //std::vector<shared_ptr<gl_mesh> > mesh_list;
+   //std::vector<mws_sp<gl_mesh> > mesh_list;
    bool is_loaded;
 };
 
@@ -27,7 +27,7 @@ public:
 class gfx_plane : public gfx_vxo
 {
 public:
-   gfx_plane(std::shared_ptr<gfx> i_gi = nullptr);
+   gfx_plane(mws_sp<gfx> i_gi = nullptr);
    virtual void set_dimensions(float idx, float idy, float i_z_val = 0.f);
 };
 

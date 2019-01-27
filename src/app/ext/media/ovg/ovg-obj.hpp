@@ -12,9 +12,9 @@ class vg_path;
 class vg_paint;
 class vg_image;
 
-typedef shared_ptr<vg_path> spvg_path;
-typedef shared_ptr<vg_paint> spvg_paint;
-typedef shared_ptr<vg_image> spvg_image;
+typedef mws_sp<vg_path> spvg_path;
+typedef mws_sp<vg_paint> spvg_paint;
+typedef mws_sp<vg_image> spvg_image;
 
 
 class vg_path_cmd_vect
@@ -76,7 +76,7 @@ private:
 class vg_paint
 {
 public:
-	static shared_ptr<vg_paint> nwi();
+	static mws_sp<vg_paint> nwi();
 	virtual ~vg_paint();
 	vg_paint_handle handle();
 
@@ -103,8 +103,8 @@ private:
 class vg_image
 {
 public:
-	static shared_ptr<vg_image> nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
-	static shared_ptr<vg_image> nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
+	static mws_sp<vg_image> nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
+	static mws_sp<vg_image> nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
 	virtual ~vg_image();
 	vg_image_handle handle();
 
@@ -123,7 +123,7 @@ public:
 	int get_texture_width();
 	int get_texture_height();
 
-	static shared_ptr<vg_image> load_image(std::string iimg_path);
+	static mws_sp<vg_image> load_image(std::string iimg_path);
 
 private:
 	vg_image(int iwidth, int iheight, vg::image_format::e_image_format iimg_format);

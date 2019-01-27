@@ -10,9 +10,9 @@
 #include "pfm-gl.h"
 
 
-std::shared_ptr<gfx_readback> gfx_readback::nwi(std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_readback> gfx_readback::nwi(mws_sp<gfx> i_gi)
 {
-   return std::shared_ptr<gfx_readback>(new gfx_readback(i_gi));
+   return mws_sp<gfx_readback>(new gfx_readback(i_gi));
 }
 
 gfx_obj::e_gfx_obj_type gfx_readback::get_type()const
@@ -22,7 +22,7 @@ gfx_obj::e_gfx_obj_type gfx_readback::get_type()const
 
 int gfx_readback::get_pbo_size() const
 {
-   return width * height * ti->get_bpp();
+   return width * height* ti->get_bpp();
 }
 
 const std::vector<uint8>& gfx_readback::get_pbo_pixels() const
@@ -150,7 +150,7 @@ void gfx_readback::update()
    frame_idx++;
 }
 
-gfx_readback::gfx_readback(std::shared_ptr<gfx> i_gi) : gfx_obj(i_gi)
+gfx_readback::gfx_readback(mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_pbo_count(2);
 }
@@ -186,17 +186,17 @@ mws_pbo_bundle::mws_pbo_bundle(mws_sp<gfx> i_gi, int i_width, int i_height, std:
    (*rt_quad)[MP_CULL_BACK] = false;
 }
 
-void mws_pbo_bundle::set_on_data_recv_handler(std::function<void(const gfx_readback* i_rb, gfx_ubyte* i_data, int i_size)> i_handler)
+void mws_pbo_bundle::set_on_data_recv_handler(std::function<void(const gfx_readback * i_rb, gfx_ubyte * i_data, int i_size)> i_handler)
 {
    readback->on_data_recv_handler = i_handler;
 }
 
-void mws_pbo_bundle::set_tex(std::shared_ptr<gfx_tex> i_tex)
+void mws_pbo_bundle::set_tex(mws_sp<gfx_tex> i_tex)
 {
    (*rt_quad)["u_s2d_tex"][MP_TEXTURE_INST] = i_tex;
 }
 
-void mws_pbo_bundle::update(std::shared_ptr<gfx_camera> i_cam)
+void mws_pbo_bundle::update(mws_sp<gfx_camera> i_cam)
 {
    gfx::i()->rt.set_current_render_target(rt);
    rt_quad->draw_out_of_sync(i_cam);

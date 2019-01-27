@@ -357,7 +357,7 @@ namespace pfm_impl
       mws_throw mws_exception("undefined platform");
    }
 
-   const std::string& get_unit_res_path(std::shared_ptr<unit> iu)
+   const std::string& get_unit_res_path(mws_sp<unit> iu)
    {
       switch (pfm::get_platform_id())
       {
@@ -402,9 +402,9 @@ namespace pfm_impl
       mws_throw mws_exception("undefined platform");
    }
 
-   shared_ptr<pfm_file> get_res_file(const std::string& ifilename)
+   mws_sp<pfm_file> get_res_file(const std::string& ifilename)
    {
-      shared_ptr<pfm_file> file;
+      mws_sp<pfm_file> file;
 
       if (!res_files_map)
       {
@@ -421,7 +421,7 @@ namespace pfm_impl
       return file;
    }
 
-   void put_res_file(const std::string& ifilename, shared_ptr<pfm_file> ifile)
+   void put_res_file(const std::string& ifilename, mws_sp<pfm_file> ifile)
    {
       if (!res_files_map)
       {
@@ -593,9 +593,9 @@ pfm_file::~pfm_file()
    io.close();
 }
 
-shared_ptr<pfm_file> pfm_file::get_inst(std::string ifilename, std::string iroot_dir)
+mws_sp<pfm_file> pfm_file::get_inst(std::string ifilename, std::string iroot_dir)
 {
-   shared_ptr<pfm_file> inst;
+   mws_sp<pfm_file> inst;
    auto ppath = pfm_path::get_inst(ifilename, iroot_dir);
 
    // if res map initialized
@@ -621,16 +621,16 @@ shared_ptr<pfm_file> pfm_file::get_inst(std::string ifilename, std::string iroot
 
    if (!inst)
    {
-      inst = shared_ptr<pfm_file>(new pfm_file());
+      inst = mws_sp<pfm_file>(new pfm_file());
       inst->io.impl = pfm_app_inst->new_pfm_file_impl(ppath->get_file_name(), ppath->get_root_directory());
    }
 
    return inst;
 }
 
-shared_ptr<pfm_file> pfm_file::get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimpl)
+mws_sp<pfm_file> pfm_file::get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl)
 {
-   shared_ptr<pfm_file> inst;
+   mws_sp<pfm_file> inst;
 
    if (pfm_impl::res_files_map)
       // res map initialized
@@ -640,7 +640,7 @@ shared_ptr<pfm_file> pfm_file::get_inst(shared_ptr<pfm_impl::pfm_file_impl> iimp
 
    if (!inst)
    {
-      inst = shared_ptr<pfm_file>(new pfm_file());
+      inst = mws_sp<pfm_file>(new pfm_file());
       inst->io.impl = iimpl;
    }
 
@@ -824,7 +824,7 @@ int pfm_file::io_op::write(const uint8* ibuffer, int isize)
 }
 
 
-std::shared_ptr<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string i_aux_root_dir)
+mws_sp<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string i_aux_root_dir)
 {
    struct make_shared_enabler : public pfm_path {};
    auto inst = std::make_shared<make_shared_enabler>();
@@ -882,9 +882,9 @@ const std::string& pfm_path::get_root_directory() const
    return aux_root_dir;
 }
 
-shared_ptr<std::vector<shared_ptr<pfm_file> > > pfm_path::list_directory(std::shared_ptr<unit> iu, bool recursive) const
+mws_sp<std::vector<mws_sp<pfm_file> > > pfm_path::list_directory(mws_sp<unit> iu, bool recursive) const
 {
-   auto file_list = std::make_shared<std::vector<shared_ptr<pfm_file> > >();
+   auto file_list = std::make_shared<std::vector<mws_sp<pfm_file> > >();
    std::string base_dir = aux_root_dir;
    std::replace(base_dir.begin(), base_dir.end(), '\\', '/');
 
@@ -910,7 +910,7 @@ shared_ptr<std::vector<shared_ptr<pfm_file> > > pfm_path::list_directory(std::sh
 
    struct pred
    {
-      bool operator()(const shared_ptr<pfm_file> a, const shared_ptr<pfm_file> b) const
+      bool operator()(const mws_sp<pfm_file> a, const mws_sp<pfm_file> b) const
       {
          return a->creation_time() > b->creation_time();
       }
@@ -953,7 +953,7 @@ void pfm_path::make_standard_path()
       }
    }
 }
-void pfm_path::list_directory_impl(std::string ibase_dir, std::shared_ptr<std::vector<std::shared_ptr<pfm_file> > > ifile_list, bool irecursive) const
+void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > ifile_list, bool irecursive) const
 {
    if (irecursive)
    {
@@ -961,7 +961,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, std::shared_ptr<std::v
 
       for (; it != pfm_impl::res_files_map->end(); it++)
       {
-         shared_ptr<pfm_file> file = it->second;
+         mws_sp<pfm_file> file = it->second;
          std::string rdir = file->get_root_directory();
 
          if (mws_str::starts_with(rdir, ibase_dir))
@@ -976,7 +976,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, std::shared_ptr<std::v
 
       for (; it != pfm_impl::res_files_map->end(); it++)
       {
-         shared_ptr<pfm_file> file = it->second;
+         mws_sp<pfm_file> file = it->second;
 
          if (file->get_root_directory() == ibase_dir)
          {
@@ -1010,7 +1010,7 @@ bool pfm_main::back_evt()
    return unit_ctrl::inst()->back_evt();
 }
 
-//shared_ptr<ia_console> pfm::get_console()
+//mws_sp<ia_console> pfm::get_console()
 //{
 //	return data.console;
 //}
@@ -1119,7 +1119,7 @@ void pfm::screen::flip_screen()
 //
 //	if(exists(p))
 //	{
-//		shared_ptr<random_access_file> fs = get_random_access(p);
+//		mws_sp<random_access_file> fs = get_random_access(p);
 //		isize = file_size(p);
 //
 //		res = shared_array<uint8>(new uint8[isize]);
@@ -1176,7 +1176,7 @@ std::string pfm::filesystem::get_path(std::string iname)
    return "";
 }
 
-void pfm::filesystem::load_res_file_map(shared_ptr<unit> iu)
+void pfm::filesystem::load_res_file_map(mws_sp<unit> iu)
 {
    pfm_impl::res_files_map = std::make_shared<umf_r>();
    pfm_app_inst->get_directory_listing(pfm_impl::get_common_res_path(), pfm_impl::res_files_map, true);
@@ -1187,15 +1187,15 @@ void pfm::filesystem::load_res_file_map(shared_ptr<unit> iu)
    }
 }
 
-shared_ptr<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(shared_ptr<pfm_file> ifile)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(mws_sp<pfm_file> ifile)
 {
-   shared_ptr<vector<uint8> > res;
+   mws_sp<vector<uint8> > res;
 
    if (ifile->io.open())
    {
       int size = (int)ifile->length();
 
-      res = shared_ptr<vector<uint8> >(new vector<uint8>(size));
+      res = mws_sp<vector<uint8> >(new vector<uint8>(size));
       ifile->io.read(begin_ptr(res), size);
       ifile->io.close();
    }
@@ -1203,16 +1203,16 @@ shared_ptr<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(shared_ptr<p
    return res;
 }
 
-shared_ptr<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string ifilename)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string ifilename)
 {
-   shared_ptr<pfm_file> fs = pfm_file::get_inst(ifilename);
+   mws_sp<pfm_file> fs = pfm_file::get_inst(ifilename);
 
    return load_res_byte_vect(fs);
 }
 
-shared_ptr<std::string> pfm::filesystem::load_res_as_string(shared_ptr<pfm_file> ifile)
+mws_sp<std::string> pfm::filesystem::load_res_as_string(mws_sp<pfm_file> ifile)
 {
-   shared_ptr<std::string> text;
+   mws_sp<std::string> text;
 
    if (ifile->io.open("rt"))
    {
@@ -1228,14 +1228,14 @@ shared_ptr<std::string> pfm::filesystem::load_res_as_string(shared_ptr<pfm_file>
    return text;
 }
 
-shared_ptr<std::string> pfm::filesystem::load_res_as_string(std::string ifilename)
+mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string ifilename)
 {
-   shared_ptr<pfm_file> fs = pfm_file::get_inst(ifilename);
+   mws_sp<pfm_file> fs = pfm_file::get_inst(ifilename);
 
    return load_res_as_string(fs);
 }
 
-//shared_array<uint8> pfm::storage::load_unit_byte_array(shared_ptr<unit> iu, string ifilename, int& isize)
+//shared_array<uint8> pfm::storage::load_unit_byte_array(mws_sp<unit> iu, string ifilename, int& isize)
 //{
 //	if(!iu)
 //	{
@@ -1247,11 +1247,11 @@ shared_ptr<std::string> pfm::filesystem::load_res_as_string(std::string ifilenam
 //	return load_res_byte_array(ifilename, isize);
 //}
 
-shared_ptr<std::vector<uint8> > pfm::filesystem::load_unit_byte_vect(shared_ptr<unit> iu, string ifilename)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_unit_byte_vect(mws_sp<unit> iu, string ifilename)
 {
    if (!iu)
    {
-      return shared_ptr<std::vector<uint8> >();
+      return mws_sp<std::vector<uint8> >();
    }
 
    //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
@@ -1259,7 +1259,7 @@ shared_ptr<std::vector<uint8> > pfm::filesystem::load_unit_byte_vect(shared_ptr<
    return load_res_byte_vect(ifilename);
 }
 
-bool pfm::filesystem::store_unit_byte_array(shared_ptr<unit> iu, string ifilename, const uint8* ires, int isize)
+bool pfm::filesystem::store_unit_byte_array(mws_sp<unit> iu, string ifilename, const uint8* ires, int isize)
 {
    if (!iu)
    {
@@ -1269,7 +1269,7 @@ bool pfm::filesystem::store_unit_byte_array(shared_ptr<unit> iu, string ifilenam
    //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
 
    //path p = get_path(ifilename.c_str());
-   //shared_ptr<random_access_file> fs = get_random_access(p, true);
+   //mws_sp<random_access_file> fs = get_random_access(p, true);
 
    //if(exists(p))
    //{
@@ -1281,7 +1281,7 @@ bool pfm::filesystem::store_unit_byte_array(shared_ptr<unit> iu, string ifilenam
    return false;
 }
 
-bool pfm::filesystem::store_unit_byte_vect(shared_ptr<unit> iu, string ifilename, const vector<uint8>& ires)
+bool pfm::filesystem::store_unit_byte_vect(mws_sp<unit> iu, string ifilename, const vector<uint8>& ires)
 {
    if (!iu)
    {
@@ -1291,7 +1291,7 @@ bool pfm::filesystem::store_unit_byte_vect(shared_ptr<unit> iu, string ifilename
    //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
 
    //path p = get_path(ifilename.c_str());
-   //shared_ptr<random_access_file> fs = get_random_access(p, true);
+   //mws_sp<random_access_file> fs = get_random_access(p, true);
 
    //if(exists(p))
    //{
@@ -1303,17 +1303,17 @@ bool pfm::filesystem::store_unit_byte_vect(shared_ptr<unit> iu, string ifilename
    return false;
 }
 
-shared_ptr<pfm_file> pfm::filesystem::random_access(shared_ptr<unit> iu, std::string ifilename)
+mws_sp<pfm_file> pfm::filesystem::random_access(mws_sp<unit> iu, std::string ifilename)
 {
    if (!iu)
    {
-      return shared_ptr<pfm_file>();
+      return mws_sp<pfm_file>();
    }
 
    //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
 
    //return get_random_access(get_path(ifilename.c_str()), true);
-   return shared_ptr<pfm_file>();
+   return mws_sp<pfm_file>();
 }
 
 bool pfm::has_touchscreen()
@@ -1330,7 +1330,7 @@ bool pfm::has_touchscreen()
    return false;
 }
 
-shared_ptr<pfm_main> pfm::get_pfm_main_inst()
+mws_sp<pfm_main> pfm::get_pfm_main_inst()
 {
    if (!pfm_impl::res_files_map)
    {

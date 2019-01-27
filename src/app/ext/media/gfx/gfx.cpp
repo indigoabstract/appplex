@@ -120,7 +120,7 @@ void gfx::global_init()
       mws_print("sample coverage: %d, max samples: %d\n", samples, max_samples);
    }
 
-   //inst = shared_ptr<gfx>(new gfx());
+   //inst = mws_sp<gfx>(new gfx());
 
    //int ms = 8;
    //GLuint mTextureFramebuffer = 0;
@@ -150,7 +150,7 @@ void gfx::global_init()
       glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
    }
 
-   main_instance = std::shared_ptr<gfx>(new gfx());
+   main_instance = mws_sp<gfx>(new gfx());
    main_instance->init(main_instance);
 }
 
@@ -175,14 +175,14 @@ void gfx::on_resize(int i_width, int i_height)
    default_viewport_dim.w = i_height;
 }
 
-std::shared_ptr<gfx> gfx::nwi()
+mws_sp<gfx> gfx::nwi()
 {
-   auto inst = std::shared_ptr<gfx>(new gfx());
+   auto inst = mws_sp<gfx>(new gfx());
    inst->init(inst);
    return inst;
 }
 
-shared_ptr<gfx_state> gfx::get_gfx_state()
+mws_sp<gfx_state> gfx::get_gfx_state()
 {
    return gfx_state_inst;
 }
@@ -191,21 +191,21 @@ void gfx::reload()
 {
    for (auto it = rt_list.begin(); it != rt_list.end(); it++)
    {
-      shared_ptr<gfx_rt> rt = it->lock();
+      mws_sp<gfx_rt> rt = it->lock();
 
       rt->reload();
    }
 
    for (auto it = shader_list.begin(); it != shader_list.end(); it++)
    {
-      shared_ptr<gfx_shader> prg = it->lock();
+      mws_sp<gfx_shader> prg = it->lock();
 
       prg->reload();
    }
 
    for (auto it = tex_list.begin(); it != tex_list.end(); it++)
    {
-      shared_ptr<gfx_tex> tex = it->lock();
+      mws_sp<gfx_tex> tex = it->lock();
 
       tex->reload();
    }
@@ -213,9 +213,9 @@ void gfx::reload()
    mws_report_gfx_errs();
 }
 
-std::shared_ptr<gfx_rt> gfx::ic_rt::new_rt()
+mws_sp<gfx_rt> gfx::ic_rt::new_rt()
 {
-   std::shared_ptr<gfx_rt> rt = std::shared_ptr<gfx_rt>(new gfx_rt(gi()));
+   mws_sp<gfx_rt> rt = mws_sp<gfx_rt>(new gfx_rt(gi()));
    gi()->rt_list.push_back(rt);
 
    return rt;
@@ -241,12 +241,12 @@ int gfx::ic_rt::get_render_target_height()
    return (gi()->active_rt) ? gi()->active_rt->get_height() : get_screen_height();
 }
 
-std::shared_ptr<gfx_rt> gfx::ic_rt::get_current_render_target()
+mws_sp<gfx_rt> gfx::ic_rt::get_current_render_target()
 {
    return gi()->active_rt;
 }
 
-void gfx::ic_rt::set_current_render_target(std::shared_ptr<gfx_rt> irdt, bool i_force_binding)
+void gfx::ic_rt::set_current_render_target(mws_sp<gfx_rt> irdt, bool i_force_binding)
 {
    mws_report_gfx_errs();
 
@@ -298,12 +298,12 @@ bool gfx::ic_shader::reload_shader_on_modify()
    return true;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::new_program_from_src
+mws_sp<gfx_shader> gfx::ic_shader::new_program_from_src
 (
-   const std::string& iprg_name, std::shared_ptr<std::string> ivs_shader_src, std::shared_ptr<std::string> ifs_shader_src, std::shared_ptr<gfx_shader_listener> ilistener
+   const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src, mws_sp<gfx_shader_listener> ilistener
 )
 {
-   std::shared_ptr<gfx_shader> prg = get_program_by_name(iprg_name);
+   mws_sp<gfx_shader> prg = get_program_by_name(iprg_name);
 
    if (!prg)
    {
@@ -314,17 +314,17 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::new_program_from_src
    return prg;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener)
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener)
 {
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
 
    return gi()->shader.new_program(shader_id, ishader_name, ilistener);
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name, std::shared_ptr<gfx_shader_listener> ilistener)
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener)
 {
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
-   std::shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
+   mws_sp<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
@@ -335,13 +335,13 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_
    return prg;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::new_program
+mws_sp<gfx_shader> gfx::ic_shader::new_program
 (
-   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader, std::shared_ptr<gfx_shader_listener> ilistener
+   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader, mws_sp<gfx_shader_listener> ilistener
 )
 {
    std::string shader_id = gfx_shader::create_shader_id(ivertex_shader, ifragment_shader);
-   std::shared_ptr<gfx_shader> prg = get_program_by_shader_id(shader_id);
+   mws_sp<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
@@ -352,13 +352,13 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::new_program
    return prg;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_id)
+mws_sp<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_id)
 {
-   std::shared_ptr<gfx_shader> glp;
+   mws_sp<gfx_shader> glp;
 
    for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
    {
-      std::shared_ptr<gfx_shader> prg = it->lock();
+      mws_sp<gfx_shader> prg = it->lock();
 
       if (prg->get_shader_id() == ishader_id)
       {
@@ -370,13 +370,13 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string
    return glp;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
+mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
 {
-   std::shared_ptr<gfx_shader> glp;
+   mws_sp<gfx_shader> glp;
 
    for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
    {
-      std::shared_ptr<gfx_shader> prg = it->lock();
+      mws_sp<gfx_shader> prg = it->lock();
 
       if (prg->get_program_name() == iprg_name)
       {
@@ -388,12 +388,12 @@ std::shared_ptr<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg
    return glp;
 }
 
-std::shared_ptr<gfx_shader> gfx::ic_shader::get_current_program()
+mws_sp<gfx_shader> gfx::ic_shader::get_current_program()
 {
    return gi()->active_shader;
 }
 
-void gfx::ic_shader::set_current_program(std::shared_ptr<gfx_shader> iglp, bool force)
+void gfx::ic_shader::set_current_program(mws_sp<gfx_shader> iglp, bool force)
 {
    mws_report_gfx_errs();
 
@@ -424,10 +424,10 @@ void gfx::ic_shader::set_current_program(std::shared_ptr<gfx_shader> iglp, bool 
 
 mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_filename, const gfx_tex_params* i_prm)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_filename);
+   mws_sp<gfx_tex> tex = get_texture_by_name(i_filename);
    mws_assert(!tex);
 
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_filename, i_prm, gi()));
+   tex = mws_sp<gfx_tex>(new gfx_tex(i_filename, i_prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
@@ -435,10 +435,10 @@ mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_filename, const gfx_tex_params* i
 
 mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height, const gfx_tex_params* i_prm)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_sp<gfx_tex> tex = get_texture_by_name(i_tex_id);
    mws_assert(!tex);
 
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, i_prm, gi()));
+   tex = mws_sp<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, i_prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
@@ -446,13 +446,13 @@ mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height
 
 mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height, std::string i_format_id)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_sp<gfx_tex> tex = get_texture_by_name(i_tex_id);
    mws_assert(!tex);
 
    gfx_tex_params prm;
 
    prm.set_format_id(i_format_id);
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, &prm, gi()));
+   tex = mws_sp<gfx_tex>(new gfx_tex(i_tex_id, i_width, i_height, gfx_tex::TEX_2D, &prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
@@ -460,22 +460,22 @@ mws_sp<gfx_tex> gfx::ic_tex::nwi(std::string i_tex_id, int i_width, int i_height
 
 mws_sp<gfx_tex> gfx::ic_tex::nwi_external(std::string i_tex_id, int i_gl_id, std::string i_format_id)
 {
-   std::shared_ptr<gfx_tex> tex = get_texture_by_name(i_tex_id);
+   mws_sp<gfx_tex> tex = get_texture_by_name(i_tex_id);
    mws_assert(!tex);
 
    gfx_tex_params prm;
 
    prm.set_format_id(i_format_id);
-   tex = std::shared_ptr<gfx_tex>(new gfx_tex(i_tex_id, i_gl_id, 1, 1, gfx_tex::TEX_2D, &prm, gi()));
+   tex = mws_sp<gfx_tex>(new gfx_tex(i_tex_id, i_gl_id, 1, 1, gfx_tex::TEX_2D, &prm, gi()));
    gi()->tex_list.push_back(tex);
 
    return tex;
 }
 
-shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bool iforce_new_inst)
+mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bool iforce_new_inst)
 {
-   shared_ptr<gfx_tex> tex = get_texture_by_name(itex_name);
-   shared_ptr<gfx_tex_cube_map> tex_cube_map;
+   mws_sp<gfx_tex> tex = get_texture_by_name(itex_name);
+   mws_sp<gfx_tex_cube_map> tex_cube_map;
    bool new_tex = false;
 
    if (tex)
@@ -496,29 +496,29 @@ shared_ptr<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name
 
    if (new_tex)
    {
-      tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
+      tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
       gi()->tex_list.push_back(tex_cube_map);
    }
 
    return tex_cube_map;
 }
 
-shared_ptr<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 isize)
+mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 isize)
 {
-   shared_ptr<gfx_tex_cube_map> tex_cube_map = shared_ptr<gfx_tex_cube_map>(new gfx_tex_cube_map(isize));
+   mws_sp<gfx_tex_cube_map> tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(isize));
 
    gi()->tex_list.push_back(tex_cube_map);
 
    return tex_cube_map;
 }
 
-std::shared_ptr<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
+mws_sp<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
 {
-   std::shared_ptr<gfx_tex> tex;
+   mws_sp<gfx_tex> tex;
 
    for (auto it = gi()->tex_list.begin(); it != gi()->tex_list.end(); it++)
    {
-      std::shared_ptr<gfx_tex> t = it->lock();
+      mws_sp<gfx_tex> t = it->lock();
 
       if (t->get_name() == iname)
       {
@@ -530,7 +530,7 @@ std::shared_ptr<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
    return tex;
 }
 
-shared_ptr<gfx_tex> gfx::ic_tex::load_tex(std::string i_filename)
+mws_sp<gfx_tex> gfx::ic_tex::load_tex(std::string i_filename)
 {
    auto tex = get_texture_by_name(i_filename);
 
@@ -548,12 +548,12 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    shader.g = i_new_inst;
    tex.g = i_new_inst;
 
-   gfx_state_inst = shared_ptr<gfx_state>(new gfx_state());
+   gfx_state_inst = mws_sp<gfx_state>(new gfx_state());
    rt.set_current_render_target(nullptr);
 
    // black shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(
+      auto vsh = mws_sp<std::string>(new std::string(
          R"(
       uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
@@ -565,7 +565,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(
+      auto fsh = mws_sp<std::string>(new std::string(
          R"(
 #ifdef GL_ES
          precision lowp float;
@@ -583,7 +583,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // wireframe shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(
+      auto vsh = mws_sp<std::string>(new std::string(
          R"(
       uniform mat4 u_m4_model_view_proj;
       attribute vec3 a_v3_position;
@@ -596,7 +596,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(
+      auto fsh = mws_sp<std::string>(new std::string(
          R"(
 #ifdef GL_ES
          precision lowp float;
@@ -613,7 +613,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // basic-tex shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(
+      auto vsh = mws_sp<std::string>(new std::string(
          R"(
       attribute vec3 a_v3_position;
       attribute vec2 a_v2_tex_coord;
@@ -631,7 +631,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(
+      auto fsh = mws_sp<std::string>(new std::string(
          R"(
 #ifdef GL_ES
       precision lowp float;
@@ -655,7 +655,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // c-o shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(
+      auto vsh = mws_sp<std::string>(new std::string(
          R"(
       attribute vec3 a_v3_position;
 
@@ -668,7 +668,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(
+      auto fsh = mws_sp<std::string>(new std::string(
          R"(
 #ifdef GL_ES
          precision lowp float;
@@ -688,7 +688,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // mws shader
    {
-      auto vsh = shared_ptr<std::string>(new std::string(
+      auto vsh = mws_sp<std::string>(new std::string(
          R"(
       attribute vec3 a_v3_position;
       attribute vec2 a_v2_tex_coord;
@@ -706,7 +706,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      auto fsh = shared_ptr<std::string>(new std::string(
+      auto fsh = mws_sp<std::string>(new std::string(
          R"(
 #ifdef GL_ES
       precision lowp float;
@@ -748,7 +748,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    }
 }
 
-void gfx::get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect)
+void gfx::get_render_target_pixels_impl(mws_sp<gfx_rt> irt, void* ivect)
 {
    if (irt && rt.get_current_render_target())
    {
@@ -761,7 +761,7 @@ void gfx::get_render_target_pixels_impl(shared_ptr<gfx_rt> irt, void* ivect)
 
    if (rt.get_current_render_target())
    {
-      shared_ptr<gfx_tex> att = rt.get_current_render_target()->color_att;
+      mws_sp<gfx_tex> att = rt.get_current_render_target()->color_att;
       auto& prm = att->get_params();
 
       glPixelStorei(GL_PACK_ALIGNMENT, prm.get_bpp());
@@ -782,7 +782,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
    {
       struct pred
       {
-         bool operator()(std::weak_ptr<gfx_rt> wp) { return wp.expired(); }
+         bool operator()(mws_wp<gfx_rt> wp) { return wp.expired(); }
       };
       auto it = std::find_if(rt_list.begin(), rt_list.end(), pred());
       if (it != rt_list.end())rt_list.erase(it);
@@ -793,7 +793,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
    {
       struct pred
       {
-         bool operator()(std::weak_ptr<gfx_shader> wp) { return wp.expired(); }
+         bool operator()(mws_wp<gfx_shader> wp) { return wp.expired(); }
       };
       auto it = std::find_if(shader_list.begin(), shader_list.end(), pred());
       if(it != shader_list.end())shader_list.erase(it);
@@ -804,7 +804,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
    {
       struct pred
       {
-         bool operator()(std::weak_ptr<gfx_tex> wp) { return wp.expired(); }
+         bool operator()(mws_wp<gfx_tex> wp) { return wp.expired(); }
       };
       auto it = std::find_if(tex_list.begin(), tex_list.end(), pred());
       if (it != tex_list.end())tex_list.erase(it);

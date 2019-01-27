@@ -10,14 +10,14 @@
 class unit_gen_texture : public unit
 {
 public:
-	static shared_ptr<unit_gen_texture> nwi();
+   static mws_sp<unit_gen_texture> nwi();
 
-    virtual void init();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void init_mws();
+   virtual void load();
 
 private:
-	unit_gen_texture();
+   unit_gen_texture();
 };
 
 #endif

@@ -228,9 +228,9 @@ using namespace unit_test_stk_ns;
 
 unit_test_stk::unit_test_stk() : unit(mws_stringify(UNIT_TEST_STK)) {}
 
-shared_ptr<unit_test_stk> unit_test_stk::nwi()
+mws_sp<unit_test_stk> unit_test_stk::nwi()
 {
-	return shared_ptr<unit_test_stk>(new unit_test_stk());
+	return mws_sp<unit_test_stk>(new unit_test_stk());
 }
 
 void unit_test_stk::init()
@@ -242,7 +242,7 @@ void unit_test_stk::init_mws()
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(shared_ptr<mws_page_tab> iparent) : mws_page(iparent){}
+		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
 
 		virtual void init()
 		{
@@ -289,7 +289,7 @@ void unit_test_stk::init_mws()
 			generator = std::make_shared<Generator>(fmodSystem, generators[generatorId], frequency, sampleRate, channels, soundLengthSeconds, volume);
 		}
 
-		virtual void receive(shared_ptr<mws_dp> idp)
+		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if (idp->is_processed())
 			{
@@ -298,7 +298,7 @@ void unit_test_stk::init_mws()
 
 			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
 			{
-				shared_ptr<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
 
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
@@ -315,7 +315,7 @@ void unit_test_stk::init_mws()
 			}
 			else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
 			{
-				shared_ptr<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
 
 				if (ke->get_type() == key_evt::KE_PRESSED)
 				{
@@ -384,7 +384,7 @@ void unit_test_stk::init_mws()
 			fmodSystem->update();
 		}
 
-		virtual void update_view(shared_ptr<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> g)
 		{
 			mws_page::update_view(g);
 
@@ -397,8 +397,8 @@ void unit_test_stk::init_mws()
 		FMOD::Sound* actionSound;
 		FMOD::Channel* musicChannel;
 		FMOD::DSP* dspecho;
-		shared_ptr<Generator> generator;
-		shared_ptr<musical_note> last_played_note;
+		mws_sp<Generator> generator;
+		mws_sp<musical_note> last_played_note;
 		std::string show_note;
 	};
 

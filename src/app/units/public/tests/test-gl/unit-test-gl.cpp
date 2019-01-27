@@ -17,9 +17,9 @@
 
 unit_test_gl::unit_test_gl() : unit(mws_stringify(UNIT_TEST_GL)) {}
 
-shared_ptr<unit_test_gl> unit_test_gl::nwi()
+mws_sp<unit_test_gl> unit_test_gl::nwi()
 {
-	return shared_ptr<unit_test_gl>(new unit_test_gl());
+	return mws_sp<unit_test_gl>(new unit_test_gl());
 }
 
 void unit_test_gl::init()
@@ -29,10 +29,10 @@ void unit_test_gl::init()
 
 namespace test_gl
 {
-   shared_ptr<gfx_camera> ortho_cam;
-   shared_ptr<gfx_rt> rt;
-	shared_ptr<gfx_tex> rt_tex;
-	shared_ptr<gfx_quad_2d> quad_mesh;
+   mws_sp<gfx_camera> ortho_cam;
+   mws_sp<gfx_rt> rt;
+	mws_sp<gfx_tex> rt_tex;
+	mws_sp<gfx_quad_2d> quad_mesh;
 }
 
 using namespace test_gl;
@@ -64,7 +64,7 @@ void unit_test_gl::load()
 		rt = gfx::i()->rt.new_rt();
 		rt->set_color_attachment(rt_tex);
 
-		shared_ptr<gfx_state> gl_st = gfx::i()->get_gfx_state();
+		mws_sp<gfx_state> gl_st = gfx::i()->get_gfx_state();
 
 		gfx::i()->rt.set_current_render_target(rt);
 		decl_scgfxpl(pl1)
@@ -74,7 +74,7 @@ void unit_test_gl::load()
 			{},
 		};
 		gl_st->set_state(pl1);
-		gfx::i()->rt.set_current_render_target(shared_ptr<gfx_rt>());
+		gfx::i()->rt.set_current_render_target(mws_sp<gfx_rt>());
 	}
 
    {

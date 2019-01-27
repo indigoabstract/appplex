@@ -50,7 +50,7 @@ public:
 	void loadTrackData(char* track_name);
 	void generateTrackVertices();
 	glm::vec3& get_segment_pos_at(int isegment_idx);
-	void drawTrack(shared_ptr<gfx_camera> r);
+	void drawTrack(mws_sp<gfx_camera> r);
 
 	int version_number;
 	int* base_points;
@@ -72,7 +72,7 @@ public:
 	int start_point;
 	std::vector<glm::vec3> segment_crd;
 	glm::vec3 start_pos;
-	shared_ptr<gfx_tex> tex;
+	mws_sp<gfx_tex> tex;
 };
 
 #endif

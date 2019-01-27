@@ -10,20 +10,20 @@
 class unit_test_openvg : public unit
 {
 public:
-	static shared_ptr<unit_test_openvg> nwi();
+   static mws_sp<unit_test_openvg> nwi();
 
-    virtual void init();
-	virtual void on_destroy();
-	virtual void init_mws();
-    virtual void load();
+   virtual void init();
+   virtual void on_destroy();
+   virtual void init_mws();
+   virtual void load();
 
 private:
-	unit_test_openvg();
+   unit_test_openvg();
 
-	void init_shivavg();
-	void destroy_shivavg();
-	void init_monkvg();
-	void destroy_monkvg();
+   void init_shivavg();
+   void destroy_shivavg();
+   void init_monkvg();
+   void destroy_monkvg();
 };
 
 #endif

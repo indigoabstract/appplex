@@ -13,9 +13,9 @@ class font_db_impl;
 class mws_font : public enable_shared_from_this < mws_font >
 {
 public:
-   static shared_ptr<mws_font> nwi(std::shared_ptr<mws_font> i_fnt);
-   static shared_ptr<mws_font> nwi(float isize, const std::string& ifont_path = "");
-   shared_ptr<mws_font> get_inst();
+   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt);
+   static mws_sp<mws_font> nwi(float isize, const std::string& ifont_path = "");
+   mws_sp<mws_font> get_inst();
    const std::string& get_file_name()const;
    const std::string& get_full_path()const;
    std::string get_font_name()const;
@@ -36,6 +36,6 @@ private:
    mws_font();
 
    // cache font data for quick access
-   weak_ptr<font_cache> fnt_cache;
-   shared_ptr<mws_font_impl> p;
+   mws_wp<font_cache> fnt_cache;
+   mws_sp<mws_font_impl> p;
 };

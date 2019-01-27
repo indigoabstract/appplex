@@ -92,12 +92,12 @@ namespace unit_exercise_pref
 
 unit_exercise::unit_exercise() : unit(mws_stringify(UNIT_EXERCISE))
 {
-	prefs = shared_ptr<unit_preferences>(new unit_exercise_pref::unit_preferences_detail());
+	prefs = mws_sp<unit_preferences>(new unit_exercise_pref::unit_preferences_detail());
 }
 
-shared_ptr<unit_exercise> unit_exercise::nwi()
+mws_sp<unit_exercise> unit_exercise::nwi()
 {
-	return shared_ptr<unit_exercise>(new unit_exercise());
+	return mws_sp<unit_exercise>(new unit_exercise());
 }
 
 bool unit_exercise::update()
@@ -133,7 +133,7 @@ void unit_exercise::init()
 {
 	if (pfm::get_platform_id() == platform_android)
 	{
-		lop = shared_ptr<long_operation>(new holdlightlongop());
+		lop = mws_sp<long_operation>(new holdlightlongop());
 		start_process::exe_shell(exeUnlocked);
 	}
 }

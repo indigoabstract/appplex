@@ -21,10 +21,10 @@ enum class mws_vdec_state
 class mws_vdec_listener
 {
 public:
-   virtual void on_start(std::shared_ptr<mws_video_params> i_params) {}
+   virtual void on_start(mws_sp<mws_video_params> i_params) {}
    virtual void on_progress_evt(float i_progress_percent) {}
    virtual void on_frame_decoded(void* i_frame) {}
-   virtual void on_frame_decoded(std::shared_ptr<gfx_tex> i_video_frame) {}
+   virtual void on_frame_decoded(mws_sp<gfx_tex> i_video_frame) {}
    virtual void on_stop() {}
    virtual void on_finish() {}
 };
@@ -39,7 +39,7 @@ public:
    virtual int64 get_frame_count() = 0;
    virtual double get_frame_rate() = 0;
    virtual unsigned long long get_duration_us() = 0;
-   virtual std::shared_ptr<gfx_tex> get_current_frame() = 0;
+   virtual mws_sp<gfx_tex> get_current_frame() = 0;
    // get the total pixel content for a frame, including the padding
    virtual int get_total_width() = 0;
    virtual mws_vdec_state get_dec_state() = 0;
@@ -49,17 +49,17 @@ public:
 class mws_video_dec
 {
 public:
-   static std::shared_ptr<mws_video_dec> nwi();
+   static mws_sp<mws_video_dec> nwi();
 
    virtual ~mws_video_dec() {}
    virtual bool is_playing() const { return get_state() == mws_vdec_state::st_playing; }
    virtual std::string get_video_path() = 0;
    virtual void set_video_path(std::string i_video_path) = 0;
-   virtual std::shared_ptr<mws_media_info> get_media_info() = 0;
+   virtual mws_sp<mws_media_info> get_media_info() = 0;
    virtual int start_decoding() = 0;
    virtual void stop() = 0;
    virtual mws_vdec_state get_state() const = 0;
-   virtual void update(std::shared_ptr<gfx_camera> i_mws_cam = nullptr) = 0;
+   virtual void update(mws_sp<gfx_camera> i_mws_cam = nullptr) = 0;
    virtual void play() = 0;
    virtual void replay() = 0;
    virtual void pause() = 0;
@@ -68,7 +68,7 @@ public:
    virtual void next_frame() = 0;
    virtual void prev_frame() = 0;
    virtual void set_frame_limit(float iframe_limit) = 0;
-   virtual void set_listener(std::shared_ptr<mws_vdec_listener> listener) = 0;
+   virtual void set_listener(mws_sp<mws_vdec_listener> listener) = 0;
 
 protected:
    mws_video_dec() {}
