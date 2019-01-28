@@ -13,7 +13,6 @@
 #include "mod/rdo-std-fmt-rename.hpp"
 #include "mod/rdo-add-stdafx-include.hpp"
 #include "mod/rdo-recursive-copy.hpp"
-#include "mod/appplex-conf/mod-appplex-conf.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -247,7 +246,6 @@ private:
 			add_module(mws_sp<mod_cmd>(new mod_cmd_std_fmt_filenames()));
 			add_module(mws_sp<mod_cmd>(new mod_cmd_add_stdafx_include()));
 			add_module(mws_sp<mod_cmd>(new mod_cmd_recursive_copy()));
-			add_module(mws_sp<mod_cmd>(new mod_cmd_appplex_conf()));
 			//add_module(mws_sp<mod_cmd>(new mod_cmd_sherlock()));
 		}
 	}

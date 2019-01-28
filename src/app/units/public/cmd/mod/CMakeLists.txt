@@ -12,5 +12,3 @@ target_sources(app_plex_main
 	"${CMAKE_CURRENT_LIST_DIR}/rdo-recursive-copy.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/rdo-std-fmt-rename.hpp"
 )
-
-include("${CMAKE_CURRENT_LIST_DIR}/appplex-conf/CMakeLists.txt")
