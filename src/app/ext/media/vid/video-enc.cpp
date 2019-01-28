@@ -22,7 +22,7 @@ bool mws_video_reencoder::is_running() const
 
 #if defined MOD_FFMPEG
 
-#include "app/units/public/tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
+#include "tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
 
 
 mws_video_params::mws_video_params()

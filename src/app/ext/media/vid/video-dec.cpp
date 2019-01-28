@@ -5,7 +5,7 @@
 
 #if defined MOD_FFMPEG
 
-#include "app/units/public/tests/test-ffmpeg/ffmpeg/vdec-ffmpeg.hpp"
+#include "tests/test-ffmpeg/ffmpeg/vdec-ffmpeg.hpp"
 
 
 mws_sp<mws_video_dec> mws_video_dec::nwi()

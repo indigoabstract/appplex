@@ -24,7 +24,7 @@
 
 #include "gfx-quad-2d.hpp"
 #include "gfx-rt.hpp"
-#include "public/tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
+#include "tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
 #include "pfm-gl.h"
 
 #endif

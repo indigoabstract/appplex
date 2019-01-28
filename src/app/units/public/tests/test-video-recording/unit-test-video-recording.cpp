@@ -4,7 +4,7 @@
 
 #ifdef UNIT_TEST_VIDEO_RECORDING
 
-#include "public/tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
+#include "tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hpp"
 #include "com/unit/input-ctrl.hpp"
 #include "gfx-inc.hpp"
 #include "ext/gfx-surface.hpp"

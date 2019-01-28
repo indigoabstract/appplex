@@ -37,7 +37,9 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
@@ -81,7 +83,9 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jni")
@@ -150,7 +154,9 @@ else() # Assume iOS
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src")
