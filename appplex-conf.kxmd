@@ -14,6 +14,7 @@ units
 	@@[ lib ],
 	
 	png[ uses[ gfx, fonts, freetype, freetype_gl, mws, vector-fonts ] ],
+	jcv[ uses[ gfx, fonts, freetype, freetype_gl, mws, vector-fonts ] ],
 	
 	@@[ misc ],
 	
