@@ -94,7 +94,7 @@ mws_sp<res_ld> res_ld::inst()
 #if defined MOD_PNG
 
 #include "min.hpp"
-#include "lib/png/lodepng.h"
+#include "png/lodepng.h"
 
 
 static gfx_enum get_gl_color_format(const LodePNGInfo & i_info_png)
