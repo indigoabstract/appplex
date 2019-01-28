@@ -198,7 +198,6 @@ protected:
 
 private:
    friend class unit_ctrl;
-   friend class unit_ctrl_ext;
 
    std::vector<mws_sp<unit> > ulist;
    mws_wp<mws_list_model> ulmodel;
@@ -210,7 +209,6 @@ class app_units_setup
 {
 private:
    friend class unit_ctrl;
-   friend class unit_ctrl_ext;
 
    static void create_units(mws_sp<unit_list> i_unit_list);
    static mws_sp<unit_list> get_unit_list();

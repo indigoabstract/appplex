@@ -7,6 +7,7 @@
 #include "mws-vkb.hpp"
 #include "mws-vkb-diagram.hpp"
 #include "mws-vkb-visual.hpp"
+#include "unit-ctrl.hpp"
 #include "../mws-camera.hpp"
 #include "com/mws/text-vxo.hpp"
 #include "com/mws/mws-font.hpp"
@@ -37,6 +38,14 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
       {
       case pointer_evt::touch_began:
       {
+         auto& pt = pe->points[0];
+         auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
+         key_types key_id = key_vect[ret.idx];
+
+         if (key_id != KEY_DONE)
+         {
+            unit_ctrl::inst()->key_action(KEY_PRESS, key_id);
+         }
          break;
       }
 
@@ -57,12 +66,20 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             {
                done();
             }
+            else
+            {
+               unit_ctrl::inst()->key_action(KEY_RELEASE, key_id);
+            }
          }
          break;
       }
       }
 
       pe->process();
+   }
+   else if (i_dp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   {
+      ta->receive(i_dp);
    }
 }
 

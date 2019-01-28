@@ -44,7 +44,7 @@ public:
    pointer_evt();
    // used for debugging!
    virtual void process() override;
-   static mws_sp<pointer_evt> as_pointer_evt(mws_sp<mws_dp> idp);
+   static mws_sp<pointer_evt> as_pointer_evt(mws_sp<mws_dp> i_dp);
    bool is_multitouch();
 
    // pointer_down_count
@@ -58,11 +58,11 @@ public:
    //    PointerIndex... pointer index
    // return:
    //    returns a touch point at PointerIndex if it exists, else if PointerIndex is 0 return mouse press if it exists, else return null
-   const touch_point* get_pointer_press_by_index(uint32 pointer_index);
+   const touch_point* get_pointer_press_by_index(uint32 i_pointer_index);
 
-   const touch_point* find_point(uintptr_t touch_id) const;
-   bool same_touches(const pointer_evt& other) const;
-   glm::vec2 touch_pos(uintptr_t touch_id) const;
+   const touch_point* find_point(uintptr_t i_touch_id) const;
+   bool same_touches(const pointer_evt& i_other) const;
+   glm::vec2 touch_pos(uintptr_t i_touch_id) const;
    std::string get_evt_type();
 
    e_touch_type type = touch_invalid;
@@ -81,22 +81,22 @@ public:
 
    bool is_pointer_released();
    void update();
-   void enqueue_pointer_event(mws_sp<pointer_evt> ite);
+   void enqueue_pointer_event(mws_sp<pointer_evt> i_pe);
 
-   std::atomic<std::vector<mws_sp<pointer_evt> >*> queue_ptr;
+   std::atomic<std::vector<mws_sp<pointer_evt>>*> queue_ptr = nullptr;
 
 private:
    touchctrl();
 
    virtual mws_sp<mws_sender> sender_inst();
 
-   void on_pointer_action_pressed(mws_sp<pointer_evt> pa);
-   void on_pointer_action_dragged(mws_sp<pointer_evt> pa);
-   void on_pointer_action_released(mws_sp<pointer_evt> pa);
-   void on_pointer_action_mouse_wheel(mws_sp<pointer_evt> pa);
+   void on_pointer_action_pressed(mws_sp<pointer_evt> i_pe);
+   void on_pointer_action_dragged(mws_sp<pointer_evt> i_pe);
+   void on_pointer_action_released(mws_sp<pointer_evt> i_pe);
+   void on_pointer_action_mouse_wheel(mws_sp<pointer_evt> i_pe);
 
-   int queue_idx;
-   std::vector<std::vector<mws_sp<pointer_evt> > > queue_tab;
+   int queue_idx = 0;
+   std::vector<std::vector<mws_sp<pointer_evt>>> queue_tab;
 
    static bool is_pointer_down;
    static point2d first_press;
@@ -122,11 +122,11 @@ public:
    static const std::string KEYEVT_REPEATED;
    static const std::string KEYEVT_RELEASED;
 
-   static mws_sp<key_evt> as_key_evt(mws_sp<mws_dp> idp);
-   static mws_sp<key_evt> nwi(mws_wp<key_ctrl> isrc, key_evt_types itype, key_types i_key);
+   static mws_sp<key_evt> as_key_evt(mws_sp<mws_dp> i_dp);
+   static mws_sp<key_evt> nwi(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);
    mws_sp<key_evt> get_instance();
 
-   static const std::string& get_type_name(key_evt_types tstype);
+   static const std::string& get_type_name(key_evt_types i_key_evt);
    mws_sp<key_ctrl> get_src();
    bool is_pressed() const;
    bool is_repeated() const;
@@ -137,7 +137,7 @@ public:
 
 private:
 
-   key_evt(mws_wp<key_ctrl> isrc, key_evt_types itype, key_types i_key);
+   key_evt(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);
 
    key_evt_types type;
    key_types key;
@@ -160,10 +160,13 @@ private:
    key_ctrl();
 
    virtual mws_sp<mws_sender> sender_inst();
-   void new_key_event(mws_sp<key_evt> ts);
+   void new_key_event(mws_sp<key_evt> i_ke);
 
    bool events_pending;
    // common for all instances
+   static uint32 time_until_first_key_repeat_ms;
+   static uint32 key_repeat_threshold_ms;
+   static uint32 max_key_repeat_count;
    static uint8 keys_status[KEY_COUNT];
    static uint32 keys_status_time[KEY_COUNT];
 };

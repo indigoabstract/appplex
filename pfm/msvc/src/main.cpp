@@ -161,7 +161,7 @@ public:
 ATOM				register_new_window_class(HINSTANCE hinstance);
 HWND				create_app_window(HINSTANCE, RECT& iclient_rect);
 LRESULT CALLBACK	wnd_proc(HWND, UINT, WPARAM, LPARAM);
-int					get_key(int key);
+key_types			get_key(int key);
 
 
 mws_sp<msvc_main> msvc_main::instance;
@@ -290,7 +290,7 @@ void msvc_main::flip_screen()
 
 void msvc_main::write_text(const char* text)const
 {
-   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
+   if (text&& instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleA(instance.consoleHandle, text, wcslen(text), NULL, NULL);
       printf(text);
@@ -307,7 +307,7 @@ void msvc_main::write_text_nl(const char* text)const
 
 void msvc_main::write_text(const wchar_t* text)const
 {
-   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
+   if (text&& instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleW(instance.consoleHandle, text, wcslen(text), NULL, NULL);
       wprintf(text);
@@ -325,7 +325,7 @@ void msvc_main::write_text_v(const char* iformat, ...)const
    vsnprintf_s(dest, 1024 * 16 - 1, _TRUNCATE, iformat, argptr);
    va_end(argptr);
 
-   if (iformat && instance->console_handle != INVALID_HANDLE_VALUE)
+   if (iformat&& instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleA(instance.consoleHandle, text, strlen(text), NULL, NULL);
       printf(dest);
@@ -350,7 +350,7 @@ void msvc_main::write_text_nl(const wchar_t* text)const
    write_text(L"\n");
 }
 
-umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive)
+umf_list msvc_main::get_directory_listing(const std::string & idirectory, umf_list iplist, bool is_recursive)
 {
    if (idirectory.length() > 0)
    {
@@ -1079,7 +1079,7 @@ ATOM register_new_window_class(HINSTANCE hinstance)
    return RegisterClassEx(&wcex);
 }
 
-HWND create_app_window(HINSTANCE hinstance, RECT& iclient_rect)
+HWND create_app_window(HINSTANCE hinstance, RECT & iclient_rect)
 // creates the main window
 {
    //	HWND hWnd;
@@ -1311,7 +1311,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYDOWN:
    case WM_SYSKEYDOWN:
    {
-      int key = get_key(wparam);
+      key_types key_id = get_key(wparam);
 
       switch (wparam)
       {
@@ -1328,7 +1328,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          break;
       }
 
-      unit_ctrl::inst()->key_action(KEY_PRESS, key);
+      unit_ctrl::inst()->key_action(KEY_PRESS, key_id);
 
       return 0;
    }
@@ -1336,11 +1336,11 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYUP:
    case WM_SYSKEYUP:
    {
-      int key = get_key(wparam);
+      key_types key_id = get_key(wparam);
 
-      unit_ctrl::inst()->key_action(KEY_RELEASE, key);
+      unit_ctrl::inst()->key_action(KEY_RELEASE, key_id);
 
-      if (key == KEY_ESCAPE)
+      if (key_id == KEY_ESCAPE)
       {
          bool back = unit_ctrl::inst()->back_evt();
          unit_ctrl::inst()->set_app_exit_on_next_run(back);
@@ -1389,7 +1389,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 }
 
 
-int get_key(int i_key)
+key_types get_key(int i_key)
 {
    bool shift_held = (mod_keys_down & shift_key_down != 0);
 
@@ -1399,7 +1399,6 @@ int get_key(int i_key)
 
       if (shift_held)
       {
-
          switch (diff)
          {
          case 1: return KEY_EXCLAMATION;
@@ -1416,14 +1415,14 @@ int get_key(int i_key)
       }
       else
       {
-         return KEY_0 + diff;
+         return key_types(KEY_0 + diff);
       }
    }
    else if (i_key >= 'A' && i_key <= 'Z')
    {
       int diff = i_key - 'A';
 
-      return KEY_A + diff;
+      return key_types(KEY_A + diff);
    }
 
    switch (i_key)
