@@ -345,12 +345,14 @@ void key_ctrl::update()
       uint32 crt_time = pfm::time::get_time_millis();
       bool events_still_pending = false;
 
-      for (int k = KEY_INVALID; k < KEY_COUNT; k++)
+      for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
       {
+         key_types key_id = (key_types)k;
+         
          switch (keys_status[k])
          {
          case KEY_PRESSED:
-            new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, (key_types)k));
+            new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, key_id));
             keys_status[k] = KEY_FIRST_PRESSED;
             events_still_pending = true;
             break;
@@ -358,7 +360,7 @@ void key_ctrl::update()
          case KEY_FIRST_PRESSED:
             if (crt_time - keys_status_time[k] > 400)
             {
-               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, (key_types)k));
+               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, key_id));
                keys_status[k] = KEY_REPEATED;
                keys_status_time[k] = crt_time;
             }
@@ -369,7 +371,7 @@ void key_ctrl::update()
          case KEY_REPEATED:
             if (crt_time - keys_status_time[k] > 25)
             {
-               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, (key_types)k));
+               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, key_id));
                keys_status_time[k] = crt_time;
             }
 
@@ -378,7 +380,7 @@ void key_ctrl::update()
 
          case KEY_RELEASED:
             keys_status[k] = KEY_RELEASED_IDLE;
-            new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, (key_types)k));
+            new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, key_id));
             events_still_pending = true;
             break;
 
