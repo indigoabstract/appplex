@@ -28,11 +28,46 @@ enum dir_types
 };
 
 
+class mws_exception
+#ifdef MWS_USES_EXCEPTIONS
+   : public std::exception
+#endif
+{
+public:
+   mws_exception();
+   mws_exception(const std::string& i_msg);
+   mws_exception(const char* i_msg);
+   virtual ~mws_exception();
+
+   // returns a C-style character string describing the general cause of the current error
+   virtual const char* what() const noexcept;
+
+private:
+   void set_msg(const char* i_msg);
+
+   std::string msg;
+};
+
+
 template<typename T> std::string mws_from(const T& i_input) { return std::to_string(i_input); }
 template<typename T> T mws_to(const std::string& i_input) { return T(); }
 template<> int mws_to(const std::string& i_input) { return std::stoi(i_input); }
 template<> long mws_to(const std::string& i_input) { return std::stol(i_input); }
 template<> float mws_to(const std::string& i_input) { return std::stof(i_input); }
+template<> bool mws_to(const std::string& i_input)
+{
+    if(i_input == "0" || i_input == "false")
+    {
+        return false;
+    }
+    else if(i_input == "1" || i_input == "true")
+    {
+        return true;
+    }
+    
+   mws_throw mws_exception("mws_to<bool> failed");
+    return false;
+}
 
 struct mws_str
 {
@@ -99,27 +134,6 @@ public:
       static std::string get_current_date();
       static std::string get_duration_as_string(uint32 i_duration);
    };
-};
-
-
-class mws_exception
-#ifdef MWS_USES_EXCEPTIONS
-   : public std::exception
-#endif
-{
-public:
-   mws_exception();
-   mws_exception(const std::string& i_msg);
-   mws_exception(const char* i_msg);
-   virtual ~mws_exception();
-
-   // returns a C-style character string describing the general cause of the current error
-   virtual const char* what() const noexcept;
-
-private:
-   void set_msg(const char* i_msg);
-
-   std::string msg;
 };
 
 
