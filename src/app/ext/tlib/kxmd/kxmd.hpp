@@ -70,6 +70,7 @@ public:
 
    static mws_sp<kxmd_elem> nwi() { return mws_sp<kxmd_elem>(new kxmd_elem()); }
    virtual ~kxmd_elem() {}
+   size_t size() const { return vect.size(); }
    int elem_count() const { return vect.size(); }
    virtual bool is_leaf() const { return vect.empty() && !val.empty(); };
    virtual bool is_node() const { return !vect.empty(); };
