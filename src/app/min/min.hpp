@@ -51,23 +51,11 @@ private:
 
 template<typename T> std::string mws_from(const T& i_input) { return std::to_string(i_input); }
 template<typename T> T mws_to(const std::string& i_input) { mws_throw mws_exception("mws_to<bool> failed"); return T(); }
-template<> int mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> long mws_to(const std::string& i_input) { return std::stol(i_input); }
-template<> float mws_to(const std::string& i_input) { return std::stof(i_input); }
-template<> bool mws_to(const std::string& i_input)
-{
-    if(i_input == "0" || i_input == "false")
-    {
-        return false;
-    }
-    else if(i_input == "1" || i_input == "true")
-    {
-        return true;
-    }
-    
-   mws_throw mws_exception("mws_to<bool> failed");
-    return false;
-}
+template<> int mws_to(const std::string& i_input);
+template<> long mws_to(const std::string& i_input);
+template<> float mws_to(const std::string& i_input);
+template<> bool mws_to(const std::string& i_input);
+
 
 struct mws_str
 {

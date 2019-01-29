@@ -8,8 +8,57 @@
 #include <iomanip>
 
 
-using std::string;
-using std::wstring;
+mws_exception::mws_exception()
+{
+   set_msg("");
+}
+
+mws_exception::mws_exception(const std::string& i_msg)
+{
+   set_msg(i_msg.c_str());
+}
+
+mws_exception::mws_exception(const char* i_msg)
+{
+   set_msg(i_msg);
+}
+
+mws_exception::~mws_exception()
+{
+}
+
+const char* mws_exception::what() const noexcept
+{
+   return msg.c_str();
+}
+
+void mws_exception::set_msg(const char* i_msg)
+{
+   msg = i_msg;
+
+#ifndef MWS_USES_EXCEPTIONS
+   mws_assert(false);
+#endif
+}
+
+
+template<> int mws_to(const std::string& i_input) { return std::stoi(i_input); }
+template<> long mws_to(const std::string& i_input) { return std::stol(i_input); }
+template<> float mws_to(const std::string& i_input) { return std::stof(i_input); }
+template<> bool mws_to(const std::string& i_input)
+{
+   if (i_input == "0" || i_input == "false")
+   {
+      return false;
+   }
+   else if (i_input == "1" || i_input == "true")
+   {
+      return true;
+   }
+
+   mws_throw mws_exception("mws_to<bool> failed");
+   return false;
+}
 
 
 std::string mws_util::path::get_directory_from_path(const std::string& file_path)
@@ -245,40 +294,6 @@ std::vector<std::string> mws_str::str_split(const std::string & str, const std::
    std::vector<std::string> delimiters = { delimiter };
 
    return str_split(str, delimiters);
-}
-
-
-mws_exception::mws_exception()
-{
-   set_msg("");
-}
-
-mws_exception::mws_exception(const std::string & i_msg)
-{
-   set_msg(i_msg.c_str());
-}
-
-mws_exception::mws_exception(const char* i_msg)
-{
-   set_msg(i_msg);
-}
-
-mws_exception::~mws_exception()
-{
-}
-
-const char* mws_exception::what() const noexcept
-{
-   return msg.c_str();
-}
-
-void mws_exception::set_msg(const char* i_msg)
-{
-   msg = i_msg;
-
-#ifndef MWS_USES_EXCEPTIONS
-   mws_assert(false);
-#endif
 }
 
 
