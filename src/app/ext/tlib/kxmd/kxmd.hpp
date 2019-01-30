@@ -71,18 +71,17 @@ public:
    static mws_sp<kxmd_elem> nwi() { return mws_sp<kxmd_elem>(new kxmd_elem()); }
    virtual ~kxmd_elem() {}
    size_t size() const { return vect.size(); }
-   int elem_count() const { return vect.size(); }
    virtual bool is_leaf() const { return vect.empty() && !val.empty(); };
    virtual bool is_node() const { return !vect.empty(); };
 
    mws_sp<kxmd_elem> find_by_name(const std::string& i_name, bool i_recursive = false) const;
    std::string to_string() const;
    std::string to_string_list() const;
-   std::string indent_by_level(int i_level) const;
-   std::string to_string_impl(int i_level) const;
 
 protected:
    kxmd_elem() {}
+   std::string indent_by_level(int i_level) const;
+   std::string to_string_impl(int i_level) const;
 };
 
 #endif

@@ -209,9 +209,9 @@ void mws_vkb::load(std::string i_filename)
    {
       auto kernel_point_keys = kxmd::get_elem("kernel-point-keys", kxmdi);
 
-      key_vect.resize(kernel_point_keys->elem_count());
+      key_vect.resize(kernel_point_keys->size());
 
-      for (int k = 0; k < kernel_point_keys->elem_count(); k++)
+      for (size_t k = 0; k < kernel_point_keys->size(); k++)
       {
          const std::string& key_name = kernel_point_keys->vect[k]->val;
          key_vect[k] = get_key_type(key_name);
@@ -222,7 +222,7 @@ void mws_vkb::load(std::string i_filename)
    {
       auto kernel_points = kxmd::get_elem("kernel-points", kxmdi);
       auto& kpv = gd.kernel_points;
-      int size = kernel_points->elem_count();
+      int size = kernel_points->size();
 
       kpv.resize(size);
       kpv._first_idx = 0;
@@ -234,8 +234,8 @@ void mws_vkb::load(std::string i_filename)
          auto& kp = kpv[k];
 
          kp.id = k;
-         kp.position.x = std::stof(pos_pair->vect[0]->val);
-         kp.position.y = std::stof(pos_pair->vect[1]->val);
+         kp.position.x = mws_to<float>(pos_pair->vect[0]->val);
+         kp.position.y = mws_to<float>(pos_pair->vect[1]->val);
       }
    }
 
@@ -243,7 +243,7 @@ void mws_vkb::load(std::string i_filename)
    {
       auto nexus_points = kxmd::get_elem("nexus-points", kxmdi);
       auto& npv = gd.nexus_points;
-      int size = nexus_points->elem_count();
+      int size = nexus_points->size();
 
       npv.resize(size);
       npv._first_idx = gd.kernel_points._last_idx + 1;
@@ -255,8 +255,8 @@ void mws_vkb::load(std::string i_filename)
          auto& np = npv[k];
 
          np.id = npv._first_idx + k;
-         np.position.x = std::stof(pos_pair->vect[0]->val);
-         np.position.y = std::stof(pos_pair->vect[1]->val);
+         np.position.x = mws_to<float>(pos_pair->vect[0]->val);
+         np.position.y = mws_to<float>(pos_pair->vect[1]->val);
       }
    }
 
@@ -264,7 +264,7 @@ void mws_vkb::load(std::string i_filename)
    {
       auto nexus_pairs = kxmd::get_elem("nexus-pairs", kxmdi);
       auto& npp = gd.nexus_pairs;
-      int size = nexus_pairs->elem_count();
+      int size = nexus_pairs->size();
       npp.resize(size);
 
       for (int k = 0; k < size; k++)
@@ -272,8 +272,8 @@ void mws_vkb::load(std::string i_filename)
          auto pos_pair = nexus_pairs->vect[k];
          auto& np = npp[k];
 
-         np.nexus0_id = std::stoi(pos_pair->vect[0]->val);
-         np.nexus1_id = std::stoi(pos_pair->vect[1]->val);
+         np.nexus0_id = mws_to<uint32>(pos_pair->vect[0]->val);
+         np.nexus1_id = mws_to<uint32>(pos_pair->vect[1]->val);
       }
    }
 
@@ -282,7 +282,7 @@ void mws_vkb::load(std::string i_filename)
       auto cell_indices = kxmd::get_elem("cell-indices", kxmdi);
       auto& cpi = gd.cell_points_ids;
       auto& cpc = gd.cell_point_count;
-      int cell_indices_size = cell_indices->elem_count();
+      int cell_indices_size = cell_indices->size();
       int cell_points_count = 0;
 
       cpc.resize(cell_indices_size);
@@ -305,7 +305,7 @@ void mws_vkb::load(std::string i_filename)
 
          for (size_t i = 0; i < triangle_indices_count; i++, l++)
          {
-            int idx = std::stoi(triangle_indices->vect[i]->val);
+            uint32 idx = mws_to<uint32>(triangle_indices->vect[i]->val);
             cpi[l].point_id = idx;
          }
       }

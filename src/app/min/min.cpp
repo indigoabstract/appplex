@@ -42,9 +42,12 @@ void mws_exception::set_msg(const char* i_msg)
 }
 
 
-template<> int mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> long mws_to(const std::string& i_input) { return std::stol(i_input); }
+template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
+template<> uint32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
+template<> int64 mws_to(const std::string& i_input) { return std::stoll(i_input); }
+template<> uint64 mws_to(const std::string& i_input) { return std::stoull(i_input); }
 template<> float mws_to(const std::string& i_input) { return std::stof(i_input); }
+template<> double mws_to(const std::string& i_input) { return std::stod(i_input); }
 template<> bool mws_to(const std::string& i_input)
 {
    if (i_input == "0" || i_input == "false")
