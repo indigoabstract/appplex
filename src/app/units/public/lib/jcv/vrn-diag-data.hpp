@@ -50,12 +50,7 @@ public:
 class mws_vrn_kernel_pt : public mws_vrn_diag_pt
 {
 public:
-   mws_vrn_kernel_pt()
-   {
-      cell = nullptr;
-   }
-
-   jcv_site* cell;
+   jcv_site* cell = nullptr;
 };
 
 
@@ -63,12 +58,7 @@ public:
 class mws_vrn_nexus_pt : public mws_vrn_diag_pt
 {
 public:
-   mws_vrn_nexus_pt()
-   {
-      starting_edge = nullptr;
-   }
-
-   jcv_edge* starting_edge;
+   jcv_edge* starting_edge = nullptr;
 };
 
 
@@ -302,10 +292,10 @@ public:
 
 enum class mws_vrn_diag_pt_type
 {
-   e_invalid_point,
-   e_kernel_point,
-   e_nexus_point,
-   e_triangle_point,
+   invalid_point,
+   kernel_point,
+   nexus_point,
+   triangle_point,
 };
 
 
@@ -346,51 +336,14 @@ public:
       uint32 last_geom_id;
    };
 
-   // return if a kernel or a nexus point based on id value
-   // return invalid value if id is outside of range
-   mws_vrn_diag_pt_type get_diagram_point_type_by_id(uint32 id)
-   {
-      if (id >= geom.kernel_points.first_idx() && id <= geom.kernel_points.last_idx())
-      {
-         return mws_vrn_diag_pt_type::e_kernel_point;
-      }
-      else if (id >= geom.nexus_points.first_idx() && id <= geom.nexus_points.last_idx())
-      {
-         return mws_vrn_diag_pt_type::e_nexus_point;
-      }
-
-      return mws_vrn_diag_pt_type::e_invalid_point;
-   }
-
+   // return if a kernel or a nexus point based on i_id value
+   // return invalid value if i_id is outside of range
+   mws_vrn_diag_pt_type get_diagram_point_type_by_id(uint32 i_id);
    // return a kernel or a nexus point based on id value
    // return null if id is outside of range
-   mws_vrn_diag_pt* get_diagram_point_by_id(uint32 id)
-   {
-      if (id >= geom.kernel_points.first_idx() && id <= geom.kernel_points.last_idx())
-      {
-         uint32 idx = id - geom.kernel_points.first_idx();
-
-         return &geom.kernel_points[idx];
-      }
-      else if (id >= geom.nexus_points.first_idx() && id <= geom.nexus_points.last_idx())
-      {
-         uint32 idx = id - geom.nexus_points.first_idx();
-
-         return &geom.nexus_points[idx];
-      }
-
-      return nullptr;
-   }
-
-   mws_vrn_kernel_pt* get_kernel_point_by_id(uint32 id)
-   {
-      return (mws_vrn_kernel_pt*)get_diagram_point_by_id(id);
-   }
-
-   mws_vrn_nexus_pt* get_nexus_point_by_id(uint32 id)
-   {
-      return (mws_vrn_nexus_pt*)get_diagram_point_by_id(id);
-   }
+   mws_vrn_diag_pt* get_diagram_point_by_id(uint32 i_id);
+   mws_vrn_kernel_pt* get_kernel_point_by_id(uint32 i_id);
+   mws_vrn_nexus_pt* get_nexus_point_by_id(uint32 i_id);
 
    settings info;
    mws_vrn_geom_data geom;
