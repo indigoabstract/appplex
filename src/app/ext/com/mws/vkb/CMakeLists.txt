@@ -1,7 +1,5 @@
 set(headers
 	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb-visual.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb-diagram.hpp"
 )
 set(sources
 	"${CMAKE_CURRENT_LIST_DIR}/mws-vkb.cpp"

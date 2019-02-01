@@ -5,8 +5,8 @@
 #if defined MOD_MWS && defined MOD_VKB
 
 #include "mws-vkb.hpp"
-#include "mws-vkb-diagram.hpp"
-#include "mws-vkb-visual.hpp"
+#include "jcv/vrn-diag.hpp"
+#include "jcv/vrn-visual.hpp"
 #include "unit-ctrl.hpp"
 #include "../mws-camera.hpp"
 #include "com/mws/text-vxo.hpp"
@@ -15,7 +15,6 @@
 #include <kxmd/kxmd.hpp>
 
 
-const key_types KEY_DONE = KEY_END;
 mws_sp<mws_vkb> mws_vkb::inst;
 mws_sp<mws_vkb> mws_vkb::gi()
 {
@@ -42,7 +41,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
          key_types key_id = key_vect[ret.idx];
 
-         if (key_id != KEY_DONE)
+         if (key_id != VKB_DONE)
          {
             unit_ctrl::inst()->key_action(KEY_PRESS, key_id);
          }
@@ -62,7 +61,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             std::string key_name = get_key_name(key_id);
             mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
 
-            if (key_id == KEY_DONE)
+            if (key_id == VKB_DONE)
             {
                done();
             }
@@ -113,7 +112,10 @@ void mws_vkb::load(std::string i_filename)
 {
    if (!vk)
    {
-      vk = vkb_voronoi_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+      vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+      vk->toggle_voronoi_object(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
+      vk->init();
+      //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
       attach(vk->vgeom);
       vk_keys = text_vxo::nwi();
       attach(vk_keys);
@@ -203,116 +205,38 @@ void mws_vkb::load(std::string i_filename)
    mws_sp<std::vector<uint8> > res = get_unit()->storage.load_unit_byte_vect(vkb_filename);
    mws_sp<std::string> src(new std::string((const char*)begin_ptr(res), res->size()));
    mws_sp<kxmd_elem> kxmdi = kxmd::parse(src);
-   mws_sp<vkb_voronoi_data> diag_data = vk->diag_data;
-   vkb_voronoi_data::vkb_voronoi_geometry_data& gd = diag_data->geom;
 
+   // load key points
    {
       auto kernel_point_keys = kxmd::get_elem("kernel-point-keys", kxmdi);
-
       key_vect.resize(kernel_point_keys->size());
 
-      for (size_t k = 0; k < kernel_point_keys->size(); k++)
+      for (uint32 k = 0; k < kernel_point_keys->size(); k++)
       {
-         const std::string& key_name = kernel_point_keys->vect[k]->val;
-         key_vect[k] = get_key_type(key_name);
+         const std::string& val = kernel_point_keys->vect[k]->val;
+         uint32 key_id = mws_to<uint32>(val);
+
+         mws_assert(key_id > KEY_INVALID && key_id < KEY_COUNT);
+         key_vect[k] = key_types(key_id);
       }
    }
-
-   // kernel-points
+   // load kernel points
    {
       auto kernel_points = kxmd::get_elem("kernel-points", kxmdi);
-      auto& kpv = gd.kernel_points;
-      int size = kernel_points->size();
+      std::vector<glm::vec2> kernel_points_pos;
 
-      kpv.resize(size);
-      kpv._first_idx = 0;
-      kpv._last_idx = size - 1;
-
-      for (int k = 0; k < size; k++)
+      for (uint32 k = 0; k < kernel_points->size(); k++)
       {
          auto pos_pair = kernel_points->vect[k];
-         auto& kp = kpv[k];
-
-         kp.id = k;
-         kp.position.x = mws_to<float>(pos_pair->vect[0]->val);
-         kp.position.y = mws_to<float>(pos_pair->vect[1]->val);
+         float pos_0 = mws_to<float>(pos_pair->vect[0]->val);
+         float pos_1 = mws_to<float>(pos_pair->vect[1]->val);
+         kernel_points_pos.push_back(glm::vec2(pos_0, pos_1));
       }
+
+      vk->set_kernel_points(kernel_points_pos);
+      //vk->update_geometry();
    }
-
-   // nexus-points
-   {
-      auto nexus_points = kxmd::get_elem("nexus-points", kxmdi);
-      auto& npv = gd.nexus_points;
-      int size = nexus_points->size();
-
-      npv.resize(size);
-      npv._first_idx = gd.kernel_points._last_idx + 1;
-      npv._last_idx = npv._first_idx + size;
-
-      for (int k = 0; k < size; k++)
-      {
-         auto pos_pair = nexus_points->vect[k];
-         auto& np = npv[k];
-
-         np.id = npv._first_idx + k;
-         np.position.x = mws_to<float>(pos_pair->vect[0]->val);
-         np.position.y = mws_to<float>(pos_pair->vect[1]->val);
-      }
-   }
-
-   // nexus-pairs
-   {
-      auto nexus_pairs = kxmd::get_elem("nexus-pairs", kxmdi);
-      auto& npp = gd.nexus_pairs;
-      int size = nexus_pairs->size();
-      npp.resize(size);
-
-      for (int k = 0; k < size; k++)
-      {
-         auto pos_pair = nexus_pairs->vect[k];
-         auto& np = npp[k];
-
-         np.nexus0_id = mws_to<uint32>(pos_pair->vect[0]->val);
-         np.nexus1_id = mws_to<uint32>(pos_pair->vect[1]->val);
-      }
-   }
-
-   // cell-indices
-   {
-      auto cell_indices = kxmd::get_elem("cell-indices", kxmdi);
-      auto& cpi = gd.cell_points_ids;
-      auto& cpc = gd.cell_point_count;
-      int cell_indices_size = cell_indices->size();
-      int cell_points_count = 0;
-
-      cpc.resize(cell_indices_size);
-
-      for (int k = 0; k < cell_indices_size; k++)
-      {
-         auto& triangle_indices = cell_indices->vect[k];
-         int vx_count = triangle_indices->vect.size();
-
-         cell_points_count += vx_count;
-         cpc[k] = vx_count;
-      }
-
-      cpi.resize(cell_points_count);
-
-      for (int k = 0, l = 0; k < cell_indices_size; k++)
-      {
-         auto& triangle_indices = cell_indices->vect[k];
-         size_t triangle_indices_count = triangle_indices->vect.size();
-
-         for (size_t i = 0; i < triangle_indices_count; i++, l++)
-         {
-            uint32 idx = mws_to<uint32>(triangle_indices->vect[i]->val);
-            cpi[l].point_id = idx;
-         }
-      }
-   }
-
-   vk->update_geometry();
-
+   // finish setup
    {
       auto vd = vk->get_diag_data();
       auto& kp_vect = vd->geom.kernel_points;
@@ -323,7 +247,7 @@ void mws_vkb::load(std::string i_filename)
       selected_key_font = mws_font::nwi(48.f);
       selected_key_font->set_color(gfx_color::colors::red);
 
-      for (size_t k = 0; k < key_vect.size(); k++)
+      for (uint32 k = 0; k < key_vect.size(); k++)
       {
          mws_sp<mws_font> font = key_font;
 

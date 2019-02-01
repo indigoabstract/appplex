@@ -24,9 +24,9 @@ public:
    virtual const mws_sp<mws_vrn_data> get_data() const = 0;
    virtual idx_dist get_kernel_idx_at(float i_x, float i_y) const = 0;
    virtual void update_data() = 0;
-   virtual void move_kernel_to(int i_idx, float i_x, float i_y) = 0;
+   virtual void move_kernel_to(uint32 i_idx, float i_x, float i_y) = 0;
    virtual void insert_kernel_at(float i_x, float i_y) = 0;
-   virtual void remove_kernel(int i_idx) = 0;
+   virtual void remove_kernel(uint32 i_idx) = 0;
 
 protected:
    mws_vrn_diag() {}

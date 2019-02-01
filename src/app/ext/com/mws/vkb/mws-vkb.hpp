@@ -10,7 +10,18 @@
 
 class mws_font;
 class text_vxo;
-class vkb_voronoi_main;
+class mws_vrn_main;
+
+
+const key_types VKB_DONE = KEY_END;
+const key_types VKB_SHIFT = KEY_SHIFT;
+const key_types VKB_ENTER = KEY_ENTER;
+const key_types VKB_BACKSPACE = KEY_BACKSPACE;
+const key_types VKB_DELETE = KEY_DELETE;
+const key_types VKB_HIDE_KB = KEY_F1;
+const key_types VKB_NEXT_SCREEN = KEY_F2;
+const key_types VKB_PREV_SCREEN = KEY_F3;
+const key_types VKB_CAPS_LOCK = KEY_F4;
 
 
 class mws_vkb : public mws_virtual_keyboard
@@ -34,7 +45,7 @@ protected:
    key_types get_key_type(const std::string& i_key_name) const;
 
    mws_sp<mws_text_area> ta;
-   mws_sp<vkb_voronoi_main> vk;
+   mws_sp<mws_vrn_main> vk;
    mws_sp<text_vxo> vk_keys;
    std::unordered_map<key_types, std::string> key_map;
    std::vector<key_types> key_vect;

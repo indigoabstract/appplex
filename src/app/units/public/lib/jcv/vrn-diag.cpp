@@ -9,7 +9,7 @@
 #define JC_VORONOI_IMPLEMENTATION
 #include "jc_voronoi.h"
 
-const float picking_start_idx = 0;
+const uint32 picking_start_idx = 0;
 
 
 class voronoi_2d_diag_impl : public mws_vrn_diag
@@ -23,7 +23,7 @@ public:
       clip_dim = { jcv_point {0.f, 0.f}, jcv_point{ (float)i_vdata->info.diag_width, (float)i_vdata->info.diag_height } };
       full_clear();
 
-      for (int k = 0; k < vx.size(); ++k)
+      for (uint32 k = 0; k < vx.size(); ++k)
       {
          jcv_point p = { vx[k], vy[k] };
          kernels_list.push_back(p);
@@ -43,9 +43,9 @@ public:
       float min_dist = JCV_FLT_MAX;
       idx_dist ret = { -1, min_dist };
       glm::vec2 ref_pt(i_x, i_y);
-      int size = kernels_list.size();
+      uint32 size = kernels_list.size();
 
-      for (size_t k = 0; k < size; k++)
+      for (uint32 k = 0; k < size; k++)
       {
          auto& kp = kernels_list[k];
          glm::vec2 kp_pt(kp.x, kp.y);
@@ -71,14 +71,14 @@ public:
       mws_sp<mws_vrn_data> vdata = vrn_data.lock();
       mws_vrn_data::settings& s = vdata->info;
       mws_vrn_data::mws_vrn_geom_data& g = vdata->geom;
-      float current_picking_start_idx = picking_start_idx;
+      uint32 current_picking_start_idx = picking_start_idx;
 
       {
          mws_vrn_kernel_pt_vect& p = g.kernel_points;
 
          p._first_idx = current_picking_start_idx;
          update_global_kernel_points(vdata);
-         p._last_idx = p._first_idx + p.get_size() - 1;
+         p._last_idx = p._first_idx + p.size() - 1;
          current_picking_start_idx = p._last_idx + 1;
       }
 
@@ -87,7 +87,7 @@ public:
 
          p._first_idx = current_picking_start_idx;
          update_global_nexus_points(vdata);
-         p._last_idx = p._first_idx + p.get_size() - 1;
+         p._last_idx = p._first_idx + p.size() - 1;
          current_picking_start_idx = p._last_idx + 1;
       }
 
@@ -102,7 +102,7 @@ public:
       }
    }
 
-   virtual void move_kernel_to(int i_idx, float i_x, float i_y) override
+   virtual void move_kernel_to(uint32 i_idx, float i_x, float i_y) override
    {
       auto& kp = kernels_list[i_idx];
 
@@ -118,14 +118,14 @@ public:
    {
       partial_clear();
 
-      jcv_point np{i_x, i_y};
+      jcv_point np{ i_x, i_y };
       kernels_list.push_back(np);
       memset(&diagram, 0, sizeof(jcv_diagram));
       jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, &diagram);
       update_data();
    }
 
-   virtual void remove_kernel(int i_idx) override
+   virtual void remove_kernel(uint32 i_idx) override
    {
       partial_clear();
       kernels_list.erase(kernels_list.begin() + i_idx);
@@ -156,7 +156,7 @@ public:
    {
       i_vdata->geom.kernel_points.resize(kernels_list.size());
 
-      for (size_t k = 0; k < kernels_list.size(); k++)
+      for (uint32 k = 0; k < kernels_list.size(); k++)
       {
          auto& p = kernels_list[k];
          glm::vec3 pos(p.x, p.y, 0.f);
@@ -166,7 +166,7 @@ public:
          i_vdata->geom.kernel_points.vect[k].id = i_vdata->geom.kernel_points.first_idx() + k;
       }
 
-      int size = i_vdata->geom.kernel_points.get_size();
+      int size = i_vdata->geom.kernel_points.size();
 
       for (int k = 0; k < size; k++)
       {
@@ -202,7 +202,7 @@ public:
 
       i_vdata->geom.nexus_points.resize(edge_count);
 
-      int size = i_vdata->geom.nexus_points.get_size();
+      int size = i_vdata->geom.nexus_points.size();
 
       for (int k = 0; k < size; k++)
       {
@@ -229,7 +229,7 @@ public:
       {
          i_vdata->geom.nexus_pairs.set_min_size(idx + 1);
 
-         mws_vrn_nexus_pair& pair = i_vdata->geom.nexus_pairs.vect[idx];
+         mws_vrn_nexus_pair & pair = i_vdata->geom.nexus_pairs.vect[idx];
 
          glm::vec3 position0(edge->pos[0].x, edge->pos[0].y, 0.f);
          glm::vec3 position1(edge->pos[1].x, edge->pos[1].y, 0.f);
@@ -243,7 +243,7 @@ public:
 
          if (!p0_found)
          {
-            int k = i_vdata->geom.nexus_points.get_size();
+            int k = i_vdata->geom.nexus_points.size();
             //edge_type& edge = (edge_type&)*it;
 
             i_vdata->geom.nexus_points.resize(k + 1);
@@ -259,7 +259,7 @@ public:
 
          if (!p1_found)
          {
-            int k = i_vdata->geom.nexus_points.get_size();
+            int k = i_vdata->geom.nexus_points.size();
             //edge_type& edge = (edge_type&)*it;
 
             i_vdata->geom.nexus_points.resize(k + 1);
@@ -359,10 +359,10 @@ public:
       i_vdata->geom.cell_points_ids.resize(k);
    }
 
-   static uint64 get_key(glm::vec3& iposition)
+   static uint64 get_key(glm::vec3 & iposition)
    {
-      int* x = (int*)&iposition.x;
-      int* y = (int*)&iposition.y;
+      int* x = (int*)& iposition.x;
+      int* y = (int*)& iposition.y;
       uint64 x64 = *x & 0xffffffff;
       uint64 y64 = *y & 0xffffffff;
       uint64 r = (x64 << 32) | y64;
