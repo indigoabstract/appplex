@@ -9,7 +9,7 @@
 
 
 class unit_ctrl;
-class unit_list;
+class mod_list;
 class mws_page_tab;
 class key_ctrl;
 class touchctrl;
@@ -52,7 +52,7 @@ public:
    enum unit_type
    {
       e_unit_base,
-      e_unit_list,
+      e_mod_list,
    };
 
    class app_storage_impl;
@@ -152,7 +152,7 @@ protected:
 
 private:
    friend class unit_ctrl;
-   friend class unit_list;
+   friend class mod_list;
 
    void run_step();
    void base_load();
@@ -175,10 +175,10 @@ private:
 };
 
 
-class unit_list : public unit
+class mod_list : public unit
 {
 public:
-   static mws_sp<unit_list> nwi();
+   static mws_sp<mod_list> nwi();
 
    unit_type get_unit_type();
    void add(mws_sp<unit> i_unit);
@@ -191,7 +191,7 @@ public:
    static void up_one_level();
 
 protected:
-   unit_list();
+   mod_list();
 
    virtual void on_destroy();
    virtual void init_mws();
@@ -201,19 +201,19 @@ private:
 
    std::vector<mws_sp<unit> > ulist;
    mws_wp<mws_list_model> ulmodel;
-   static int unit_list_count;
+   static int mod_list_count;
 };
 
 
-class app_units_setup
+class mws_mod_setup
 {
 private:
    friend class unit_ctrl;
 
-   static void create_units(mws_sp<unit_list> i_unit_list);
-   static mws_sp<unit_list> get_unit_list();
+   static void create_units(mws_sp<mod_list> i_mod_list);
+   static mws_sp<mod_list> get_mod_list();
    static void add_unit(mws_sp<unit> iu, std::string iunit_path, bool iset_current = false);
 
-   static mws_wp<unit_list> ul;
+   static mws_wp<mod_list> ul;
    static mws_wp<unit> next_crt_unit;
 };

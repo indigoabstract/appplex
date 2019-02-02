@@ -981,7 +981,7 @@ bool unit::cancel_operation(int ioperation_id)
 bool unit::back()
 {
 #ifndef SINGLE_UNIT_BUILD
-   unit_list::up_one_level();
+   mod_list::up_one_level();
 
    return false;
 #else
@@ -1094,25 +1094,25 @@ void unit::update_view(int update_count)
 void unit::post_update_view() {}
 
 
-int unit_list::unit_list_count = 0;
+int mod_list::mod_list_count = 0;
 
 
-unit_list::unit_list() : unit(mws_to_str("unit_app_list_#%d", unit_list::unit_list_count).c_str())
+mod_list::mod_list() : unit(mws_to_str("unit_app_list_#%d", mod_list::mod_list_count).c_str())
 {
-   unit_list_count++;
+   mod_list_count++;
 }
 
-mws_sp<unit_list> unit_list::nwi()
+mws_sp<mod_list> mod_list::nwi()
 {
-   return mws_sp<unit_list>(new unit_list());
+   return mws_sp<mod_list>(new mod_list());
 }
 
-unit::unit_type unit_list::get_unit_type()
+unit::unit_type mod_list::get_unit_type()
 {
-   return e_unit_list;
+   return e_mod_list;
 }
 
-void unit_list::add(mws_sp<unit> iunit)
+void mod_list::add(mws_sp<unit> iunit)
 {
    mws_assert(iunit != mws_sp<unit>());
 
@@ -1121,12 +1121,12 @@ void unit_list::add(mws_sp<unit> iunit)
    //ulmodel.lock()->notify_update();
 }
 
-mws_sp<unit> unit_list::unit_at(int i_index)
+mws_sp<unit> mod_list::unit_at(int i_index)
 {
    return ulist[i_index];
 }
 
-mws_sp<unit> unit_list::unit_by_name(string iname)
+mws_sp<unit> mod_list::unit_by_name(string iname)
 {
    int size = ulist.size();
 
@@ -1143,12 +1143,12 @@ mws_sp<unit> unit_list::unit_by_name(string iname)
    return mws_sp<unit>();
 }
 
-int unit_list::get_unit_count()const
+int mod_list::get_unit_count()const
 {
    return ulist.size();
 }
 
-void unit_list::on_resize()
+void mod_list::on_resize()
 {
    if (ulmodel.lock())
    {
@@ -1161,7 +1161,7 @@ void unit_list::on_resize()
    }
 }
 
-void unit_list::receive(mws_sp<mws_dp> idp)
+void mod_list::receive(mws_sp<mws_dp> idp)
 {
    if (!idp->is_processed() && idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
@@ -1174,7 +1174,7 @@ void unit_list::receive(mws_sp<mws_dp> idp)
    }
 }
 
-void unit_list::forward()
+void mod_list::forward()
 {
    if (ulist.size() > 0)
    {
@@ -1183,7 +1183,7 @@ void unit_list::forward()
    }
 }
 
-void unit_list::up_one_level()
+void mod_list::up_one_level()
 {
 #ifndef SINGLE_UNIT_BUILD
    mws_sp<unit> u = unit_ctrl::inst()->get_current_unit();
@@ -1191,9 +1191,9 @@ void unit_list::up_one_level()
 
    if (parent != NULL)
    {
-      if (parent->get_unit_type() == e_unit_list)
+      if (parent->get_unit_type() == e_mod_list)
       {
-         mws_sp<unit_list> ul = static_pointer_cast<unit_list>(parent);
+         mws_sp<mod_list> ul = static_pointer_cast<mod_list>(parent);
          int idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
 
          if (idx < ul->ulist.size())
@@ -1207,48 +1207,48 @@ void unit_list::up_one_level()
 #endif
 }
 
-void unit_list::on_destroy()
+void mod_list::on_destroy()
 {
    ulist.clear();
 }
 
-void unit_list::init_mws()
+void mod_list::init_mws()
 {
 #ifdef MOD_MWS
 
    class lmodel : public mws_list_model
    {
    public:
-      lmodel(mws_sp<unit_list> i_ul) : ul(i_ul) {}
+      lmodel(mws_sp<mod_list> i_ul) : ul(i_ul) {}
 
       int get_length()
       {
-         return get_unit_list()->ulist.size();
+         return get_mod_list()->ulist.size();
       }
 
       std::string elem_at(int idx)
       {
-         return get_unit_list()->ulist[idx]->get_name();
+         return get_mod_list()->ulist[idx]->get_name();
       }
 
       void on_elem_selected(int idx)
       {
-         mws_sp<unit> u = get_unit_list()->ulist[idx];
+         mws_sp<unit> u = get_mod_list()->ulist[idx];
 
          //trx("item %1%") % elemAt(idx);
          unit_ctrl::inst()->set_next_unit(u);
       }
 
    private:
-      mws_sp<unit_list> get_unit_list()
+      mws_sp<mod_list> get_mod_list()
       {
          return ul.lock();
       }
 
-      mws_wp<unit_list> ul;
+      mws_wp<mod_list> ul;
    };
 
-   mws_sp<unit_list> ul = static_pointer_cast<unit_list>(get_smtp_instance());
+   mws_sp<mod_list> ul = static_pointer_cast<mod_list>(get_smtp_instance());
    mws_sp<mws_list_model> lm((mws_list_model*)new lmodel(ul));
    mws_sp<mws_page> p = mws_page::nwi(mws_root);
    mws_sp<mws_list> l = mws_list::nwi();
@@ -1262,22 +1262,22 @@ void unit_list::init_mws()
 }
 
 
-mws_wp<unit_list> app_units_setup::ul;
-mws_wp<unit> app_units_setup::next_crt_unit;
+mws_wp<mod_list> mws_mod_setup::ul;
+mws_wp<unit> mws_mod_setup::next_crt_unit;
 
 
-mws_sp<unit_list> app_units_setup::get_unit_list()
+mws_sp<mod_list> mws_mod_setup::get_mod_list()
 {
    return ul.lock();
 }
 
-void app_units_setup::add_unit(mws_sp<unit> i_u, std::string i_unit_path, bool i_set_current)
+void mws_mod_setup::add_unit(mws_sp<unit> i_u, std::string i_unit_path, bool i_set_current)
 {
    i_u->set_proj_rel_path(i_unit_path);
 
-   if (get_unit_list())
+   if (get_mod_list())
    {
-      get_unit_list()->add(i_u);
+      get_mod_list()->add(i_u);
 
       if (i_set_current)
       {

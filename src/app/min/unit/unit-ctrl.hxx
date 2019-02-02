@@ -5,7 +5,7 @@
 
 
 class unit;
-class unit_list;
+class mod_list;
 class pointer_evt;
 class gfx;
 
@@ -45,7 +45,7 @@ private:
 
    mws_wp<unit> crt_unit;
    mws_wp<unit> next_unit;
-   mws_sp<unit_list> ul;
+   mws_sp<mod_list> ul;
    bool exit_app_on_next_run;
    bool app_started;
    static mws_sp<unit_ctrl> instance;

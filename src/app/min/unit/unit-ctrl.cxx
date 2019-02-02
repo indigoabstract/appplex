@@ -112,11 +112,11 @@ void unit_ctrl::pre_init_app()
 
    if (!ul)
    {
-      ul = unit_list::nwi();
+      ul = mod_list::nwi();
       ul->set_name("app-unit-list");
-      app_units_setup::next_crt_unit = crt_unit = ul;
+      mws_mod_setup::next_crt_unit = crt_unit = ul;
 
-      app_units_setup::create_units(ul);
+      mws_mod_setup::create_units(ul);
    }
 }
 
@@ -274,7 +274,7 @@ void unit_ctrl::set_next_unit(mws_sp<unit> iunit)
 
 void unit_ctrl::start_app()
 {
-   auto u = app_units_setup::next_crt_unit.lock();
+   auto u = mws_mod_setup::next_crt_unit.lock();
 
    unit_ctrl::set_current_unit(u);
    //mws_log::i()->push("unit_ctrl::start_app()");
@@ -285,7 +285,7 @@ void unit_ctrl::start_app()
 
 mws_sp<unit> unit_ctrl::get_app_start_unit()
 {
-   auto u = app_units_setup::next_crt_unit.lock();
+   auto u = mws_mod_setup::next_crt_unit.lock();
 
    if (u)
    {
