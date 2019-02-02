@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mws.hxx"
-#include "com/unit/gesture-detectors.hxx"
+#include "com/mod/gesture-detectors.hxx"
 #include "gfx-color.hxx"
 
 

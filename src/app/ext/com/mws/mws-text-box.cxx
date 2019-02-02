@@ -5,7 +5,7 @@
 #ifdef MOD_MWS
 
 #include "mws-text-box.hxx"
-#include "unit.hxx"
+#include "mod.hxx"
 #include "mws-camera.hxx"
 #include "mws-com.hxx"
 #include "mws-font.hxx"
@@ -162,11 +162,14 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
       tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font->get_height()), font);
    }
 
-   glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
-   cursor_row_idx = cursor_coord.y;
-   cursor_col_idx = cursor_coord.x;
+   if (is_editable())
+   {
+      glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
+      cursor_row_idx = cursor_coord.y;
+      cursor_col_idx = cursor_coord.x;
 
-   update_gfx_cursor();
+      update_gfx_cursor();
+   }
 }
 
 void mws_text_box::set_position(const glm::vec2 & i_pos)
@@ -279,13 +282,16 @@ void mws_text_box::select_char_at(const glm::vec2 & i_pos)
       cursor_col_idx = text_length;
    }
 
-   uint32 line_index = top_line_idx + cursor_row_idx;
-   uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
-   glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
-   tx_src->set_cursor_pos(cursor_pos + cursor_col_idx);
-   glm::ivec2 new_cursor_coord = tx_src->get_cursor_coord();
-   mws_println("c2 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
-   update_gfx_cursor();
+   if (is_editable())
+   {
+      uint32 line_index = top_line_idx + cursor_row_idx;
+      uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
+      glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
+      tx_src->set_cursor_pos(cursor_pos + cursor_col_idx);
+      glm::ivec2 new_cursor_coord = tx_src->get_cursor_coord();
+      mws_println("c2 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
+      update_gfx_cursor();
+   }
 }
 
 void mws_text_box::update_state()
@@ -499,7 +505,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
    {
    case pointer_evt::touch_began:
    {
-      if (pfm::has_touchscreen() || get_unit()->get_preferences()->emulate_mobile_screen())
+      if (pfm::has_touchscreen() || get_mod()->get_preferences()->emulate_mobile_screen())
       {
          auto inst = static_pointer_cast<mws_text_area>(get_instance());
          get_mws_root()->show_keyboard(inst);
@@ -535,7 +541,7 @@ void mws_text_box::handle_key_evt(mws_sp<key_evt> i_ke)
             {
                if (editable)
                {
-                  bool shift_held = get_unit()->key_ctrl_inst->key_is_held(KEY_SHIFT);
+                  bool shift_held = get_mod()->key_ctrl_inst->key_is_held(KEY_SHIFT);
                   char key_char = char(key + ('a' - 'A'));
 
                   if (shift_held)

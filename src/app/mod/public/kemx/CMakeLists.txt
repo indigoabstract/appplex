@@ -1,0 +1,10 @@
+target_sources(app_plex_main
+    PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/info.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/node-info.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-kemx.cxx"
+    PUBLIC
+	"${CMAKE_CURRENT_LIST_DIR}/info.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/node-info.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-kemx.hxx"
+)

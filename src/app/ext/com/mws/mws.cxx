@@ -12,8 +12,8 @@
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-vxo.hxx"
-#include "unit.hxx"
-#include "com/unit/transitions.hxx"
+#include "mod.hxx"
+#include "com/mod/transitions.hxx"
 #include <algorithm>
 #ifdef MWS_USES_EXCEPTIONS
 #include <exception>
@@ -119,7 +119,7 @@ void mws::attach(mws_sp<gfx_node> i_node)
       if (mws_ref)
       {
          mws_ref->mwsroot = mwsroot;
-         mws_ref->mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+         mws_ref->mws_cam = mwsroot.lock()->get_mod()->mws_cam;
       }
    }
 
@@ -200,9 +200,9 @@ mws_sp<mws_page_tab> mws::get_mws_root()
    return mwsroot.lock();
 }
 
-mws_sp<unit> mws::get_unit()
+mws_sp<mws_mod> mws::get_mod()
 {
-   return std::static_pointer_cast<unit>(mwsroot.lock()->get_unit());
+   return std::static_pointer_cast<mws_mod>(mwsroot.lock()->get_mod());
 }
 
 void mws::receive(mws_sp<mws_dp> idp)
@@ -292,20 +292,20 @@ mws_sp<mws_sender> mws::sender_inst()
 }
 
 
-mws_page_tab::mws_page_tab(mws_sp<unit> iu)
+mws_page_tab::mws_page_tab(mws_sp<mws_mod> i_mod)
 {
-   if (!iu)
+   if (!i_mod)
    {
-      mws_throw mws_exception("unit cannot be null");
+      mws_throw mws_exception("mod cannot be null");
    }
 
-   u = iu;
-   mws_r.set(0, 0, (float)iu->get_width(), (float)iu->get_height());
+   u = i_mod;
+   mws_r.set(0, 0, (float)i_mod->get_width(), (float)i_mod->get_height());
 }
 
-mws_sp<mws_page_tab> mws_page_tab::nwi(mws_sp<unit> i_u)
+mws_sp<mws_page_tab> mws_page_tab::nwi(mws_sp<mws_mod> i_mod)
 {
-   mws_sp<mws_page_tab> pt(new mws_page_tab(i_u));
+   mws_sp<mws_page_tab> pt(new mws_page_tab(i_mod));
    pt->new_instance_helper();
    return pt;
 }
@@ -318,7 +318,7 @@ void mws_page_tab::add_to_draw_list(const std::string& i_camera_id, std::vector<
 void mws_page_tab::init()
 {
    mwsroot = get_mws_page_tab_instance();
-   mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+   mws_cam = mwsroot.lock()->get_mod()->mws_cam;
 }
 
 void mws_page_tab::init_subobj()
@@ -386,9 +386,9 @@ mws_sp<mws_page_tab> mws_page_tab::get_mws_page_tab_instance()
    return static_pointer_cast<mws_page_tab>(get_instance());
 }
 
-mws_sp<unit> mws_page_tab::get_unit()
+mws_sp<mws_mod> mws_page_tab::get_mod()
 {
-   return static_pointer_cast<unit>(u.lock());
+   return static_pointer_cast<mws_mod>(u.lock());
 }
 
 bool mws_page_tab::is_empty()
@@ -518,7 +518,7 @@ void mws_page_tab::new_instance_helper()
 {
    mws_sp<mws_page_tab> mws_root = get_mws_page_tab_instance();
    mwsroot = mws_root;
-   mws_cam = mwsroot.lock()->get_unit()->mws_cam;
+   mws_cam = mwsroot.lock()->get_mod()->mws_cam;
 
 #if defined MOD_VECTOR_FONTS
    {

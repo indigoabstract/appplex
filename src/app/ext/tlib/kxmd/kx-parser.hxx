@@ -4,7 +4,7 @@
 
 #ifdef MOD_KXMD
 
-#include "unit.hxx"
+#include "mod.hxx"
 #include <string>
 #include <vector>
 

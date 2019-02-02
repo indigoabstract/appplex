@@ -2,15 +2,15 @@
 
 #include "free-camera.hxx"
 #include "pfm.hxx"
-#include "com/unit/input-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
 #include "com/util/util.hxx"
 #include "gfx-camera.hxx"
-#include "unit.hxx"
+#include "mod.hxx"
 
 
-free_camera::free_camera(mws_sp<unit> i_u)
+free_camera::free_camera(mws_sp<mws_mod> i_mod)
 {
-   u = i_u;
+   u = i_mod;
    look_at_dir = glm::vec3(0.f, 0.f, -1.f);
    up_dir = glm::vec3(0.f, 1.f, 0.f);
    speed = 0.f;

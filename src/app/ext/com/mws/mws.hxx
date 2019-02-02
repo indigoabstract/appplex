@@ -3,17 +3,17 @@
 // mws - multi-widget-set (as in, opposed to, say, a one-widget-set :) )
 #include "pfm.hxx"
 #include "com/util/util.hxx"
-#include "com/unit/input-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
 #include "media/gfx/gfx-scene.hxx"
 #include <string>
 #include <vector>
 
 
-class unitctrl;
+class mod_ctrl;
 class linear_transition;
 class ms_linear_transition;
-class unit;
-class unit;
+class mws_mod;
+class mws_mod;
 class mws;
 class mws_page_tab;
 class mws_page;
@@ -92,7 +92,7 @@ public:
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws> get_mws_parent();
    mws_sp<mws_page_tab> get_mws_root();
-   virtual mws_sp<unit> get_unit();
+   virtual mws_sp<mws_mod> get_mod();
 
    virtual void receive(mws_sp<mws_dp> idp);
    virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler);
@@ -136,7 +136,7 @@ class mws_page_tab : public mws
 {
 public:
    virtual ~mws_page_tab() {}
-   static mws_sp<mws_page_tab> nwi(mws_sp<unit> i_u);
+   static mws_sp<mws_page_tab> nwi(mws_sp<mws_mod> i_mod);
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
    virtual void init();
    virtual void init_subobj();
@@ -145,7 +145,7 @@ public:
    virtual mws_sp<mws> contains_id(const std::string& iid);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws_page_tab> get_mws_page_tab_instance();
-   virtual mws_sp<unit> get_unit();
+   virtual mws_sp<mws_mod> get_mod();
    bool is_empty();
    mws_sp<text_vxo> get_text_vxo() const;
 
@@ -162,10 +162,10 @@ public:
    std::vector<mws_sp<mws_page> > page_tab;
 
 protected:
-   mws_page_tab(mws_sp<unit> iu);
+   mws_page_tab(mws_sp<mws_mod> i_mod);
 
 private:
-   friend class unitctrl;
+   friend class mod_ctrl;
    friend class mws_page;
 
    void add(mws_sp<mws_page> p);
@@ -174,7 +174,7 @@ private:
 
    mws_sp<mws_virtual_keyboard> vkb;
    mws_sp<text_vxo> tab_text_vxo;
-   mws_wp<unit> u;
+   mws_wp<mws_mod> u;
 };
 
 

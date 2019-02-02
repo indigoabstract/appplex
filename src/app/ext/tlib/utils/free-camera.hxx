@@ -2,10 +2,10 @@
 
 #include "min.hxx"
 #include <glm/inc.hpp>
-#include "com/unit/gesture-detectors.hxx"
+#include "com/mod/gesture-detectors.hxx"
 
 class gfx_camera;
-class unit;
+class mws_mod;
 class kinetic_scrolling;
 
 
@@ -19,7 +19,7 @@ public:
       e_roll_view_axis,
    };
 
-   free_camera(mws_sp<unit> i_u);
+   free_camera(mws_sp<mws_mod> i_mod);
 
 	void update_input(mws_sp<mws_dp> idp);
 	void update();
@@ -42,5 +42,5 @@ private:
    e_movement_types mov_type = e_movement_types::e_translation;
    dragging_detector dragging_det;
    mws_sp<kinetic_scrolling> ks;
-   mws_wp<unit> u;
+   mws_wp<mws_mod> u;
 };

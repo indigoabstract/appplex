@@ -49,8 +49,8 @@ typedef wchar_t		 unicodechar;
 #endif
 
 class ia_console;
-class unit;
-class unit_ctrl;
+class mws_mod;
+class mod_ctrl;
 class pfm_file;
 
 namespace pfm_impl
@@ -68,7 +68,7 @@ public:
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<unit> iu = nullptr, bool recursive = false)const;
+   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<mws_mod> i_mod = nullptr, bool recursive = false)const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
@@ -84,7 +84,7 @@ private:
 class pfm_file
 {
 public:
-   static mws_sp<pfm_file> get_inst(std::string ifilename, std::string iroot_dir = "");
+   static mws_sp<pfm_file> get_inst(std::string i_filename, std::string iroot_dir = "");
    static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl);
    virtual ~pfm_file();
 
@@ -142,7 +142,7 @@ namespace pfm_impl
    class pfm_file_impl
    {
    public:
-      pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
+      pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir);
       virtual ~pfm_file_impl();
       virtual FILE* get_file_impl() const = 0;
       virtual bool exists();
@@ -264,22 +264,22 @@ public:
    public:
       static std::string get_writable_path(std::string iname);
       static std::string get_path(std::string iname);
-      static void load_res_file_map(mws_sp<unit> iu = nullptr);
-      //static shared_array<uint8> load_res_byte_array(std::string ifile_name, int& isize);
+      static void load_res_file_map(mws_sp<mws_mod> i_mod = nullptr);
+      //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& isize);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> ifile);
-      static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string ifile_name);
+      static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string i_filename);
       static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> ifile);
-      static mws_sp<std::string> load_res_as_string(std::string ifilename);
+      static mws_sp<std::string> load_res_as_string(std::string i_filename);
 
    private:
 
-      friend class unit;
+      friend class mws_mod;
 
-      static mws_sp<std::vector<uint8> > load_unit_byte_vect(mws_sp<unit> iu, std::string ifile_name);
-      //static shared_array<uint8> load_unit_byte_array(mws_sp<unit> iu, std::string ifile_name, int& isize);
-      static bool store_unit_byte_array(mws_sp<unit> iu, std::string ifile_name, const uint8* ires, int isize);
-      static bool store_unit_byte_vect(mws_sp<unit> iu, std::string ifile_name, const std::vector<uint8>& ires);
-      static mws_sp<pfm_file> random_access(mws_sp<unit> iu, std::string ifile_name);
+      static mws_sp<std::vector<uint8> > load_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename);
+      //static shared_array<uint8> load_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, int& isize);
+      static bool store_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, const uint8* ires, int isize);
+      static bool store_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename, const std::vector<uint8>& ires);
+      static mws_sp<pfm_file> random_access(mws_sp<mws_mod> i_mod, std::string i_filename);
    };
 
 
@@ -296,8 +296,8 @@ public:
    //static mws_sp<ia_console> get_console();
 
 private:
-   friend class unit_ctrl;
-   friend class unit_ctrl;
+   friend class mod_ctrl;
+   friend class mod_ctrl;
 
    static pfm_data data;
 

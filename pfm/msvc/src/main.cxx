@@ -6,9 +6,9 @@
 
 #include "pfm.hxx"
 #include "pfm-gl.h"
-#include "unit.hxx"
-#include "unit-ctrl.hxx"
-#include "com/unit/input-ctrl.hxx"
+#include "mod.hxx"
+#include "mod-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 class msvc_file_impl : public pfm_impl::pfm_file_impl
 {
 public:
-   msvc_file_impl(const std::string& ifilename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(ifilename, iroot_dir)
+   msvc_file_impl(const std::string& i_filename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(i_filename, iroot_dir)
    {
    }
 
@@ -205,28 +205,28 @@ mws_sp<msvc_main> msvc_main::get_instance()
    return instance;
 }
 
-mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir)
 {
-   return std::make_shared<msvc_file_impl>(ifilename, iroot_dir);
+   return std::make_shared<msvc_file_impl>(i_filename, iroot_dir);
 }
 
 void msvc_main::init()
 {
    pfm_main::init();
 
-   unit_ctrl::inst()->init_app();
+   mod_ctrl::inst()->init_app();
 }
 
 void msvc_main::start()
 {
    pfm_main::start();
 
-   unit_ctrl::inst()->start_app();
+   mod_ctrl::inst()->start_app();
 }
 
 void msvc_main::run()
 {
-   unit_ctrl::inst()->update();
+   mod_ctrl::inst()->update();
 }
 
 int msvc_main::get_screen_dpi()const
@@ -251,7 +251,7 @@ void msvc_main::flip_screen()
 
    is_window_flipped = !is_window_flipped;
 
-   auto u = unit_ctrl::inst()->get_app_start_unit();
+   auto u = mod_ctrl::inst()->get_app_start_mod();
    int x = 0;
    int y = 0;
    int width = pfm::screen::get_width();
@@ -260,10 +260,10 @@ void msvc_main::flip_screen()
 
    if (u)
    {
-      auto unit_pref = u->get_preferences();
-      int pref_width = unit_pref->get_preferred_screen_width();
-      int pref_height = unit_pref->get_preferred_screen_height();
-      start_full_screen = unit_pref->start_full_screen();
+      auto mod_pref = u->get_preferences();
+      int pref_width = mod_pref->get_preferred_screen_width();
+      int pref_height = mod_pref->get_preferred_screen_height();
+      start_full_screen = mod_pref->start_full_screen();
 
       if (pref_width > 0 && pref_height > 0)
       {
@@ -409,10 +409,10 @@ bool msvc_main::init_app(int argc, char** argv)
    pfm::params::set_app_arguments(wargc, arg_list, true);
    LocalFree(arg_list);
 
-   unit_ctrl::inst()->pre_init_app();
+   mod_ctrl::inst()->pre_init_app();
 
-   app_has_window = unit_ctrl::inst()->app_uses_gfx();
-   unit_ctrl::inst()->set_gfx_available(app_has_window);
+   app_has_window = mod_ctrl::inst()->app_uses_gfx();
+   mod_ctrl::inst()->set_gfx_available(app_has_window);
 
    if (app_has_window)
    {
@@ -430,7 +430,7 @@ bool msvc_main::init_app(int argc, char** argv)
       // create and show window
       register_new_window_class(hinstance);
 
-      auto u = unit_ctrl::inst()->get_app_start_unit();
+      auto u = mod_ctrl::inst()->get_app_start_mod();
       //int x = CW_USEDEFAULT;
       int x = 0;
       int y = 0;
@@ -440,11 +440,11 @@ bool msvc_main::init_app(int argc, char** argv)
 
       if (u)
       {
-         auto unit_pref = u->get_preferences();
-         int pref_width = unit_pref->get_preferred_screen_width();
-         int pref_height = unit_pref->get_preferred_screen_height();
-         start_full_screen = unit_pref->start_full_screen();
-         emulate_mobile_screen = unit_pref->emulate_mobile_screen();
+         auto mod_pref = u->get_preferences();
+         int pref_width = mod_pref->get_preferred_screen_width();
+         int pref_height = mod_pref->get_preferred_screen_height();
+         start_full_screen = mod_pref->start_full_screen();
+         emulate_mobile_screen = mod_pref->emulate_mobile_screen();
 
          if (pref_width > 0 && pref_height > 0)
          {
@@ -653,7 +653,7 @@ int msvc_main::console_main_loop()
    long curTime = pfm::time::get_time_millis();
    long nextUpdateTime = curTime;
 
-   while (!unit_ctrl::inst()->is_set_app_exit_on_next_run())
+   while (!mod_ctrl::inst()->is_set_app_exit_on_next_run())
    {
       curTime = pfm::time::get_time_millis();
 
@@ -668,7 +668,7 @@ int msvc_main::console_main_loop()
       }
    }
 
-   unit_ctrl::inst()->destroy_app();
+   mod_ctrl::inst()->destroy_app();
 
    return 0;
 }
@@ -680,7 +680,7 @@ int msvc_main::win_main_loop()
    uint32 next_update_time = current_time;
    MSG msg;
 
-   while (!unit_ctrl::inst()->is_set_app_exit_on_next_run())
+   while (!mod_ctrl::inst()->is_set_app_exit_on_next_run())
    {
       if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
       {
@@ -729,7 +729,7 @@ int msvc_main::win_main_loop()
       Shell_NotifyIcon(NIM_DELETE, &notify_icon_data);
    }
 
-   unit_ctrl::inst()->destroy_app();
+   mod_ctrl::inst()->destroy_app();
    destroy_open_gl_context();
    ReleaseDC(hwnd, hdc_window);
    DestroyWindow(hwnd);
@@ -1078,7 +1078,7 @@ ATOM register_new_window_class(HINSTANCE hinstance)
    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
    wcex.lpszMenuName = NULL;
-   wcex.lpszClassName = unit_ctrl::inst()->get_app_name().c_str();
+   wcex.lpszClassName = mod_ctrl::inst()->get_app_name().c_str();
 
    return RegisterClassEx(&wcex);
 }
@@ -1103,7 +1103,7 @@ HWND create_app_window(HINSTANCE hinstance, RECT & iclient_rect)
    //	y = 1080 - height - 5;
    //#endif
    //
-   //	hWnd = CreateWindow(unitctrl::getAppName().c_str(), unitctrl::getAppName().c_str(), WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
+   //	hWnd = CreateWindow(mod_ctrl::getAppName().c_str(), mod_ctrl::getAppName().c_str(), WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
 
    HWND hWnd;
 
@@ -1112,7 +1112,7 @@ HWND create_app_window(HINSTANCE hinstance, RECT & iclient_rect)
    int width = iclient_rect.right - x;
    int height = iclient_rect.bottom - y;
 
-   hWnd = CreateWindow(unit_ctrl::inst()->get_app_name().c_str(), unit_ctrl::inst()->get_app_name().c_str(), WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
+   hWnd = CreateWindow(mod_ctrl::inst()->get_app_name().c_str(), mod_ctrl::inst()->get_app_name().c_str(), WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
 
    if (!hWnd)
    {
@@ -1235,7 +1235,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->touch_count = 1;
       pfm_te->type = pointer_evt::touch_began;
 
-      unit_ctrl::inst()->pointer_action(pfm_te);
+      mod_ctrl::inst()->pointer_action(pfm_te);
 
       return 0;
    }
@@ -1254,7 +1254,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->touch_count = 1;
       pfm_te->type = pointer_evt::touch_ended;
 
-      unit_ctrl::inst()->pointer_action(pfm_te);
+      mod_ctrl::inst()->pointer_action(pfm_te);
 
       return 0;
    }
@@ -1273,7 +1273,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->touch_count = 1;
       pfm_te->type = pointer_evt::touch_moved;
 
-      unit_ctrl::inst()->pointer_action(pfm_te);
+      mod_ctrl::inst()->pointer_action(pfm_te);
 
       return 0;
    }
@@ -1305,7 +1305,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          pfm_te->type = pointer_evt::mouse_wheel;
          pfm_te->mouse_wheel_delta = (float)wheel_delta;
 
-         unit_ctrl::inst()->pointer_action(pfm_te);
+         mod_ctrl::inst()->pointer_action(pfm_te);
          //mws_print("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
       }
 
@@ -1332,7 +1332,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          break;
       }
 
-      unit_ctrl::inst()->key_action(KEY_PRESS, key_id);
+      mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
 
       return 0;
    }
@@ -1342,12 +1342,12 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    {
       key_types key_id = get_key(wparam);
 
-      unit_ctrl::inst()->key_action(KEY_RELEASE, key_id);
+      mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
 
       if (key_id == KEY_ESCAPE)
       {
-         bool back = unit_ctrl::inst()->back_evt();
-         unit_ctrl::inst()->set_app_exit_on_next_run(back);
+         bool back = mod_ctrl::inst()->back_evt();
+         mod_ctrl::inst()->set_app_exit_on_next_run(back);
       }
 
       switch (wparam)
@@ -1379,7 +1379,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       int height = HIWORD(lparam);
 
       height = (height > 0) ? height : 1;
-      unit_ctrl::inst()->resize_app(width, height);
+      mod_ctrl::inst()->resize_app(width, height);
 
       return 0;
    }

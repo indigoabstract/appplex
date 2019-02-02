@@ -12,7 +12,7 @@ class gfx_tex_params;
 class gfx_tex;
 class gfx_tex_cube_map;
 class gfx_state;
-class unit_ctrl;
+class mod_ctrl;
 
 
 class gfx
@@ -114,7 +114,7 @@ private:
    friend class gfx_rt;
    friend class gfx_shader;
    friend class gfx_tex;
-   friend class unit_ctrl;
+   friend class mod_ctrl;
 
    static void global_init();
    static void on_destroy();

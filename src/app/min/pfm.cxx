@@ -3,8 +3,8 @@
 #include "appplex-conf.hxx"
 #include "pfm.hxx"
 #include "pfm-gl.h"
-#include "unit.hxx"
-#include "unit-ctrl.hxx"
+#include "mod.hxx"
+#include "mod-ctrl.hxx"
 #include "min.hxx"
 
 #include <cstdio>
@@ -357,13 +357,13 @@ namespace pfm_impl
       mws_throw mws_exception("undefined platform");
    }
 
-   const std::string& get_unit_res_path(mws_sp<unit> iu)
+   const std::string& get_mod_res_path(mws_sp<mws_mod> i_mod)
    {
       switch (pfm::get_platform_id())
       {
       case platform_android:
       {
-         return iu->get_name();
+         return i_mod->get_name();
       }
 
       case platform_ios:
@@ -388,7 +388,7 @@ namespace pfm_impl
       {
          if (res_is_bundled_with_src())
          {
-            static std::string res_path = get_appplex_proj_path() + "/" + iu->get_proj_rel_path() + "/res";
+            static std::string res_path = get_appplex_proj_path() + "/" + i_mod->get_proj_rel_path() + "/res";
             return res_path;
          }
          else
@@ -402,7 +402,7 @@ namespace pfm_impl
       mws_throw mws_exception("undefined platform");
    }
 
-   mws_sp<pfm_file> get_res_file(const std::string& ifilename)
+   mws_sp<pfm_file> get_res_file(const std::string& i_filename)
    {
       mws_sp<pfm_file> file;
 
@@ -411,7 +411,7 @@ namespace pfm_impl
          pfm::filesystem::load_res_file_map();
       }
 
-      auto it = res_files_map->find(ifilename);
+      auto it = res_files_map->find(i_filename);
 
       if (it != res_files_map->end())
       {
@@ -421,14 +421,14 @@ namespace pfm_impl
       return file;
    }
 
-   void put_res_file(const std::string& ifilename, mws_sp<pfm_file> ifile)
+   void put_res_file(const std::string& i_filename, mws_sp<pfm_file> ifile)
    {
       if (!res_files_map)
       {
          pfm::filesystem::load_res_file_map();
       }
 
-      auto it = res_files_map->find(ifilename);
+      auto it = res_files_map->find(i_filename);
 
       if (it != res_files_map->end())
       {
@@ -437,12 +437,12 @@ namespace pfm_impl
          mws_throw mws_exception(msg.c_str());
       }
 
-      (*res_files_map)[ifilename] = ifile;
+      (*res_files_map)[i_filename] = ifile;
    }
 
-   pfm_file_impl::pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+   pfm_file_impl::pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir)
    {
-      ppath.filename = ifilename;
+      ppath.filename = i_filename;
       ppath.aux_root_dir = iroot_dir;
       ppath.make_standard_path();
       file_pos = 0;
@@ -593,10 +593,10 @@ pfm_file::~pfm_file()
    io.close();
 }
 
-mws_sp<pfm_file> pfm_file::get_inst(std::string ifilename, std::string iroot_dir)
+mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string iroot_dir)
 {
    mws_sp<pfm_file> inst;
-   auto ppath = pfm_path::get_inst(ifilename, iroot_dir);
+   auto ppath = pfm_path::get_inst(i_filename, iroot_dir);
 
    // if res map initialized
    if (pfm_impl::res_files_map)
@@ -882,13 +882,13 @@ const std::string& pfm_path::get_root_directory() const
    return aux_root_dir;
 }
 
-mws_sp<std::vector<mws_sp<pfm_file> > > pfm_path::list_directory(mws_sp<unit> iu, bool recursive) const
+mws_sp<std::vector<mws_sp<pfm_file> > > pfm_path::list_directory(mws_sp<mws_mod> i_mod, bool recursive) const
 {
    auto file_list = std::make_shared<std::vector<mws_sp<pfm_file> > >();
    std::string base_dir = aux_root_dir;
    std::replace(base_dir.begin(), base_dir.end(), '\\', '/');
 
-   if (mws_str::starts_with(base_dir, pfm_impl::get_common_res_path()) || (iu && mws_str::starts_with(base_dir, pfm_impl::get_unit_res_path(iu))))
+   if (mws_str::starts_with(base_dir, pfm_impl::get_common_res_path()) || (i_mod && mws_str::starts_with(base_dir, pfm_impl::get_mod_res_path(i_mod))))
    {
       list_directory_impl(base_dir, file_list, recursive);
    }
@@ -900,11 +900,11 @@ mws_sp<std::vector<mws_sp<pfm_file> > > pfm_path::list_directory(mws_sp<unit> iu
          list_directory_impl(base_dir_common, file_list, recursive);
       }
 
-      if (iu)
+      if (i_mod)
       {
-         std::string base_dir_unit = pfm_impl::get_unit_res_path(iu) + "/" + base_dir;
-         std::replace(base_dir_unit.begin(), base_dir_unit.end(), '\\', '/');
-         list_directory_impl(base_dir_unit, file_list, recursive);
+         std::string base_dir_mod = pfm_impl::get_mod_res_path(i_mod) + "/" + base_dir;
+         std::replace(base_dir_mod.begin(), base_dir_mod.end(), '\\', '/');
+         list_directory_impl(base_dir_mod, file_list, recursive);
       }
    }
 
@@ -1007,7 +1007,7 @@ void pfm_main::set_screen_brightness(float i_brightness) {}
 
 bool pfm_main::back_evt()
 {
-   return unit_ctrl::inst()->back_evt();
+   return mod_ctrl::inst()->back_evt();
 }
 
 //mws_sp<ia_console> pfm::get_console()
@@ -1107,14 +1107,14 @@ void pfm::screen::flip_screen()
 }
 
 
-//shared_array<uint8> pfm::storage::load_res_byte_array(string ifilename, int& isize)
+//shared_array<uint8> pfm::storage::load_res_byte_array(string i_filename, int& isize)
 //{
 //	shared_array<uint8> res;
-//	path p(ifilename.c_str());
+//	path p(i_filename.c_str());
 //
 //	if(p.is_relative())
 //	{
-//		p = get_path(ifilename.c_str());
+//		p = get_path(i_filename.c_str());
 //	}
 //
 //	if(exists(p))
@@ -1136,11 +1136,11 @@ std::string pfm::filesystem::get_writable_path(std::string iname)
 
    if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
    {
-      auto unit = unit_ctrl::inst()->get_current_unit();
+      auto mod = mod_ctrl::inst()->get_current_mod();
 
-      if (unit)
+      if (mod)
       {
-         p = pfm_impl::get_unit_res_path(unit);
+         p = pfm_impl::get_mod_res_path(mod);
       }
       else
       {
@@ -1176,14 +1176,14 @@ std::string pfm::filesystem::get_path(std::string iname)
    return "";
 }
 
-void pfm::filesystem::load_res_file_map(mws_sp<unit> iu)
+void pfm::filesystem::load_res_file_map(mws_sp<mws_mod> i_mod)
 {
    pfm_impl::res_files_map = std::make_shared<umf_r>();
    pfm_app_inst->get_directory_listing(pfm_impl::get_common_res_path(), pfm_impl::res_files_map, true);
 
-   if (iu)
+   if (i_mod)
    {
-      pfm_app_inst->get_directory_listing(pfm_impl::get_unit_res_path(iu), pfm_impl::res_files_map, true);
+      pfm_app_inst->get_directory_listing(pfm_impl::get_mod_res_path(i_mod), pfm_impl::res_files_map, true);
    }
 }
 
@@ -1203,9 +1203,9 @@ mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(mws_sp<pfm_file>
    return res;
 }
 
-mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string ifilename)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string i_filename)
 {
-   mws_sp<pfm_file> fs = pfm_file::get_inst(ifilename);
+   mws_sp<pfm_file> fs = pfm_file::get_inst(i_filename);
 
    return load_res_byte_vect(fs);
 }
@@ -1228,47 +1228,47 @@ mws_sp<std::string> pfm::filesystem::load_res_as_string(mws_sp<pfm_file> ifile)
    return text;
 }
 
-mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string ifilename)
+mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string i_filename)
 {
-   mws_sp<pfm_file> fs = pfm_file::get_inst(ifilename);
+   mws_sp<pfm_file> fs = pfm_file::get_inst(i_filename);
 
    return load_res_as_string(fs);
 }
 
-//shared_array<uint8> pfm::storage::load_unit_byte_array(mws_sp<unit> iu, string ifilename, int& isize)
+//shared_array<uint8> pfm::storage::load_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, int& isize)
 //{
-//	if(!iu)
+//	if(!i_mod)
 //	{
 //		return shared_array<uint8>();
 //	}
 //
-//	ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+//	i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 //
-//	return load_res_byte_array(ifilename, isize);
+//	return load_res_byte_array(i_filename, isize);
 //}
 
-mws_sp<std::vector<uint8> > pfm::filesystem::load_unit_byte_vect(mws_sp<unit> iu, string ifilename)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_mod_byte_vect(mws_sp<mws_mod> i_mod, string i_filename)
 {
-   if (!iu)
+   if (!i_mod)
    {
       return mws_sp<std::vector<uint8> >();
    }
 
-   //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 
-   return load_res_byte_vect(ifilename);
+   return load_res_byte_vect(i_filename);
 }
 
-bool pfm::filesystem::store_unit_byte_array(mws_sp<unit> iu, string ifilename, const uint8* ires, int isize)
+bool pfm::filesystem::store_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, const uint8* ires, int isize)
 {
-   if (!iu)
+   if (!i_mod)
    {
       return false;
    }
 
-   //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 
-   //path p = get_path(ifilename.c_str());
+   //path p = get_path(i_filename.c_str());
    //mws_sp<random_access_file> fs = get_random_access(p, true);
 
    //if(exists(p))
@@ -1281,16 +1281,16 @@ bool pfm::filesystem::store_unit_byte_array(mws_sp<unit> iu, string ifilename, c
    return false;
 }
 
-bool pfm::filesystem::store_unit_byte_vect(mws_sp<unit> iu, string ifilename, const vector<uint8>& ires)
+bool pfm::filesystem::store_mod_byte_vect(mws_sp<mws_mod> i_mod, string i_filename, const vector<uint8>& ires)
 {
-   if (!iu)
+   if (!i_mod)
    {
       return false;
    }
 
-   //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 
-   //path p = get_path(ifilename.c_str());
+   //path p = get_path(i_filename.c_str());
    //mws_sp<random_access_file> fs = get_random_access(p, true);
 
    //if(exists(p))
@@ -1303,16 +1303,16 @@ bool pfm::filesystem::store_unit_byte_vect(mws_sp<unit> iu, string ifilename, co
    return false;
 }
 
-mws_sp<pfm_file> pfm::filesystem::random_access(mws_sp<unit> iu, std::string ifilename)
+mws_sp<pfm_file> pfm::filesystem::random_access(mws_sp<mws_mod> i_mod, std::string i_filename)
 {
-   if (!iu)
+   if (!i_mod)
    {
       return mws_sp<pfm_file>();
    }
 
-   //ifilename = trs("unit-data/%1%-%2%") % iu->get_name() % ifilename;
+   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 
-   //return get_random_access(get_path(ifilename.c_str()), true);
+   //return get_random_access(get_path(i_filename.c_str()), true);
    return mws_sp<pfm_file>();
 }
 

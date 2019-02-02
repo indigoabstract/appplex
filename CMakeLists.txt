@@ -31,15 +31,15 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/unit"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
@@ -77,15 +77,15 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/unit"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jni")
@@ -148,15 +148,15 @@ else() # Assume iOS
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/unit"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/snd"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/tlib"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/private"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/units/public/lib"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/private"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public"
+	"${CMAKE_CURRENT_LIST_DIR}/src/app/mod/public/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/lib/std/inc"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src")
@@ -250,7 +250,7 @@ else() # Assume iOS
 	)
 
         file(GLOB_RECURSE res_files_0 ${CMAKE_CURRENT_LIST_DIR}/src/res/*)
-	file(GLOB_RECURSE res_files_1 ${CMAKE_CURRENT_LIST_DIR}/src/app/units/private/omnirecall/res/*)
+	file(GLOB_RECURSE res_files_1 ${CMAKE_CURRENT_LIST_DIR}/src/app/mod/private/omnirecall/res/*)
         set(res_files ${res_files_0} ${res_files_1})
 
 	set_source_files_properties(

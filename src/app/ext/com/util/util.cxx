@@ -1,8 +1,8 @@
 #include "stdafx.hxx"
 
 #include "util.hxx"
-#include "com/unit/transitions.hxx"
-#include "unit-ctrl.hxx"
+#include "com/mod/transitions.hxx"
+#include "mod-ctrl.hxx"
 
 
 using std::string;
@@ -94,7 +94,7 @@ point2d kinetic_scrolling::update()
 			//i tried a few slowing formulas
 			decay = 1.f - inverse(delta_t, decay_maxmillis);
 			
-			//decay = 1 - inverse(unit_ctrl::get_current_unit()->update_ctrl->getTime() - decay_start, decay_maxmillis);
+			//decay = 1 - inverse(mod_ctrl::get_current_mod()->update_ctrl->getTime() - decay_start, decay_maxmillis);
 
 			//decay = 1 - sigmoid(pfm::getCurrentTime() - decay_start, decay_maxmillis);
 			//decay=decay*.9;
@@ -139,7 +139,7 @@ void kinetic_scrolling::start_slowdown()
 		decay = 1;
 		decay_start = pfm::time::get_time_millis();
 		
-		//decay_start = unit_ctrl::get_current_unit()->update_ctrl->getTime();
+		//decay_start = mod_ctrl::get_current_mod()->update_ctrl->getTime();
 		active = true;
 	}
 }

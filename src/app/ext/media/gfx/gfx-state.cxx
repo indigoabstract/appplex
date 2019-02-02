@@ -84,7 +84,7 @@ public:
       rsv_point_sprite_oes = GL_FALSE;
       rsv_polygon_offset_factor = 0;
       rsv_polygon_offset_fill = GL_FALSE;
-      rsv_polygon_offset_units = 0;
+      rsv_polygon_offset_mods = 0;
       rsv_sample_alpha_to_coverage = GL_FALSE;
       rsv_sample_alpha_to_one = GL_FALSE;
       rsv_sample_coverage = GL_FALSE;
@@ -375,7 +375,7 @@ public:
 
          case gl::POLYGON_OFFSET_FACTOR:
             rsv_polygon_offset_factor = iplist->val[0].float_val;
-            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_units);
+            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_mods);
             break;
             //params returns one value, the scaling factor used to determine the variable offset that is added
             //to the depth value of each fragment generated when a polygon is rasterized. See glPolygonOffset.
@@ -388,8 +388,8 @@ public:
             //	The initial value is GL_FALSE. See glPolygonOffset.
 
          case gl::POLYGON_OFFSET_UNITS:
-            rsv_polygon_offset_units = iplist->val[0].float_val;
-            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_units);
+            rsv_polygon_offset_mods = iplist->val[0].float_val;
+            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_mods);
             break;
             //params returns one value. This value is multiplied by an implementation-specific value and then added to the depth value of each
             //	fragment generated when a polygon is rasterized. See glPolygonOffset.
@@ -535,8 +535,8 @@ public:
          case gl::POLYGON_OFFSET:
          {
             rsv_polygon_offset_factor = iplist->val[0].float_val;
-            rsv_polygon_offset_units = iplist->val[1].float_val;
-            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_units);
+            rsv_polygon_offset_mods = iplist->val[1].float_val;
+            glPolygonOffset(rsv_polygon_offset_factor, rsv_polygon_offset_mods);
 
             break;
             //params returns two values: the near and far mapping limits for the depth buffer. See glDepthRange.
@@ -696,7 +696,7 @@ public:
    GLboolean rsv_point_sprite_oes;
    GLfloat rsv_polygon_offset_factor;
    GLboolean rsv_polygon_offset_fill;
-   GLfloat rsv_polygon_offset_units;
+   GLfloat rsv_polygon_offset_mods;
    GLboolean rsv_sample_alpha_to_coverage;
    GLboolean rsv_sample_alpha_to_one;
    GLboolean rsv_sample_coverage;

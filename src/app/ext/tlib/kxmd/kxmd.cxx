@@ -105,10 +105,6 @@ mws_sp<kx_process> kxmd_ops::get_inner_block(std::string i_path, mws_sp<kx_proce
       tokens = str_split(i_path, ".");
       xdb = i_root;
 
-      if (i_path == "units.kappaxx.platf")
-      {
-         int x = 3;
-      }
       for (auto& xdb_name : tokens)
       {
          auto sub_xdb = xdb->find_by_name(xdb_name, i_recursive);

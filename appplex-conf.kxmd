@@ -3,13 +3,13 @@
 default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
-	@@start[ unit[ reliquus ], exclusive [ false ], launch-unit [ true ], ],
-	start[ unit-list[ template ], exclusive [ true ], launch-unit [ true ], ],
+	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
+	start[ mod-list[ template ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
-units
+mod
 [
-	@@[ public units ],
+	@@[ public mods ],
 
 	@@[ lib ],
 	
@@ -18,9 +18,9 @@ units
 	
 	@@[ misc ],
 	
+	template[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
 	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png ], platf[ windows, android ], ],
-	template[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ ],
@@ -53,14 +53,14 @@ units
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
 	test-trail[ platf[ windows, android ], ],
-	test-video-recording[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, vector-fonts, ffmpeg, unit-test-ffmpeg ], platf[ windows ], enabled[ true ], ],
+	test-video-recording[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype_gl, mws, vector-fonts, ffmpeg, test-ffmpeg ], platf[ windows ], enabled[ true ], ],
 	test-touch-input[ uses[ bitmap-fonts, gfx, fonts, mws, png ], platf[ windows, android, ios ], ],
 	test-gl-uniform-blocks[ uses[ gfx ], platf[ windows, android, ios ], ],
 	test-res-ld[ uses[ gfx, png ], platf[ all ], ],
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
 
-	@@[ private units ],
-	@@load-and-replace[ "src/app/units/private/units.kxmd", units ],
+	@@[ private mods ],
+	@@load-and-replace[ "src/app/mod/private/mods.kxmd", mods ],
 
 	appplexx-conf[ uses[ format, kxmd ], platf[ windows ], ],
 	barnes-hut[ ],
@@ -70,8 +70,8 @@ units
 	shipwrecked[ ],
 	vorofract[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, kxmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
-	omnirecall[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, notifications, mws, png, vector-fonts, unit-techno-globe ], platf[ windows, android, ios ], ],
-	metrolife[ uses[ gfx, ffmpeg, unit-test-ffmpeg ], platf[ windows, android ], ],
+	omnirecall[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, notifications, mws, png, vector-fonts, techno-globe ], platf[ windows, android, ios ], ],
+	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 	voronoi-keyboard[ uses[ gfx, fonts, format, freetype, freetype_gl, jcv, kxmd, mws, png, vector-fonts, vkb ] ],
@@ -82,14 +82,14 @@ units
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
 	techno-globe[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ], platf[ windows, android, emscripten ], ],
-	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, @@[ ffmpeg, unit-test-ffmpeg, format ], ], platf[ windows, android, ios ], ],
+	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, @@[ ffmpeg, test-ffmpeg, format ], ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
 
 	text-extractor[ uses[ gfx ], platf[ windows ], ],
 ],
 
-mod
+mod-dependencies
 [
 	3d-engine [ req[ gfx, obj-loader, res-loader ] ],
 	bitmap-fonts[ req[ png ] ],
@@ -112,8 +112,8 @@ paths
 	proj-rel-res-path[ 'src/res' ],
 	@@[ source dir location, relative to 'appplex' dir ],
 	proj-rel-src-path[ "src/app" ],
-	@@[ units dir location, relative to 'appplex' dir ],
-	proj-rel-units-path[ "src/app/units" ],
+	@@[ mod dir location, relative to 'appplex' dir ],
+	proj-rel-mod-path[ "src/app/mod" ],
 	@@[ appplex conf dir location, relative to 'appplex' dir ],
 	proj-rel-appplex-conf-path[ "src/app/min" ],
 

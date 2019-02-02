@@ -7,11 +7,11 @@
 #include "mws-vkb.hxx"
 #include "jcv/vrn-diag.hxx"
 #include "jcv/vrn-visual.hxx"
-#include "unit-ctrl.hxx"
+#include "mod-ctrl.hxx"
 #include "../mws-camera.hxx"
 #include "com/mws/text-vxo.hxx"
 #include "com/mws/mws-font.hxx"
-#include "unit.hxx"
+#include "mod.hxx"
 #include "kxmd/kxmd.hxx"
 
 
@@ -43,7 +43,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
          if (key_id != VKB_DONE)
          {
-            unit_ctrl::inst()->key_action(KEY_PRESS, key_id);
+            mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
          }
          break;
       }
@@ -67,7 +67,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             }
             else
             {
-               unit_ctrl::inst()->key_action(KEY_RELEASE, key_id);
+               mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
             }
          }
          break;
@@ -202,7 +202,7 @@ void mws_vkb::load(std::string i_filename)
    }
 
    vkb_filename = i_filename;
-   mws_sp<std::vector<uint8> > res = get_unit()->storage.load_unit_byte_vect(vkb_filename);
+   mws_sp<std::vector<uint8> > res = get_mod()->storage.load_mod_byte_vect(vkb_filename);
    mws_sp<std::string> src(new std::string((const char*)begin_ptr(res), res->size()));
    mws_sp<kxmd_elem> kxmdi = kxmd::parse(src);
 

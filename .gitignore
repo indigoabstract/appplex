@@ -19,6 +19,7 @@
 /pfm/msvc/msvc-2017/.vs
 /pfm/msvc/msvc-2017/debug
 /pfm/msvc/msvc-2017/ipch
+/pfm/msvc/proj
 /pfm/msvc/appplex.exe
 /pfm/msvc/appplex.exp
 /pfm/msvc/appplex.lib
@@ -29,9 +30,8 @@
 /pfm/appplex.lib
 /src/app/min/appplex-conf.hxx
 /src/app/min/appplex-conf.cxx
-/src/app/units/private
-/src/app/units/public/layered-car-paint
+/src/app/mod/private
+/src/app/mod/public/layered-car-paint
 /pfm/ios/xcode
 
-/pfm/msvc/proj
 *.iml

@@ -4,7 +4,7 @@
 #include <glm/fwd.hpp>
 
 
-class unit;
+class mws_mod;
 struct texture_glyph_t;
 class gfx_tex;
 class mws_font;
@@ -109,7 +109,7 @@ public:
    glm::vec2 get_text_dim(mws_sp<mws_font> ifont, const std::string& itext);
 
 private:
-   friend class unit;
+   friend class mws_mod;
    font_db();
    void on_frame_start();
 
