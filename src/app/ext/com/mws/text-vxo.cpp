@@ -35,8 +35,7 @@ public:
    {
       mIs3D = false;
       text_vxo& ti = *inst;
-      ti[MP_SHADER_NAME][MP_VSH_NAME] = "v3f-t2f-c4f.vert";
-      ti[MP_SHADER_NAME][MP_FSH_NAME] = "v3f-t2f-c4f.frag";
+      ti[MP_SHADER_NAME] = "text-shader";
       ti[MP_BLENDING] = MV_ALPHA;
       ti[MP_CULL_BACK] = true;
       ti[MP_CULL_FRONT] = false;

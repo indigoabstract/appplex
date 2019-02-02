@@ -40,8 +40,8 @@ public:
    virtual void update_gfx_cursor();
 
 protected:
-   mws_text_box();
-   mws_sp<mws_text_area_model> new_model();
+   mws_text_box() {}
+   virtual mws_sp<mws_text_area_model> new_model();
    virtual void handle_pointer_evt(mws_sp<pointer_evt> i_pe);
    virtual void handle_key_evt(mws_sp<key_evt> i_ke);
    virtual float get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const;
@@ -65,6 +65,16 @@ protected:
    mws_sp<mws_rect> left_char_rect;
    mws_sp<mws_rect> right_char_rect;
    dragging_detector dragging_det;
+};
+
+
+class mws_text_field : public mws_text_box
+{
+public:
+   static mws_sp<mws_text_field> nwi();
+
+protected:
+   mws_text_field() {}
 };
 
 

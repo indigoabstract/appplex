@@ -23,4 +23,11 @@ mws_sp<mws_video_dec> mws_video_dec::nwi()
    return ios_video_dec::nwi();
 }
 
+#else
+
+mws_sp<mws_video_dec> mws_video_dec::nwi()
+{
+   return nullptr;
+}
+
 #endif

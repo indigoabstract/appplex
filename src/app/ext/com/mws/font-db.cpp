@@ -185,8 +185,47 @@ class font_db_impl
 public:
    font_db_impl()
    {
-      tex_atlas = nullptr;
-      pow_of_two = 9;
+      // text shader
+      auto vsh = mws_sp<std::string>(new std::string(
+         R"(
+      uniform mat4 model;
+      uniform mat4 view;
+      uniform mat4 projection;
+
+      attribute vec3 vertex;
+      attribute vec2 tex_coord;
+      attribute vec4 color;
+
+      varying vec2 v_v2_tex_coord;
+      varying vec4 v_v4_color;
+
+      void main()
+      {
+	      v_v2_tex_coord = tex_coord;
+	      v_v4_color = color;
+            gl_Position = projection*(view*(model*vec4(vertex, 1.0)));
+      }
+      )"
+      ));
+
+      auto fsh = mws_sp<std::string>(new std::string(
+         R"(
+#ifdef GL_ES
+   	precision lowp float;
+#endif
+      uniform sampler2D texture;
+      varying vec2 v_v2_tex_coord;
+      varying vec4 v_v4_color;
+
+      void main()
+      {
+          float v1_a = texture2D(texture, v_v2_tex_coord).r;
+          gl_FragColor = vec4(v_v4_color.rgb, v_v4_color.a * v1_a);
+      }
+      )"
+      ));
+
+      text_shader = gfx::i()->shader.new_program_from_src("text-shader", vsh, fsh);
       clear_db();
    }
 
@@ -346,7 +385,8 @@ public:
    }
 
 public:
-   texture_atlas_t * tex_atlas;
+   texture_atlas_t * tex_atlas = nullptr;
+   mws_sp<gfx_shader> text_shader;
    mws_sp<gfx_tex> ext_tex_atlas_ref;
    std::vector<font_glyph> glyph_vect;
    std::unordered_map<uint64, mws_sp<font_cache> > font_size_ht;
@@ -356,8 +396,8 @@ public:
    std::unordered_map<std::string, mws_wp<std::vector<uint8> > > font_data_by_path_ht;
    std::vector<wchar_t> glyphs_to_load;
    std::unordered_map<wchar_t, bool> marked_for_loading;
-   bool reload_atlas;
-   int pow_of_two;
+   bool reload_atlas = false;
+   int pow_of_two = 9;
 };
 
 

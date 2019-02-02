@@ -90,4 +90,11 @@ mws_sp<mws_video_reencoder> mws_video_reencoder::nwi()
    return ios_video_reencoder::nwi();
 }
 
+#else
+
+mws_sp<mws_video_enc> mws_video_enc::nwi()
+{
+   return nullptr;
+}
+
 #endif

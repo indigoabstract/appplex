@@ -240,7 +240,6 @@ key_evt::key_evt(mws_wp<key_ctrl> i_src, key_evt::key_evt_types i_type, key_type
    src = i_src;
    type = i_type;
    key = i_key;
-   //trx("newkeyevt %x") % this;
 }
 
 mws_sp<key_evt> key_evt::as_key_evt(mws_sp<mws_dp> i_dp)
@@ -302,7 +301,6 @@ key_types key_evt::get_key() const
 
 void key_evt::process()
 {
-   //trx("keyevt process %x") % getInst().get();
    mws_dp::process();
 }
 
@@ -320,6 +318,7 @@ enum key_status
 
 uint32 key_ctrl::time_until_first_key_repeat_ms = 400;
 uint32 key_ctrl::key_repeat_threshold_ms = 50;
+const uint32 INFINITE_KEY_REPEATS = 0xffffffff;
 uint32 key_ctrl::max_key_repeat_count = 5;
 uint8 key_ctrl::keys_status[KEY_COUNT] = { KEY_IDLE };
 uint32 key_ctrl::keys_status_time[KEY_COUNT] = { 0 };
@@ -356,7 +355,7 @@ void key_ctrl::update()
       for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
       {
          key_types key_id = (key_types)k;
-         
+
          switch (keys_status[k])
          {
          case KEY_PRESSED:
@@ -383,7 +382,7 @@ void key_ctrl::update()
             if (dt > key_repeat_threshold_ms)
             {
                // if the key repeat is past the max number of repeats for this key, force release it
-               if (dt > key_repeat_threshold_ms * max_key_repeat_count)
+               if (max_key_repeat_count != INFINITE_KEY_REPEATS && dt > key_repeat_threshold_ms * max_key_repeat_count)
                {
                   key_released(k, key_id);
                }
@@ -436,6 +435,15 @@ void key_ctrl::key_released(int i_key)
    keys_status[i_key] = KEY_RELEASED;
 }
 
+void key_ctrl::clear_keys()
+{
+   for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
+   {
+      keys_status[k] = KEY_IDLE;
+      keys_status_time[k] = 0;
+   }
+}
+
 mws_sp<mws_sender> key_ctrl::sender_inst()
 {
    return get_instance();
@@ -443,6 +451,5 @@ mws_sp<mws_sender> key_ctrl::sender_inst()
 
 void key_ctrl::new_key_event(mws_sp<key_evt> i_ke)
 {
-   //trx("keyevt type %1%) ke->getName();
    broadcast(i_ke->get_src(), i_ke);
 }

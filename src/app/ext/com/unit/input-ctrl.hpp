@@ -155,6 +155,8 @@ public:
    bool key_is_held(key_types i_key);
    void key_pressed(int i_key);
    void key_released(int i_key);
+   // resets all keys to the default [ KEY_IDLE, 0 ms ]
+   void clear_keys();
 
 private:
    key_ctrl();

@@ -447,10 +447,6 @@ void mws_text_box::update_gfx_cursor()
    }
 }
 
-mws_text_box::mws_text_box()
-{
-}
-
 mws_sp<mws_text_area_model> mws_text_box::new_model()
 {
    if (editable)
@@ -656,6 +652,15 @@ float mws_text_box::get_span(const font_glyph & i_glyph, std::string & i_text, i
    }
 
    return span;
+}
+
+
+
+mws_sp<mws_text_field> mws_text_field::nwi()
+{
+   mws_sp<mws_text_field> inst(new mws_text_field());
+   inst->setup();
+   return inst;
 }
 
 
