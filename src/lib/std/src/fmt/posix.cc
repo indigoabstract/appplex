@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "appplex-conf.hpp"
+#include "stdafx.hxx"
+#include "appplex-conf.hxx"
 
 #if defined MOD_FORMAT
 // A C++ interface to POSIX functions.

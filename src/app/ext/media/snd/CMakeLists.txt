@@ -1,8 +1,8 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/snd.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/snd.hxx"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/snd.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/snd.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

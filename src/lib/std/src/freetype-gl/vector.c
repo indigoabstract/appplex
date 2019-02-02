@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
-#include "appplex-conf.hpp"
+#include "appplex-conf.hxx"
 
 #if defined MOD_FREETYPE_GL
 

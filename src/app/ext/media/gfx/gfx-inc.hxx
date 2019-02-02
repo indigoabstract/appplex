@@ -1,0 +1,17 @@
+#pragma once
+
+#include "gfx-camera.hxx"
+#include "gfx-color.hxx"
+#include "gfx-material.hxx"
+#include "gfx-obj.hxx"
+#include "gfx-pbo.hxx"
+#include "gfx-quad-2d.hxx"
+#include "gfx-rt.hxx"
+#include "gfx-scene.hxx"
+#include "gfx-shader.hxx"
+#include "gfx-state-const.hxx"
+#include "gfx-state.hxx"
+#include "gfx-tex.hxx"
+#include "gfx-util.hxx"
+#include "gfx-vxo.hxx"
+#include "gfx.hxx"

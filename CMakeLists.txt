@@ -202,7 +202,7 @@ else() # Assume iOS
 	set(APP_HEADER_FILES
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/AppDelegate.h"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/ViewController.h"
-	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.hpp"
+	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/main.hxx"
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src/Prefix.pch"
 	)
 

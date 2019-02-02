@@ -1,10 +1,10 @@
 set(headers
 	"${CMAKE_CURRENT_LIST_DIR}/lodepng.h"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-png.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-png.hxx"
 )
 set(sources
 	"${CMAKE_CURRENT_LIST_DIR}/lodepng.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-png.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-png.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

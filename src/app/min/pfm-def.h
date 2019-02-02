@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 #include <memory>
+#include <stdint.h>
 
 using std::enable_shared_from_this;
 using std::static_pointer_cast;

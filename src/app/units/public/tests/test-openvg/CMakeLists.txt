@@ -1,8 +1,8 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg-mws-monkvg.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg-mws-shivavg.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg-mws-monkvg.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg-mws-shivavg.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-openvg.hxx"
 )

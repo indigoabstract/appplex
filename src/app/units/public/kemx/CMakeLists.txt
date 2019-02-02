@@ -1,10 +1,10 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/info.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/node-info.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-kemx.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/info.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/node-info.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-kemx.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/info.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/node-info.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-kemx.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/info.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/node-info.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-kemx.hxx"
 )

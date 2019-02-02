@@ -1,22 +1,22 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/font-db.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-camera.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-com.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-ext.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-font.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-text-box.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/text-vxo.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/font-db.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-camera.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-com.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-ext.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-font.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-text-box.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/text-vxo.hxx"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/font-db.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-camera.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-com.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-ext.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-font.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/mws-text-box.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/text-vxo.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/font-db.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-camera.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-com.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-ext.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-font.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mws-text-box.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/text-vxo.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
-#include "appplex-conf.hpp"
+#include "appplex-conf.hxx"
 
 #ifdef UNIT_MX_LISP
 
@@ -14,7 +14,7 @@
 	#define mws_assert(cond)
 	#define mws_signal_error()
 #else
-	#include "pfm.hpp"
+	#include "pfm.hxx"
 #endif
 
 #include <stdio.h>

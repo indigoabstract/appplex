@@ -1,6 +1,6 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test.hxx"
 )

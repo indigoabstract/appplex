@@ -1,8 +1,8 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/unit-template.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-template.hxx"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/unit-template.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-template.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

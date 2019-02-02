@@ -1,8 +1,8 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/icosphere.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-kube-sphere.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/icosphere.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-kube-sphere.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/icosphere.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-kube-sphere.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/icosphere.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-kube-sphere.hxx"
 )

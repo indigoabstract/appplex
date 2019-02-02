@@ -1,10 +1,10 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/palette.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/perlinnoise.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/perlinsettings.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/palette.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/perlinnoise.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/perlinsettings.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/palette.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/perlinnoise.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/perlinsettings.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/palette.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/perlinnoise.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/perlinsettings.hxx"
 )

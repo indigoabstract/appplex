@@ -1,8 +1,8 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.hxx"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-texxed.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

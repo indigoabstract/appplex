@@ -1,13 +1,13 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/gesture-detectors.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/input-ctrl.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/transitions.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/update-ctrl.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gesture-detectors.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/input-ctrl.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/transitions.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/update-ctrl.cxx"
 
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/gesture-detectors.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/input-ctrl.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/transitions.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/update-ctrl.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/gesture-detectors.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/input-ctrl.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/transitions.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/update-ctrl.hxx"
 )

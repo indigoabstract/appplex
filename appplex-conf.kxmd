@@ -117,18 +117,8 @@ paths
 	@@[ appplex conf dir location, relative to 'appplex' dir ],
 	proj-rel-appplex-conf-path[ "src/app/min" ],
 
-	appplex-conf-hpp-name[ "appplex-conf.hpp" ],
-	appplex-conf-cpp-name[ "appplex-conf.cpp" ],
-
-	libs
-	[
-		boost
-		[
-			@@[ boost dirs location, relative to 'appplex' dir ],
-			inc[ 'src/lib/ext/inc/boost' ],
-			lib[ 'src/lib/ext/src/boost' ],
-		],
-	],
+	appplex-conf-hxx-name[ "appplex-conf.hxx" ],
+	appplex-conf-cxx-name[ "appplex-conf.cxx" ],
 
 	platforms
 	[
@@ -140,22 +130,6 @@ paths
 			asset-path[ 'app/src/main/assets' ],
 			@@[ name of the default/generic android project ],
 			default-proj-name[ 'default' ],
-
-			gradle
-			[
-				@@[ location of the app gradle in an android project, relative to the android project ],
-				gradle-path[ 'app/build.gradle' ],
-				@@[ main project location ('appplex' dir), relative to all android projects directory root ('pfm/android') ],
-				rel-proj-path[ '../../..' ],
-
-				@@[ search for these tags to include java, cpp libs and cpp sources in the gradle file ],
-				java-src-start[ '// java-src[' ],
-				java-src-end[ '// java-src]' ],
-				cpp-lib-start[ '// cpp-lib[' ],
-				cpp-lib-end[ '// cpp-lib]' ],
-				cpp-src-start[ '// cpp-src[' ],
-				cpp-src-end[ '// cpp-src]' ],
-			],
 		],
 
 		ios

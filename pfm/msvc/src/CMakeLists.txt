@@ -1,7 +1,7 @@
 # Set Properties->General->Configuration Type to Application(.exe)
 # Creates app.exe with the listed sources (main.cxx)
 # Adds sources to the Solution Explorer
-add_executable (app "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
+add_executable (app "${CMAKE_CURRENT_LIST_DIR}/main.cxx")
 
 # for ffmpeg
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")

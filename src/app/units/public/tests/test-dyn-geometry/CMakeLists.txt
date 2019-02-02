@@ -1,16 +1,16 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/b-spline.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/catmull-rom-spline.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/control-curve.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/curve-mesh.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/natural-cubic-spline.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-dyn-geometry.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/b-spline.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/catmull-rom-spline.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/control-curve.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/curve-mesh.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/natural-cubic-spline.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-dyn-geometry.cxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/b-spline.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/catmull-rom-spline.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/control-curve.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/curve-mesh.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/natural-cubic-spline.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/unit-test-dyn-geometry.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/b-spline.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/catmull-rom-spline.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/control-curve.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/curve-mesh.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/natural-cubic-spline.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/unit-test-dyn-geometry.hxx"
 )

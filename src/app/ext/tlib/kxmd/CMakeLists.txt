@@ -1,14 +1,14 @@
 set(headers
-	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kxmd.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kxmd.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.hxx"
 )
 set(sources
-	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kxmd.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-elem.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-krte.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kxmd.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/kx-parser.cxx"
 )
 target_sources(app_plex_main
     PUBLIC

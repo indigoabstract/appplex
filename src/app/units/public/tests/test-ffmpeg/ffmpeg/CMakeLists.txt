@@ -1,10 +1,10 @@
 target_sources(app_plex_main
     PRIVATE
-	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.cxx"
+	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.hxx"
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.hpp"
-	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/vdec-ffmpeg.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/venc-ffmpeg.hxx"
 )
