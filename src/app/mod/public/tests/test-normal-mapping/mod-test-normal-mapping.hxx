@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_NORMAL_MAPPING
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 namespace ns_mod_test_normal_mapping

@@ -1,8 +1,8 @@
-#include "main.hpp"
+#include "main.hxx"
 
-#include "min.hpp"
-#include "unit-ctrl.hpp"
-#include "com/unit/input-ctrl.hpp"
+#include "min.hxx"
+#include "mws-mod-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
 #include <stdio.h>
 #include <sys/time.h>
 #include <time.h>
@@ -12,14 +12,15 @@
 #include <string>
 #include <vector>
 
-std::shared_ptr<std::string> load_res_as_string(std::string ifilename)
+
+mws_sp<std::string> load_res_as_string(std::string ifilename)
 {
     auto c_filename = ifilename.c_str();
     NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
     // get the main bundle for the app
     NSBundle* main_bundle = [NSBundle mainBundle];
     NSString* path = [main_bundle pathForResource:nss_filename ofType:@""];
-    std::shared_ptr<std::string> text;
+    mws_sp<std::string> text;
     
     if(path)
     {
@@ -349,9 +350,9 @@ void ios_main::init()
 {
 	load_apk_file_list();
 
-	unit_ctrl::inst()->pre_init_app();
-	unit_ctrl::inst()->set_gfx_available(true);
-	unit_ctrl::inst()->init_app();
+	mws_mod_ctrl::inst()->pre_init_app();
+	mws_mod_ctrl::inst()->set_gfx_available(true);
+	mws_mod_ctrl::inst()->init_app();
 
     //auto s = load_res_as_string("rectangle.png");
 	is_started = true;
@@ -359,10 +360,10 @@ void ios_main::init()
 
 void ios_main::start()
 {
-	unit_ctrl::inst()->start_app();
+	mws_mod_ctrl::inst()->start_app();
 }
 
 void ios_main::run()
 {
-	unit_ctrl::inst()->update();
+	mws_mod_ctrl::inst()->update();
 }

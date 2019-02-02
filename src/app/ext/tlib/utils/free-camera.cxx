@@ -5,7 +5,7 @@
 #include "com/mod/input-ctrl.hxx"
 #include "com/util/util.hxx"
 #include "gfx-camera.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 free_camera::free_camera(mws_sp<mws_mod> i_mod)

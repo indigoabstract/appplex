@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_KUBE_SPHERE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_kube_sphere_impl;

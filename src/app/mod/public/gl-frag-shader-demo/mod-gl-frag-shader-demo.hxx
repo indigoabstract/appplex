@@ -4,7 +4,7 @@
 
 #ifdef MOD_GL_FRAG_SHADER_DEMO
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class mod_gl_frag_shader_demo_impl;
 class mod_gl_frag_shader_demo_page;

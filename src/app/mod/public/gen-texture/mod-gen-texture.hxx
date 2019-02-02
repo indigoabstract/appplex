@@ -4,7 +4,7 @@
 
 #ifdef MOD_GEN_TEXTURE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_gen_texture : public mws_mod

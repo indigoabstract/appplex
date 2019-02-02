@@ -4,7 +4,7 @@
 
 #ifdef MOD_JCV
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_jcv : public mws_mod

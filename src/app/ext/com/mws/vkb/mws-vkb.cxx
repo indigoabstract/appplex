@@ -7,11 +7,11 @@
 #include "mws-vkb.hxx"
 #include "jcv/vrn-diag.hxx"
 #include "jcv/vrn-visual.hxx"
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "../mws-camera.hxx"
 #include "com/mws/text-vxo.hxx"
 #include "com/mws/mws-font.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "kxmd/kxmd.hxx"
 
 
@@ -43,7 +43,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
          if (key_id != VKB_DONE)
          {
-            mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
+            mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
          }
          break;
       }
@@ -67,7 +67,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             }
             else
             {
-               mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
+               mws_mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
             }
          }
          break;

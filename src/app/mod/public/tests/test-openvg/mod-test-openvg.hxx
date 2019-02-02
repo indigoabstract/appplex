@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_OPENVG
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_openvg : public mws_mod

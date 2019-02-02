@@ -8,7 +8,7 @@
 #include "text-vxo.hxx"
 #include "mws-camera.hxx"
 #include "mws-font.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "com/util/util.hxx"
 #include "com/mod/transitions.hxx"
 #include "gfx-quad-2d.hxx"

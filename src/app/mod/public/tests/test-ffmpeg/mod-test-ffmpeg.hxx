@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_FFMPEG
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_ffmpeg : public mws_mod

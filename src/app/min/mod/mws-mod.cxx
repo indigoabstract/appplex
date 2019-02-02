@@ -1,13 +1,13 @@
 #include "stdafx.hxx"
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "appplex-conf.hxx"
 #include "com/util/util.hxx"
 #include "com/mws/mws-camera.hxx"
 #include "com/mws/mws.hxx"
 #include "com/mws/mws-com.hxx"
 #include "com/mws/mws-font.hxx"
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "com/mod/input-ctrl.hxx"
 #include "com/mod/update-ctrl.hxx"
@@ -668,7 +668,7 @@ void mws_mod::set_proj_rel_path(std::string ipath)
 
 void mws_mod::set_app_exit_on_next_run(bool iapp_exit_on_next_run)
 {
-   mod_ctrl::inst()->set_app_exit_on_next_run(iapp_exit_on_next_run);
+   mws_mod_ctrl::inst()->set_app_exit_on_next_run(iapp_exit_on_next_run);
 }
 
 bool mws_mod::gfx_available()
@@ -816,11 +816,11 @@ void mws_mod::receive(mws_sp<mws_dp> idp)
                switch (ke->get_key())
                {
                case KEY_F1:
-                  mod_ctrl::inst()->pause();
+                  mws_mod_ctrl::inst()->pause();
                   break;
 
                case KEY_F2:
-                  mod_ctrl::inst()->resume();
+                  mws_mod_ctrl::inst()->resume();
                   break;
 
                case KEY_F3:
@@ -836,7 +836,7 @@ void mws_mod::receive(mws_sp<mws_dp> idp)
                   break;
 
                case KEY_F6:
-                  mod_ctrl::inst()->set_app_exit_on_next_run(true);
+                  mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
                   break;
 
                case KEY_F11:
@@ -1179,14 +1179,14 @@ void mws_mod_list::forward()
    if (ulist.size() > 0)
    {
       mws_sp<mws_mod> u = ulist[ulmodel.lock()->get_selected_elem()];
-      mod_ctrl::inst()->set_next_mod(u);
+      mws_mod_ctrl::inst()->set_next_mod(u);
    }
 }
 
 void mws_mod_list::up_one_level()
 {
 #ifndef SINGLE_MOD_BUILD
-   mws_sp<mws_mod> u = mod_ctrl::inst()->get_current_mod();
+   mws_sp<mws_mod> u = mws_mod_ctrl::inst()->get_current_mod();
    mws_sp<mws_mod> parent = u->parent.lock();
 
    if (parent != NULL)
@@ -1202,7 +1202,7 @@ void mws_mod_list::up_one_level()
          }
       }
 
-      mod_ctrl::inst()->set_next_mod(parent);
+      mws_mod_ctrl::inst()->set_next_mod(parent);
    }
 #endif
 }
@@ -1236,7 +1236,7 @@ void mws_mod_list::init_mws()
          mws_sp<mws_mod> u = get_mod_list()->ulist[idx];
 
          //trx("item %1%") % elemAt(idx);
-         mod_ctrl::inst()->set_next_mod(u);
+         mws_mod_ctrl::inst()->set_next_mod(u);
       }
 
    private:

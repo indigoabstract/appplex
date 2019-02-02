@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_GL_UNIFORM_BLOCKS
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "pfm.hxx"
 
 

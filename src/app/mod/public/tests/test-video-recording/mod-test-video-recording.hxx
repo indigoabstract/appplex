@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_VIDEO_RECORDING
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class mod_test_video_recording : public mws_mod
 {

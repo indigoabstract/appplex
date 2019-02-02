@@ -4,7 +4,7 @@
 
 #ifdef MOD_KINETIC_SCROLLING
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class mod_kinetic_scrolling : public mws_mod
 {

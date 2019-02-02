@@ -3,8 +3,8 @@
 #include "appplex-conf.hxx"
 #include "pfm.hxx"
 #include "pfm-gl.h"
-#include "mod.hxx"
-#include "mod-ctrl.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 
 #include <cstdio>
@@ -1007,7 +1007,7 @@ void pfm_main::set_screen_brightness(float i_brightness) {}
 
 bool pfm_main::back_evt()
 {
-   return mod_ctrl::inst()->back_evt();
+   return mws_mod_ctrl::inst()->back_evt();
 }
 
 //mws_sp<ia_console> pfm::get_console()
@@ -1136,7 +1136,7 @@ std::string pfm::filesystem::get_writable_path(std::string iname)
 
    if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
    {
-      auto mod = mod_ctrl::inst()->get_current_mod();
+      auto mod = mws_mod_ctrl::inst()->get_current_mod();
 
       if (mod)
       {

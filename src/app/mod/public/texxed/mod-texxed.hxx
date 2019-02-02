@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEXXED
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_texxed : public mws_mod

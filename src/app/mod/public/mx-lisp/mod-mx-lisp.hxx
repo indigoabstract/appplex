@@ -4,7 +4,7 @@
 
 #ifdef MOD_MX_LISP
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_mx_lisp : public mws_mod

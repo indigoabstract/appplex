@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_VPLAYER_ANDROID
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_vplayer_android : public mws_mod

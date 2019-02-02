@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_FREEIMAGE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include <string>
 #include <vector>
 

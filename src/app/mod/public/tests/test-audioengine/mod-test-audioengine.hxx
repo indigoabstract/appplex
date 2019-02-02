@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_AUDIOENGINE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_audioengine : public mws_mod

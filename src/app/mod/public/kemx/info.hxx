@@ -4,7 +4,7 @@
 
 #ifdef MOD_KEMX
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 enum basictypes
 {

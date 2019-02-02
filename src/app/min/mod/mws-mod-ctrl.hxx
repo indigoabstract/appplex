@@ -10,10 +10,10 @@ class pointer_evt;
 class gfx;
 
 
-class mod_ctrl
+class mws_mod_ctrl
 {
 public:
-   static mws_sp<mod_ctrl> inst();
+   static mws_sp<mws_mod_ctrl> inst();
    // returns a shared pointer to the current app
    static mws_sp<mws_mod> get_app();
    bool back_evt();
@@ -39,7 +39,7 @@ public:
    void set_gfx_available(bool iis_gfx_available);
 
 private:
-   mod_ctrl();
+   mws_mod_ctrl();
 
    void set_current_mod(mws_sp<mws_mod> i_mod);
 
@@ -48,5 +48,5 @@ private:
    mws_sp<mws_mod_list> ul;
    bool exit_app_on_next_run;
    bool app_started;
-   static mws_sp<mod_ctrl> instance;
+   static mws_sp<mws_mod_ctrl> instance;
 };

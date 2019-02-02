@@ -2,7 +2,7 @@
 
 #include "input-ctrl.hxx"
 #include "pfm-def.h"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include <glm/inc.hpp>
 
 

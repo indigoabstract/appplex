@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_SND_GENERATORS
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_snd_generators : public mws_mod

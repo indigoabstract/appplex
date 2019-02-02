@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "min.hxx"
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 #include <regex>
 #include <sstream>
 #include <ctime>

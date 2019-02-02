@@ -4,7 +4,7 @@
 
 #ifdef MOD_GLOBAL_FLIGHT_PATHS
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_global_flight_paths : public mws_mod

@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_RES_LD
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_res_ld : public mws_mod

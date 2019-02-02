@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEMPLATE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_template : public mws_mod

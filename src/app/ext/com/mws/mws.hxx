@@ -9,7 +9,7 @@
 #include <vector>
 
 
-class mod_ctrl;
+class mws_mod_ctrl;
 class linear_transition;
 class ms_linear_transition;
 class mws_mod;
@@ -165,7 +165,7 @@ protected:
    mws_page_tab(mws_sp<mws_mod> i_mod);
 
 private:
-   friend class mod_ctrl;
+   friend class mws_mod_ctrl;
    friend class mws_page;
 
    void add(mws_sp<mws_page> p);

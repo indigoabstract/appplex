@@ -12,7 +12,7 @@
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-vxo.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "com/mod/transitions.hxx"
 #include <algorithm>
 #ifdef MWS_USES_EXCEPTIONS

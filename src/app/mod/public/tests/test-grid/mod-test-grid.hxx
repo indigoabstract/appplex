@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_GRID
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_grid_impl;

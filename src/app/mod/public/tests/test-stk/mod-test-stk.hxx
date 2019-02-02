@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_STK
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class mod_test_stk : public mws_mod
 {

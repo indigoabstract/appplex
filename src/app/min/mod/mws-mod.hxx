@@ -8,7 +8,7 @@
 #include <vector>
 
 
-class mod_ctrl;
+class mws_mod_ctrl;
 class mws_mod_list;
 class mws_page_tab;
 class key_ctrl;
@@ -151,7 +151,7 @@ protected:
    uint32 last_frame_time;
 
 private:
-   friend class mod_ctrl;
+   friend class mws_mod_ctrl;
    friend class mws_mod_list;
 
    void run_step();
@@ -197,7 +197,7 @@ protected:
    virtual void init_mws();
 
 private:
-   friend class mod_ctrl;
+   friend class mws_mod_ctrl;
 
    std::vector<mws_sp<mws_mod> > ulist;
    mws_wp<mws_list_model> ulmodel;
@@ -208,7 +208,7 @@ private:
 class mws_mod_setup
 {
 private:
-   friend class mod_ctrl;
+   friend class mws_mod_ctrl;
 
    static void create_mods(mws_sp<mws_mod_list> i_mod_list);
    static mws_sp<mws_mod_list> get_mod_list();

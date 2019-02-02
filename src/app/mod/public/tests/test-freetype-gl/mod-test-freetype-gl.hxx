@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_FREETYPE_GL
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_freetype_gl_impl;

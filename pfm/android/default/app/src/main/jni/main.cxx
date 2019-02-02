@@ -2,8 +2,8 @@
 
 #include "pfm-gl.h"
 #include "min.hxx"
-#include "unit-ctrl.hxx"
-#include "com/unit/input-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
 #include "java-callbacks.h"
 #include "jni-helper.hxx"
 #include <zip/zip.h>
@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <string>
 #include <vector>
+
 
 #define APPNAME "appplex"
 
@@ -206,7 +207,7 @@ public:
 };
 
 
-shared_ptr<android_main> android_main::instance;
+mws_sp<android_main> android_main::instance;
 
 android_main::android_main()
 {
@@ -218,17 +219,17 @@ android_main::~android_main()
 {
 }
 
-shared_ptr<android_main> android_main::get_instance()
+mws_sp<android_main> android_main::get_instance()
 {
 	if (!instance)
 	{
-		instance = shared_ptr<android_main>(new android_main());
+		instance = mws_sp<android_main>(new android_main());
 	}
 
 	return instance;
 }
 
-shared_ptr<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
 {
 	return std::make_shared<android_file_impl>(ifilename, iroot_dir);
 }
@@ -313,7 +314,7 @@ std::string android_main::get_timezone_id()const
     return ret;
 }
 
-void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)
+void get_directory_listing_helper(umf_list iplist, mws_sp<pfm_file> ifile)
 {
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{
@@ -423,21 +424,21 @@ void android_main::init()
 {
 	load_apk_file_list();
 
-	unit_ctrl::inst()->pre_init_app();
-	unit_ctrl::inst()->set_gfx_available(true);
-	unit_ctrl::inst()->init_app();
+	mws_mod_ctrl::inst()->pre_init_app();
+	mws_mod_ctrl::inst()->set_gfx_available(true);
+	mws_mod_ctrl::inst()->init_app();
 
 	is_started = true;
 }
 
 void android_main::start()
 {
-	unit_ctrl::inst()->start_app();
+	mws_mod_ctrl::inst()->start_app();
 }
 
 void android_main::run()
 {
-	unit_ctrl::inst()->update();
+	mws_mod_ctrl::inst()->update();
 }
 
 
@@ -520,22 +521,22 @@ extern "C"
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1destroy(JNIEnv*  env, jobject thiz)
 	{
-        unit_ctrl::inst()->destroy_app();
+        mws_mod_ctrl::inst()->destroy_app();
 	}
 
     JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1resume(JNIEnv*  env, jobject thiz)
     {
-        unit_ctrl::inst()->resume();
+        mws_mod_ctrl::inst()->resume();
     }
 
     JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1pause(JNIEnv*  env, jobject thiz)
 	{
-        unit_ctrl::inst()->pause();
+        mws_mod_ctrl::inst()->pause();
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1resize(JNIEnv*  env, jobject  thiz, jint i_w, jint i_h)
 	{
-		unit_ctrl::inst()->resize_app(i_w, i_h);
+		mws_mod_ctrl::inst()->resize_app(i_w, i_h);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event
@@ -567,12 +568,12 @@ extern "C"
 		pfm_te->touch_count = i_touch_count;
 		pfm_te->type = (pointer_evt::e_touch_type)i_touch_type;
 
-		unit_ctrl::inst()->pointer_action(pfm_te);
+		mws_mod_ctrl::inst()->pointer_action(pfm_te);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1render(JNIEnv*  env, jobject thiz)
 	{
-	    if(unit_ctrl::inst()->is_set_app_exit_on_next_run())
+	    if(mws_mod_ctrl::inst()->is_set_app_exit_on_next_run())
         {
             exit_application();
         }

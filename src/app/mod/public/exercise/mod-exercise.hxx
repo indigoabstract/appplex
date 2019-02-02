@@ -4,7 +4,7 @@
 
 #ifdef MOD_EXERCISE
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class long_operation;
 

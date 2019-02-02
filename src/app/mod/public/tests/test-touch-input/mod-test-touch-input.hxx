@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_TOUCH_INPUT
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "pfm.hxx"
 
 

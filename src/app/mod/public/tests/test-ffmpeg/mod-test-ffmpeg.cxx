@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_FFMPEG
 
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "com/mod/input-ctrl.hxx"
 #include "com/mod/update-ctrl.hxx"
 #include "ffmpeg/vdec-ffmpeg.hxx"
@@ -183,7 +183,7 @@ void mod_test_ffmpeg::receive(mws_sp<mws_dp> idp)
 						break;
 
 					case KEY_F6:
-						mod_ctrl::inst()->set_app_exit_on_next_run(true);
+						mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
 						break;
 
 					case KEY_F11:

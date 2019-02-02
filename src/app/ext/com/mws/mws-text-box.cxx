@@ -5,7 +5,7 @@
 #ifdef MOD_MWS
 
 #include "mws-text-box.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "mws-camera.hxx"
 #include "mws-com.hxx"
 #include "mws-font.hxx"

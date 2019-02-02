@@ -4,7 +4,7 @@
 
 #ifdef MOD_ABSTRACT_RACING
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 class mod_abstract_racing : public mws_mod
 {

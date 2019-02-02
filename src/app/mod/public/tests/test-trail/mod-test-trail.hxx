@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_TRAIL
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_trail_impl;

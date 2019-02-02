@@ -5,7 +5,7 @@
 #ifdef MOD_MX_LISP
 
 
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 
 
 void run_mx_lisp_repl();
@@ -46,7 +46,7 @@ bool mod_mx_lisp::update()
 {
 	long_op_run_mx_lisp repl;
 	repl.run();
-	mod_ctrl::inst()->set_app_exit_on_next_run(true);
+	mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
 
 	return true;
 }

@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_SND_ANDROID
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_snd_android : public mws_mod

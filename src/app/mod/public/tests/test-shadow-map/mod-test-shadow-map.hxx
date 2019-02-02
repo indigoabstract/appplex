@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_SHADOW_MAP
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_shadow_map_impl;

@@ -50,7 +50,7 @@ typedef wchar_t		 unicodechar;
 
 class ia_console;
 class mws_mod;
-class mod_ctrl;
+class mws_mod_ctrl;
 class pfm_file;
 
 namespace pfm_impl
@@ -296,8 +296,8 @@ public:
    //static mws_sp<ia_console> get_console();
 
 private:
-   friend class mod_ctrl;
-   friend class mod_ctrl;
+   friend class mws_mod_ctrl;
+   friend class mws_mod_ctrl;
 
    static pfm_data data;
 

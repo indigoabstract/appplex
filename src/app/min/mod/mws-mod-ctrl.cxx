@@ -1,9 +1,9 @@
 #include "stdafx.hxx"
 
-#include "mod-ctrl.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "appplex-conf.hxx"
 #include "pfm.hxx"
-#include "mod.hxx"
+#include "mws-mod.hxx"
 #include "com/mod/input-ctrl.hxx"
 #include "min.hxx"
 #include "gfx.hxx"
@@ -11,30 +11,30 @@
 #include <cstdlib>
 
 
-mws_sp<mod_ctrl> mod_ctrl::instance;
+mws_sp<mws_mod_ctrl> mws_mod_ctrl::instance;
 
-mod_ctrl::mod_ctrl()
+mws_mod_ctrl::mws_mod_ctrl()
 {
    exit_app_on_next_run = false;
    app_started = false;
 }
 
-mws_sp<mod_ctrl> mod_ctrl::inst()
+mws_sp<mws_mod_ctrl> mws_mod_ctrl::inst()
 {
    if (!instance)
    {
-      instance = mws_sp<mod_ctrl>(new mod_ctrl());
+      instance = mws_sp<mws_mod_ctrl>(new mws_mod_ctrl());
    }
 
    return instance;
 }
 
-mws_sp<mws_mod> mod_ctrl::get_app()
+mws_sp<mws_mod> mws_mod_ctrl::get_app()
 {
    return inst()->crt_mod.lock();
 }
 
-bool mod_ctrl::back_evt()
+bool mws_mod_ctrl::back_evt()
 {
    auto u = crt_mod.lock();
 
@@ -53,7 +53,7 @@ bool mod_ctrl::back_evt()
    return false;
 }
 
-bool mod_ctrl::app_uses_gfx()
+bool mws_mod_ctrl::app_uses_gfx()
 {
 #ifdef MOD_GFX
 
@@ -81,22 +81,22 @@ bool mod_ctrl::app_uses_gfx()
 #endif
 }
 
-void mod_ctrl::exit_app(int exit_code)
+void mws_mod_ctrl::exit_app(int exit_code)
 {
    exit(exit_code);
 }
 
-bool mod_ctrl::is_set_app_exit_on_next_run()
+bool mws_mod_ctrl::is_set_app_exit_on_next_run()
 {
    return exit_app_on_next_run;
 }
 
-void mod_ctrl::set_app_exit_on_next_run(bool iexit_app_on_next_run)
+void mws_mod_ctrl::set_app_exit_on_next_run(bool iexit_app_on_next_run)
 {
    exit_app_on_next_run = iexit_app_on_next_run;
 }
 
-void mod_ctrl::destroy_app()
+void mws_mod_ctrl::destroy_app()
 {
    ul->on_destroy();
 
@@ -105,7 +105,7 @@ void mod_ctrl::destroy_app()
 #endif
 }
 
-void mod_ctrl::pre_init_app()
+void mws_mod_ctrl::pre_init_app()
 {
    // trigger resource directory listing
    pfm::get_pfm_main_inst();
@@ -120,7 +120,7 @@ void mod_ctrl::pre_init_app()
    }
 }
 
-void mod_ctrl::init_app()
+void mws_mod_ctrl::init_app()
 {
 #ifdef MOD_GFX
 
@@ -143,21 +143,21 @@ void mod_ctrl::init_app()
    }
 }
 
-const unicodestring& mod_ctrl::get_app_name()
+const unicodestring& mws_mod_ctrl::get_app_name()
 {
    static const unicodestring name(untr("appplex"));
 
    return name;
 }
 
-const unicodestring& mod_ctrl::get_app_description()
+const unicodestring& mws_mod_ctrl::get_app_description()
 {
    static const unicodestring name(untr("appplex description"));
 
    return name;
 }
 
-void mod_ctrl::update()
+void mws_mod_ctrl::update()
 {
 #ifdef MOD_SND
    snd::update();
@@ -172,7 +172,7 @@ void mod_ctrl::update()
 
    if (nu && nu != u)
    {
-      mod_ctrl::set_current_mod(nu);
+      mws_mod_ctrl::set_current_mod(nu);
       u = nu;
    }
 
@@ -181,9 +181,9 @@ void mod_ctrl::update()
    u->run_step();
 }
 
-void mod_ctrl::pause()
+void mws_mod_ctrl::pause()
 {
-   //mws_log::i()->push("mod_ctrl::pause()");
+   //mws_log::i()->push("mws_mod_ctrl::pause()");
    auto u = get_current_mod();
 
    if (u)
@@ -192,9 +192,9 @@ void mod_ctrl::pause()
    }
 }
 
-void mod_ctrl::resume()
+void mws_mod_ctrl::resume()
 {
-   //mws_log::i()->push("mod_ctrl::resume()");
+   //mws_log::i()->push("mws_mod_ctrl::resume()");
    auto u = get_current_mod();
 
    if (u)
@@ -203,7 +203,7 @@ void mod_ctrl::resume()
    }
 }
 
-void mod_ctrl::resize_app(int i_width, int i_height)
+void mws_mod_ctrl::resize_app(int i_width, int i_height)
 {
 #ifdef MOD_GFX
 
@@ -221,7 +221,7 @@ void mod_ctrl::resize_app(int i_width, int i_height)
 
       if (u && u->is_init())
       {
-         //mws_log::i()->push("mod_ctrl::resize_app()");
+         //mws_log::i()->push("mws_mod_ctrl::resize_app()");
          u->on_resize();
       }
    }
@@ -229,7 +229,7 @@ void mod_ctrl::resize_app(int i_width, int i_height)
 #endif
 }
 
-void mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
+void mws_mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 {
 #ifdef MOD_GFX
 
@@ -243,7 +243,7 @@ void mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 #endif
 }
 
-void mod_ctrl::key_action(key_actions iaction_type, int ikey)
+void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
 {
    mws_sp<mws_mod> u = get_current_mod();
 
@@ -262,28 +262,28 @@ void mod_ctrl::key_action(key_actions iaction_type, int ikey)
    }
 }
 
-mws_sp<mws_mod> mod_ctrl::get_current_mod()
+mws_sp<mws_mod> mws_mod_ctrl::get_current_mod()
 {
    return crt_mod.lock();
 }
 
-void mod_ctrl::set_next_mod(mws_sp<mws_mod> i_mod)
+void mws_mod_ctrl::set_next_mod(mws_sp<mws_mod> i_mod)
 {
    next_mod = i_mod;
 }
 
-void mod_ctrl::start_app()
+void mws_mod_ctrl::start_app()
 {
    auto u = mws_mod_setup::next_crt_mod.lock();
 
-   mod_ctrl::set_current_mod(u);
-   //mws_log::i()->push("mod_ctrl::start_app()");
+   mws_mod_ctrl::set_current_mod(u);
+   //mws_log::i()->push("mws_mod_ctrl::start_app()");
    u->on_resize();
 
    app_started = true;
 }
 
-mws_sp<mws_mod> mod_ctrl::get_app_start_mod()
+mws_sp<mws_mod> mws_mod_ctrl::get_app_start_mod()
 {
    auto u = mws_mod_setup::next_crt_mod.lock();
 
@@ -295,12 +295,12 @@ mws_sp<mws_mod> mod_ctrl::get_app_start_mod()
    return ul;
 }
 
-void mod_ctrl::set_gfx_available(bool iis_gfx_available)
+void mws_mod_ctrl::set_gfx_available(bool iis_gfx_available)
 {
    pfm::data.gfx_available = iis_gfx_available;
 }
 
-void mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
+void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 {
    if (i_mod)
    {

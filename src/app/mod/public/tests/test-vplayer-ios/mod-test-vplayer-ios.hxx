@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_VPLAYER_IOS
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_vplayer_ios : public mws_mod

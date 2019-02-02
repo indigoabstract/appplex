@@ -4,7 +4,7 @@
 
 #ifdef MOD_PNG
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_png : public mws_mod

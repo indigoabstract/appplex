@@ -1,15 +1,15 @@
 #import "ViewController.h"
-#include "main.hpp"
-#include "unit-ctrl.hpp"
-#include "com/unit/input-ctrl.hpp"
-#include "gfx.hpp"
-#include "gfx-tex.hpp"
-#include "objc-cxx-bridge.hpp"
+#include "main.hxx"
+#include "mws-mod-ctrl.hxx"
+#include "com/mod/input-ctrl.hxx"
+#include "gfx.hxx"
+#include "gfx-tex.hxx"
+#include "objc-cxx-bridge.hxx"
 #import "ios/vid/enc/GPUImageContext.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 
-std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi);
+mws_sp<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, mws_sp<gfx> i_gi);
 
 
 @interface ViewController ()
@@ -90,7 +90,7 @@ static float native_scale = 0.f;
     
     fbo_width = (int)glk_view.drawableWidth;
     fbo_height = (int)glk_view.drawableHeight;
-    unit_ctrl::inst()->resize_app(fbo_width, fbo_height);
+    mws_mod_ctrl::inst()->resize_app(fbo_width, fbo_height);
     ios_main::get_instance()->init();
     ios_main::get_instance()->start();
 }
@@ -129,7 +129,7 @@ static float native_scale = 0.f;
     
     if(evt->touch_count > 0)
     {
-        unit_ctrl::inst()->pointer_action(evt);
+        mws_mod_ctrl::inst()->pointer_action(evt);
     }
 }
 
@@ -174,7 +174,7 @@ static float native_scale = 0.f;
     {
         fbo_width = glk_view.drawableWidth;
         fbo_height = glk_view.drawableHeight;
-        unit_ctrl::inst()->resize_app((int)fbo_width, (int)fbo_height);
+        mws_mod_ctrl::inst()->resize_app((int)fbo_width, (int)fbo_height);
     }
 
     ios_main::get_instance()->run();
@@ -291,7 +291,7 @@ void cxx_2_objc_open_video_picker()
     [[ViewController inst] on_vid_btn_click];
 }
 
-std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, mws_sp<gfx> i_gi)
 {
     auto tex = i_gi->tex.get_texture_by_name(i_filename);
     
@@ -322,7 +322,7 @@ std::shared_ptr<gfx_tex> cxx_2_objc_load_tex_by_name(std::string i_filename, std
     return tex;
 }
 
-std::shared_ptr<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, std::shared_ptr<gfx> i_gi)
+mws_sp<gfx_tex> load_tex_by_ui_image(UIImage* image, std::string i_filename, mws_sp<gfx> i_gi)
 {
     auto tex = i_gi->tex.get_texture_by_name(i_filename);
     

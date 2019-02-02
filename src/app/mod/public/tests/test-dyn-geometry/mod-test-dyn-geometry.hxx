@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_DYN_GEOMETRY
 
-#include "mod.hxx"
+#include "mws-mod.hxx"
 
 
 class mod_test_dyn_geometry_impl;

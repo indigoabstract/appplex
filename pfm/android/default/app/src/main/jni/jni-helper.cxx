@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org

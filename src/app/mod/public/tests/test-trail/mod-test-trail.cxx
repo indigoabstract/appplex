@@ -831,7 +831,7 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
                   break;
 
                case KEY_F6:
-                  //mod_ctrl::inst()->set_app_exit_on_next_run(true);
+                  //mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
                   break;
 
                case KEY_F11:
