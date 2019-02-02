@@ -2,20 +2,20 @@
 
 #include "mws-mod.hxx"
 #include "appplex-conf.hxx"
-#include "util/util.hxx"
-#include "mws/mws-camera.hxx"
-#include "mws/mws.hxx"
-#include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
+#include "res-ld/res-ld.hxx"
+#include "util/util.hxx"
+#include "mws/mws.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
+#include "mws/mws-font.hxx"
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"
-#include "res-ld/res-ld.hxx"
 #include "mws/font-db.hxx"
 #include <algorithm>
 #include <cstdio>
@@ -793,6 +793,7 @@ void mws_mod::on_resume()
 
 void mws_mod::receive(mws_sp<mws_dp> idp)
 {
+#ifdef MOD_INPUT
 #ifdef MOD_MWS
 
    send(mws_root, idp);
@@ -855,6 +856,7 @@ void mws_mod::receive(mws_sp<mws_dp> idp)
          }
       }
    }
+#endif
 }
 
 void mws_mod::base_init()
@@ -1150,6 +1152,7 @@ int mws_mod_list::get_mod_count()const
 
 void mws_mod_list::on_resize()
 {
+#ifdef MOD_GFX
    if (ulmodel.lock())
    {
       auto u = ulist[ulmodel.lock()->get_selected_elem()];
@@ -1159,10 +1162,12 @@ void mws_mod_list::on_resize()
          u->on_resize();
       }
    }
+#endif
 }
 
 void mws_mod_list::receive(mws_sp<mws_dp> idp)
 {
+#ifdef MOD_INPUT
    if (!idp->is_processed() && idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
    {
       mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
@@ -1172,15 +1177,18 @@ void mws_mod_list::receive(mws_sp<mws_dp> idp)
    {
       mws_mod::receive(idp);
    }
+#endif
 }
 
 void mws_mod_list::forward()
 {
+#ifdef MOD_GFX
    if (ulist.size() > 0)
    {
       mws_sp<mws_mod> u = ulist[ulmodel.lock()->get_selected_elem()];
       mws_mod_ctrl::inst()->set_next_mod(u);
    }
+#endif
 }
 
 void mws_mod_list::up_one_level()

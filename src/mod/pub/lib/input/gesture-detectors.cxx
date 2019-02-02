@@ -8,6 +8,10 @@
 #include "input-ctrl.hxx"
 
 
+// since it can't be null, use a dummy event used as default pointer event for gesture detectors
+static mws_sp<> dummy_event = std::make_shared<pointer_evt>();
+
+
 dragging_detector::dragging_detector()
 {
    reset();

@@ -26,8 +26,6 @@ const unsigned long DOUBLE_TAP_MAX_DURATION = 500;
 const unsigned long DOUBLE_TAP_MAX_POINTER_DISTANCE = 25;
 // max distance between first press position an subsequent pointer positions for rotating with touch gestures
 const unsigned long ROTATION_MAX_POINTER_DEVIATION = 15;
-// since it can't be null, use a dummy event used as default pointer event for gesture detectors
-static auto dummy_event = std::make_shared<pointer_evt>();
 
 
 class dragging_detector

@@ -1221,6 +1221,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    }
    break;
 
+#ifdef MOD_INPUT
    case WM_LBUTTONDOWN:
    {
       auto pfm_te = std::make_shared<pointer_evt>();
@@ -1367,6 +1368,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
       return 0;
    }
+#endif
 
    case WM_CLOSE:
       printf("Got an actual WM_CLOSE Message!  Woo hoo!\n");

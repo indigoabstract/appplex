@@ -233,7 +233,7 @@ void mws_mod_ctrl::resize_app(int i_width, int i_height)
 
 void mws_mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 {
-#ifdef MOD_GFX
+#if defined MOD_GFX && defined MOD_INPUT
 
    mws_sp<mws_mod> u = get_current_mod();
 
@@ -247,6 +247,7 @@ void mws_mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 
 void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
 {
+#ifdef MOD_INPUT
    mws_sp<mws_mod> u = get_current_mod();
 
    if (u)
@@ -262,6 +263,7 @@ void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
          break;
       }
    }
+#endif
 }
 
 mws_sp<mws_mod> mws_mod_ctrl::get_current_mod()
