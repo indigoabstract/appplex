@@ -1,6 +1,17 @@
-target_sources(app_plex_main
-    PRIVATE
+set(headers
 	"${CMAKE_CURRENT_LIST_DIR}/rng.cxx"
-    PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/rng.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-rng.hxx"
 )
+set(sources
+	"${CMAKE_CURRENT_LIST_DIR}/rng.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/mod-rng.cxx"
+)
+target_sources(app_plex_main
+    PUBLIC
+	${headers}
+    PRIVATE
+	${sources}
+)
+
+#get_filename_component(dirname ${CMAKE_CURRENT_LIST_DIR} NAME)
+#source_group("mod/${dirname}" FILES ${headers} ${sources})  

@@ -25,7 +25,7 @@ float RNG::random_gauss(float mu, float sigma)
 	if (st.z == 0.f)
 	{
 		float x2pi = random_float() * 2.f *  glm::pi<float>();
-		float g2rad = sqrtf(-2.0 * logf(1.0 - random_float()));
+		float g2rad = sqrtf(-2.f * logf(1.f - random_float()));
       st.z = cosf(x2pi) * g2rad;
       st.gauss_next = sinf(x2pi) * g2rad;
 	}
