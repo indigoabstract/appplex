@@ -4,7 +4,7 @@
 
 #ifdef MOD_FFMPEG
 
-#include "media/vid/video-dec.hxx"
+#include "vid/video-dec.hxx"
 #include <memory>
 
 class gfx_camera;

@@ -4,10 +4,10 @@
 
 #ifdef MOD_TEST_FREETYPE_GL
 
-#include "com/mod/input-ctrl.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-font.hxx"
-#include "com/mws/font-db.hxx"
+#include "input/input-ctrl.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-font.hxx"
+#include "mws/font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"

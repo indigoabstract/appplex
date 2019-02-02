@@ -6,9 +6,9 @@
 
 #include "rdo-call-ffmpeg.hxx"
 #include "min.hxx"
-#include "com/util/unicode/conversions-util.hxx"
-#include "com/util/unicode/boost-filesystem-util.hxx"
-#include "com/util/unicode/boost-program-options-util.hxx"
+#include "util/unicode/conversions-util.hxx"
+#include "util/unicode/boost-filesystem-util.hxx"
+#include "util/unicode/boost-program-options-util.hxx"
 #include "../start-process.hxx"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

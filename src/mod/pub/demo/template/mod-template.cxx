@@ -4,8 +4,8 @@
 #ifdef MOD_TEMPLATE
 
 #include "mod-template.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 
 
 mod_template::mod_template() : mws_mod(mws_stringify(MOD_TEMPLATE)) {}

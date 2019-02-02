@@ -4,8 +4,8 @@
 #ifdef MOD_TEST
 
 #include "mod-test.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 #include "noise/perlinnoise.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>

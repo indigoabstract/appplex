@@ -4,10 +4,10 @@
 
 #ifdef MOD_KINETIC_SCROLLING
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws.hxx"
-#include "com/mws/mws-font.hxx"
-#include "com/util/util.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws.hxx"
+#include "mws/mws-font.hxx"
+#include "util/util.hxx"
 #include "rng/rng.hxx"
 #include <string>
 #include <vector>

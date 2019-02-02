@@ -4,9 +4,9 @@
 
 #ifdef MOD_EXERCISE
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
-#include "com/mod/transitions.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
+#include "input/transitions.hxx"
 #include "min.hxx"
 #include "cmd/start-process.hxx"
 #include "cmd/long-operation.hxx"

@@ -4,9 +4,9 @@
 #ifdef MOD_TEST_TOUCH_INPUT
 
 #include "mod-test-touch-input.hxx"
-#include "com/mod/gesture-detectors.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "input/gesture-detectors.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-vxo.hxx"

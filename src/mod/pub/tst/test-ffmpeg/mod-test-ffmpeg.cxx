@@ -5,8 +5,8 @@
 #ifdef MOD_TEST_FFMPEG
 
 #include "mws-mod-ctrl.hxx"
-#include "com/mod/input-ctrl.hxx"
-#include "com/mod/update-ctrl.hxx"
+#include "input/input-ctrl.hxx"
+#include "input/update-ctrl.hxx"
 #include "ffmpeg/vdec-ffmpeg.hxx"
 #include "ffmpeg/venc-ffmpeg.hxx"
 #include "gfx.hxx"
@@ -18,7 +18,7 @@
 #include "gfx-util.hxx"
 #include "gfx-state.hxx"
 #include "ext/gfx-surface.hxx"
-#include "com/mws/mws-camera.hxx"
+#include "mws/mws-camera.hxx"
 
 using std::string;
 

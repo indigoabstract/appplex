@@ -7,8 +7,8 @@
 #include "lodepng.h"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 
 
 mod_png::mod_png() : mws_mod(mws_stringify(MOD_PNG)) {}

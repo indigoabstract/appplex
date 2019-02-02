@@ -4,8 +4,8 @@
 
 #ifdef MOD_TEST_MWS
 
-#include "com/mws/mws-ext.hxx"
-#include "com/mws/mws-camera.hxx"
+#include "mws/mws-ext.hxx"
+#include "mws/mws-camera.hxx"
 
 
 mod_test_mws::mod_test_mws() : mws_mod(mws_stringify(MOD_TEST_MWS)) {}

@@ -4,11 +4,11 @@
 
 #ifdef MOD_ABSTRACT_RACING
 
-#include "com/mws/mws-camera.hxx"
+#include "mws/mws-camera.hxx"
 #include "gfx-state.hxx"
 #include "ext/gfx-surface.hxx"
 //#include "renderer-openvg.h"
-#include "com/mws/mws.hxx"
+#include "mws/mws.hxx"
 //#include "renderer.h"
 //#include "3d-objects.h"
 #include "track.hxx"

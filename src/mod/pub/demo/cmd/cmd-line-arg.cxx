@@ -6,8 +6,8 @@
 
 #include "cmd-line-arg.hxx"
 #include "min.hxx"
-#include "com/util/unicode/boost-program-options-util.hxx"
-#include "com/util/unicode/conversions-util.hxx"
+#include "util/unicode/boost-program-options-util.hxx"
+#include "util/unicode/conversions-util.hxx"
 #include "mod/rdo-call-ffmpeg.hxx"
 #include "mod/rdo-directory-statistics.hxx"
 #include "mod/rdo-std-fmt-rename.hxx"

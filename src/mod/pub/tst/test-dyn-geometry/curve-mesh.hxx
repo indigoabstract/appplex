@@ -5,7 +5,7 @@
 #ifdef MOD_TEST_DYN_GEOMETRY
 
 #include "pfm.hxx"
-#include "com/util/util.hxx"
+#include "util/util.hxx"
 #include "gfx-vxo.hxx"
 #include <vector>
 

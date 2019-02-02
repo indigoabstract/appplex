@@ -4,8 +4,8 @@
 
 #ifdef MOD_TEXXED
 
-#include "com/mws/mws-text-box.hxx"
-#include "com/mws/mws-camera.hxx"
+#include "mws/mws-text-box.hxx"
+#include "mws/mws-camera.hxx"
 
 
 namespace mod_texxed_ns

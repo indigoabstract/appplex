@@ -4,9 +4,9 @@
 
 #ifdef MOD_EXERCISE
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
-#include "com/mod/transitions.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
+#include "input/transitions.hxx"
 
 using boost::posix_time::ptime;
 using boost::posix_time::microsec_clock;

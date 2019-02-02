@@ -4,12 +4,12 @@
 
 #ifdef MOD_TEST_DYN_GEOMETRY
 
-#include "com/mod/input-ctrl.hxx"
-#include "com/mws/font-db.hxx"
+#include "input/input-ctrl.hxx"
+#include "mws/font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
-#include "com/mws/mws-camera.hxx"
+#include "mws/mws-camera.hxx"
 #include "gfx-shader.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-tex.hxx"

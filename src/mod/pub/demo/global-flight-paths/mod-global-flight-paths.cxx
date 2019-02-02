@@ -4,15 +4,15 @@
 
 #ifdef MOD_GLOBAL_FLIGHT_PATHS
 
-#include "com/mws/mws-com.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-font.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-font.hxx"
+#include "input/input-ctrl.hxx"
 #include "cpp-property.hxx"
 #include "gfx-inc.hxx"
 #include "ext/gfx-surface.hxx"
 #include "utils/free-camera.hxx"
-#include "tlib/rng/rng.hxx"
+#include "rng/rng.hxx"
 #include <glm/inc.hpp>
 
 

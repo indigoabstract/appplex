@@ -4,8 +4,8 @@
 
 #ifdef MOD_TEST_OPENVG
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 #include "ovg-obj.hxx"
 #include <openvg.h>
 #include <vgu.h>

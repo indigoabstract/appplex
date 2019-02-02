@@ -4,9 +4,9 @@
 #ifdef MOD_GL_FRAG_SHADER_DEMO
 
 #include "mod-gl-frag-shader-demo.hxx"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-ext.hxx"
-#include "com/util/util.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-ext.hxx"
+#include "util/util.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-vxo.hxx"
 #include "gfx-tex.hxx"

@@ -4,7 +4,7 @@
 
 #ifdef MOD_FFMPEG
 
-#include "media/vid/video-enc.hxx"
+#include "vid/video-enc.hxx"
 #include "pfm.hxx"
 
 extern "C"

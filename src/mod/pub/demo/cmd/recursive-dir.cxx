@@ -5,7 +5,7 @@
 #ifdef MOD_CMD
 
 #include "recursive-dir.hxx"
-#include "com/util/unicode/boost-filesystem-util.hxx"
+#include "util/unicode/boost-filesystem-util.hxx"
 #include "min.hxx"
 #include <boost/algorithm/string.hpp>
 #include <string>

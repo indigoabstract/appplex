@@ -5,8 +5,8 @@
 
 #include "mod-jcv.hxx"
 #include "jc_voronoi.h"
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 
 
 mod_jcv::mod_jcv() : mws_mod(mws_stringify(MOD_JCV)) {}

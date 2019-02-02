@@ -4,10 +4,12 @@
 #include "appplex-conf.hxx"
 #include "pfm.hxx"
 #include "mws-mod.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include "min.hxx"
 #include "gfx.hxx"
-//#include "snd.hxx"
+#ifdef MOD_SND
+#include "snd/snd.hxx"
+#endif
 #include <cstdlib>
 
 

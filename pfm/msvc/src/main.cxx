@@ -8,7 +8,7 @@
 #include "pfm-gl.h"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>

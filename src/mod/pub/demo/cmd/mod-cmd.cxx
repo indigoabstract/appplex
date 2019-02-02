@@ -5,7 +5,7 @@
 #ifdef MOD_CMD
 
 #include "long-operation.hxx"
-#include "com/util/unicode/boost-filesystem-util.hxx"
+#include "util/unicode/boost-filesystem-util.hxx"
 #include "cmd-line-arg.hxx"
 #include <boost/filesystem.hpp>
 #include <exception>

@@ -7,7 +7,7 @@
 //#define ENABLE_MONKVG
 #ifdef ENABLE_MONKVG
 
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-com.hxx"
 
 #include <MonkVG/openvg.h>
 #include <MonkVG/vgu.h>

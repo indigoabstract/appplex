@@ -4,8 +4,8 @@
 
 #ifdef MOD_TEST_AUDIOENGINE
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws-com.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws-com.hxx"
 
 
 mod_test_audioengine::mod_test_audioengine() : mws_mod(mws_stringify(MOD_TEST_AUDIOENGINE)) {}

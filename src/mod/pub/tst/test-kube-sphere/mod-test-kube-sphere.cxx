@@ -5,7 +5,7 @@
 #ifdef MOD_TEST_KUBE_SPHERE
 
 #include "icosphere.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"

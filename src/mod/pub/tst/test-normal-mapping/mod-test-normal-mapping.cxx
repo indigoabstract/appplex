@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_NORMAL_MAPPING
 
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
@@ -16,7 +16,7 @@
 #include "gfx-state.hxx"
 #include "gfx-color.hxx"
 #include "ext/gfx-surface.hxx"
-#include "media/res-ld/res-ld.hxx"
+#include "res-ld/res-ld.hxx"
 #include "rng/rng.hxx"
 #include "utils/free-camera.hxx"
 #include <glm/inc.hpp>

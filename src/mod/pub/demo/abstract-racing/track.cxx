@@ -7,7 +7,7 @@
 #include "track.hxx"
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
-#include "com/util/util.hxx"
+#include "util/util.hxx"
 #include "spline.hxx"
 #include "data-sequence.hxx"
 #include <glm/inc.hpp>

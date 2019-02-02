@@ -6,8 +6,8 @@
 
 #include "rdo-std-fmt-rename.hxx"
 #include "min.hxx"
-#include "com/util/unicode/boost-filesystem-util.hxx"
-#include "com/util/unicode/boost-program-options-util.hxx"
+#include "util/unicode/boost-filesystem-util.hxx"
+#include "util/unicode/boost-program-options-util.hxx"
 #include "rdo-recursive-copy.hxx"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

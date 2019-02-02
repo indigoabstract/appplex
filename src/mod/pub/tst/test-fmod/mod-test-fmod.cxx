@@ -4,8 +4,8 @@
 
 #ifdef MOD_TEST_FMOD
 
-#include "com/mws/mws-camera.hxx"
-#include "com/mws/mws.hxx"
+#include "mws/mws-camera.hxx"
+#include "mws/mws.hxx"
 #include "snd.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>

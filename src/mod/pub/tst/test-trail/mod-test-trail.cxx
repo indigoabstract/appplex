@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_TRAIL
 
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
