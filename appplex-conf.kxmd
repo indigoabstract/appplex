@@ -60,7 +60,7 @@ mod
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
 
 	@@[ private mods ],
-	@@load-and-replace[ "src/app/mod/private/mods.kxmd", mods ],
+	@@load-and-replace[ "src/mod/prv/mods.kxmd", mods ],
 
 	appplexx-conf[ uses[ format, kxmd ], platf[ windows ], ],
 	barnes-hut[ ],
@@ -111,9 +111,9 @@ paths
 	@@[ common resources dir location, relative to 'appplex' dir ],
 	proj-rel-res-path[ 'src/res' ],
 	@@[ source dir location, relative to 'appplex' dir ],
-	proj-rel-src-path[ "src/app" ],
+	proj-rel-src-path[ "src" ],
 	@@[ mod dir location, relative to 'appplex' dir ],
-	proj-rel-mod-path[ "src/app/mod" ],
+	proj-rel-mod-path[ "src/mod" ],
 	@@[ appplex conf dir location, relative to 'appplex' dir ],
 	proj-rel-appplex-conf-path[ "src/min" ],
 
