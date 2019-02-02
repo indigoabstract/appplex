@@ -30,8 +30,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
+	"${CMAKE_CURRENT_LIST_DIR}/src/min"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
@@ -76,8 +75,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
+	"${CMAKE_CURRENT_LIST_DIR}/src/min"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"
@@ -147,8 +145,7 @@ else() # Assume iOS
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min"
-	"${CMAKE_CURRENT_LIST_DIR}/src/app/min/mod"
+	"${CMAKE_CURRENT_LIST_DIR}/src/min"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/gfx"
 	"${CMAKE_CURRENT_LIST_DIR}/src/app/ext/media/ovg"

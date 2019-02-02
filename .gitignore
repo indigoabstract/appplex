@@ -28,10 +28,10 @@
 /pfm/appplex.exp
 /pfm/appplex.ilk
 /pfm/appplex.lib
-/src/app/min/appplex-conf.hxx
-/src/app/min/appplex-conf.cxx
 /src/app/mod/private
 /src/app/mod/public/layered-car-paint
+/src/min/appplex-conf.hxx
+/src/min/appplex-conf.cxx
 /pfm/ios/xcode
 
 *.iml
