@@ -1010,11 +1010,6 @@ bool pfm_main::back_evt()
    return mws_mod_ctrl::inst()->back_evt();
 }
 
-//mws_sp<ia_console> pfm::get_console()
-//{
-//	return data.console;
-//}
-
 
 int pfm::params::get_app_argument_count()
 {

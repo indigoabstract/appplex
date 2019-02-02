@@ -48,7 +48,6 @@ typedef wchar_t		 unicodechar;
 
 #endif
 
-class ia_console;
 class mws_mod;
 class mws_mod_ctrl;
 class pfm_file;
@@ -202,7 +201,6 @@ public:
    bool gfx_available;
    int screen_width;
    int screen_height;
-   //mws_sp<ia_console> console;
 };
 
 
@@ -293,7 +291,6 @@ public:
    static bool has_touchscreen();
    static gfx_type_id get_gfx_type_id();
    static mws_sp<pfm_main> get_pfm_main_inst();
-   //static mws_sp<ia_console> get_console();
 
 private:
    friend class mws_mod_ctrl;

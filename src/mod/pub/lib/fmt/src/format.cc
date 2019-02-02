@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 #include "appplex-conf.hxx"
 
-#if defined MOD_FORMAT
+#if defined MOD_FMT
 // Formatting library for C++
 //
 // Copyright (c) 2012 - 2016, Victor Zverovich

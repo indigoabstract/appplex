@@ -132,7 +132,7 @@ GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeipt
 
 #if defined MWS_USES_OPENGL_ES
 
-#define ia_glGetProcAddress(name) eglGetProcAddress(name)
+#define mws_glGetProcAddress(name) eglGetProcAddress(name)
 
 #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
@@ -390,7 +390,7 @@ GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeipt
 
 #elif defined MWS_USES_OPENGL_GLEW
 
-#define ia_glGetProcAddress(name) wglGetProcAddress(name)
+#define mws_glGetProcAddress(name) wglGetProcAddress(name)
 #define USES_GL_STRINGI
 #define USES_GL_TEX_STORAGE_2D
 

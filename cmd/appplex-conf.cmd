@@ -1,1 +1,1 @@
-appplex.exe --source-path="c:\dev\own\appplex" --exclude-path="ext\lib"
+appplex.exe --source-path="c:\dev\own\appplex" --exclude-path="lib"

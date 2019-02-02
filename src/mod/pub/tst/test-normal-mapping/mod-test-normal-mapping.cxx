@@ -87,7 +87,6 @@ namespace ns_mod_test_normal_mapping
 
 				inst[MP_SHADER_NAME] = "basic-tex-shader";
 				inst[MP_BLENDING] = MV_ALPHA;
-				//inst["u_v4_color"] = ia_color::colors::dodger_blue.to_vec4();
 				inst["u_s2d_tex"] = tex_name;
 			}
 		}
@@ -721,7 +720,6 @@ namespace ns_mod_test_normal_mapping
 			ortho_cam->near_clip_distance = -100;
 			ortho_cam->far_clip_distance = 100;
 			ortho_cam->clear_color = false;
-			//ortho_cam->clear_color_value = ia_color::colors::black.to_vec4();
 			ortho_cam->clear_depth = true;
 
 			// cubemap

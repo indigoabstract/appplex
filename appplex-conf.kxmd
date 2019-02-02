@@ -12,27 +12,27 @@ mod
 	@@[ private mods ],
 	@@load-and-replace[ "src/mod/prv/mods.kxmd", mods ],
 
-	appplexx-conf[ uses[ format, kxmd ], platf[ windows ], ],
+	appplexx-conf[ uses[ fmt, kxmd ], platf[ windows ], ],
 	barnes-hut[ ],
 	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ ],
 	orbital-deathmatch[ ],
 	shipwrecked[ ],
-	vorofract[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector_fonts, kxmd ] ],
+	vorofract[ uses[ gfx, fonts, fmt, freetype, freetype_gl, mws, png, vector_fonts, kxmd ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten, qt_windows ], ],
-	omnirecall[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, notifications, mws, png, vector-fonts, techno-globe ], platf[ windows, android, ios ], ],
+	omnirecall[ uses[ gfx, fonts, fmt, freetype, freetype_gl, kxmd, notifications, mws, png, vector-fonts, techno-globe ], platf[ windows, android, ios ], ],
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
-	tangled-memories[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
+	tangled-memories[ uses[ gfx, fonts, fmt, freetype, freetype_gl, mws, png, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
-	voronoi-keyboard[ uses[ gfx, fonts, format, freetype, freetype_gl, jcv, kxmd, mws, png, vector-fonts, vkb ] ],
-	kxmdb[ uses[ gfx, fonts, format, freetype, freetype_gl, kxmd, mws, png, vector-fonts ] ],
+	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype_gl, jcv, kxmd, mws, png, vector-fonts, vkb ] ],
+	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype_gl, kxmd, mws, png, vector-fonts ] ],
 
 	@@[ npw ],
 	
 	test-digital-krikits[ uses[ boost, gfx ], platf[ windows, android ], ],
 	test-jewelry[ uses[ gfx ], platf[ windows ], ],
-	techno-globe[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ], platf[ windows, android, emscripten ], ],
-	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, @@[ ffmpeg, test-ffmpeg, format ], ], platf[ windows, android, ios ], ],
+	techno-globe[ uses[ gfx, fonts, fmt, freetype, freetype_gl, mws, png, vector-fonts ], platf[ windows, android, emscripten ], ],
+	video-editor[ uses[ bitmap-fonts, gfx, fonts, mws, png, @@[ ffmpeg, test-ffmpeg, fmt ], ], platf[ windows, android, ios ], ],
 	
 	@@[ tests ],
 
@@ -73,9 +73,9 @@ mod
 	
 	@@[ demo ],
 	
-	template[ uses[ gfx, fonts, format, freetype, freetype_gl, mws, png, vector-fonts ] ],
-	cmd[ uses[ boost, format, kxmd, kappaxx_bug ], platf[ windows ], ],
-	gl-frag-shader-demo[ uses[ bitmap-fonts, format, gfx, fonts, mws, png ], platf[ windows, android ], ],
+	template[ uses[ gfx, fonts, fmt, freetype, freetype_gl, mws, png, vector-fonts ] ],
+	cmd[ uses[ boost, fmt, kxmd, kappaxx_bug ], platf[ windows ], ],
+	gl-frag-shader-demo[ uses[ bitmap-fonts, fmt, gfx, fonts, mws, png ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ ],

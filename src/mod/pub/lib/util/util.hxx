@@ -319,24 +319,6 @@ private:
 };
 
 
-class ia_console
-{
-public:
-	struct text_line
-	{
-		mws_sp<std::string> line;
-	};
-
-	ia_console();
-	virtual ~ia_console(){}
-
-	void add_line(const std::string& iline);
-	void clear();
-	//void draw(mws_sp<mws_camera> g);
-
-	//mws_sp<boost::circular_buffer<text_line> > lines;
-};
-
 float sigmoid(float v, float vmax);
 float inverse(float v,float vmax);
 
