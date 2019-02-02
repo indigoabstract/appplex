@@ -27,8 +27,8 @@
 /pfm/appplex.exp
 /pfm/appplex.ilk
 /pfm/appplex.lib
-/src/app/min/appplex-conf.hpp
-/src/app/min/appplex-conf.cpp
+/src/app/min/appplex-conf.hxx
+/src/app/min/appplex-conf.cxx
 /src/app/units/private
 /src/app/units/public/layered-car-paint
 /pfm/ios/xcode
