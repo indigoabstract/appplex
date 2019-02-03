@@ -186,7 +186,7 @@ public:
    mws_sp<mws_mod> mod_by_name(std::string i_name);
    int get_mod_count()const;
    virtual void on_resize();
-   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    void forward();
    static void up_one_level();
 
@@ -210,9 +210,9 @@ class mws_mod_setup
 private:
    friend class mws_mod_ctrl;
 
-   static void create_mods(mws_sp<mws_mod_list> i_mod_list);
+   static void append_mod_list(mws_sp<mws_mod_list> i_mod_list);
    static mws_sp<mws_mod_list> get_mod_list();
-   static void add_mod(mws_sp<mws_mod> i_mod, std::string imod_path, bool iset_current = false);
+   static void add_mod(mws_sp<mws_mod> i_mod, std::string i_mod_path, bool i_set_current = false);
 
    static mws_wp<mws_mod_list> ul;
    static mws_wp<mws_mod> next_crt_mod;

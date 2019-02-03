@@ -1,9 +1,6 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_SND
-
+#include "pfm-def.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -125,5 +122,3 @@ private:
 	static std::vector<std::string> note_names;
 	static std::vector<float> the_8th_octave_pitches;
 };
-
-#endif

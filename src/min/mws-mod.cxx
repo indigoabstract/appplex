@@ -17,10 +17,11 @@
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"
 #include "mws/font-db.hxx"
+#include "mod-list.hxx"
 #include <algorithm>
 #include <cstdio>
 
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
 #include "gfx-quad-2d.hxx"
 #include "gfx-rt.hxx"
@@ -35,11 +36,7 @@ using std::vector;
 
 bool mws_mod_preferences::requires_gfx()
 {
-#ifdef MOD_GFX
-   return true;
-#else
-   return false;
-#endif
+   return mod_gfx_on;
 }
 
 class mws_mod::app_storage_impl
@@ -51,7 +48,7 @@ public:
 
    void setup_video_encoding(int video_width, int video_height)
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       if (!venc)
       {
@@ -201,7 +198,7 @@ public:
 
    void update_video_encoder()
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX && defined MOD_MWS
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX && MOD_MWS
 
       mws_report_gfx_errs();
 
@@ -337,7 +334,7 @@ public:
 
    void start_recording_screen(std::string i_filename = "", const mws_video_params * i_params = nullptr)
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       int video_width = gfx::i()->rt.get_screen_width();
       int video_height = gfx::i()->rt.get_screen_height();
@@ -378,7 +375,7 @@ public:
 
    void stop_recording_screen()
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       if (venc && venc->is_encoding())
       {
@@ -398,7 +395,7 @@ public:
 
    bool is_recording_screen()
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       return venc && venc->is_encoding();
 
@@ -409,7 +406,7 @@ public:
 
    void toggle_screen_recording()
    {
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       if (venc)
       {
@@ -434,7 +431,7 @@ public:
 #endif
    }
 
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
    // data for converting rgb to yuv420
    mws_sp<gfx_tex> scr_mirror_tex;
@@ -503,7 +500,7 @@ mws_sp<pfm_file> mws_mod::app_storage::random_access(std::string name)
 
 void mws_mod::app_storage::save_screenshot(std::string i_filename)
 {
-#if defined MOD_GFX && defined MOD_PNG
+#if MOD_GFX && MOD_PNG
    if (!p->u.lock()->is_gfx_mod())
    {
       return;
@@ -701,41 +698,41 @@ void mws_mod::set_internal_name_from_include_guard(const char* i_include_guard)
 
 bool mws_mod::update()
 {
-#ifdef MOD_GFX
-
-   bool force_rebind = false;
-#if defined PLATFORM_IOS
-   force_rebind = true;
-#endif
-   int updateCount = 1;//update_ctrl->update();
-
-   mws_report_gfx_errs();
-
-   //for (int k = 0; k < updateCount; k++)
+   if (mod_gfx_on)
    {
-      touch_ctrl->update();
-      key_ctrl_inst->update();
-      game_time += update_ctrl->getTimeStepDuration();
+      bool force_rebind = false;
+#if defined PLATFORM_IOS
+      force_rebind = true;
+#endif
+      int update_count = 1;//update_ctrl->update();
+
+      mws_report_gfx_errs();
+
+      //for (int k = 0; k < updateCount; k++)
+      {
+         touch_ctrl->update();
+         key_ctrl_inst->update();
+         game_time += update_ctrl->getTimeStepDuration();
+      }
+
+      gfx_scene_inst->update();
+
+      if (mod_mws_on)
+      {
+         mws_root->update_state();
+      }
+
+
+      post_update();
+      gfx::i()->rt.set_current_render_target(nullptr, force_rebind);
+      mws_report_gfx_errs();
+      gfx_scene_inst->draw();
+      update_view(update_count);
+      gfx_scene_inst->post_draw();
+      post_update_view();
+      mws_report_gfx_errs();
    }
 
-   gfx_scene_inst->update();
-
-#if defined MOD_MWS
-
-   mws_root->update_state();
-
-#endif
-
-   post_update();
-   gfx::i()->rt.set_current_render_target(nullptr, force_rebind);
-   mws_report_gfx_errs();
-   gfx_scene_inst->draw();
-   update_view(updateCount);
-   gfx_scene_inst->post_draw();
-   post_update_view();
-   mws_report_gfx_errs();
-
-#endif
 
 #ifdef MWS_DEBUG_BUILD
 
@@ -758,7 +755,7 @@ bool mws_mod::update()
 
 void mws_mod::on_resize()
 {
-#ifdef MOD_GFX
+#if MOD_GFX
 
    if (is_gfx_mod() && gfx::i())
    {
@@ -793,75 +790,75 @@ void mws_mod::on_resume()
 
 void mws_mod::receive(mws_sp<mws_dp> idp)
 {
-#ifdef MOD_INPUT
-#ifdef MOD_MWS
-
-   send(mws_root, idp);
-
-#endif
-
-   if (!idp->is_processed())
+   if (mod_input_on)
    {
-      if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+      if (mod_mws_on)
       {
-         mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
+         send(mws_root, idp);
+      }
 
-         if (ke->get_type() != mws_key_evt::KE_RELEASED)
+      if (!idp->is_processed())
+      {
+         if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
          {
-            bool do_action = false;
+            mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-            if (ke->get_type() != mws_key_evt::KE_REPEATED)
+            if (ke->get_type() != mws_key_evt::KE_RELEASED)
             {
-               do_action = true;
+               bool do_action = false;
 
-               switch (ke->get_key())
+               if (ke->get_type() != mws_key_evt::KE_REPEATED)
                {
-               case KEY_F1:
-                  mws_mod_ctrl::inst()->pause();
-                  break;
+                  do_action = true;
 
-               case KEY_F2:
-                  mws_mod_ctrl::inst()->resume();
-                  break;
+                  switch (ke->get_key())
+                  {
+                  case KEY_F1:
+                     mws_mod_ctrl::inst()->pause();
+                     break;
 
-               case KEY_F3:
-                  pfm::screen::flip_screen();
-                  break;
+                  case KEY_F2:
+                     mws_mod_ctrl::inst()->resume();
+                     break;
 
-               case KEY_F4:
-                  storage.toggle_screen_recording();
-                  break;
+                  case KEY_F3:
+                     pfm::screen::flip_screen();
+                     break;
 
-               case KEY_F5:
-                  storage.save_screenshot();
-                  break;
+                  case KEY_F4:
+                     storage.toggle_screen_recording();
+                     break;
 
-               case KEY_F6:
-                  mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
-                  break;
+                  case KEY_F5:
+                     storage.save_screenshot();
+                     break;
 
-               case KEY_F11:
-                  pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
-                  break;
+                  case KEY_F6:
+                     mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
+                     break;
 
-               default:
-                  do_action = false;
+                  case KEY_F11:
+                     pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+                     break;
+
+                  default:
+                     do_action = false;
+                  }
                }
-            }
 
-            if (do_action)
-            {
-               ke->process();
+               if (do_action)
+               {
+                  ke->process();
+               }
             }
          }
       }
    }
-#endif
 }
 
 void mws_mod::base_init()
 {
-#ifdef MOD_GFX
+#if MOD_GFX
 
    if (is_gfx_mod())
    {
@@ -877,7 +874,7 @@ void mws_mod::base_init()
    init();
    storage.p->u = get_smtp_instance();
 
-#ifdef MOD_GFX
+#if MOD_GFX
 
    // getInst() doesn't work in the constructor
    if (is_gfx_mod())
@@ -885,7 +882,7 @@ void mws_mod::base_init()
       touch_ctrl->add_receiver(get_smtp_instance());
       key_ctrl_inst->add_receiver(get_smtp_instance());
 
-#if defined MOD_MWS
+#if MOD_MWS
 
       {
          mws_cam = mws_camera::nwi();
@@ -988,7 +985,7 @@ bool mws_mod::back()
    return false;
 #else
 
-#if defined MOD_MWS
+#if MOD_MWS
    return !mws_root->handle_back_evt();
 #else
    return true;
@@ -1018,7 +1015,7 @@ mws_sp<mws_sender> mws_mod::sender_inst()
 
 void mws_mod::run_step()
 {
-#if defined MOD_VECTOR_FONTS
+#if MOD_VECTOR_FONTS
 
    font_db::inst()->on_frame_start();
 
@@ -1040,7 +1037,7 @@ void mws_mod::run_step()
 
    update();
 
-#if defined MOD_FFMPEG && defined MOD_TEST_FFMPEG && defined MOD_GFX
+#if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
    if (storage.is_recording_screen())
    {
@@ -1073,7 +1070,7 @@ void mws_mod::set_init(bool i_is_init)
 
 void mws_mod::update_view(int update_count)
 {
-#if defined MOD_GFX && defined MOD_MWS
+#if MOD_GFX && MOD_MWS
 
    mws_root->update_view(mws_cam);
 
@@ -1116,7 +1113,7 @@ mws_mod::mod_type mws_mod_list::get_mod_type()
 
 void mws_mod_list::add(mws_sp<mws_mod> i_mod)
 {
-   mws_assert(i_mod != mws_sp<mws_mod>());
+   mws_assert(i_mod != nullptr);
 
    i_mod->parent = get_smtp_instance();
    ulist.push_back(i_mod);
@@ -1152,43 +1149,46 @@ int mws_mod_list::get_mod_count()const
 
 void mws_mod_list::on_resize()
 {
-#ifdef MOD_GFX
-   if (ulmodel.lock())
+   if (mod_gfx_on)
    {
-      auto u = ulist[ulmodel.lock()->get_selected_elem()];
-
-      if (u && u->is_init())
+      if (ulmodel.lock())
       {
-         u->on_resize();
+         auto u = ulist[ulmodel.lock()->get_selected_elem()];
+
+         if (u && u->is_init())
+         {
+            u->on_resize();
+         }
       }
    }
-#endif
 }
 
 void mws_mod_list::receive(mws_sp<mws_dp> idp)
 {
-#ifdef MOD_INPUT
-   if (!idp->is_processed() && idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (mod_input_on)
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
-   }
+      if (!idp->is_processed() && idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+      {
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      }
 
-   if (!idp->is_processed())
-   {
-      mws_mod::receive(idp);
+      if (!idp->is_processed())
+      {
+         mws_mod::receive(idp);
+      }
    }
-#endif
 }
 
 void mws_mod_list::forward()
 {
-#ifdef MOD_GFX
-   if (ulist.size() > 0)
+   if (mod_gfx_on)
    {
-      mws_sp<mws_mod> u = ulist[ulmodel.lock()->get_selected_elem()];
-      mws_mod_ctrl::inst()->set_next_mod(u);
+      if (ulist.size() > 0)
+      {
+         mws_sp<mws_mod> u = ulist[ulmodel.lock()->get_selected_elem()];
+         mws_mod_ctrl::inst()->set_next_mod(u);
+      }
    }
-#endif
 }
 
 void mws_mod_list::up_one_level()
@@ -1222,7 +1222,7 @@ void mws_mod_list::on_destroy()
 
 void mws_mod_list::init_mws()
 {
-#ifdef MOD_MWS
+#if MOD_MWS
 
    class lmodel : public mws_list_model
    {

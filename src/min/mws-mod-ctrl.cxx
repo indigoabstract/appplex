@@ -1,15 +1,12 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "pfm.hxx"
 #include "mws-mod.hxx"
 #include "input/input-ctrl.hxx"
 #include "min.hxx"
 #include "gfx.hxx"
-#ifdef MOD_SND
 #include "snd/snd.hxx"
-#endif
+#include "mod-list.hxx"
 #include <cstdlib>
 
 
@@ -57,30 +54,29 @@ bool mws_mod_ctrl::back_evt()
 
 bool mws_mod_ctrl::app_uses_gfx()
 {
-#ifdef MOD_GFX
-
-   bool req_gfx = false;
-   int mod_count = ul->get_mod_count();
-
-   if (mod_count > 0)
+   if (mod_gfx_on)
    {
-      for (int k = 0; k < mod_count; k++)
+      bool req_gfx = false;
+      int mod_count = ul->get_mod_count();
+
+      if (mod_count > 0)
       {
-         req_gfx = req_gfx || ul->mod_at(k)->get_preferences()->requires_gfx();
+         for (int k = 0; k < mod_count; k++)
+         {
+            req_gfx = req_gfx || ul->mod_at(k)->get_preferences()->requires_gfx();
+         }
       }
+      else
+      {
+         req_gfx = true;
+      }
+
+      return req_gfx;
    }
    else
    {
-      req_gfx = true;
+      return false;
    }
-
-   return req_gfx;
-
-#else
-
-   return false;
-
-#endif
 }
 
 void mws_mod_ctrl::exit_app(int exit_code)
@@ -102,9 +98,10 @@ void mws_mod_ctrl::destroy_app()
 {
    ul->on_destroy();
 
-#ifdef MOD_GFX
-   gfx::on_destroy();
-#endif
+   if (mod_gfx_on)
+   {
+      gfx::on_destroy();
+   }
 }
 
 void mws_mod_ctrl::pre_init_app()
@@ -118,24 +115,21 @@ void mws_mod_ctrl::pre_init_app()
       ul->set_name("app-mws_mod-list");
       mws_mod_setup::next_crt_mod = crt_mod = ul;
 
-      mws_mod_setup::create_mods(ul);
+      mws_mod_setup::append_mod_list(ul);
    }
 }
 
 void mws_mod_ctrl::init_app()
 {
-#ifdef MOD_GFX
-
-   if (pfm::data.gfx_available)
+   if (mod_gfx_on && pfm::data.gfx_available)
    {
       gfx::global_init();
    }
 
-#endif // MOD_GFX
-
-#ifdef MOD_SND
-   snd::init();
-#endif // MOD_SND
+   if (mod_snd_on)
+   {
+      snd::init();
+   }
 
    if (ul)
    {
@@ -161,9 +155,10 @@ const unicodestring& mws_mod_ctrl::get_app_description()
 
 void mws_mod_ctrl::update()
 {
-#ifdef MOD_SND
-   snd::update();
-#endif // MOD_SND
+   if (mod_snd_on)
+   {
+      snd::update();
+   }
 
    mws_sp<mws_mod> u = get_current_mod();
    mws_assert(u != nullptr);
@@ -172,7 +167,7 @@ void mws_mod_ctrl::update()
 
    mws_sp<mws_mod> nu = next_mod.lock();
 
-   if (nu && nu != u)
+   if (nu&& nu != u)
    {
       mws_mod_ctrl::set_current_mod(nu);
       u = nu;
@@ -207,64 +202,62 @@ void mws_mod_ctrl::resume()
 
 void mws_mod_ctrl::resize_app(int i_width, int i_height)
 {
-#ifdef MOD_GFX
-
-   pfm::data.screen_width = i_width;
-   pfm::data.screen_height = i_height;
-   gfx::on_resize(i_width, i_height);
-
-   if (ul && ul->is_init())
+   if (mod_gfx_on)
    {
-      ul->on_resize();
-   }
-   else
-   {
-      auto u = get_current_mod();
+      pfm::data.screen_width = i_width;
+      pfm::data.screen_height = i_height;
+      gfx::on_resize(i_width, i_height);
 
-      if (u && u->is_init())
+      if (ul && ul->is_init())
       {
-         //mws_log::i()->push("mws_mod_ctrl::resize_app()");
-         u->on_resize();
+         ul->on_resize();
+      }
+      else
+      {
+         auto u = get_current_mod();
+
+         if (u && u->is_init())
+         {
+            //mws_log::i()->push("mws_mod_ctrl::resize_app()");
+            u->on_resize();
+         }
       }
    }
-
-#endif
 }
 
 void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
 {
-#if defined MOD_GFX && defined MOD_INPUT
-
-   mws_sp<mws_mod> u = get_current_mod();
-
-   if (u)
+   if (mod_input_on)
    {
-      mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
-      u->touch_ctrl->enqueue_pointer_event(te);
-   }
+      mws_sp<mws_mod> u = get_current_mod();
 
-#endif
+      if (u)
+      {
+         u->touch_ctrl->enqueue_pointer_event(i_te);
+      }
+   }
 }
 
 void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
 {
-#ifdef MOD_INPUT
-   mws_sp<mws_mod> u = get_current_mod();
-
-   if (u)
+   if (mod_input_on)
    {
-      switch (iaction_type)
-      {
-      case KEY_PRESS:
-         u->key_ctrl_inst->key_pressed(ikey);
-         break;
+      mws_sp<mws_mod> u = get_current_mod();
 
-      case KEY_RELEASE:
-         u->key_ctrl_inst->key_released(ikey);
-         break;
+      if (u)
+      {
+         switch (iaction_type)
+         {
+         case KEY_PRESS:
+            u->key_ctrl_inst->key_pressed(ikey);
+            break;
+
+         case KEY_RELEASE:
+            u->key_ctrl_inst->key_released(ikey);
+            break;
+         }
       }
    }
-#endif
 }
 
 mws_sp<mws_mod> mws_mod_ctrl::get_current_mod()
@@ -334,9 +327,12 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 
 mws_sp<mws_ptr_evt_base> mws_ptr_evt_base::nwi()
 {
-#ifdef MOD_INPUT
-   return mws_ptr_evt::nwi();
-#else
-   return mws_sp<mws_ptr_evt_base>(new mws_ptr_evt_base());
-#endif
+   if (mod_input_on)
+   {
+      return mws_ptr_evt::nwi();
+   }
+   else
+   {
+      return mws_sp<mws_ptr_evt_base>(new mws_ptr_evt_base());
+   }
 }

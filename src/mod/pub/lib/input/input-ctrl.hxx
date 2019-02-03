@@ -57,7 +57,7 @@ public:
 
    bool is_pointer_released();
    void update();
-   void enqueue_pointer_event(mws_sp<mws_ptr_evt> i_pe);
+   void enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_pe);
 
    std::atomic<std::vector<mws_sp<mws_ptr_evt>>*> queue_ptr = nullptr;
 
