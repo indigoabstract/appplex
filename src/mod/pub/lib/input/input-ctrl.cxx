@@ -6,18 +6,11 @@
 #include <glm/inc.hpp>
 
 
-const std::string pointer_evt::TOUCHSYM_EVT_TYPE = "ts-";
+const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE = "ts-";
 
+mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { return mws_sp<mws_ptr_evt>(new mws_ptr_evt()); }
 
-pointer_evt::pointer_evt() : mws_dp("ts-")
-{
-   type = touch_invalid;
-   time = 0;
-   touch_count = 0;
-   mouse_wheel_delta = 0;
-}
-
-void pointer_evt::process()
+void mws_ptr_evt::process()
 {
    mws_dp::process();
 
@@ -28,12 +21,12 @@ void pointer_evt::process()
    //mws_print("%s\n", get_name().c_str());
 }
 
-mws_sp<pointer_evt> pointer_evt::as_pointer_evt(mws_sp<mws_dp> i_dp)
+mws_sp<mws_ptr_evt> mws_ptr_evt::as_pointer_evt(mws_sp<mws_dp> i_dp)
 {
-   return static_pointer_cast<pointer_evt>(i_dp);
+   return static_pointer_cast<mws_ptr_evt>(i_dp);
 }
 
-bool pointer_evt::is_multitouch()
+bool mws_ptr_evt::is_multitouch()
 {
    return touch_count > 1;
 }
@@ -42,7 +35,7 @@ bool pointer_evt::is_multitouch()
 // params:
 // return:
 //    return number of fingers currently pressed when this event was generated, and plus one if mouse button is down
-int pointer_evt::pointer_down_count()
+int mws_ptr_evt::pointer_down_count()
 {
    int count = touch_count;
 
@@ -59,7 +52,7 @@ int pointer_evt::pointer_down_count()
 //    PointerIndex... pointer index
 // return:
 //    returns a touch point at PointerIndex if it exists, else if PointerIndex is 0 return mouse press if it exists, else return null
-const pointer_evt::touch_point* pointer_evt::get_pointer_press_by_index(uint32 i_pointer_index)
+const mws_ptr_evt::touch_point* mws_ptr_evt::get_pointer_press_by_index(uint32 i_pointer_index)
 {
    if (touch_count > i_pointer_index)
    {
@@ -73,7 +66,7 @@ const pointer_evt::touch_point* pointer_evt::get_pointer_press_by_index(uint32 i
    return nullptr;
 }
 
-const pointer_evt::touch_point* pointer_evt::find_point(uintptr_t i_touch_id) const
+const mws_ptr_evt::touch_point* mws_ptr_evt::find_point(uintptr_t i_touch_id) const
 {
    for (uint32 i = 0; i < touch_count; i++)
    {
@@ -86,7 +79,7 @@ const pointer_evt::touch_point* pointer_evt::find_point(uintptr_t i_touch_id) co
    return nullptr;
 }
 
-bool pointer_evt::same_touches(const pointer_evt& i_other) const
+bool mws_ptr_evt::same_touches(const mws_ptr_evt& i_other) const
 {
    if (i_other.touch_count == this->touch_count)
    {
@@ -104,7 +97,7 @@ bool pointer_evt::same_touches(const pointer_evt& i_other) const
    return false;
 }
 
-glm::vec2 pointer_evt::touch_pos(uintptr_t i_touch_id) const
+glm::vec2 mws_ptr_evt::touch_pos(uintptr_t i_touch_id) const
 {
    const touch_point* p = this->find_point(i_touch_id);
    mws_assert(p);
@@ -112,25 +105,24 @@ glm::vec2 pointer_evt::touch_pos(uintptr_t i_touch_id) const
    return glm::vec2(p->x, p->y);
 }
 
-std::string pointer_evt::get_evt_type()
+std::string mws_ptr_evt::get_evt_type()
 {
    switch (type)
    {
-   case touch_invalid:
-      return "touch_invalid";
-   case touch_began:
-      return "touch_began";
-   case touch_moved:
-      return "touch_moved";
-   case touch_ended:
-      return "touch_ended";
-   case touch_cancelled:
-      return "touch_cancelled";
-   case mouse_wheel:
-      return "mouse_wheel";
+   case touch_invalid: return "touch_invalid";
+   case touch_began: return "touch_began";
+   case touch_moved: return "touch_moved";
+   case touch_ended: return "touch_ended";
+   case touch_cancelled: return "touch_cancelled";
+   case mouse_wheel: return "mouse_wheel";
    }
 
    return "n/a";
+}
+
+glm::vec2 mws_ptr_evt::get_pos(const mws_ptr_evt::touch_point& i_tp)
+{
+   return glm::vec2(i_tp.x, i_tp.y);
 }
 
 
@@ -160,7 +152,7 @@ bool touchctrl::is_pointer_released()
 void touchctrl::update()
 {
    // set the current input queue as the queue for processing the input
-   std::vector<mws_sp<pointer_evt>>* input_queue_ptr = &queue_tab[queue_idx];
+   std::vector<mws_sp<mws_ptr_evt>>* input_queue_ptr = &queue_tab[queue_idx];
 
    // switch queues, so the currently empty queue is used for taking input events
    queue_idx = (queue_idx + 1) % 2;
@@ -173,19 +165,19 @@ void touchctrl::update()
       {
          switch (i_pe->type)
          {
-         case pointer_evt::touch_began:
+         case mws_ptr_evt::touch_began:
             on_pointer_action_pressed(i_pe);
             break;
 
-         case pointer_evt::touch_ended:
+         case mws_ptr_evt::touch_ended:
             on_pointer_action_released(i_pe);
             break;
 
-         case pointer_evt::touch_moved:
+         case mws_ptr_evt::touch_moved:
             on_pointer_action_dragged(i_pe);
             break;
 
-         case pointer_evt::mouse_wheel:
+         case mws_ptr_evt::mouse_wheel:
             on_pointer_action_mouse_wheel(i_pe);
             break;
          }
@@ -193,7 +185,7 @@ void touchctrl::update()
    }
 }
 
-void touchctrl::enqueue_pointer_event(mws_sp<pointer_evt> i_pe)
+void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt> i_pe)
 {
    (*queue_ptr).push_back(i_pe);
 }
@@ -203,13 +195,13 @@ mws_sp<mws_sender> touchctrl::sender_inst()
    return get_instance();
 }
 
-void touchctrl::on_pointer_action_pressed(mws_sp<pointer_evt> i_pe)
+void touchctrl::on_pointer_action_pressed(mws_sp<mws_ptr_evt> i_pe)
 {
    is_pointer_down = true;
    broadcast(get_instance(), i_pe);
 }
 
-void touchctrl::on_pointer_action_dragged(mws_sp<pointer_evt> i_pe)
+void touchctrl::on_pointer_action_dragged(mws_sp<mws_ptr_evt> i_pe)
 {
    if (is_pointer_down)
    {
@@ -217,47 +209,47 @@ void touchctrl::on_pointer_action_dragged(mws_sp<pointer_evt> i_pe)
    }
 }
 
-void touchctrl::on_pointer_action_released(mws_sp<pointer_evt> i_pe)
+void touchctrl::on_pointer_action_released(mws_sp<mws_ptr_evt> i_pe)
 {
    is_pointer_down = false;
    broadcast(get_instance(), i_pe);
 }
 
-void touchctrl::on_pointer_action_mouse_wheel(mws_sp<pointer_evt> i_pe)
+void touchctrl::on_pointer_action_mouse_wheel(mws_sp<mws_ptr_evt> i_pe)
 {
    broadcast(get_instance(), i_pe);
 }
 
 
-const std::string key_evt::KEYEVT_EVT_TYPE = "ke-";
-const std::string key_evt::KEYEVT_PRESSED = "ke-pressed";
-const std::string key_evt::KEYEVT_REPEATED = "ke-repeated";
-const std::string key_evt::KEYEVT_RELEASED = "ke-released";
+const std::string mws_key_evt::KEYEVT_EVT_TYPE = "ke-";
+const std::string mws_key_evt::KEYEVT_PRESSED = "ke-pressed";
+const std::string mws_key_evt::KEYEVT_REPEATED = "ke-repeated";
+const std::string mws_key_evt::KEYEVT_RELEASED = "ke-released";
 
 
-key_evt::key_evt(mws_wp<key_ctrl> i_src, key_evt::key_evt_types i_type, key_types i_key) : mws_dp(get_type_name(i_type))
+mws_key_evt::mws_key_evt(mws_wp<key_ctrl> i_src, mws_key_evt::key_evt_types i_type, key_types i_key) : mws_dp(get_type_name(i_type))
 {
    src = i_src;
    type = i_type;
    key = i_key;
 }
 
-mws_sp<key_evt> key_evt::as_key_evt(mws_sp<mws_dp> i_dp)
+mws_sp<mws_key_evt> mws_key_evt::as_key_evt(mws_sp<mws_dp> i_dp)
 {
-   return static_pointer_cast<key_evt>(i_dp);
+   return static_pointer_cast<mws_key_evt>(i_dp);
 }
 
-mws_sp<key_evt> key_evt::nwi(mws_wp<key_ctrl> i_src, key_evt::key_evt_types i_type, key_types i_key)
+mws_sp<mws_key_evt> mws_key_evt::nwi(mws_wp<key_ctrl> i_src, mws_key_evt::key_evt_types i_type, key_types i_key)
 {
-   return mws_sp<key_evt>(new key_evt(i_src, i_type, i_key));
+   return mws_sp<mws_key_evt>(new mws_key_evt(i_src, i_type, i_key));
 }
 
-mws_sp<key_evt> key_evt::get_instance()
+mws_sp<mws_key_evt> mws_key_evt::get_instance()
 {
    return shared_from_this();
 }
 
-const std::string& key_evt::get_type_name(key_evt_types i_key_evt)
+const std::string& mws_key_evt::get_type_name(key_evt_types i_key_evt)
 {
    static const std::string types[] =
    {
@@ -269,37 +261,37 @@ const std::string& key_evt::get_type_name(key_evt_types i_key_evt)
    return types[i_key_evt];
 }
 
-mws_sp<key_ctrl> key_evt::get_src()
+mws_sp<key_ctrl> mws_key_evt::get_src()
 {
    return src.lock();
 }
 
-bool key_evt::is_pressed() const
+bool mws_key_evt::is_pressed() const
 {
    return type == KE_PRESSED;
 }
 
-bool key_evt::is_repeated() const
+bool mws_key_evt::is_repeated() const
 {
    return type == KE_REPEATED;
 }
 
-bool key_evt::is_released() const
+bool mws_key_evt::is_released() const
 {
    return type == KE_RELEASED;
 }
 
-key_evt::key_evt_types key_evt::get_type() const
+mws_key_evt::key_evt_types mws_key_evt::get_type() const
 {
    return type;
 }
 
-key_types key_evt::get_key() const
+key_types mws_key_evt::get_key() const
 {
    return key;
 }
 
-void key_evt::process()
+void mws_key_evt::process()
 {
    mws_dp::process();
 }
@@ -348,7 +340,7 @@ void key_ctrl::update()
       auto key_released = [&](int i_idx, key_types i_key_id)
       {
          keys_status[i_idx] = KEY_RELEASED_IDLE;
-         new_key_event(key_evt::nwi(inst, key_evt::KE_RELEASED, i_key_id));
+         new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_RELEASED, i_key_id));
          events_still_pending = true;
       };
 
@@ -359,7 +351,7 @@ void key_ctrl::update()
          switch (keys_status[k])
          {
          case KEY_PRESSED:
-            new_key_event(key_evt::nwi(inst, key_evt::KE_PRESSED, key_id));
+            new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_PRESSED, key_id));
             keys_status[k] = KEY_FIRST_PRESSED;
             events_still_pending = true;
             break;
@@ -367,7 +359,7 @@ void key_ctrl::update()
          case KEY_FIRST_PRESSED:
             if (crt_time - keys_status_time[k] > time_until_first_key_repeat_ms)
             {
-               new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, key_id));
+               new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
                keys_status[k] = KEY_REPEATED;
                keys_status_time[k] = crt_time;
             }
@@ -388,7 +380,7 @@ void key_ctrl::update()
                }
                else
                {
-                  new_key_event(key_evt::nwi(inst, key_evt::KE_REPEATED, key_id));
+                  new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
                   events_still_pending = true;
                }
             }
@@ -449,7 +441,7 @@ mws_sp<mws_sender> key_ctrl::sender_inst()
    return get_instance();
 }
 
-void key_ctrl::new_key_event(mws_sp<key_evt> i_ke)
+void key_ctrl::new_key_event(mws_sp<mws_key_evt> i_ke)
 {
    broadcast(i_ke->get_src(), i_ke);
 }

@@ -187,10 +187,8 @@ bool gfx_tex::mipmaps_supported(gfx_enum i_internal_format)
 
 std::string gfx_tex::gen_id()
 {
-   char name[256];
-
    uint32 time = pfm::time::get_time_millis();
-   sprintf(name, "tex-%d-%d", texture_name_idx, time);
+   std::string name = mws_to_str("tex-%d-%d", texture_name_idx, time);
    texture_name_idx++;
 
    return name;
@@ -393,24 +391,14 @@ gfx_tex::gfx_tex(const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
    texture_updated = false;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = false;
    uni_tex_type = TEX_2D;
-   set_texture_name(itex_name);
-
-#if defined MOD_PNG
+   set_texture_name(i_tex_name);
 
    mws_sp<raw_img_data> rid = res_ld::inst()->load_image(tex_name);
-
-#else
-
-   auto rid = std::make_shared<raw_img_data>(32, 32);
-   mws_print("tex [%s] not loaded. MOD_PNG is disabled.\n", itex_name.c_str());
-
-#endif
-
    init_dimensions(rid->width, rid->height);
 
    switch (uni_tex_type)
@@ -628,17 +616,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gf
    for (int k = 0; k < 6; k++)
    {
       std::string img_name = itex_name + "-" + ends[k] + ".png";
-
-#if defined MOD_PNG
-
       mws_sp<raw_img_data> rid = res_ld::inst()->load_image(img_name);
-
-#else
-
-      auto rid = std::make_shared<raw_img_data>(32, 32);
-      mws_print("tex [%s] not loaded. MOD_PNG is disabled.\n", img_name.c_str());
-
-#endif
 
       if (!is_init)
       {

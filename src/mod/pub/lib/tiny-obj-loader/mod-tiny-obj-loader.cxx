@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TINY_OBJ_LOADER
 
 #include "mod-tiny-obj-loader.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_tiny_obj_loader> mod_tiny_obj_loader::nwi()
 void mod_tiny_obj_loader::init() {}
 void mod_tiny_obj_loader::init_mws() {}
 void mod_tiny_obj_loader::load() {}
-
-#endif

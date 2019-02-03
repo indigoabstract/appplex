@@ -29,13 +29,13 @@ mws_sp<mws_vkb> mws_vkb::gi()
 
 void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 {
-   if (i_dp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> pe = pointer_evt::as_pointer_evt(i_dp);
+      mws_sp<mws_ptr_evt> pe = mws_ptr_evt::as_pointer_evt(i_dp);
 
       switch (pe->type)
       {
-      case pointer_evt::touch_began:
+      case mws_ptr_evt::touch_began:
       {
          auto& pt = pe->points[0];
          auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
@@ -48,7 +48,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          break;
       }
 
-      case pointer_evt::touch_ended:
+      case mws_ptr_evt::touch_ended:
       {
          auto& pt = pe->points[0];
          auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
@@ -76,7 +76,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
       pe->process();
    }
-   else if (i_dp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
       ta->receive(i_dp);
    }

@@ -231,7 +231,7 @@ void mws_mod_ctrl::resize_app(int i_width, int i_height)
 #endif
 }
 
-void mws_mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
+void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
 {
 #if defined MOD_GFX && defined MOD_INPUT
 
@@ -239,7 +239,8 @@ void mws_mod_ctrl::pointer_action(mws_sp<pointer_evt> ite)
 
    if (u)
    {
-      u->touch_ctrl->enqueue_pointer_event(ite);
+      mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
+      u->touch_ctrl->enqueue_pointer_event(te);
    }
 
 #endif
@@ -328,4 +329,14 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
    {
       mws_signal_error("warning: tried to make current a null mws_mod");
    }
+}
+
+
+mws_sp<mws_ptr_evt_base> mws_ptr_evt_base::nwi()
+{
+#ifdef MOD_INPUT
+   return mws_ptr_evt::nwi();
+#else
+   return mws_sp<mws_ptr_evt_base>(new mws_ptr_evt_base());
+#endif
 }

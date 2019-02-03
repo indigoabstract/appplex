@@ -117,9 +117,9 @@ void mws_img_btn::receive(mws_sp<mws_dp> idp)
    {
       receive_handler(get_instance(), idp);
    }
-   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -220,9 +220,9 @@ void mws_button::receive(mws_sp<mws_dp> idp)
    {
       receive_handler(get_instance(), idp);
    }
-   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -373,9 +373,9 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
    {
       receive_handler(get_instance(), idp);
    }
-   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
       bool process = false;
 
@@ -412,7 +412,7 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
       //mws_print("evt type [%d]\n", type);
       switch (ts->type)
       {
-      case pointer_evt::touch_began:
+      case mws_ptr_evt::touch_began:
       {
          bool ball_hit;
          bool bar_hit;
@@ -437,7 +437,7 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
          break;
       }
 
-      case pointer_evt::touch_ended:
+      case mws_ptr_evt::touch_ended:
          active = false;
          process = false;
          break;
@@ -590,9 +590,9 @@ void mws_list::receive(mws_sp<mws_dp> idp)
 
       mws_r.h = listheight;
    }
-   else if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      //mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
       //switch (ts->get_type())
       //{

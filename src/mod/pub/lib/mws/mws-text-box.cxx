@@ -332,13 +332,13 @@ void mws_text_box::receive(mws_sp<mws_dp> i_dp)
       return;
    }
 
-   if (i_dp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      handle_pointer_evt(pointer_evt::as_pointer_evt(i_dp));
+      handle_pointer_evt(mws_ptr_evt::as_pointer_evt(i_dp));
    }
-   else if (i_dp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
-      handle_key_evt(key_evt::as_key_evt(i_dp));
+      handle_key_evt(mws_key_evt::as_key_evt(i_dp));
    }
 }
 
@@ -463,7 +463,7 @@ mws_sp<mws_text_area_model> mws_text_box::new_model()
    return std::make_shared<mws_text_area_model_ro>();
 }
 
-void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
+void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
 {
    bool hit = is_inside_box(i_pe->points[0].x, i_pe->points[0].y, pos.x, pos.y, mws_r.w, mws_r.h);
 
@@ -503,7 +503,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
 
    switch (i_pe->type)
    {
-   case pointer_evt::touch_began:
+   case mws_ptr_evt::touch_began:
    {
       if (pfm::has_touchscreen() || get_mod()->get_preferences()->emulate_mobile_screen())
       {
@@ -519,7 +519,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
       break;
    }
 
-   case pointer_evt::touch_ended:
+   case mws_ptr_evt::touch_ended:
    {
       if (!i_pe->is_processed()) { i_pe->process(); }
       break;
@@ -527,9 +527,9 @@ void mws_text_box::handle_pointer_evt(mws_sp<pointer_evt> i_pe)
    }
 }
 
-void mws_text_box::handle_key_evt(mws_sp<key_evt> i_ke)
+void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
 {
-   if (i_ke->get_type() != key_evt::KE_RELEASED)
+   if (i_ke->get_type() != mws_key_evt::KE_RELEASED)
    {
       key_types key = i_ke->get_key();
 
@@ -567,7 +567,7 @@ void mws_text_box::handle_key_evt(mws_sp<key_evt> i_ke)
       {
          float off = 51.175f;
 
-         if (i_ke->get_type() == key_evt::KE_PRESSED)
+         if (i_ke->get_type() == mws_key_evt::KE_PRESSED)
          {
             off = 21.175f;
          }

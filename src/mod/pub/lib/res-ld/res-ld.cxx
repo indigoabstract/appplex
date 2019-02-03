@@ -211,6 +211,24 @@ bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint
 
 #else
 
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file)
+{
+   mws_print("img [%s] not loaded. MOD_PNG is disabled.\n", i_file->get_file_name().c_str());
+   return std::make_shared<raw_img_data>(32, 32);
+}
+
+mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
+{
+   mws_print("img [%s] not loaded. MOD_PNG is disabled.\n", i_filename.c_str());
+   return std::make_shared<raw_img_data>(32, 32);
+}
+
+bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip)
+{
+   mws_print("img [%s] not saved. MOD_PNG is disabled.\n", i_file->get_file_name().c_str());
+   return false;
+}
+
 raw_img_data::raw_img_data()
 {
    data = nullptr;

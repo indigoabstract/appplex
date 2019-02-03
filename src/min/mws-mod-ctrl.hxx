@@ -6,7 +6,7 @@
 
 class mws_mod;
 class mws_mod_list;
-class pointer_evt;
+class mws_ptr_evt_base;
 class gfx;
 
 
@@ -29,7 +29,7 @@ public:
    void pause();
    void resume();
    void resize_app(int i_width, int i_height);
-   void pointer_action(mws_sp<pointer_evt> ite);
+   void pointer_action(mws_sp<mws_ptr_evt_base> ite);
    void key_action(key_actions iaction_type, int ikey);
    mws_sp<mws_mod> get_current_mod();
    void set_next_mod(mws_sp<mws_mod> i_mod);

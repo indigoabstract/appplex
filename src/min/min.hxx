@@ -155,6 +155,43 @@ private:
 };
 
 
+class mws_ptr_evt_base : public mws_dp
+{
+public:
+   static mws_sp<mws_ptr_evt_base> nwi();
+   virtual ~mws_ptr_evt_base() {}
+
+   static const int MAX_TOUCH_POINTS = 8;
+
+   enum e_touch_type
+   {
+      touch_invalid,
+      touch_began,
+      touch_moved,
+      touch_ended,
+      touch_cancelled,
+      mouse_wheel,
+   };
+
+   struct touch_point
+   {
+      uintptr_t identifier = 0;
+      float x = 0.f;
+      float y = 0.f;
+      bool is_changed = false;
+   };
+
+   e_touch_type type = touch_invalid;
+   uint32 time = 0;
+   uint32 touch_count = 0;
+   touch_point points[MAX_TOUCH_POINTS];
+   real32 mouse_wheel_delta = 0;
+
+protected:
+   mws_ptr_evt_base() : mws_dp("ts-") {}
+};
+
+
 class mws_receiver
 {
 public:

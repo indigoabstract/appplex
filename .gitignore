@@ -34,9 +34,6 @@
 /src/mod/prv
 /src/mod/pub/demo/layered-car-paint
 
-/src/mod/prv/CMakeLists.txt
-/src/mod/prv/npw/CMakeLists.txt
-/src/mod/prv/tests/CMakeLists.txt
 /src/mod/pub/demo/CMakeLists.txt
 /src/mod/pub/lib/CMakeLists.txt
 /src/mod/pub/tst/CMakeLists.txt

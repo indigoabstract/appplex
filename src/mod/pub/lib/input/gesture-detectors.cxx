@@ -5,7 +5,7 @@
 
 
 // since it can't be null, use a dummy event used as default pointer event for gesture detectors
-static mws_sp<pointer_evt> dummy_event = std::make_shared<pointer_evt>();
+static mws_sp<mws_ptr_evt> dummy_event = mws_ptr_evt::nwi();
 
 
 dragging_detector::dragging_detector()
@@ -13,7 +13,7 @@ dragging_detector::dragging_detector()
    reset();
 }
 
-bool dragging_detector::detect_helper(mws_sp<pointer_evt> evt)
+bool dragging_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
 {
    bool gesture_detected = false;
    auto dragging_state = detect(evt);
@@ -25,7 +25,7 @@ bool dragging_detector::detect_helper(mws_sp<pointer_evt> evt)
    case GS_MOVE:
    {
       last_move_pos_bak = pointer_pos;
-      pointer_pos = evt->get_pointer_press_by_index(0)->get_position();
+      pointer_pos = mws_ptr_evt::get_pos(*evt->get_pointer_press_by_index(0));
       drag_diff = pointer_pos - last_move_pos;
       last_move_pos = pointer_pos;
       last_move_pos_time = evt->time;
@@ -35,7 +35,7 @@ bool dragging_detector::detect_helper(mws_sp<pointer_evt> evt)
 
    case GS_END:
    {
-      pointer_pos = evt->get_pointer_press_by_index(0)->get_position();
+      pointer_pos = mws_ptr_evt::get_pos(*evt->get_pointer_press_by_index(0));
       drag_diff = pointer_pos - last_move_pos;
       gesture_detected = true;
       break;
@@ -50,7 +50,7 @@ bool dragging_detector::is_finished() const
    return det_state == tap_detector_state::ST_READY;
 }
 
-gesture_state dragging_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // only one finger press is allowed for dragging
    if (new_event->pointer_down_count() != 1)
@@ -61,14 +61,14 @@ gesture_state dragging_detector::detect(const mws_sp<pointer_evt> new_event)
    //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), pfm::time::get_time_millis());
    switch (new_event->type)
    {
-   case pointer_evt::touch_began:
+   case mws_ptr_evt::touch_began:
       start_event = new_event;
-      last_move_pos_bak = last_move_pos = press_pos = new_event->get_pointer_press_by_index(0)->get_position();
+      last_move_pos_bak = last_move_pos = press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
       set_state(tap_detector_state::ST_PRESSED);
 
       return GS_START;
 
-   case pointer_evt::touch_ended:
+   case mws_ptr_evt::touch_ended:
       if (det_state == tap_detector_state::ST_MOVING)
       {
          reset();
@@ -78,7 +78,7 @@ gesture_state dragging_detector::detect(const mws_sp<pointer_evt> new_event)
 
       return reset();
 
-   case pointer_evt::touch_moved:
+   case mws_ptr_evt::touch_moved:
       switch (det_state)
       {
       case tap_detector_state::ST_PRESSED:
@@ -128,13 +128,13 @@ double_tap_detector::double_tap_detector()
    reset();
 }
 
-bool double_tap_detector::detect_helper(mws_sp<pointer_evt> evt)
+bool double_tap_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
 {
    gesture_state gs = detect(evt);
    return gs == GS_ACTION;
 }
 
-gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // only one finger press is allowed for taps
    if (new_event->pointer_down_count() != 1)
@@ -154,7 +154,7 @@ gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
 
          // if the new event is a press, restart the detector and continue
          // otherwise, abort detection
-         if (new_event->type != pointer_evt::touch_began)
+         if (new_event->type != mws_ptr_evt::touch_began)
          {
             return GS_NONE;
          }
@@ -163,18 +163,18 @@ gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
 
    switch (new_event->type)
    {
-   case pointer_evt::touch_began:
+   case mws_ptr_evt::touch_began:
       if (det_state == tap_detector_state::ST_READY)
       {
          start_event = new_event;
-         first_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
+         first_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
          set_state(tap_detector_state::ST_PRESSED_0);
 
          return GS_START;
       }
       else if (det_state == tap_detector_state::ST_RELEASED_0)
       {
-         second_press_pos = new_event->get_pointer_press_by_index(0)->get_position();
+         second_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
          set_state(tap_detector_state::ST_PRESSED_1);
 
          if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
@@ -187,7 +187,7 @@ gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
 
       return reset();
 
-   case pointer_evt::touch_ended:
+   case mws_ptr_evt::touch_ended:
       if (det_state == tap_detector_state::ST_PRESSED_0)
       {
          set_state(tap_detector_state::ST_RELEASED_0);
@@ -198,7 +198,7 @@ gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
       {
          auto release = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(release->get_position(), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
          {
             return reset();
          }
@@ -210,12 +210,12 @@ gesture_state double_tap_detector::detect(const mws_sp<pointer_evt> new_event)
 
       return reset();
 
-   case pointer_evt::touch_moved:
+   case mws_ptr_evt::touch_moved:
       if (det_state > tap_detector_state::ST_READY)
       {
          auto press = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(press->get_position(), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(mws_ptr_evt::get_pos(*press), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
          {
             return reset();
          }
@@ -246,7 +246,7 @@ pinch_zoom_detector::pinch_zoom_detector()
    start_event = dummy_event;
 }
 
-bool pinch_zoom_detector::detect_helper(mws_sp<pointer_evt> evt)
+bool pinch_zoom_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
 {
    bool gesture_detected = false;
    auto pinch_state = detect(evt);
@@ -281,10 +281,10 @@ bool pinch_zoom_detector::detect_helper(mws_sp<pointer_evt> evt)
    return gesture_detected;
 }
 
-gesture_state pinch_zoom_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state pinch_zoom_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // check for cancelled event
-   if (new_event->type == pointer_evt::touch_cancelled)
+   if (new_event->type == mws_ptr_evt::touch_cancelled)
    {
       return reset();
    }
@@ -305,7 +305,7 @@ gesture_state pinch_zoom_detector::detect(const mws_sp<pointer_evt> new_event)
 
       case GS_START:
       case GS_MOVE:
-         if (new_event->type == pointer_evt::touch_moved)
+         if (new_event->type == mws_ptr_evt::touch_moved)
          {
             if (prev_position_0 != position_0)
             {
@@ -322,8 +322,8 @@ gesture_state pinch_zoom_detector::detect(const mws_sp<pointer_evt> new_event)
 
             if (p0 && p1)
             {
-               position_0 = p0->get_position();
-               position_1 = p1->get_position();
+               position_0 = mws_ptr_evt::get_pos(*p0);
+               position_1 = mws_ptr_evt::get_pos(*p1);
 
                float dist_0 = glm::distance(start_position_0, position_0);
                float dist_0_1 = glm::distance(start_position_0, position_1);
@@ -349,7 +349,7 @@ gesture_state pinch_zoom_detector::detect(const mws_sp<pointer_evt> new_event)
       }
    }
 
-   if (new_event->type == pointer_evt::touch_ended)
+   if (new_event->type == mws_ptr_evt::touch_ended)
    {
       if (new_event->touch_count == 2 && det_state == GS_MOVE)
       {
@@ -379,7 +379,7 @@ anchor_rotation_one_finger_detector::anchor_rotation_one_finger_detector()
    start_event = dummy_event;
 }
 
-gesture_state anchor_rotation_one_finger_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state anchor_rotation_one_finger_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // this is a one finger gesture
    if (new_event->touch_count != 1)
@@ -388,43 +388,43 @@ gesture_state anchor_rotation_one_finger_detector::detect(const mws_sp<pointer_e
    }
 
    // check for cancelled event
-   if (new_event->type == pointer_evt::touch_cancelled)
+   if (new_event->type == mws_ptr_evt::touch_cancelled)
    {
       return reset();
    }
 
    // check for gesture start, move and end
-   if (new_event->type == pointer_evt::touch_began)
+   if (new_event->type == mws_ptr_evt::touch_began)
    {
       start_event = new_event;
-      start_position = new_event->points[0].get_position();
+      start_position = mws_ptr_evt::get_pos(new_event->points[0]);
       prev_position = position = start_position;
       start_time = pfm::time::get_time_millis();
 
       return GS_START;
    }
-   else if (new_event->type == pointer_evt::touch_moved)
+   else if (new_event->type == mws_ptr_evt::touch_moved)
    {
       // cancel if start event is not valid
-      if (start_event->type == pointer_evt::touch_invalid)
+      if (start_event->type == mws_ptr_evt::touch_invalid)
       {
          return GS_NONE;
       }
 
       prev_position = position;
-      position = new_event->points[0].get_position();
+      position = mws_ptr_evt::get_pos(new_event->points[0]);
 
       return GS_MOVE;
    }
-   else if (new_event->type == pointer_evt::touch_ended)
+   else if (new_event->type == mws_ptr_evt::touch_ended)
    {
-      if (start_event->type == pointer_evt::touch_invalid)
+      if (start_event->type == mws_ptr_evt::touch_invalid)
       {
          return GS_NONE;
       }
 
       prev_position = position;
-      position = start_event->points[0].get_position();
+      position = mws_ptr_evt::get_pos(start_event->points[0]);
       reset();
 
       return GS_END;
@@ -450,7 +450,7 @@ axis_roll_detector::axis_roll_detector()
    reset();
 }
 
-bool axis_roll_detector::detect_helper(mws_sp<pointer_evt> evt, float& rotation_angle)
+bool axis_roll_detector::detect_helper(mws_sp<mws_ptr_evt> evt, float& rotation_angle)
 {
    bool gesture_detected = false;
    auto pinch_state = detect(evt);
@@ -497,10 +497,10 @@ bool axis_roll_detector::detect_helper(mws_sp<pointer_evt> evt, float& rotation_
    return gesture_detected;
 }
 
-gesture_state axis_roll_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state axis_roll_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // check for cancelled event
-   if (new_event->type == pointer_evt::touch_cancelled)
+   if (new_event->type == mws_ptr_evt::touch_cancelled)
    {
       return reset();
    }
@@ -523,15 +523,15 @@ gesture_state axis_roll_detector::detect(const mws_sp<pointer_evt> new_event)
 
       case GS_START:
       case GS_MOVE:
-         if (new_event->type == pointer_evt::touch_moved)
+         if (new_event->type == mws_ptr_evt::touch_moved)
          {
             auto p0 = new_event->find_point(start_event->points[0].identifier);
             auto p1 = new_event->find_point(start_event->points[1].identifier);
 
             if (p0 && p1)
             {
-               position_0 = p0->get_position();
-               position_1 = p1->get_position();
+               position_0 = mws_ptr_evt::get_pos(*p0);
+               position_1 = mws_ptr_evt::get_pos(*p1);
                det_state = GS_MOVE;
 
                float dist_0 = glm::distance(start_position_0, position_0);
@@ -578,7 +578,7 @@ gesture_state axis_roll_detector::detect(const mws_sp<pointer_evt> new_event)
       }
    }
 
-   if (new_event->type == pointer_evt::touch_ended)
+   if (new_event->type == mws_ptr_evt::touch_ended)
    {
       if (new_event->touch_count == 2 && det_state == GS_MOVE)
       {
@@ -587,8 +587,8 @@ gesture_state axis_roll_detector::detect(const mws_sp<pointer_evt> new_event)
 
          if (p0 && p1)
          {
-            position_0 = p0->get_position();
-            position_1 = p1->get_position();
+            position_0 = mws_ptr_evt::get_pos(*p0);
+            position_1 = mws_ptr_evt::get_pos(*p1);
             reset();
 
             return GS_END;
@@ -613,28 +613,28 @@ panning_tilting_detector::panning_tilting_detector()
    start_event = dummy_event;
 }
 
-gesture_state panning_tilting_detector::detect(const mws_sp<pointer_evt> new_event)
+gesture_state panning_tilting_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 {
    // check for cancelled event
-   if (new_event->type == pointer_evt::touch_cancelled)
+   if (new_event->type == mws_ptr_evt::touch_cancelled)
    {
       return reset();
    }
 
    // need 3 touches
-   if ((new_event->type != pointer_evt::touch_ended) && (new_event->touch_count != 3))
+   if ((new_event->type != mws_ptr_evt::touch_ended) && (new_event->touch_count != 3))
    {
       return reset();
    }
 
    // check if touch identifiers are unchanged (number of touches and same touch ids)
-   if ((start_event->type != pointer_evt::touch_invalid) && !start_event->same_touches(*new_event))
+   if ((start_event->type != mws_ptr_evt::touch_invalid) && !start_event->same_touches(*new_event))
    {
       return reset();
    }
 
    // check for gesture start, move and end
-   if (new_event->type == pointer_evt::touch_began)
+   if (new_event->type == mws_ptr_evt::touch_began)
    {
       if (new_event->touch_count < 3)
       {
@@ -651,10 +651,10 @@ gesture_state panning_tilting_detector::detect(const mws_sp<pointer_evt> new_eve
 
       return GS_START;
    }
-   else if (new_event->type == pointer_evt::touch_moved)
+   else if (new_event->type == mws_ptr_evt::touch_moved)
    {
       // cancel if start event is not valid
-      if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 3)
+      if (start_event->type == mws_ptr_evt::touch_invalid || new_event->touch_count < 3)
       {
          return GS_NONE;
       }
@@ -674,9 +674,9 @@ gesture_state panning_tilting_detector::detect(const mws_sp<pointer_evt> new_eve
 
       return GS_MOVE;
    }
-   else if (new_event->type == pointer_evt::touch_ended)
+   else if (new_event->type == mws_ptr_evt::touch_ended)
    {
-      if (start_event->type == pointer_evt::touch_invalid || new_event->touch_count < 3)
+      if (start_event->type == mws_ptr_evt::touch_invalid || new_event->touch_count < 3)
       {
          return GS_NONE;
       }

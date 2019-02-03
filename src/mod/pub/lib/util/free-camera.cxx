@@ -41,9 +41,9 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
       mov_type = e_roll_view_axis;
    }
 
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
       bool dragging_detected = dragging_det.detect_helper(ts);
 
@@ -101,20 +101,20 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
          //mws_print("tn %s\n", ts->get_type_name(ts->type).c_str());
          switch (ts->type)
          {
-         case pointer_evt::touch_began:
+         case mws_ptr_evt::touch_began:
          {
             ks->grab(ts->points[0].x, ts->points[0].y);
             ts->process();
             break;
          }
 
-         case pointer_evt::touch_ended:
+         case mws_ptr_evt::touch_ended:
          {
             ts->process();
             break;
          }
 
-         case pointer_evt::mouse_wheel:
+         case mws_ptr_evt::mouse_wheel:
          {
             persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
             ts->process();
@@ -123,9 +123,9 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
          }
       }
    }
-   else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
-      mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+      mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
       if (!ke->is_released())
       {

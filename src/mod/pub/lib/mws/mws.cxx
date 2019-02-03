@@ -661,9 +661,9 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
       return;
    }
 
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
       static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
@@ -694,7 +694,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
          }
       }
    }
-   else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+   else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
       if (selected_item)
       {
@@ -711,9 +711,9 @@ void mws_page::update_input_std_behaviour(mws_sp<mws_dp> idp)
       return;
    }
 
-   if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
       //switch (ts->get_type())
       //{

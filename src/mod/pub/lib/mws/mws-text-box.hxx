@@ -42,8 +42,8 @@ public:
 protected:
    mws_text_box() {}
    virtual mws_sp<mws_text_area_model> new_model();
-   virtual void handle_pointer_evt(mws_sp<pointer_evt> i_pe);
-   virtual void handle_key_evt(mws_sp<key_evt> i_ke);
+   virtual void handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe);
+   virtual void handle_key_evt(mws_sp<mws_key_evt> i_ke);
    virtual float get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const;
 
    bool editable = false;

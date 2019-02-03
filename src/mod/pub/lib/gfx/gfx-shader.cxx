@@ -209,10 +209,7 @@ public:
 
          if (i_shader_id.length() == 0)
          {
-            char name[256];
-
-            sprintf(name, "from-src#%d", shader_idx);
-            shader_id = name;
+            shader_id = mws_to_str("from-src#%d", shader_idx);
          }
 
          shader_idx++;
