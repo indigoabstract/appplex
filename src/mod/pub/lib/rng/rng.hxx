@@ -24,7 +24,7 @@ struct rng_state
 class RNG
 {
 public:
-   RNG::RNG()
+   RNG()
    {
       auto now_tp = std::chrono::system_clock::now();
       uint64 count = now_tp.time_since_epoch().count();

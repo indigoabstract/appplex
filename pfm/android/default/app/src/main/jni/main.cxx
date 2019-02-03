@@ -3,7 +3,6 @@
 #include "pfm-gl.h"
 #include "min.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "com/mod/input-ctrl.hxx"
 #include "java-callbacks.h"
 #include "jni-helper.hxx"
 #include <zip/zip.h>
@@ -164,7 +163,7 @@ public:
 		}
         else
         {
-            mws_throw ia_exception("error");
+            mws_throw mws_exception("error");
         }
 	}
 
@@ -175,7 +174,7 @@ public:
 			return ftell(file);
 		}
 
-        mws_throw ia_exception("unsupported op");
+        mws_throw mws_exception("unsupported op");
 
 		return 0;
 	}
@@ -197,7 +196,7 @@ public:
 			return fwrite(ibuffer, 1, isize, file);
 		}
 		
-		mws_throw ia_exception("unsupported op");
+		mws_throw mws_exception("unsupported op");
 
 		return 0;
 	}
@@ -319,7 +318,7 @@ void get_directory_listing_helper(umf_list iplist, mws_sp<pfm_file> ifile)
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{
 		mws_print("android_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
-        mws_throw ia_exception("duplicate filename: " + ifile->get_full_path());
+        mws_throw mws_exception("duplicate filename: " + ifile->get_full_path());
 	}
 
 	(*iplist)[ifile->get_file_name()] = ifile;
@@ -354,7 +353,7 @@ umf_list android_main::get_directory_listing(const std::string& idirectory, umf_
 	return iplist;
 }
 
-float android_main::get_screen_scale()
+float android_main::get_screen_scale() const
 {
     return 1.f;
 }
@@ -543,7 +542,7 @@ extern "C"
 			(JNIEnv*  env, jobject thiz, jint i_touch_type, jint i_touch_count, jintArray i_touch_points_identifier,
 			 jbooleanArray i_touch_points_is_changed, jfloatArray i_touch_points_x, jfloatArray i_touch_points_y)
 	{
-		auto pfm_te = std::make_shared<pointer_evt>();
+		auto pfm_te = mws_ptr_evt_base::nwi();
 		jint* touch_points_identifier = env->GetIntArrayElements(i_touch_points_identifier, NULL);
 		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(i_touch_points_is_changed, NULL);
 		jfloat* touch_points_x = env->GetFloatArrayElements(i_touch_points_x, NULL);
@@ -566,7 +565,7 @@ extern "C"
 
 		pfm_te->time = pfm::time::get_time_millis();
 		pfm_te->touch_count = i_touch_count;
-		pfm_te->type = (pointer_evt::e_touch_type)i_touch_type;
+		pfm_te->type = (mws_ptr_evt_base::e_touch_type)i_touch_type;
 
 		mws_mod_ctrl::inst()->pointer_action(pfm_te);
 	}
@@ -602,12 +601,12 @@ extern "C"
 	
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1init(JNIEnv *env, jobject thiz, jint i_sample_rate, jint i_buffer_size)
 	{
-		android_main::get_instance()->snd_init(i_sample_rate, i_buffer_size);
+		//android_main::get_instance()->snd_init(i_sample_rate, i_buffer_size);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1snd_1close(JNIEnv *env, jobject thiz)
 	{
-		android_main::get_instance()->snd_close();
+		//android_main::get_instance()->snd_close();
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1set_1writable_1path(JNIEnv*  env, jobject thiz, jstring i_writable_path)
@@ -623,6 +622,6 @@ extern "C"
 
     GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data)
     {
-        mws_throw ia_exception("not implemented");
+        mws_throw mws_exception("not implemented");
     }
 }

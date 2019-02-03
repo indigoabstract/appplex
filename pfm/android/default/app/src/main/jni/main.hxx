@@ -24,7 +24,7 @@ public:
 	virtual std::string get_writable_path()const;
     virtual std::string get_timezone_id()const;
 	umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive);
-    float get_screen_scale();
+    virtual float get_screen_scale() const;
 	virtual bool is_full_screen_mode();
 	virtual void set_full_screen_mode(bool i_enabled);
 	void init();
