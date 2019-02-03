@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_FMT
 
 #include "mod-fmt.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_fmt> mod_fmt::nwi()
 void mod_fmt::init() {}
 void mod_fmt::init_mws() {}
 void mod_fmt::load() {}
-
-#endif

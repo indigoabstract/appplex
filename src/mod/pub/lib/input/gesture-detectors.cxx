@@ -1,15 +1,11 @@
-#pragma once
-
-#include "appplex-conf.hxx"
-
-#if defined MOD_GFX
+#include "stdafx.hxx"
 
 #include "gesture-detectors.hxx"
 #include "input-ctrl.hxx"
 
 
 // since it can't be null, use a dummy event used as default pointer event for gesture detectors
-static mws_sp<> dummy_event = std::make_shared<pointer_evt>();
+static mws_sp<pointer_evt> dummy_event = std::make_shared<pointer_evt>();
 
 
 dragging_detector::dragging_detector()
@@ -702,5 +698,3 @@ gesture_state panning_tilting_detector::reset()
 
    return GS_NONE;
 }
-
-#endif

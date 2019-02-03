@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
-
 #include "kx-parser.hxx"
 #include <string>
 #include <vector>
@@ -27,5 +23,3 @@ public:
    mws_sp<kx_block> kxb;
    kx_parser kxp;
 };
-
-#endif

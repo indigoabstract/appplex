@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include "gfx-material.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"

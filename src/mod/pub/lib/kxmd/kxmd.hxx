@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
-
 #include "pfm.hxx"
 #include "min.hxx"
 #include <string>
@@ -83,5 +79,3 @@ protected:
    std::string indent_by_level(int i_level) const;
    std::string to_string_impl(int i_level) const;
 };
-
-#endif

@@ -1,7 +1,5 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
 
-#if defined MOD_FMT
 // Formatting library for C++
 //
 // Copyright (c) 2012 - 2016, Victor Zverovich
@@ -61,5 +59,3 @@ template FMT_API int internal::char_traits<wchar_t>::format_float(
 template FMT_API std::wstring internal::vformat<wchar_t>(
     wstring_view, basic_format_args<wformat_context>);
 FMT_END_NAMESPACE
-
-#endif

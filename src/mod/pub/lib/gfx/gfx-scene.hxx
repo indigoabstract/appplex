@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cpp-property.hxx"
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include "gfx-state.hxx"
 #include "gfx-util.hxx"
 #include <glm/inc.hpp>

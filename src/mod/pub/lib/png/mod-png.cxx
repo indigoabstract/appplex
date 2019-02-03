@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_PNG
 
 #include "mod-png.hxx"
 #include "lodepng.h"
@@ -114,5 +111,3 @@ void mod_png::init_mws()
 void mod_png::load()
 {
 }
-
-#endif

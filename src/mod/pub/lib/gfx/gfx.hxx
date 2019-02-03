@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "pfm.hxx"
+#include "pfm-def.h"
 
 class gfx_obj;
 class gfx_rt;

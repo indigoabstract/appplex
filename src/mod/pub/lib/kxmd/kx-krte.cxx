@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
 
 #include "kx-krte.hxx"
 #include "kx-elem.hxx"
@@ -64,5 +61,3 @@ void kx_krte::print()
 
    trx("{}", s);
 }
-
-#endif

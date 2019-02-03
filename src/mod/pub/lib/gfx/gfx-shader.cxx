@@ -2,10 +2,11 @@
 
 #include "gfx-shader.hxx"
 #include "gfx.hxx"
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include "gfx-util.hxx"
 #include "pfm-gl.h"
 #include "min.hxx"
+#include "pfm.hxx"
 
 
 std::string append_if_missing_ext(std::string ishader_name, std::string iext)

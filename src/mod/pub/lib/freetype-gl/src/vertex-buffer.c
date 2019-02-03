@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_FREETYPE_GL
-
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -683,5 +679,3 @@ vertex_buffer_erase( vertex_buffer_t * self,
     vector_erase( self->items, index );
     self->state = DIRTY;
 }
-
-#endif

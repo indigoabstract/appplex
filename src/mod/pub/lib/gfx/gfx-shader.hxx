@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include "gfx-obj.hxx"
 #include <memory>
 #include <string>

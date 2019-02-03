@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
 
 #include "kx-elem.hxx"
 #include "min.hxx"
@@ -268,5 +265,3 @@ std::string kx_meta_block::print(int i_level)
 
    return s;
 }
-
-#endif

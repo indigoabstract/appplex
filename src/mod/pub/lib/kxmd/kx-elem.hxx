@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
-
 #include "pfm.hxx"
 #include <string>
 #include <vector>
@@ -281,5 +277,3 @@ public:
 private:
    kx_meta_block() { type = kxe_meta_block; }
 };
-
-#endif

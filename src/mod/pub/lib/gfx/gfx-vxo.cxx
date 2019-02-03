@@ -1,7 +1,6 @@
 #include "stdafx.hxx"
 
 #include "gfx-vxo.hxx"
-#include "appplex-conf.hxx"
 #include "pfm-gl.h"
 #include "gfx.hxx"
 #include "gfx-util.hxx"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include <glm/fwd.hpp>
 
 

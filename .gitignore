@@ -15,6 +15,7 @@
 /pfm/android/default/local.properties
 /pfm/android/private
 /pfm/android.adt
+/pfm/ios/xcode
 /pfm/msvc/msvc-2017
 /pfm/msvc/msvc-2017/.vs
 /pfm/msvc/msvc-2017/debug
@@ -32,6 +33,12 @@
 /src/min/appplex-conf.cxx
 /src/mod/prv
 /src/mod/pub/demo/layered-car-paint
-/pfm/ios/xcode
+
+/src/mod/prv/CMakeLists.txt
+/src/mod/prv/npw/CMakeLists.txt
+/src/mod/prv/tests/CMakeLists.txt
+/src/mod/pub/demo/CMakeLists.txt
+/src/mod/pub/lib/CMakeLists.txt
+/src/mod/pub/tst/CMakeLists.txt
 
 *.iml

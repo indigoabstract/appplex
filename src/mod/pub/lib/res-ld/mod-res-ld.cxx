@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_RES_LD
 
 #include "mod-res-ld.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_res_ld> mod_res_ld::nwi()
 void mod_res_ld::init() {}
 void mod_res_ld::init_mws() {}
 void mod_res_ld::load() {}
-
-#endif

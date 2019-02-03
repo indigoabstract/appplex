@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_FREETYPE_GL
-
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -267,5 +263,3 @@ mat4_scale( mat4 *self,
     mat4_set_scaling( &m, x, y, z);
     mat4_multiply( self, &m );
 }
-
-#endif

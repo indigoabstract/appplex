@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_FREETYPE_GL
-
 /* ============================================================================
  * Freetype GL - A C OpenGL Freetype engine
  * Platform:    Any
@@ -481,5 +477,3 @@ text_buffer_add_wchar( text_buffer_t * self,
         pen->x += glyph->advance_x * (1.0 + markup->spacing);
     }
 }
-
-#endif

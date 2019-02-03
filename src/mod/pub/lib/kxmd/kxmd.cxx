@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
 
 #include "kxmd.hxx"
 #include "kxmd/kx-krte.hxx"
@@ -1551,5 +1548,3 @@ mws_sp<kxmd_elem> kxmd::parse(mws_sp<std::string> src)
 
    return sc->scan();
 }
-
-#endif

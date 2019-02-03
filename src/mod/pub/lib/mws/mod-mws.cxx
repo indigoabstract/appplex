@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_MWS
 
 #include "mod-mws.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_mws> mod_mws::nwi()
 void mod_mws::init() {}
 void mod_mws::init_mws() {}
 void mod_mws::load() {}
-
-#endif

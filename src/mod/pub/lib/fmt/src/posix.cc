@@ -1,7 +1,5 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
 
-#if defined MOD_FMT
 // A C++ interface to POSIX functions.
 //
 // Copyright (c) 2012 - 2016, Victor Zverovich
@@ -245,5 +243,3 @@ long getpagesize() {
 #endif
 }
 FMT_END_NAMESPACE
-
-#endif

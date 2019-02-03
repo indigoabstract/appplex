@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEMPLATE
 
 #include "mod-template.hxx"
 #include "mws/mws-camera.hxx"
@@ -61,5 +58,3 @@ void mod_template::init_mws()
 void mod_template::load()
 {
 }
-
-#endif

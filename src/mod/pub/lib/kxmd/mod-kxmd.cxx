@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KXMD
 
 #include "mod-kxmd.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_kxmd> mod_kxmd::nwi()
 void mod_kxmd::init() {}
 void mod_kxmd::init_mws() {}
 void mod_kxmd::load() {}
-
-#endif

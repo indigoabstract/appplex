@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm.hxx"
+#include "pfm-def.h"
 #include "min.hxx"
 #include "gfx-shader.hxx"
 #include <glm/inc.hpp>
