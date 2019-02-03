@@ -1,6 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
 #include "pfm.hxx"
 #include "pfm-gl.h"
 #include "mws-mod.hxx"

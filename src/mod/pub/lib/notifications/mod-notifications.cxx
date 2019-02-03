@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_NOTIFICATIONS
 
 #include "mod-notifications.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_notifications> mod_notifications::nwi()
 void mod_notifications::init() {}
 void mod_notifications::init_mws() {}
 void mod_notifications::load() {}
-
-#endif

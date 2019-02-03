@@ -2,13 +2,10 @@
 
 #include "appplex-conf.hxx"
 
-#if defined MOD_MWS
-
 #include "mws.hxx"
 #include "mws-camera.hxx"
 #include "mws-font.hxx"
 #include "text-vxo.hxx"
-#include "vkb/mws-vkb.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-vxo.hxx"
@@ -938,5 +935,3 @@ void mws_page_item::add_to_page()
 
    page->add(inst);
 }
-
-#endif

@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
-#include "mws-mod-ctrl.hxx"
 #include "appplex-conf.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "pfm.hxx"
 #include "mws-mod.hxx"
 #include "input/input-ctrl.hxx"

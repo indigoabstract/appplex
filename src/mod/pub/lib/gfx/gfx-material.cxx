@@ -6,7 +6,6 @@
 #include "gfx-shader.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-state.hxx"
-#include "ext/gfx-surface.hxx"
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
 

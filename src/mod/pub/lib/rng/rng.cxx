@@ -1,9 +1,17 @@
 #include "stdafx.hxx"
 
 #include "rng.hxx"
-#include "pfm-def.h"
-#include <glm/inc.hpp>
+#include "pfm.hxx"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
+
+RNG::RNG()
+{
+   long t = pfm::time::get_time_millis();
+   setSeed((int)(t & 0x7fffffff));
+   //System.out.println("t " + t + " is " + init_seed);
+}
 
 int RNG::nextInt1()
 {
@@ -24,7 +32,7 @@ float RNG::random_gauss(float mu, float sigma)
 
 	if (st.z == 0.f)
 	{
-		float x2pi = random_float() * 2.f *  glm::pi<float>();
+		float x2pi = random_float() * 2.f * (float)M_PI;
 		float g2rad = sqrtf(-2.f * logf(1.f - random_float()));
       st.z = cosf(x2pi) * g2rad;
       st.gauss_next = sinf(x2pi) * g2rad;

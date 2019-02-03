@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
-#include "mws-mod.hxx"
 #include "appplex-conf.hxx"
+#include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "res-ld/res-ld.hxx"

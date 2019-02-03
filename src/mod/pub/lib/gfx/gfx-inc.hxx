@@ -14,4 +14,5 @@
 #include "gfx-tex.hxx"
 #include "gfx-util.hxx"
 #include "gfx-vxo.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "gfx.hxx"

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_MWS
-
 #include "mws-text-box.hxx"
 #include "mws-mod.hxx"
 #include "mws-camera.hxx"
@@ -1044,5 +1040,3 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
    }
    }
 }
-
-#endif

@@ -31,11 +31,13 @@ public:
    virtual void set_dimensions(float idx, float idy, float i_z_val = 0.f);
 };
 
+
 class gfx_billboard : public gfx_plane
 {
 public:
    gfx_billboard();
 };
+
 
 class gfx_grid : public gfx_vxo
 {
@@ -44,6 +46,7 @@ public:
    virtual void set_dimensions(int i_h_point_count, int i_v_point_count);
 };
 
+
 class gfx_box : public gfx_vxo
 {
 public:
@@ -51,27 +54,6 @@ public:
    void set_dimensions(float idx, float idy, float idz);
 };
 
-class gfx_icosahedron : public gfx_vxo
-{
-public:
-   gfx_icosahedron();
-   void set_dimensions(float iradius);
-};
-
-// variable polygon count
-class gfx_vpc_box : public gfx_vxo
-{
-public:
-   gfx_vpc_box();
-   void set_dimensions(float iradius, int isegments);
-};
-
-class gfx_vpc_kubic_sphere : public gfx_vxo
-{
-public:
-   gfx_vpc_kubic_sphere();
-   void set_dimensions(float iradius, int isegments);
-};
 
 class gfx_vpc_ring_sphere : public gfx_vxo
 {

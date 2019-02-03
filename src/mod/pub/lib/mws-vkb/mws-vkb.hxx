@@ -1,10 +1,6 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_MWS && defined MOD_VKB
-
-#include "../mws.hxx"
+#include "mws/mws.hxx"
 #include <unordered_map>
 
 
@@ -56,5 +52,3 @@ protected:
    std::string vkb_filename;
    static mws_sp<mws_vkb> inst;
 };
-
-#endif

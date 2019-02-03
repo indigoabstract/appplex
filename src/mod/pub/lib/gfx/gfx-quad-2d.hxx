@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo.hxx"
 #include <string>
 #include <vector>
 

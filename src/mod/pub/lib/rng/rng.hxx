@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pfm.hxx"
 
 // 7 ^ 5
 const int A = 16807;
@@ -23,12 +22,7 @@ struct rng_state
 class RNG
 {
 public:
-	RNG()
-	{
-		long t = pfm::time::get_time_millis();
-		setSeed((int)(t & 0x7fffffff));
-		//System.out.println("t " + t + " is " + init_seed);
-	}
+   RNG();
 
 	RNG(int seed0)
 	{

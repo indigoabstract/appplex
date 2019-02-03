@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_MWS
-
 #include "mws.hxx"
 #include "mws-com.hxx"
 #include <glm/vec2.hpp>
@@ -158,5 +154,3 @@ protected:
    bool word_wrap = false;
    mws_sp<mws_font> font;
 };
-
-#endif

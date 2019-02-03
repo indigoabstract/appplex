@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_MWS
-
 #include "mws-ext.hxx"
 
 
@@ -116,5 +112,3 @@ mws_sp<mws_list_menu_model> mws_list_menu_page::get_list_menu_model()
 {
    return static_pointer_cast<mws_list_menu_model>(item_list->get_model());
 }
-
-#endif

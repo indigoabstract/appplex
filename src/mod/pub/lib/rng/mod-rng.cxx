@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_RNG
 
 #include "mod-rng.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_rng> mod_rng::nwi()
 void mod_rng::init() {}
 void mod_rng::init_mws() {}
 void mod_rng::load() {}
-
-#endif

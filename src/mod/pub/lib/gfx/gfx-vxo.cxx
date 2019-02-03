@@ -8,10 +8,7 @@
 #include "gfx-shader.hxx"
 #include "gfx-state.hxx"
 #include "gfx.hxx"
-#include "ext/gfx-surface.hxx"
-#if defined MOD_OBJ_LOADER
 #include "tiny-obj-loader/tiny_obj_loader.hxx"
-#endif
 #include <glm/inc.hpp>
 #include <iostream>
 
@@ -377,7 +374,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
       if (name_changed && mesh_name.length() > 0)
       {
-#if defined MOD_OBJ_LOADER
+#if defined MOD_TINY_OBJ_LOADER
 
          name_changed = false;
          mws_sp<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_mws_sp());
@@ -516,7 +513,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
 #else
 
-         mws_print("error: MOD_OBJ_LOADER is not enabled\n");
+         mws_print("error: MOD_TINY_OBJ_LOADER is not enabled\n");
 
 #endif
       }

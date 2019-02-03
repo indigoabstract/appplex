@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_NOTIFICATIONS
-
 #include "mws-mod.hxx"
 
 
@@ -19,5 +15,3 @@ public:
 private:
    mod_notifications();
 };
-
-#endif

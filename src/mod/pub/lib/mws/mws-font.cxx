@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_FONTS
-
 #include "mws-font.hxx"
 #include "font-db.hxx"
 #include "gfx-color.hxx"
@@ -152,5 +148,3 @@ mws_font::mws_font()
    //m.strikethrough_color = black;
    //m.font = 0;
 }
-
-#endif

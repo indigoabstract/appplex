@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gfx-vxo.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-surface.hxx"
 #include <deque>
 
 

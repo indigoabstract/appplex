@@ -7,7 +7,6 @@
 #include "gfx-vxo.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-tex.hxx"
-#include "ext/gfx-surface.hxx"
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
 

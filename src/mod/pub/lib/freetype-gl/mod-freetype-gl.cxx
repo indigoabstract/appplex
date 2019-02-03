@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_FREETYPE_GL
 
 #include "mod-freetype-gl.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_freetype_gl> mod_freetype_gl::nwi()
 void mod_freetype_gl::init() {}
 void mod_freetype_gl::init_mws() {}
 void mod_freetype_gl::load() {}
-
-#endif

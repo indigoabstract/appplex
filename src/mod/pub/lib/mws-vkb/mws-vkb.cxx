@@ -1,14 +1,10 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_MWS && defined MOD_VKB
-
 #include "mws-vkb.hxx"
 #include "jcv/vrn-diag.hxx"
 #include "jcv/vrn-visual.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "../mws-camera.hxx"
+#include "mws/mws-camera.hxx"
 #include "mws/text-vxo.hxx"
 #include "mws/mws-font.hxx"
 #include "mws-mod.hxx"
@@ -307,5 +303,3 @@ key_types mws_vkb::get_key_type(const std::string& i_key_name) const
 
    return KEY_INVALID;
 }
-
-#endif

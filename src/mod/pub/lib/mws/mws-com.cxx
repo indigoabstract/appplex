@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#if defined MOD_MWS
-
 #include "mws-com.hxx"
 #include "text-vxo.hxx"
 #include "mws-camera.hxx"
@@ -834,5 +830,3 @@ void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_
       }
    }
 }
-
-#endif
