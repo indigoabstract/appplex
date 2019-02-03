@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ appplex-conf ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ omnirecall ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -18,14 +18,14 @@ mod
 	reliquus[ ],
 	orbital-deathmatch[ ],
 	shipwrecked[ ],
-	vorofract[ uses[ gfx, fonts, fmt, freetype, freetype-gl, mws, png, vector-fonts, kxmd ] ],
+	vorofract[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, rng, util, vector-fonts ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten ], ],
 	omnirecall[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, notifications, mws, png, res-ld, rng, techno-globe, util, vector-fonts ], platf[ windows, android, ios ], ],
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, fonts, fmt, freetype, freetype-gl, mws, png, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx ] ],
 	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, jcv, kxmd, mws, png, vector-fonts, vkb ] ],
-	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, kxmd, mws, png, vector-fonts ] ],
+	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, vector-fonts ] ],
 
 	@@[ npw ],
 	
