@@ -17,7 +17,7 @@
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
 #include "gfx-color.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "control-curve.hxx"
 #include "natural-cubic-spline.hxx"
 #include "curve-mesh.hxx"

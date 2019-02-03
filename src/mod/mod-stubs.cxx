@@ -69,6 +69,11 @@ void touchctrl::update() { err_na(); }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
 
+#if !MOD_MWS_VKB
+#include "mws-vkb/mws-vkb.hxx"
+mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
+#endif
+
 #if !MOD_SND
 #include "snd/snd.hxx"
 void snd::init() { err_na(); }

@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
 #include "vrn-diag-data.hxx"
 
 
@@ -52,5 +48,3 @@ mws_vrn_nexus_pt* mws_vrn_data::get_nexus_point_by_id(uint32 i_id)
 {
    return (mws_vrn_nexus_pt*)get_diagram_point_by_id(i_id);
 }
-
-#endif

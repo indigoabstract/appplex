@@ -1,14 +1,10 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
 #include "pfm.hxx"
 #include "gfx.hxx"
 #include "gfx-vxo.hxx"
 #include "gfx-camera.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "vrn-diag-data.hxx"
 #include "vrn-diag.hxx"
 #include "rng/rng.hxx"
@@ -653,5 +649,3 @@ private:
 
    mws_wp<gfx_camera> cam;
 };
-
-#endif

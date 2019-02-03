@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
 #include "pfm.hxx"
 #include "jc_voronoi.h"
 #include <glm/inc.hpp>
@@ -364,5 +360,3 @@ inline void mws_vrn_cell_pt_id_vect::set_position_at(const glm::vec3& iposition,
 
    vdata.lock()->get_diagram_point_by_id(vect[i_idx].point_id)->position = iposition;
 }
-
-#endif

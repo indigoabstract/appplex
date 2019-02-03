@@ -17,7 +17,7 @@
 #include "gfx-tex.hxx"
 #include "gfx-util.hxx"
 #include "gfx-state.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "mws/mws-camera.hxx"
 
 using std::string;

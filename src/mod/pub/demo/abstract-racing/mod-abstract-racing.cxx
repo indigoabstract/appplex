@@ -6,7 +6,7 @@
 
 #include "mws/mws-camera.hxx"
 #include "gfx-state.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 //#include "renderer-openvg.h"
 #include "mws/mws.hxx"
 //#include "renderer.h"

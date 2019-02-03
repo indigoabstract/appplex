@@ -1,9 +1,6 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
+#include "pfm-def.h"
 #include <vector>
 
 class mws_vrn_data;
@@ -31,5 +28,3 @@ public:
 protected:
    mws_vrn_diag() {}
 };
-
-#endif

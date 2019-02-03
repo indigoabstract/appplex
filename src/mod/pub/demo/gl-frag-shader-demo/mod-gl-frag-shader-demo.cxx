@@ -11,7 +11,7 @@
 #include "gfx-vxo.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-scene.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-rt.hxx"
@@ -21,7 +21,7 @@
 #include "gfx-util.hxx"
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "utils/free-camera.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>

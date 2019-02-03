@@ -11,6 +11,8 @@
 #include "gfx-vxo.hxx"
 #include "mws-mod.hxx"
 #include "input/transitions.hxx"
+#include "mws-vkb/mws-vkb.hxx"
+#include "mod-list.hxx"
 #include <algorithm>
 #ifdef MWS_USES_EXCEPTIONS
 #include <exception>
@@ -544,20 +546,19 @@ bool mws_page_tab::handle_back_evt()
 
 void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
 {
-#if defined MOD_VKB
-
-   mws_println("mws_page_tab::show_keyboard");
-
-   if (!vkb)
+   if (mod_mws_vkb_on)
    {
-      vkb = mws_vkb::gi();
-      attach(vkb);
+      mws_println("mws_page_tab::show_keyboard");
+
+      if (!vkb)
+      {
+         vkb = mws_vkb::gi();
+         attach(vkb);
+      }
+
+      vkb->visible = true;
+      vkb->set_target(i_tbx);
    }
-
-   vkb->visible = true;
-   vkb->set_target(i_tbx);
-
-#endif
 }
 
 

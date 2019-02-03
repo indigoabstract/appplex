@@ -6,13 +6,6 @@
 #include <math.h>
 
 
-RNG::RNG()
-{
-   long t = pfm::time::get_time_millis();
-   setSeed((int)(t & 0x7fffffff));
-   //System.out.println("t " + t + " is " + init_seed);
-}
-
 int RNG::nextInt1()
 {
    st.crt_seed = A * (st.crt_seed % Q) - R * (st.crt_seed / Q);

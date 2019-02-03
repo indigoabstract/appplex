@@ -13,7 +13,7 @@
 #include "gfx-util.hxx"
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "tiny-obj-loader/tiny_obj_loader.hxx"
 #include <glm/inc.hpp>
 

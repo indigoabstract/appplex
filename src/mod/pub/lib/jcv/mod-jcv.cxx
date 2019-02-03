@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
 
 #include "mod-jcv.hxx"
 #include "jc_voronoi.h"
@@ -62,5 +59,3 @@ void mod_jcv::init_mws()
 void mod_jcv::load()
 {
 }
-
-#endif

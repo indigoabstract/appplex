@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 
 // 7 ^ 5
 const int A = 16807;
@@ -22,7 +24,14 @@ struct rng_state
 class RNG
 {
 public:
-   RNG();
+   RNG::RNG()
+   {
+      auto now_tp = std::chrono::system_clock::now();
+      uint64 count = now_tp.time_since_epoch().count();
+      uint32 t = count & 0x7fffffff;// pfm::time::get_time_millis();
+      setSeed(t);
+      //System.out.println("t " + t + " is " + init_seed);
+   }
 
 	RNG(int seed0)
 	{

@@ -7,7 +7,7 @@
 #include "tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hxx"
 #include "input/input-ctrl.hxx"
 #include "gfx-inc.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "mws/mws-camera.hxx"
 #include "pfm-gl.h"
 #include <glm/inc.hpp>

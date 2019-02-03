@@ -15,7 +15,7 @@
 #include "gfx-util.hxx"
 #include "gfx-state.hxx"
 #include "gfx-camera.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include <string>
 #include <cstdarg>
 

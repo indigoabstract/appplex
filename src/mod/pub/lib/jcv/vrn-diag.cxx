@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
 #include "vrn-diag.hxx"
 #include "vrn-diag-data.hxx"
 #define JC_VORONOI_IMPLEMENTATION
@@ -383,5 +379,3 @@ mws_sp<mws_vrn_diag> mws_vrn_diag::nwi()
 {
    return mws_sp<mws_vrn_diag>(new voronoi_2d_diag_impl());
 }
-
-#endif

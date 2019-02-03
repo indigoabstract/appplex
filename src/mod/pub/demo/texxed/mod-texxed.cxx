@@ -62,7 +62,7 @@ namespace mod_texxed_ns
 				return;
 			}
 			
-			if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+			if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 			{
 				ta->receive(idp);
 			}

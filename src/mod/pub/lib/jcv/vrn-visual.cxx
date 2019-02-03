@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_JCV
-
 #include "vrn-visual.hxx"
 
 void voronoi_gen::update_diag()
@@ -51,5 +47,3 @@ void mws_vrn_main::remove_kernel(uint32 i_idx)
    vgen->voronoi_diag_impl->remove_kernel(i_idx);
    update_geometry();
 }
-
-#endif

@@ -10,7 +10,7 @@
 #include "input/input-ctrl.hxx"
 #include "cpp-property.hxx"
 #include "gfx-inc.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "utils/free-camera.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>

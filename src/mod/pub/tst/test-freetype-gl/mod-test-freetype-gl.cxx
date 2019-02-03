@@ -16,7 +16,7 @@
 #include "gfx-tex.hxx"
 #include "gfx-util.hxx"
 #include "gfx-vxo.hxx"
-#include "ext/gfx-surface.hxx"
+#include "gfx-vxo-ext.hxx"
 #include "gfx-state.hxx"
 #include "gfx-color.hxx"
 #include "rng/rng.hxx"
