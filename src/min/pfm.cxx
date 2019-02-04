@@ -776,7 +776,7 @@ bool pfm_file::io_op::open(std::string iopen_mode)
 
    if (!file_opened)
    {
-      mws_println("warning - file [%s] not found/opened", impl->ppath.get_file_name().c_str());
+      mws_println("WARNING[ file [%s] NOT FOUND. ]", impl->ppath.get_file_name().c_str());
    }
 
    return file_opened;

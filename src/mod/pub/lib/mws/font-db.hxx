@@ -97,16 +97,17 @@ private:
 class font_db
 {
 public:
+   static const std::string default_font_name;
    static mws_sp<font_db> inst();
    void clear_db();
    void resize_db(int ipow_of_two);
-   mws_sp<std::string> get_db_font_name(const std::string& ifont_name);
-   const std::vector<font_glyph>& get_glyph_vect(mws_sp<mws_font> ifont, const std::string& itext);
+   mws_sp<std::string> get_db_font_name(const std::string& i_font_name);
+   const std::vector<font_glyph>& get_glyph_vect(mws_sp<mws_font> i_font, const std::string& i_text);
    mws_sp<gfx_tex> get_texture_atlas();
-   float get_ascender(mws_sp<mws_font> ifont);
-   float get_descender(mws_sp<mws_font> ifont);
-   float get_height(mws_sp<mws_font> ifont);
-   glm::vec2 get_text_dim(mws_sp<mws_font> ifont, const std::string& itext);
+   float get_ascender(mws_sp<mws_font> i_font);
+   float get_descender(mws_sp<mws_font> i_font);
+   float get_height(mws_sp<mws_font> i_font);
+   glm::vec2 get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text);
 
 private:
    friend class mws_mod;

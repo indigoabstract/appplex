@@ -226,7 +226,7 @@ void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::vector<std::string>
 }
 
 
-mws_sp<kxmd_elem> kxmd::get_elem(const std::string& i_path, mws_sp<kxmd_elem> i_root)
+mws_sp<kxmd_elem> kxmd::elem_at(mws_sp<kxmd_elem> i_root, const std::string& i_path)
 {
    mws_sp<kxmd_elem> ke = i_root;
    std::vector<std::string> tokens = str_split(i_path, ".");
@@ -244,7 +244,30 @@ mws_sp<kxmd_elem> kxmd::get_elem(const std::string& i_path, mws_sp<kxmd_elem> i_
    return ke;
 }
 
-bool kxmd::path_exists(const std::string& i_path, mws_sp<kxmd_elem> i_root)
+std::string kxmd::val_at(mws_sp<kxmd_elem> i_root, const std::string& i_path, const std::string& i_default_val)
+{
+   mws_sp<kxmd_elem> ke = i_root;
+   std::vector<std::string> tokens = str_split(i_path, ".");
+
+   for (auto& ke_name : tokens)
+   {
+      ke = ke->find_by_name(ke_name, false);
+
+      if (!ke)
+      {
+         return i_default_val;
+      }
+   }
+
+   if (ke->vect.size() == 1)
+   {
+      return ke->vect[0]->val;
+   }
+
+   return i_default_val;
+}
+
+bool kxmd::path_exists(mws_sp<kxmd_elem> i_root, const std::string& i_path)
 {
    mws_sp<kxmd_elem> ke = i_root;
    std::vector<std::string> tokens = str_split(i_path, ".");

@@ -204,7 +204,7 @@ void mws_vkb::load(std::string i_filename)
 
    // load key points
    {
-      auto kernel_point_keys = kxmd::get_elem("kernel-point-keys", kxmdi);
+      auto kernel_point_keys = kxmd::elem_at(kxmdi, "kernel-point-keys");
       key_vect.resize(kernel_point_keys->size());
 
       for (uint32 k = 0; k < kernel_point_keys->size(); k++)
@@ -218,7 +218,7 @@ void mws_vkb::load(std::string i_filename)
    }
    // load kernel points
    {
-      auto kernel_points = kxmd::get_elem("kernel-points", kxmdi);
+      auto kernel_points = kxmd::elem_at(kxmdi, "kernel-points");
       std::vector<glm::vec2> kernel_points_pos;
 
       for (uint32 k = 0; k < kernel_points->size(); k++)

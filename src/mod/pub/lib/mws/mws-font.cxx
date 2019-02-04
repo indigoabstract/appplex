@@ -38,7 +38,7 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt)
 mws_sp<mws_font> mws_font::nwi(float isize, const std::string& ifont_path)
 {
    mws_sp<mws_font> font(new mws_font());
-   std::string font_path = ifont_path.empty() ? "vera.ttf" : ifont_path;
+   std::string font_path = ifont_path.empty() ? font_db::default_font_name : ifont_path;
 
    font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path));
    font->p->size = isize;

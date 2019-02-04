@@ -47,10 +47,13 @@ class kxmd
 public:
    // gets a reference to a kxmd_elem that's inside the given kxmd_elem
    // i_path is like xxx.yyy.zzz.etc
-   static mws_sp<kxmd_elem> get_elem(const std::string& i_path, mws_sp<kxmd_elem> i_root);
+   static mws_sp<kxmd_elem> elem_at(mws_sp<kxmd_elem> i_root, const std::string& i_path);
+   // fast way to get the leaf value of node-single-leaf elems
+   // for example, for "start.mod-list" in "start[ mod-list[ appplex-conf ], ]", returns "appplex-conf"
+   static std::string val_at(mws_sp<kxmd_elem> i_root, const std::string& i_path, const std::string& i_default_val = "");
    // checks if path exists, starting from a given root
    // path is like xxx.yyy.zzz.etc
-   static bool path_exists(const std::string& i_path, mws_sp<kxmd_elem> i_root);
+   static bool path_exists(mws_sp<kxmd_elem> i_root, const std::string& i_path);
    static void push_back(mws_sp<kxmd_elem> i_root, const mws_sp<kxmd_elem> i_val);
    static void push_back(mws_sp<kxmd_elem> i_root, const std::string& i_val);
    static void push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i_list);

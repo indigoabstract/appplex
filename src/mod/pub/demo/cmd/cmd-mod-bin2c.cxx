@@ -83,8 +83,10 @@ void convert_bin_2_c_array(const std::string& i_src_path, const std::string& i_d
    FILE* f = fopen(i_src_path.c_str(), "rb");
    FILE* fw = fopen(i_dst_path.c_str(), "w");
    uint32 max_column_count = 0;
+   uintmax_t size = fs::file_size(fs::path(i_src_path));
 
-   fprintf(fw, "char array[] =\n{\n");
+   fprintf(fw, "unsigned int bin_res_size = %d;\n", (uint32)size);
+   fprintf(fw, "unsigned char bin_res[] =\n{\n");
 
    while ((!feof(f)))
    {
@@ -95,12 +97,11 @@ void convert_bin_2_c_array(const std::string& i_src_path, const std::string& i_d
          break;
       }
 
-      fprintf(fw, "0x%.2x,", (int)c);
+      fprintf(fw, "%d,", (uint32)c);
       ++max_column_count;
 
-      if (max_column_count % 20 == 0)
+      if (max_column_count % 50 == 0)
       {
-         printf("\n");
          fprintf(fw, "\n");
       }
    }
