@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "pfm.hxx"
 
 
@@ -29,5 +25,3 @@ private:
 	mws_sp<std::thread> threadp;
 	volatile bool active;
 };
-
-#endif

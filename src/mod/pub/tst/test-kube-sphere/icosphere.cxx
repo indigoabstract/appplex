@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-kube-sphere.hxx"
-
-#ifdef MOD_TEST_KUBE_SPHERE
-
 #include "icosphere.hxx"
 #include "pfm.hxx"
 #include "gfx-camera.hxx"
@@ -192,7 +189,7 @@ void icosphere::update()
 
 	for (; it != children.end(); it++)
 	{
-		(*it)->update();
+		//(*it)->update_recursive();
 
 		if(camera)
 		{
@@ -333,5 +330,3 @@ void icosphere::set_dimensions(float iradius, int isubdiv_count)
 		attach(face);
 	}
 }
-
-#endif

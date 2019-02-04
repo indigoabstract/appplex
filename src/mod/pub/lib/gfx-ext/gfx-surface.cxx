@@ -6,6 +6,8 @@
 
 using gfx_vxo_util::set_mesh_data;
 
+gfx_icosahedron::gfx_icosahedron() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord")) {}
+
 void gfx_icosahedron::set_dimensions(float iradius)
 {
    float size = iradius;

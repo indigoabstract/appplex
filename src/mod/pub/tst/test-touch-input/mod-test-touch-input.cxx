@@ -165,9 +165,9 @@ namespace mod_test_touch_input_ns
 
       virtual void receive(mws_sp<mws_dp> idp)
       {
-         if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
          {
-            mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+            mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
             bool dragging_detected = dragging_dt.detect_helper(ts);
             bool pinch_zoom_detected = pinch_zoom_dt.detect_helper(ts);
             auto double_tap_gs = double_tap_dt.detect(ts);
@@ -211,12 +211,12 @@ namespace mod_test_touch_input_ns
 
             switch (ts->type)
             {
-            case pointer_evt::touch_began:
+            case mws_ptr_evt::touch_began:
                last_click = glm::vec2(ts->points[0].x, ts->points[0].y);
                click_slider.start(click_anim_duration_ms);
                break;
 
-            case pointer_evt::mouse_wheel:
+            case mws_ptr_evt::mouse_wheel:
             {
                float scale = obj_scaling + ts->mouse_wheel_delta * 0.1f;
                float inf_lim = 0.25f;
@@ -237,9 +237,9 @@ namespace mod_test_touch_input_ns
             }
             }
          }
-         else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+         else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
          {
-            mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+            mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
             if (ke->is_pressed())
             {

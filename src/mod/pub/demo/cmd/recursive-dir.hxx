@@ -1,15 +1,11 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "pfm.hxx"
-#include <boost/cstdint.hpp>
-#include <boost/filesystem.hpp>
+#include <cstdint>
+#include <filesystem>
 #include <vector>
 
-namespace bfs = ::boost::filesystem;
+namespace bfs = std::filesystem;
 
 
 class dir_node;
@@ -20,7 +16,7 @@ public:
 	bfs::path abs_file_path;
 	bfs::path rel_file_path;
 	mws_wp<dir_node> parent_dir;
-	boost::uintmax_t file_size;
+	uintmax_t file_size;
 };
 
 
@@ -79,5 +75,3 @@ private:
 	std::vector<bfs::path> exclude_path;
 	mws_sp<dir_node> root_node;
 };
-
-#endif

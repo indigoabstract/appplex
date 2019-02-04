@@ -5,35 +5,35 @@
 #include "min.hxx"
 
 
-const bool mod_ffmpeg_on = MOD_FFMPEG;
-const bool mod_fmod_on = MOD_FMOD;
-const bool mod_fmt_on = MOD_FMT;
-const bool mod_freeimage_on = MOD_FREEIMAGE;
-const bool mod_freetype_on = MOD_FREETYPE;
-const bool mod_freetype_gl_on = MOD_FREETYPE_GL;
-const bool mod_gfx_on = MOD_GFX;
-const bool mod_gfx_ext_on = MOD_GFX_EXT;
-const bool mod_gl_on = MOD_GL;
-const bool mod_glm_on = MOD_GLM;
-const bool mod_input_on = MOD_INPUT;
-const bool mod_jcv_on = MOD_JCV;
-const bool mod_kxmd_on = MOD_KXMD;
-const bool mod_mws_on = MOD_MWS;
-const bool mod_mws_vkb_on = MOD_MWS_VKB;
-const bool mod_noise_on = MOD_NOISE;
-const bool mod_notifications_on = MOD_NOTIFICATIONS;
-const bool mod_ogg_on = MOD_OGG;
-const bool mod_ovg_on = MOD_OVG;
-const bool mod_png_on = MOD_PNG;
-const bool mod_res_ld_on = MOD_RES_LD;
-const bool mod_rng_on = MOD_RNG;
-const bool mod_snd_on = MOD_SND;
-const bool mod_stk_on = MOD_STK;
-const bool mod_tiny_obj_loader_on = MOD_TINY_OBJ_LOADER;
-const bool mod_util_on = MOD_UTIL;
-const bool mod_vg_on = MOD_VG;
-const bool mod_vid_on = MOD_VID;
-const bool mod_vorbis_on = MOD_VORBIS;
+extern const bool mod_ffmpeg_on = MOD_FFMPEG;
+extern const bool mod_fmod_on = MOD_FMOD;
+extern const bool mod_fmt_on = MOD_FMT;
+extern const bool mod_freeimage_on = MOD_FREEIMAGE;
+extern const bool mod_freetype_on = MOD_FREETYPE;
+extern const bool mod_freetype_gl_on = MOD_FREETYPE_GL;
+extern const bool mod_gfx_on = MOD_GFX;
+extern const bool mod_gfx_ext_on = MOD_GFX_EXT;
+extern const bool mod_gl_on = MOD_GL;
+extern const bool mod_glm_on = MOD_GLM;
+extern const bool mod_input_on = MOD_INPUT;
+extern const bool mod_jcv_on = MOD_JCV;
+extern const bool mod_kxmd_on = MOD_KXMD;
+extern const bool mod_mws_on = MOD_MWS;
+extern const bool mod_mws_vkb_on = MOD_MWS_VKB;
+extern const bool mod_noise_on = MOD_NOISE;
+extern const bool mod_notifications_on = MOD_NOTIFICATIONS;
+extern const bool mod_ogg_on = MOD_OGG;
+extern const bool mod_ovg_on = MOD_OVG;
+extern const bool mod_png_on = MOD_PNG;
+extern const bool mod_res_ld_on = MOD_RES_LD;
+extern const bool mod_rng_on = MOD_RNG;
+extern const bool mod_snd_on = MOD_SND;
+extern const bool mod_stk_on = MOD_STK;
+extern const bool mod_tiny_obj_loader_on = MOD_TINY_OBJ_LOADER;
+extern const bool mod_util_on = MOD_UTIL;
+extern const bool mod_vg_on = MOD_VG;
+extern const bool mod_vid_on = MOD_VID;
+extern const bool mod_vorbis_on = MOD_VORBIS;
 
 
 static void err_na() { mws_throw mws_exception("call not available"); }

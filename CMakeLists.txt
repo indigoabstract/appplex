@@ -36,9 +36,9 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}src/mod/pub/lib/ffmpeg")
-	#include_directories("${CMAKE_CURRENT_LIST_DIR}/src/lib/ext/inc/boost")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	
@@ -76,6 +76,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jni")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
@@ -141,6 +142,7 @@ else() # Assume iOS
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/ios/src")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
@@ -354,13 +356,13 @@ else() # Assume iOS
                                                   RESOURCE "${IMAGES};${STORYBOARDS};${res_files};${ICONS}"
 	)
 
-        set_target_properties(app_plex_main PROPERTIES
+    set_target_properties(app_plex_main PROPERTIES
 	XCODE_ATTRIBUTE_ARCHS "$(ARCHS_STANDARD)"
 	XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO"
 	)
-        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
-        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_WEAK "YES")
-        set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
+	set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
+	set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_WEAK "YES")
+	set_target_properties(app_plex_main PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 
 	# Include framework headers, needed to make "Build" Xcode action work.
 	# "Archive" works fine just relying on default search paths as it has different

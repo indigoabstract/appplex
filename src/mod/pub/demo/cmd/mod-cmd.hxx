@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "mws-mod.hxx"
 
 class long_operation;
@@ -22,5 +18,3 @@ private:
 
 	mws_sp<long_operation> lop;
 };
-
-#endif

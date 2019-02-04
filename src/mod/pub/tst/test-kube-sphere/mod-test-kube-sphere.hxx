@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST_KUBE_SPHERE
-
 #include "mws-mod.hxx"
 
 
@@ -24,5 +20,3 @@ private:
 
    mws_sp<mod_test_kube_sphere_impl> p;
 };
-
-#endif

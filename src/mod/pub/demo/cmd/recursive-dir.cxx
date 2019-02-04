@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "recursive-dir.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "min.hxx"
@@ -11,7 +7,7 @@
 #include <string>
 
 using namespace boost::algorithm;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 
 
 void recursive_dir_op::on_start(mws_sp<dir_node> dir)
@@ -214,5 +210,3 @@ void directory_tree::recursive_read(mws_sp<directory_tree> dt, mws_sp<dir_node> 
 		di++;
 	}
 }
-
-#endif

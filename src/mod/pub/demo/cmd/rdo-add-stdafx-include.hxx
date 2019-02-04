@@ -1,21 +1,17 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "pfm.hxx"
-#include "../long-operation.hxx"
-#include "../recursive-dir.hxx"
-#include "../cmd-line-arg.hxx"
-#include <boost/filesystem.hpp>
+#include "long-operation.hxx"
+#include "recursive-dir.hxx"
+#include "cmd-line-arg.hxx"
+#include <filesystem>
 #include <string>
 #include <vector>
 
-namespace bfs = ::boost::filesystem;
+namespace bfs = std::filesystem;
 
 
-class mod_cmd_add_stdafx_include : public mod_cmd
+class cmd_mod_add_stdafx_include : public cmd_mod_line
 {
 public:
 	std::string get_module_name();
@@ -34,5 +30,3 @@ private:
 	bfs::path src_path;
 	std::vector<unicodestring> exclude_path;
 };
-
-#endif

@@ -1,25 +1,21 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "rdo-directory-statistics.hxx"
 #include "min.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
 #include "rdo-recursive-copy.hxx"
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <exception>
+#include <filesystem>
 #include <locale>
 #include <string>
 #include <vector>
 
 using namespace boost::algorithm;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 using namespace boost::program_options;
 using std::string;
 using std::vector;
@@ -47,7 +43,7 @@ private:
 };
 
 
-std::string mod_cmd_dir_statistics::get_module_name()
+std::string cmd_mod_dir_statistics::get_module_name()
 {
 	return "directory-statistics";
 }
@@ -56,7 +52,7 @@ std::string mod_cmd_dir_statistics::get_module_name()
 const string SOURCE_PATH			= "source-path";
 
 
-boost::program_options::options_description mod_cmd_dir_statistics::get_options_description()
+boost::program_options::options_description cmd_mod_dir_statistics::get_options_description()
 {
 	options_description desc(trs("available options for module [{}]", get_module_name()));
 
@@ -67,7 +63,7 @@ boost::program_options::options_description mod_cmd_dir_statistics::get_options_
 	return desc;
 }
 
-mws_sp<long_operation> mod_cmd_dir_statistics::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_mod_dir_statistics::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -76,7 +72,7 @@ mws_sp<long_operation> mod_cmd_dir_statistics::run(const vector<unicodestring>& 
 	store(parsed, vm);
 	notify(vm);
 
-	boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
+   std::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
 
 	mws_sp<long_operation> lop = mws_sp<long_operation>(new long_op_dir_statistics(srcPath));
 
@@ -160,5 +156,3 @@ void rec_dir_op_dir_statistics::apply_to_file(mws_sp<file_node> file)
 	total_file_size += fileSize;
 	file_count++;
 }
-
-#endif

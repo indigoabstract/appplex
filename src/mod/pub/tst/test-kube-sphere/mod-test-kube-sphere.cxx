@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-kube-sphere.hxx"
-
-#ifdef MOD_TEST_KUBE_SPHERE
-
 #include "icosphere.hxx"
 #include "input/input-ctrl.hxx"
 #include "gfx.hxx"
@@ -16,6 +13,7 @@
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
 #include "gfx-vxo-ext.hxx"
+#include "gfx-ext/gfx-surface.hxx"
 #include "tiny-obj-loader/tiny_obj_loader.hxx"
 #include <glm/inc.hpp>
 
@@ -252,47 +250,46 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
-		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+		if(idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 		{
-			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
-			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
-			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
-			{
-				float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
-				float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
-				float dx_rad = glm::radians(dx / 2);
-				float dy_rad = glm::radians(dy / 2);
+         mws_print("tn %s\n", ts->get_evt_type().c_str());
+         if (ts->type == mws_ptr_evt::mouse_wheel)
+         {
+            p->persp_cam->position += p->look_at_dir * 150.f * float(ts->mouse_wheel_delta);
+         }
 
-				//impl->theta += glm::radians(dx / 10);
-				//impl->phi += glm::radians(-dy / 10);
-				//impl->theta = glm::mod(impl->theta, 2 * glm::pi<float>());
-				//impl->phi = glm::mod(impl->phi, 2 * glm::pi<float>());
-				//glm::vec3 axis(glm::sin(impl->theta) * glm::sin(impl->phi), glm::cos(impl->theta) * glm::sin(impl->phi), -glm::cos(impl->phi));
-				//axis = glm::normalize(axis);
-				//mws_print("x %f, y %f\n", impl->theta, impl->phi);
-				//mws_print("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
-				glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
-				glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
-				p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
+			//if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
+			//{
+			//	float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
+			//	float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
+			//	float dx_rad = glm::radians(dx / 2);
+			//	float dy_rad = glm::radians(dy / 2);
 
-				glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
-				ts->process();
-			}
-			else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
-			{
-				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+			//	//impl->theta += glm::radians(dx / 10);
+			//	//impl->phi += glm::radians(-dy / 10);
+			//	//impl->theta = glm::mod(impl->theta, 2 * glm::pi<float>());
+			//	//impl->phi = glm::mod(impl->phi, 2 * glm::pi<float>());
+			//	//glm::vec3 axis(glm::sin(impl->theta) * glm::sin(impl->phi), glm::cos(impl->theta) * glm::sin(impl->phi), -glm::cos(impl->phi));
+			//	//axis = glm::normalize(axis);
+			//	//mws_print("x %f, y %f\n", impl->theta, impl->phi);
+			//	//mws_print("x %f, y %f, z %f - th %f, ph %f\n", axis.x, axis.y, axis.z, impl->theta, impl->phi);
+			//	glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
+			//	glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
+			//	p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
+			//	p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
 
-				p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
-			}
+			//	glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
+			//	p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
+			//	ts->process();
+			//}
 		}
-		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+		else if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 		{
-			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if(ke->get_type() != key_evt::KE_RELEASED)
+			if(ke->get_type() != mws_key_evt::KE_RELEASED)
 			{
 				bool do_action = true;
 
@@ -340,7 +337,7 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 					do_action = false;
 				}
 
-				if(!do_action && ke->get_type() != key_evt::KE_REPEATED)
+				if(!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
 				{
 					do_action = true;
 
@@ -360,10 +357,6 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 						//mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
 						break;
 
-					case KEY_F11:
-						pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
-						break;
-
 					default:
 						do_action = false;
 					}
@@ -377,5 +370,3 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 		}
 	}
 }
-
-#endif

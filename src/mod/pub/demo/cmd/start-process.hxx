@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "pfm.hxx"
 #include <string> 
 #include <vector> 
@@ -29,5 +25,3 @@ public:
 private:
    static void print_process_output(boost::process::child& c);
 };
-
-#endif

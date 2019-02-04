@@ -544,7 +544,7 @@ void font_db::on_frame_start()
 
 mws_sp<std::string> font_db::get_db_font_name(const std::string& ifont_name)
 {
-   std::mws_sp<std::string> fn(new std::string("n/a"));
+   mws_sp<std::string> fn(new std::string("n/a"));
 
    return fn;
 }

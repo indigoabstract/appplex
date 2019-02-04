@@ -1,9 +1,6 @@
 #pragma once
 
 #include "mod-test-kube-sphere.hxx"
-
-#ifdef MOD_TEST_KUBE_SPHERE
-
 #include "gfx-vxo.hxx"
 #include "gfx-color.hxx"
 
@@ -41,5 +38,3 @@ public:
 	std::vector<gfx_color> face_colors;
 	float radius;
 };
-
-#endif

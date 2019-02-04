@@ -1,21 +1,18 @@
 #include "stdafx.hxx"
 
 #include "mod-cmd.hxx"
-
-#ifdef MOD_CMD
-
 #include "long-operation.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "cmd-line-arg.hxx"
-#include <boost/filesystem.hpp>
 #include <exception>
+#include <filesystem>
 #include <string>
 #include <vector>
 
-namespace bfs = ::boost::filesystem;
+namespace bfs = std::filesystem;
 
 
-namespace mod_cmd_pref
+namespace cmd_mod_pref
 {
    class mod_preferences_detail : public mws_mod_preferences
    {
@@ -27,7 +24,7 @@ namespace mod_cmd_pref
 
 mod_cmd::mod_cmd() : mws_mod(mws_stringify(MOD_CMD))
 {
-   prefs = mws_sp<mws_mod_preferences>(new mod_cmd_pref::mod_preferences_detail());
+   prefs = mws_sp<mws_mod_preferences>(new cmd_mod_pref::mod_preferences_detail());
 }
 
 mws_sp<mod_cmd> mod_cmd::nwi()
@@ -76,14 +73,12 @@ void mod_cmd::load()
          trx("started operation thread. please wait..\n");
       }
    }
-      mws_catch(std::exception& e)
+   mws_catch(std::exception& e)
    {
-      trx("error. [{}]", e.what());
+      trx("error[ {} ]", e.what());
    }
    mws_catch(...)
    {
       trx("exception of unknown type!");
    }
 }
-
-#endif

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
 // Copyright Vladimir Prus 2002-2004.
 // Copyright Bertolt Mildner 2004.

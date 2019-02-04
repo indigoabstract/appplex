@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include <boost/process.hpp>
 #include "start-process.hxx"
 #include "long-operation.hxx"
@@ -147,5 +143,3 @@ void start_process::print_process_output(bp::child& c)
       }
    }
 }
-
-#endif

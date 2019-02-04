@@ -1,25 +1,22 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "rdo-std-fmt-rename.hxx"
 #include "min.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
+#include "util/unicode/conversions-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
 #include "rdo-recursive-copy.hxx"
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <exception>
+#include <filesystem>
 #include <locale>
 #include <string>
 #include <vector>
 
 using namespace boost::algorithm;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 using namespace boost::program_options;
 using std::string;
 using std::vector;
@@ -49,7 +46,7 @@ private:
 };
 
 
-std::string mod_cmd_std_fmt_filenames::get_module_name()
+std::string cmd_mod_std_fmt_filenames::get_module_name()
 {
    return "standard-format-filenames";
 }
@@ -60,7 +57,7 @@ const string DESTINATION_PATH = "destination-path";
 const string COPY_ONLY = "copy-only";
 
 
-boost::program_options::options_description mod_cmd_std_fmt_filenames::get_options_description()
+boost::program_options::options_description cmd_mod_std_fmt_filenames::get_options_description()
 {
    options_description desc(trs("available options for module [{}]", get_module_name()));
 
@@ -75,7 +72,7 @@ boost::program_options::options_description mod_cmd_std_fmt_filenames::get_optio
    return desc;
 }
 
-mws_sp<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_mod_std_fmt_filenames::run(const vector<unicodestring>& args)
 {
    options_description desc = get_options_description();
    variables_map vm;
@@ -84,8 +81,8 @@ mws_sp<long_operation> mod_cmd_std_fmt_filenames::run(const vector<unicodestring
    store(parsed, vm);
    notify(vm);
 
-   boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
-   boost::filesystem::path dstPath;
+   std::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
+   std::filesystem::path dstPath;
 
    utrx(untr("source-path was set to {}"), vm[SOURCE_PATH].as<unicodestring>());
    utrx(untr("destination-path was set to {}"), vm[DESTINATION_PATH].as<unicodestring>());
@@ -224,46 +221,47 @@ void rec_dir_op_std_fmt_rename::rename_path(const path& irel_path, unicodestring
 
    mws_try
    {
-      if (inew_filename.compare(iold_filename) != 0 && inew_filename.length() > 0)
       // rename
-   {
-      path oldRelPath = irel_path / iold_filename;
-      path newRelPath = irel_path / inew_filename;
-      path oldPath = src_dir / oldRelPath;
-      path newPath = src_dir / newRelPath;
-
-      if (!iequals(inew_filename, iold_filename) && exists(newPath))
+      if (inew_filename.compare(iold_filename) != 0 && inew_filename.length() > 0)
       {
-         utrx(untr("{0} [{1}] was not renamed to [{2}] because a {0} with that name already exists"), fileType, path2string(oldRelPath), path2string(newRelPath));
-      }
-      else
-      {
-         rename(oldPath, newPath);
-         utrx(untr("{0} [{1}] -> [{2}]"), fileType, iold_filename, inew_filename);
+         path oldRelPath = irel_path / iold_filename;
+         path newRelPath = irel_path / inew_filename;
+         path oldPath = src_dir / oldRelPath;
+         path newPath = src_dir / newRelPath;
 
-         if (iis_directory)
+         if (!iequals(inew_filename, iold_filename) && exists(newPath))
          {
-            directories_renamed_count++;
+            utrx(untr("{0} [{1}] was not renamed to [{2}] because a {0} with that name already exists"), fileType, path2string(oldRelPath), path2string(newRelPath));
          }
          else
          {
-            files_renamed_count++;
+            rename(oldPath, newPath);
+            utrx(untr("{0} [{1}] -> [{2}]"), fileType, iold_filename, inew_filename);
+
+            if (iis_directory)
+            {
+               directories_renamed_count++;
+            }
+            else
+            {
+               files_renamed_count++;
+            }
          }
       }
+      //else
+      //{
+      //   utrx(untr("{} [{}] already in standard format"),  fileType, inew_filename);
+      //}
    }
-   else
-   {
-      //utrx(untr("%1% [%2%] already in standard format")) % fileType % newFilename;
-   }
-   }
-      mws_catch(mws_exception& e)
+   mws_catch (mws_exception & e)
    {
       path oldRelPath = irel_path / iold_filename;
       path newRelPath = irel_path / inew_filename;
+      const char* msg = e.what();
 
-      utrx(untr("rename error [{0}]. failed to rename [{1}] to [{2}]"), e.what(), path2string(oldRelPath), path2string(newRelPath));
+      utrx(untr("rename error [{}]. failed to rename [{}] to [{}]"), string2unicodestring(msg), path2string(oldRelPath), path2string(newRelPath));
    }
-   mws_catch(std::exception)
+   mws_catch (std::exception)
    {
       path oldRelPath = irel_path / iold_filename;
       path newRelPath = irel_path / inew_filename;
@@ -275,7 +273,6 @@ void rec_dir_op_std_fmt_rename::rename_path(const path& irel_path, unicodestring
 unicodestring rec_dir_op_std_fmt_rename::apply_standard_format(const unicodestring& i_filename, bool iis_directory)
 {
    unicodestring filename = i_filename;
-
    unicodestring toReplace[] =
    {
         untr(" "), untr("-"), untr("."), untr(","), untr("_"), untr("{"),
@@ -389,5 +386,3 @@ unicodestring rec_dir_op_std_fmt_rename::apply_standard_format(const unicodestri
 
    return filename;
 }
-
-#endif

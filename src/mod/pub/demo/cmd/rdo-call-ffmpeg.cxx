@@ -1,23 +1,19 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "rdo-call-ffmpeg.hxx"
 #include "min.hxx"
 #include "util/unicode/conversions-util.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
-#include "../start-process.hxx"
-#include <boost/filesystem.hpp>
+#include "start-process.hxx"
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
+#include <filesystem>
 #include <exception>
 #include <string>
 #include <vector>
 
-using namespace boost::filesystem;
+using namespace std::filesystem;
 using namespace boost::program_options;
 using std::vector;
 using std::string;
@@ -43,7 +39,7 @@ private:
 };
 
 
-std::string mod_cmd_start_process::get_module_name()
+std::string cmd_mod_start_process::get_module_name()
 {
 	return "start-process";
 }
@@ -56,7 +52,7 @@ const string DESTINATION_PATH		= "destination-path";
 const string FORMAT_EXTENSION		= "format-extension";
 const string WAIT_TIME				= "wait-time";
 
-boost::program_options::options_description mod_cmd_start_process::get_options_description()
+boost::program_options::options_description cmd_mod_start_process::get_options_description()
 {
 	options_description desc(trs("available options for module [{}]", get_module_name()));
 
@@ -73,7 +69,7 @@ boost::program_options::options_description mod_cmd_start_process::get_options_d
 	return desc;
 }
 
-mws_sp<long_operation> mod_cmd_start_process::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_mod_start_process::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -93,10 +89,10 @@ mws_sp<long_operation> mod_cmd_start_process::run(const vector<unicodestring>& a
 		utrx(untr("format extension was set to {}"), format_extension);
 	}
 
-	boost::filesystem::path process_path(vm[PROCESS_PATH].as<unicodestring>());
+	std::filesystem::path process_path(vm[PROCESS_PATH].as<unicodestring>());
 	unicodestring process_arguments = vm[PROCESS_ARGUMENTS].as<unicodestring>();
-	boost::filesystem::path src_path(vm[SOURCE_PATH].as<unicodestring>());
-	boost::filesystem::path dst_path(vm[DESTINATION_PATH].as<unicodestring>());
+   std::filesystem::path src_path(vm[SOURCE_PATH].as<unicodestring>());
+   std::filesystem::path dst_path(vm[DESTINATION_PATH].as<unicodestring>());
 	int milliseconds_to_wait = 1000 * vm[WAIT_TIME].as<int>();
 
 	if (dst_path.is_relative())
@@ -233,5 +229,3 @@ void rec_dir_op_flac_to_mp3::apply_to_file(mws_sp<file_node> file)
 		start_process::exe_shell(exec, milliseconds_to_wait);
 	}
 }
-
-#endif

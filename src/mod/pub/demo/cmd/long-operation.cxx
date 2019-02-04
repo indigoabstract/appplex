@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "long-operation.hxx"
 #include "min.hxx"
 #include <thread>
@@ -48,15 +44,15 @@ void long_operation::run_impl()
       run();
       active = false;
    }
-      mws_catch(mws_exception& e)
+   mws_catch(mws_exception& e)
    {
       active = false;
-      trx("op error. [{}]", e.what());
+      trx("error[ {} ]", e.what());
    }
    mws_catch(std::exception& e)
    {
       active = false;
-      trx("thread op finished with error");
+      trx("thread finished with error[ {} ]", e.what());
    }
    mws_catch(...)
    {
@@ -70,5 +66,3 @@ bool long_operation::is_active()
 {
    return active;
 }
-
-#endif

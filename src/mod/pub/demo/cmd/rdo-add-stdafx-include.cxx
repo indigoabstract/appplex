@@ -1,19 +1,15 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "rdo-add-stdafx-include.hxx"
 #include "min.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
 #include "rdo-recursive-copy.hxx"
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <locale>
@@ -21,7 +17,7 @@
 #include <vector>
 
 using namespace boost::algorithm;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 using namespace boost::program_options;
 using std::string;
 using std::vector;
@@ -45,7 +41,7 @@ private:
 };
 
 
-std::string mod_cmd_add_stdafx_include::get_module_name()
+std::string cmd_mod_add_stdafx_include::get_module_name()
 {
 	return "add-stdafx-include";
 }
@@ -55,7 +51,7 @@ const string SOURCE_PATH			= "source-path";
 const string EXCLUDE_PATH			= "exclude-path";
 
 
-boost::program_options::options_description mod_cmd_add_stdafx_include::get_options_description()
+boost::program_options::options_description cmd_mod_add_stdafx_include::get_options_description()
 {
 	options_description desc(trs("available options for module [{}]", get_module_name()));
 
@@ -67,7 +63,7 @@ boost::program_options::options_description mod_cmd_add_stdafx_include::get_opti
 	return desc;
 }
 
-mws_sp<long_operation> mod_cmd_add_stdafx_include::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_mod_add_stdafx_include::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -250,5 +246,3 @@ void rec_dir_op_add_stdafx_include::apply_to_file(mws_sp<file_node> file)
 
 	file_count++;
 }
-
-#endif

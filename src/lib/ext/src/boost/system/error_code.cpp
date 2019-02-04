@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
 //  error_code support implementation file  ----------------------------------//
 

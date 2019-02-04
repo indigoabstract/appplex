@@ -1,24 +1,20 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_CMD
-
 #include "rdo-recursive-copy.hxx"
 #include "min.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find.hpp>
+#include <filesystem>
 #include <exception>
 #include <locale>
 #include <string>
 #include <vector>
 
 using namespace boost::algorithm;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 using namespace boost::program_options;
 using std::string;
 using std::vector;
@@ -45,7 +41,7 @@ private:
 };
 
 
-std::string mod_cmd_recursive_copy::get_module_name()
+std::string cmd_mod_recursive_copy::get_module_name()
 {
 	return "recursive-copy";
 }
@@ -55,7 +51,7 @@ const string SOURCE_PATH			= "source-path";
 const string DESTINATION_PATH		= "destination-path";
 
 
-boost::program_options::options_description mod_cmd_recursive_copy::get_options_description()
+boost::program_options::options_description cmd_mod_recursive_copy::get_options_description()
 {
 	options_description desc(trs("available options for module [{}]", get_module_name()));
 
@@ -68,7 +64,7 @@ boost::program_options::options_description mod_cmd_recursive_copy::get_options_
 	return desc;
 }
 
-mws_sp<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestring>& args)
+mws_sp<long_operation> cmd_mod_recursive_copy::run(const vector<unicodestring>& args)
 {
 	options_description desc = get_options_description();
 	variables_map vm;
@@ -77,8 +73,8 @@ mws_sp<long_operation> mod_cmd_recursive_copy::run(const vector<unicodestring>& 
 	store(parsed, vm);
 	notify(vm);
 
-	boost::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
-	boost::filesystem::path dstPath;
+   std::filesystem::path srcPath(vm[SOURCE_PATH].as<unicodestring>());
+   std::filesystem::path dstPath;
 
 	utrx(untr("source-path was set to {}"), vm[SOURCE_PATH].as<unicodestring>());
 	utrx(untr("destination-path was set to {}"), vm[DESTINATION_PATH].as<unicodestring>());
@@ -175,7 +171,7 @@ void rec_dir_op_copy::on_leaving_dir(mws_sp<dir_node> dir)
 	if(exists(dp))
 		// retain timestamp on dirs
 	{
-		std::time_t tt = last_write_time(sp);
+		auto tt = last_write_time(sp);
 		last_write_time(dp, tt);
 	}
 
@@ -199,7 +195,7 @@ void rec_dir_op_copy::copy_path(bfs::path& srcp, bfs::path& dstp, bool iis_direc
 		if(iis_directory)
 		{
 			utrx(untr("copying directory from [{0}] to [{1}]"), path2string(srcp), path2string(dstp));
-			copy_directory(srcp, dstp);
+			copy(srcp, dstp, copy_options::recursive);
 		}
 		else
 		{
@@ -208,5 +204,3 @@ void rec_dir_op_copy::copy_path(bfs::path& srcp, bfs::path& dstp, bool iis_direc
 		}
 	}
 }
-
-#endif
