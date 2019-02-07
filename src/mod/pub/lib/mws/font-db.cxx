@@ -10,28 +10,13 @@
 #include <glm/inc.hpp>
 
 
-// default font binary data
-#include "font-def.inl"
-
-
-const std::string font_db::default_font_name = "mws-def-font";
-mws_sp<font_db> font_db::instance;
-
-mws_sp<font_db> font_db::inst()
-{
-   if (!instance)
-   {
-      instance = mws_sp<font_db>(new font_db());
-   }
-
-   return instance;
-}
-
 #if defined MOD_VECTOR_FONTS
 
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include <freetype-gl/freetype-gl.h>
+// default font binary data
+#include "font-def.inl"
 
 
 font_glyph::font_glyph()
@@ -152,7 +137,7 @@ public:
       return tex_font;
    }
 
-   mws_sp<std::vector<uint8> >get_font_data()
+   mws_sp<std::vector<uint8>> get_font_data()
    {
       return font_mem_data;
    }
@@ -264,6 +249,16 @@ public:
       return r;
    }
 
+   mws_sp<mws_font> get_global_font() const
+   {
+      return global_font;
+   }
+
+   void set_global_font(mws_sp<mws_font> i_font)
+   {
+      global_font = i_font;
+   }
+
    mws_sp<std::string> get_db_font_name(const std::string& i_font_name)
    {
       mws_sp<std::string> fn = font_name_ht[i_font_name];
@@ -278,6 +273,13 @@ public:
 
    mws_sp<font_cache> get_font_cache(mws_sp<mws_font> i_font)
    {
+      const std::string& font_file_name = i_font->get_file_name();
+
+      if (font_file_name.empty() && !global_font->get_file_name().empty())
+      {
+         return get_font_cache(global_font);
+      }
+
       mws_sp<font_cache> fnt_cache = i_font->fnt_cache.lock();
 
       if (!fnt_cache)
@@ -287,43 +289,41 @@ public:
 
          if (!fnt_cache)
          {
-            const std::string& font_path = i_font->get_full_path();
             float font_size = i_font->get_size();
-            auto res = font_data_by_path_ht[font_path].lock();
+            auto res = font_data_by_path_ht[font_file_name].lock();
 
             if (!res)
             {
-               if (font_path == font_db::default_font_name)
+               if (font_file_name == font_db::default_font_name)
                {
                   res = std::make_shared<std::vector<uint8>>(mws_def_font_data, mws_def_font_data + mws_def_font_data_size);
                }
                else
                {
-                  res = pfm::filesystem::load_res_byte_vect(font_path);
+                  res = pfm::filesystem::load_res_byte_vect(font_file_name);
                }
 
-               font_data_by_path_ht[font_path] = res;
-            }
-
-            if (!res)
-            {
-               mws_println("ERROR[ cannot load font [%s] ]", font_path.c_str());
-            }
-            else
-            {
-               texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, begin_ptr(*res), res->size());
-               fnt_cache = std::make_shared<font_cache>(tex_font, res);
-
-               if (!tex_font)
+               if (!res)
                {
-                  if (reload_atlas == false)
-                  {
-                     pow_of_two++;
-                     reload_atlas = true;
-                  }
-
+                  mws_println("ERROR[ cannot load font [%s] ]", font_file_name.c_str());
                   return nullptr;
                }
+
+               font_data_by_path_ht[font_file_name] = res;
+            }
+
+            texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, begin_ptr(*res), res->size());
+            fnt_cache = std::make_shared<font_cache>(tex_font, res);
+
+            if (!tex_font)
+            {
+               if (reload_atlas == false)
+               {
+                  pow_of_two++;
+                  reload_atlas = true;
+               }
+
+               return nullptr;
             }
 
             font_size_ht[key] = fnt_cache;
@@ -410,6 +410,7 @@ public:
    std::unordered_map<std::string, mws_wp<std::vector<uint8>>> font_data_by_path_ht;
    std::vector<wchar_t> glyphs_to_load;
    std::unordered_map<wchar_t, bool> marked_for_loading;
+   mws_sp<mws_font> global_font;
    bool reload_atlas = false;
    int pow_of_two = 9;
 };
@@ -429,6 +430,23 @@ void font_db::resize_db(int ipow_of_two)
 
    p->pow_of_two = ipow_of_two;
    p->reload_atlas = true;
+}
+
+mws_sp<mws_font> font_db::get_global_font() const
+{
+   return p->get_global_font();
+}
+
+void font_db::set_global_font(const std::string& i_font_name, float i_size)
+{
+   float size = (i_size > 0.f) ? i_size : 40.f;
+   auto font = mws_font::nwi(size, i_font_name);
+   set_global_font(font);
+}
+
+void font_db::set_global_font(mws_sp<mws_font> i_font)
+{
+   p->set_global_font(i_font);
 }
 
 mws_sp<std::string> font_db::get_db_font_name(const std::string& i_font_name)
@@ -584,5 +602,20 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
 }
 
 #endif
+
+
+const std::string font_db::default_font_name = "mws-def-font";
+mws_sp<font_db> font_db::instance;
+
+mws_sp<font_db> font_db::inst()
+{
+   if (!instance)
+   {
+      instance = mws_sp<font_db>(new font_db());
+      instance->p->global_font = mws_font::nwi(40.f, font_db::default_font_name);
+   }
+
+   return instance;
+}
 
 #endif

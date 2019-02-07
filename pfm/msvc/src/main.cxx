@@ -1426,7 +1426,14 @@ key_types get_key(int i_key)
    {
       int diff = i_key - 'A';
 
-      return key_types(KEY_A + diff);
+      if (shift_held)
+      {
+         return key_types(KEY_A_UPPER_CASE + diff);
+      }
+      else
+      {
+         return key_types(KEY_A + diff);
+      }
    }
 
    switch (i_key)

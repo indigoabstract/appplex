@@ -250,6 +250,11 @@ mws_sp<mws_key_evt> mws_key_evt::get_instance()
    return shared_from_this();
 }
 
+bool mws_key_evt::is_ascii(int i_key_id)
+{
+   return i_key_id >= KEY_SPACE && i_key_id <= KEY_TILDE_SIGN;
+}
+
 const std::string& mws_key_evt::get_type_name(key_evt_types i_key_evt)
 {
    static const std::string types[] =
@@ -265,6 +270,11 @@ const std::string& mws_key_evt::get_type_name(key_evt_types i_key_evt)
 mws_sp<key_ctrl> mws_key_evt::get_src()
 {
    return src.lock();
+}
+
+bool mws_key_evt::is_letter() const
+{
+   return (key >= KEY_A_UPPER_CASE && key <= KEY_Z_UPPER_CASE) || (key >= KEY_A && key <= KEY_Z);
 }
 
 bool mws_key_evt::is_pressed() const

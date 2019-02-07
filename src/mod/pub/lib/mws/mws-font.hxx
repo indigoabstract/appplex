@@ -14,7 +14,7 @@ class mws_font : public enable_shared_from_this < mws_font >
 {
 public:
    static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt);
-   static mws_sp<mws_font> nwi(float isize, const std::string& ifont_path = "");
+   static mws_sp<mws_font> nwi(float i_size, const std::string& i_font_path = "");
    mws_sp<mws_font> get_inst();
    const std::string& get_file_name()const;
    const std::string& get_full_path()const;
@@ -25,9 +25,9 @@ public:
    float get_ascender();
    float get_descender();
    float get_height();
-   glm::vec2 get_text_dim(const std::string& itext);
-   float get_text_width(const std::string& itext);
-   float get_text_height(const std::string& itext);
+   glm::vec2 get_text_dim(const std::string& i_text);
+   float get_text_width(const std::string& i_text);
+   float get_text_height(const std::string& i_text);
    const gfx_color& get_color()const;
    void set_color(const gfx_color& icolor);
 

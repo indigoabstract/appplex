@@ -238,7 +238,7 @@ void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
    }
 }
 
-void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
+void mws_mod_ctrl::key_action(key_actions i_action_type, int i_key)
 {
    if (mod_input_on)
    {
@@ -246,14 +246,14 @@ void mws_mod_ctrl::key_action(key_actions iaction_type, int ikey)
 
       if (u)
       {
-         switch (iaction_type)
+         switch (i_action_type)
          {
          case KEY_PRESS:
-            u->key_ctrl_inst->key_pressed(ikey);
+            u->key_ctrl_inst->key_pressed(i_key);
             break;
 
          case KEY_RELEASE:
-            u->key_ctrl_inst->key_released(ikey);
+            u->key_ctrl_inst->key_released(i_key);
             break;
          }
       }

@@ -126,74 +126,6 @@ void mws_vkb::load(std::string i_filename)
          { KEY_ESCAPE, "escape" },
          { KEY_END, "done" },
          { KEY_SPACE, "space" },
-         { KEY_EXCLAMATION, "!" },
-         { KEY_DOUBLE_QUOTE, "\"" },
-         { KEY_NUMBER_SIGN, "#" },
-         { KEY_DOLLAR_SIGN, "$" },
-         { KEY_PERCENT_SIGN, "%" },
-         { KEY_AMPERSAND, "&" },
-         { KEY_SINGLE_QUOTE, "'" },
-         { KEY_LEFT_PARENTHESIS, "(" },
-         { KEY_RIGHT_PARENTHESIS, ")" },
-         { KEY_ASTERISK, "*" },
-         { KEY_PLUS_SIGN, "+" },
-         { KEY_COMMA, "," },
-         { KEY_MINUS_SIGN, "-" },
-         { KEY_PERIOD, "." },
-         { KEY_SLASH, "/" },
-         { KEY_0, "0" },
-         { KEY_1, "1" },
-         { KEY_2, "2" },
-         { KEY_3, "3" },
-         { KEY_4, "4" },
-         { KEY_5, "5" },
-         { KEY_6, "6" },
-         { KEY_7, "7" },
-         { KEY_8, "8" },
-         { KEY_9, "9" },
-         { KEY_COLON, ":" },
-         { KEY_SEMICOLON, ";" },
-         { KEY_LESS_THAN_SIGN, "<" },
-         { KEY_EQUAL_SIGN, "=" },
-         { KEY_GREATER_THAN_SIGN, ">" },
-         { KEY_QUESTION_MARK, "?" },
-         { KEY_AT_SYMBOL, "@" },
-         { KEY_A, "A" },
-         { KEY_B, "B" },
-         { KEY_C, "C" },
-         { KEY_D, "D" },
-         { KEY_E, "E" },
-         { KEY_F, "F" },
-         { KEY_G, "G" },
-         { KEY_H, "H" },
-         { KEY_I, "I" },
-         { KEY_J, "J" },
-         { KEY_K, "K" },
-         { KEY_L, "L" },
-         { KEY_M, "M" },
-         { KEY_N, "N" },
-         { KEY_O, "O" },
-         { KEY_P, "P" },
-         { KEY_Q, "Q" },
-         { KEY_R, "R" },
-         { KEY_S, "S" },
-         { KEY_T, "T" },
-         { KEY_U, "U" },
-         { KEY_V, "V" },
-         { KEY_W, "W" },
-         { KEY_X, "X" },
-         { KEY_Y, "Y" },
-         { KEY_Z, "Z" },
-         { KEY_LEFT_BRACKET, "[" },
-         { KEY_BACKSLASH, "\\" },
-         { KEY_RIGHT_BRACKET, "]" },
-         { KEY_CIRCUMFLEX, "^" },
-         { KEY_UNDERSCORE, "_" },
-         { KEY_GRAVE_ACCENT, "`" },
-         { KEY_LEFT_BRACE, "{" },
-         { KEY_VERTICAL_BAR, "|" },
-         { KEY_RIGHT_BRACE, "}" },
-         { KEY_TILDE_SIGN, "~" },
       };
    }
 
@@ -288,6 +220,11 @@ std::string mws_vkb::get_key_name(key_types i_key_id) const
       return it->second;
    }
 
+   if (mws_key_evt::is_ascii(i_key_id))
+   {
+      return std::string(1, i_key_id);
+   }
+
    return "";
 }
 
@@ -298,6 +235,16 @@ key_types mws_vkb::get_key_type(const std::string& i_key_name) const
       if (it->second == i_key_name)
       {
          return it->first;
+      }
+   }
+
+   if (i_key_name.length() == 1)
+   {
+      char ch = i_key_name[0];
+
+      if (mws_key_evt::is_ascii(ch))
+      {
+         return (key_types)ch;
       }
    }
 

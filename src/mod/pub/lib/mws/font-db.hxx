@@ -100,7 +100,10 @@ public:
    static const std::string default_font_name;
    static mws_sp<font_db> inst();
    void clear_db();
-   void resize_db(int ipow_of_two);
+   void resize_db(int i_pow_of_two);
+   mws_sp<mws_font> get_global_font() const;
+   void set_global_font(const std::string& i_font_name, float i_size = 0.f);
+   void set_global_font(mws_sp<mws_font> i_font);
    mws_sp<std::string> get_db_font_name(const std::string& i_font_name);
    const std::vector<font_glyph>& get_glyph_vect(mws_sp<mws_font> i_font, const std::string& i_text);
    mws_sp<gfx_tex> get_texture_atlas();

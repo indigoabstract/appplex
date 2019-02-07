@@ -102,8 +102,10 @@ public:
    static mws_sp<mws_key_evt> nwi(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);
    mws_sp<mws_key_evt> get_instance();
 
+   static bool is_ascii(int i_key_id);
    static const std::string& get_type_name(key_evt_types i_key_evt);
    mws_sp<key_ctrl> get_src();
+   bool is_letter() const;
    bool is_pressed() const;
    bool is_repeated() const;
    bool is_released() const;

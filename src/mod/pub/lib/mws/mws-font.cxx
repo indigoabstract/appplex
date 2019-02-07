@@ -12,11 +12,11 @@
 class mws_font_impl
 {
 public:
-   mws_font_impl(mws_sp<mws_font> ifont, const std::string& ifont_path)
+   mws_font_impl(mws_sp<mws_font> i_font, const std::string& i_font_path)
    {
-      mws_font_ref = ifont;
+      mws_font_ref = i_font;
       color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::blue_violet));
-      ppath = pfm_path::get_inst(ifont_path);
+      ppath = pfm_path::get_inst(i_font_path);
       font_name = font_db::inst()->get_db_font_name(ppath->get_file_name());
       font_path = ppath->get_full_path();
    }
@@ -35,10 +35,10 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt)
    return nwi(i_fnt->p->size, i_fnt->get_full_path());
 }
 
-mws_sp<mws_font> mws_font::nwi(float isize, const std::string& ifont_path)
+mws_sp<mws_font> mws_font::nwi(float isize, const std::string& i_font_path)
 {
    mws_sp<mws_font> font(new mws_font());
-   std::string font_path = ifont_path.empty() ? font_db::default_font_name : ifont_path;
+   std::string font_path = i_font_path;
 
    font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path));
    font->p->size = isize;
@@ -96,19 +96,19 @@ float mws_font::get_height()
    return font_db::inst()->get_height(get_inst());
 }
 
-glm::vec2 mws_font::get_text_dim(const std::string& itext)
+glm::vec2 mws_font::get_text_dim(const std::string& i_text)
 {
-   return font_db::inst()->get_text_dim(get_inst(), itext);
+   return font_db::inst()->get_text_dim(get_inst(), i_text);
 }
 
-float mws_font::get_text_width(const std::string& itext)
+float mws_font::get_text_width(const std::string& i_text)
 {
-   return get_text_dim(itext).x;
+   return get_text_dim(i_text).x;
 }
 
-float mws_font::get_text_height(const std::string& itext)
+float mws_font::get_text_height(const std::string& i_text)
 {
-   return get_text_dim(itext).y;
+   return get_text_dim(i_text).y;
 }
 
 const gfx_color& mws_font::get_color()const
