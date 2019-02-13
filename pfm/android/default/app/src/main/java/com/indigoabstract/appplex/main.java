@@ -9,57 +9,37 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-// class Loader
-// {
-    // private static boolean done = false;
 
-    // protected static synchronized void load()
-	// {
-        // if (done)
-            // return;
-
-        // System.loadLibrary("library_name");
-
-        // done = true;
-    // }
-// }
 public class main extends Activity
 {
 	static
 	{
-		System.loadLibrary("zip");
-		System.loadLibrary("png_renamed");
+        System.loadLibrary("zip");
 		System.loadLibrary("freetype2-static");
-		System.loadLibrary("ffmpeg");
 		System.loadLibrary("app_plex_main");
 	}
 
-    private static final Pattern DIR_SEPORATOR = Pattern.compile("/");
+    private static final Pattern DIR_SEPARATOR = Pattern.compile("/");
 
     /**
      * Raturns all available SD-Cards in the system (include emulated)
@@ -107,7 +87,7 @@ public class main extends Activity
             else
             {
                 final String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                final String[] folders = DIR_SEPORATOR.split(path);
+                final String[] folders = DIR_SEPARATOR.split(path);
                 final String lastFolder = folders[folders.length - 1];
                 boolean isDigit = false;
 
@@ -145,35 +125,31 @@ public class main extends Activity
         return rv.toArray(new String[rv.size()]);
     }
 
-	public mainGLSurfaceView	mGLView;
-	public LinearLayout			ApplicationTextView;
-	public FrameLayout			ApplicationLayout;
-	public EditText				ApplicationEditText;
+	public main_glsv main_glsv_inst;
 	public InputMethodManager	ApplicationInputManager;
 	RelativeLayout				rl					= null;
-	public static Handler		mainHandler			= new Handler();
 
-	public static long			lastTimeResumed		= -1;
 	public static String		sInternalDirectory	= null;
 
 	public static String		PACKAGE_NAME;
-	static String apkFilePath	= null;
+	static String apk_file_path = null;
+	float original_screen_brightness = 0.f;
 
 	static main inst()
 	{
 		return instance;
 	}
-	atest ainst;
-	
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	protected void onCreate(Bundle i_saved_instance_state)
 	{
-		ainst = new atest();
+        Log.i("activity_life_cycle", "main.onCreate()");
+
 		instance = this;
-        Log.i("main", "onCreate()");
 
-		super.onCreate(savedInstanceState);
+		super.onCreate(i_saved_instance_state);
 
+        original_screen_brightness = get_screen_brightness();
 		// test getting external storage directories
         File primaryExtSd=Environment.getExternalStorageDirectory();
         File[] files1 = primaryExtSd.listFiles();
@@ -215,59 +191,33 @@ public class main extends Activity
 			throw new RuntimeException("Unable to locate assets, aborting...");
 		}
 		
-		apkFilePath = appInfo.sourceDir;
-		
-		if (savedInstanceState == null)
-		{
+		apk_file_path = appInfo.sourceDir;
+        int window_flags = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        int window_mask = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
+            window_flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
+		if (i_saved_instance_state == null)
+		{
 			sInternalDirectory = getFilesDir().getPath();
 			rl = new RelativeLayout(this);
-			//rl.setId(4322);
-
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(window_flags, window_mask);
 
 			getWindow().setBackgroundDrawable(null);
 
-			mGLView = new mainGLSurfaceView(this);
-			//mGLView.setId(2234);
-
-			// mGLView.setFocusable(true);
-			// mGLView.setFocusableInTouchMode(true);
-
-			// setContentView(mGLView);
-			rl.addView(mGLView);
-
-			// invisible edit text
-			ApplicationEditText = new EditText(this);
-			ApplicationEditText.setWidth(0);
-			ApplicationEditText.setHeight(0);
-			ApplicationEditText.setVisibility(View.INVISIBLE);
-
-			// for text
-			ApplicationTextView = new LinearLayout(this);
-			ApplicationTextView.addView(ApplicationEditText);
-			// The application text view holds editText object
-
-			// rl.addView(ApplicationTextView);
-
+			main_glsv_inst = new main_glsv(this);
+			rl.addView(main_glsv_inst);
 			setContentView(rl);
-
-			// mGLView.setFocusable(true);
-			// mGLView.setFocusableInTouchMode(true);
 			ApplicationInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		}
-	}
-
-	public void startNLTHandler()
-	{
 	}
 
 	@Override
 	protected void onStart()
 	{
-		Log.i("main", "onStart()");
+		Log.i("activity_life_cycle", "main.onStart()");
 		super.onStart();
         opensl_conf params = opensl_conf.createInstance(this);
 		native_snd_init(params.get_sample_rate(), params.get_buffer_size());
@@ -276,7 +226,7 @@ public class main extends Activity
 	@Override
 	protected void onStop()
 	{
-		Log.i("main", "onStop()");
+		Log.i("activity_life_cycle", "main.onStop()");
 		super.onStop();
         native_snd_close();
 	}
@@ -296,127 +246,51 @@ public class main extends Activity
 	@Override
 	protected void onPause()
 	{
-		Log.i("main", "onPause()");
+		Log.i("activity_life_cycle", "main.onPause()");
 		super.onPause();
-		if (mGLView == null) return;
-		// if (mGLView.mRenderer.m_bNativeRunning == false)
-		// {
-		// return;
-		// }
 
-		mGLView.onPause();
+        if(main_glsv_inst != null)
+        {
+            main_glsv_inst.onPause();
+        }
 	}
 
 	@Override
 	protected void onResume()
 	{
+        Log.i("activity_life_cycle", "main.onResume()");
 		super.onResume();
-		/**
-		 * Orientation blocked in landscape
-		 */
-		// setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		if (mGLView == null)
-		{
-			Log.e("main", "NULL glview");
-			return;
-		}
-		mGLView.onResume();
-		Log.i("main", "onResume()");
 
-		Display display = getWindowManager().getDefaultDisplay();
-		mGLView.mRenderer.d = display; // av should see if there is any problem
-										// with this
+        if(main_glsv_inst != null)
+        {
+            main_glsv_inst.onResume();
+        }
 	}
 
 	@Override
 	protected void onRestart()
 	{
+        Log.i("activity_life_cycle", "main.onRestart()");
 		super.onRestart();
-		Log.i("main", "onRestart()");
 	}
 
 	@Override
 	protected void onDestroy()
 	{
-		Log.i("main", "onDestroy()");
+		Log.i("activity_life_cycle", "main.onDestroy()");
 		super.onDestroy();
-		if (mGLView == null) return;
-		// if (mGLView.mRenderer.m_bNativeRunning == true) {
-		// mGLView.onDestroy(false);
-		// }
-	}
 
-	public void ReinitDisplay(boolean hasFocus)
-	{
-		Log.i("main", "onWindowFocusChanged START : " + hasFocus);
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus)
-		{
-			Log.i("main", "onWindowFocusChanged - onResume()");
-
-			if (mGLView == null) return;
-			mGLView.onResume();
-			lastTimeResumed = System.currentTimeMillis();
-			Display display = getWindowManager().getDefaultDisplay();
-			mGLView.mRenderer.d = display; // av should see if there is any
-											// problem with this
-
-			Log.i("Display", "Initialized");
-			try
-			{
-				Thread.sleep(50);
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else
-		{
-			Log.i("main", "onWindowFocusChanged - onPause()");
-			if (mGLView == null) return;
-			// if(mGLView.mRenderer.m_bNativeRunning == false)
-			// return;
-			// //mGLView.onPause();
-		}
+        if(main_glsv_inst != null)
+        {
+            main_glsv_inst.onDestroy();
+        }
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus)
 	{
-		Log.i("main", "onWindowFocusChanged START : " + hasFocus);
+		Log.i("activity_life_cycle", "main.onWindowFocusChanged. hasFocus: " + hasFocus);
 		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus)
-		{
-
-			if (mGLView == null) return;
-			mGLView.onResume();
-			lastTimeResumed = System.currentTimeMillis();
-			Display display = getWindowManager().getDefaultDisplay();
-			mGLView.mRenderer.d = display; // av should see if there is any
-											// problem with this
-
-			Log.i("Display", "Initialized");
-			try
-			{
-				Thread.sleep(50);
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		else
-		{
-			Log.i("main", "onWindowFocusChanged - onPause()");
-			if (mGLView == null) return;
-			// if(mGLView.mRenderer.m_bNativeRunning == false)
-			// return;
-			// mGLView.onPause();
-		}
 	}
 
 	@Override
@@ -424,51 +298,103 @@ public class main extends Activity
 	{
 		if(native_back_evt())
 		{
-			super.onBackPressed();
-			System.exit(0);
+            back_press();
 		}
 	}
 
 	@Override
 	public void onNewIntent(Intent intent)
 	{
+        Log.d("activity_life_cycle", "main.intent: " + intent);
 		super.onNewIntent(intent);
-		Log.d("main", "intent: " + intent);
 	}
+
+	private void back_press()
+    {
+        set_screen_brightness_ui(original_screen_brightness);
+        super.onBackPressed();
+        // app's gonna crash on restart without this line. todo: fix this issue before release
+        System.exit(0);
+    }
+
+	public static void exit_application()
+    {
+        inst().runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                inst().back_press();
+            }
+        });
+    }
+
+    private static void schedule_alarm(int i_alarm_type, long i_trigger_at_millis, PendingIntent i_operation)
+    {
+        Context ctx = inst();
+        AlarmManager alarm_manager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            alarm_manager.setExactAndAllowWhileIdle(i_alarm_type, i_trigger_at_millis, i_operation);
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            alarm_manager.setExact(i_alarm_type, i_trigger_at_millis, i_operation);
+        }
+        else
+        {
+            alarm_manager.set(i_alarm_type, i_trigger_at_millis, i_operation);
+        }
+        //Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
+    }
+
+    /**
+     * This will schedule an alarm, which, when fired by the system, will trigger a notification.
+     * @param message Message to display in notification.
+     * @param delay_in_seconds Time (in seconds from now) after which the notification is fired.
+     * @param tag Identifier for the alarm/notification.
+     */
+    public static void schedule_wakeup(String message, int delay_in_seconds, int tag){
+        Context ctx = inst();
+        Intent alarm_intent = new Intent(ctx, AlarmReceiver.class);
+
+        alarm_intent.putExtra("type", "wakeup");
+        alarm_intent.putExtra("message", message);
+        alarm_intent.putExtra("tagId", tag);
+
+        PendingIntent pending_intent = PendingIntent.getBroadcast(ctx, tag, alarm_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long uptime_millis =  SystemClock.elapsedRealtime();
+        long millis = uptime_millis + delay_in_seconds * 1000;
+        int alarm_type = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+
+        String msg = "ERW wake app in " + delay_in_seconds + " seconds";
+        //native_log(msg);
+        schedule_alarm(alarm_type, millis, pending_intent);
+    }
 
 	/**
 	 * This will schedule an alarm, which, when fired by the system, will trigger a notification.
 	 * @param message Message to display in notification.
-	 * @param delayInSeconds Time (in seconds from now) after which the notification is fired.
+	 * @param delay_in_seconds Time (in seconds from now) after which the notification is fired.
 	 * @param tag Identifier for the alarm/notification.
 	 */
-	public static void schedule_notification(String message, int delayInSeconds, int tag){
+	public static void schedule_notification(String message, int delay_in_seconds, int tag){
 		Context ctx = inst();
-		AlarmManager alarm_manager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
 		Intent alarm_intent = new Intent(ctx, AlarmReceiver.class);
 
+        alarm_intent.putExtra("type", "notification");
 		alarm_intent.putExtra("message", message);
 		alarm_intent.putExtra("tagId", tag);
 
 		PendingIntent pending_intent = PendingIntent.getBroadcast(ctx, tag, alarm_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long uptime_millis =  SystemClock.elapsedRealtime();
-		long millis = uptime_millis + delayInSeconds * 1000;
+		long millis = uptime_millis + delay_in_seconds * 1000;
         int alarm_type = AlarmManager.ELAPSED_REALTIME_WAKEUP;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            alarm_manager.setExactAndAllowWhileIdle(alarm_type, millis, pending_intent);
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-        {
-            alarm_manager.setExact(alarm_type, millis, pending_intent);
-        }
-        else
-        {
-            alarm_manager.set(alarm_type, millis, pending_intent);
-        }
-        //Log.i(TAG,"alarm msg " + message + " delay " + delayInSeconds + " ms " + millis + " id " + tag);
+        schedule_alarm(alarm_type, millis, pending_intent);
 	}
 
 	/**
@@ -524,6 +450,13 @@ public class main extends Activity
         return layoutParams.screenBrightness;
     }
 
+    void set_screen_brightness_ui(float i_brightness)
+    {
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = i_brightness;
+        getWindow().setAttributes(layoutParams);
+    }
+
     public static void set_screen_brightness(final float i_brightness)
     {
         inst().runOnUiThread(new Runnable()
@@ -531,9 +464,7 @@ public class main extends Activity
             @Override
             public void run()
             {
-                WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
-                layoutParams.screenBrightness = i_brightness;
-                instance.getWindow().setAttributes(layoutParams);
+                inst().set_screen_brightness_ui(i_brightness);
             }
         });
     }
@@ -548,10 +479,39 @@ public class main extends Activity
 
         return inst().display_metrics.densityDpi;
     }
+
+    public static String get_timezone_id()
+    {
+        String tz_id = TimeZone.getDefault().getID();
+        return tz_id;
+    }
+
+    static native void native_log(String i_msg);
+
+    static native void native_resume();
+
+    static native void native_destroy();
+
+    static native void native_pause();
+
+    static native void native_init_renderer(AssetManager i_asset_manager, String i_apk_path);
+
+    static native void native_start_app();
+
+    static native void native_render();
+
+    static native void native_resize(int i_w, int i_h);
+
+    static native void native_touch_event
+    (
+            int i_touch_type, int i_touch_count, int[] i_touch_points_identifier,
+            boolean[] i_touch_points_is_changed, float[] i_touch_points_x, float[] i_touch_points_y
+    );
+
 	private static native boolean native_back_evt();
-	private static native void native_snd_init(int isample_rate, int ibuffer_size);
+	private static native void native_snd_init(int i_sample_rate, int i_buffer_size);
 	private static native void native_snd_close();
-	private native void native_set_writable_path(String iwritable_path);
+	private native void native_set_writable_path(String i_writable_path);
 
     private DisplayMetrics display_metrics;
 	private static main instance = null;

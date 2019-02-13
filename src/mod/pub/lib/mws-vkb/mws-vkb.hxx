@@ -5,10 +5,11 @@
 
 
 class mws_font;
-class text_vxo;
 class mws_vrn_main;
+class text_vxo;
 
 
+const key_types VKB_ESCAPE = KEY_ESCAPE;
 const key_types VKB_DONE = KEY_END;
 const key_types VKB_SHIFT = KEY_SHIFT;
 const key_types VKB_ENTER = KEY_ENTER;
@@ -18,6 +19,50 @@ const key_types VKB_HIDE_KB = KEY_F1;
 const key_types VKB_NEXT_SCREEN = KEY_F2;
 const key_types VKB_PREV_SCREEN = KEY_F3;
 const key_types VKB_CAPS_LOCK = KEY_F4;
+
+
+enum class key_mod_types
+{
+   mod_none,
+   mod_shift,
+};
+
+
+class mws_vkb_impl : public mws
+{
+public:
+   mws_vkb_impl(uint32 i_obj_type_mask);
+   virtual void setup() override;
+   std::string get_key_name(key_types i_key_id) const;
+   key_types get_key_type(const std::string& i_key_name) const;
+   //void set_random_keys();
+   void load_map(mws_sp<mws_mod> i_mod, std::string i_filename);
+   //void save_map(std::string i_filename);
+   std::vector<key_types>& get_key_vect();
+   uint32 get_key_vect_size();
+   void set_key_vect_size(uint32 i_size);
+   key_types get_key_at(int i_idx);
+   void set_key_at(int i_idx, key_types i_key_id);
+   void erase_key_at(int i_idx);
+   void push_back_key(key_types i_key_id);
+   std::string get_map_filename();
+
+   uint32 obj_type_mask = 0;
+   mws_sp<mws_vrn_main> vk;
+   //dragging_detector dragging_det;
+   //double_tap_detector dbl_tap_det;
+   int selected_kernel_idx = -1;
+   int current_key_idx = -1;
+   key_mod_types key_mod = key_mod_types::mod_none;
+   std::vector<key_types> key_mod_none_vect;
+   std::vector<key_types> key_mod_shift_vect;
+   mws_sp<mws_font> key_font;
+   mws_sp<mws_font> selected_key_font;
+   bool keys_visible = true;
+   //mws_sp<mws> mws_container;
+   std::unordered_map<key_types, std::string> key_map;
+   int map_idx = 0;
+};
 
 
 class mws_vkb : public mws_virtual_keyboard
@@ -37,18 +82,10 @@ protected:
    virtual void setup() override;
    // when finished, call this to hide the keyboard
    virtual void done();
-   std::string get_key_name(key_types i_key_id) const;
-   key_types get_key_type(const std::string& i_key_name) const;
 
+   mws_sp<mws_vkb_impl> impl;
    mws_sp<mws_text_area> ta;
-   mws_sp<mws_vrn_main> vk;
    mws_sp<text_vxo> vk_keys;
-   std::unordered_map<key_types, std::string> key_map;
-   std::vector<key_types> key_vect;
-   mws_sp<mws_font> key_font;
-   mws_sp<mws_font> selected_key_font;
-   int selected_kernel_idx = -1;
-   int current_key_idx = -1;
    std::string vkb_filename;
    static mws_sp<mws_vkb> inst;
 };

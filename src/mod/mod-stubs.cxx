@@ -74,6 +74,17 @@ int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
 #endif
 
+#if !MOD_OMNIRECALL
+#include "pfm.hxx"
+mws_sp<mws_log> mws_log::i() { return nullptr; }
+const std::vector<std::string>& mws_log::get_log() { static std::vector<std::string> log; return log; }
+void mws_log::push(const char* i_msg) {}
+void mws_log::pushf(const char* i_fmt, ...) {}
+void mws_log::clear() {}
+mws_log::mws_log() {}
+mws_sp<mws_log> mws_log::inst;
+#endif
+
 #if !MOD_SND
 #include "snd/snd.hxx"
 void snd::init() { err_na(); }

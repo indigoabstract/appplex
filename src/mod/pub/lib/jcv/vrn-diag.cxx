@@ -188,7 +188,7 @@ public:
          glm::vec3 pos(edge->pos[0].x, edge->pos[0].y, 0.f);
 
          i_vdata->geom.nexus_points.set_position_at(pos, edge_count);
-         //i_vdata->geom.nexus_points.set_edge_at(edge, k);
+         i_vdata->geom.nexus_points.set_edge_at((jcv_edge*)edge, edge_count);
          i_vdata->geom.nexus_points.vect[edge_count].id = i_vdata->geom.nexus_points.first_idx() + edge_count;
          edge_count++;
 
@@ -283,16 +283,15 @@ public:
    // update a list of corner/wall intersection points for each cell in the diagram and a list counting the number of corner points for each cell
    void update_per_cell_corner_points(mws_sp<mws_vrn_data> i_vdata)
    {
-      int k = 0;
-
       i_vdata->geom.cell_point_count.clear();
-
+      int k = 0;
       const jcv_site* sites = jcv_diagram_get_sites(&diagram);
 
       for (int i = 0; i < diagram.numsites; ++i)
       {
          const jcv_site* site = &sites[i];
          int idx = site->index;
+         i_vdata->geom.kernel_points.set_cell_at((jcv_site*)site, idx);
          jcv_point& vertex = kernels_list[idx];
          //edge_type* first_edge = (edge_type*)it->incident_edge();
          //edge_type* edge = first_edge;

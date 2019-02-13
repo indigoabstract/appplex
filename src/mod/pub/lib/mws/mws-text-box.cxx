@@ -663,6 +663,35 @@ mws_sp<mws_text_field> mws_text_field::nwi()
    return inst;
 }
 
+void mws_text_field::insert_at_cursor(const std::string& i_text)
+{
+   std::string text = i_text;
+   format_text(text);
+
+   if (!text.empty())
+   {
+      mws_text_box::insert_at_cursor(text);
+   }
+}
+
+void mws_text_field::set_text(const std::string& i_text)
+{
+   std::string text = i_text;
+   format_text(text);
+
+   if (!text.empty())
+   {
+      mws_text_box::set_text(text);
+   }
+}
+
+void mws_text_field::format_text(std::string& i_text)
+{
+   static const std::string search = "\n";
+   static const std::string fmt = "";
+   mws_str::replace_all(i_text, search, fmt);
+}
+
 
 mws_text_area_model_ro::mws_text_area_model_ro()
 {

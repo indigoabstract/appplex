@@ -68,9 +68,12 @@ class mws_text_field : public mws_text_box
 {
 public:
    static mws_sp<mws_text_field> nwi();
+   virtual void insert_at_cursor(const std::string& i_text) override;
+   virtual void set_text(const std::string& i_text) override;
 
 protected:
    mws_text_field() {}
+   static void format_text(std::string& i_text);
 };
 
 

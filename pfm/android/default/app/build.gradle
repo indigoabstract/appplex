@@ -6,17 +6,19 @@ def platformVersion = 19    //openGLES 3 min Version
 android
 {
     compileSdkVersion 25
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
 
     defaultConfig
     {
-        applicationId 'com.indigoabstract.appplex_hb'
+        applicationId 'com.indigoabstract.appplex'
         minSdkVersion 19
         targetSdkVersion 25
-
+        versionCode 1
+        versionName "1.0"
+	
         ndk
         {
-            //abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            // abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
             abiFilters 'armeabi-v7a'
         }
 
@@ -61,8 +63,7 @@ android.sourceSets
 {
     main.java.srcDirs =
     [
-            'src/main/java',
-            '../../../android-2/java'
+            'src/main/java'
     ]
 }
 

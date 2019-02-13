@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -54,7 +55,8 @@ public class AlarmService extends IntentService
                 .setAutoCancel(true)
                 .setContentTitle("haiku2break")
                 .setContentText(message)
-                .setDefaults(Notification.DEFAULT_ALL);
+                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification))
+                .setDefaults(Notification.DEFAULT_LIGHTS);
 
         // Fire it.
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
