@@ -47,7 +47,7 @@ bool dragging_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
 
 bool dragging_detector::is_finished() const
 {
-   return det_state == tap_detector_state::ST_READY;
+   return det_state == detector_state::ST_READY;
 }
 
 gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
@@ -64,12 +64,12 @@ gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
    case mws_ptr_evt::touch_began:
       start_event = new_event;
       last_move_pos_bak = last_move_pos = press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
-      set_state(tap_detector_state::ST_PRESSED);
+      set_state(detector_state::ST_PRESSED);
 
       return GS_START;
 
    case mws_ptr_evt::touch_ended:
-      if (det_state == tap_detector_state::ST_MOVING)
+      if (det_state == detector_state::ST_MOVING)
       {
          reset();
 
@@ -81,9 +81,9 @@ gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
    case mws_ptr_evt::touch_moved:
       switch (det_state)
       {
-      case tap_detector_state::ST_PRESSED:
-         set_state(tap_detector_state::ST_MOVING);
-      case tap_detector_state::ST_MOVING:
+      case detector_state::ST_PRESSED:
+         set_state(detector_state::ST_MOVING);
+      case detector_state::ST_MOVING:
          return GS_MOVE;
       }
 
@@ -96,26 +96,26 @@ gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 gesture_state dragging_detector::reset()
 {
    start_event = dummy_event;
-   set_state(tap_detector_state::ST_READY);
+   set_state(detector_state::ST_READY);
 
    return GS_NONE;
 }
 
-void dragging_detector::set_state(tap_detector_state i_st)
+void dragging_detector::set_state(detector_state i_st)
 {
    //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), pfm::time::get_time_millis());
    det_state = i_st;
 }
 
-std::string dragging_detector::to_string(tap_detector_state i_st) const
+std::string dragging_detector::to_string(detector_state i_st) const
 {
    switch (i_st)
    {
-   case tap_detector_state::ST_READY:
+   case detector_state::ST_READY:
       return "ST_READY";
-   case tap_detector_state::ST_PRESSED:
+   case detector_state::ST_PRESSED:
       return "ST_PRESSED";
-   case tap_detector_state::ST_MOVING:
+   case detector_state::ST_MOVING:
       return "ST_MOVING";
    }
 
@@ -142,7 +142,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       return reset();
    }
 
-   if (det_state > tap_detector_state::ST_READY)
+   if (det_state > detector_state::ST_READY)
    {
       auto crt_time = pfm::time::get_time_millis();
       auto delta = crt_time - start_event->time;
@@ -164,18 +164,18 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
    switch (new_event->type)
    {
    case mws_ptr_evt::touch_began:
-      if (det_state == tap_detector_state::ST_READY)
+      if (det_state == detector_state::ST_READY)
       {
          start_event = new_event;
          first_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
-         set_state(tap_detector_state::ST_PRESSED_0);
+         set_state(detector_state::ST_PRESSED_0);
 
          return GS_START;
       }
-      else if (det_state == tap_detector_state::ST_RELEASED_0)
+      else if (det_state == detector_state::ST_RELEASED_0)
       {
          second_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
-         set_state(tap_detector_state::ST_PRESSED_1);
+         set_state(detector_state::ST_PRESSED_1);
 
          if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
          {
@@ -188,13 +188,13 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       return reset();
 
    case mws_ptr_evt::touch_ended:
-      if (det_state == tap_detector_state::ST_PRESSED_0)
+      if (det_state == detector_state::ST_PRESSED_0)
       {
-         set_state(tap_detector_state::ST_RELEASED_0);
+         set_state(detector_state::ST_RELEASED_0);
 
          return GS_START;
       }
-      else if (det_state == tap_detector_state::ST_PRESSED_1)
+      else if (det_state == detector_state::ST_PRESSED_1)
       {
          auto release = new_event->get_pointer_press_by_index(0);
 
@@ -211,7 +211,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       return reset();
 
    case mws_ptr_evt::touch_moved:
-      if (det_state > tap_detector_state::ST_READY)
+      if (det_state > detector_state::ST_READY)
       {
          auto press = new_event->get_pointer_press_by_index(0);
 
@@ -230,12 +230,12 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 gesture_state double_tap_detector::reset()
 {
    start_event = dummy_event;
-   set_state(tap_detector_state::ST_READY);
+   set_state(detector_state::ST_READY);
 
    return GS_NONE;
 }
 
-void double_tap_detector::set_state(tap_detector_state i_st)
+void double_tap_detector::set_state(detector_state i_st)
 {
    det_state = i_st;
 }

@@ -46,18 +46,18 @@ public:
    glm::vec2 last_move_pos_bak = glm::vec2(0.f);
 
 private:
-   enum class tap_detector_state
+   enum class detector_state
    {
       ST_READY,
       ST_PRESSED,
       ST_MOVING,
    };
 
-   void set_state(tap_detector_state i_st);
-   std::string to_string(tap_detector_state i_st) const;
+   void set_state(detector_state i_st);
+   std::string to_string(detector_state i_st) const;
 
    mws_sp<mws_ptr_evt> start_event;
-   tap_detector_state det_state;
+   detector_state det_state;
 };
 
 
@@ -70,7 +70,7 @@ public:
    gesture_state reset();
 
 private:
-   enum class tap_detector_state
+   enum class detector_state
    {
       ST_READY,
       ST_PRESSED_0,
@@ -78,14 +78,14 @@ private:
       ST_PRESSED_1,
    };
 
-   void set_state(tap_detector_state i_st);
+   void set_state(detector_state i_st);
 
    // get start position of tap
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
 
    mws_sp<mws_ptr_evt> start_event;
-   tap_detector_state det_state;
+   detector_state det_state;
 };
 
 

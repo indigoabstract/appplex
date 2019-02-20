@@ -31,7 +31,7 @@ public:
    virtual void init() override;
    virtual void start() override;
    virtual void run() override;
-   virtual int get_screen_dpi()const;
+   virtual float get_screen_dpi()const;
    virtual void flip_screen();
    virtual void write_text(const char* text)const;
    virtual void write_text_nl(const char* text)const;

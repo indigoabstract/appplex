@@ -1003,7 +1003,7 @@ mws_sp<mod_test_normal_mapping> mod_test_normal_mapping::nwi()
 
 void mod_test_normal_mapping::init()
 {
-	//touch_ctrl->add_receiver(get_smtp_instance());
+	//touch_ctrl_inst->add_receiver(get_smtp_instance());
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 

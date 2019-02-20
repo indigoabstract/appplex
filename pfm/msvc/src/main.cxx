@@ -229,16 +229,16 @@ void msvc_main::run()
    mws_mod_ctrl::inst()->update();
 }
 
-int msvc_main::get_screen_dpi()const
+float msvc_main::get_screen_dpi()const
 {
    if (emulate_mobile_screen)
    {
-      int dpi = int(480 * pfm::screen::get_width() / 1920.f);
-      //return 480;
+      float dpi = 480.f * pfm::screen::get_width() / 1920.f;
+      //return 480.f;
       return dpi;
    }
 
-   return 127;
+   return 127.f;
 }
 
 void msvc_main::flip_screen()
@@ -277,16 +277,25 @@ void msvc_main::flip_screen()
       int t = width;
       width = height;
       height = t;
-   }
 
 #if defined MWS_DEBUG_BUILD
 
-   x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
-   y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+      x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
+      y = -5;
 
 #endif
+      SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
+   }
+   else
+   {
+#if defined MWS_DEBUG_BUILD
 
-   SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
+      x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
+      y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+
+#endif
+      SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
+   }
 }
 
 void msvc_main::write_text(const char* text)const

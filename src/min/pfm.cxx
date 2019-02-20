@@ -1003,6 +1003,7 @@ void pfm_main::run() {}
 float pfm_main::get_screen_scale() const { return 1.f; }
 float pfm_main::get_screen_brightness() const { return 1.f; }
 void pfm_main::set_screen_brightness(float i_brightness) {}
+float pfm_main::get_screen_dpcm()const { return get_screen_dpi() / 2.54f; }
 
 bool pfm_main::back_evt()
 {
@@ -1045,12 +1046,12 @@ void pfm::params::set_app_arguments(int iargument_count, unicodechar** iargument
 }
 
 
-int pfm::screen::get_width()
+uint32 pfm::screen::get_width()
 {
    return data.screen_width;
 }
 
-int pfm::screen::get_height()
+uint32 pfm::screen::get_height()
 {
    return data.screen_height;
 }
@@ -1075,7 +1076,7 @@ int pfm::screen::get_target_fps()
    return 30;
 }
 
-int pfm::screen::get_screen_dpi()
+float pfm::screen::get_screen_dpi()
 {
    return pfm_app_inst->get_screen_dpi();
 }
@@ -1123,6 +1124,11 @@ void pfm::screen::flip_screen()
 //	return res;
 //}
 
+
+const umf_list pfm::filesystem::get_res_file_list()
+{
+   return pfm_impl::res_files_map;
+}
 
 std::string pfm::filesystem::get_writable_path(std::string iname)
 {

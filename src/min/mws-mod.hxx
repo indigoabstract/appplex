@@ -110,8 +110,8 @@ public:
    bool i_m_is_null() const { return p.get() == nullptr; }
 
    int game_time;
-   mws_sp<updatectrl> update_ctrl;
-   mws_sp<touchctrl> touch_ctrl;
+   mws_sp<updatectrl> update_ctrl_inst;
+   mws_sp<touchctrl> touch_ctrl_inst;
    mws_sp<key_ctrl> key_ctrl_inst;
    mws_sp<gfx_scene> gfx_scene_inst;
    mws_sp<mws_camera> mws_cam;

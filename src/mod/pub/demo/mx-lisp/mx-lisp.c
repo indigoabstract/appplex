@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef UNIT_MX_LISP
-
 //#define STANDALONE
 
 #ifdef STANDALONE
@@ -13,18 +9,18 @@
 	#define true 1
 	#define mws_assert(cond)
 	#define mws_signal_error()
+   typedef unsigned short uint16;
+   typedef unsigned int uint32;
+   typedef signed long long int64;
+   typedef unsigned long long uint64;
 #else
-	#include "pfm.hxx"
+	#include "pfm-def.h"
 #endif
 
 #include <stdio.h>
 
 
 // Implementarea unui interpretor pentru limbajul LISP (pentru o masina MMIX)
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef signed long long int64;
-typedef unsigned long long uint64;
 typedef int64 numeric_dt;
 struct mx_elem;
 struct mx_env;
@@ -91,7 +87,7 @@ static const uint16 INVL_BLOCK = 2;
 static char heap_mem[MX_CTX_ELEM_SIZE * MAX_ELEM_COUNT] = {0};
 // sizeof(mx_mem_block) = 2 + 2 + 4
 static char block_list_mem[sizeof(struct mx_mem_block) * MAX_ELEM_COUNT] = {0};
-static struct mx_mem_ctx mxmc_inst = {};
+static struct mx_mem_ctx mxmc_inst = {0};
 
 
 
@@ -1781,7 +1777,7 @@ void mx_signal_error(const char* ierror_msg)
 	mx_print_text(ierror_msg);
 	mx_print_text("\n");
 
-	mws_signal_error();
+	mws_signal_error(ierror_msg);
 }
 
 void mx_read_text_line()
@@ -3228,6 +3224,4 @@ void test_mx_htable()
 
 		return 0;
 	}
-#endif
-
 #endif

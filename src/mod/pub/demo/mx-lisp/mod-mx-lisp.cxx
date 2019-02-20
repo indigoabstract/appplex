@@ -1,14 +1,13 @@
 #include "stdafx.hxx"
 
 #include "mod-mx-lisp.hxx"
-
-#ifdef MOD_MX_LISP
-
-
 #include "mws-mod-ctrl.hxx"
 
 
-void run_mx_lisp_repl();
+extern "C"
+{
+   void run_mx_lisp_repl();
+}
 
 namespace mod_mx_lisp_pref
 {
@@ -18,8 +17,6 @@ namespace mod_mx_lisp_pref
 		virtual bool requires_gfx(){return false;}
 	};
 }
-
-
 
 
 class long_op_run_mx_lisp
@@ -50,6 +47,3 @@ bool mod_mx_lisp::update()
 
 	return true;
 }
-
-
-#endif

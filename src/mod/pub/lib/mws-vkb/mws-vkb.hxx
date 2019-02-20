@@ -5,9 +5,12 @@
 
 
 class mws_font;
-class mws_vrn_main;
+class mws_vkb_main;
 class text_vxo;
 
+
+const std::string VKB_PREFIX = "vkb-";
+const std::string VKB_EXT = ".kxmd";
 
 const key_types VKB_ESCAPE = KEY_ESCAPE;
 const key_types VKB_DONE = KEY_END;
@@ -32,7 +35,10 @@ class mws_vkb_impl : public mws
 {
 public:
    mws_vkb_impl(uint32 i_obj_type_mask);
+   static std::string get_map_filename(uint32 i_map_idx);
    virtual void setup() override;
+   virtual void update_state() override;
+   virtual void on_resize(uint32 i_width, uint32 i_height);
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
    //void set_random_keys();
@@ -45,10 +51,11 @@ public:
    void set_key_at(int i_idx, key_types i_key_id);
    void erase_key_at(int i_idx);
    void push_back_key(key_types i_key_id);
-   std::string get_map_filename();
+   void next_page();
+   void prev_page();
 
    uint32 obj_type_mask = 0;
-   mws_sp<mws_vrn_main> vk;
+   mws_sp<mws_vkb_main> vk;
    //dragging_detector dragging_det;
    //double_tap_detector dbl_tap_det;
    int selected_kernel_idx = -1;
@@ -58,10 +65,12 @@ public:
    std::vector<key_types> key_mod_shift_vect;
    mws_sp<mws_font> key_font;
    mws_sp<mws_font> selected_key_font;
+   mws_sp<text_vxo> vk_keys;
    bool keys_visible = true;
    //mws_sp<mws> mws_container;
    std::unordered_map<key_types, std::string> key_map;
    int map_idx = 0;
+   uint32 crt_page_idx = 0;
 };
 
 
@@ -85,7 +94,6 @@ protected:
 
    mws_sp<mws_vkb_impl> impl;
    mws_sp<mws_text_area> ta;
-   mws_sp<text_vxo> vk_keys;
    std::string vkb_filename;
    static mws_sp<mws_vkb> inst;
 };

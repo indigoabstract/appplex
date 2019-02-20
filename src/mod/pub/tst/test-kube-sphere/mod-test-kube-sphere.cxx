@@ -61,7 +61,7 @@ mws_sp<mod_test_kube_sphere> mod_test_kube_sphere::nwi()
 
 void mod_test_kube_sphere::init()
 {
-	//touch_ctrl->add_receiver(get_smtp_instance());
+	//touch_ctrl_inst->add_receiver(get_smtp_instance());
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
@@ -112,7 +112,7 @@ void mod_test_kube_sphere::load()
 
 	p->skybox = mws_sp<gfx_box>(new gfx_box());
 	gfx_box& r_cube_mesh = *p->skybox;
-	float s = p->persp_cam->far_clip_distance * 0.5;
+	float s = p->persp_cam->far_clip_distance * 0.5f;
 	r_cube_mesh.set_dimensions(s, s, s);
 	r_cube_mesh[MP_SHADER_NAME] = "skybox";
 	r_cube_mesh["u_scm_skybox"] = "skybx";

@@ -233,7 +233,7 @@ void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
 
       if (u)
       {
-         u->touch_ctrl->enqueue_pointer_event(i_te);
+         u->touch_ctrl_inst->enqueue_pointer_event(i_te);
       }
    }
 }

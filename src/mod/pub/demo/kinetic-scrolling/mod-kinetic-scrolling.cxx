@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-kinetic-scrolling.hxx"
-
-#ifdef MOD_KINETIC_SCROLLING
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws.hxx"
 #include "mws/mws-font.hxx"
@@ -275,11 +272,9 @@ void mod_kinetic_scrolling::init()
 
 void mod_kinetic_scrolling::init_mws()
 {
-	class mainpage : public mws_page
+	class main_page : public mws_page
 	{
 	public:
-		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void receive(mws_sp<mws_dp> idp)
 		{
 			if (idp->is_processed())
@@ -287,24 +282,24 @@ void mod_kinetic_scrolling::init_mws()
 				return;
 			}
 
-			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 			{
-				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+				mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
 
-				switch (ts->get_type())
+				switch (ts->type)
 				{
-				case touch_sym_evt::TS_PRESSED:
+				case mws_ptr_evt::touch_began:
 					kscrollinst.mousePressed(x, y);
 					break;
 
-				case touch_sym_evt::TS_PRESS_AND_DRAG:
+				case mws_ptr_evt::touch_moved:
 					kscrollinst.mouseDragged(x, y);
 					break;
 
-				case touch_sym_evt::TS_RELEASED:
+				case mws_ptr_evt::touch_ended:
 					kscrollinst.mouseReleased(x, y);
 					break;
 				}
@@ -321,8 +316,6 @@ void mod_kinetic_scrolling::init_mws()
 		}
 	};
 
-   mws_root->new_page<mainpage>();
+   mws_root->new_page<main_page>();
    mws_cam->clear_color = true;
 }
-
-#endif

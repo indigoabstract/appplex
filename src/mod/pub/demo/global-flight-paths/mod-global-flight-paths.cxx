@@ -11,7 +11,7 @@
 #include "cpp-property.hxx"
 #include "gfx-inc.hxx"
 #include "gfx-vxo-ext.hxx"
-#include "utils/free-camera.hxx"
+#include "util/free-camera.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>
 
@@ -991,9 +991,9 @@ namespace global_flight_paths_ns
 
          if (!idp->is_processed())
          {
-            if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+            if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
             {
-               mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+               mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
                if (ke->is_pressed())
                {

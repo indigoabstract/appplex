@@ -44,7 +44,7 @@ mws_sp<mod_test_ffmpeg> mod_test_ffmpeg::nwi()
 void mod_test_ffmpeg::init()
 {
 	trx("test-ffmpeg...");
-	//touch_ctrl->add_receiver(get_smtp_instance());
+	//touch_ctrl_inst->add_receiver(get_smtp_instance());
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 

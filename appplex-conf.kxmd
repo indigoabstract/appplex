@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ all ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ cmd ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ mx-lisp ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -23,7 +23,7 @@ mod
 	omnirecall[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, notifications, mws, png, res-ld, techno-globe, util, vector-fonts ], platf[ windows, android, ios ], ],
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, vector-fonts ] ],
-	spacetime-sinkhole[ uses[ gfx ] ],
+	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
 	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, jcv, kxmd, mws, png, res-ld, util, vector-fonts, mws-vkb ] ],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, vector-fonts ] ],
 
@@ -79,12 +79,12 @@ mod
 	gl-frag-shader-demo[ uses[ bitmap-fonts, fmt, gfx, fonts, mws, png ], platf[ windows, android ], ],
 	mx-lisp[ uses[ boost ], platf[ windows ], ],
 	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
-	kinetic-scrolling[ ],
+	kinetic-scrolling[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ], ],
 	abstract-racing[ platf[ windows, android ], ],
 	texxed[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ], ],
 	exercise[ ],
 	gen-texture[ ],
-	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype-gl, mws, png, vector-fonts ] ],
+	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
 	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
 
 	@@[ tst ],
@@ -93,7 +93,7 @@ mod
 	test-ffmpeg[ uses[ gfx, ffmpeg, fonts, freetype, freetype-gl, mws, png, vector-fonts ], enabled[ true ], ],
 	test-vplayer-android[ uses[ gfx, ffmpeg ], platf[ android ], enabled[ false ], ],
 	test-vplayer-ios[ uses[ gfx, ffmpeg ], platf[ ios ], enabled[ false ], ],
-	test-gl[ uses[ gfx ], platf[ all ], ],
+	test-gl[ uses[ gfx, png, res-ld ], platf[ all ], ],
 	test-kube-sphere[ uses[ bitmap-fonts, gfx, gfx-ext, fonts, input, mws, png, res-ld ], ],
 	test-shadow-map[ ],
 	test-grid[ ],
@@ -108,11 +108,11 @@ mod
 	test-audioengine[ uses[ boost, gfx, snd ], platf[ windows, android, ios ], ],
 	test-snd-android[ uses[ boost, gfx, snd ], platf[ windows, android ], ],
 	test-snd-generators[ uses[ boost, gfx, snd ], platf[ windows ], ],
-	test-trail[ platf[ windows, android ], ],
+	test-trail[ uses[ gfx, gfx-ext, fmt, input, png, res-ld, util ], platf[ windows, android ], ],
 	test-video-recording[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype-gl, mws, vector-fonts, ffmpeg, test-ffmpeg ], platf[ windows ], enabled[ true ], ],
 	test-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws, png, res-ld ], platf[ windows, android, ios ], ],
 	test-gl-uniform-blocks[ uses[ gfx ], platf[ windows, android, ios ], ],
-	test-res-ld[ uses[ gfx, png ], platf[ all ], ],
+	test-res-ld[ uses[ gfx, png, res-ld ], platf[ all ], ],
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
 ],
 

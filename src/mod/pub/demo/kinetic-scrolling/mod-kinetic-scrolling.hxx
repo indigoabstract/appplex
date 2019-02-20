@@ -1,10 +1,7 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KINETIC_SCROLLING
-
 #include "mws-mod.hxx"
+
 
 class mod_kinetic_scrolling : public mws_mod
 {
@@ -17,5 +14,3 @@ public:
 private:
    mod_kinetic_scrolling();
 };
-
-#endif

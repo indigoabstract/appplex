@@ -61,19 +61,19 @@ namespace pfm_impl
 class pfm_path
 {
 public:
-   static mws_sp<pfm_path> get_inst(std::string ifile_path, std::string i_aux_root_dir = "");
+   static mws_sp<pfm_path> get_inst(std::string i_file_path, std::string i_aux_root_dir = "");
    std::string get_full_path()const;
    const std::string& get_file_name()const;
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<mws_mod> i_mod = nullptr, bool recursive = false)const;
+   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false)const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
    pfm_path() {}
    void make_standard_path();
-   void list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > ifile_list, bool irecursive) const;
+   void list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const;
 
    std::string filename;
    std::string aux_root_dir;
@@ -83,8 +83,8 @@ private:
 class pfm_file
 {
 public:
-   static mws_sp<pfm_file> get_inst(std::string i_filename, std::string iroot_dir = "");
-   static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl);
+   static mws_sp<pfm_file> get_inst(std::string i_filename, std::string i_root_dir = "");
+   static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> i_impl);
    virtual ~pfm_file();
 
    bool remove();
@@ -108,16 +108,16 @@ public:
    {
    public:
       bool open();
-      bool open(std::string iopen_mode);
+      bool open(std::string i_open_mode);
       void close();
       void flush();
       bool reached_eof() const;
-      void seek(uint64 ipos);
+      void seek(uint64 i_pos);
 
-      int read(std::vector<uint8>& ibuffer);
-      int write(const std::vector<uint8>& ibuffer);
-      int read(uint8* ibuffer, int isize);
-      int write(const uint8* ibuffer, int isize);
+      int read(std::vector<uint8>& i_buffer);
+      int write(const std::vector<uint8>& i_buffer);
+      int read(uint8* i_buffer, int i_size);
+      int write(const uint8* i_buffer, int i_size);
 
    private:
       friend class pfm_file;
@@ -141,7 +141,7 @@ namespace pfm_impl
    class pfm_file_impl
    {
    public:
-      pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir);
+      pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir);
       virtual ~pfm_file_impl();
       virtual FILE* get_file_impl() const = 0;
       virtual bool exists();
@@ -150,15 +150,15 @@ namespace pfm_impl
       virtual uint64 length() = 0;
       virtual uint64 creation_time()const = 0;
       virtual uint64 last_write_time()const = 0;
-      virtual bool open(std::string iopen_mode);
+      virtual bool open(std::string i_open_mode);
       virtual void close();
       virtual void flush();
       virtual bool reached_eof() const;
-      virtual void seek(uint64 ipos);
-      virtual int read(std::vector<uint8>& ibuffer);
-      virtual int write(const std::vector<uint8>& ibuffer);
-      virtual int read(uint8* ibuffer, int isize);
-      virtual int write(const uint8* ibuffer, int isize);
+      virtual void seek(uint64 i_pos);
+      virtual int read(std::vector<uint8>& i_buffer);
+      virtual int write(const std::vector<uint8>& i_buffer);
+      virtual int read(uint8* i_buffer, int i_size);
+      virtual int write(const uint8* i_buffer, int i_size);
       virtual void check_state()const;
 
       pfm_path ppath;
@@ -167,13 +167,13 @@ namespace pfm_impl
       bool file_is_writable;
 
    protected:
-      virtual bool open_impl(std::string iopen_mode) = 0;
+      virtual bool open_impl(std::string i_open_mode) = 0;
       virtual void close_impl() = 0;
       virtual void flush_impl() = 0;
-      virtual void seek_impl(uint64 ipos, int iseek_pos);
+      virtual void seek_impl(uint64 i_pos, int i_seek_pos);
       virtual uint64 tell_impl();
-      virtual int read_impl(uint8* ibuffer, int isize);
-      virtual int write_impl(const uint8* ibuffer, int isize);
+      virtual int read_impl(uint8* i_buffer, int isize);
+      virtual int write_impl(const uint8* i_buffer, int i_size);
    };
 }
 
@@ -199,8 +199,8 @@ public:
    pfm_data();
 
    bool gfx_available;
-   int screen_width;
-   int screen_height;
+   uint32 screen_width;
+   uint32 screen_height;
 };
 
 
@@ -213,14 +213,17 @@ public:
    virtual float get_screen_scale() const;
    virtual float get_screen_brightness() const;
    virtual void set_screen_brightness(float i_brightness);
-   virtual int get_screen_dpi()const = 0;
+   // dots(pixels) per inch
+   virtual float get_screen_dpi()const = 0;
+   // dots(pixels) per cm
+   virtual float get_screen_dpcm()const;
    // switches between screen width and height. this only works in windowed desktop applications
    virtual void flip_screen() {};
-   virtual void write_text(const char* text)const = 0;
-   virtual void write_text_nl(const char* text)const = 0;
-   virtual void write_text(const wchar_t* text)const = 0;
-   virtual void write_text_nl(const wchar_t* text)const = 0;
-   virtual void write_text_v(const char* iformat, ...)const = 0;
+   virtual void write_text(const char* i_text)const = 0;
+   virtual void write_text_nl(const char* i_text)const = 0;
+   virtual void write_text(const wchar_t* i_text)const = 0;
+   virtual void write_text_nl(const wchar_t* i_text)const = 0;
+   virtual void write_text_v(const char* i_format, ...)const = 0;
    virtual std::string get_writable_path()const = 0;
    virtual std::string get_timezone_id()const = 0;
    // return true to exit the app
@@ -236,21 +239,21 @@ public:
       static int get_app_argument_count();
       static const unicodestring& get_app_path();
       static const std::vector<unicodestring>& get_app_argument_vector();
-      static void set_app_arguments(int iargument_count, unicodechar** iargument_vector, bool iapp_path_included = false);
+      static void set_app_arguments(int i_argument_count, unicodechar** i_argument_vector, bool i_app_path_included = false);
    };
 
 
    struct screen
    {
-      static int get_width();
-      static int get_height();
+      static uint32 get_width();
+      static uint32 get_height();
       static float get_scale();
       static float get_scaled_width();
       static float get_scaled_height();
       static int get_target_fps();
-      static int get_screen_dpi();
+      static float get_screen_dpi();
       static bool is_full_screen_mode();
-      static void set_full_screen_mode(bool ienabled);
+      static void set_full_screen_mode(bool i_enabled);
       static bool is_gfx_available();
       // switches between screen width and height. this only works in windowed desktop applications
       static void flip_screen();
@@ -260,13 +263,14 @@ public:
    class filesystem
    {
    public:
-      static std::string get_writable_path(std::string iname);
-      static std::string get_path(std::string iname);
+      static const umf_list get_res_file_list();
+      static std::string get_writable_path(std::string i_name);
+      static std::string get_path(std::string i_name);
       static void load_res_file_map(mws_sp<mws_mod> i_mod = nullptr);
       //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& isize);
-      static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> ifile);
+      static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> i_file);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string i_filename);
-      static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> ifile);
+      static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> i_file);
       static mws_sp<std::string> load_res_as_string(std::string i_filename);
 
    private:
@@ -275,8 +279,8 @@ public:
 
       static mws_sp<std::vector<uint8> > load_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename);
       //static shared_array<uint8> load_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, int& isize);
-      static bool store_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, const uint8* ires, int isize);
-      static bool store_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename, const std::vector<uint8>& ires);
+      static bool store_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, const uint8* i_res, int i_size);
+      static bool store_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename, const std::vector<uint8>& i_res);
       static mws_sp<pfm_file> random_access(mws_sp<mws_mod> i_mod, std::string i_filename);
    };
 
@@ -309,36 +313,36 @@ private:
 #define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
 std::string mws_to_str(const char* i_format, ...);
 
-template <typename... argst> void trx(const char* i_format, const argst& ... args)
+template <typename... argst> void trx(const char* i_format, const argst& ... i_args)
 {
-   std::string s = fmt::format(i_format, args...);
+   std::string s = fmt::format(i_format, i_args...);
    pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
 }
 
-template <typename... argst> void wtrx(const wchar_t* i_format, const argst& ... args)
+template <typename... argst> void wtrx(const wchar_t* i_format, const argst& ... i_args)
 {
-   std::wstring s = fmt::format(i_format, args...);
+   std::wstring s = fmt::format(i_format, i_args...);
    pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
 }
 
-template <typename... argst> void trc(const char* i_format, const argst& ... args)
+template <typename... argst> void trc(const char* i_format, const argst& ... i_args)
 {
-   std::string s = fmt::format(i_format, args...);
+   std::string s = fmt::format(i_format, i_args...);
    pfm::get_pfm_main_inst()->write_text(s.c_str());
 }
 
-template <typename... argst> void wtrc(const wchar_t* i_format, const argst& ... args)
+template <typename... argst> void wtrc(const wchar_t* i_format, const argst& ... i_args)
 {
-   std::wstring s = fmt::format(i_format, args...);
+   std::wstring s = fmt::format(i_format, i_args...);
    pfm::get_pfm_main_inst()->write_text(s.c_str());
 }
 
-template <typename... argst> std::string trs(const char* i_format, const argst& ... args)
+template <typename... argst> std::string trs(const char* i_format, const argst& ... i_args)
 {
-   return fmt::format(i_format, args...);
+   return fmt::format(i_format, i_args...);
 }
 
-template <typename... argst> std::wstring wtrs(const wchar_t* i_format, const argst& ... args)
+template <typename... argst> std::wstring wtrs(const wchar_t* i_format, const argst& ... i_args)
 {
-   return fmt::format(i_format, args...);
+   return fmt::format(i_format, i_args...);
 }

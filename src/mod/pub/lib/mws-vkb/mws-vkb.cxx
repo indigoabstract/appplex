@@ -1,19 +1,31 @@
 #include "stdafx.hxx"
 
 #include "mws-vkb.hxx"
+#include "mws-vkb-visual.hxx"
 #include "jcv/vrn-diag.hxx"
-#include "jcv/vrn-visual.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/text-vxo.hxx"
 #include "mws/mws-font.hxx"
 #include "mws-mod.hxx"
 #include "kxmd/kxmd.hxx"
+#include <numeric>
 
 
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
+}
+
+std::string mws_vkb_impl::get_map_filename(uint32 i_map_idx)
+{
+   uint32 w = pfm::screen::get_width();
+   uint32 h = pfm::screen::get_height();
+   uint32 gcd = std::gcd(w, h);
+   uint32 wd = w / gcd;
+   uint32 hd = h / gcd;
+
+   return trs("{0}{1}x{2}-{3}{4}", VKB_PREFIX, wd, hd, i_map_idx, VKB_EXT);
 }
 
 void mws_vkb_impl::setup()
@@ -29,7 +41,7 @@ void mws_vkb_impl::setup()
       {VKB_DELETE, "delete"},
       {KEY_SPACE, "space"},
    };
-   vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+   vk = mws_vkb_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
    vk->toggle_voronoi_object(obj_type_mask);
    //vk->toggle_voronoi_object(mws_vrn_obj_types::kernel_points | mws_vrn_obj_types::nexus_points | mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
    vk->init();
@@ -73,7 +85,64 @@ void mws_vkb_impl::setup()
       //   pos -= dim / 2.f;
       //   vk_keys->add_text(key, pos, font);
       //}
+      vk_keys = text_vxo::nwi();
+      attach(vk_keys);
+      vk_keys->camera_id_list.clear();
+      vk_keys->camera_id_list.push_back(mws_cam.lock()->camera_id);
    }
+}
+
+void mws_vkb_impl::update_state()
+{
+   if (keys_visible)
+   {
+      auto root = get_mws_root();
+      auto vd = vk->get_diag_data();
+      auto& kp_vect = vd->geom.kernel_points;
+      uint32 size = get_key_vect_size();
+      bool shift_held = get_mod()->key_ctrl_inst->key_is_held(KEY_SHIFT);
+      key_mod = (shift_held) ? key_mod_types::mod_shift : key_mod_types::mod_none;
+      vk_keys->clear_text();
+
+      for (uint32 k = 0; k < size; k++)
+      {
+         mws_sp<mws_font> font = key_font;
+
+         if (k == current_key_idx)
+         {
+            font = selected_key_font;
+         }
+
+         key_types key_id = get_key_at(k);
+         std::string key = get_key_name(key_id);
+         auto& kp = kp_vect[k];
+         glm::vec2 dim = font->get_text_dim(key);
+         glm::vec2 pos(kp.position.x, kp.position.y);
+
+         pos -= dim / 2.f;
+         vk_keys->add_text(key, pos, font);
+      }
+   }
+}
+
+void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
+{
+   std::vector<mws_sp<pfm_file>> file_vect;
+   const umf_list file_list = pfm::filesystem::get_res_file_list();
+
+   for (auto file_it : *file_list)
+   {
+      mws_sp<pfm_file> file = file_it.second;
+      const std::string& name = file->get_file_name();
+
+      if (mws_str::starts_with(name, VKB_PREFIX) && mws_str::ends_with(name, VKB_EXT))
+      {
+         file_vect.push_back(file);
+      }
+   }
+
+   bool is_landscape = (i_width > i_height);
+   int x = 3;
 }
 
 std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
@@ -228,9 +297,14 @@ void mws_vkb_impl::push_back_key(key_types i_key_id)
    key_mod_shift_vect.push_back(i_key_id);
 }
 
-std::string mws_vkb_impl::get_map_filename()
+void mws_vkb_impl::next_page()
 {
-   return trs("vk-{}.kxmd", map_idx);
+   mws_println("next_page");
+}
+
+void mws_vkb_impl::prev_page()
+{
+   mws_println("prev_page");
 }
 
 
@@ -303,32 +377,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
 void mws_vkb::update_state()
 {
-   auto root = get_mws_root();
-   auto vd = impl->vk->get_diag_data();
-   auto& kp_vect = vd->geom.kernel_points;
-   uint32 size = impl->get_key_vect_size();
-   bool shift_held = get_mod()->key_ctrl_inst->key_is_held(KEY_SHIFT);
-   impl->key_mod = (shift_held) ? key_mod_types::mod_shift : key_mod_types::mod_none;
-   vk_keys->clear_text();
-
-   for (uint32 k = 0; k < size; k++)
-   {
-      mws_sp<mws_font> font = impl->key_font;
-
-      if (k == impl->current_key_idx)
-      {
-         font = impl->selected_key_font;
-      }
-
-      key_types key_id = impl->get_key_at(k);
-      std::string key = impl->get_key_name(key_id);
-      auto& kp = kp_vect[k];
-      glm::vec2 dim = font->get_text_dim(key);
-      glm::vec2 pos(kp.position.x, kp.position.y);
-
-      pos -= dim / 2.f;
-      vk_keys->add_text(key, pos, font);
-   }
+   impl->update_state();
 }
 
 void mws_vkb::update_view(mws_sp<mws_camera> g)
@@ -337,10 +386,18 @@ void mws_vkb::update_view(mws_sp<mws_camera> g)
 
 void mws_vkb::on_resize()
 {
+   uint32 w = pfm::screen::get_width();
+   uint32 h = pfm::screen::get_height();
+
    mws_r.x = 0;
    mws_r.y = 0;
-   mws_r.w = (float)pfm::screen::get_width();
-   mws_r.h = (float)pfm::screen::get_height();
+   mws_r.w = (float)w;
+   mws_r.h = (float)h;
+
+   if (impl)
+   {
+      impl->on_resize(w, h);
+   }
 }
 
 void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
@@ -349,7 +406,7 @@ void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 
    if (vkb_filename.empty())
    {
-      load("vk-0.kxmd");
+      load(mws_vkb_impl::get_map_filename(0));
    }
 }
 
@@ -357,14 +414,14 @@ void mws_vkb::load(std::string i_filename)
 {
    if (!impl)
    {
+      uint32 w = pfm::screen::get_width();
+      uint32 h = pfm::screen::get_height();
+
       impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
       //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
       attach(impl);
       impl->setup();
-      vk_keys = text_vxo::nwi();
-      attach(vk_keys);
-      vk_keys->camera_id_list.clear();
-      vk_keys->camera_id_list.push_back(mws_cam.lock()->camera_id);
+      impl->on_resize(w, h);
    }
 
    vkb_filename = i_filename;

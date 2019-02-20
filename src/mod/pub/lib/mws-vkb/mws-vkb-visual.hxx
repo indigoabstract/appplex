@@ -5,8 +5,8 @@
 #include "gfx-vxo.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-vxo-ext.hxx"
-#include "vrn-diag-data.hxx"
-#include "vrn-diag.hxx"
+#include "jcv/vrn-diag-data.hxx"
+#include "jcv/vrn-diag.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>
 
@@ -31,12 +31,12 @@ enum class mws_vrn_diag_data_change_type
 };
 
 
-class voronoi_gen
+class mws_vkb_gen
 {
 public:
-   static mws_sp<voronoi_gen> nwi(mws_sp<mws_vrn_data> i_diag_data)
+   static mws_sp<mws_vkb_gen> nwi(mws_sp<mws_vrn_data> i_diag_data)
    {
-      mws_sp<voronoi_gen> inst(new voronoi_gen());
+      mws_sp<mws_vkb_gen> inst(new mws_vkb_gen());
 
       inst->init(i_diag_data);
 
@@ -102,7 +102,7 @@ public:
    std::vector<float> vx, vy;
 
 private:
-   voronoi_gen()
+   mws_vkb_gen()
    {
    }
 
@@ -117,7 +117,7 @@ private:
 };
 
 
-class mws_vrn_geom : public gfx_node
+class mws_vkb_geom : public gfx_node
 {
 public:
    struct vx_seg_data_4f
@@ -139,9 +139,9 @@ public:
       gfx_uint id;
    };
 
-   static mws_sp<mws_vrn_geom> nwi(mws_sp<mws_vrn_data> i_diag_data, mws_sp<gfx_camera> i_cam)
+   static mws_sp<mws_vkb_geom> nwi(mws_sp<mws_vrn_data> i_diag_data, mws_sp<gfx_camera> i_cam)
    {
-      mws_sp<mws_vrn_geom> inst(new mws_vrn_geom(i_diag_data));
+      mws_sp<mws_vkb_geom> inst(new mws_vkb_geom(i_diag_data));
 
       inst->init(i_cam);
 
@@ -375,7 +375,7 @@ public:
    mws_sp<gfx_vxo> convex_hull_mesh;
 
 private:
-   mws_vrn_geom(mws_sp<mws_vrn_data> i_diag_data) : gfx_node(gfx::i())
+   mws_vkb_geom(mws_sp<mws_vrn_data> i_diag_data) : gfx_node(gfx::i())
    {
       diag_data = i_diag_data;
    }
@@ -494,12 +494,12 @@ private:
 };
 
 
-class mws_vrn_main
+class mws_vkb_main
 {
 public:
-   static mws_sp<mws_vrn_main> nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
+   static mws_sp<mws_vkb_main> nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
    {
-      mws_sp<mws_vrn_main> inst(new mws_vrn_main());
+      mws_sp<mws_vkb_main> inst(new mws_vkb_main());
       inst->setup(i_diag_width, i_diag_height, i_cam);
       return inst;
    }
@@ -507,8 +507,8 @@ public:
    void init()
    {
       mws_assert(!vgen);
-      vgen = voronoi_gen::nwi(diag_data);
-      vgeom = mws_vrn_geom::nwi(diag_data, cam.lock());
+      vgen = mws_vkb_gen::nwi(diag_data);
+      vgeom = mws_vkb_geom::nwi(diag_data, cam.lock());
    }
 
    void toggle_voronoi_object(uint32 i_obj_type_mask)
@@ -632,11 +632,11 @@ public:
    void remove_kernel(uint32 i_idx);
 
    mws_sp<mws_vrn_data> diag_data;
-   mws_sp<voronoi_gen> vgen;
-   mws_sp<mws_vrn_geom> vgeom;
+   mws_sp<mws_vkb_gen> vgen;
+   mws_sp<mws_vkb_geom> vgeom;
 
 private:
-   mws_vrn_main() {}
+   mws_vkb_main() {}
 
    void setup(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
    {

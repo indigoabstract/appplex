@@ -73,7 +73,7 @@ mws_sp<mod_test_grid> mod_test_grid::nwi()
 
 void mod_test_grid::init()
 {
-	//touch_ctrl->add_receiver(get_smtp_instance());
+	//touch_ctrl_inst->add_receiver(get_smtp_instance());
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 

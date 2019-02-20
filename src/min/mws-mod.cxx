@@ -704,15 +704,18 @@ bool mws_mod::update()
 #if defined PLATFORM_IOS
       force_rebind = true;
 #endif
-      int update_count = 1;//update_ctrl->update();
+      int update_count = 1;//update_ctrl_inst->update();
 
       mws_report_gfx_errs();
 
-      //for (int k = 0; k < updateCount; k++)
+      if (mod_input_on)
       {
-         touch_ctrl->update();
-         key_ctrl_inst->update();
-         game_time += update_ctrl->getTimeStepDuration();
+         //for (int k = 0; k < updateCount; k++)
+         {
+            touch_ctrl_inst->update();
+            key_ctrl_inst->update();
+            game_time += update_ctrl_inst->getTimeStepDuration();
+         }
       }
 
       gfx_scene_inst->update();
@@ -862,9 +865,13 @@ void mws_mod::base_init()
 
    if (is_gfx_mod())
    {
-      update_ctrl = updatectrl::nwi();
-      touch_ctrl = touchctrl::nwi();
-      key_ctrl_inst = key_ctrl::nwi();
+      if (mod_input_on)
+      {
+         update_ctrl_inst = updatectrl::nwi();
+         touch_ctrl_inst = touchctrl::nwi();
+         key_ctrl_inst = key_ctrl::nwi();
+      }
+
       gfx_scene_inst = mws_sp<gfx_scene>(new gfx_scene());
       gfx_scene_inst->init();
    }
@@ -879,8 +886,11 @@ void mws_mod::base_init()
    // getInst() doesn't work in the constructor
    if (is_gfx_mod())
    {
-      touch_ctrl->add_receiver(get_smtp_instance());
-      key_ctrl_inst->add_receiver(get_smtp_instance());
+      if (mod_input_on)
+      {
+         touch_ctrl_inst->add_receiver(get_smtp_instance());
+         key_ctrl_inst->add_receiver(get_smtp_instance());
+      }
 
 #if MOD_MWS
 
@@ -1054,13 +1064,13 @@ void mws_mod::base_load()
    last_frame_time = pfm::time::get_time_millis();
 
    load();
-   //update_ctrl->started();
+   //update_ctrl_inst->started();
 }
 
 void mws_mod::base_unload()
 {
    unload();
-   //update_ctrl->stopped();
+   //update_ctrl_inst->stopped();
 }
 
 void mws_mod::set_init(bool i_is_init)
@@ -1078,7 +1088,7 @@ void mws_mod::update_view(int update_count)
 
    if (fps > 0 && !storage.is_recording_screen())
    {
-      float ups = 1000.f / update_ctrl->getTimeStepDuration();
+      float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
       string f = mws_to_str("uc %d u %02.1f f %02.1f", update_count, ups, fps);
       glm::vec2 txt_dim = mws_cam->get_font()->get_text_dim(f);
 

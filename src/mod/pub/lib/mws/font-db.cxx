@@ -416,6 +416,17 @@ public:
 };
 
 
+mws_sp<font_db> font_db::inst()
+{
+   if (!instance)
+   {
+      instance = mws_sp<font_db>(new font_db());
+      instance->p->global_font = mws_font::nwi(40.f, font_db::default_font_name);
+   }
+
+   return instance;
+}
+
 void font_db::clear_db()
 {
    p->reload_atlas = true;
@@ -570,6 +581,16 @@ font_db::font_db()
 {
 }
 
+mws_sp<font_db> font_db::inst()
+{
+   if (!instance)
+   {
+      instance = mws_sp<font_db>(new font_db());
+   }
+
+   return instance;
+}
+
 void font_db::on_frame_start()
 {
 }
@@ -606,16 +627,5 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
 
 const std::string font_db::default_font_name = "mws-def-font";
 mws_sp<font_db> font_db::instance;
-
-mws_sp<font_db> font_db::inst()
-{
-   if (!instance)
-   {
-      instance = mws_sp<font_db>(new font_db());
-      instance->p->global_font = mws_font::nwi(40.f, font_db::default_font_name);
-   }
-
-   return instance;
-}
 
 #endif

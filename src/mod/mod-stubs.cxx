@@ -54,6 +54,7 @@ void gfx_scene::post_draw() { err_na(); }
 #if !MOD_INPUT
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
+mws_sp<key_ctrl> key_ctrl::nwi() { err_na(); return nullptr; }
 void key_ctrl::key_pressed(int) { err_na(); }
 void key_ctrl::key_released(int) { err_na(); }
 void key_ctrl::update() { err_na(); }
@@ -64,8 +65,10 @@ mws_key_evt::key_evt_types mws_key_evt::get_type() const { err_na(); return mws_
 const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE;
 mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { err_na(); return nullptr; }
 mws_sp<mws_ptr_evt> mws_ptr_evt::as_pointer_evt(mws_sp<mws_dp>) { err_na(); return nullptr; }
+mws_sp<touchctrl> touchctrl::nwi() { err_na(); return nullptr; }
 void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base>) { err_na(); }
 void touchctrl::update() { err_na(); }
+mws_sp<updatectrl> updatectrl::nwi() { err_na(); return nullptr; }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
 

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_MX_LISP
-
 #include "mws-mod.hxx"
 
 
@@ -17,5 +13,3 @@ public:
 private:
    mod_mx_lisp();
 };
-
-#endif

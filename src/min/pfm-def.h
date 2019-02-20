@@ -153,8 +153,9 @@ extern "C"
 
 
 #ifndef __cplusplus
-#ifndef bool
+#if !defined bool && !defined false
     typedef unsigned int bool;
+    typedef enum{ false = 0, true = 1 }bool_type;
 #endif
 #endif
    typedef char int8;
