@@ -59,6 +59,50 @@ void mws_panel::setup()
 }
 
 
+mws_sp<mws_label> mws_label::nwi()
+{
+   auto inst = mws_sp<mws_label>(new mws_label());
+   inst->setup();
+   return inst;
+}
+
+void mws_label::set_rect(const mws_rect& i_rect)
+{
+   position = glm::vec3(i_rect.x, i_rect.y, position().z);
+   mws_r = i_rect;
+}
+
+void mws_label::update_state()
+{
+   if (!text.empty())
+   {
+      auto& tf = get_global_tf_mx();
+      auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
+      glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
+      auto root = get_mws_root();
+      auto text_ref = root->get_text_vxo();
+      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+
+      text_ref->add_text(text, pos, f);
+   }
+}
+
+void mws_label::set_text(string i_text)
+{
+   text = i_text;
+}
+
+void mws_label::set_font(mws_sp<mws_font> i_font)
+{
+   font = i_font;
+}
+
+void mws_label::setup()
+{
+   mws_page_item::setup();
+}
+
+
 mws_sp<mws_img_btn> mws_img_btn::nwi()
 {
    auto inst = mws_sp<mws_img_btn>(new mws_img_btn());

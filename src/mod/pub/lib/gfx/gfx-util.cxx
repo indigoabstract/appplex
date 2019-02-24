@@ -1,7 +1,6 @@
 #include "stdafx.hxx"
 
 #include "gfx-util.hxx"
-#include "min.hxx"
 #include "gfx-shader.hxx"
 #include "gfx.hxx"
 #include "gfx-vxo.hxx"

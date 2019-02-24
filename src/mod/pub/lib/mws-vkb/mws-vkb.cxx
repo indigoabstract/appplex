@@ -17,7 +17,32 @@ mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
    obj_type_mask = i_obj_type_mask;
 }
 
-std::string mws_vkb_impl::get_map_filename(uint32 i_map_idx)
+vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
+{
+   vkb_info vkb_i;
+
+   if (mws_str::starts_with(i_filename, VKB_PREFIX) && mws_str::ends_with(i_filename, VKB_EXT))
+   {
+      size_t nr_0_start_idx = VKB_PREFIX.length();
+      size_t nr_0_end_idx = i_filename.find('x', nr_0_start_idx);
+      std::string nr_0 = i_filename.substr(nr_0_start_idx, nr_0_end_idx - nr_0_start_idx);
+      size_t nr_1_start_idx = nr_0_end_idx + 1;
+      size_t nr_1_end_idx = i_filename.find('-', nr_1_start_idx);
+      std::string nr_1 = i_filename.substr(nr_1_start_idx, nr_1_end_idx - nr_1_start_idx);
+      size_t nr_2_start_idx = nr_1_end_idx + 1;
+      size_t nr_2_end_idx = i_filename.find(VKB_EXT, nr_1_start_idx);
+      std::string nr_2 = i_filename.substr(nr_2_start_idx, nr_2_end_idx - nr_2_start_idx);
+
+      vkb_i.width = mws_to<uint32>(nr_0);
+      vkb_i.height = mws_to<uint32>(nr_1);
+      vkb_i.index = mws_to<uint32>(nr_2);
+      vkb_i.aspect_ratio = float(vkb_i.width) / vkb_i.height;
+   }
+
+   return vkb_i;
+}
+
+std::string mws_vkb_impl::get_vkb_filename(uint32 i_map_idx)
 {
    uint32 w = pfm::screen::get_width();
    uint32 h = pfm::screen::get_height();
@@ -41,50 +66,26 @@ void mws_vkb_impl::setup()
       {VKB_DELETE, "delete"},
       {KEY_SPACE, "space"},
    };
-   vk = mws_vkb_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
-   vk->toggle_voronoi_object(obj_type_mask);
-   //vk->toggle_voronoi_object(mws_vrn_obj_types::kernel_points | mws_vrn_obj_types::nexus_points | mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
-   vk->init();
-   vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
-   //vk->vgen->random_points();
-   //vk->update_diag();
-   //load_map(get_map_filename());
-   attach(vk->vgeom);
-   key_font = mws_font::nwi(48.f);
-   //key_font->set_color(gfx_color::colors::slate_gray);
-   key_font->set_color(gfx_color::colors::white);
-   selected_key_font = mws_font::nwi(48.f);
-   selected_key_font->set_color(gfx_color::colors::red);
-   //set_random_keys();
+   {
+      vk = mws_vkb_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+      vk->toggle_voronoi_object(obj_type_mask);
+      vk->init();
+      vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
+      attach(vk->vgeom);
+      key_font = mws_font::nwi(48.f);
+      key_font->set_color(gfx_color::colors::white);
+      selected_key_font = mws_font::nwi(48.f);
+      selected_key_font->set_color(gfx_color::colors::red);
+   }
    // finish setup
    {
       auto vd = vk->get_diag_data();
       auto& kp_vect = vd->geom.kernel_points;
 
       key_font = mws_font::nwi(48.f);
-      //key_font->set_color(gfx_color::colors::slate_gray);
       key_font->set_color(gfx_color::colors::white);
       selected_key_font = mws_font::nwi(48.f);
       selected_key_font->set_color(gfx_color::colors::red);
-
-      //for (uint32 k = 0; k < key_vect.size(); k++)
-      //{
-      //   mws_sp<mws_font> font = key_font;
-
-      //   if (k == current_key_idx)
-      //   {
-      //      font = selected_key_font;
-      //   }
-
-      //   key_types key_id = key_vect[k];
-      //   std::string key = get_key_name(key_id);
-      //   auto& kp = kp_vect[k];
-      //   glm::vec2 dim = font->get_text_dim(key);
-      //   glm::vec2 pos(kp.position.x, kp.position.y);
-
-      //   pos -= dim / 2.f;
-      //   vk_keys->add_text(key, pos, font);
-      //}
       vk_keys = text_vxo::nwi();
       attach(vk_keys);
       vk_keys->camera_id_list.clear();
@@ -127,22 +128,67 @@ void mws_vkb_impl::update_state()
 
 void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 {
+   vk->resize(i_width, i_height);
+
+   struct vkb_info_t
+   {
+      vkb_info info;
+      uint32 file_vect_idx = 0;
+   };
+
+   // search all files in resources
    std::vector<mws_sp<pfm_file>> file_vect;
    const umf_list file_list = pfm::filesystem::get_res_file_list();
+   float screen_aspect_ratio = float(i_width) / i_height;
+   std::vector<vkb_info_t> vkb_info_vect;
+   uint32 k = 0;
 
+   // store all the found vkb files in a list
    for (auto file_it : *file_list)
    {
       mws_sp<pfm_file> file = file_it.second;
       const std::string& name = file->get_file_name();
+      vkb_info vkb_i = mws_vkb_impl::get_vkb_info(name);
 
-      if (mws_str::starts_with(name, VKB_PREFIX) && mws_str::ends_with(name, VKB_EXT))
+      if (vkb_i.aspect_ratio != 0.f)
       {
+         vkb_info_t vkb_i_t = { vkb_i, k };
+
          file_vect.push_back(file);
+         vkb_info_vect.push_back(vkb_i_t);
+         k++;
       }
    }
 
-   bool is_landscape = (i_width > i_height);
-   int x = 3;
+   if (vkb_info_vect.empty())
+   {
+      mws_println("no vkb files available");
+      return;
+   }
+
+   // sort the vkb files by aspect ratio
+   auto cmp_aspect_ratio = [](const vkb_info_t & i_a, const vkb_info_t & i_b) { return i_a.info.aspect_ratio > i_b.info.aspect_ratio; };
+   std::sort(vkb_info_vect.begin(), vkb_info_vect.end(), cmp_aspect_ratio);
+
+   // find the vkb file with the closest match to the screen's aspect ratio
+   auto closest_val = [&cmp_aspect_ratio](const std::vector<vkb_info_t> & i_vect, float i_value) -> const vkb_info_t &
+   {
+      vkb_info_t vkb_i_t;
+      vkb_i_t.info.aspect_ratio = i_value;
+      auto const it = std::lower_bound(i_vect.begin(), i_vect.end(), vkb_i_t, cmp_aspect_ratio);
+
+      if (it == i_vect.end())
+      {
+         return i_vect.back();
+      }
+
+      return *it;
+   };
+   // found it
+   const vkb_info_t& vkb_i_t = closest_val(vkb_info_vect, screen_aspect_ratio);
+   mws_sp<pfm_file> file = file_vect[vkb_i_t.file_vect_idx];
+
+   load_map(file->get_file_name());
 }
 
 std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
@@ -185,13 +231,21 @@ key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
    return KEY_INVALID;
 }
 
-void mws_vkb_impl::load_map(mws_sp<mws_mod> i_mod, std::string i_filename)
+void mws_vkb_impl::load_map(std::string i_filename)
 {
-   mws_sp<std::vector<uint8> > res = i_mod->storage.load_mod_byte_vect(i_filename);
-   mws_sp<std::string> src(new std::string((const char*)begin_ptr(res), res->size()));
+   mws_sp<std::string> src = pfm::filesystem::load_res_as_string(i_filename);
    mws_sp<kxmd_elem> kxmdi = kxmd::parse(src);
    uint32 point_count = 0;
+   glm::vec2 diag_dim(0.f);
+   glm::vec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::vec2 resize_fact(0.f);
 
+   // size
+   {
+      auto size = kxmd::elem_at(kxmdi, "size");
+      diag_dim = glm::vec2(mws_to<float>(size->vect[0]->val), mws_to<float>(size->vect[1]->val));
+      resize_fact = screen_dim / diag_dim;
+   }
    // pages
    {
       auto pages = kxmd::elem_at(kxmdi, "pages");
@@ -241,11 +295,12 @@ void mws_vkb_impl::load_map(mws_sp<mws_mod> i_mod, std::string i_filename)
          {
             float pos_0 = mws_to<float>(key_coord->vect[2 * k + 0]->val);
             float pos_1 = mws_to<float>(key_coord->vect[2 * k + 1]->val);
-            key_coord_pos.push_back(glm::vec2(pos_0, pos_1));
+            glm::vec2 dim = glm::vec2(pos_0, pos_1) * resize_fact;
+
+            key_coord_pos.push_back(dim);
          }
 
          vk->set_kernel_points(key_coord_pos);
-         //vk->update_geometry();
       }
    }
 
@@ -404,14 +459,6 @@ void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 {
    ta = i_ta;
 
-   if (vkb_filename.empty())
-   {
-      load(mws_vkb_impl::get_map_filename(0));
-   }
-}
-
-void mws_vkb::load(std::string i_filename)
-{
    if (!impl)
    {
       uint32 w = pfm::screen::get_width();
@@ -423,9 +470,6 @@ void mws_vkb::load(std::string i_filename)
       impl->setup();
       impl->on_resize(w, h);
    }
-
-   vkb_filename = i_filename;
-   impl->load_map(get_mod(), vkb_filename);
 }
 
 void mws_vkb::setup()

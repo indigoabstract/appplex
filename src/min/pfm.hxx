@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#ifdef MWS_USES_EXCEPTIONS
+#include <exception>
+#endif
 
 
 #if defined PLATFORM_WINDOWS_PC
@@ -56,6 +59,27 @@ namespace pfm_impl
 {
    class pfm_file_impl;
 }
+
+
+class mws_exception
+#ifdef MWS_USES_EXCEPTIONS
+   : public std::exception
+#endif
+{
+public:
+   mws_exception();
+   mws_exception(const std::string& i_msg);
+   mws_exception(const char* i_msg);
+   virtual ~mws_exception();
+
+   // returns a C-style character string describing the general cause of the current error
+   virtual const char* what() const noexcept;
+
+private:
+   void set_msg(const char* i_msg);
+
+   std::string msg;
+};
 
 
 class pfm_path

@@ -585,7 +585,7 @@ gesture_state axis_roll_detector::detect(const mws_sp<mws_ptr_evt> new_event)
          auto p0 = new_event->find_point(start_event->points[0].identifier);
          auto p1 = new_event->find_point(start_event->points[1].identifier);
 
-         if (p0 && p1)
+         if (p0&& p1)
          {
             position_0 = mws_ptr_evt::get_pos(*p0);
             position_1 = mws_ptr_evt::get_pos(*p1);
@@ -697,4 +697,249 @@ gesture_state panning_tilting_detector::reset()
    start_event = dummy_event;
 
    return GS_NONE;
+}
+
+
+swipe_detector::swipe_detector()
+{
+   reset();
+}
+
+bool swipe_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
+{
+   auto state = detect(evt);
+
+   if (state == GS_END)
+   {
+      pointer_pos = mws_ptr_evt::get_pos(*evt->get_pointer_press_by_index(0));
+
+      return true;
+   }
+
+   return false;
+}
+
+bool swipe_detector::was_started_from_edge() const
+{
+   bool started_from_edge = false;
+   float dist = (float)std::max(pfm::screen::get_width(), pfm::screen::get_height());
+   float threshold = 5.f;
+
+   switch (swipe_direction)
+   {
+   case swipe_types::left:
+      dist = press_pos.x;
+      break;
+
+   case swipe_types::right:
+      dist = pfm::screen::get_width() - press_pos.x;
+      break;
+
+   case swipe_types::up:
+      dist = press_pos.y;
+      break;
+
+   case swipe_types::down:
+      dist = pfm::screen::get_height() - press_pos.y;
+      break;
+   }
+
+   if (dist < threshold)
+   {
+      started_from_edge = true;
+   }
+
+   return started_from_edge;
+}
+
+gesture_state swipe_detector::detect(const mws_sp<mws_ptr_evt> new_event)
+{
+   // only one finger press is allowed for swiping
+   if (new_event->pointer_down_count() != 1)
+   {
+      return reset();
+   }
+
+   //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), pfm::time::get_time_millis());
+   switch (new_event->type)
+   {
+   case mws_ptr_evt::touch_began:
+      press_pos = mws_ptr_evt::get_pos(new_event->points[0]);
+      start_event = new_event;
+      touch_vect.clear();
+      touch_vect.push_back(new_event);
+      start_time = new_event->time;
+      set_state(detector_state::ST_PRESSED);
+
+      return GS_START;
+
+   case mws_ptr_evt::touch_ended:
+      if (det_state == detector_state::ST_MOVING)
+      {
+         touch_vect.push_back(new_event);
+
+         if (is_valid_swipe())
+         {
+            reset();
+            return GS_END;
+         }
+      }
+
+      return reset();
+
+   case mws_ptr_evt::touch_moved:
+      switch (det_state)
+      {
+      case detector_state::ST_PRESSED:
+         touch_vect.push_back(new_event);
+         set_state(detector_state::ST_MOVING);
+         return GS_MOVE;
+
+      case detector_state::ST_MOVING:
+         touch_vect.push_back(new_event);
+
+         if (trigger_before_touch_ended&& is_valid_swipe())
+         {
+            reset();
+            return GS_END;
+         }
+
+         return GS_MOVE;
+      }
+
+      return reset();
+   }
+
+   return reset();
+}
+
+gesture_state swipe_detector::reset()
+{
+   touch_vect.clear();
+   start_event = dummy_event;
+   set_state(detector_state::ST_READY);
+
+   return GS_NONE;
+}
+
+void swipe_detector::set_state(detector_state i_st)
+{
+   //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), pfm::time::get_time_millis());
+   det_state = i_st;
+}
+
+std::string swipe_detector::to_string(detector_state i_st) const
+{
+   switch (i_st)
+   {
+   case detector_state::ST_READY:
+      return "ST_READY";
+   case detector_state::ST_PRESSED:
+      return "ST_PRESSED";
+   case detector_state::ST_MOVING:
+      return "ST_MOVING";
+   }
+
+   return "n/a";
+}
+
+// https://github.com/prime31/TouchKit/blob/master/Assets/TouchKit/Recognizers/TKSwipeRecognizer.cs
+bool swipe_detector::is_valid_swipe()
+{
+   //float screen_pixels_per_cm = 1920.f / 38.3f;
+   float screen_pixels_per_cm = pfm::get_pfm_main_inst()->get_screen_dpcm();
+   // if we have a time stipulation and we exceeded it stop listening for swipes, fail
+   if (max_swipe_duration > 0 && (pfm::time::get_time_millis() - start_time) > max_swipe_duration)
+   {
+      return false;
+   }
+
+   // if we don't have at least two points to test yet, then fail
+   if (touch_vect.size() < 2)
+   {
+      return false;
+   }
+
+   glm::vec2 start_point = mws_ptr_evt::get_pos(touch_vect.front()->points[0]);
+   glm::vec2 end_point = mws_ptr_evt::get_pos(touch_vect.back()->points[0]);
+
+   // the ideal distance in pixels from the start to the finish
+   float ideal_dist_px = glm::distance(start_point, end_point);
+   float real_dist_px = 0.f;
+
+   // the ideal distance in centimeters, based on the screen pixel density
+   float ideal_dist_cm = ideal_dist_px / screen_pixels_per_cm;
+
+   // if the distance moved in cm was less than the minimum,
+   if (ideal_dist_cm < min_swipe_dist_cm || ideal_dist_cm > max_swipe_dist_cm)
+   {
+      return false;
+   }
+
+   // add up distances between all points sampled during the gesture to get the real distance
+   for (uint32 i = 1; i < touch_vect.size(); i++)
+   {
+      glm::vec2 p0 = mws_ptr_evt::get_pos(touch_vect[i - 1]->points[0]);
+      glm::vec2 p1 = mws_ptr_evt::get_pos(touch_vect[i]->points[0]);
+      real_dist_px += glm::distance(p0, p1);
+   }
+
+   // if the real distance is 10% greater than the ideal distance, then fail
+   // this weeds out really irregular "lines" and curves from being considered swipes
+   if (real_dist_px > ideal_dist_px* 1.1f)
+   {
+      return false;
+   }
+
+   // the speed in cm/s of the swipe
+   swipe_speed_cms = ideal_dist_cm / ((pfm::time::get_time_millis() - start_time) / 1000.f);
+
+   // turn the slope of the ideal swipe line into an angle in degrees
+   glm::vec2 v2 = glm::normalize(end_point - start_point);
+   float swipe_angle_deg = glm::atan(v2.y, v2.x);
+   swipe_angle_deg = glm::degrees(swipe_angle_deg);
+
+   if (swipe_angle_deg < 0)
+   {
+      swipe_angle_deg = 360 + swipe_angle_deg;
+   }
+
+   swipe_angle_deg = 360 - swipe_angle_deg;
+
+   // depending on the angle of the line, give a logical swipe direction
+   if (swipe_angle_deg >= 292.5f && swipe_angle_deg <= 337.5f)
+   {
+      swipe_direction = swipe_types::up_right;
+   }
+   else if (swipe_angle_deg >= 247.5f && swipe_angle_deg <= 292.5f)
+   {
+      swipe_direction = swipe_types::up;
+   }
+   else if (swipe_angle_deg >= 202.5f && swipe_angle_deg <= 247.5f)
+   {
+      swipe_direction = swipe_types::up_left;
+   }
+   else if (swipe_angle_deg >= 157.5f && swipe_angle_deg <= 202.5f)
+   {
+      swipe_direction = swipe_types::left;
+   }
+   else if (swipe_angle_deg >= 112.5f && swipe_angle_deg <= 157.5f)
+   {
+      swipe_direction = swipe_types::down_left;
+   }
+   else if (swipe_angle_deg >= 67.5f && swipe_angle_deg <= 112.5f)
+   {
+      swipe_direction = swipe_types::down;
+   }
+   else if (swipe_angle_deg >= 22.5f && swipe_angle_deg <= 67.5f)
+   {
+      swipe_direction = swipe_types::down_right;
+   }
+   // swipe_angle_deg >= 337.5f || swipe_angle_deg <= 22.5f
+   else
+   {
+      swipe_direction = swipe_types::right;
+   }
+
+   return true;
 }

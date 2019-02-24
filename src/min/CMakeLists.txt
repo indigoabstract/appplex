@@ -13,7 +13,6 @@ set(headers
 )
 set(sources
 	"${CMAKE_CURRENT_LIST_DIR}/appplex-conf.cxx"
-	"${CMAKE_CURRENT_LIST_DIR}/data-sequence.cxx"
 	"${CMAKE_CURRENT_LIST_DIR}/min.cxx"
 	"${CMAKE_CURRENT_LIST_DIR}/mws-mod.cxx"
 	"${CMAKE_CURRENT_LIST_DIR}/mws-mod-ctrl.cxx"

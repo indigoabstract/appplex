@@ -15,7 +15,7 @@ public:
    mws_font_impl(mws_sp<mws_font> i_font, const std::string& i_font_path)
    {
       mws_font_ref = i_font;
-      color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::blue_violet));
+      color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::white));
       ppath = pfm_path::get_inst(i_font_path);
       font_name = font_db::inst()->get_db_font_name(ppath->get_file_name());
       font_path = ppath->get_full_path();

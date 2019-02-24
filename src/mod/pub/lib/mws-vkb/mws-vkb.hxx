@@ -31,19 +31,27 @@ enum class key_mod_types
 };
 
 
+struct vkb_info
+{
+   uint32 width = 0;
+   uint32 height = 0;
+   uint32 index = 0;
+   float aspect_ratio = 0.f;
+};
+
+
 class mws_vkb_impl : public mws
 {
 public:
    mws_vkb_impl(uint32 i_obj_type_mask);
-   static std::string get_map_filename(uint32 i_map_idx);
+   static vkb_info get_vkb_info(const std::string& i_filename);
+   static std::string get_vkb_filename(uint32 i_map_idx);
    virtual void setup() override;
    virtual void update_state() override;
    virtual void on_resize(uint32 i_width, uint32 i_height);
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
-   //void set_random_keys();
-   void load_map(mws_sp<mws_mod> i_mod, std::string i_filename);
-   //void save_map(std::string i_filename);
+   void load_map(std::string i_filename);
    std::vector<key_types>& get_key_vect();
    uint32 get_key_vect_size();
    void set_key_vect_size(uint32 i_size);
@@ -56,8 +64,6 @@ public:
 
    uint32 obj_type_mask = 0;
    mws_sp<mws_vkb_main> vk;
-   //dragging_detector dragging_det;
-   //double_tap_detector dbl_tap_det;
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
    key_mod_types key_mod = key_mod_types::mod_none;
@@ -67,7 +73,6 @@ public:
    mws_sp<mws_font> selected_key_font;
    mws_sp<text_vxo> vk_keys;
    bool keys_visible = true;
-   //mws_sp<mws> mws_container;
    std::unordered_map<key_types, std::string> key_map;
    int map_idx = 0;
    uint32 crt_page_idx = 0;
@@ -84,7 +89,6 @@ public:
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize() override;
    virtual void set_target(mws_sp<mws_text_area> i_tbx) override;
-   void load(std::string i_filename);
 
 protected:
    mws_vkb() {}

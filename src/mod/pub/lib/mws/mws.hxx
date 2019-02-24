@@ -201,6 +201,7 @@ public:
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    mws_sp<mws> get_mws_at(int idx);
+   virtual bool is_selected(mws_sp<mws> i_item);
    virtual void select(mws_sp<mws> i_item);
 
 protected:
@@ -228,6 +229,7 @@ public:
    virtual void set_rect(const mws_rect& i_rect);
    virtual void set_size(float i_width, float i_height);
    mws_sp<mws_page> get_mws_page_item_parent();
+   virtual bool has_focus();
    virtual void select();
 
 protected:

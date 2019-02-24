@@ -51,6 +51,40 @@ void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition)
 }
 
 
+mws_exception::mws_exception()
+{
+   set_msg("");
+}
+
+mws_exception::mws_exception(const std::string& i_msg)
+{
+   set_msg(i_msg.c_str());
+}
+
+mws_exception::mws_exception(const char* i_msg)
+{
+   set_msg(i_msg);
+}
+
+mws_exception::~mws_exception()
+{
+}
+
+const char* mws_exception::what() const noexcept
+{
+   return msg.c_str();
+}
+
+void mws_exception::set_msg(const char* i_msg)
+{
+   msg = i_msg;
+
+#ifndef MWS_USES_EXCEPTIONS
+   mws_assert(false);
+#endif
+}
+
+
 // platform specific code
 #if defined PLATFORM_ANDROID
 
@@ -870,7 +904,7 @@ std::string pfm_path::get_file_extension() const
 
    if (idx != filename.npos)
    {
-      return filename.substr(idx + 1, filename.npos);
+      return filename.substr(idx, filename.npos);
    }
 
    return "";

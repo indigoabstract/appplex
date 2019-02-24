@@ -6,6 +6,7 @@
 #include "gfx-util.hxx"
 #include "gfx-color.hxx"
 #include <glm/inc.hpp>
+#include <functional> 
 #include <string>
 #include <vector>
 #include <unordered_map>

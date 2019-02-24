@@ -188,3 +188,75 @@ public:
 
    mws_sp<mws_ptr_evt> start_event;
 };
+
+
+enum class swipe_types
+{
+   left = (1 << 0),
+   right = (1 << 1),
+   up = (1 << 2),
+   down = (1 << 3),
+
+   up_left = (1 << 4),
+   down_left = (1 << 5),
+   up_right = (1 << 6),
+   down_right = (1 << 7),
+
+   horizontal = (left | right),
+   vertical = (up | down),
+   cardinal = (horizontal | vertical),
+
+   diagonal_up = (up_left | up_right),
+   diagonal_down = (down_left | down_right),
+   diagonal_left = (up_left | down_left),
+   diagonal_right = (up_right | down_right),
+   diagonal = (diagonal_up | diagonal_down),
+
+   right_side = (right | diagonal_right),
+   left_side = (left | diagonal_left),
+   top_side = (up | diagonal_up),
+   bottom_side = (down | diagonal_down),
+
+   all = (horizontal | vertical | diagonal)
+};
+
+
+class swipe_detector
+{
+public:
+   uint32 max_swipe_duration = 500;
+   float swipe_speed_cms = 0.f;
+   swipe_types swipe_direction;
+   int min_fingers_pressed = 1;
+   int max_fingers_pressed = 2;
+   bool trigger_before_touch_ended = false;
+   float min_swipe_dist_cm = 2.f;
+   float max_swipe_dist_cm = 10.f;
+   std::vector<mws_sp<mws_ptr_evt>> touch_vect;
+   uint32 start_time;
+
+   swipe_detector();
+   bool detect_helper(mws_sp<mws_ptr_evt> evt);
+   bool was_started_from_edge() const;
+   gesture_state detect(const mws_sp<mws_ptr_evt> new_event);
+   gesture_state reset();
+
+   glm::vec2 press_pos = glm::vec2(0.f);
+   glm::vec2 pointer_pos = glm::vec2(0.f);
+
+private:
+   enum class detector_state
+   {
+      ST_READY,
+      ST_PRESSED,
+      ST_MOVING,
+   };
+
+   void set_state(detector_state i_st);
+   std::string to_string(detector_state i_st) const;
+
+   mws_sp<mws_ptr_evt> start_event;
+   detector_state det_state;
+
+   bool is_valid_swipe();
+};

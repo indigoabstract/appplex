@@ -3,7 +3,7 @@
 #include "gfx-rt.hxx"
 #include "gfx.hxx"
 #include "gfx-util.hxx"
-#include "min.hxx"
+#include "pfm.hxx"
 #include "pfm-gl.h"
 
 

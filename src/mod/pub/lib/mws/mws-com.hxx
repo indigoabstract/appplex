@@ -25,6 +25,25 @@ protected:
 };
 
 
+class mws_label : public mws_page_item
+{
+public:
+   static mws_sp<mws_label> nwi();
+   virtual ~mws_label() {}
+   virtual void set_rect(const mws_rect& i_rect) override;
+   virtual void update_state() override;
+   virtual void set_text(std::string i_text);
+   virtual void set_font(mws_sp<mws_font> i_font);
+
+protected:
+   mws_label() {}
+   void setup() override;
+
+   std::string text;
+   mws_sp<mws_font> font;
+};
+
+
 class mws_img_btn : public mws_page_item
 {
 public:

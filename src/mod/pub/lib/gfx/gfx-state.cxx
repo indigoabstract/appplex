@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "gfx-state.hxx"
-#include "min.hxx"
+#include "pfm.hxx"
 #include "pfm-gl.h"
 
 

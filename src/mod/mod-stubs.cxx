@@ -2,7 +2,7 @@
 
 #include "appplex-conf.hxx"
 #include "mod-list.hxx"
-#include "min.hxx"
+#include "pfm.hxx"
 
 
 extern const bool mod_ffmpeg_on = MOD_FFMPEG;

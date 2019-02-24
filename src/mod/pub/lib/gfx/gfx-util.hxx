@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
-#include "min.hxx"
+#include "pfm.hxx"
 #include "gfx-shader.hxx"
 #include <glm/inc.hpp>
 #include <memory>

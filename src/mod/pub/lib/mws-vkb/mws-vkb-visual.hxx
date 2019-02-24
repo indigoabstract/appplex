@@ -612,7 +612,11 @@ public:
       }
    }
 
-   void resize(uint32 i_diag_width, uint32 i_diag_height) {}
+   void resize(uint32 i_diag_width, uint32 i_diag_height)
+   {
+      diag_data->info.diag_width = i_diag_width;
+      diag_data->info.diag_height = i_diag_height;
+   }
 
    const mws_sp<mws_vrn_data> get_diag_data() const { return diag_data; }
 

@@ -10,9 +10,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#ifdef MWS_USES_EXCEPTIONS
-#include <exception>
-#endif
 
 
 class mws_sender;
@@ -25,27 +22,6 @@ enum dir_types
    DIR_UP,
    DIR_RIGHT,
    DIR_DOWN,
-};
-
-
-class mws_exception
-#ifdef MWS_USES_EXCEPTIONS
-   : public std::exception
-#endif
-{
-public:
-   mws_exception();
-   mws_exception(const std::string& i_msg);
-   mws_exception(const char* i_msg);
-   virtual ~mws_exception();
-
-   // returns a C-style character string describing the general cause of the current error
-   virtual const char* what() const noexcept;
-
-private:
-   void set_msg(const char* i_msg);
-
-   std::string msg;
 };
 
 
@@ -62,6 +38,7 @@ template<> bool mws_to(const std::string& i_input);
 
 struct mws_str
 {
+   static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);
    static bool starts_with(const std::string& istr, const std::string& ifind);
    static bool ends_with(const std::string& istr, const std::string& ifind);
    // trim from start

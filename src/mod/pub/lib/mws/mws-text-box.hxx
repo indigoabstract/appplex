@@ -28,6 +28,7 @@ public:
    virtual void scroll_text(const glm::vec2& i_off);
    virtual void set_position(const glm::vec2& i_pos);
    virtual void set_dimension(const glm::vec2& i_dim);
+   virtual void set_font(mws_sp<mws_font> i_font);
    virtual void select_char_at(const glm::vec2& i_pos);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);

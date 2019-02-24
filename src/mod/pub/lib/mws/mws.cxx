@@ -863,6 +863,11 @@ mws_sp<mws> mws_page::get_mws_at(int idx)
    return mlist[idx];
 }
 
+bool mws_page::is_selected(mws_sp<mws> i_item)
+{
+   return i_item == selected_item;
+}
+
 void mws_page::select(mws_sp<mws> i_item)
 {
    if (contains_mws(i_item))
@@ -915,6 +920,11 @@ void mws_page_item::set_size(float i_width, float i_height)
 mws_sp<mws_page> mws_page_item::get_mws_page_item_parent()
 {
    return static_pointer_cast<mws_page>(get_mws_parent());
+}
+
+bool mws_page_item::has_focus()
+{
+   return get_mws_page_item_parent()->is_selected(get_instance());
 }
 
 void mws_page_item::select()

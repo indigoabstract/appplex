@@ -202,6 +202,13 @@ void mws_text_box::set_dimension(const glm::vec2 & i_dim)
    }
 }
 
+void mws_text_box::set_font(mws_sp<mws_font> i_font)
+{
+   font = i_font;
+   tx_src->set_font(font);
+   update_text();
+}
+
 void mws_text_box::select_char_at(const glm::vec2 & i_pos)
 {
    cursor_row_idx = size_t((i_pos.y + text_row_remainder) / font->get_height());

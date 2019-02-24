@@ -6,6 +6,7 @@
 #include "gfx-rt.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-util.hxx"
+#include "pfm.hxx"
 #include "pfm-gl.h"
 
 

@@ -8,40 +8,6 @@
 #include <iomanip>
 
 
-mws_exception::mws_exception()
-{
-   set_msg("");
-}
-
-mws_exception::mws_exception(const std::string& i_msg)
-{
-   set_msg(i_msg.c_str());
-}
-
-mws_exception::mws_exception(const char* i_msg)
-{
-   set_msg(i_msg);
-}
-
-mws_exception::~mws_exception()
-{
-}
-
-const char* mws_exception::what() const noexcept
-{
-   return msg.c_str();
-}
-
-void mws_exception::set_msg(const char* i_msg)
-{
-   msg = i_msg;
-
-#ifndef MWS_USES_EXCEPTIONS
-   mws_assert(false);
-#endif
-}
-
-
 template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
 template<> uint32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
 template<> int64 mws_to(const std::string& i_input) { return std::stoll(i_input); }
@@ -164,6 +130,40 @@ std::string mws_util::time::get_duration_as_string(uint32 i_duration)
 }
 
 
+
+int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
+{
+   auto comp_ch = [](const char i_0, const char i_1) -> int32
+   {
+      if (i_0 == i_1)
+      {
+         return 0;
+      }
+
+      return (std::toupper(i_0) - std::toupper(i_1));
+   };
+
+   const char* s1 = (const char*)i_0.c_str();
+   const char* s2 = (const char*)i_1.c_str();
+   char c1, c2;
+   int32 cmp_res = 0;
+
+   do
+   {
+      c1 = (char)* s1++;
+      c2 = (char)* s2++;
+      cmp_res = comp_ch(c1, c2);
+
+      if (c1 == '\0')
+      {
+         return cmp_res;
+      }
+
+   }
+   while (cmp_res == 0);
+
+   return cmp_res;
+}
 
 bool mws_str::starts_with(const std::string & istr, const std::string & ifind)
 {
