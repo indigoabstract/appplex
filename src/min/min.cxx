@@ -140,7 +140,7 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
          return 0;
       }
 
-      return (std::toupper(i_0) - std::toupper(i_1));
+      return (std::tolower(i_0) - std::tolower(i_1));
    };
 
    const char* s1 = (const char*)i_0.c_str();
