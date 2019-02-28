@@ -1,8 +1,9 @@
 #include "stdafx.hxx"
 
 #include "kxmd.hxx"
-#include "kxmd/kx-krte.hxx"
-#include "kxmd/kx-elem.hxx"
+#include "min.hxx"
+#include "pfm.hxx"
+#include <cctype>
 
 
 using std::string;
@@ -23,217 +24,14 @@ class kxmd_scn_block;
 class kxmd_scn_main;
 
 
-std::vector<mws_sp<kx_process> > kxmd_ops::get_process_list(const mws_sp<kx_process> ikp)
+mws_sp<kxmd_elem> kxmd::elem_at(mws_sp<kxmd_elem> i_r, const std::string& i_path)
 {
-   std::vector<mws_sp<kx_process> > list;
-
-   if (ikp->type == kxe_block)
-   {
-      auto block = static_pointer_cast<kx_block>(ikp);
-
-      for (auto& i : block->list)
-      {
-         if (i->is_process())
-         {
-            list.push_back(static_pointer_cast<kx_process>(i));
-         }
-      }
-   }
-
-   return list;
-}
-
-std::vector<std::string> kxmd_ops::get_process_name_list(const std::vector<mws_sp<kx_process> >& i_list)
-{
-   std::vector<std::string> list;
-
-   for (auto& i : i_list)
-   {
-      list.push_back(i->get_name());
-   }
-
-   return list;
-}
-
-
-std::vector<std::string> kxmd_ops::get_process_name_list(const mws_sp<kx_process> ikp)
-{
-   std::vector<mws_sp<kx_process> > l1 = get_process_list(ikp);
-   std::vector<std::string> l2;
-
-   if (!l1.empty())
-   {
-      l2 = get_process_name_list(l1);
-   }
-
-   return l2;
-}
-
-
-bool kxmd_ops::get_bool_from_list(const std::vector<std::string>& i_list)
-{
-   if (i_list.empty())
-   {
-      mws_throw mws_exception("list is empty");
-   }
-
-   if (i_list[0] == "false")
-   {
-      return false;
-   }
-   else if (i_list[0] == "true")
-   {
-      return true;
-   }
-
-   mws_throw mws_exception("parse error");
-}
-
-
-// i_path is like xxx.yyy.zzz
-mws_sp<kx_process> kxmd_ops::get_inner_block(std::string i_path, mws_sp<kx_process> i_root, bool i_recursive)
-{
-   mws_sp<kx_process> xdb;
-
-   if (i_root->type == kxe_block)
-   {
-      auto block = static_pointer_cast<kx_block>(i_root);
-      std::vector<std::string> tokens;
-      tokens = str_split(i_path, ".");
-      xdb = i_root;
-
-      for (auto& xdb_name : tokens)
-      {
-         auto sub_xdb = xdb->find_by_name(xdb_name, i_recursive);
-         xdb = sub_xdb;
-
-         if (!xdb)
-         {
-            return nullptr;
-         }
-      }
-   }
-
-   return xdb;
-}
-
-mws_any kxmd_ops::get_value(std::string i_path, mws_sp<kx_process> i_root, mws_any i_default_val)
-{
-   mws_sp<kx_process> px = get_inner_block(i_path, i_root);
-   mws_any result;
-
-   if (px)
-   {
-      auto values = get_process_name_list(px);
-      result = values;
-   }
-   else
-   {
-      result = i_default_val;
-   }
-
-   return result;
-}
-
-std::vector<std::string> kxmd_ops::get_kxmd_str_seq(std::string i_path, mws_sp<kx_process> i_root, std::vector<std::string> i_default_val)
-{
-   std::vector<std::string> seq;
-   mws_any val = get_value(i_path, i_root);
-
-   if (!val.empty())
-   {
-      mws_try
-      {
-         std::function<int(int)> is_quote = [](int c) { return c == '\'' || c == '"'; };
-
-         seq = mws_any_cast<std::vector<std::string>>(val);
-
-         // clear ' and " from the string
-         for (std::string& s : seq)
-         {
-            s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(is_quote)));
-            s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(is_quote)).base(), s.end());
-         }
-      }
-         mws_catch(mws_bad_any_cast& e)
-      {
-         trx(e.what());
-      }
-   }
-
-   if (seq.empty())
-   {
-      seq = i_default_val;
-   }
-
-   return seq;
-}
-
-
-// i_path is like xxx.yyy.zzz
-bool kxmd_ops::kxmd_path_exists(std::string i_path, mws_sp<kx_process> i_root)
-{
-   if (i_root->type == kxe_block)
-   {
-      std::size_t found = i_path.find_last_of(".");
-
-      if (found > 0)
-      {
-         std::string stem = i_path.substr(0, found);
-         std::string leaf = i_path.substr(found + 1, i_path.length() - found - 1);
-         auto seq = get_kxmd_str_seq(stem, i_root);
-         auto idx = std::find(seq.begin(), seq.end(), leaf);
-
-         if (idx != seq.end())
-         {
-            return true;
-         }
-      }
-   }
-
-   return false;
-}
-
-
-std::string kxmd_ops::as_string(mws_any const& i_val)
-{
-   std::string str = mws_any_cast<std::string>(i_val);
-   return str;
-}
-
-void kxmd_ops::push_val(mws_sp<kx_block> i_block, const mws_sp<kx_elem> i_val)
-{
-   i_block->list.push_back(i_val);
-}
-
-void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::string& i_val)
-{
-   auto val = kx_symbol::nwi();
-
-   val->name = i_val;
-   i_block->list.push_back(val);
-}
-
-void kxmd_ops::push_val(mws_sp<kx_block> i_block, const std::vector<std::string>& i_list)
-{
-   for (auto& str : i_list)
-   {
-      auto val = kx_symbol::nwi();
-
-      val->name = str;
-      i_block->list.push_back(val);
-   }
-}
-
-
-mws_sp<kxmd_elem> kxmd::elem_at(mws_sp<kxmd_elem> i_root, const std::string& i_path)
-{
-   mws_sp<kxmd_elem> ke = i_root;
+   mws_sp<kxmd_elem> ke = i_r;
    std::vector<std::string> tokens = str_split(i_path, ".");
 
    for (auto& ke_name : tokens)
    {
-      ke = ke->find_by_name(ke_name, false);
+      ke = kxmd::find_by_name(ke, ke_name, false);
 
       if (!ke)
       {
@@ -244,14 +42,14 @@ mws_sp<kxmd_elem> kxmd::elem_at(mws_sp<kxmd_elem> i_root, const std::string& i_p
    return ke;
 }
 
-std::string kxmd::val_at(mws_sp<kxmd_elem> i_root, const std::string& i_path, const std::string& i_default_val)
+std::string kxmd::val_at(mws_sp<kxmd_elem> i_r, const std::string& i_path, const std::string& i_default_val)
 {
-   mws_sp<kxmd_elem> ke = i_root;
+   mws_sp<kxmd_elem> ke = i_r;
    std::vector<std::string> tokens = str_split(i_path, ".");
 
    for (auto& ke_name : tokens)
    {
-      ke = ke->find_by_name(ke_name, false);
+      ke = kxmd::find_by_name(ke, ke_name, false);
 
       if (!ke)
       {
@@ -259,22 +57,51 @@ std::string kxmd::val_at(mws_sp<kxmd_elem> i_root, const std::string& i_path, co
       }
    }
 
-   if (ke->vect.size() == 1)
+   if (!ke->vect.empty())
    {
-      return ke->vect[0]->val;
+      return kxmd::strip_quotes(ke->vect[0]->val);
    }
 
    return i_default_val;
 }
 
-bool kxmd::path_exists(mws_sp<kxmd_elem> i_root, const std::string& i_path)
+std::vector<std::string> kxmd::val_seq_at(mws_sp<kxmd_elem> i_r, const std::string& i_path, const std::vector<std::string>& i_default_val)
 {
-   mws_sp<kxmd_elem> ke = i_root;
+   std::vector<std::string> val_vect;
+   mws_sp<kxmd_elem> ke = i_r;
    std::vector<std::string> tokens = str_split(i_path, ".");
 
    for (auto& ke_name : tokens)
    {
-      ke = ke->find_by_name(ke_name, false);
+      ke = kxmd::find_by_name(ke, ke_name, false);
+
+      if (!ke)
+      {
+         return i_default_val;
+      }
+   }
+
+   if (!ke->vect.empty())
+   {
+      for (auto& ke2 : ke->vect)
+      {
+         val_vect.push_back(kxmd::strip_quotes(ke2->val));
+      }
+
+      return val_vect;
+   }
+
+   return i_default_val;
+}
+
+bool kxmd::path_exists(mws_sp<kxmd_elem> i_r, const std::string& i_path)
+{
+   mws_sp<kxmd_elem> ke = i_r;
+   std::vector<std::string> tokens = str_split(i_path, ".");
+
+   for (auto& ke_name : tokens)
+   {
+      ke = kxmd::find_by_name(ke, ke_name, false);
 
       if (!ke)
       {
@@ -285,34 +112,34 @@ bool kxmd::path_exists(mws_sp<kxmd_elem> i_root, const std::string& i_path)
    return true;
 }
 
-void kxmd::push_back(mws_sp<kxmd_elem> i_root, const mws_sp<kxmd_elem> i_val)
+void kxmd::push_back(mws_sp<kxmd_elem> i_r, const mws_sp<kxmd_elem> i_val)
 {
-   i_root->vect.push_back(i_val);
+   i_r->vect.push_back(i_val);
 }
 
-void kxmd::push_back(mws_sp<kxmd_elem> i_root, const std::string& i_val)
+void kxmd::push_back(mws_sp<kxmd_elem> i_r, const std::string& i_val)
 {
-   auto val = kxmd_elem::nwi();
+   auto val = kxmd::nwi();
 
    val->val = i_val;
-   i_root->vect.push_back(val);
+   i_r->vect.push_back(val);
 }
 
-void kxmd::push_back(mws_sp<kxmd_elem> i_root, const std::vector<std::string>& i_list)
+void kxmd::push_back(mws_sp<kxmd_elem> i_r, const std::vector<std::string>& i_list)
 {
    for (auto& str : i_list)
    {
-      auto val = kxmd_elem::nwi();
+      auto val = kxmd::nwi();
 
       val->val = str;
-      i_root->vect.push_back(val);
+      i_r->vect.push_back(val);
    }
 }
 
 
-mws_sp<kxmd_elem> kxmd_elem::find_by_name(const std::string& i_name, bool i_recursive) const
+mws_sp<kxmd_elem> kxmd::find_by_name(mws_sp<kxmd_elem> i_r, const std::string& i_name, bool i_recursive)
 {
-   for (auto& ke : vect)
+   for (auto& ke : i_r->vect)
    {
       if (ke)
       {
@@ -323,7 +150,7 @@ mws_sp<kxmd_elem> kxmd_elem::find_by_name(const std::string& i_name, bool i_recu
 
          if (i_recursive)
          {
-            mws_sp<kxmd_elem> tke = ke->find_by_name(i_name, true);
+            mws_sp<kxmd_elem> tke = kxmd::find_by_name(ke, i_name, true);
 
             if (tke)
             {
@@ -336,26 +163,26 @@ mws_sp<kxmd_elem> kxmd_elem::find_by_name(const std::string& i_name, bool i_recu
    return nullptr;
 }
 
-std::string kxmd_elem::to_string() const
+std::string kxmd::to_string(mws_sp<kxmd_elem> i_r)
 {
-   return to_string_impl(0);
+   return kxmd::to_string_impl(i_r, 0);
 }
 
-std::string kxmd_elem::to_string_list() const
+std::string kxmd::to_string_list(mws_sp<kxmd_elem> i_r)
 {
    std::string s;
-   int size = vect.size();
+   int size = i_r->vect.size();
 
    for (int k = 0; k < size; k++)
    {
-      auto& ke = vect[k];
-      s += ke->to_string();
+      auto& ke = i_r->vect[k];
+      s += kxmd::to_string(ke);
 
       if (k < (size - 1))
       {
          s += ", ";
 
-         if (ke->is_node())
+         if (kxmd::is_node(ke))
          {
             s += "\n";
          }
@@ -365,7 +192,7 @@ std::string kxmd_elem::to_string_list() const
    return s;
 }
 
-std::string kxmd_elem::indent_by_level(int i_level) const
+std::string kxmd::indent_by_level(int i_level)
 {
    static const std::string indent_str = "    ";
    std::string ret;
@@ -378,53 +205,70 @@ std::string kxmd_elem::indent_by_level(int i_level) const
    return ret;
 }
 
-std::string kxmd_elem::to_string_impl(int i_level) const
+std::string kxmd::to_string_impl(mws_sp<kxmd_elem> i_r, int i_level)
 {
    std::string s;
 
-   if (!val.empty())
+   if (!i_r->val.empty())
    {
-      s += val;
+      s += i_r->val;
    }
 
-   if (!vect.empty())
+   if (!i_r->vect.empty())
    {
-      int size = vect.size();
+      int size = i_r->vect.size();
 
-      if (!val.empty())
+      if (!i_r->val.empty())
       {
          s += "\n";
-         s += indent_by_level(i_level);
+         s += kxmd::indent_by_level(i_level);
       }
 
       s += "[\n";
-      s += indent_by_level(i_level + 1);
+      s += kxmd::indent_by_level(i_level + 1);
 
       for (int k = 0; k < size; k++)
       {
-         auto& ke = vect[k];
-         s += ke->to_string_impl(i_level + 1);
+         auto& ke = i_r->vect[k];
+         s += kxmd::to_string_impl(ke, i_level + 1);
 
          if (k < (size - 1))
          {
             s += ", ";
 
-            if (ke->is_node())
+            if (kxmd::is_node(ke))
             {
                s += "\n";
-               s += indent_by_level(i_level + 1);
+               s += kxmd::indent_by_level(i_level + 1);
             }
          }
       }
 
       s += "\n";
-      s += indent_by_level(i_level);
+      s += kxmd::indent_by_level(i_level);
       s += "]";
    }
 
    return s;
 }
 
+std::string kxmd::strip_quotes(const std::string& i_text)
+{
+   const char single_quote = '\'';
+   const char double_quote = '"';
+
+   if (i_text.length() >= 2)
+   {
+      if ((i_text.front() == single_quote && i_text.back() == single_quote) || (i_text.front() == double_quote && i_text.back() == double_quote))
+      {
+         std::string result = i_text.substr(1, i_text.length() - 2);
+
+         return result;
+      }
+   }
+
+   return i_text;
+}
 
 
 enum class kxmd_elem_type
@@ -446,6 +290,10 @@ class kxmd_process;
 class kxs_elem : public kxmd_elem
 {
 public:
+   virtual ~kxs_elem() {}
+   size_t size() const { return vect.size(); }
+   virtual bool is_leaf() const { return vect.empty() && !val.empty(); };
+   virtual bool is_node() const { return !vect.empty(); };
    virtual kxmd_elem_type get_type() const { return kxmd_elem_type::kxe_invalid; }
 
 protected:
@@ -1235,7 +1083,7 @@ public:
       }
 
       mws_sp<kxmd_text> body = static_pointer_cast<kxmd_text>(kxt);
-      mws_sp<kxmd_elem> text = kxmd_elem::nwi();
+      mws_sp<kxmd_elem> text = kxmd::nwi();
       ke->vect.push_back(text);
       text->val = body->val;
       token_found = true;
@@ -1406,7 +1254,6 @@ public:
       };
 
       mws_sp<kxmd_block> ke = kxmd_block::nwi();
-      mws_sp<kxs_elem> kxt;
 
       while (!ss->is_end_of_line())
       {
@@ -1415,28 +1262,37 @@ public:
          for (auto et : sct)
          {
             mws_sp<kxmd_scn> scn = kxmd_scn_factory::nwi(et, ss);
-            kxt = scn->scan();
+            mws_sp<kxs_elem> kxt = scn->scan();
+
+            if (kxt && kxt->val == "vorbis")
+            {
+               int x = 3;
+            }
 
             if (scn->token_found)
             {
                ttoken_found = true;
 
-               // find out if this block has a name
-               if (kxt->is_node() && ke->vect.size() >= 1)
+               // discard comments
+               if (kxt->get_type() != kxmd_elem_type::kxe_ignore_block)
                {
-                  mws_sp<kxmd_block> kb = static_pointer_cast<kxmd_block>(kxt);
-
-                  if (ke->vect.back()->is_leaf())
+                  // find out if this block has a name
+                  if (kxt->is_node() && ke->vect.size() >= 1)
                   {
-                     kb->val = ke->vect.back()->val;
-                     ke->vect.pop_back();
-                  }
-               }
+                     mws_sp<kxmd_block> kb = static_pointer_cast<kxmd_block>(kxt);
 
-               // discard everything except nodes and leaves
-               if (kxt->is_leaf() || kxt->is_node())
-               {
-                  ke->vect.push_back(kxt);
+                     if (kxmd::is_leaf(ke->vect.back()))
+                     {
+                        kb->val = ke->vect.back()->val;
+                        ke->vect.pop_back();
+                     }
+                  }
+
+                  // discard everything except nodes and leaves
+                  if (kxt->is_leaf() || kxt->is_node())
+                  {
+                     ke->vect.push_back(kxt);
+                  }
                }
             }
 

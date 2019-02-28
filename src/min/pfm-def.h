@@ -41,6 +41,7 @@ extern "C"
 
 #define mws_report_gfx_errs()
 #define mws_print(i_format, ...)
+#define mws_println(i_format, ...)
 
 #endif
 

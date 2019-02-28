@@ -15,7 +15,7 @@ public:
 	static mws_sp<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir);
     virtual float get_screen_brightness() const override;
     virtual void set_screen_brightness(float i_brightness) override;
-    virtual int get_screen_dpi()const override;
+    virtual float get_screen_dpi()const override;
 	virtual void write_text(const char* i_text)const;
 	virtual void write_text_nl(const char* i_text)const;
 	virtual void write_text(const wchar_t* i_text)const;

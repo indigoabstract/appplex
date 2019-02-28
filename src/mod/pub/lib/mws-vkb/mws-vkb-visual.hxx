@@ -11,6 +11,11 @@
 #include <glm/inc.hpp>
 
 
+static const std::string vkb_line_sh = "mws-vkb-line";
+static const std::string vkb_point_sh = "mws-vkb-point";
+static const std::string vkb_triangle_sh = "mws-vkb-triangle";
+
+
 struct mws_vrn_obj_types
 {
    static const uint32 kernel_points = (1 << 0);
@@ -386,16 +391,14 @@ private:
       float line_thickness = 6.f;
 
       // cache the shaders, to prevent recompiling
-      shaders.push_back(gfx::i()->shader.new_program("sp_line"));
-      shaders.push_back(gfx::i()->shader.new_program("sp_point"));
-      shaders.push_back(gfx::i()->shader.new_program("sp_triangle"));
+      init_shaders();
 
       // kernel points
       {
          voronoi_kernels_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_iv1_id")));
          voronoi_kernels_mesh->name = "voronoi_kernels_mesh";
          voronoi_kernels_mesh->visible = diag_data->info.kernel_points_visible;
-         (*voronoi_kernels_mesh)[MP_SHADER_NAME] = "sp_point";
+         (*voronoi_kernels_mesh)[MP_SHADER_NAME] = vkb_point_sh;
          (*voronoi_kernels_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
          (*voronoi_kernels_mesh)[MP_CULL_BACK] = false;
          (*voronoi_kernels_mesh)["u_v1_point_size"] = 2.f;
@@ -408,7 +411,7 @@ private:
          voronoi_nexus_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_iv1_id")));
          voronoi_nexus_mesh->name = "voronoi_nexus_mesh";
          voronoi_nexus_mesh->visible = diag_data->info.nexus_points_visible;
-         (*voronoi_nexus_mesh)[MP_SHADER_NAME] = "sp_point";
+         (*voronoi_nexus_mesh)[MP_SHADER_NAME] = vkb_point_sh;
          (*voronoi_nexus_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
          (*voronoi_nexus_mesh)[MP_CULL_BACK] = false;
          (*voronoi_nexus_mesh)["u_v1_point_size"] = 2.5f;
@@ -421,7 +424,7 @@ private:
          nexus_pairs_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v4_seg_data, a_iv4_color, a_v2_tex_coord, a_iv1_id")));
          nexus_pairs_mesh->name = "nexus_pairs_mesh";
          nexus_pairs_mesh->visible = diag_data->info.nexus_pairs_visible;
-         (*nexus_pairs_mesh)[MP_SHADER_NAME] = "sp_line";
+         (*nexus_pairs_mesh)[MP_SHADER_NAME] = vkb_line_sh;
          (*nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
          (*nexus_pairs_mesh)["u_v1_depth_offset"] = 0.001f;
          (*nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, alpha_val);
@@ -436,7 +439,7 @@ private:
          voronoi_cell_faces_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_iv4_color, a_v2_tex_coord, a_iv1_id")));
          voronoi_cell_faces_mesh->name = "voronoi_cell_faces_mesh";
          voronoi_cell_faces_mesh->visible = diag_data->info.cell_triangles_visible;
-         (*voronoi_cell_faces_mesh)[MP_SHADER_NAME] = "sp_triangle";
+         (*voronoi_cell_faces_mesh)[MP_SHADER_NAME] = vkb_triangle_sh;
          (*voronoi_cell_faces_mesh)["u_v1_point_size"] = 6.f;
          (*voronoi_cell_faces_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 0.f, alpha_val);
          (*voronoi_cell_faces_mesh)[MP_CULL_FRONT] = false;
@@ -449,7 +452,7 @@ private:
          delaunay_diag_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v4_seg_data, a_iv4_color, a_v2_tex_coord, a_iv1_id")));
          delaunay_diag_mesh->name = "delaunay_diag_mesh";
          delaunay_diag_mesh->visible = diag_data->info.delaunay_diag_visible;
-         (*delaunay_diag_mesh)[MP_SHADER_NAME] = "sp_line";
+         (*delaunay_diag_mesh)[MP_SHADER_NAME] = vkb_line_sh;
          (*delaunay_diag_mesh)["u_v1_line_thickness"] = line_thickness;
          delaunay_diag_mesh->camera_id_list = { i_cam->camera_id() };
       }
@@ -458,7 +461,7 @@ private:
          convex_hull_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v4_seg_data, a_iv4_color, a_v2_tex_coord, a_iv1_id")));
          convex_hull_mesh->name = "convex_hull_mesh";
          convex_hull_mesh->visible = diag_data->info.convex_hull_visible;
-         (*convex_hull_mesh)[MP_SHADER_NAME] = "sp_line";
+         (*convex_hull_mesh)[MP_SHADER_NAME] = vkb_line_sh;
          (*convex_hull_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
          (*convex_hull_mesh)["u_v1_line_thickness"] = line_thickness;
          convex_hull_mesh->camera_id_list = { i_cam->camera_id() };
@@ -490,7 +493,199 @@ private:
       }
    }
 
-   std::vector<mws_sp<gfx_shader>> shaders;
+   void init_shaders()
+   {
+      // line shader
+      vkb_line_shader = gfx::i()->shader.get_program_by_name(vkb_line_sh);
+      if (!vkb_line_shader)
+      {
+         auto vsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+
+               layout(location = 0) in vec3 a_v3_position;
+               layout(location = 1) in vec4 a_v4_seg_data;
+               layout(location = 2) in vec4 a_iv4_color;
+               layout(location = 3) in vec2 a_v2_tex_coord;
+
+               uniform mat4 u_m4_model_view;
+               uniform mat4 u_m4_model_view_proj;
+               uniform mat4 u_m4_projection;
+
+               uniform float u_v1_line_thickness;
+               uniform float u_v1_depth_offset;
+
+               flat out vec4 v_v4_color;
+               smooth out vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               vec3 v3_cam_dir = normalize(u_m4_model_view[3].xyz);
+	               vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
+	               vec3 v3_direction = (u_m4_model_view * vec4(a_v4_seg_data.xyz, 0.0)).xyz;
+	               vec3 vect = cross(v3_cam_dir, v3_direction);
+	               float vsize = a_v4_seg_data.w * u_v1_line_thickness;
+	
+	               v3_position = v3_position + vect * vsize;
+	               v_v4_color = a_iv4_color;
+	               v_v2_tex_coord = a_v2_tex_coord;
+	
+	               vec4 v4_position = u_m4_projection * vec4(v3_position, 1.0);
+	
+	               //v4_position.z -= u_v1_depth_offset;
+	               gl_Position = v4_position;
+               }
+               )"
+         ));
+
+         auto fsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               #ifdef GL_ES
+	               precision highp float;
+               #endif
+
+               layout(location = 0) out vec4 v4_frag_color;
+
+               uniform vec4 u_v4_color;
+
+               flat in vec4 v_v4_color;
+               smooth in vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               v4_frag_color = u_v4_color;
+               }
+               )"
+         ));
+
+         vkb_line_shader = gfx::i()->shader.new_program_from_src(vkb_line_sh, vsh, fsh);
+      }
+
+      // point shader
+      vkb_point_shader = gfx::i()->shader.get_program_by_name(vkb_point_sh);
+      if (!vkb_point_shader)
+      {
+         auto vsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+
+               layout(location = 0) in vec3 a_v3_position;
+               layout(location = 1) in vec2 a_v2_tex_coord;
+
+               uniform mat4 u_m4_model_view;
+               uniform mat4 u_m4_model_view_proj;
+               uniform mat4 u_m4_projection;
+
+               uniform float u_v1_point_size;
+
+               smooth out vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               float vsize = u_v1_point_size;
+	               vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
+	
+	               v_v2_tex_coord = a_v2_tex_coord;
+	               v3_position = v3_position + vec3(1., 0., 0.) * vsize * a_v2_tex_coord.x;
+	               v3_position = v3_position + vec3(0., 1., 0.) * vsize * a_v2_tex_coord.y;
+	
+	               gl_Position = u_m4_projection * vec4(v3_position, 1.0);
+               }
+               )"
+         ));
+
+         auto fsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               #ifdef GL_ES
+	               precision highp float;	
+               #endif
+
+               layout(location = 0) out vec4 v4_frag_color;
+
+               uniform vec4 u_v4_color;
+
+               smooth in vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               v4_frag_color = u_v4_color;
+               }
+               )"
+         ));
+
+         vkb_point_shader = gfx::i()->shader.new_program_from_src(vkb_point_sh, vsh, fsh);
+      }
+
+      // triangle shader
+      vkb_triangle_shader = gfx::i()->shader.get_program_by_name(vkb_triangle_sh);
+      if (!vkb_triangle_shader)
+      {
+         auto vsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               layout (location = 0) in vec3 a_v3_position;
+               layout (location = 1) in vec4 a_iv4_color;
+               layout (location = 2) in vec2 a_v2_tex_coord;
+
+               uniform mat4 u_m4_model;
+               uniform mat4 u_m4_model_view_proj;
+               uniform mat4 u_m4_projection;
+               uniform mat4 u_m4_view_inv;
+
+               smooth out vec2 v_v2_tex_coord;
+               smooth out vec4 v_v4_color;
+               smooth out vec3 v_v3_pos_ms;
+               smooth out vec3 v_v3_pos_ws;
+               smooth out vec3 v_v3_cam_dir_ws;
+
+               void main()
+               {
+	               v_v2_tex_coord = a_v2_tex_coord;
+	               v_v4_color = a_iv4_color;
+	               v_v3_pos_ms = a_v3_position;
+	               v_v3_pos_ws = (u_m4_model * vec4(a_v3_position, 1.0)).xyz;
+	               v_v3_cam_dir_ws = normalize(v_v3_pos_ws - u_m4_view_inv[3].xyz);
+	
+	               gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+               }
+               )"
+         ));
+
+         auto fsh = mws_sp<std::string>(new std::string(
+            R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               layout(location = 0) out vec4 v4_frag_color;
+
+               uniform vec4 u_v4_color;
+
+               void main()
+               {
+	               v4_frag_color = u_v4_color;
+               }
+               )"
+         ));
+
+         vkb_triangle_shader = gfx::i()->shader.new_program_from_src(vkb_triangle_sh, vsh, fsh);
+      }
+   }
+
+   mws_sp<gfx_shader> vkb_line_shader;
+   mws_sp<gfx_shader> vkb_point_shader;
+   mws_sp<gfx_shader> vkb_triangle_shader;
 };
 
 

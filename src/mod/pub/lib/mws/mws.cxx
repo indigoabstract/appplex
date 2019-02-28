@@ -661,6 +661,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
 
    if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
+      mws_sp<mws> new_selected_item;
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
       static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
@@ -671,7 +672,6 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
       };
 
       std::sort(children.begin(), children.end(), z_sort);
-      selected_item = nullptr;
 
       for (auto& c : children)
       {
@@ -685,10 +685,25 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
 
                if (idp->is_processed())
                {
-                  selected_item = w;
+                  new_selected_item = w;
                   break;
                }
             }
+         }
+      }
+
+      if (selected_item != new_selected_item)
+      {
+         if (selected_item)
+         {
+            selected_item->on_focus_changed(false);
+         }
+
+         selected_item = new_selected_item;
+
+         if (selected_item)
+         {
+            selected_item->on_focus_changed(true);
          }
       }
    }
@@ -872,7 +887,13 @@ void mws_page::select(mws_sp<mws> i_item)
 {
    if (contains_mws(i_item))
    {
+      if (selected_item)
+      {
+         i_item->on_focus_changed(false);
+      }
+
       selected_item = i_item;
+      selected_item->on_focus_changed(true);
    }
    else
    {

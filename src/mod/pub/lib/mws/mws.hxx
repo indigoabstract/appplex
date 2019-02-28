@@ -83,7 +83,7 @@ public:
    virtual void list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list);
    virtual void set_enabled(bool i_is_enabled);
    bool is_enabled()const;
-   void set_visible(bool iis_visible);
+   void set_visible(bool i_is_visible);
    bool is_visible()const;
    void set_id(std::string iid);
    const std::string& get_id();
@@ -94,6 +94,7 @@ public:
    mws_sp<mws_page_tab> get_mws_root();
    virtual mws_sp<mws_mod> get_mod();
 
+   virtual void on_focus_changed(bool i_has_focus) {}
    virtual void receive(mws_sp<mws_dp> idp);
    virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler);
    virtual void update_state();
@@ -244,6 +245,8 @@ class mws_text_area : public mws_page_item
 {
 public:
    virtual ~mws_text_area() {}
+   virtual void do_action() {}
+   virtual bool is_action_key(key_types i_key) const { return false; }
 
 protected:
    mws_text_area() {}

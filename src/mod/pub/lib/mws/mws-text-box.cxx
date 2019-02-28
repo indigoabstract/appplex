@@ -7,6 +7,7 @@
 #include "mws-font.hxx"
 #include "font-db.hxx"
 #include "text-vxo.hxx"
+#include "mws-vkb/mws-vkb.hxx"
 #include "min.hxx"
 
 
@@ -32,6 +33,14 @@ void mws_text_box::setup()
    attach(tx_vxo);
 }
 
+void mws_text_box::do_action()
+{
+   if (on_action)
+   {
+      on_action();
+   }
+}
+
 bool mws_text_box::is_editable() const
 {
    return editable;
@@ -41,6 +50,7 @@ void mws_text_box::set_editable(bool i_is_editable)
 {
    if (editable != i_is_editable)
    {
+      editable = i_is_editable;
       auto src = new_model();
 
       if (tx_src)
@@ -50,8 +60,12 @@ void mws_text_box::set_editable(bool i_is_editable)
       }
 
       tx_src = src;
-      editable = i_is_editable;
    }
+}
+
+const std::string& mws_text_box::get_text() const
+{
+   return tx_src->get_text();
 }
 
 void mws_text_box::set_text(const std::string& i_text)
@@ -240,6 +254,8 @@ void mws_text_box::select_char_at(const glm::vec2 & i_pos)
    if (text.empty())
    {
       cursor_col_idx = 0;
+
+      if(is_editable())
       {
          uint32 line_index = top_line_idx + cursor_row_idx;
          uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
@@ -247,8 +263,9 @@ void mws_text_box::select_char_at(const glm::vec2 & i_pos)
          tx_src->set_cursor_pos(cursor_pos + cursor_col_idx);
          glm::ivec2 new_cursor_coord = tx_src->get_cursor_coord();
          mws_println("c1 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
+         update_gfx_cursor();
       }
-      update_gfx_cursor();
+
       return;
    }
 
@@ -325,20 +342,41 @@ void mws_text_box::update_view(mws_sp<mws_camera> g)
 {
    g->drawRect(pos.x, pos.y, dim.x, dim.y);
 
-   if (cursor_left && cursor_right)
+   if(has_focus())
    {
-      mws_rect cursor_rect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
-      g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
-   }
-   else if (cursor_left || cursor_right)
-   {
-      if (cursor_left)
+      if (cursor_left && cursor_right)
       {
-         g->drawRect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_left->w, cursor_left->h);
+         mws_rect cursor_rect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
+         g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
       }
-      else if (cursor_right)
+      else if (cursor_left || cursor_right)
       {
-         g->drawRect(cursor_right->x + pos.x, cursor_right->y + pos.y, cursor_right->w, cursor_right->h);
+         if (cursor_left)
+         {
+            g->drawRect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_left->w, cursor_left->h);
+         }
+         else if (cursor_right)
+         {
+            g->drawRect(cursor_right->x + pos.x, cursor_right->y + pos.y, cursor_right->w, cursor_right->h);
+         }
+      }
+   }
+}
+
+void mws_text_box::on_focus_changed(bool i_has_focus)
+{
+   if (i_has_focus)
+   {
+      if (on_gained_focus)
+      {
+         on_gained_focus();
+      }
+   }
+   else
+   {
+      if (on_lost_focus)
+      {
+         on_lost_focus();
       }
    }
 }
@@ -531,16 +569,21 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
    {
    case mws_ptr_evt::touch_began:
    {
-      if (pfm::has_touchscreen() || get_mod()->get_preferences()->emulate_mobile_screen())
+      if (is_editable())
       {
-         auto inst = static_pointer_cast<mws_text_area>(get_instance());
-         get_mws_root()->show_keyboard(inst);
+         if (pfm::has_touchscreen() || get_mod()->get_preferences()->emulate_mobile_screen())
+         {
+            auto inst = static_pointer_cast<mws_text_area>(get_instance());
+            get_mws_root()->show_keyboard(inst);
+         }
+
+         select_char_at(glm::vec2(x, y));
+         //mws_print("touch [%f, %f]\n", i_pe->points[0].x, i_pe->points[0].y);
       }
 
       ks.grab(x, y);
-      select_char_at(glm::vec2(x, y));
-      //mws_print("touch [%f, %f]\n", i_pe->points[0].x, i_pe->points[0].y);
 
+      if (on_click) { on_click(); }
       if (!i_pe->is_processed()) { i_pe->process(); }
       break;
    }
@@ -559,13 +602,29 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
    {
       key_types key = i_ke->get_key();
 
+      if (is_action_key(key))
+      {
+         if (on_action)
+         {
+            i_ke->process();
+            on_action();
+         }
+
+         return;
+      }
+
       if (mws_key_evt::is_ascii(key))
       {
-         std::string key_str(1, (char)key);
-         insert_at_cursor(key_str);
+         if (editable)
+         {
+            std::string key_str(1, (char)key);
+            insert_at_cursor(key_str);
+            i_ke->process();
+         }
       }
       else
       {
+         bool is_processed = true;
          float off = 51.175f;
 
          if (i_ke->get_type() == mws_key_evt::KE_PRESSED)
@@ -577,28 +636,28 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
          {
          case KEY_LEFT:
          {
-            tx_src->advance_cursor(dir_types::DIR_LEFT);
+            if (editable)tx_src->advance_cursor(dir_types::DIR_LEFT);
             scroll_text(glm::vec2(off, 0));
             break;
          }
 
          case KEY_UP:
          {
-            tx_src->advance_cursor(dir_types::DIR_UP);
+            if (editable)tx_src->advance_cursor(dir_types::DIR_UP);
             scroll_text(glm::vec2(0, off));
             break;
          }
 
          case KEY_RIGHT:
          {
-            tx_src->advance_cursor(dir_types::DIR_RIGHT);
+            if (editable)tx_src->advance_cursor(dir_types::DIR_RIGHT);
             scroll_text(glm::vec2(-off, 0));
             break;
          }
 
          case KEY_DOWN:
          {
-            tx_src->advance_cursor(dir_types::DIR_DOWN);
+            if (editable)tx_src->advance_cursor(dir_types::DIR_DOWN);
             scroll_text(glm::vec2(0, -off));
             break;
          }
@@ -638,6 +697,14 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
             }
             break;
          }
+
+         default:
+            is_processed = false;
+         }
+
+         if (is_processed)
+         {
+            i_ke->process();
          }
       }
    }
@@ -670,6 +737,16 @@ mws_sp<mws_text_field> mws_text_field::nwi()
    return inst;
 }
 
+bool mws_text_field::is_action_key(key_types i_key) const
+{
+   if (i_key == VKB_ENTER || i_key == VKB_DONE)
+   {
+      return true;
+   }
+
+   return false;
+}
+
 void mws_text_field::insert_at_cursor(const std::string& i_text)
 {
    std::string text = i_text;
@@ -685,11 +762,7 @@ void mws_text_field::set_text(const std::string& i_text)
 {
    std::string text = i_text;
    format_text(text);
-
-   if (!text.empty())
-   {
-      mws_text_box::set_text(text);
-   }
+   mws_text_box::set_text(text);
 }
 
 void mws_text_field::format_text(std::string& i_text)

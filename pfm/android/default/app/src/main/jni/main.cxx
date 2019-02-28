@@ -251,14 +251,14 @@ void android_main::set_screen_brightness(float i_brightness)
     env->CallStaticVoidMethod(clazz, mid, (jfloat)i_brightness);
 }
 
-int android_main::get_screen_dpi()const
+float android_main::get_screen_dpi()const
 {
     JNIEnv* env = JniHelper::getEnv();
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
     jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()I");
     jint dpi = env->CallStaticIntMethod(clazz, mid);
 
-    return (int)dpi;
+    return (float)dpi;
 }
 
 void android_main::write_text(const char* text)const

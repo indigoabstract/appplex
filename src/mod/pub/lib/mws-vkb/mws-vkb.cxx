@@ -162,7 +162,7 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 
    if (vkb_info_vect.empty())
    {
-      mws_println("no vkb files available");
+      mws_throw mws_exception("no vkb files available");
       return;
    }
 
@@ -389,7 +389,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          auto ret = impl->vk->get_kernel_idx_at(pt.x, pt.y);
          key_types key_id = impl->get_key_at(ret.idx);
 
-         if (key_id != VKB_DONE)
+         if (!ta->is_action_key(key_id))
          {
             mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
          }
@@ -409,7 +409,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             std::string key_name = impl->get_key_name(key_id);
             mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
 
-            if (key_id == VKB_DONE)
+            if (ta->is_action_key(key_id))
             {
                done();
             }
@@ -481,6 +481,7 @@ void mws_vkb::setup()
 
 void mws_vkb::done()
 {
+   ta->do_action();
    visible = false;
    ta = nullptr;
 }

@@ -18,8 +18,10 @@ class mws_text_box : public mws_text_area
 public:
    static mws_sp<mws_text_box> nwi();
    void setup() override;
+   virtual void do_action();
    virtual bool is_editable() const;
    virtual void set_editable(bool i_is_editable);
+   virtual const std::string& get_text() const;
    virtual void set_text(const std::string& i_text);
    virtual void push_back_text(const std::string& i_text);
    virtual void push_front_text(const std::string& i_text);
@@ -32,9 +34,19 @@ public:
    virtual void select_char_at(const glm::vec2& i_pos);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
+   virtual void on_focus_changed(bool i_has_focus);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_text();
    virtual void update_gfx_cursor();
+
+   // called after a click inside the text box
+   std::function<void()> on_click;
+   // called after gaining focus(if did not already have focus)
+   std::function<void()> on_gained_focus;
+   // called after losing focus
+   std::function<void()> on_lost_focus;
+   // called after enter(or an action key) was pressed
+   std::function<void()> on_action;
 
 protected:
    mws_text_box() {}
@@ -69,6 +81,7 @@ class mws_text_field : public mws_text_box
 {
 public:
    static mws_sp<mws_text_field> nwi();
+   virtual bool is_action_key(key_types i_key) const;
    virtual void insert_at_cursor(const std::string& i_text) override;
    virtual void set_text(const std::string& i_text) override;
 
