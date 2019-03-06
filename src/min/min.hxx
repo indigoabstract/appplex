@@ -36,6 +36,24 @@ template<> float mws_to(const std::string& i_input);
 template<> double mws_to(const std::string& i_input);
 template<> bool mws_to(const std::string& i_input);
 
+template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
+{
+   bool result = true;
+
+   mws_try
+   {
+      i_val = mws_to<T>(i_input);
+   }
+   mws_catch(...)
+   {
+#ifdef MWS_USES_EXCEPTIONS
+      result = false;
+#endif
+   }
+
+   return result;
+}
+
 
 struct mws_str
 {
