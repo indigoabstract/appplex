@@ -233,9 +233,9 @@ else() # Assume iOS
 	  "${CMAKE_CURRENT_LIST_DIR}/pfm/ios/res/storyboards/LaunchScreen.storyboard"
 	)
 
-    file(GLOB_RECURSE res_files_0 ${CMAKE_CURRENT_LIST_DIR}/src/res/*)
-	file(GLOB_RECURSE res_files_1 ${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/omnirecall/res/*)
-    set(res_files ${res_files_0} ${res_files_1})
+    file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/omnirecall/res/*)
+    list(FILTER ${res_files} EXCLUDE REGEX "ign/")
+    set(res_files ${res_files})
 
 	set_source_files_properties(
 	${res_files}
