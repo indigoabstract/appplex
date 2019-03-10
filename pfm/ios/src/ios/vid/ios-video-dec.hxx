@@ -1,6 +1,6 @@
 #pragma once
 
-#include "media/vid/video-dec.hxx"
+#include "vid/video-dec.hxx"
 #include <memory>
 #include <string>
 

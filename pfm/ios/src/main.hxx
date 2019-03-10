@@ -9,7 +9,7 @@ public:
 	virtual ~ios_main();
 	static mws_sp<ios_main> get_instance();
 	static mws_sp<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir);
-    virtual int get_screen_dpi()const override;
+    virtual float get_screen_dpi()const override;
 	virtual void write_text(const char* i_text)const override;
 	virtual void write_text_nl(const char* i_text)const override;
 	virtual void write_text(const wchar_t* i_text)const override;

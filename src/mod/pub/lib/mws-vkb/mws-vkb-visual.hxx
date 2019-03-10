@@ -518,7 +518,7 @@ private:
                uniform float u_v1_depth_offset;
 
                flat out vec4 v_v4_color;
-               smooth out vec2 v_v2_tex_coord;
+               out vec2 v_v2_tex_coord;
 
                void main()
                {
@@ -554,7 +554,7 @@ private:
                uniform vec4 u_v4_color;
 
                flat in vec4 v_v4_color;
-               smooth in vec2 v_v2_tex_coord;
+               in vec2 v_v2_tex_coord;
 
                void main()
                {
@@ -585,7 +585,7 @@ private:
 
                uniform float u_v1_point_size;
 
-               smooth out vec2 v_v2_tex_coord;
+               out vec2 v_v2_tex_coord;
 
                void main()
                {
@@ -614,7 +614,7 @@ private:
 
                uniform vec4 u_v4_color;
 
-               smooth in vec2 v_v2_tex_coord;
+               in vec2 v_v2_tex_coord;
 
                void main()
                {
@@ -644,11 +644,11 @@ private:
                uniform mat4 u_m4_projection;
                uniform mat4 u_m4_view_inv;
 
-               smooth out vec2 v_v2_tex_coord;
-               smooth out vec4 v_v4_color;
-               smooth out vec3 v_v3_pos_ms;
-               smooth out vec3 v_v3_pos_ws;
-               smooth out vec3 v_v3_cam_dir_ws;
+               out vec2 v_v2_tex_coord;
+               out vec4 v_v4_color;
+               out vec3 v_v3_pos_ms;
+               out vec3 v_v3_pos_ws;
+               out vec3 v_v3_cam_dir_ws;
 
                void main()
                {
@@ -667,6 +667,10 @@ private:
             R"(
                //@es #version 300 es
                //@dt #version 330 core
+                                                        
+                #ifdef GL_ES
+                precision highp float;
+                #endif
 
                layout(location = 0) out vec4 v4_frag_color;
 

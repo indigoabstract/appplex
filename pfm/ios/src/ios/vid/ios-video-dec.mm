@@ -1,15 +1,15 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
-#include "appplex-conf.hpp"
-#include "ios-video-dec.hpp"
-#include "pfm.hpp"
-#include "min.hpp"
+#include "appplex-conf.hxx"
+#include "ios-video-dec.hxx"
+#include "pfm.hxx"
+#include "min.hxx"
 
 #if defined PLATFORM_IOS
 
 #include "ViewController.h"
 #include "dec/video-player.h"
-#include "gfx-inc.hpp"
+#include "gfx-inc.hxx"
 #include "glm/gtc/type_ptr.hpp"
 #import <AVFoundation/AVAudioPlayer.h>
 #import <AVFoundation/AVMediaFormat.h>
@@ -17,7 +17,7 @@
 #import <AVFoundation/AVAsset.h>
 
 
-std::shared_ptr<mws_video_dec> mws_video_dec::nwi()
+mws_sp<mws_video_dec> mws_video_dec::nwi()
 {
    return ios_video_dec::nwi();
 }
@@ -405,7 +405,7 @@ public:
         return [anim_helper_inst.video_player video_height];
     }
     
-    std::shared_ptr<gfx_tex> get_current_frame()
+    mws_sp<gfx_tex> get_current_frame()
     {
         return rt_tex;
     }
@@ -427,18 +427,18 @@ public:
     
     AnimHelper* anim_helper_inst;
     std::string video_path;
-    std::shared_ptr<ios_media_info> mi;
+    mws_sp<ios_media_info> mi;
     mws_vdec_state state;
-    shared_ptr<gfx_camera> ortho_cam;
-    shared_ptr<gfx_rt> rt;
-    shared_ptr<gfx_tex> rt_tex;
-    shared_ptr<gfx_tex> tex_y;
-    shared_ptr<gfx_tex> tex_uv;
-    shared_ptr<gfx_quad_2d> quad_mesh;
+    mws_sp<gfx_camera> ortho_cam;
+    mws_sp<gfx_rt> rt;
+    mws_sp<gfx_tex> rt_tex;
+    mws_sp<gfx_tex> tex_y;
+    mws_sp<gfx_tex> tex_uv;
+    mws_sp<gfx_quad_2d> quad_mesh;
 };
 
 
-ios_media_info::ios_media_info(std::shared_ptr<ios_video_dec_impl> i_p)
+ios_media_info::ios_media_info(mws_sp<ios_video_dec_impl> i_p)
 {
     p = i_p;
 }
@@ -470,11 +470,11 @@ double ios_media_info::get_frame_rate()
 
 unsigned long long ios_media_info::get_duration_us()
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
     return 0;
 }
 
-std::shared_ptr<gfx_tex> ios_media_info::get_current_frame()
+mws_sp<gfx_tex> ios_media_info::get_current_frame()
 {
     return impl()->get_current_frame();
 }
@@ -489,15 +489,15 @@ mws_vdec_state ios_media_info::get_dec_state()
     return impl()->state;
 }
 
-std::shared_ptr<ios_video_dec_impl> ios_media_info::impl() const
+mws_sp<ios_video_dec_impl> ios_media_info::impl() const
 {
     return p.lock();
 }
 
 
-std::shared_ptr<ios_video_dec> ios_video_dec::nwi()
+mws_sp<ios_video_dec> ios_video_dec::nwi()
 {
-	return std::shared_ptr<ios_video_dec>(new ios_video_dec());
+	return mws_sp<ios_video_dec>(new ios_video_dec());
 }
 
 std::string ios_video_dec::get_video_path()
@@ -510,7 +510,7 @@ void ios_video_dec::set_video_path(std::string i_video_path)
     p->video_path = i_video_path;
 }
 
-std::shared_ptr<mws_media_info> ios_video_dec::get_media_info()
+mws_sp<mws_media_info> ios_video_dec::get_media_info()
 {
     return p->mi;
 }
@@ -532,7 +532,7 @@ mws_vdec_state ios_video_dec::get_state() const
     return p->state;
 }
 
-void ios_video_dec::update(std::shared_ptr<gfx_camera> i_mws_cam)
+void ios_video_dec::update(mws_sp<gfx_camera> i_mws_cam)
 {
     p->render_frame();
     p->end_frame();
@@ -556,32 +556,32 @@ void ios_video_dec::pause()
 
 void ios_video_dec::play_pause()
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
 void ios_video_dec::goto_frame(int iframe_idx)
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
 void ios_video_dec::next_frame()
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
 void ios_video_dec::prev_frame()
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
 void ios_video_dec::set_frame_limit(float iframe_limit)
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
-void ios_video_dec::set_listener(std::shared_ptr<mws_vdec_listener> listener)
+void ios_video_dec::set_listener(mws_sp<mws_vdec_listener> listener)
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
 }
 
 ios_video_dec::ios_video_dec()

@@ -1,7 +1,7 @@
 #import "ViewController.h"
 #include "main.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "objc-cxx-bridge.hxx"
@@ -104,9 +104,9 @@ static float native_scale = 0.f;
     return YES;
 }
 
-- (void) handle_touch_event:(pointer_evt::e_touch_type)type with_touches:(NSSet*)touches with_event:(UIEvent*)event
+- (void) handle_touch_event:(mws_ptr_evt::e_touch_type)type with_touches:(NSSet*)touches with_event:(UIEvent*)event
 {
-    auto evt = std::make_shared<pointer_evt>();
+    auto evt = mws_ptr_evt::nwi();
     NSEnumerator* enumerator = [[event allTouches] objectEnumerator];
     UITouch* current_touch;
     
@@ -115,10 +115,10 @@ static float native_scale = 0.f;
     
     while ((current_touch = [enumerator nextObject]))
     {
-        if ((evt->touch_count + 1) < pointer_evt::MAX_TOUCH_POINTS)
+        if ((evt->touch_count + 1) < mws_ptr_evt::MAX_TOUCH_POINTS)
         {
             CGPoint pos = [current_touch locationInView:current_touch.view];
-            pointer_evt::touch_point& current_point = evt->points[evt->touch_count++];
+            mws_ptr_evt::touch_point& current_point = evt->points[evt->touch_count++];
             
             current_point.identifier = (uintptr_t) current_touch;
             current_point.x = pos.x * native_scale;
@@ -144,28 +144,28 @@ static float native_scale = 0.f;
     //    NSLog(@"touch press: %f, %f", normalizedPoint.x, normalizedPoint.y);
     //self.paused = !self.paused;
     
-    [self handle_touch_event:pointer_evt::touch_began with_touches:touches with_event:event];
+    [self handle_touch_event:mws_ptr_evt::touch_began with_touches:touches with_event:event];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
     
-    [self handle_touch_event:pointer_evt::touch_moved with_touches:touches with_event:event];
+    [self handle_touch_event:mws_ptr_evt::touch_moved with_touches:touches with_event:event];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesEnded:touches withEvent:event];
     
-    [self handle_touch_event:pointer_evt::touch_ended with_touches:touches with_event:event];
+    [self handle_touch_event:mws_ptr_evt::touch_ended with_touches:touches with_event:event];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesCancelled:touches withEvent:event];
     
-    [self handle_touch_event:pointer_evt::touch_cancelled with_touches:touches with_event:event];
+    [self handle_touch_event:mws_ptr_evt::touch_cancelled with_touches:touches with_event:event];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect

@@ -2,7 +2,7 @@
 
 #include "min.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "com/mod/input-ctrl.hxx"
+#include "input/input-ctrl.hxx"
 #include <stdio.h>
 #include <sys/time.h>
 #include <time.h>
@@ -231,7 +231,7 @@ mws_sp<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& i
 	return std::make_shared<ios_file_impl>(ifilename, iroot_dir);
 }
 
-int ios_main::get_screen_dpi() const
+float ios_main::get_screen_dpi() const
 {
     return 480;
 }
@@ -293,7 +293,7 @@ void get_directory_listing_helper(umf_list iplist, mws_sp<pfm_file> ifile)
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{
 		mws_print("ios_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
-		throw ia_exception("duplicate filename: " + ifile->get_full_path());
+		throw mws_exception("duplicate filename: " + ifile->get_full_path());
 	}
 
 	(*iplist)[ifile->get_file_name()] = ifile;

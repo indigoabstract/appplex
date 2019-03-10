@@ -1,5 +1,3 @@
-#pragma once
-
 #include "mws-text-box.hxx"
 #include "mws-mod.hxx"
 #include "mws-camera.hxx"

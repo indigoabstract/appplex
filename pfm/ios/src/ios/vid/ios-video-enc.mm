@@ -1,10 +1,10 @@
-#include "stdafx.h"
+#include "stdafx.hxx"
 
-#include "appplex-conf.hpp"
-#include "ios-video-enc.hpp"
-#include "ios-video-dec.hpp"
-#include "pfm.hpp"
-#include "min.hpp"
+#include "appplex-conf.hxx"
+#include "ios-video-enc.hxx"
+#include "ios-video-dec.hxx"
+#include "pfm.hxx"
+#include "min.hxx"
 
 
 #if defined PLATFORM_IOS
@@ -15,7 +15,7 @@
 #import "ios/vid/enc/GPUImageOutput.h"
 #import "ios/vid/enc/GPUImageMovieWriter.h"
 #import "ios/vid/enc/GPUImageView.h"
-#include "gfx-inc.hpp"
+#include "gfx-inc.hxx"
 #include "pfm-gl.h"
 #include <unistd.h>
 
@@ -181,17 +181,17 @@ public:
 
 	void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
 	{
-		mws_throw ia_exception("n/a");
+		mws_throw mws_exception("n/a");
 	}
 	
 	void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length)
 	{
-		mws_throw ia_exception("n/a");
+		mws_throw mws_exception("n/a");
 	}
 	
 	void encode_frame_m2_rbga(std::shared_ptr<gfx_tex> i_frame_tex)
 	{
-		mws_throw ia_exception("n/a");
+		mws_throw mws_exception("n/a");
 	}
 
 	void stop_encoding()
@@ -425,7 +425,7 @@ void ios_video_reencoder::start_encoding(const mws_video_params& i_prm)
 
 void ios_video_reencoder::stop_encoding()
 {
-    mws_throw ia_exception("n/a");
+    mws_throw mws_exception("n/a");
    //p->vdec->stop();
 }
 
