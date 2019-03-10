@@ -49,6 +49,7 @@ public:
    virtual void setup() override;
    virtual void update_state() override;
    virtual void on_resize(uint32 i_width, uint32 i_height);
+   virtual void set_font(mws_sp<mws_font> i_fnt);
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
@@ -89,12 +90,14 @@ public:
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize() override;
    virtual void set_target(mws_sp<mws_text_area> i_tbx) override;
+   virtual void set_font(mws_sp<mws_font> i_fnt) override;
 
 protected:
    mws_vkb() {}
    virtual void setup() override;
    // when finished, call this to hide the keyboard
    virtual void done();
+   virtual mws_sp<mws_vkb_impl> get_impl();
 
    mws_sp<mws_vkb_impl> impl;
    mws_sp<mws_text_area> ta;

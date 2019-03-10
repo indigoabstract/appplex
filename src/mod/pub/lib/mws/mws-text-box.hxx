@@ -18,7 +18,8 @@ class mws_text_box : public mws_text_area
 public:
    static mws_sp<mws_text_box> nwi();
    void setup() override;
-   virtual void do_action();
+   virtual bool is_action_key(key_types i_key) const override;
+   virtual void do_action() override;
    virtual bool is_editable() const;
    virtual void set_editable(bool i_is_editable);
    virtual const std::string& get_text() const;
@@ -81,7 +82,7 @@ class mws_text_field : public mws_text_box
 {
 public:
    static mws_sp<mws_text_field> nwi();
-   virtual bool is_action_key(key_types i_key) const;
+   virtual bool is_action_key(key_types i_key) const override;
    virtual void insert_at_cursor(const std::string& i_text) override;
    virtual void set_text(const std::string& i_text) override;
 

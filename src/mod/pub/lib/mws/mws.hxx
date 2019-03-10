@@ -127,6 +127,7 @@ public:
    virtual ~mws_virtual_keyboard() {}
    virtual void on_resize() = 0;
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
+   virtual void set_font(mws_sp<mws_font> i_fnt) = 0;
 
 protected:
    mws_virtual_keyboard() {}
@@ -158,6 +159,7 @@ public:
    template <typename T> mws_sp<T> new_page() { mws_sp<T> p(new T()); add_page(p); return p; }
    // returns true if it handled(consumed) the back event, false otherwise
    virtual bool handle_back_evt();
+   virtual mws_sp<mws_virtual_keyboard> get_keyboard();
    virtual void show_keyboard(mws_sp<mws_text_area> i_tbx);
 
    std::vector<mws_sp<mws_page> > page_tab;

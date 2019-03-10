@@ -66,13 +66,14 @@ void mws_vkb_impl::setup()
       {VKB_DELETE, "delete"},
       {KEY_SPACE, "space"},
    };
+   float dpcm = pfm_main::gi()->get_screen_dpcm();
    {
       vk = mws_vkb_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
       vk->toggle_voronoi_object(obj_type_mask);
       vk->init();
       vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
       attach(vk->vgeom);
-      key_font = mws_font::nwi(48.f);
+      key_font = mws_font::nwi(72.f);
       key_font->set_color(gfx_color::colors::white);
       selected_key_font = mws_font::nwi(48.f);
       selected_key_font->set_color(gfx_color::colors::red);
@@ -84,7 +85,7 @@ void mws_vkb_impl::setup()
 
       key_font = mws_font::nwi(48.f);
       key_font->set_color(gfx_color::colors::white);
-      selected_key_font = mws_font::nwi(48.f);
+      selected_key_font = mws_font::nwi(72.f);
       selected_key_font->set_color(gfx_color::colors::red);
       vk_keys = text_vxo::nwi();
       attach(vk_keys);
@@ -189,6 +190,14 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
    mws_sp<pfm_file> file = file_vect[vkb_i_t.file_vect_idx];
 
    load_map(file->get_file_name());
+}
+
+void mws_vkb_impl::set_font(mws_sp<mws_font> i_fnt)
+{
+   key_font = mws_font::nwi(i_fnt);
+   key_font->set_color(gfx_color::colors::white);
+   selected_key_font = mws_font::nwi(i_fnt);
+   selected_key_font->set_color(gfx_color::colors::red);
 }
 
 std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
@@ -458,18 +467,12 @@ void mws_vkb::on_resize()
 void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 {
    ta = i_ta;
+   impl = get_impl();
+}
 
-   if (!impl)
-   {
-      uint32 w = pfm::screen::get_width();
-      uint32 h = pfm::screen::get_height();
-
-      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
-      //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
-      attach(impl);
-      impl->setup();
-      impl->on_resize(w, h);
-   }
+void mws_vkb::set_font(mws_sp<mws_font> i_fnt)
+{
+   get_impl()->set_font(i_fnt);
 }
 
 void mws_vkb::setup()
@@ -484,4 +487,21 @@ void mws_vkb::done()
    ta->do_action();
    visible = false;
    ta = nullptr;
+}
+
+mws_sp<mws_vkb_impl> mws_vkb::get_impl()
+{
+   if (!impl)
+   {
+      uint32 w = pfm::screen::get_width();
+      uint32 h = pfm::screen::get_height();
+
+      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
+      //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
+      attach(impl);
+      impl->setup();
+      impl->on_resize(w, h);
+   }
+
+   return impl;
 }

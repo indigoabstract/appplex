@@ -544,27 +544,37 @@ bool mws_page_tab::handle_back_evt()
    return false;
 }
 
-void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
+mws_sp<mws_virtual_keyboard> mws_page_tab::get_keyboard()
 {
    if (mod_mws_vkb_on)
    {
-      mws_println("mws_page_tab::show_keyboard");
-
       if (!vkb)
       {
          vkb = mws_vkb::gi();
          attach(vkb);
+         vkb->visible = false;
       }
 
-      vkb->visible = true;
-      vkb->set_target(i_tbx);
+      return vkb;
+   }
+
+   return nullptr;
+}
+
+void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
+{
+   if (mod_mws_vkb_on)
+   {
+      auto kb = get_keyboard();
+
+      kb->visible = true;
+      kb->set_target(i_tbx);
+      mws_println("mws_page_tab::show_keyboard");
    }
 }
 
 
-mws_page::mws_page()
-{
-}
+mws_page::mws_page() {}
 
 mws_sp<mws_page> mws_page::nwi(mws_sp<mws_page_tab> i_parent)
 {

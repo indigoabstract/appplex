@@ -1212,7 +1212,7 @@ void mws_mod_list::up_one_level()
       if (parent->get_mod_type() == e_mod_list)
       {
          mws_sp<mws_mod_list> ul = static_pointer_cast<mws_mod_list>(parent);
-         int idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
+         uint32 idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
 
          if (idx < ul->ulist.size())
          {

@@ -33,6 +33,16 @@ void mws_text_box::setup()
    attach(tx_vxo);
 }
 
+bool mws_text_box::is_action_key(key_types i_key) const
+{
+   if (i_key == VKB_DONE)
+   {
+      return true;
+   }
+
+   return false;
+}
+
 void mws_text_box::do_action()
 {
    if (on_action)

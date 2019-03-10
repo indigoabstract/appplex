@@ -30,9 +30,10 @@ public:
 };
 
 
-mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt)
+mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, float i_size)
 {
-   return nwi(i_fnt->p->size, i_fnt->get_full_path());
+   float size = (i_size > 0.f) ? i_size : i_fnt->p->size;
+   return nwi(size, i_fnt->get_full_path());
 }
 
 mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path)
