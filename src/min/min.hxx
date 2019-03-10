@@ -26,6 +26,14 @@ enum dir_types
 };
 
 
+// returns true is pointer i_w was initialized(it can be either valid or expired)
+// returns false otherwise(if it's an empty weak_ptr)
+template <class T> bool is_valid_or_expired(const std::weak_ptr<T>& i_w)
+{
+   return i_w.owner_before(std::weak_ptr<T>{}) || std::weak_ptr<T>{}.owner_before(i_w);
+}
+
+
 template<typename T> std::string mws_to_str(const T& i_input) { return std::to_string(i_input); }
 template<typename T> T mws_to(const std::string& i_input) { mws_throw mws_exception("mws_to<bool> failed"); return T(); }
 template<> int32 mws_to(const std::string& i_input);

@@ -35,13 +35,13 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt)
    return nwi(i_fnt->p->size, i_fnt->get_full_path());
 }
 
-mws_sp<mws_font> mws_font::nwi(float isize, const std::string& i_font_path)
+mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path)
 {
    mws_sp<mws_font> font(new mws_font());
    std::string font_path = i_font_path;
 
    font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path));
-   font->p->size = isize;
+   font->p->size = i_size;
 
    return font;
 }

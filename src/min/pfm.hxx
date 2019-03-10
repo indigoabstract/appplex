@@ -231,6 +231,7 @@ public:
 class pfm_main
 {
 public:
+   static mws_sp<pfm_main> gi();
    virtual void init();
    virtual void start();
    virtual void run();

@@ -204,7 +204,7 @@ public:
 };
 
 
-shared_ptr<ios_main> ios_main::instance;
+mws_sp<ios_main> ios_main::instance;
 
 ios_main::ios_main()
 {
@@ -216,17 +216,17 @@ ios_main::~ios_main()
 {
 }
 
-shared_ptr<ios_main> ios_main::get_instance()
+mws_sp<ios_main> ios_main::get_instance()
 {
 	if (!instance)
 	{
-		instance = shared_ptr<ios_main>(new ios_main());
+		instance = mws_sp<ios_main>(new ios_main());
 	}
 
 	return instance;
 }
 
-shared_ptr<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
 {
 	return std::make_shared<ios_file_impl>(ifilename, iroot_dir);
 }
@@ -288,7 +288,7 @@ std::string ios_main::get_timezone_id()const
     return name;
 }
 
-void get_directory_listing_helper(umf_list iplist, shared_ptr<pfm_file> ifile)
+void get_directory_listing_helper(umf_list iplist, mws_sp<pfm_file> ifile)
 {
 	if (iplist->find(ifile->get_file_name()) != iplist->end())
 	{

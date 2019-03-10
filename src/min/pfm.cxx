@@ -1031,6 +1031,11 @@ pfm_data::pfm_data()
 pfm_data pfm::data;
 
 
+mws_sp<pfm_main> pfm_main::gi()
+{
+   return pfm_app_inst;
+}
+
 void pfm_main::init() {}
 void pfm_main::start() {}
 void pfm_main::run() {}
