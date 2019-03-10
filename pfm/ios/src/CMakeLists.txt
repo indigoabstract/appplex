@@ -22,7 +22,7 @@
 
 target_sources(app_plex_main
     PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/objc-cxx-bridge.hpp"
+	"${CMAKE_CURRENT_LIST_DIR}/objc-cxx-bridge.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/global-c-functions.h"
 )
 
