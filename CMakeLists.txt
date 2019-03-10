@@ -234,7 +234,7 @@ else() # Assume iOS
 	)
 
     file(GLOB_RECURSE res_files ${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/omnirecall/res/*)
-    list(FILTER ${res_files} EXCLUDE REGEX "ign/")
+    #list(FILTER ${res_files} EXCLUDE REGEX "ign/")
     set(res_files ${res_files})
 
 	set_source_files_properties(

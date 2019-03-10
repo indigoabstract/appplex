@@ -667,10 +667,10 @@ private:
             R"(
                //@es #version 300 es
                //@dt #version 330 core
-                                                        
-                #ifdef GL_ES
-                precision highp float;
-                #endif
+
+               #ifdef GL_ES
+                  precision highp float;
+               #endif
 
                layout(location = 0) out vec4 v4_frag_color;
 
