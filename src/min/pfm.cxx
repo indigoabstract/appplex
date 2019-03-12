@@ -261,6 +261,21 @@ namespace pfm_impl
 
    void print_type_sizes()
    {
+      static_assert(sizeof(int8) == 1);
+      static_assert(sizeof(sint8) == 1);
+      static_assert(sizeof(uint8) == 1);
+      static_assert(sizeof(int16) == 2);
+      static_assert(sizeof(sint16) == 2);
+      static_assert(sizeof(uint16) == 2);
+      static_assert(sizeof(int32) == 4);
+      static_assert(sizeof(sint32) == 4);
+      static_assert(sizeof(uint32) == 4);
+      static_assert(sizeof(int64) == 8);
+      static_assert(sizeof(sint64) == 8);
+      static_assert(sizeof(uint64) == 8);
+      static_assert(sizeof(real32) == 4);
+      static_assert(sizeof(real64) == 8);
+      
       mws_print("print type sizes\n");
       mws_print("sizeof int8 [%d]\n", sizeof(int8));
       mws_print("sizeof sint8 [%d]\n", sizeof(sint8));
