@@ -959,7 +959,7 @@ namespace ns_kxmd
       }
 
       mws_sp<std::string> src;
-      int crt_idx;
+      uint32 crt_idx;
       mws_sp<kxs_elem> kxel;
 
    private:
@@ -1028,9 +1028,9 @@ namespace ns_kxmd
 
       virtual mws_sp<kxs_elem> scan_impl()
       {
-         int start_idx = ss->crt_idx;
+         uint32 start_idx = ss->crt_idx;
 
-         for (int k = start_idx; k < ss->src->length(); k++)
+         for (uint32 k = start_idx; k < ss->src->length(); k++)
          {
             char c = ss->src->at(k);
 
@@ -1099,7 +1099,7 @@ namespace ns_kxmd
 
          ss->crt_idx++;
 
-         for (int k = ss->crt_idx; k < ss->src->length(); k++)
+         for (uint32 k = ss->crt_idx; k < ss->src->length(); k++)
          {
             c = ss->src->at(k);
 
@@ -1141,7 +1141,7 @@ namespace ns_kxmd
          char end = c;
          ss->crt_idx++;
 
-         for (int k = ss->crt_idx; k < ss->src->length(); k++)
+         for (uint32 k = ss->crt_idx; k < ss->src->length(); k++)
          {
             char c = ss->src->at(k);
 
@@ -1734,7 +1734,7 @@ namespace ns_kxmd
             }
          }
 
-         int idx = ss->crt_idx;
+         uint32 idx = ss->crt_idx;
          bool parse_error = false;
 
          if (idx >= ss->src->length())
