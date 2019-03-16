@@ -242,8 +242,8 @@ key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
 
 void mws_vkb_impl::load_map(std::string i_filename)
 {
-   mws_sp<std::string> src = pfm::filesystem::load_res_as_string(i_filename);
-   mws_sp<kxmd_kv> kxmdi = kxmd::parse(src);
+   auto db = kxmd::nwi_from_file(i_filename);
+   kxmd_ref main = db->main();
    uint32 point_count = 0;
    glm::vec2 diag_dim(0.f);
    glm::vec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
@@ -251,23 +251,23 @@ void mws_vkb_impl::load_map(std::string i_filename)
 
    // size
    {
-      auto size = kxmd::elem_at(kxmdi, "size");
-      diag_dim = glm::vec2(mws_to<float>(size->val[0]->key), mws_to<float>(size->val[1]->key));
+      kxmd_ref size = main["size"];
+      diag_dim = glm::vec2(mws_to<float>(size[0].key()), mws_to<float>(size[1].key()));
       resize_fact = screen_dim / diag_dim;
    }
    // pages
    {
-      auto pages = kxmd::elem_at(kxmdi, "pages");
-      auto pg_0 = kxmd::elem_at(pages, "0");
+      kxmd_ref pages = main["pages"];
+      kxmd_ref pg_0 = pages["0"];
       // key_mods
       {
-         auto key_mods = kxmd::elem_at(pg_0, "key-mods");
+         kxmd_ref key_mods = pg_0["key-mods"];
          // mod-none & mod-shift
          {
-            auto keys_mod_none = kxmd::elem_at(key_mods, "mod-none");
-            auto keys_mod_shift = kxmd::elem_at(key_mods, "mod-shift");
-            uint32 size = keys_mod_none->val.size();
-            mws_assert(keys_mod_shift->val.size() == size);
+            kxmd_ref keys_mod_none = key_mods["mod-none"];
+            kxmd_ref keys_mod_shift = key_mods["mod-shift"];
+            uint32 size = keys_mod_none.size();
+            mws_assert(keys_mod_shift.size() == size);
             set_key_vect_size(size);
             point_count = size;
             {
@@ -275,7 +275,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
                {
                   // mod-none
                   {
-                     const std::string& key = keys_mod_none->val[k]->key;
+                     const std::string& key = keys_mod_none[k].key();
                      uint32 key_id = mws_to<uint32>(key);
 
                      mws_assert(key_id > KEY_INVALID && key_id < KEY_COUNT);
@@ -283,7 +283,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
                   }
                   // mod-shift
                   {
-                     const std::string& key = keys_mod_shift->val[k]->key;
+                     const std::string& key = keys_mod_shift[k].key();
                      uint32 key_id = mws_to<uint32>(key);
 
                      mws_assert(key_id > KEY_INVALID && key_id < KEY_COUNT);
@@ -295,15 +295,15 @@ void mws_vkb_impl::load_map(std::string i_filename)
       }
       // key coord
       {
-         auto key_coord = kxmd::elem_at(pg_0, "key-coord");
+         kxmd_ref key_coord = pg_0["key-coord"];
          std::vector<glm::vec2> key_coord_pos;
-         uint32 size = key_coord->val.size();
-         mws_assert(key_coord->val.size() == (2 * point_count));
+         uint32 size = key_coord.size();
+         mws_assert(key_coord.size() == (2 * point_count));
 
          for (uint32 k = 0; k < point_count; k++)
          {
-            float pos_0 = mws_to<float>(key_coord->val[2 * k + 0]->key);
-            float pos_1 = mws_to<float>(key_coord->val[2 * k + 1]->key);
+            float pos_0 = mws_to<float>(key_coord[2 * k + 0].key());
+            float pos_1 = mws_to<float>(key_coord[2 * k + 1].key());
             glm::vec2 dim = glm::vec2(pos_0, pos_1) * resize_fact;
 
             key_coord_pos.push_back(dim);

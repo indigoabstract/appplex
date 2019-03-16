@@ -20,7 +20,14 @@ mod
 	shipwrecked[ enabled[ false ], ],
 	vorofract[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, util, vector-fonts ] ],
 	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten ], ],
-	omnirecall[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, notifications, mws, png, res-ld, techno-globe, util, vector-fonts ], platf[ windows, android, ios ], ],
+	omnirecall
+	[
+		uses
+		[
+			gfx, fonts, fmt, freetype, freetype-gl, input, jcv, kxmd, kxmdb, notifications, mws, mws-vkb, png, res-ld, techno-globe, util, vector-fonts
+		],
+		platf[ windows, android, ios ],
+	],
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
