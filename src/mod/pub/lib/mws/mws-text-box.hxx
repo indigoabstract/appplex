@@ -23,7 +23,7 @@ public:
    virtual bool is_editable() const;
    virtual void set_editable(bool i_is_editable);
    virtual const std::string& get_text() const;
-   virtual void set_text(const std::string& i_text);
+   virtual void set_text(const std::string& i_text) override;
    virtual void push_back_text(const std::string& i_text);
    virtual void push_front_text(const std::string& i_text);
    virtual void insert_at_cursor(const std::string& i_text);

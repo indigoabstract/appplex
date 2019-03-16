@@ -249,6 +249,7 @@ public:
    virtual ~mws_text_area() {}
    virtual void do_action() {}
    virtual bool is_action_key(key_types i_key) const { return false; }
+   virtual void set_text(const std::string& i_text) = 0;
 
 protected:
    mws_text_area() {}
