@@ -238,6 +238,9 @@ float msvc_main::get_screen_dpi()const
       return dpi;
    }
 
+   int w2 = GetDeviceCaps(hdc_window, HORZSIZE);
+   int h2 = GetDeviceCaps(hdc_window, VERTSIZE);
+
    return 127.f;
 }
 
@@ -277,30 +280,41 @@ void msvc_main::flip_screen()
       int t = width;
       width = height;
       height = t;
+   }
 
 #if defined MWS_DEBUG_BUILD
 
-      x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
-      y = -5;
+   x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
+   y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
 
-#endif
-      SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
-   }
-   else
+   if (width < height)
    {
-#if defined MWS_DEBUG_BUILD
+      if (portrait_flip_count % 2 == 0)
+      {
+         y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+      }
+      else
+      {
+         y = 5;
+      }
 
-      x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
-      y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+      portrait_flip_count++;
+   }
 
 #endif
-      SetWindowPos(hwnd, HWND_TOP, x, y, width, height, 0);
-   }
+   window_coord.left = x;
+   window_coord.right = x + width;
+   window_coord.top = y;
+   window_coord.bottom = y + height;
+   AdjustWindowRect(&window_coord, WS_OVERLAPPEDWINDOW, FALSE);
+   SetWindowPos(hwnd, HWND_TOP, window_coord.left, window_coord.top, window_coord.right - window_coord.left, window_coord.bottom - window_coord.top, 0);
+
+   //mws_println("flip_screen wnd[ x[ %d ] y [ %d ] w [ %d ] h [ %d ] ]", (int)x, (int)y, int(width), int(height));
 }
 
 void msvc_main::write_text(const char* text)const
 {
-   if (text&& instance->console_handle != INVALID_HANDLE_VALUE)
+   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleA(instance.consoleHandle, text, wcslen(text), NULL, NULL);
       printf(text);
@@ -317,7 +331,7 @@ void msvc_main::write_text_nl(const char* text)const
 
 void msvc_main::write_text(const wchar_t* text)const
 {
-   if (text&& instance->console_handle != INVALID_HANDLE_VALUE)
+   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleW(instance.consoleHandle, text, wcslen(text), NULL, NULL);
       wprintf(text);
@@ -335,7 +349,7 @@ void msvc_main::write_text_v(const char* iformat, ...)const
    vsnprintf_s(dest, 1024 * 16 - 1, _TRUNCATE, iformat, argptr);
    va_end(argptr);
 
-   if (iformat&& instance->console_handle != INVALID_HANDLE_VALUE)
+   if (iformat && instance->console_handle != INVALID_HANDLE_VALUE)
    {
       //WriteConsoleA(instance.consoleHandle, text, strlen(text), NULL, NULL);
       printf(dest);
@@ -360,7 +374,7 @@ void msvc_main::write_text_nl(const wchar_t* text)const
    write_text(L"\n");
 }
 
-umf_list msvc_main::get_directory_listing(const std::string & idirectory, umf_list iplist, bool is_recursive)
+umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive)
 {
    if (idirectory.length() > 0)
    {
@@ -465,7 +479,15 @@ bool msvc_main::init_app(int argc, char** argv)
 #if defined MWS_DEBUG_BUILD
 
       x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
-      y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+
+      if (height < GetSystemMetrics(SM_CYSCREEN))
+      {
+         y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
+      }
+      else
+      {
+         y = 5;
+      }
 
 #endif
 
@@ -474,6 +496,8 @@ bool msvc_main::init_app(int argc, char** argv)
       window_coord.top = y;
       window_coord.bottom = y + height;
       AdjustWindowRect(&window_coord, WS_OVERLAPPEDWINDOW, FALSE);
+      //mws_println("init_app wnd[ x[ %d ] y [ %d ] w [ %d ] h [ %d ] ]",
+      //   (int)window_coord.left, (int)window_coord.top, int(window_coord.right - window_coord.left), int(window_coord.bottom - window_coord.top));
 
       hwnd = create_app_window(hinstance, window_coord);
 
@@ -717,20 +741,20 @@ int msvc_main::win_main_loop()
 #else
                SwapBuffers(hdc_window);
 #endif
-            }
+         }
             else
             {
                disable_paint = false;
             }
-         }
+      }
 
          next_update_time = current_time + timer_interval;
-      }
+   }
       else
       {
          Sleep(15);
       }
-   }
+}
 
    if (!IsWindowVisible(hwnd))
       // remove the tray icon
@@ -1389,6 +1413,16 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
       height = (height > 0) ? height : 1;
       mws_mod_ctrl::inst()->resize_app(width, height);
+
+      return 0;
+   }
+   case WM_GETMINMAXINFO:
+   {
+      DefWindowProc(hwnd, message, wparam, lparam);
+
+      MINMAXINFO* pmmi = (MINMAXINFO*)lparam;
+      pmmi->ptMaxTrackSize.x = 1600;
+      pmmi->ptMaxTrackSize.y = 1600;
 
       return 0;
    }

@@ -390,7 +390,7 @@ void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line)
 
    if (error_code != 0)
    {
-      if (gl_error_code_list.find(error_code) != gl_error_code_list.end())
+      if (!gl_error_code_list.empty() && (gl_error_code_list.find(error_code) != gl_error_code_list.end()))
       {
          std::string error_name = gl_error_code_list[error_code];
          std::string error_desc = gl_error_list[error_name];

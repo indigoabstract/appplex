@@ -69,6 +69,7 @@ private:
    static mws_sp<msvc_main> instance;
    bool is_full_screen;
    bool is_window_flipped = false;
+   uint32 portrait_flip_count = 0;
    bool emulate_mobile_screen = false;
    RECT window_coord;
    bool disable_paint;
