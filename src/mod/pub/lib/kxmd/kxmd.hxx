@@ -18,37 +18,37 @@ namespace ns_kxmd
       // constructs an empty/nullptr object
       kxmd_ref();
 
-      bool valid() const;
-      mws_sp<kxmd> get_db() const;
-      std::string key() const;
-      std::vector<kxmd_ref> val() const;
-      size_t size() const;
-      bool is_leaf() const;
-      bool is_node() const;
-      void del_val() const;
-      void del_val_at_idx(uint32 i_idx) const;
-      bool operator==(const kxmd_ref& i_ref) const;
-      kxmd_ref operator[](uint32 i_idx) const;
+      virtual bool valid() const;
+      virtual mws_sp<kxmd> get_db() const;
+      virtual std::string key() const;
+      virtual std::vector<kxmd_ref> val() const;
+      virtual size_t size() const;
+      virtual bool is_leaf() const;
+      virtual bool is_node() const;
+      virtual void del_val() const;
+      virtual void del_val_at_idx(uint32 i_idx) const;
+      virtual bool operator==(const kxmd_ref& i_ref) const;
+      virtual kxmd_ref operator[](uint32 i_idx) const;
       // gets a reference to an elem that's inside the given elem
       // i_path is like xxx.yyy.zzz.etc
-      kxmd_ref operator[](const std::string& i_path) const;
+      virtual kxmd_ref operator[](const std::string& i_path) const;
       // fast way to get the first value in a node list
       // for example, for "default.start.mod-list" in "default[ start[ mod-list[ kxmd ], exclusive [ true ], launch-mod [ true ], ], ]", returns "mod-list"
       // returns i_default_val if path is empty or does not exist
-      std::string val_at(const std::string& i_path, const std::string& i_default_val = "") const;
+      virtual std::string val_at(const std::string& i_path, const std::string& i_default_val = "") const;
       // fast way to get the leaf list of node-leaf-list elems
       // for example, for "default.start" in "default[ start[ mod-list[ kxmd ], exclusive [ true ], launch-mod [ true ], ], ]", returns "[ mod-list, exclusive, launch-mod, ]"
       // returns i_default_val if path is empty or does not exist
-      std::vector<std::string> val_seq_at(const std::string& i_path, const std::vector<std::string>& i_default_val = {}) const;
+      virtual std::vector<std::string> val_seq_at(const std::string& i_path, const std::vector<std::string>& i_default_val = {}) const;
       // checks if path exists, starting from a given root
       // path is like xxx.yyy.zzz.etc
-      bool path_exists(const std::string& i_path) const;
-      void set_key(const std::string& i_key) const;
-      kxmd_ref push_back(const std::string& i_key) const;
-      void push_back(const std::vector<std::string>& i_list) const;
-      kxmd_ref find_by_key(const std::string& i_key, bool i_recursive = false) const;
-      std::string to_str_inc_self() const;
-      std::string to_str() const;
+      virtual bool path_exists(const std::string& i_path) const;
+      virtual void set_key(const std::string& i_key) const;
+      virtual kxmd_ref push_back(const std::string& i_key) const;
+      virtual void push_back(const std::vector<std::string>& i_list) const;
+      virtual kxmd_ref find_by_key(const std::string& i_key, bool i_recursive = false) const;
+      virtual std::string to_str_inc_self() const;
+      virtual std::string to_str() const;
 
    private:
       friend class kxmd_impl;
