@@ -28,9 +28,9 @@ enum dir_types
 
 // returns true is pointer i_w was initialized(it can be either valid or expired)
 // returns false otherwise(if it's an empty weak_ptr)
-template <class T> bool is_valid_or_expired(const std::weak_ptr<T>& i_w)
+template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)
 {
-   return i_w.owner_before(std::weak_ptr<T>{}) || std::weak_ptr<T>{}.owner_before(i_w);
+   return i_w.owner_before(mws_wp<T>{}) || mws_wp<T>{}.owner_before(i_w);
 }
 
 
