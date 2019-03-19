@@ -30,7 +30,9 @@ namespace ns_kxmd
       virtual bool empty() const;
       virtual bool is_leaf() const;
       virtual bool is_node() const;
+      // deletes all vals
       virtual void clear() const;
+      // erases val at i_idx
       virtual void erase(uint32 i_idx) const;
       virtual bool operator==(const kv_ref& i_ref) const;
       virtual kv_ref operator[](uint32 i_idx) const;
@@ -50,6 +52,7 @@ namespace ns_kxmd
       virtual bool path_exists(const std::string& i_path) const;
       virtual void set_key(const std::string& i_key) const;
       virtual kv_ref push_back(const std::string& i_key) const;
+      template<typename T> kv_ref push_back_as(const T& i_key) const { return push_back(mws_to_str<T>(i_key)); }
       virtual void push_back(const std::vector<std::string>& i_list) const;
       virtual kv_ref find_by_key(const std::string& i_key, bool i_recursive = false) const;
       virtual std::string to_str_inc_self() const;
