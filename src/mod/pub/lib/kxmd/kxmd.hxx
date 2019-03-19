@@ -29,8 +29,8 @@ namespace ns_kxmd
       virtual size_t size() const;
       virtual bool is_leaf() const;
       virtual bool is_node() const;
-      virtual void del_val() const;
-      virtual void del_val_at_idx(uint32 i_idx) const;
+      virtual void clear() const;
+      virtual void erase(uint32 i_idx) const;
       virtual bool operator==(const kv_ref& i_ref) const;
       virtual kv_ref operator[](uint32 i_idx) const;
       // gets a reference to an elem that's inside the given elem

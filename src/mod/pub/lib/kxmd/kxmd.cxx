@@ -158,7 +158,7 @@ namespace ns_kxmd
          return false;
       };
 
-      static void del_val(const kv_ref* i_ref)
+      static void clear(const kv_ref* i_ref)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -168,7 +168,7 @@ namespace ns_kxmd
          }
       }
 
-      static void del_val_at_idx(const kv_ref* i_ref, uint32 i_idx)
+      static void erase(const kv_ref* i_ref, uint32 i_idx)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -543,14 +543,14 @@ namespace ns_kxmd
       return kxmd_impl::is_node(this);
    }
 
-   void kv_ref::del_val() const
+   void kv_ref::clear() const
    {
-      kxmd_impl::del_val(this);
+      kxmd_impl::clear(this);
    }
 
-   void kv_ref::del_val_at_idx(uint32 i_idx) const
+   void kv_ref::erase(uint32 i_idx) const
    {
-      kxmd_impl::del_val_at_idx(this, i_idx);
+      kxmd_impl::erase(this, i_idx);
    }
 
    bool kv_ref::operator==(const kv_ref & i_ref) const
