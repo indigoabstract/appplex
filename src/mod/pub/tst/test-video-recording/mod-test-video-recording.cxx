@@ -262,7 +262,7 @@ namespace test_video_recording
 
       void update_view(mws_sp<mws_camera> mws_cam)
       {
-         std::string frame_counter = mws_to_str("frame count: [%d]", frame_idx);
+         std::string frame_counter = mws_to_str_fmt("frame count: [%d]", frame_idx);
 
          mws_report_gfx_errs();
          quad_mesh->draw_out_of_sync(mws_cam);

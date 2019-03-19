@@ -209,7 +209,7 @@ public:
 
          if (i_shader_id.length() == 0)
          {
-            shader_id = mws_to_str("from-src#%d", shader_idx);
+            shader_id = mws_to_str_fmt("from-src#%d", shader_idx);
          }
 
          shader_idx++;

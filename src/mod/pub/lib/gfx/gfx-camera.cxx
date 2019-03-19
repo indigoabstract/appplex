@@ -853,7 +853,7 @@ void gfx_camera::load(mws_sp<gfx_camera> inst)
    }
    else
    {
-      camera_id = mws_to_str("default%d", camera_idx);
+      camera_id = mws_to_str_fmt("default%d", camera_idx);
    }
 
    camera_idx++;

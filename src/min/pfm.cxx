@@ -1395,7 +1395,7 @@ mws_sp<pfm_main> pfm::get_pfm_main_inst()
 }
 
 
-std::string mws_to_str(const char* i_format, ...)
+std::string mws_to_str_fmt(const char* i_format, ...)
 {
    char dest[1024 * 16];
    va_list arg_ptr;

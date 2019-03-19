@@ -336,7 +336,7 @@ private:
 
 #define trn() pfm::get_pfm_main_inst()->write_text_nl("")
 #define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
-std::string mws_to_str(const char* i_format, ...);
+std::string mws_to_str_fmt(const char* i_format, ...);
 
 template <typename... argst> void trx(const char* i_format, const argst& ... i_args)
 {

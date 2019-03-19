@@ -358,7 +358,7 @@ public:
 
       if (i_filename.empty())
       {
-         i_filename = mws_to_str("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
+         i_filename = mws_to_str_fmt("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
       }
 
       const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
@@ -510,13 +510,13 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
 
    if (i_filename.empty())
    {
-      string file_root = mws_to_str("%s-", p->u.lock()->get_name().c_str());
+      string file_root = mws_to_str_fmt("%s-", p->u.lock()->get_name().c_str());
       string img_ext = ".png";
       string zeroes[] =
       {
          "00", "0"
       };
-      std::string dir_name = pfm::filesystem::get_writable_path(p->u.lock()->get_name());// mws_to_str("f:/data/media/work/screens/%s", p->u.lock()->get_name().c_str());
+      std::string dir_name = pfm::filesystem::get_writable_path(p->u.lock()->get_name());// mws_to_str_fmt("f:/data/media/work/screens/%s", p->u.lock()->get_name().c_str());
       auto dir = pfm_file::get_inst(dir_name);
       int screenshot_idx = 0;
 
@@ -548,14 +548,14 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
          // assign a zero prefix.
          if (digits < 2)
          {
-            idx_nr = mws_to_str("%s%s%d", file_root.c_str(), zeroes[digits].c_str(), screenshot_idx);
+            idx_nr = mws_to_str_fmt("%s%s%d", file_root.c_str(), zeroes[digits].c_str(), screenshot_idx);
          }
          else
          {
-            idx_nr = mws_to_str("%s%d", file_root.c_str(), screenshot_idx);
+            idx_nr = mws_to_str_fmt("%s%d", file_root.c_str(), screenshot_idx);
          }
 
-         std::string file_name = mws_to_str("%s%s", idx_nr.c_str(), img_ext.c_str());
+         std::string file_name = mws_to_str_fmt("%s%s", idx_nr.c_str(), img_ext.c_str());
          screenshot_file = pfm_file::get_inst(dir_name + "/" + file_name);
          screenshot_idx++;
       } while (screenshot_file->exists());
@@ -1089,7 +1089,7 @@ void mws_mod::update_view(int update_count)
    if (fps > 0 && !storage.is_recording_screen())
    {
       float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
-      string f = mws_to_str("uc %d u %02.1f f %02.1f", update_count, ups, fps);
+      string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
       glm::vec2 txt_dim = mws_cam->get_font()->get_text_dim(f);
 
       mws_cam->drawText(f, get_width() - txt_dim.x, 0.f);
@@ -1106,7 +1106,7 @@ void mws_mod::post_update_view() {}
 int mws_mod_list::mod_list_count = 0;
 
 
-mws_mod_list::mws_mod_list() : mws_mod(mws_to_str("mod_app_list_#%d", mws_mod_list::mod_list_count).c_str())
+mws_mod_list::mws_mod_list() : mws_mod(mws_to_str_fmt("mod_app_list_#%d", mws_mod_list::mod_list_count).c_str())
 {
    mod_list_count++;
 }

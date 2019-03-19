@@ -27,6 +27,7 @@ namespace ns_kxmd
       virtual std::vector<kv_ref> val() const;
       template<typename T> T val_as(uint32 i_idx = 0) const { return mws_to<T>((*this)[i_idx]); }
       virtual size_t size() const;
+      virtual bool empty() const;
       virtual bool is_leaf() const;
       virtual bool is_node() const;
       virtual void clear() const;
@@ -71,6 +72,7 @@ namespace ns_kxmd
       static mws_sp<kxmd> nwi_from_file(const std::string& i_filename = "");
       ~kxmd();
       kv_ref main() const;
+      uint32 get_version() const;
 
    private:
       friend class kxmd_impl;

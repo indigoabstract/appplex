@@ -533,6 +533,11 @@ namespace ns_kxmd
       return kxmd_impl::size(this);
    }
 
+   bool kv_ref::empty() const
+   {
+      return size() == 0;
+   }
+
    bool kv_ref::is_leaf() const
    {
       return kxmd_impl::is_leaf(this);
@@ -675,6 +680,11 @@ namespace ns_kxmd
    kv_ref kxmd::main() const
    {
       return p->get_main_ref();
+   }
+
+   uint32 kxmd::get_version() const
+   {
+      return 20190319;
    }
 
 

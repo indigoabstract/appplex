@@ -188,7 +188,7 @@ bool gfx_tex::mipmaps_supported(gfx_enum i_internal_format)
 std::string gfx_tex::gen_id()
 {
    uint32 time = pfm::time::get_time_millis();
-   std::string name = mws_to_str("tex-%d-%d", texture_name_idx, time);
+   std::string name = mws_to_str_fmt("tex-%d-%d", texture_name_idx, time);
    texture_name_idx++;
 
    return name;
