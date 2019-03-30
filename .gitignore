@@ -1,4 +1,7 @@
-/.svn
+.ign
+.svn
+*.iml
+
 /cmd
 /libs
 /pfm/android/default/.gradle
@@ -37,5 +40,3 @@
 /src/mod/pub/demo/CMakeLists.txt
 /src/mod/pub/lib/CMakeLists.txt
 /src/mod/pub/tst/CMakeLists.txt
-
-*.iml

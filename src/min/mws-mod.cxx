@@ -516,7 +516,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
       {
          "00", "0"
       };
-      std::string dir_name = pfm::filesystem::get_writable_path(p->u.lock()->get_name());// mws_to_str_fmt("f:/data/media/work/screens/%s", p->u.lock()->get_name().c_str());
+      std::string dir_name = pfm::filesystem::get_tmp_path("screens");
       auto dir = pfm_file::get_inst(dir_name);
       int screenshot_idx = 0;
 

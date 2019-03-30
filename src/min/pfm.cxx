@@ -1184,7 +1184,41 @@ const umf_list pfm::filesystem::get_res_file_list()
    return pfm_impl::res_files_map;
 }
 
-std::string pfm::filesystem::get_writable_path(std::string iname)
+std::string pfm::filesystem::get_tmp_path(std::string i_name)
+{
+   std::string p;
+
+   if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
+   {
+      auto mod = mws_mod_ctrl::inst()->get_current_mod();
+
+      if (mod)
+      {
+         p = pfm_impl::get_mod_res_path(mod) + "/../.ign";
+      }
+      else
+      {
+         p = pfm_impl::get_common_res_path();
+      }
+   }
+   else
+   {
+      p = pfm_app_inst->get_writable_path();
+   }
+
+   if (i_name[0] == '/')
+   {
+      p += i_name;
+   }
+   else
+   {
+      p = p + "/" + i_name;
+   }
+
+   return p;
+}
+
+std::string pfm::filesystem::get_writable_path(std::string i_name)
 {
    std::string p;
 
@@ -1206,13 +1240,13 @@ std::string pfm::filesystem::get_writable_path(std::string iname)
       p = pfm_app_inst->get_writable_path();
    }
 
-   if (iname[0] == '/')
+   if (i_name[0] == '/')
    {
-      p += iname;
+      p += i_name;
    }
    else
    {
-      p = p + "/" + iname;
+      p = p + "/" + i_name;
    }
 
    return p;

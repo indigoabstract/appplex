@@ -1,3 +1,5 @@
+#include "stdafx.hxx"
+
 #include "mws-text-box.hxx"
 #include "mws-mod.hxx"
 #include "mws-camera.hxx"
