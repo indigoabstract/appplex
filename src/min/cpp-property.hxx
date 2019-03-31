@@ -227,7 +227,6 @@ public:
 template<class Host, class Accessor, typename ValueType> class number_property : public Property<Host, Accessor, ValueType>
 {
 public:
-   typedef ValueType value_type;
    number_property(Host* i_host = nullptr) : Property<Host, Accessor, ValueType>( i_host ){}
 
    virtual operator const ValueType& () const
@@ -270,37 +269,18 @@ public:
       return accessor_inst.get(host_ref);
    }
 
-   virtual const ValueType& operator+(const ValueType& i_value) { return accessor_inst.get(host_ref) + i_value; }
+   virtual ValueType operator+(const ValueType& i_value) { return accessor_inst.get(host_ref) + i_value; }
+   virtual ValueType operator-(const ValueType& i_value) { return accessor_inst.get(host_ref) - i_value; }
+   virtual ValueType operator*(const ValueType& i_value) { return accessor_inst.get(host_ref)* i_value; }
+   virtual ValueType operator/(const ValueType& i_value) { return accessor_inst.get(host_ref) / i_value; }
+   friend ValueType operator+(const ValueType& i_v0, const number_property& i_v1) { return i_v0 + (ValueType)i_v1; }
+   friend ValueType operator-(const ValueType& i_v0, const number_property& i_v1) { return i_v0 - (ValueType)i_v1; }
+   friend ValueType operator*(const ValueType& i_v0, const number_property& i_v1) { return i_v0 * (ValueType)i_v1; }
+   friend ValueType operator/(const ValueType& i_v0, const number_property& i_v1) { return i_v0 / (ValueType)i_v1; }
 
-   virtual const ValueType& operator-(const ValueType& i_value) { return accessor_inst.get(host_ref) - i_value; }
-
-   virtual const ValueType& operator*(const ValueType& i_value) { return accessor_inst.get(host_ref) * i_value; }
-
-   virtual const ValueType& operator/(const ValueType& i_value) { return accessor_inst.get(host_ref) / i_value; }
-
-   friend number_property::value_type operator+(const number_property::value_type& i_v0, const number_property& i_v1)
-   {
-      return i_v0 + (number_property::value_type)i_v1;
-   }
-
-   friend number_property::value_type operator-(const number_property::value_type& i_v0, const number_property& i_v1)
-   {
-      return i_v0 - (number_property::value_type)i_v1;
-   }
-
-   friend number_property::value_type operator*(const number_property::value_type& i_v0, const number_property& i_v1)
-   {
-      return i_v0 * (number_property::value_type)i_v1;
-   }
-
-   friend number_property::value_type operator/(const number_property::value_type& i_v0, const number_property& i_v1)
-   {
-      return i_v0 / (number_property::value_type)i_v1;
-   }
-
-	using Property<Host, Accessor, ValueType>::operator =;
-	//using PropertyBase<Host, Accessor, ValueType>::operator const ValueType&;	
-	//using PropertyBase<Host, Accessor, ValueType>::operator ();
+   using Property<Host, Accessor, ValueType>::operator =;
+   //using PropertyBase<Host, Accessor, ValueType>::operator const ValueType&;	
+   //using PropertyBase<Host, Accessor, ValueType>::operator ();
 };
 
 
