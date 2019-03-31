@@ -16,15 +16,6 @@ class mws_sender;
 class mws_receiver;
 
 
-enum dir_types
-{
-   DIR_LEFT,
-   DIR_UP,
-   DIR_RIGHT,
-   DIR_DOWN,
-};
-
-
 // returns true is pointer i_w was initialized(it can be either valid or expired)
 // returns false otherwise(if it's an empty weak_ptr)
 template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)

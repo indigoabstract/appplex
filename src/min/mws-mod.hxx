@@ -80,7 +80,7 @@ public:
    private:
       friend class mws_mod;
 
-      std::unique_ptr<app_storage_impl> p;
+      mws_up<app_storage_impl> p;
    };
 
    virtual ~mws_mod();
@@ -144,7 +144,7 @@ protected:
    virtual void update_view(int update_count);
    virtual void post_update_view();
 
-   std::unique_ptr<app_impl> p;
+   mws_up<app_impl> p;
    mws_sp<mws_mod_preferences> prefs;
    int frame_count;
    float fps;

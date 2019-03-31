@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.6)
 
 # Maps to a solution file (appplex.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)
-project (omnirecall)
+project (appplex)
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
@@ -43,7 +43,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/lib")
-    set(ADDITIONAL_LIBRARIES wsock32)
+    #set(ADDITIONAL_LIBRARIES wsock32)
 	
 	find_library(GLEW_LIB glew32)
 	find_library(FMODEX_LIB fmodex_vc)

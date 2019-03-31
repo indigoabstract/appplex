@@ -4,12 +4,14 @@
 
 #ifdef __cplusplus
 #include <memory>
-#include <stdint.h>
+
 
 using std::enable_shared_from_this;
 using std::static_pointer_cast;
 template <typename T> using mws_sp = std::shared_ptr<T>;
 template <typename T> using mws_wp = std::weak_ptr<T>;
+template <typename T> using mws_up = std::unique_ptr<T>;
+
 
 extern "C"
 {
@@ -370,6 +372,15 @@ extern "C"
       KEY_SELECT,
 
       KEY_COUNT,
+   };
+
+
+   enum dir_types
+   {
+      DIR_LEFT,
+      DIR_UP,
+      DIR_RIGHT,
+      DIR_DOWN,
    };
 
 
