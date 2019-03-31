@@ -16,42 +16,6 @@ class gfx_vxo;
 
 class gfx_transform
 {
-   //template <class host> class position_accessor : public vec3_accessor<host>
-   //{
-   //public:
-   //	void set(host* ihost, const value_type& ivalue)
-   //	{
-   //		val = ivalue;
-   //	}
-
-   //	const value_type& get(host* ihost) const 
-   //	{
-   //		return val;
-   //	}
-
-   //private:
-   //	friend host;
-   //	value_type val;
-   //};
-
-   //template <class host> class orientation_accessor : public quat_accessor<host>
-   //{
-   //public:
-   //	void set(host* ihost, const value_type& ivalue)
-   //	{
-   //		val = ivalue;
-   //	}
-
-   //	const value_type& get(host* ihost) const 
-   //	{
-   //		return val;
-   //	}
-
-   //private:
-   //	friend host;
-   //	value_type val;
-   //};
-
 public:
    gfx_transform();
 
@@ -90,6 +54,7 @@ public:
    mws_sp<gfx_node> get_parent();
    mws_sp<gfx_node> get_root();
    mws_sp<gfx_scene> get_scene();
+   virtual void on_visibility_changed(bool i_visible) {}
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void draw_in_sync(mws_sp<gfx_camera> i_cam);
    virtual void draw_out_of_sync(mws_sp<gfx_camera> i_cam);
@@ -106,18 +71,30 @@ public:
    template <class host> class name_accessor : public string_accessor<host>
    {
    public:
-      virtual void set(host* ihost, const std::string& ivalue)
+      virtual void set(host* i_host, const std::string& i_value) override
       {
-         if (ivalue != this->val)
+         if (i_value != this->val)
          {
-            this->val = ivalue;
+            this->val = i_value;
          }
       }
-      friend host;
    };
    def_string_prop(gfx_node, name_accessor) name;
 
-   bool visible;
+   class visible_accessor : public bool_accessor<gfx_node>
+   {
+   public:
+      virtual void set(gfx_node* i_host, const bool& i_value) override
+      {
+         if (i_value != this->val)
+         {
+            this->val = i_value;
+            val_changed = true;
+            i_host->on_visibility_changed(i_value);
+         }
+      }
+   };
+   def_prop(gfx_node, visible_accessor) visible;
 
 protected:
    e_node_type node_type;

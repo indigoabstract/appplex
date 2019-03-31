@@ -329,7 +329,7 @@ void text_vxo::draw_in_sync(mws_sp<gfx_camera> icamera)
       return;
    }
 
-   p->draw_in_sync(static_pointer_cast<text_vxo>(get_mws_sp()), icamera, position());
+   p->draw_in_sync(static_pointer_cast<text_vxo>(get_mws_sp()), icamera, position);
 }
 
 text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color, a_v1_shift, a_v1_gamma"))

@@ -47,10 +47,10 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
 
    if (cam->projection_type == gfx_camera::e_perspective_proj)
    {
-      glm::vec3 start_cam_pos = start - cam->position();
-      glm::vec3 finish_cam_pos = finish - cam->position();
-      glm::vec3 plane_vect_start = glm::normalize(glm::cross(start - cam->position(), n));
-      glm::vec3 plane_vect_finish = glm::normalize(glm::cross(finish - cam->position(), n));
+      glm::vec3 start_cam_pos = start - cam->position;
+      glm::vec3 finish_cam_pos = finish - cam->position;
+      glm::vec3 plane_vect_start = glm::normalize(glm::cross(start - cam->position, n));
+      glm::vec3 plane_vect_finish = glm::normalize(glm::cross(finish - cam->position, n));
       float start_thickness = thickness * glm::length(start_cam_pos) / 500.f;
       float finish_thickness = thickness * glm::length(finish_cam_pos) / 500.f;
 
@@ -502,7 +502,7 @@ public:
 
       if (cam->projection_type == gfx_camera::e_perspective_proj)
       {
-         glm::vec3 center_cam_pos = center - cam->position();
+         glm::vec3 center_cam_pos = center - cam->position;
          up = glm::vec3(camera[1].x, camera[1].y, camera[1].z);
          right = glm::normalize(glm::cross(center_cam_pos, up));
          //thickness = thickness * glm::length(center_cam_pos) / 1500.f;
@@ -795,7 +795,7 @@ void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update
       glm::vec3 skew;
       glm::vec4 perspective;
 
-      glm::decompose(transform_mx(), (glm::vec3&)scaling(), (glm::quat&)orientation(), (glm::vec3&)position(), skew, perspective);
+      glm::decompose(transform_mx(), (glm::vec3&)scaling, (glm::quat&)orientation, (glm::vec3&)position, skew, perspective);
       update_tf_mx = true;
    }
    else

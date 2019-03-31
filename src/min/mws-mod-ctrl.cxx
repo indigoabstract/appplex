@@ -155,13 +155,40 @@ const unicodestring& mws_mod_ctrl::get_app_description()
 
 void mws_mod_ctrl::update()
 {
+   mws_sp<mws_mod> u = get_current_mod();
+   mws_assert(u != nullptr);
+
+   if (mod_gfx_on)
+   {
+      uint32 dim = atomic_dim;
+      uint32 width = (dim >> 16);
+      uint32 height = (dim & 0xffff);
+
+      if (pfm::data.screen_width != width || pfm::data.screen_height != height)
+      {
+         pfm::data.screen_width = width;
+         pfm::data.screen_height = height;
+         gfx::on_resize(width, height);
+
+         if (ul && ul->is_init())
+         {
+            ul->on_resize();
+         }
+         else
+         {
+            if (u && u->is_init())
+            {
+               //mws_log::i()->push("mws_mod_ctrl::resize_app()");
+               u->on_resize();
+            }
+         }
+      }
+   }
+
    if (mod_snd_on)
    {
       snd::update();
    }
-
-   mws_sp<mws_mod> u = get_current_mod();
-   mws_assert(u != nullptr);
 
 #ifndef SINGLE_MOD_BUILD
 
@@ -169,7 +196,7 @@ void mws_mod_ctrl::update()
 
    if (nu&& nu != u)
    {
-      mws_mod_ctrl::set_current_mod(nu);
+      set_current_mod(nu);
       u = nu;
    }
 
@@ -200,29 +227,10 @@ void mws_mod_ctrl::resume()
    }
 }
 
-void mws_mod_ctrl::resize_app(int i_width, int i_height)
+void mws_mod_ctrl::resize_app(uint32 i_width, uint32 i_height)
 {
-   if (mod_gfx_on)
-   {
-      pfm::data.screen_width = i_width;
-      pfm::data.screen_height = i_height;
-      gfx::on_resize(i_width, i_height);
-
-      if (ul && ul->is_init())
-      {
-         ul->on_resize();
-      }
-      else
-      {
-         auto u = get_current_mod();
-
-         if (u && u->is_init())
-         {
-            //mws_log::i()->push("mws_mod_ctrl::resize_app()");
-            u->on_resize();
-         }
-      }
-   }
+   uint32 dim = (i_width << 16) | i_height;
+   atomic_dim = dim;
 }
 
 void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)

@@ -19,71 +19,36 @@ gfx_transform::gfx_transform() : position(this), orientation(this), scaling(this
    scaling = glm::vec3(1.f);
 }
 
-glm::vec3 gfx_transform::get_forward_dir()
-{
-   return orientation() * glm::vec3(0, 0, -1.f);
-}
+glm::vec3 gfx_transform::get_forward_dir() { return orientation()* glm::vec3(0, 0, -1.f); }
 
-glm::vec3 gfx_transform::get_up_dir()
-{
-   return orientation() * glm::vec3(0, 1.f, 0);
-}
+glm::vec3 gfx_transform::get_up_dir() { return orientation()* glm::vec3(0, 1.f, 0); }
 
-glm::vec3 gfx_transform::get_right_dir()
-{
-   return orientation() * glm::vec3(1.f, 0, 0);
-}
+glm::vec3 gfx_transform::get_right_dir() { return orientation()* glm::vec3(1.f, 0, 0); }
 
-void gfx_transform::look_at(glm::vec3 direction, glm::vec3 desiredUp)
-{
-   orientation = gfx_util::look_at(direction, desiredUp);
-}
+void gfx_transform::look_at(glm::vec3 direction, glm::vec3 desiredUp) { orientation = gfx_util::look_at(direction, desiredUp); }
 
 void gfx_transform::look_at_pos(glm::vec3 iposition, glm::vec3 desiredUp)
 {
-   glm::vec3 direction = iposition - position();
-
+   glm::vec3 direction = iposition - position;
    orientation = gfx_util::look_at(direction, desiredUp);
 }
 
-const glm::mat4& gfx_transform::get_global_tf_mx() const
-{
-   return global_tf_mx;
-}
+const glm::mat4& gfx_transform::get_global_tf_mx() const { return global_tf_mx; }
 
 
-gfx_node::gfx_node(mws_sp<gfx> i_gi) : gfx_obj(i_gi), name(this)
-{
-   node_type = regular_node;
-   visible = true;
-}
+gfx_node::gfx_node(mws_sp<gfx> i_gi) : gfx_obj(i_gi), name(this), visible(this) { node_type = regular_node; visible = true; }
 
-gfx_obj::e_gfx_obj_type gfx_node::get_type()const
-{
-   return e_node;
-}
+gfx_obj::e_gfx_obj_type gfx_node::get_type()const { return e_node; }
 
-mws_sp<gfx_node> gfx_node::get_mws_sp()
-{
-   return std::static_pointer_cast<gfx_node>(get_inst());
-}
+mws_sp<gfx_node> gfx_node::get_mws_sp() { return std::static_pointer_cast<gfx_node>(get_inst()); }
 
-mws_sp<gfx_node> gfx_node::get_parent()
-{
-   return parent.lock();
-}
+mws_sp<gfx_node> gfx_node::get_parent() { return parent.lock(); }
 
-mws_sp<gfx_node> gfx_node::get_root()
-{
-   return root.lock();
-}
+mws_sp<gfx_node> gfx_node::get_root() { return root.lock(); }
 
-mws_sp<gfx_scene> gfx_node::get_scene()
-{
-   return std::static_pointer_cast<gfx_scene>(root.lock());
-}
+mws_sp<gfx_scene> gfx_node::get_scene() { return std::static_pointer_cast<gfx_scene>(root.lock()); }
 
-void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
+void gfx_node::add_to_draw_list(const std::string & i_camera_id, std::vector<mws_sp<gfx_vxo> > & i_opaque, std::vector<mws_sp<gfx_vxo> > & i_translucent)
 {
    for (auto it = children.begin(); it != children.end(); it++)
    {
@@ -181,7 +146,7 @@ bool gfx_node::contains(const mws_sp<gfx_node> inode)
    return false;
 }
 
-mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
+mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & iname)
 {
    if (iname == get_mws_sp()->name())
    {
@@ -203,7 +168,7 @@ mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string& iname)
    return mws_sp<gfx_node>();
 }
 
-void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
+void gfx_node::update_recursive(const glm::mat4 & i_global_tf_mx, bool i_update_global_mx)
 {
    if (!visible)
    {
@@ -217,7 +182,7 @@ void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_g
       glm::vec3 skew;
       glm::vec4 perspective;
 
-      glm::decompose(transform_mx(), (glm::vec3&)scaling(), (glm::quat&)orientation(), (glm::vec3&)position(), skew, perspective);
+      glm::decompose(transform_mx(), (glm::vec3&)scaling, (glm::quat&)orientation, (glm::vec3&)position, skew, perspective);
       update_tf_mx = true;
    }
    else

@@ -122,7 +122,7 @@ void mws::attach(mws_sp<gfx_node> i_node)
       }
    }
 
-   i_node->position = i_node->position() + glm::vec3(0.f, 0.f, 0.0001f);
+   i_node->position = i_node->position + glm::vec3(0.f, 0.f, 0.0001f);
 }
 
 void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
@@ -439,7 +439,7 @@ void mws_page_tab::update_state()
       tab_text_vxo->clear_text();
    }
 
-   for (auto p : page_tab)
+   for (mws_sp<mws_page> p : page_tab)
    {
       if (p->visible)
       {
@@ -455,7 +455,7 @@ void mws_page_tab::update_view(mws_sp<mws_camera> g)
       vkb->update_view(g);
    }
 
-   for (auto p : page_tab)
+   for (mws_sp<mws_page> p : page_tab)
    {
       if (p->visible)
       {
@@ -469,9 +469,12 @@ void mws_page_tab::on_resize()
    mws_r.w = (float)u.lock()->get_width();
    mws_r.h = (float)u.lock()->get_height();
 
-   for (auto p : page_tab)
+   for (mws_sp<mws_page> p : page_tab)
    {
-      p->on_resize();
+      if (p->visible)
+      {
+         p->on_resize();
+      }
    }
 
    if (vkb)
@@ -645,8 +648,18 @@ mws_sp<mws_page_tab> mws_page::get_mws_page_parent()
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
 }
 
-void mws_page::on_visibility_changed(bool iis_visible) {}
+void mws_page::on_visibility_changed(bool iis_visible)
+{
+   mws_sp<mws_page_tab> parent = get_mws_page_parent();
+
+   if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
+   {
+      on_resize();
+   }
+}
+
 void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {}
+
 void mws_page::on_hide_transition(const mws_sp<linear_transition> itransition) {}
 
 void mws_page::receive(mws_sp<mws_dp> idp)

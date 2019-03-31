@@ -31,21 +31,21 @@ public:
 		val_changed = false;
 	}
 
-	virtual void set(host* ihost, const value_type& ivalue)
+	virtual void set(host* i_host, const value_type& i_value)
 	{
-		if (val != ivalue)
+		if (val != i_value)
 		{
 			val_changed = true;
-			val = ivalue;
+			val = i_value;
 		}
 	}
 
-	virtual const value_type& get(host* ihost) const
+	virtual const value_type& get(host* i_host) const
 	{
 		return val;
 	}
 
-	const value_type& read(host* ihost)
+	const value_type& read(host* i_host)
 	{
 		val_changed = false;
 		return val;
@@ -94,27 +94,27 @@ template<typename ValueType> class IProperty
 template<class Host, class Accessor, typename ValueType> class PropertyBase : public IProperty<ValueType>
 {
 public:
-	PropertyBase(Host* ihost) : host_ref( ihost ){}
+	PropertyBase(Host* i_host) : host_ref( i_host ){}
 
-	virtual const ValueType& operator =(const ValueType& _value)
+	virtual const ValueType& operator =(const ValueType& i_value)
 	{
-		this->accessor_inst.set(this->host_ref, _value);
-		return _value;
+		accessor_inst.set(host_ref, i_value);
+		return i_value;
 	}
 
 	virtual operator const ValueType& () const
 	{
-		return this->accessor_inst.get(this->host_ref);
+		return accessor_inst.get(host_ref);
 	}
 
 	virtual const ValueType& operator ()() const
 	{
-		return this->accessor_inst.get(this->host_ref);
+		return accessor_inst.get(host_ref);
 	}
 
 	const ValueType& read()
 	{
-		return accessor_inst.read(this->host_ref);
+		return accessor_inst.read(host_ref);
 	}
 
 	bool value_changed()const
@@ -137,7 +137,7 @@ protected:
 template<class Host, class Accessor, typename ValueType> class Property : public PropertyBase<Host, Accessor, ValueType>
 {
 public:
-	Property(Host* ihost = nullptr) : PropertyBase<Host, Accessor, ValueType>( ihost ){}
+	Property(Host* i_host = nullptr) : PropertyBase<Host, Accessor, ValueType>( i_host ){}
 
 	using PropertyBase<Host, Accessor, ValueType>::operator =;
 	using PropertyBase<Host, Accessor, ValueType>::operator const ValueType&;	
@@ -154,7 +154,7 @@ template<class Host, class Accessor, typename ValueType> class Property_Set_Publ
 	friend Host;
 
 public:
-	Property_Set_Public(Host* ihost = nullptr) : PropertyBase<Host, Accessor, ValueType>( ihost ){}
+	Property_Set_Public(Host* i_host = nullptr) : PropertyBase<Host, Accessor, ValueType>( i_host ){}
 
 public:
 	using PropertyBase<Host, Accessor, ValueType>::operator =;
@@ -172,7 +172,7 @@ template<class Host, class Accessor, typename ValueType> class Property_Get_Publ
 	friend Host;
 
 public:
-	Property_Get_Public(Host* ihost = nullptr) : PropertyBase<Host, Accessor, ValueType>( ihost ){}
+	Property_Get_Public(Host* i_host = nullptr) : PropertyBase<Host, Accessor, ValueType>( i_host ){}
 
 private:
 	using PropertyBase<Host, Accessor, ValueType>::operator =;
@@ -181,71 +181,122 @@ public:
 };
 
 
+template <class host> class bool_accessor : public accessor_base<host, bool>
+{
+public:
+};
+
+
 template <class host, typename ValueType> class number_accessor : public accessor_base<host, ValueType>
 {
 public:
-	virtual void add(host* ihost, const ValueType& ivalue)
+	virtual void add(host* i_host, const ValueType& i_value)
 	{
-		this->set(ihost, this->val + ivalue);
+		set(i_host, val + i_value);
 	}
 
-	virtual void mul(host* ihost, const ValueType& ivalue)
+	virtual void mul(host* i_host, const ValueType& i_value)
 	{
-		this->set(ihost, this->val * ivalue);
+		set(i_host, val * i_value);
 	}
 
-	virtual void div(host* ihost, const ValueType& ivalue)
+	virtual void div(host* i_host, const ValueType& i_value)
 	{
-		this->set(ihost, this->val / ivalue);
+		set(i_host, val / i_value);
 	}
 };
 
 template <class host> class vec3_accessor : public number_accessor<host, glm::vec3>
 {
 public:
-	virtual void set(host* ihost, const glm::vec3& ivalue)
+	virtual void set(host* i_host, const glm::vec3& i_value)
 	{
-		number_accessor<host, glm::vec3>::set(ihost, ivalue);
+		number_accessor<host, glm::vec3>::set(i_host, i_value);
 	}
 };
 
 template <class host> class mat4_accessor : public number_accessor<host, glm::mat4>
 {
 public:
-	virtual void set(host* ihost, const glm::mat4& ivalue)
+	virtual void set(host* i_host, const glm::mat4& i_value)
 	{
-		number_accessor<host, glm::mat4>::set(ihost, ivalue);
+		number_accessor<host, glm::mat4>::set(i_host, i_value);
 	}
 };
 
 template<class Host, class Accessor, typename ValueType> class number_property : public Property<Host, Accessor, ValueType>
 {
 public:
-	number_property(Host* ihost = nullptr) : Property<Host, Accessor, ValueType>( ihost ){}
+   typedef ValueType value_type;
+   number_property(Host* i_host = nullptr) : Property<Host, Accessor, ValueType>( i_host ){}
 
-	virtual const ValueType& operator +=(const ValueType& _value)
+   virtual operator const ValueType& () const
+   {
+      return accessor_inst.get(host_ref);
+   }
+
+   virtual const ValueType& operator =(const ValueType& i_value)
+   {
+      accessor_inst.set(host_ref, i_value);
+      return i_value;
+   }
+
+   virtual const ValueType& operator ()() const
+   {
+      return accessor_inst.get(host_ref);
+   }
+
+   virtual const ValueType& operator +=(const ValueType& i_value)
 	{
-		this->accessor_inst.add(this->host_ref, _value);
-		return this->accessor_inst.get(this->host_ref);
+		accessor_inst.add(host_ref, i_value);
+		return accessor_inst.get(host_ref);
 	}
 
-	virtual const ValueType& operator -=(const ValueType& _value)
+	virtual const ValueType& operator -=(const ValueType& i_value)
 	{
-		this->accessor_inst.add(this->host_ref, -_value);
-		return this->accessor_inst.get(this->host_ref);
+		accessor_inst.add(host_ref, -i_value);
+		return accessor_inst.get(host_ref);
 	}
 
-	virtual const ValueType& operator *=(const ValueType& _value)
-	{
-		this->accessor_inst.mul(this->host_ref, _value);
-		return this->accessor_inst.get(this->host_ref);
-	}
+   virtual const ValueType& operator *=(const ValueType& i_value)
+   {
+      accessor_inst.mul(host_ref, i_value);
+      return accessor_inst.get(host_ref);
+   }
 
-	virtual const ValueType& operator /=(const ValueType& _value)
-	{
-		this->accessor_inst.div(this->host_ref, _value);
-		return this->accessor_inst.get(this->host_ref);
-	}
+   virtual const ValueType& operator /=(const ValueType& i_value)
+   {
+      accessor_inst.div(host_ref, i_value);
+      return accessor_inst.get(host_ref);
+   }
+
+   virtual const ValueType& operator+(const ValueType& i_value) { return accessor_inst.get(host_ref) + i_value; }
+
+   virtual const ValueType& operator-(const ValueType& i_value) { return accessor_inst.get(host_ref) - i_value; }
+
+   virtual const ValueType& operator*(const ValueType& i_value) { return accessor_inst.get(host_ref) * i_value; }
+
+   virtual const ValueType& operator/(const ValueType& i_value) { return accessor_inst.get(host_ref) / i_value; }
+
+   friend number_property::value_type operator+(const number_property::value_type& i_v0, const number_property& i_v1)
+   {
+      return i_v0 + (number_property::value_type)i_v1;
+   }
+
+   friend number_property::value_type operator-(const number_property::value_type& i_v0, const number_property& i_v1)
+   {
+      return i_v0 - (number_property::value_type)i_v1;
+   }
+
+   friend number_property::value_type operator*(const number_property::value_type& i_v0, const number_property& i_v1)
+   {
+      return i_v0 * (number_property::value_type)i_v1;
+   }
+
+   friend number_property::value_type operator/(const number_property::value_type& i_v0, const number_property& i_v1)
+   {
+      return i_v0 / (number_property::value_type)i_v1;
+   }
 
 	using Property<Host, Accessor, ValueType>::operator =;
 	//using PropertyBase<Host, Accessor, ValueType>::operator const ValueType&;	
@@ -256,21 +307,21 @@ public:
 template <class host> class quat_accessor : public accessor_base<host, glm::quat>
 {
 public:
-	virtual void mul(host* ihost, const glm::quat& ivalue)
+	virtual void mul(host* i_host, const glm::quat& i_value)
 	{
-		this->set(ihost, this->val * ivalue);
+		set(i_host, val * i_value);
 	}
 };
 
 template<class Host, class Accessor, typename ValueType> class quat_property : public Property<Host, Accessor, ValueType>
 {
 public:
-	quat_property(Host* ihost = nullptr) : Property<Host, Accessor, ValueType>( ihost ){}
+	quat_property(Host* i_host = nullptr) : Property<Host, Accessor, ValueType>( i_host ){}
 
-	virtual const ValueType& operator *=(const ValueType& _value)
+	virtual const ValueType& operator *=(const ValueType& i_value)
 	{
-		this->accessor_inst.mul(this->host_ref, _value);
-		return this->accessor_inst.get(this->host_ref);
+		accessor_inst.mul(host_ref, i_value);
+		return accessor_inst.get(host_ref);
 	}
 
 	using Property<Host, Accessor, ValueType>::operator =;
@@ -280,28 +331,29 @@ public:
 template <class host> class string_accessor : public accessor_base<host, std::string>
 {
 public:
-	virtual void add(host* ihost, const std::string& ivalue)
+	virtual void add(host* i_host, const std::string& i_value)
 	{
-		this->set(ihost, this->val + ivalue);
+		set(i_host, val + i_value);
 	}
 };
 
 template<class Host, class Accessor, typename ValueType> class string_property : public Property<Host, Accessor, ValueType>
 {
 public:
-	string_property(Host* ihost = nullptr) : Property<Host, Accessor, ValueType>(ihost){}
+	string_property(Host* i_host = nullptr) : Property<Host, Accessor, ValueType>(i_host){}
 
-	virtual const ValueType& operator +=(const ValueType& _value)
+	virtual const ValueType& operator +=(const ValueType& i_value)
 	{
-		this->accessor_inst.add(this->host_ref, _value);
-		return this->accessor_inst.get(this->host_ref);
+		accessor_inst.add(host_ref, i_value);
+		return accessor_inst.get(host_ref);
 	}
 
 	using Property<Host, Accessor, ValueType>::operator =;
 };
 
 
-#define def_prop(host, accessor) Property<host, accessor<host>, accessor<host>::value_type>
+#define def_prop(host, accessor) Property<host, accessor, accessor::value_type>
+#define def_tpl_prop(host, accessor) Property<host, accessor<host>, accessor<host>::value_type>
 #define def_number_prop(host, accessor) number_property<host, accessor<host>, accessor<host>::value_type>
 #define def_quat_prop(host, accessor) quat_property<host, accessor<host>, accessor<host>::value_type>
 #define def_mat_prop(host, accessor) number_property<host, accessor<host>, accessor<host>::value_type>

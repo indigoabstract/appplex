@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm.hxx"
-#include <memory>
+#include <atomic>
 
 
 class mws_mod;
@@ -28,7 +28,7 @@ public:
    void update();
    void pause();
    void resume();
-   void resize_app(int i_width, int i_height);
+   void resize_app(uint32 i_width, uint32 i_height);
    void pointer_action(mws_sp<mws_ptr_evt_base> ite);
    void key_action(key_actions i_action_type, int i_key);
    mws_sp<mws_mod> get_current_mod();
@@ -43,6 +43,7 @@ private:
 
    void set_current_mod(mws_sp<mws_mod> i_mod);
 
+   std::atomic_int32_t atomic_dim;
    mws_wp<mws_mod> crt_mod;
    mws_wp<mws_mod> next_mod;
    mws_sp<mws_mod_list> ul;

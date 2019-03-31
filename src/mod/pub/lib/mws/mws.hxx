@@ -33,6 +33,21 @@ const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
 
 
+class mws_pt
+{
+public:
+   mws_pt() {}
+   mws_pt(float i_x, float i_y) : x(i_x), y(i_y) {}
+   bool operator==(const mws_pt& i_pt) const { return x == i_pt.x && y == i_pt.y; }
+   bool operator!=(const mws_pt& i_pt) const { return x != i_pt.x || y != i_pt.y; }
+   void set(float i_x, float i_y) { x = i_x; y = i_y; }
+
+   float x = 0.f;
+   float y = 0.f;
+};
+using mws_dim = mws_pt;
+
+
 class mws_rect
 {
 public:
@@ -78,9 +93,9 @@ public:
    mws_sp<mws> get_instance();
 
    virtual gfx_obj::e_gfx_obj_type get_type()const override;
-   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
+   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
    virtual void attach(mws_sp<gfx_node> i_node) override;
-   virtual void list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list);
+   virtual void list_mws_children(std::vector<mws_sp<mws>>& i_mws_subobj_list);
    virtual void set_enabled(bool i_is_enabled);
    bool is_enabled()const;
    void set_visible(bool i_is_visible);
@@ -139,7 +154,7 @@ class mws_page_tab : public mws
 public:
    virtual ~mws_page_tab() {}
    static mws_sp<mws_page_tab> nwi(mws_sp<mws_mod> i_mod);
-   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
+   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
    virtual void init();
    virtual void init_subobj();
    virtual void on_destroy();
@@ -162,7 +177,7 @@ public:
    virtual mws_sp<mws_virtual_keyboard> get_keyboard();
    virtual void show_keyboard(mws_sp<mws_text_area> i_tbx);
 
-   std::vector<mws_sp<mws_page> > page_tab;
+   std::vector<mws_sp<mws_page>> page_tab;
 
 protected:
    mws_page_tab(mws_sp<mws_mod> i_mod);
@@ -194,7 +209,7 @@ public:
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent();
 
-   virtual void on_visibility_changed(bool iis_visible);
+   virtual void on_visibility_changed(bool iis_visible) override;
    virtual void on_show_transition(const mws_sp<linear_transition> itransition);
    virtual void on_hide_transition(const mws_sp<linear_transition> itransition);
 
@@ -210,7 +225,7 @@ public:
 protected:
    mws_page();
    virtual void on_resize();
-   std::vector<mws_sp<mws> > mws_subobj_list;
+   std::vector<mws_sp<mws>> mws_subobj_list;
    mws_sp<mws> selected_item;
 
 private:
@@ -220,7 +235,7 @@ private:
    static mws_sp<mws_page> new_standalone_instance();
    void add(mws_sp<mws_page_item> b);
 
-   std::vector<mws_sp<mws_page_item> > mlist;
+   std::vector<mws_sp<mws_page_item>> mlist;
 };
 
 

@@ -246,7 +246,7 @@ void free_camera::update()
       glm::vec3 view_pos = target_ref_point + sphere_position;
       persp_cam->position = view_pos;
       persp_cam->look_at_pos(target_ref_point, up_dir);
-      look_at_dir = glm::normalize(target_ref_point - persp_cam->position());
+      look_at_dir = glm::normalize(target_ref_point - persp_cam->position);
 
       up_dir = glm::vec3(0, 1, 0);
       glm::vec3 right_dir = glm::normalize(glm::cross(look_at_dir, up_dir));
