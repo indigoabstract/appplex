@@ -1,24 +1,24 @@
 #include "stdafx.hxx"
 
-#include "mod-jcv.hxx"
+#include "mod-vrn.hxx"
 #include "jc_voronoi.h"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 
 
-mod_jcv::mod_jcv() : mws_mod(mws_stringify(MOD_JCV)) {}
+mod_vrn::mod_vrn() : mws_mod(mws_stringify(MOD_VRN)) {}
 
-mws_sp<mod_jcv> mod_jcv::nwi()
+mws_sp<mod_vrn> mod_vrn::nwi()
 {
-   return mws_sp<mod_jcv>(new mod_jcv());
+   return mws_sp<mod_vrn>(new mod_vrn());
 }
 
-void mod_jcv::init()
+void mod_vrn::init()
 {
 }
 
 
-namespace mod_jcv_ns
+namespace mod_vrn_ns
 {
    class main_page : public mws_page
    {
@@ -50,12 +50,12 @@ namespace mod_jcv_ns
 }
 
 
-void mod_jcv::init_mws()
+void mod_vrn::init_mws()
 {
-   mws_root->new_page<mod_jcv_ns::main_page>();
+   mws_root->new_page<mod_vrn_ns::main_page>();
    mws_cam->clear_color = true;
 }
 
-void mod_jcv::load()
+void mod_vrn::load()
 {
 }

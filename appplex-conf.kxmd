@@ -24,15 +24,15 @@ mod
 	[
 		uses
 		[
-			gfx, fonts, fmt, freetype, freetype-gl, input, jcv, kxmd, kxmdb, notifications, mws, mws-vkb, png, res-ld, techno-globe, util, vector-fonts
+			gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, kxmdb, notifications, mws, mws-vkb, png, res-ld, techno-globe, util, vector-fonts, vrn
 		],
 		platf[ windows, android, ios ],
 	],
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
-	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, jcv, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts ] ],
-	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, jcv, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts ] ],
+	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
+	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 
 	@@[ npw ],
 	
@@ -60,7 +60,7 @@ mod
 	gl,
 	glm,
 	input[],
-	jcv[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
+	vrn[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
 	kxmd[],
 	mws[],
 	mws-vkb[],

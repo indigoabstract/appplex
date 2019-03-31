@@ -11,7 +11,7 @@ extern const bool mod_gfx_ext_on;
 extern const bool mod_gl_on;
 extern const bool mod_glm_on;
 extern const bool mod_input_on;
-extern const bool mod_jcv_on;
+extern const bool mod_vrn_on;
 extern const bool mod_kxmd_on;
 extern const bool mod_mws_on;
 extern const bool mod_mws_vkb_on;

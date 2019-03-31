@@ -1,8 +1,8 @@
 #include "stdafx.hxx"
 
 #include "mws-vkb.hxx"
-#include "mws-vkb-visual.hxx"
-#include "jcv/vrn-diag.hxx"
+#include "vrn/vrn-diag.hxx"
+#include "vrn/vrn-visual.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/text-vxo.hxx"
@@ -68,7 +68,7 @@ void mws_vkb_impl::setup()
    };
    float dpcm = pfm_main::gi()->get_screen_dpcm();
    {
-      vk = mws_vkb_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+      vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
       vk->toggle_voronoi_object(obj_type_mask);
       vk->init();
       vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);

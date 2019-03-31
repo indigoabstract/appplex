@@ -5,7 +5,7 @@
 
 
 class mws_font;
-class mws_vkb_main;
+class mws_vrn_main;
 class text_vxo;
 
 
@@ -64,7 +64,7 @@ public:
    void prev_page();
 
    uint32 obj_type_mask = 0;
-   mws_sp<mws_vkb_main> vk;
+   mws_sp<mws_vrn_main> vk;
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
    key_mod_types key_mod = key_mod_types::mod_none;
