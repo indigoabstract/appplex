@@ -1,5 +1,14 @@
 #pragma once
 
+/**
+*	FILE: Cpp_Property.h
+*	ARTHOR: Jeff Tanner, jeff_tanner@earthlink.net
+*	CLASS NAME: Property
+*	VERSION: 1.0
+*	DESCRIPTION:
+*		C++ implementation of C# Property functionality.
+*/
+
 #include <glm/inc.hpp>
 #include <string>
 
@@ -31,7 +40,7 @@ public:
 		val_changed = false;
 	}
 
-	virtual void set(host* i_host, const value_type& i_value)
+	virtual void set(host* i_host, const value_type& i_value) override
 	{
 		if (val != i_value)
 		{
@@ -40,7 +49,7 @@ public:
 		}
 	}
 
-	virtual const value_type& get(host* i_host) const
+	virtual const value_type& get(host* i_host) const override
 	{
 		return val;
 	}
@@ -57,7 +66,7 @@ public:
 	}
 
 protected:
-	value_type val;
+    ValueType val;
 	bool val_changed;
 };
 
@@ -96,30 +105,30 @@ template<class Host, class Accessor, typename ValueType> class PropertyBase : pu
 public:
 	PropertyBase(Host* i_host) : host_ref( i_host ){}
 
-	virtual const ValueType& operator =(const ValueType& i_value)
+	virtual const ValueType& operator =(const ValueType& i_value) override
 	{
-		accessor_inst.set(host_ref, i_value);
+        this->accessor_inst.set(this->host_ref, i_value);
 		return i_value;
 	}
 
-	virtual operator const ValueType& () const
+	virtual operator const ValueType& () const override
 	{
-		return accessor_inst.get(host_ref);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
-	virtual const ValueType& operator ()() const
+	virtual const ValueType& operator ()() const override
 	{
-		return accessor_inst.get(host_ref);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
 	const ValueType& read()
 	{
-		return accessor_inst.read(host_ref);
+		return this->accessor_inst.read(this->host_ref);
 	}
 
 	bool value_changed()const
 	{
-		return accessor_inst.value_changed();
+		return this->accessor_inst.value_changed();
 	}
 
 protected:
@@ -192,17 +201,17 @@ template <class host, typename ValueType> class number_accessor : public accesso
 public:
 	virtual void add(host* i_host, const ValueType& i_value)
 	{
-		set(i_host, val + i_value);
+        this->set(i_host, this->val + i_value);
 	}
 
 	virtual void mul(host* i_host, const ValueType& i_value)
 	{
-		set(i_host, val * i_value);
+        this->set(i_host, this->val * i_value);
 	}
 
 	virtual void div(host* i_host, const ValueType& i_value)
 	{
-		set(i_host, val / i_value);
+        this->set(i_host, this->val / i_value);
 	}
 };
 
@@ -231,48 +240,48 @@ public:
 
    virtual operator const ValueType& () const
    {
-      return accessor_inst.get(host_ref);
+      return this->accessor_inst.get(this->host_ref);
    }
 
    virtual const ValueType& operator =(const ValueType& i_value)
    {
-      accessor_inst.set(host_ref, i_value);
+       this->accessor_inst.set(this->host_ref, i_value);
       return i_value;
    }
 
    virtual const ValueType& operator ()() const
    {
-      return accessor_inst.get(host_ref);
+      return this->accessor_inst.get(this->host_ref);
    }
 
    virtual const ValueType& operator +=(const ValueType& i_value)
 	{
-		accessor_inst.add(host_ref, i_value);
-		return accessor_inst.get(host_ref);
+        this->accessor_inst.add(this->host_ref, i_value);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
 	virtual const ValueType& operator -=(const ValueType& i_value)
 	{
-		accessor_inst.add(host_ref, -i_value);
-		return accessor_inst.get(host_ref);
+        this->accessor_inst.add(this->host_ref, -i_value);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
    virtual const ValueType& operator *=(const ValueType& i_value)
    {
-      accessor_inst.mul(host_ref, i_value);
-      return accessor_inst.get(host_ref);
+       this->accessor_inst.mul(this->host_ref, i_value);
+      return this->accessor_inst.get(this->host_ref);
    }
 
    virtual const ValueType& operator /=(const ValueType& i_value)
    {
-      accessor_inst.div(host_ref, i_value);
-      return accessor_inst.get(host_ref);
+       this->accessor_inst.div(this->host_ref, i_value);
+      return this->accessor_inst.get(this->host_ref);
    }
 
-   virtual ValueType operator+(const ValueType& i_value) { return accessor_inst.get(host_ref) + i_value; }
-   virtual ValueType operator-(const ValueType& i_value) { return accessor_inst.get(host_ref) - i_value; }
-   virtual ValueType operator*(const ValueType& i_value) { return accessor_inst.get(host_ref)* i_value; }
-   virtual ValueType operator/(const ValueType& i_value) { return accessor_inst.get(host_ref) / i_value; }
+   virtual ValueType operator+(const ValueType& i_value) { return this->accessor_inst.get(this->host_ref) + i_value; }
+   virtual ValueType operator-(const ValueType& i_value) { return this->accessor_inst.get(this->host_ref) - i_value; }
+   virtual ValueType operator*(const ValueType& i_value) { return this->accessor_inst.get(this->host_ref)* i_value; }
+   virtual ValueType operator/(const ValueType& i_value) { return this->accessor_inst.get(this->host_ref) / i_value; }
    friend ValueType operator+(const ValueType& i_v0, const number_property& i_v1) { return i_v0 + (ValueType)i_v1; }
    friend ValueType operator-(const ValueType& i_v0, const number_property& i_v1) { return i_v0 - (ValueType)i_v1; }
    friend ValueType operator*(const ValueType& i_v0, const number_property& i_v1) { return i_v0 * (ValueType)i_v1; }
@@ -289,7 +298,7 @@ template <class host> class quat_accessor : public accessor_base<host, glm::quat
 public:
 	virtual void mul(host* i_host, const glm::quat& i_value)
 	{
-		set(i_host, val * i_value);
+        this->set(i_host, this->val * i_value);
 	}
 };
 
@@ -300,8 +309,8 @@ public:
 
 	virtual const ValueType& operator *=(const ValueType& i_value)
 	{
-		accessor_inst.mul(host_ref, i_value);
-		return accessor_inst.get(host_ref);
+        this->accessor_inst.mul(this->host_ref, i_value);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
 	using Property<Host, Accessor, ValueType>::operator =;
@@ -313,7 +322,7 @@ template <class host> class string_accessor : public accessor_base<host, std::st
 public:
 	virtual void add(host* i_host, const std::string& i_value)
 	{
-		set(i_host, val + i_value);
+        this->set(i_host, this->val + i_value);
 	}
 };
 
@@ -324,8 +333,8 @@ public:
 
 	virtual const ValueType& operator +=(const ValueType& i_value)
 	{
-		accessor_inst.add(host_ref, i_value);
-		return accessor_inst.get(host_ref);
+        this->accessor_inst.add(this->host_ref, i_value);
+		return this->accessor_inst.get(this->host_ref);
 	}
 
 	using Property<Host, Accessor, ValueType>::operator =;

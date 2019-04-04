@@ -48,6 +48,8 @@ public:
    std::function<void()> on_lost_focus;
    // called after enter(or an action key) was pressed
    std::function<void()> on_action;
+   // called after a key was pressed
+   std::function<void(key_types i_key)> on_key_pressed;
 
 protected:
    mws_text_box() {}

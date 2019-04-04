@@ -32,7 +32,7 @@ inline std::string mws_to_str(const uint64& i_input) { return std::to_string(i_i
 inline std::string mws_to_str(const real32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const real64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
-template<typename T> T mws_to(const std::string& i_input) { static_assert(false, "mws_to<> is not defined for this type"); return T(); }
+template<typename T> T mws_to(const std::string& i_input) { mws_assert(false); return T(); }
 template<> int32 mws_to(const std::string& i_input);
 template<> uint32 mws_to(const std::string& i_input);
 template<> int64 mws_to(const std::string& i_input);

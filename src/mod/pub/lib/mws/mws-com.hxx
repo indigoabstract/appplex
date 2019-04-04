@@ -57,7 +57,7 @@ public:
    virtual void on_click();
    virtual mws_sp<gfx_quad_2d> get_vxo();
 
-   std::function<void(mws_sp<mws_img_btn> i_img_btn)> on_click_handler;
+   std::function<void()> on_click_handler;
 
 protected:
    mws_img_btn() {}
@@ -85,7 +85,7 @@ public:
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual mws_sp<gfx_quad_2d> get_vxo();
 
-   std::function<void(mws_sp<mws_button> i_btn)> on_click_handler;
+   std::function<void()> on_click_handler;
 
 protected:
    mws_button() {}
@@ -112,7 +112,7 @@ public:
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
 
-   std::function<void(mws_sp<mws_slider> i_slider)> on_drag_handler;
+   std::function<void()> on_drag_handler;
 
 protected:
    mws_slider();

@@ -190,7 +190,7 @@ void mws_img_btn::on_click()
 {
    if (on_click_handler)
    {
-      on_click_handler(std::static_pointer_cast<mws_img_btn>(get_instance()));
+      on_click_handler();
    }
 }
 
@@ -274,7 +274,7 @@ void mws_button::receive(mws_sp<mws_dp> idp)
       {
          if (on_click_handler)
          {
-            on_click_handler(std::static_pointer_cast<mws_button>(get_instance()));
+            on_click_handler();
          }
 
          ts->process();
@@ -384,7 +384,7 @@ void mws_slider::set_value(float i_value)
 
       if (on_drag_handler)
       {
-         on_drag_handler(std::static_pointer_cast<mws_slider>(get_instance()));
+         on_drag_handler();
       }
    }
 }

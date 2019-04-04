@@ -717,6 +717,11 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
             i_ke->process();
          }
       }
+
+      if (on_key_pressed && i_ke->is_processed())
+      {
+         on_key_pressed(key);
+      }
    }
 }
 
