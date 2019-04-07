@@ -79,6 +79,8 @@ mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
 
 #if !MOD_OMNIRECALL
 #include "pfm.hxx"
+bool mws_log::is_enabled() { return false; }
+void mws_log::set_enabled(bool i_is_enabled) {}
 mws_sp<mws_log> mws_log::i() { return nullptr; }
 const std::vector<std::string>& mws_log::get_log() { static std::vector<std::string> log; return log; }
 void mws_log::push(const char* i_msg) {}

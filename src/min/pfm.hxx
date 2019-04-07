@@ -205,15 +205,18 @@ namespace pfm_impl
 class mws_log
 {
 public:
+   static bool is_enabled();
+   static void set_enabled(bool i_is_enabled);
    static mws_sp<mws_log> i();
-   virtual const std::vector<std::string>& get_log() = 0;
-   virtual void push(const char* i_msg) = 0;
-   virtual void pushf(const char* i_fmt, ...) = 0;
-   virtual void clear() = 0;
+   virtual const std::vector<std::string> get_log();
+   virtual void push(const char* i_msg);
+   virtual void pushf(const char* i_fmt, ...);
+   virtual void clear();
 
 protected:
    mws_log();
    static mws_sp<mws_log> inst;
+   static bool enabled;
 };
 
 
