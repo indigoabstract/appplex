@@ -572,7 +572,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
       }
 
       scroll_text(dragging_det.drag_diff);
-      i_pe->process();
+      process(i_pe);
    }
 
    switch (i_pe->type)
@@ -594,13 +594,13 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
       ks.grab(x, y);
 
       if (on_click) { on_click(); }
-      if (!i_pe->is_processed()) { i_pe->process(); }
+      if (!i_pe->is_processed()) { process(i_pe); }
       break;
    }
 
    case mws_ptr_evt::touch_ended:
    {
-      if (!i_pe->is_processed()) { i_pe->process(); }
+      if (!i_pe->is_processed()) { process(i_pe); }
       break;
    }
    }
@@ -616,7 +616,7 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
       {
          if (on_action)
          {
-            i_ke->process();
+            process(i_ke);
             on_action();
          }
 
@@ -629,7 +629,7 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
          {
             std::string key_str(1, (char)key);
             insert_at_cursor(key_str);
-            i_ke->process();
+            process(i_ke);
          }
       }
       else
@@ -714,7 +714,7 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
 
          if (is_processed)
          {
-            i_ke->process();
+            process(i_ke);
          }
       }
 

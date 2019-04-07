@@ -111,12 +111,14 @@ public:
 
    virtual void on_focus_changed(bool i_has_focus) {}
    virtual void receive(mws_sp<mws_dp> idp);
-   virtual void set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler);
+   virtual void process(mws_sp<mws_dp> i_dp);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
    mws_rect get_pos();
    virtual float get_z();
    virtual void set_z(float i_z_position);
+
+   std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
 
 protected:
    mws(mws_sp<gfx> i_gi = nullptr);
@@ -127,7 +129,6 @@ protected:
    mws_rect mws_r;
    mws_wp<mws_page_tab> mwsroot;
    mws_wp<mws_camera> mws_cam;
-   std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
 
 private:
    virtual mws_sp<mws_sender> sender_inst();
@@ -218,7 +219,7 @@ public:
    virtual void update_input_std_behaviour(mws_sp<mws_dp> idp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
-   mws_sp<mws> get_mws_at(int idx);
+   mws_sp<mws> get_mws_at(uint32 i_idx);
    virtual bool is_selected(mws_sp<mws> i_item);
    virtual void select(mws_sp<mws> i_item);
 
@@ -233,9 +234,6 @@ private:
    friend class mws_page_item;
 
    static mws_sp<mws_page> new_standalone_instance();
-   void add(mws_sp<mws_page_item> b);
-
-   std::vector<mws_sp<mws_page_item>> mlist;
 };
 
 
@@ -246,15 +244,13 @@ public:
 
    virtual void set_rect(const mws_rect& i_rect);
    virtual void set_size(float i_width, float i_height);
-   mws_sp<mws_page> get_mws_page_item_parent();
+   mws_sp<mws_page> get_page();
    virtual bool has_focus();
    virtual void select();
 
 protected:
    mws_page_item();
    void setup() override;
-
-   void add_to_page();
 };
 
 

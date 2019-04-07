@@ -21,7 +21,7 @@ public:
    virtual ~mws_ptr_evt() {}
 
    // used for debugging!
-   virtual void process() override;
+   void process(mws_sp<mws_receiver> i_dst) override;
    static mws_sp<mws_ptr_evt> as_pointer_evt(mws_sp<mws_dp> i_dp);
    bool is_multitouch();
 
@@ -111,7 +111,7 @@ public:
    bool is_released() const;
    key_evt_types get_type()  const;
    key_types get_key() const;
-   virtual void process();
+   void process(mws_sp<mws_receiver> i_dst) override;
 
 private:
    mws_key_evt(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);

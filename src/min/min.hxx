@@ -138,7 +138,7 @@ public:
    virtual const std::string& get_name();
    virtual bool is_type(const std::string& i_type);
    virtual bool is_processed();
-   virtual void process();
+   virtual void process(mws_sp<mws_receiver> i_dst);
    virtual mws_sp<mws_sender> source();
    virtual mws_sp<mws_receiver> destination();
 
@@ -149,10 +149,10 @@ protected:
 private:
    friend class mws_sender;
 
-   std::string name;
-   bool processed;
    mws_wp<mws_sender> src;
    mws_wp<mws_receiver> dst;
+   std::string name;
+   bool processed = false;
 };
 
 

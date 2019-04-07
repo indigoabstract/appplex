@@ -10,9 +10,9 @@ const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE = "ts-";
 
 mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { return mws_sp<mws_ptr_evt>(new mws_ptr_evt()); }
 
-void mws_ptr_evt::process()
+void mws_ptr_evt::process(mws_sp<mws_receiver> i_dst)
 {
-   mws_dp::process();
+   mws_dp::process(i_dst);
 
    //if (type == touch_ended)
    //{
@@ -302,9 +302,9 @@ key_types mws_key_evt::get_key() const
    return key;
 }
 
-void mws_key_evt::process()
+void mws_key_evt::process(mws_sp<mws_receiver> i_dst)
 {
-   mws_dp::process();
+   mws_dp::process(i_dst);
 }
 
 

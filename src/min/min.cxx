@@ -303,7 +303,6 @@ std::vector<std::string> mws_str::str_split(const std::string & str, const std::
 mws_dp::mws_dp(const std::string & i_name)
 {
    set_name(i_name);
-   processed = false;
 }
 
 mws_sp<mws_dp> mws_dp::nwi(std::string i_name)
@@ -326,13 +325,16 @@ bool mws_dp::is_processed()
    return processed;
 }
 
-void mws_dp::process()
+void mws_dp::process(mws_sp<mws_receiver> i_dst)
 {
    if (processed)
    {
       mws_throw mws_exception("datapacket is already processed");
+      mws_assert(false);
+      return;
    }
 
+   dst = i_dst;
    processed = true;
 }
 
@@ -355,7 +357,6 @@ void mws_dp::set_name(const std::string & i_name)
 void mws_sender::send(mws_sp<mws_receiver> i_dst, mws_sp<mws_dp> i_dp)
 {
    i_dp->src = sender_inst();
-   i_dp->dst = i_dst;
    i_dst->receive(i_dp);
 }
 

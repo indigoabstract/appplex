@@ -431,7 +431,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
       }
       }
 
-      pe->process();
+      process(pe);
    }
    else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {

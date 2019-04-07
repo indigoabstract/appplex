@@ -62,7 +62,7 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
 
             glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
             look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
-            ts->process();
+            ts->process(nullptr);
          }
          // translation movement.
          else
@@ -92,7 +92,7 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
             clamp_angles();
             //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
             mov_type = e_roll_view_axis;
-            ts->process();
+            ts->process(nullptr);
          }
       }
 
@@ -104,20 +104,20 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
          case mws_ptr_evt::touch_began:
          {
             ks->grab(ts->points[0].x, ts->points[0].y);
-            ts->process();
+            ts->process(nullptr);
             break;
          }
 
          case mws_ptr_evt::touch_ended:
          {
-            ts->process();
+            ts->process(nullptr);
             break;
          }
 
          case mws_ptr_evt::mouse_wheel:
          {
             persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
-            ts->process();
+            ts->process(nullptr);
             break;
          }
          }
@@ -198,7 +198,7 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
 
          if (do_action)
          {
-            ke->process();
+            ke->process(nullptr);
          }
       }
    }

@@ -851,12 +851,17 @@ void mws_mod::receive(mws_sp<mws_dp> idp)
 
                if (do_action)
                {
-                  ke->process();
+                  process(ke);
                }
             }
          }
       }
    }
+}
+
+void mws_mod::process(mws_sp<mws_dp> i_dp)
+{
+   i_dp->process(get_smtp_instance());
 }
 
 void mws_mod::base_init()

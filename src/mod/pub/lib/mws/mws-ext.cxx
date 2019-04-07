@@ -45,7 +45,7 @@ string mws_list_menu_model::elem_at(int idx)
 void mws_list_menu_model::on_elem_selected(int idx)
 {
    mws_sp<mws_list> ul = static_pointer_cast<mws_list>(get_view());
-   mws_sp<mws_page> up = ul->get_mws_page_item_parent();
+   mws_sp<mws_page> up = ul->get_page();
    mws_sp<mws_page_tab> ut = up->get_mws_page_parent();
 
    change_page_transitions(idx);

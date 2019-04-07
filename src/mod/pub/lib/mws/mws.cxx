@@ -39,7 +39,7 @@ mws_sp<mws_model> mws_model::get_instance()
    return shared_from_this();
 }
 
-void mws_model::receive(mws_sp<mws_dp> idp)
+void mws_model::receive(mws_sp<mws_dp> i_dp)
 {
 }
 
@@ -204,11 +204,11 @@ mws_sp<mws_mod> mws::get_mod()
    return std::static_pointer_cast<mws_mod>(mwsroot.lock()->get_mod());
 }
 
-void mws::receive(mws_sp<mws_dp> idp)
+void mws::receive(mws_sp<mws_dp> i_dp)
 {
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
    else
    {
@@ -220,9 +220,9 @@ void mws::receive(mws_sp<mws_dp> idp)
 
             if (w && w->visible)
             {
-               send(w, idp);
+               send(w, i_dp);
 
-               if (idp->is_processed())
+               if (i_dp->is_processed())
                {
                   break;
                }
@@ -232,10 +232,7 @@ void mws::receive(mws_sp<mws_dp> idp)
    }
 }
 
-void mws::set_receive_handler(std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> i_receive_handler)
-{
-   receive_handler = i_receive_handler;
-}
+void mws::process(mws_sp<mws_dp> i_dp) { i_dp->process(get_instance()); }
 
 void mws::update_state()
 {
@@ -400,28 +397,28 @@ mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
    return tab_text_vxo;
 }
 
-void mws_page_tab::receive(mws_sp<mws_dp> idp)
+void mws_page_tab::receive(mws_sp<mws_dp> i_dp)
 {
    if (vkb && vkb->visible)
    {
-      vkb->receive(idp);
+      vkb->receive(i_dp);
    }
    else
    {
       if (receive_handler)
       {
-         receive_handler(get_instance(), idp);
+         receive_handler(get_instance(), i_dp);
       }
       else
       {
-         if (idp->is_processed())
+         if (i_dp->is_processed())
          {
             return;
          }
 
          if (!is_empty())
          {
-            send(page_tab.back(), idp);
+            send(page_tab.back(), i_dp);
          }
       }
    }
@@ -591,9 +588,14 @@ void mws_page::init() {}
 
 void mws_page::on_destroy()
 {
-   for (auto p : mlist)
+   for (auto& c : children)
    {
-      p->on_destroy();
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         auto w = mws_dynamic_pointer_cast<mws>(c);
+
+         w->on_destroy();
+      }
    }
 }
 
@@ -606,18 +608,23 @@ mws_sp<mws> mws_page::contains_id(const std::string& iid)
          return get_instance();
       }
 
-      for (auto p : mlist)
+      for (auto& c : children)
       {
-         mws_sp<mws> u = p->contains_id(iid);
-
-         if (u)
+         if (c->get_type() == gfx_obj::e_mws)
          {
-            return u;
+            auto w = mws_dynamic_pointer_cast<mws>(c);
+
+            mws_sp<mws> u = w->contains_id(iid);
+
+            if (u)
+            {
+               return u;
+            }
          }
       }
    }
 
-   return mws_sp<mws>();
+   return nullptr;
 }
 
 bool mws_page::contains_mws(const mws_sp<mws> i_mws)
@@ -662,30 +669,30 @@ void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {
 
 void mws_page::on_hide_transition(const mws_sp<linear_transition> itransition) {}
 
-void mws_page::receive(mws_sp<mws_dp> idp)
+void mws_page::receive(mws_sp<mws_dp> i_dp)
 {
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
    else
    {
-      update_input_sub_mws(idp);
-      //update_input_std_behaviour(idp);
+      update_input_sub_mws(i_dp);
+      //update_input_std_behaviour(i_dp);
    }
 }
 
-void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
+void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
 {
-   if (idp->is_processed())
+   if (i_dp->is_processed())
    {
       return;
    }
 
-   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
       mws_sp<mws> new_selected_item;
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
@@ -700,15 +707,15 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
       {
          if (c->get_type() == gfx_obj::e_mws)
          {
-            auto w = mws_dynamic_pointer_cast<mws>(c);
+            mws_sp<mws> w = mws_dynamic_pointer_cast<mws>(c);
 
             if (w && w->visible)
             {
-               send(w, idp);
+               send(w, i_dp);
 
-               if (idp->is_processed())
+               if (i_dp->is_processed())
                {
-                  new_selected_item = w;
+                  new_selected_item = mws_dynamic_pointer_cast<mws>(i_dp->destination());
                   break;
                }
             }
@@ -730,26 +737,26 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> idp)
          }
       }
    }
-   else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
       if (selected_item)
       {
-         selected_item->receive(idp);
+         selected_item->receive(i_dp);
       }
    }
 
 }
 
-void mws_page::update_input_std_behaviour(mws_sp<mws_dp> idp)
+void mws_page::update_input_std_behaviour(mws_sp<mws_dp> i_dp)
 {
-   if (idp->is_processed())
+   if (i_dp->is_processed())
    {
       return;
    }
 
-   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
       //switch (ts->get_type())
       //{
@@ -896,9 +903,25 @@ void mws_page::update_view(mws_sp<mws_camera> g)
    }
 }
 
-mws_sp<mws> mws_page::get_mws_at(int idx)
+mws_sp<mws> mws_page::get_mws_at(uint32 i_idx)
 {
-   return mlist[idx];
+   uint32 k = 0;
+
+   for (auto& c : children)
+   {
+      if (c->get_type() == gfx_obj::e_mws)
+      {
+         if (k == i_idx)
+         {
+            auto w = mws_dynamic_pointer_cast<mws>(c);
+            return w;
+         }
+
+         k++;
+      }
+   }
+
+   return nullptr;
 }
 
 bool mws_page::is_selected(mws_sp<mws> i_item)
@@ -939,16 +962,6 @@ mws_sp<mws_page> mws_page::new_standalone_instance()
    return mws_sp<mws_page>(new mws_page());
 }
 
-void mws_page::add(mws_sp<mws_page_item> b)
-{
-   if (contains_mws(b))
-   {
-      mws_throw mws_exception();//trs("mwspageitem with id [%1%] already exists") % b->get_id());
-   }
-
-   mlist.push_back(b);
-}
-
 
 void mws_page_item::set_rect(const mws_rect& i_rect)
 {
@@ -961,19 +974,37 @@ void mws_page_item::set_size(float i_width, float i_height)
    mws_r.h = i_height;
 }
 
-mws_sp<mws_page> mws_page_item::get_mws_page_item_parent()
+mws_sp<mws_page> mws_page_item::get_page()
 {
-   return static_pointer_cast<mws_page>(get_mws_parent());
+   mws_sp<gfx_node> parent = get_parent();
+
+   while (parent)
+   {
+      if (parent->get_type() == gfx_obj::e_mws)
+      {
+         mws_sp<mws_page> page = mws_dynamic_pointer_cast<mws_page>(parent);
+
+         if (page)
+         {
+            return page;
+         }
+      }
+
+      parent = parent->get_parent();
+   }
+
+   return nullptr;
 }
 
 bool mws_page_item::has_focus()
 {
-   return get_mws_page_item_parent()->is_selected(get_instance());
+   mws_sp<mws_page> parent = get_page();
+   return parent->is_selected(get_instance());
 }
 
 void mws_page_item::select()
 {
-   get_mws_page_item_parent()->select(get_instance());
+   get_page()->select(get_instance());
 }
 
 mws_page_item::mws_page_item() {}
@@ -981,12 +1012,4 @@ mws_page_item::mws_page_item() {}
 void mws_page_item::setup()
 {
    mws::setup();
-}
-
-void mws_page_item::add_to_page()
-{
-   mws_sp<mws_page> page = static_pointer_cast<mws_page>(get_mws_parent());
-   mws_sp<mws_page_item> inst = static_pointer_cast<mws_page_item>(get_instance());
-
-   page->add(inst);
 }

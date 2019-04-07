@@ -170,7 +170,7 @@ void mws_img_btn::receive(mws_sp<mws_dp> idp)
       if (ts->type == ts->touch_began)
       {
          on_click();
-         ts->process();
+         process(ts);
       }
    }
 }
@@ -277,7 +277,7 @@ void mws_button::receive(mws_sp<mws_dp> idp)
             on_click_handler();
          }
 
-         ts->process();
+         process(ts);
       }
    }
 }
@@ -417,7 +417,7 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
-      bool process = false;
+      bool process_evt = false;
 
       if (dragging_detected && active)
       {
@@ -472,20 +472,20 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
             }
 
             active = true;
-            process = true;
+            process_evt = true;
          }
          break;
       }
 
       case mws_ptr_evt::touch_ended:
          active = false;
-         process = false;
+         process_evt = false;
          break;
       }
 
-      if (!ts->is_processed() && process)
+      if (!ts->is_processed() && process_evt)
       {
-         ts->process();
+         process(ts);
       }
    }
 }
@@ -755,7 +755,6 @@ mws_tree::mws_tree(mws_sp<mws_page> iparent)
 void mws_tree::setup()
 {
    mws_page_item::setup();
-   add_to_page();
 }
 
 mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> iparent)
@@ -768,7 +767,6 @@ mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> iparent)
 mws_sp<mws_tree> mws_tree::new_shared_instance(mws_tree* newTreeClassInstance)
 {
    mws_sp<mws_tree> u(newTreeClassInstance);
-   u->add_to_page();
    return u;
 }
 
