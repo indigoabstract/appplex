@@ -5,8 +5,10 @@
 #include "gfx-state.hxx"
 #include "gfx-util.hxx"
 #include <glm/inc.hpp>
+#include <functional>
 #include <string>
 #include <vector>
+
 
 class gfx;
 class gfx_scene;
@@ -54,7 +56,6 @@ public:
    mws_sp<gfx_node> get_parent();
    mws_sp<gfx_node> get_root();
    mws_sp<gfx_scene> get_scene();
-   virtual void on_visibility_changed(bool i_visible) {}
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void draw_in_sync(mws_sp<gfx_camera> i_cam);
    virtual void draw_out_of_sync(mws_sp<gfx_camera> i_cam);
@@ -67,6 +68,7 @@ public:
    // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
    virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx);
 
+   std::function<void(bool i_visible)> on_visibility_changed;
 
    template <class host> class name_accessor : public string_accessor<host>
    {
@@ -90,7 +92,11 @@ public:
          {
             this->val = i_value;
             val_changed = true;
-            i_host->on_visibility_changed(i_value);
+
+            if (i_host->on_visibility_changed)
+            {
+               i_host->on_visibility_changed(i_value);
+            }
          }
       }
    };

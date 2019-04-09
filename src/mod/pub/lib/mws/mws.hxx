@@ -210,7 +210,6 @@ public:
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent();
 
-   virtual void on_visibility_changed(bool iis_visible) override;
    virtual void on_show_transition(const mws_sp<linear_transition> itransition);
    virtual void on_hide_transition(const mws_sp<linear_transition> itransition);
 

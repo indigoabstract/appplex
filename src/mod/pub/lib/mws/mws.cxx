@@ -574,7 +574,18 @@ void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
 }
 
 
-mws_page::mws_page() {}
+mws_page::mws_page()
+{
+   on_visibility_changed = [this](bool i_visible)
+   {
+      mws_sp<mws_page_tab> parent = get_mws_page_parent();
+
+      if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
+      {
+         on_resize();
+      }
+   };
+}
 
 mws_sp<mws_page> mws_page::nwi(mws_sp<mws_page_tab> i_parent)
 {
@@ -653,16 +664,6 @@ mws_sp<mws_page> mws_page::get_mws_page_instance()
 mws_sp<mws_page_tab> mws_page::get_mws_page_parent()
 {
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
-}
-
-void mws_page::on_visibility_changed(bool iis_visible)
-{
-   mws_sp<mws_page_tab> parent = get_mws_page_parent();
-
-   if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
-   {
-      on_resize();
-   }
 }
 
 void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {}
