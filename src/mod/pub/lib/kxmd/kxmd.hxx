@@ -20,6 +20,7 @@ namespace ns_kxmd
       // constructs an empty/nullptr object
       kv_ref();
 
+      virtual explicit operator bool() const { return valid(); }
       virtual bool valid() const;
       virtual mws_sp<kxmd> get_db() const;
       virtual std::string key() const;
