@@ -218,7 +218,7 @@ namespace ns_kxmd
 
          if (check_valid(i_ref, kv))
          {
-            std::vector<std::string> tokens = str_split(i_path, ".");
+            std::vector<std::string> tokens = mws_str::str_split(i_path, ".");
 
             for (auto& ke_name : tokens)
             {
@@ -248,7 +248,7 @@ namespace ns_kxmd
          if (check_valid(i_ref, kv))
          {
             std::vector<std::string> val_vect;
-            std::vector<std::string> tokens = str_split(i_path, ".");
+            std::vector<std::string> tokens = mws_str::str_split(i_path, ".");
 
             for (auto& ke_name : tokens)
             {
@@ -282,7 +282,7 @@ namespace ns_kxmd
 
          if (check_valid(i_ref, kv))
          {
-            std::vector<std::string> tokens = str_split(i_path, ".");
+            std::vector<std::string> tokens = mws_str::str_split(i_path, ".");
 
             for (auto& ke_name : tokens)
             {
@@ -412,7 +412,7 @@ namespace ns_kxmd
 
       static mws_sp<kxmd_kv> elem_at_path_impl(mws_sp<kxmd_kv> i_kv, const std::string & i_path)
       {
-         std::vector<std::string> tokens = str_split(i_path, ".");
+         std::vector<std::string> tokens = mws_str::str_split(i_path, ".");
 
          for (auto& ke_name : tokens)
          {
