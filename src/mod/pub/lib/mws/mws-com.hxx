@@ -3,10 +3,32 @@
 #include "mws.hxx"
 #include "input/gesture-detectors.hxx"
 #include "gfx-color.hxx"
+#include <stack>
 
 
 class gfx_quad_2d;
 class mws_font;
+
+
+class mws_stack_page_nav : public mws_page_nav
+{
+public:
+   static mws_sp<mws_stack_page_nav> nwi(mws_sp<mws_page_tab> i_tab);
+   std::string get_main_page_id() const override;
+   void set_main_page_id(const std::string& i_main_page_id) override;
+   void pop() override;
+   void push(std::string i_page_id) override;
+   void reset_pages() override;
+
+protected:
+   mws_stack_page_nav() {}
+   virtual void set_current(const std::string& i_page_id);
+   virtual void setup();
+
+   mws_wp<mws_page_tab> tab;
+   std::stack<std::string> page_stack;
+   std::string main_page_id;
+};
 
 
 class mws_panel : public mws_page_item

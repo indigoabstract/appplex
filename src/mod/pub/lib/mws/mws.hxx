@@ -150,6 +150,18 @@ protected:
 };
 
 
+class mws_page_nav
+{
+public:
+   virtual ~mws_page_nav() {}
+   virtual std::string get_main_page_id() const = 0;
+   virtual void set_main_page_id(const std::string& i_main_page_id) = 0;
+   virtual void pop() = 0;
+   virtual void push(std::string i_page_id) = 0;
+   virtual void reset_pages() = 0;
+};
+
+
 class mws_page_tab : public mws
 {
 public:
@@ -177,6 +189,8 @@ public:
    virtual bool handle_back_evt();
    virtual mws_sp<mws_virtual_keyboard> get_keyboard();
    virtual void show_keyboard(mws_sp<mws_text_area> i_tbx);
+   virtual mws_sp<mws_page_nav> get_page_nav() const { return page_nav; };
+   virtual void set_page_nav(mws_sp<mws_page_nav> i_page_nav) { mws_assert(i_page_nav != nullptr); page_nav = i_page_nav; };
 
    std::vector<mws_sp<mws_page>> page_tab;
 
@@ -194,6 +208,7 @@ private:
    mws_sp<mws_virtual_keyboard> vkb;
    mws_sp<text_vxo> tab_text_vxo;
    mws_wp<mws_mod> u;
+   mws_sp<mws_page_nav> page_nav;
 };
 
 

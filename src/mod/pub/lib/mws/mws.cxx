@@ -3,6 +3,7 @@
 #include "appplex-conf.hxx"
 
 #include "mws.hxx"
+#include "mws-com.hxx"
 #include "mws-camera.hxx"
 #include "mws-font.hxx"
 #include "text-vxo.hxx"
@@ -518,6 +519,7 @@ void mws_page_tab::new_instance_helper()
    mws_sp<mws_page_tab> mws_root = get_mws_page_tab_instance();
    mwsroot = mws_root;
    mws_cam = mwsroot.lock()->get_mod()->mws_cam;
+   page_nav = mws_stack_page_nav::nwi(mws_root);
 
 #if defined MOD_VECTOR_FONTS
    {

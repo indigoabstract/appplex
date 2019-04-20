@@ -18,6 +18,88 @@ using std::string;
 using std::vector;
 
 
+mws_sp<mws_stack_page_nav> mws_stack_page_nav::nwi(mws_sp<mws_page_tab> i_tab)
+{
+   auto i = mws_sp<mws_stack_page_nav>(new mws_stack_page_nav());
+   i->tab = i_tab;
+   i->setup();
+   return i;
+}
+
+std::string mws_stack_page_nav::get_main_page_id() const
+{
+   return main_page_id;
+}
+
+void mws_stack_page_nav::set_main_page_id(const std::string& i_main_page_id)
+{
+   main_page_id = i_main_page_id;
+}
+
+void mws_stack_page_nav::pop()
+{
+   std::string active_page;
+
+   if (!page_stack.empty())
+   {
+      page_stack.pop();
+   }
+
+   if (page_stack.empty())
+   {
+      active_page = get_main_page_id();
+   }
+   else
+   {
+      active_page = page_stack.top();
+   }
+
+   set_current(active_page);
+}
+
+void mws_stack_page_nav::push(std::string i_page_id)
+{
+   page_stack.push(i_page_id);
+   set_current(i_page_id);
+}
+
+void mws_stack_page_nav::reset_pages()
+{
+   page_stack = std::stack<std::string>();
+   set_current(get_main_page_id());
+}
+
+void mws_stack_page_nav::set_current(const std::string& i_page_id)
+{
+   mws_sp<mws_page_tab> tab_inst = tab.lock();
+   auto page = std::static_pointer_cast<mws_page>(tab_inst->find_by_id(i_page_id));
+   mws_assert(page != nullptr);
+   auto& pt = tab_inst->page_tab;
+   auto it = std::find(pt.begin(), pt.end(), page);
+   mws_assert(it != pt.end());
+
+   if (it != pt.end() - 1)
+   {
+      std::iter_swap(it, pt.end() - 1);
+   }
+
+   for (auto p : pt)
+   {
+      if (p->visible && p != page)
+      {
+         p->visible = false;
+      }
+   }
+
+   if (!page->visible)
+   {
+      page->visible = true;
+   }
+}
+
+void mws_stack_page_nav::setup() {}
+
+
 mws_sp<mws_panel> mws_panel::nwi()
 {
    auto inst = mws_sp<mws_panel>(new mws_panel());
