@@ -40,6 +40,26 @@ struct vkb_info
 };
 
 
+struct vkb_file_info
+{
+   vkb_info info;
+   mws_sp<pfm_file> file;
+};
+
+
+class mws_vkb_file_store_impl : public mws_vkb_file_store
+{
+public:
+   std::vector<vkb_file_info> get_vkb_list() override;
+   bool file_exists(const std::string& i_vkb_filename) override;
+   void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) override;
+   std::string load_vkb(const std::string& i_vkb_filename) override;
+
+protected:
+   std::vector<vkb_file_info> vkb_info_vect;
+};
+
+
 class mws_vkb_impl : public mws
 {
 public:
@@ -63,6 +83,7 @@ public:
    void next_page();
    void prev_page();
 
+   mws_sp<mws_vkb_file_store> file_store;
    uint32 obj_type_mask = 0;
    mws_sp<mws_vrn_main> vk;
    int selected_kernel_idx = -1;
@@ -91,6 +112,8 @@ public:
    virtual void on_resize() override;
    virtual void set_target(mws_sp<mws_text_area> i_tbx) override;
    virtual void set_font(mws_sp<mws_font> i_fnt) override;
+   virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
+   virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
 
 protected:
    mws_vkb() {}

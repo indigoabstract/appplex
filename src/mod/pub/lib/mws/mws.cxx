@@ -190,17 +190,17 @@ bool mws::contains_mws(const mws_sp<mws> i_mws)
    return i_mws == get_instance();
 }
 
-mws_sp<mws> mws::get_mws_parent()
+mws_sp<mws> mws::get_mws_parent() const
 {
    return mws_dynamic_pointer_cast<mws>(get_parent());
 }
 
-mws_sp<mws_page_tab> mws::get_mws_root()
+mws_sp<mws_page_tab> mws::get_mws_root() const
 {
    return mwsroot.lock();
 }
 
-mws_sp<mws_mod> mws::get_mod()
+mws_sp<mws_mod> mws::get_mod() const
 {
    return std::static_pointer_cast<mws_mod>(mwsroot.lock()->get_mod());
 }
@@ -331,6 +331,11 @@ void mws_page_tab::init_subobj()
       p->mws_subobj_list.clear();
       p->list_mws_children(p->mws_subobj_list);
       std::sort(p->mws_subobj_list.begin(), p->mws_subobj_list.end(), z_sort);
+   }
+
+   if (page_nav && !(page_nav->get_main_page_id().empty()))
+   {
+      page_nav->reset_pages();
    }
 }
 
@@ -467,6 +472,11 @@ void mws_page_tab::on_resize()
    mws_r.w = (float)u.lock()->get_width();
    mws_r.h = (float)u.lock()->get_height();
 
+   if (tab_text_vxo)
+   {
+      tab_text_vxo->clear_text();
+   }
+
    for (mws_sp<mws_page> p : page_tab)
    {
       if (p->visible)
@@ -553,6 +563,7 @@ mws_sp<mws_virtual_keyboard> mws_page_tab::get_keyboard()
       if (!vkb)
       {
          vkb = mws_vkb::gi();
+         vkb->set_file_store(get_file_store());
          attach(vkb);
          vkb->visible = false;
       }
@@ -573,6 +584,16 @@ void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
       kb->set_target(i_tbx);
       mws_println("mws_page_tab::show_keyboard");
    }
+}
+
+mws_sp<mws_vkb_file_store> mws_page_tab::get_file_store()
+{
+   if (!vkb_store)
+   {
+      set_file_store(std::make_shared<mws_vkb_file_store_impl>());
+   }
+
+   return vkb_store;
 }
 
 
@@ -663,7 +684,7 @@ mws_sp<mws_page> mws_page::get_mws_page_instance()
    return static_pointer_cast<mws_page>(get_instance());
 }
 
-mws_sp<mws_page_tab> mws_page::get_mws_page_parent()
+mws_sp<mws_page_tab> mws_page::get_mws_page_parent() const
 {
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
 }
@@ -906,6 +927,11 @@ void mws_page::update_view(mws_sp<mws_camera> g)
    }
 }
 
+mws_dim mws_page::get_dim() const
+{
+   return mws_dim(mws_r.w - mws_r.x, mws_r.h - mws_r.y);
+}
+
 mws_sp<mws> mws_page::get_mws_at(uint32 i_idx)
 {
    uint32 k = 0;
@@ -958,11 +984,6 @@ void mws_page::on_resize()
    mws_r.y = 0;
    mws_r.w = parent->mws_r.w;
    mws_r.h = parent->mws_r.h;
-}
-
-mws_sp<mws_page> mws_page::new_standalone_instance()
-{
-   return mws_sp<mws_page>(new mws_page());
 }
 
 

@@ -82,7 +82,7 @@ mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
 bool mws_log::is_enabled() { return false; }
 void mws_log::set_enabled(bool i_is_enabled) {}
 mws_sp<mws_log> mws_log::i() { return nullptr; }
-const std::vector<std::string>& mws_log::get_log() { static std::vector<std::string> log; return log; }
+const std::vector<std::string> mws_log::get_log() { return std::vector<std::string>(); }
 void mws_log::push(const char* i_msg) {}
 void mws_log::pushf(const char* i_fmt, ...) {}
 void mws_log::clear() {}

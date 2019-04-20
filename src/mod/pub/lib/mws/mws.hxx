@@ -27,6 +27,7 @@ class mws_text_area;
 class mws_virtual_keyboard;
 class gfx_vxo;
 class text_vxo;
+struct vkb_file_info;
 
 
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
@@ -105,9 +106,9 @@ public:
    virtual mws_sp<mws> find_by_id(const std::string& iid);
    virtual mws_sp<mws> contains_id(const std::string& iid);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
-   mws_sp<mws> get_mws_parent();
-   mws_sp<mws_page_tab> get_mws_root();
-   virtual mws_sp<mws_mod> get_mod();
+   mws_sp<mws> get_mws_parent() const;
+   mws_sp<mws_page_tab> get_mws_root() const;
+   virtual mws_sp<mws_mod> get_mod() const;
 
    virtual void on_focus_changed(bool i_has_focus) {}
    virtual void receive(mws_sp<mws_dp> idp);
@@ -137,6 +138,16 @@ private:
 };
 
 
+class mws_vkb_file_store
+{
+public:
+   virtual std::vector<vkb_file_info> get_vkb_list() = 0;
+   virtual bool file_exists(const std::string& i_vkb_filename) = 0;
+   virtual void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) = 0;
+   virtual std::string load_vkb(const std::string& i_vkb_filename) = 0;
+};
+
+
 class mws_virtual_keyboard : public mws
 {
 public:
@@ -144,6 +155,8 @@ public:
    virtual void on_resize() = 0;
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
    virtual void set_font(mws_sp<mws_font> i_fnt) = 0;
+   virtual mws_sp<mws_vkb_file_store> get_file_store() const = 0;
+   virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) = 0;
 
 protected:
    mws_virtual_keyboard() {}
@@ -189,6 +202,8 @@ public:
    virtual bool handle_back_evt();
    virtual mws_sp<mws_virtual_keyboard> get_keyboard();
    virtual void show_keyboard(mws_sp<mws_text_area> i_tbx);
+   virtual mws_sp<mws_vkb_file_store> get_file_store();
+   virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) { vkb_store = i_store; }
    virtual mws_sp<mws_page_nav> get_page_nav() const { return page_nav; };
    virtual void set_page_nav(mws_sp<mws_page_nav> i_page_nav) { mws_assert(i_page_nav != nullptr); page_nav = i_page_nav; };
 
@@ -206,6 +221,7 @@ private:
    void new_instance_helper();
 
    mws_sp<mws_virtual_keyboard> vkb;
+   mws_sp<mws_vkb_file_store> vkb_store;
    mws_sp<text_vxo> tab_text_vxo;
    mws_wp<mws_mod> u;
    mws_sp<mws_page_nav> page_nav;
@@ -223,7 +239,7 @@ public:
    virtual mws_sp<mws> contains_id(const std::string& iid);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws_page> get_mws_page_instance();
-   mws_sp<mws_page_tab> get_mws_page_parent();
+   mws_sp<mws_page_tab> get_mws_page_parent() const;
 
    virtual void on_show_transition(const mws_sp<linear_transition> itransition);
    virtual void on_hide_transition(const mws_sp<linear_transition> itransition);
@@ -233,6 +249,7 @@ public:
    virtual void update_input_std_behaviour(mws_sp<mws_dp> idp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
+   virtual mws_dim get_dim() const;
    mws_sp<mws> get_mws_at(uint32 i_idx);
    virtual bool is_selected(mws_sp<mws> i_item);
    virtual void select(mws_sp<mws> i_item);
@@ -246,8 +263,6 @@ protected:
 private:
    friend class mws_page_tab;
    friend class mws_page_item;
-
-   static mws_sp<mws_page> new_standalone_instance();
 };
 
 

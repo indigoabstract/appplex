@@ -51,11 +51,11 @@ public:
    };
 
    gfx_node(mws_sp<gfx> i_gi);
-   virtual e_gfx_obj_type get_type()const override;
+   virtual e_gfx_obj_type get_type() const override;
    mws_sp<gfx_node> get_mws_sp();
-   mws_sp<gfx_node> get_parent();
-   mws_sp<gfx_node> get_root();
-   mws_sp<gfx_scene> get_scene();
+   mws_sp<gfx_node> get_parent() const;
+   mws_sp<gfx_node> get_root() const;
+   mws_sp<gfx_scene> get_scene() const;
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent);
    virtual void draw_in_sync(mws_sp<gfx_camera> i_cam);
    virtual void draw_out_of_sync(mws_sp<gfx_camera> i_cam);

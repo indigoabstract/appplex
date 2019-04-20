@@ -55,6 +55,7 @@ public:
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void update_state() override;
    virtual void set_text(std::string i_text);
+   virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_font);
 
 protected:
@@ -104,6 +105,7 @@ public:
    virtual const gfx_color& get_bg_color() const;
    virtual void set_bg_color(const gfx_color& i_color);
    virtual void set_bg_visible(bool i_visible);
+   virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual mws_sp<gfx_quad_2d> get_vxo();
 

@@ -42,11 +42,11 @@ gfx_obj::e_gfx_obj_type gfx_node::get_type()const { return e_node; }
 
 mws_sp<gfx_node> gfx_node::get_mws_sp() { return std::static_pointer_cast<gfx_node>(get_inst()); }
 
-mws_sp<gfx_node> gfx_node::get_parent() { return parent.lock(); }
+mws_sp<gfx_node> gfx_node::get_parent() const { return parent.lock(); }
 
-mws_sp<gfx_node> gfx_node::get_root() { return root.lock(); }
+mws_sp<gfx_node> gfx_node::get_root() const { return root.lock(); }
 
-mws_sp<gfx_scene> gfx_node::get_scene() { return std::static_pointer_cast<gfx_scene>(root.lock()); }
+mws_sp<gfx_scene> gfx_node::get_scene() const { return std::static_pointer_cast<gfx_scene>(root.lock()); }
 
 void gfx_node::add_to_draw_list(const std::string & i_camera_id, std::vector<mws_sp<gfx_vxo> > & i_opaque, std::vector<mws_sp<gfx_vxo> > & i_translucent)
 {

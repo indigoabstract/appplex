@@ -12,6 +12,69 @@
 #include <numeric>
 
 
+std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()
+{
+   if (vkb_info_vect.empty())
+   {
+      // search all files in resources
+      auto& file_list = *pfm::filesystem::get_res_file_list();
+
+      // store all the found vkb files in a list
+      for (auto file_it : file_list)
+      {
+         mws_sp<pfm_file> file = file_it.second;
+         const std::string& name = file->get_file_name();
+         vkb_info vkb_i = mws_vkb_impl::get_vkb_info(name);
+
+         if (vkb_i.aspect_ratio != 0.f)
+         {
+            vkb_file_info vkb_i_t = { vkb_i, file };
+
+            vkb_info_vect.push_back(vkb_i_t);
+         }
+      }
+   }
+
+   return vkb_info_vect;
+}
+
+bool mws_vkb_file_store_impl::file_exists(const std::string& i_vkb_filename)
+{
+   std::vector<vkb_file_info> list = get_vkb_list();
+
+   for (auto& e : list)
+   {
+      if (e.file->get_file_name() == i_vkb_filename)
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+void mws_vkb_file_store_impl::save_vkb(const std::string& i_vkb_filename, const std::string& i_data)
+{
+   std::string map_path = pfm::filesystem::get_writable_path(i_vkb_filename);
+   mws_sp<pfm_file> map_file_save = pfm_file::get_inst(map_path);
+
+   map_file_save->io.open("wt");
+   map_file_save->io.write((const uint8*)i_data.c_str(), i_data.length());
+   map_file_save->io.close();
+}
+
+std::string mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
+{
+   if (file_exists(i_vkb_filename))
+   {
+      mws_sp<std::string> str = pfm::filesystem::load_res_as_string(i_vkb_filename);
+      return *str;
+   }
+
+   return "";
+}
+
+
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
@@ -129,37 +192,11 @@ void mws_vkb_impl::update_state()
 
 void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 {
-   vk->resize(i_width, i_height);
-
-   struct vkb_info_t
-   {
-      vkb_info info;
-      uint32 file_vect_idx = 0;
-   };
-
-   // search all files in resources
-   std::vector<mws_sp<pfm_file>> file_vect;
-   const umf_list file_list = pfm::filesystem::get_res_file_list();
+   mws_assert(file_store != nullptr);
    float screen_aspect_ratio = float(i_width) / i_height;
-   std::vector<vkb_info_t> vkb_info_vect;
-   uint32 k = 0;
+   std::vector<vkb_file_info> vkb_info_vect = file_store->get_vkb_list();
 
-   // store all the found vkb files in a list
-   for (auto file_it : *file_list)
-   {
-      mws_sp<pfm_file> file = file_it.second;
-      const std::string& name = file->get_file_name();
-      vkb_info vkb_i = mws_vkb_impl::get_vkb_info(name);
-
-      if (vkb_i.aspect_ratio != 0.f)
-      {
-         vkb_info_t vkb_i_t = { vkb_i, k };
-
-         file_vect.push_back(file);
-         vkb_info_vect.push_back(vkb_i_t);
-         k++;
-      }
-   }
+   vk->resize(i_width, i_height);
 
    if (vkb_info_vect.empty())
    {
@@ -168,13 +205,13 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
    }
 
    // sort the vkb files by aspect ratio
-   auto cmp_aspect_ratio = [](const vkb_info_t & i_a, const vkb_info_t & i_b) { return i_a.info.aspect_ratio > i_b.info.aspect_ratio; };
+   auto cmp_aspect_ratio = [](const vkb_file_info & i_a, const vkb_file_info & i_b) { return i_a.info.aspect_ratio > i_b.info.aspect_ratio; };
    std::sort(vkb_info_vect.begin(), vkb_info_vect.end(), cmp_aspect_ratio);
 
    // find the vkb file with the closest match to the screen's aspect ratio
-   auto closest_val = [&cmp_aspect_ratio](const std::vector<vkb_info_t> & i_vect, float i_value) -> const vkb_info_t &
+   auto closest_val = [&cmp_aspect_ratio](const std::vector<vkb_file_info> & i_vect, float i_value) -> const vkb_file_info &
    {
-      vkb_info_t vkb_i_t;
+      vkb_file_info vkb_i_t;
       vkb_i_t.info.aspect_ratio = i_value;
       auto const it = std::lower_bound(i_vect.begin(), i_vect.end(), vkb_i_t, cmp_aspect_ratio);
 
@@ -186,8 +223,8 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
       return *it;
    };
    // found it
-   const vkb_info_t& vkb_i_t = closest_val(vkb_info_vect, screen_aspect_ratio);
-   mws_sp<pfm_file> file = file_vect[vkb_i_t.file_vect_idx];
+   const vkb_file_info& vkb_i_t = closest_val(vkb_info_vect, screen_aspect_ratio);
+   mws_sp<pfm_file> file = vkb_i_t.file;
 
    load_map(file->get_file_name());
 }
@@ -473,6 +510,16 @@ void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 void mws_vkb::set_font(mws_sp<mws_font> i_fnt)
 {
    get_impl()->set_font(i_fnt);
+}
+
+mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const
+{
+   return impl->file_store;
+}
+
+void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
+{
+   impl->file_store = i_store;
 }
 
 void mws_vkb::setup()

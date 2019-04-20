@@ -163,15 +163,20 @@ void mws_label::update_state()
       glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
       auto root = get_mws_root();
       auto text_ref = root->get_text_vxo();
-      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
 
-      text_ref->add_text(text, pos, f);
+      text_ref->add_text(text, pos, get_font());
    }
 }
 
 void mws_label::set_text(string i_text)
 {
    text = i_text;
+}
+
+mws_sp<mws_font> mws_label::get_font() const
+{
+   mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+   return f;
 }
 
 void mws_label::set_font(mws_sp<mws_font> i_font)
@@ -384,9 +389,8 @@ void mws_button::update_state()
       glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
       auto root = get_mws_root();
       auto text_ref = root->get_text_vxo();
-      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
 
-      text_ref->add_text(text, pos, f);
+      text_ref->add_text(text, pos, get_font());
    }
 }
 
@@ -409,6 +413,12 @@ void mws_button::set_bg_color(const gfx_color& i_color)
 void mws_button::set_bg_visible(bool i_visible)
 {
    get_vxo()->visible = i_visible;
+}
+
+mws_sp<mws_font> mws_button::get_font() const
+{
+   mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+   return f;
 }
 
 void mws_button::set_font(mws_sp<mws_font> i_font)
@@ -758,8 +768,7 @@ void mws_list::update_state()
       glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
       auto root = get_mws_root();
       auto text_ref = root->get_text_vxo();
-      mws_sp<mws_font> font;
-      mws_sp<mws_font> f = (font) ? font : mws_cam.lock()->get_font();
+      mws_sp<mws_font> f = mws_cam.lock()->get_font();
       pos = glm::vec2(20.f);
 
       for (int k = 0; k < size; k++)

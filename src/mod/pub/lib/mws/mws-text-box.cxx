@@ -165,9 +165,9 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
       {
          top_line_idx = cursor_row_idx - rows;
          cursor_row_idx = rows - 1;
-         update_text();
       }
 
+      update_text();
       tx_rows = tx_src->get_lines_at(top_line_idx, rows);
       update_gfx_cursor();
    }
