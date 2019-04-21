@@ -122,6 +122,7 @@ protected:
    virtual void done();
    virtual mws_sp<mws_vkb_impl> get_impl();
 
+   mws_sp<mws_vkb_file_store> file_store;
    mws_sp<mws_vkb_impl> impl;
    mws_sp<mws_text_area> ta;
    std::string vkb_filename;

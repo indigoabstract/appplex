@@ -514,12 +514,12 @@ void mws_vkb::set_font(mws_sp<mws_font> i_fnt)
 
 mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const
 {
-   return impl->file_store;
+   return file_store;
 }
 
 void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
 {
-   impl->file_store = i_store;
+   file_store = i_store;
 }
 
 void mws_vkb::setup()
@@ -544,6 +544,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       uint32 h = pfm::screen::get_height();
 
       impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
+      impl->file_store = get_file_store();
       //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
       attach(impl);
       impl->setup();
