@@ -13,8 +13,6 @@ class voronoi_2d_diag_impl : public mws_vrn_diag
 public:
    virtual void init_data(mws_sp<mws_vrn_data> i_vdata, std::vector<float>& vx, std::vector<float>& vy) override
    {
-      std::vector<jcv_point> points;
-
       vrn_data = i_vdata;
       clip_dim = { jcv_point {0.f, 0.f}, jcv_point{ (float)i_vdata->info.diag_width, (float)i_vdata->info.diag_height } };
       full_clear();

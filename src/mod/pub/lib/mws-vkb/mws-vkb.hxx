@@ -35,6 +35,7 @@ struct vkb_info
 {
    uint32 width = 0;
    uint32 height = 0;
+   // file index for this aspect ratio
    uint32 index = 0;
    float aspect_ratio = 0.f;
 };
@@ -53,7 +54,7 @@ public:
    std::vector<vkb_file_info> get_vkb_list() override;
    bool file_exists(const std::string& i_vkb_filename) override;
    void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) override;
-   std::string load_vkb(const std::string& i_vkb_filename) override;
+   mws_sp<std::string> load_vkb(const std::string& i_vkb_filename) override;
 
 protected:
    std::vector<vkb_file_info> vkb_info_vect;
@@ -69,6 +70,7 @@ public:
    virtual void setup() override;
    virtual void update_state() override;
    virtual void on_resize(uint32 i_width, uint32 i_height);
+   virtual vkb_file_info get_closest_match(uint32 i_width, uint32 i_height);
    virtual void set_font(mws_sp<mws_font> i_fnt);
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
@@ -97,6 +99,7 @@ public:
    bool keys_visible = true;
    std::unordered_map<key_types, std::string> key_map;
    int map_idx = 0;
+   std::string loaded_filename;
    uint32 crt_page_idx = 0;
 };
 

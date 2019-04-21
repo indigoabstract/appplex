@@ -55,23 +55,24 @@ bool mws_vkb_file_store_impl::file_exists(const std::string& i_vkb_filename)
 
 void mws_vkb_file_store_impl::save_vkb(const std::string& i_vkb_filename, const std::string& i_data)
 {
-   std::string map_path = pfm::filesystem::get_writable_path(i_vkb_filename);
-   mws_sp<pfm_file> map_file_save = pfm_file::get_inst(map_path);
+   std::vector<vkb_file_info> flist = get_vkb_list();
+   std::string dir = flist[0].file->get_root_directory();
+   mws_sp<pfm_file> map_file_save = pfm_file::get_inst(i_vkb_filename, dir);
 
    map_file_save->io.open("wt");
    map_file_save->io.write((const uint8*)i_data.c_str(), i_data.length());
    map_file_save->io.close();
 }
 
-std::string mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
+mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
 {
    if (file_exists(i_vkb_filename))
    {
       mws_sp<std::string> str = pfm::filesystem::load_res_as_string(i_vkb_filename);
-      return *str;
+      return str;
    }
 
-   return "";
+   return nullptr;
 }
 
 
@@ -192,16 +193,24 @@ void mws_vkb_impl::update_state()
 
 void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 {
+   vk->resize(i_width, i_height);
+   vkb_file_info vkb_fi = get_closest_match(i_width, i_height);
+   mws_sp<pfm_file> file = vkb_fi.file;
+
+   load_map(file->get_file_name());
+}
+
+vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
+{
    mws_assert(file_store != nullptr);
    float screen_aspect_ratio = float(i_width) / i_height;
    std::vector<vkb_file_info> vkb_info_vect = file_store->get_vkb_list();
 
-   vk->resize(i_width, i_height);
 
    if (vkb_info_vect.empty())
    {
       mws_throw mws_exception("no vkb files available");
-      return;
+      return vkb_file_info();
    }
 
    // sort the vkb files by aspect ratio
@@ -222,11 +231,11 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 
       return *it;
    };
+
    // found it
    const vkb_file_info& vkb_i_t = closest_val(vkb_info_vect, screen_aspect_ratio);
-   mws_sp<pfm_file> file = vkb_i_t.file;
 
-   load_map(file->get_file_name());
+   return vkb_i_t;
 }
 
 void mws_vkb_impl::set_font(mws_sp<mws_font> i_fnt)
@@ -279,7 +288,14 @@ key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
 
 void mws_vkb_impl::load_map(std::string i_filename)
 {
-   auto db = kxmd::nwi_from_file(i_filename);
+   if (!file_store->file_exists(i_filename))
+   {
+      trx("file [ {} ] doesn't exist", i_filename);
+      return;
+   }
+
+   mws_sp<std::string> data = file_store->load_vkb(i_filename);
+   auto db = kxmd::nwi(data->c_str(), data->length());
    kv_ref main = db->main();
    uint32 point_count = 0;
    glm::vec2 diag_dim(0.f);
@@ -334,7 +350,6 @@ void mws_vkb_impl::load_map(std::string i_filename)
       {
          kv_ref key_coord = pg_0["key-coord"];
          std::vector<glm::vec2> key_coord_pos;
-         uint32 size = key_coord.size();
          mws_assert(key_coord.size() == (2 * point_count));
 
          for (uint32 k = 0; k < point_count; k++)
@@ -350,7 +365,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
       }
    }
 
-   trx("finished loading keyboard from [ {} ]", i_filename);
+   loaded_filename = i_filename;
+   trx("finished loading keyboard from [ {} ]", loaded_filename);
 }
 
 std::vector<key_types>& mws_vkb_impl::get_key_vect()
@@ -543,9 +559,8 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       uint32 w = pfm::screen::get_width();
       uint32 h = pfm::screen::get_height();
 
-      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cells);
+      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs);// | mws_vrn_obj_types::cells);
       impl->file_store = get_file_store();
-      //vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
       attach(impl);
       impl->setup();
       impl->on_resize(w, h);

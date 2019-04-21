@@ -144,7 +144,7 @@ public:
    virtual std::vector<vkb_file_info> get_vkb_list() = 0;
    virtual bool file_exists(const std::string& i_vkb_filename) = 0;
    virtual void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) = 0;
-   virtual std::string load_vkb(const std::string& i_vkb_filename) = 0;
+   virtual mws_sp<std::string> load_vkb(const std::string& i_vkb_filename) = 0;
 };
 
 

@@ -601,11 +601,14 @@ mws_page::mws_page()
 {
    on_visibility_changed = [this](bool i_visible)
    {
-      mws_sp<mws_page_tab> parent = get_mws_page_parent();
-
-      if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
+      if (i_visible)
       {
-         on_resize();
+         mws_sp<mws_page_tab> parent = get_mws_page_parent();
+
+         if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
+         {
+            on_resize();
+         }
       }
    };
 }
