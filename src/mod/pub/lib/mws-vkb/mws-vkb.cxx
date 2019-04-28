@@ -123,6 +123,7 @@ void mws_vkb_impl::setup()
    {
       {KEY_BACKSPACE, "backsp"},
       {VKB_ENTER, "enter"},
+      {VKB_ALT, "alt"},
       {VKB_SHIFT, "shift"},
       {VKB_ESCAPE, "escape"},
       {VKB_DONE, "done"},
@@ -166,8 +167,23 @@ void mws_vkb_impl::update_state()
       auto vd = vk->get_diag_data();
       auto& kp_vect = vd->geom.kernel_points;
       uint32 size = get_key_vect_size();
-      bool shift_held = get_mod()->key_ctrl_inst->key_is_held(KEY_SHIFT);
-      key_mod = (shift_held) ? key_mod_types::mod_shift : key_mod_types::mod_none;
+      auto kci = get_mod()->key_ctrl_inst;
+      bool alt_held = kci->key_is_held(VKB_ALT);
+      bool shift_held = kci->key_is_held(VKB_SHIFT);
+
+      if (alt_held)
+      {
+         key_mod = key_mod_types::mod_alt;
+      }
+      else if (shift_held)
+      {
+         key_mod = key_mod_types::mod_shift;
+      }
+      else
+      {
+         key_mod = key_mod_types::mod_none;
+      }
+
       vk_keys->clear_text();
 
       for (uint32 k = 0; k < size; k++)
@@ -310,37 +326,71 @@ void mws_vkb_impl::load_map(std::string i_filename)
    }
    // pages
    {
+      auto invalid_key_check = [](uint32 i_key_id, const std::string& i_filename)
+      {
+         if (i_key_id == KEY_INVALID) { trx("warning[ invalid key in loaded vkb map [ {} ] ]", i_filename); }
+         mws_assert(i_key_id < KEY_COUNT);
+      };
       kv_ref pages = main["pages"];
       kv_ref pg_0 = pages["0"];
-      // key_mods
+      // key-mods
       {
          kv_ref key_mods = pg_0["key-mods"];
-         // mod-none & mod-shift
+         // list of key-mods
          {
             kv_ref keys_mod_none = key_mods["mod-none"];
+            kv_ref keys_mod_alt = key_mods["mod-alt"];
             kv_ref keys_mod_shift = key_mods["mod-shift"];
             uint32 size = keys_mod_none.size();
-            mws_assert(keys_mod_shift.size() == size);
+
+            if (keys_mod_alt)
+            {
+               mws_assert(keys_mod_alt.size() == size);
+            }
+
+            if (keys_mod_shift)
+            {
+               mws_assert(keys_mod_shift.size() == size);
+            }
+
             set_key_vect_size(size);
             point_count = size;
+
+            // load key mods
             {
+               // mod-none must always be present
                for (uint32 k = 0; k < size; k++)
                {
-                  // mod-none
+                  const std::string& key = keys_mod_none[k].key();
+                  uint32 key_id = mws_to<uint32>(key);
+
+                  invalid_key_check(key_id, i_filename);
+                  key_mod_vect[(uint32)key_mod_types::mod_none][k] = key_types(key_id);
+               }
+
+               // mod-alt can be omitted
+               if (keys_mod_alt)
+               {
+                  for (uint32 k = 0; k < size; k++)
                   {
-                     const std::string& key = keys_mod_none[k].key();
+                     const std::string& key = keys_mod_alt[k].key();
                      uint32 key_id = mws_to<uint32>(key);
 
-                     mws_assert(key_id > KEY_INVALID && key_id < KEY_COUNT);
-                     key_mod_none_vect[k] = key_types(key_id);
+                     invalid_key_check(key_id, i_filename);
+                     key_mod_vect[(uint32)key_mod_types::mod_alt][k] = key_types(key_id);
                   }
-                  // mod-shift
+               }
+
+               // mod-shift can be omitted
+               if (keys_mod_shift)
+               {
+                  for (uint32 k = 0; k < size; k++)
                   {
                      const std::string& key = keys_mod_shift[k].key();
                      uint32 key_id = mws_to<uint32>(key);
 
-                     mws_assert(key_id > KEY_INVALID && key_id < KEY_COUNT);
-                     key_mod_shift_vect[k] = key_types(key_id);
+                     invalid_key_check(key_id, i_filename);
+                     key_mod_vect[(uint32)key_mod_types::mod_shift][k] = key_types(key_id);
                   }
                }
             }
@@ -371,14 +421,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
 
 std::vector<key_types>& mws_vkb_impl::get_key_vect()
 {
-   switch (key_mod)
-   {
-   case key_mod_types::mod_none: return key_mod_none_vect;
-   case key_mod_types::mod_shift: return key_mod_shift_vect;
-   }
-
-   mws_assert(false);
-   return key_mod_none_vect;
+   mws_assert(key_mod < key_mod_types::count);
+   return key_mod_vect[(uint32)key_mod];
 }
 
 uint32 mws_vkb_impl::get_key_vect_size()
@@ -388,8 +432,10 @@ uint32 mws_vkb_impl::get_key_vect_size()
 
 void mws_vkb_impl::set_key_vect_size(uint32 i_size)
 {
-   key_mod_none_vect.resize(i_size);
-   key_mod_shift_vect.resize(i_size);
+   for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
+   {
+      key_mod_vect[k].resize(i_size);
+   }
 }
 
 key_types mws_vkb_impl::get_key_at(int i_idx)
@@ -404,14 +450,18 @@ void mws_vkb_impl::set_key_at(int i_idx, key_types i_key_id)
 
 void mws_vkb_impl::erase_key_at(int i_idx)
 {
-   key_mod_none_vect.erase(key_mod_none_vect.begin() + i_idx);
-   key_mod_shift_vect.erase(key_mod_shift_vect.begin() + i_idx);
+   for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
+   {
+      key_mod_vect[k].erase(key_mod_vect[k].begin() + i_idx);
+   }
 }
 
 void mws_vkb_impl::push_back_key(key_types i_key_id)
 {
-   key_mod_none_vect.push_back(i_key_id);
-   key_mod_shift_vect.push_back(i_key_id);
+   for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
+   {
+      key_mod_vect[k].push_back(i_key_id);
+   }
 }
 
 void mws_vkb_impl::next_page()

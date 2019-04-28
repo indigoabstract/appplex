@@ -14,6 +14,7 @@ const std::string VKB_EXT = ".kxmd";
 
 const key_types VKB_ESCAPE = KEY_ESCAPE;
 const key_types VKB_DONE = KEY_END;
+const key_types VKB_ALT = KEY_ALT;
 const key_types VKB_SHIFT = KEY_SHIFT;
 const key_types VKB_ENTER = KEY_ENTER;
 const key_types VKB_BACKSPACE = KEY_BACKSPACE;
@@ -26,8 +27,10 @@ const key_types VKB_CAPS_LOCK = KEY_F4;
 
 enum class key_mod_types
 {
-   mod_none,
+   mod_none = 0,
+   mod_alt,
    mod_shift,
+   count,
 };
 
 
@@ -91,8 +94,7 @@ public:
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
    key_mod_types key_mod = key_mod_types::mod_none;
-   std::vector<key_types> key_mod_none_vect;
-   std::vector<key_types> key_mod_shift_vect;
+   std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
    mws_sp<mws_font> key_font;
    mws_sp<mws_font> selected_key_font;
    mws_sp<text_vxo> vk_keys;
