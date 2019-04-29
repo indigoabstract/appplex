@@ -89,6 +89,37 @@ private:
 };
 
 
+class triple_tap_detector
+{
+public:
+   triple_tap_detector();
+   bool detect_helper(mws_sp<mws_ptr_evt> evt);
+   gesture_state detect(const mws_sp<mws_ptr_evt> new_event);
+   gesture_state reset();
+
+private:
+   enum class detector_state
+   {
+      ST_READY,
+      ST_PRESSED_0,
+      ST_RELEASED_0,
+      ST_PRESSED_1,
+      ST_RELEASED_1,
+      ST_PRESSED_2,
+   };
+
+   void set_state(detector_state i_st);
+
+   // get start position of tap
+   glm::vec2 first_press_pos = glm::vec2(0.f);
+   glm::vec2 second_press_pos = glm::vec2(0.f);
+   glm::vec2 third_press_pos = glm::vec2(0.f);
+
+   mws_sp<mws_ptr_evt> start_event;
+   detector_state det_state;
+};
+
+
 class pinch_zoom_detector
 {
 public:

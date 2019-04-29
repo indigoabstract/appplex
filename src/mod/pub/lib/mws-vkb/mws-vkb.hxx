@@ -34,6 +34,15 @@ enum class key_mod_types
 };
 
 
+enum class vkb_mod_lock_types
+{
+   no_lock = 0,
+   alt_lock,
+   caps_lock,
+   hide_lock,
+};
+
+
 struct vkb_info
 {
    uint32 width = 0;
@@ -78,6 +87,8 @@ public:
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
+   vkb_mod_lock_types get_active_lock() const;
+   void set_active_lock(vkb_mod_lock_types i_lock);
    std::vector<key_types>& get_key_vect();
    uint32 get_key_vect_size();
    void set_key_vect_size(uint32 i_size);
@@ -94,6 +105,7 @@ public:
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
    key_mod_types key_mod = key_mod_types::mod_none;
+   vkb_mod_lock_types active_lock = vkb_mod_lock_types::no_lock;
    std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
    mws_sp<mws_font> key_font;
    mws_sp<mws_font> selected_key_font;

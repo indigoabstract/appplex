@@ -8,6 +8,7 @@
 static mws_sp<mws_ptr_evt> dummy_event = mws_ptr_evt::nwi();
 
 
+// dragging_detector
 dragging_detector::dragging_detector()
 {
    reset();
@@ -123,6 +124,7 @@ std::string dragging_detector::to_string(detector_state i_st) const
 }
 
 
+// double_tap_detector
 double_tap_detector::double_tap_detector()
 {
    reset();
@@ -241,6 +243,153 @@ void double_tap_detector::set_state(detector_state i_st)
 }
 
 
+// triple_tap_detector
+triple_tap_detector::triple_tap_detector()
+{
+   reset();
+}
+
+bool triple_tap_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
+{
+   gesture_state gs = detect(evt);
+   return gs == GS_ACTION;
+}
+
+gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
+{
+   // only one finger press is allowed for taps
+   if (new_event->pointer_down_count() != 1)
+   {
+      return reset();
+   }
+
+   if (det_state > detector_state::ST_READY)
+   {
+      auto crt_time = pfm::time::get_time_millis();
+      auto delta = crt_time - start_event->time;
+
+      // check for max double tap duration
+      if (delta > DOUBLE_TAP_MAX_DURATION)
+      {
+         reset();
+
+         // if the new event is a press, restart the detector and continue
+         // otherwise, abort detection
+         if (new_event->type != mws_ptr_evt::touch_began)
+         {
+            return GS_NONE;
+         }
+      }
+   }
+
+   switch (new_event->type)
+   {
+   case mws_ptr_evt::touch_began:
+      if (det_state == detector_state::ST_READY)
+      {
+         start_event = new_event;
+         first_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
+         set_state(detector_state::ST_PRESSED_0);
+
+         return GS_START;
+      }
+      else if (det_state == detector_state::ST_RELEASED_0)
+      {
+         second_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
+         set_state(detector_state::ST_PRESSED_1);
+
+         if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         {
+            return reset();
+         }
+
+         return GS_MOVE;
+      }
+      else if (det_state == detector_state::ST_RELEASED_1)
+      {
+         third_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
+         set_state(detector_state::ST_PRESSED_2);
+
+         if (glm::distance(third_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         {
+            return reset();
+         }
+
+         return GS_MOVE;
+      }
+
+      return reset();
+
+   case mws_ptr_evt::touch_ended:
+   {
+      if (det_state == detector_state::ST_PRESSED_0)
+      {
+         set_state(detector_state::ST_RELEASED_0);
+
+         return GS_START;
+      }
+      else if (det_state == detector_state::ST_PRESSED_1)
+      {
+         auto release = new_event->get_pointer_press_by_index(0);
+
+         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         {
+            return reset();
+         }
+
+         set_state(detector_state::ST_RELEASED_1);
+
+         return GS_MOVE;
+      }
+      else if (det_state == detector_state::ST_PRESSED_2)
+      {
+         auto release = new_event->get_pointer_press_by_index(0);
+
+         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         {
+            return reset();
+         }
+
+         reset();
+
+         return GS_ACTION;
+      }
+
+      return reset();
+   }
+
+   case mws_ptr_evt::touch_moved:
+      if (det_state > detector_state::ST_READY)
+      {
+         auto press = new_event->get_pointer_press_by_index(0);
+
+         if (glm::distance(mws_ptr_evt::get_pos(*press), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         {
+            return reset();
+         }
+
+         return GS_MOVE;
+      }
+   }
+
+   return reset();
+}
+
+gesture_state triple_tap_detector::reset()
+{
+   start_event = dummy_event;
+   set_state(detector_state::ST_READY);
+
+   return GS_NONE;
+}
+
+void triple_tap_detector::set_state(detector_state i_st)
+{
+   det_state = i_st;
+}
+
+
+// pinch_zoom_detector
 pinch_zoom_detector::pinch_zoom_detector()
 {
    start_event = dummy_event;
@@ -374,6 +523,7 @@ gesture_state pinch_zoom_detector::reset()
 }
 
 
+// anchor_rotation_one_finger_detector
 anchor_rotation_one_finger_detector::anchor_rotation_one_finger_detector()
 {
    start_event = dummy_event;
@@ -445,6 +595,7 @@ gesture_state anchor_rotation_one_finger_detector::reset()
 }
 
 
+// axis_roll_detector
 axis_roll_detector::axis_roll_detector()
 {
    reset();
@@ -585,7 +736,7 @@ gesture_state axis_roll_detector::detect(const mws_sp<mws_ptr_evt> new_event)
          auto p0 = new_event->find_point(start_event->points[0].identifier);
          auto p1 = new_event->find_point(start_event->points[1].identifier);
 
-         if (p0&& p1)
+         if (p0 && p1)
          {
             position_0 = mws_ptr_evt::get_pos(*p0);
             position_1 = mws_ptr_evt::get_pos(*p1);
@@ -608,6 +759,7 @@ gesture_state axis_roll_detector::reset()
 }
 
 
+// panning_tilting_detector
 panning_tilting_detector::panning_tilting_detector()
 {
    start_event = dummy_event;
@@ -700,6 +852,7 @@ gesture_state panning_tilting_detector::reset()
 }
 
 
+// swipe_detector
 swipe_detector::swipe_detector()
 {
    reset();
@@ -798,7 +951,7 @@ gesture_state swipe_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       case detector_state::ST_MOVING:
          touch_vect.push_back(new_event);
 
-         if (trigger_before_touch_ended&& is_valid_swipe())
+         if (trigger_before_touch_ended && is_valid_swipe())
          {
             reset();
             return GS_END;
@@ -886,7 +1039,7 @@ bool swipe_detector::is_valid_swipe()
 
    // if the real distance is 10% greater than the ideal distance, then fail
    // this weeds out really irregular "lines" and curves from being considered swipes
-   if (real_dist_px > ideal_dist_px* 1.1f)
+   if (real_dist_px > ideal_dist_px * 1.1f)
    {
       return false;
    }

@@ -167,21 +167,46 @@ void mws_vkb_impl::update_state()
       auto vd = vk->get_diag_data();
       auto& kp_vect = vd->geom.kernel_points;
       uint32 size = get_key_vect_size();
-      auto kci = get_mod()->key_ctrl_inst;
-      bool alt_held = kci->key_is_held(VKB_ALT);
-      bool shift_held = kci->key_is_held(VKB_SHIFT);
 
-      if (alt_held)
+      // check lock & mod state
+      if (active_lock == vkb_mod_lock_types::no_lock)
       {
-         key_mod = key_mod_types::mod_alt;
-      }
-      else if (shift_held)
-      {
-         key_mod = key_mod_types::mod_shift;
+         auto kci = get_mod()->key_ctrl_inst;
+         bool alt_held = kci->key_is_held(VKB_ALT);
+         bool shift_held = kci->key_is_held(VKB_SHIFT);
+
+         if (alt_held)
+         {
+            key_mod = key_mod_types::mod_alt;
+         }
+         else if (shift_held)
+         {
+            key_mod = key_mod_types::mod_shift;
+         }
+         else
+         {
+            key_mod = key_mod_types::mod_none;
+         }
       }
       else
       {
-         key_mod = key_mod_types::mod_none;
+         switch (active_lock)
+         {
+         case vkb_mod_lock_types::no_lock:
+            key_mod = key_mod_types::mod_none;
+            break;
+
+         case vkb_mod_lock_types::alt_lock:
+            key_mod = key_mod_types::mod_alt;
+            break;
+
+         case vkb_mod_lock_types::caps_lock:
+            key_mod = key_mod_types::mod_shift;
+            break;
+
+         case vkb_mod_lock_types::hide_lock:
+            break;
+         }
       }
 
       vk_keys->clear_text();
@@ -419,6 +444,13 @@ void mws_vkb_impl::load_map(std::string i_filename)
    trx("finished loading keyboard from [ {} ]", loaded_filename);
 }
 
+vkb_mod_lock_types mws_vkb_impl::get_active_lock() const { return active_lock; }
+
+void mws_vkb_impl::set_active_lock(vkb_mod_lock_types i_lock)
+{
+   active_lock = i_lock;
+}
+
 std::vector<key_types>& mws_vkb_impl::get_key_vect()
 {
    mws_assert(key_mod < key_mod_types::count);
@@ -427,7 +459,7 @@ std::vector<key_types>& mws_vkb_impl::get_key_vect()
 
 uint32 mws_vkb_impl::get_key_vect_size()
 {
-   return get_key_vect().size();
+   return key_mod_vect[(uint32)key_mod_types::mod_none].size();
 }
 
 void mws_vkb_impl::set_key_vect_size(uint32 i_size)
