@@ -163,6 +163,7 @@ void mws_vkb_impl::update_state()
 {
    if (keys_visible)
    {
+      uint32 crt_time = pfm::time::get_time_millis();
       auto root = get_mws_root();
       auto vd = vk->get_diag_data();
       auto& kp_vect = vd->geom.kernel_points;
@@ -229,6 +230,29 @@ void mws_vkb_impl::update_state()
          pos -= dim / 2.f;
          vk_keys->add_text(key, pos, font);
       }
+
+      auto it = highlight_vect.begin();
+      const uint32 timeout = 2500;
+
+      while (it != highlight_vect.end())
+      {
+         uint32 delta = crt_time - it->release_time;
+         mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[it->key_idx];
+
+         if (delta < timeout)
+         {
+            float alpha = 1.f - float(delta) / timeout;
+            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, alpha);
+            //trx("idx {} alpha {}", it->key_idx, alpha);
+            ++it;
+         }
+         else
+         {
+            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+            mesh->visible = false;
+            it = highlight_vect.erase(it);
+         }
+      }
    }
 }
 
@@ -285,6 +309,21 @@ void mws_vkb_impl::set_font(mws_sp<mws_font> i_fnt)
    key_font->set_color(gfx_color::colors::white);
    selected_key_font = mws_font::nwi(i_fnt);
    selected_key_font->set_color(gfx_color::colors::red);
+}
+
+void mws_vkb_impl::done()
+{
+   auto it = highlight_vect.begin();
+
+   while (it != highlight_vect.end())
+   {
+      mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[it->key_idx];
+      (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+      mesh->visible = false;
+      ++it;
+   }
+
+   highlight_vect.clear();
 }
 
 std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
@@ -480,6 +519,32 @@ void mws_vkb_impl::set_key_at(int i_idx, key_types i_key_id)
    get_key_vect()[i_idx] = i_key_id;
 }
 
+void mws_vkb_impl::highlight_key_at(int i_idx)
+{
+   vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx]->visible = true;
+}
+
+void mws_vkb_impl::fade_key_at(int i_idx)
+{
+
+   for (auto& kh : highlight_vect)
+   {
+      if (kh.key_idx == i_idx)
+      {
+         kh.release_time = pfm::time::get_time_millis();
+         mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx];
+         (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+         return;
+      }
+   }
+
+   key_highlight kh;
+
+   kh.key_idx = i_idx;
+   kh.release_time = pfm::time::get_time_millis();
+   highlight_vect.push_back(kh);
+}
+
 void mws_vkb_impl::erase_key_at(int i_idx)
 {
    for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
@@ -504,6 +569,11 @@ void mws_vkb_impl::next_page()
 void mws_vkb_impl::prev_page()
 {
    mws_println("prev_page");
+}
+
+void mws_vkb_impl::set_on_top()
+{
+   vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
 }
 
 
@@ -532,10 +602,12 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          auto& pt = pe->points[0];
          auto ret = impl->vk->get_kernel_idx_at(pt.x, pt.y);
          key_types key_id = impl->get_key_at(ret.idx);
+         trx("highlight i_idx {}", ret.idx);
 
          if (!ta->is_action_key(key_id))
          {
             mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
+            impl->highlight_key_at(ret.idx);
          }
          break;
       }
@@ -546,15 +618,18 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          auto ret = impl->vk->get_kernel_idx_at(pt.x, pt.y);
 
          impl->current_key_idx = impl->selected_kernel_idx = ret.idx;
+         impl->fade_key_at(ret.idx);
+         trx("fade i_idx {}", ret.idx);
          {
             auto vd = impl->vk->get_diag_data();
             int id = vd->geom.kernel_points[impl->selected_kernel_idx].id;
             key_types key_id = impl->get_key_at(impl->selected_kernel_idx);
             std::string key_name = impl->get_key_name(key_id);
-            mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
+            //mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
 
             if (ta->is_action_key(key_id))
             {
+               impl->done();
                done();
             }
             else
@@ -641,10 +716,11 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       uint32 w = pfm::screen::get_width();
       uint32 h = pfm::screen::get_height();
 
-      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs);// | mws_vrn_obj_types::cells);
+      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);// | mws_vrn_obj_types::cells);
       impl->file_store = get_file_store();
       attach(impl);
       impl->setup();
+      impl->set_on_top();
       impl->on_resize(w, h);
    }
 

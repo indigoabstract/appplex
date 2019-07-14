@@ -11,6 +11,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Command to output information to the console
 # Useful for displaying errors, warnings, and debugging
+message("CMAKE_SYSTEM_VERSION  " ${CMAKE_SYSTEM_VERSION})
 message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 message("CMAKE_SYSTEM_NAME  " ${CMAKE_SYSTEM_NAME})
 message("CMAKE_CURRENT_LIST_DIR  " ${CMAKE_CURRENT_LIST_DIR})

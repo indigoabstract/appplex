@@ -84,6 +84,7 @@ public:
    virtual void on_resize(uint32 i_width, uint32 i_height);
    virtual vkb_file_info get_closest_match(uint32 i_width, uint32 i_height);
    virtual void set_font(mws_sp<mws_font> i_fnt);
+   virtual void done();
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
@@ -94,10 +95,19 @@ public:
    void set_key_vect_size(uint32 i_size);
    key_types get_key_at(int i_idx);
    void set_key_at(int i_idx, key_types i_key_id);
+   void highlight_key_at(int i_idx);
+   void fade_key_at(int i_idx);
    void erase_key_at(int i_idx);
    void push_back_key(key_types i_key_id);
    void next_page();
    void prev_page();
+   void set_on_top();
+
+   struct key_highlight
+   {
+      uint32 key_idx;
+      uint32 release_time;
+   };
 
    mws_sp<mws_vkb_file_store> file_store;
    uint32 obj_type_mask = 0;
@@ -115,6 +125,7 @@ public:
    int map_idx = 0;
    std::string loaded_filename;
    uint32 crt_page_idx = 0;
+   std::vector<key_highlight> highlight_vect;
 };
 
 

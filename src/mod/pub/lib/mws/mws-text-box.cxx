@@ -414,7 +414,7 @@ void mws_text_box::update_text()
    glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
    cursor_row_idx = cursor_coord.y;
    cursor_col_idx = cursor_coord.x;
-   trx("update_text cursor_row_idx [ {} ]", cursor_row_idx);
+   //trx("update_text cursor_row_idx [ {} ]", cursor_row_idx);
 
    tx_vxo->clear_text();
    top_line_idx = uint32(text_offset.y / font->get_height());

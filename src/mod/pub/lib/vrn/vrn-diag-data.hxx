@@ -308,6 +308,7 @@ public:
       bool cell_triangles_visible = false;
       bool convex_hull_visible = false;
       bool delaunay_diag_visible = false;
+      bool cell_borders_visible = false;
    };
 
    struct mws_vrn_geom_data
