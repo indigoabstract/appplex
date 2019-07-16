@@ -11,6 +11,7 @@
 #include <glm/inc.hpp>
 
 
+static const std::string vkb_cell_borders_sh = "mws-vkb-cell-borders";
 static const std::string vkb_line_sh = "mws-vkb-line";
 static const std::string vkb_point_sh = "mws-vkb-point";
 static const std::string vkb_triangle_sh = "mws-vkb-triangle";
@@ -118,6 +119,7 @@ private:
    void init(mws_sp<gfx_camera> i_cam);
    void init_shaders();
 
+   mws_sp<gfx_shader> vkb_cell_borders_shader;
    mws_sp<gfx_shader> vkb_line_shader;
    mws_sp<gfx_shader> vkb_point_shader;
    mws_sp<gfx_shader> vkb_triangle_shader;

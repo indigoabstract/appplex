@@ -105,18 +105,6 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
 
    cell_borders_mesh_vect.clear();
 
-   gfx_tex_params prm;
-
-   prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
-   prm.max_anisotropy = 0.f;
-   //prm.gen_mipmaps = true;
-   //prm.min_filter = gfx_tex_params::e_tf_linear_mipmap_linear;
-   //prm.mag_filter = gfx_tex_params::e_tf_linear;
-   prm.min_filter = gfx_tex_params::e_tf_linear;
-   prm.mag_filter = gfx_tex_params::e_tf_linear;
-
-   tex = gi()->tex.nwi("line.png", &prm);
-
    for (uint32 k = 0; k < cell_count; k++)
    {
       uint32 cell_nexus_count = i_point_count_list[k] - 1;
@@ -127,8 +115,8 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       border->set_size(vx_count, ix_count);
       border->camera_id_list = { "mws_cam" };
       border->name = "voronoi_cell_borders";
-      border->visible = false;// i_diag_data->info.cell_borders_visible;
-      (*border)[MP_SHADER_NAME] = "mws-vkb-cell-borders";// vkb_triangle_sh;
+      border->visible = false;
+      (*border)[MP_SHADER_NAME] = vkb_cell_borders_sh;
       (*border)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
       (*border)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
       (*border)[MP_DEPTH_TEST] = false;
@@ -690,6 +678,61 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
 
 void mws_vrn_geom::init_shaders()
 {
+   // cell borders shader
+   vkb_cell_borders_shader = gfx::i()->shader.get_program_by_name(vkb_cell_borders_sh);
+   if (!vkb_cell_borders_shader)
+   {
+      auto vsh = mws_sp<std::string>(new std::string(
+         R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               layout (location = 0) in vec3 a_v3_position;
+               layout (location = 1) in vec2 a_v2_tex_coord;
+
+               uniform mat4 u_m4_model_view_proj;
+
+               smooth out vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               v_v2_tex_coord = a_v2_tex_coord;
+	               vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+	
+	               //v4_position.z -= u_v1_depth_offset;	
+	               //v4_position.z -= 0.001;	
+	               gl_Position = v4_position;
+               }
+               )"
+      ));
+
+      auto fsh = mws_sp<std::string>(new std::string(
+         R"(
+               //@es #version 300 es
+               //@dt #version 330 core
+
+               #ifdef GL_ES
+	               precision lowp float;
+               #endif
+
+               layout(location = 0) out vec4 v4_frag_color;
+
+               uniform vec4 u_v4_color;
+               uniform sampler2D u_s2d_tex;
+
+               smooth in vec2 v_v2_tex_coord;
+
+               void main()
+               {
+	               vec4 v4_diff_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+	               v4_frag_color = v4_diff_color * u_v4_color.a;
+               }
+               )"
+      ));
+
+      vkb_cell_borders_shader = gfx::i()->shader.new_program_from_src(vkb_cell_borders_sh, vsh, fsh);
+   }
+
    // line shader
    vkb_line_shader = gfx::i()->shader.get_program_by_name(vkb_line_sh);
    if (!vkb_line_shader)

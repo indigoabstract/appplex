@@ -139,9 +139,10 @@ void mws_vkb_impl::setup()
       vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
       attach(vk->vgeom);
       key_font = mws_font::nwi(72.f);
-      key_font->set_color(gfx_color::colors::white);
+      key_font->set_color(gfx_color::colors::red);
       selected_key_font = mws_font::nwi(48.f);
       selected_key_font->set_color(gfx_color::colors::red);
+      build_cell_border_tex();
    }
    // finish setup
    {
@@ -149,7 +150,7 @@ void mws_vkb_impl::setup()
       auto& kp_vect = vd->geom.kernel_points;
 
       key_font = mws_font::nwi(48.f);
-      key_font->set_color(gfx_color::colors::white);
+      key_font->set_color(gfx_color::colors::red);
       selected_key_font = mws_font::nwi(72.f);
       selected_key_font->set_color(gfx_color::colors::red);
       vk_keys = text_vxo::nwi();
@@ -306,7 +307,7 @@ vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
 void mws_vkb_impl::set_font(mws_sp<mws_font> i_fnt)
 {
    key_font = mws_font::nwi(i_fnt);
-   key_font->set_color(gfx_color::colors::white);
+   key_font->set_color(gfx_color::colors::red);
    selected_key_font = mws_font::nwi(i_fnt);
    selected_key_font->set_color(gfx_color::colors::red);
 }
@@ -576,6 +577,63 @@ void mws_vkb_impl::set_on_top()
    vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
 }
 
+void mws_vkb_impl::build_cell_border_tex()
+{
+   std::string tex_id = "cell-border-tex";
+   cell_border_tex = gi()->tex.get_texture_by_name(tex_id);
+
+   if (!cell_border_tex)
+   {
+      gfx_tex_params prm;
+
+      prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_clamp_to_edge;
+      prm.max_anisotropy = 0.f;
+      prm.gen_mipmaps = true;
+      prm.min_filter = gfx_tex_params::e_tf_linear_mipmap_linear;
+      prm.mag_filter = gfx_tex_params::e_tf_linear;
+
+      cell_border_tex = gi()->tex.nwi(tex_id, 256, 256, &prm);
+
+      union color32
+      {
+         uint32 rgba;
+         struct
+         {
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
+         };
+      };
+
+      uint32 width = cell_border_tex->get_width();
+      uint32 height = cell_border_tex->get_height();
+      std::vector<color32> pixel_data(width * height);
+
+      for (uint32 k = 0; k < height; k++)
+      {
+         for (uint32 i = 0; i < width / 2; i++)
+         {
+            float mix_fact = glm::clamp(float(i) / (width / 2.5f), 0.f, 1.f);
+            float alpha = float(i) / (width / 2 - 1);
+            glm::vec3 color = glm::mix(glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f), mix_fact);
+            //color = glm::clamp(color, 0.f, 1.f);
+
+            uint32 il = k * width + i;
+            uint32 ir = k * width + width - 1 - i;
+            pixel_data[il].a = pixel_data[ir].a = int(mix_fact * 255);
+            pixel_data[il].r = pixel_data[ir].r = int(color.r * 255);
+            pixel_data[il].g = pixel_data[ir].g = int(color.g * 255);
+            pixel_data[il].b = pixel_data[ir].b = int(color.b * 255);
+         }
+      }
+
+      cell_border_tex->update(0, (char*)pixel_data.data());
+   }
+
+   vk->vgeom->cell_borders->tex = cell_border_tex;
+}
+
 
 mws_sp<mws_vkb> mws_vkb::inst;
 mws_sp<mws_vkb> mws_vkb::gi()
@@ -694,6 +752,12 @@ void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
 {
    file_store = i_store;
 }
+
+mws_sp<gfx_tex> mws_vkb::get_cell_border_tex()
+{
+   return get_impl()->cell_border_tex;
+}
+
 
 void mws_vkb::setup()
 {

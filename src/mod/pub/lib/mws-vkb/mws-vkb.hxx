@@ -7,6 +7,7 @@
 class mws_font;
 class mws_vrn_main;
 class text_vxo;
+class gfx_tex;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -102,6 +103,7 @@ public:
    void next_page();
    void prev_page();
    void set_on_top();
+   void build_cell_border_tex();
 
    struct key_highlight
    {
@@ -126,6 +128,7 @@ public:
    std::string loaded_filename;
    uint32 crt_page_idx = 0;
    std::vector<key_highlight> highlight_vect;
+   mws_sp<gfx_tex> cell_border_tex;
 };
 
 
@@ -142,6 +145,7 @@ public:
    virtual void set_font(mws_sp<mws_font> i_fnt) override;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
+   virtual mws_sp<gfx_tex> get_cell_border_tex() override;
 
 protected:
    mws_vkb() {}
