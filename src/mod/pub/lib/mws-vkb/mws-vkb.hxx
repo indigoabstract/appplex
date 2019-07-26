@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mws/mws.hxx"
+#include "input/gesture-detectors.hxx"
 #include <unordered_map>
 
 
@@ -96,7 +97,7 @@ public:
    void set_key_vect_size(uint32 i_size);
    key_types get_key_at(int i_idx);
    void set_key_at(int i_idx, key_types i_key_id);
-   void highlight_key_at(int i_idx);
+   void highlight_key_at(int i_idx, bool i_light_on = true);
    void fade_key_at(int i_idx);
    void erase_key_at(int i_idx);
    void push_back_key(key_types i_key_id);
@@ -104,6 +105,8 @@ public:
    void prev_page();
    void set_on_top();
    void build_cell_border_tex();
+   mws_sp<mws_font> get_key_font() const { return key_font; }
+   mws_sp<mws_font> get_selected_key_font() const { return selected_key_font; }
 
    struct key_highlight
    {
@@ -119,8 +122,6 @@ public:
    key_mod_types key_mod = key_mod_types::mod_none;
    vkb_mod_lock_types active_lock = vkb_mod_lock_types::no_lock;
    std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
-   mws_sp<mws_font> key_font;
-   mws_sp<mws_font> selected_key_font;
    mws_sp<text_vxo> vk_keys;
    bool keys_visible = true;
    std::unordered_map<key_types, std::string> key_map;
@@ -129,6 +130,10 @@ public:
    uint32 crt_page_idx = 0;
    std::vector<key_highlight> highlight_vect;
    mws_sp<gfx_tex> cell_border_tex;
+
+private:
+   mws_sp<mws_font> key_font;
+   mws_sp<mws_font> selected_key_font;
 };
 
 
@@ -154,6 +159,7 @@ protected:
    virtual void done();
    virtual mws_sp<mws_vkb_impl> get_impl();
 
+   double_tap_detector dbl_tap_det;
    mws_sp<mws_vkb_file_store> file_store;
    mws_sp<mws_vkb_impl> impl;
    mws_sp<mws_text_area> ta;

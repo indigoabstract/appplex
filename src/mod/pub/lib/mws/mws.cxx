@@ -432,7 +432,7 @@ void mws_page_tab::receive(mws_sp<mws_dp> i_dp)
 
 void mws_page_tab::update_state()
 {
-   if (vkb)
+   if (vkb && vkb->visible)
    {
       vkb->update_state();
    }
@@ -453,7 +453,7 @@ void mws_page_tab::update_state()
 
 void mws_page_tab::update_view(mws_sp<mws_camera> g)
 {
-   if (vkb)
+   if (vkb && vkb->visible)
    {
       vkb->update_view(g);
    }

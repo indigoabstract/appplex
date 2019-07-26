@@ -91,7 +91,7 @@ mws_sp<res_ld> res_ld::inst()
 }
 
 
-#if defined MOD_PNG
+#if MOD_PNG
 
 #include "min.hxx"
 #include "png/lodepng.h"

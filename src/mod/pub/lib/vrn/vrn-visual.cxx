@@ -86,7 +86,7 @@ mws_sp<mws_vrn_cell_borders> mws_vrn_cell_borders::nwi() { return mws_sp<mws_vrn
 
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
-   const float line_half_thickness = 15.f;
+   const float line_half_thickness = 35.f;
    const float z_pos = 1.f;
 
    struct vx_fmt_3f_2f
@@ -682,7 +682,7 @@ void mws_vrn_geom::init_shaders()
    vkb_cell_borders_shader = gfx::i()->shader.get_program_by_name(vkb_cell_borders_sh);
    if (!vkb_cell_borders_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      auto vsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -704,9 +704,9 @@ void mws_vrn_geom::init_shaders()
 	               gl_Position = v4_position;
                }
                )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      auto fsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -724,11 +724,11 @@ void mws_vrn_geom::init_shaders()
 
                void main()
                {
-	               vec4 v4_diff_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+	               vec4 v4_diff_color = texture(u_s2d_tex, v_v2_tex_coord);
 	               v4_frag_color = v4_diff_color * u_v4_color.a;
                }
                )"
-      ));
+      );
 
       vkb_cell_borders_shader = gfx::i()->shader.new_program_from_src(vkb_cell_borders_sh, vsh, fsh);
    }
@@ -737,7 +737,7 @@ void mws_vrn_geom::init_shaders()
    vkb_line_shader = gfx::i()->shader.get_program_by_name(vkb_line_sh);
    if (!vkb_line_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      auto vsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -776,9 +776,9 @@ void mws_vrn_geom::init_shaders()
 	               gl_Position = v4_position;
                }
                )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      auto fsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -799,7 +799,7 @@ void mws_vrn_geom::init_shaders()
 	               v4_frag_color = u_v4_color;
                }
                )"
-      ));
+      );
 
       vkb_line_shader = gfx::i()->shader.new_program_from_src(vkb_line_sh, vsh, fsh);
    }
@@ -808,7 +808,7 @@ void mws_vrn_geom::init_shaders()
    vkb_point_shader = gfx::i()->shader.get_program_by_name(vkb_point_sh);
    if (!vkb_point_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      auto vsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -837,9 +837,9 @@ void mws_vrn_geom::init_shaders()
 	               gl_Position = u_m4_projection * vec4(v3_position, 1.0);
                }
                )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      auto fsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -859,7 +859,7 @@ void mws_vrn_geom::init_shaders()
 	               v4_frag_color = u_v4_color;
                }
                )"
-      ));
+      );
 
       vkb_point_shader = gfx::i()->shader.new_program_from_src(vkb_point_sh, vsh, fsh);
    }
@@ -868,7 +868,7 @@ void mws_vrn_geom::init_shaders()
    vkb_triangle_shader = gfx::i()->shader.get_program_by_name(vkb_triangle_sh);
    if (!vkb_triangle_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      auto vsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -899,9 +899,9 @@ void mws_vrn_geom::init_shaders()
 	               gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
                }
                )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      auto fsh = std::make_shared<std::string>(
          R"(
                //@es #version 300 es
                //@dt #version 330 core
@@ -919,7 +919,7 @@ void mws_vrn_geom::init_shaders()
 	               v4_frag_color = u_v4_color;
                }
                )"
-      ));
+      );
 
       vkb_triangle_shader = gfx::i()->shader.new_program_from_src(vkb_triangle_sh, vsh, fsh);
    }

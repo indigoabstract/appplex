@@ -520,14 +520,24 @@ void mws_vkb_impl::set_key_at(int i_idx, key_types i_key_id)
    get_key_vect()[i_idx] = i_key_id;
 }
 
-void mws_vkb_impl::highlight_key_at(int i_idx)
+void mws_vkb_impl::highlight_key_at(int i_idx, bool i_light_on)
 {
-   vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx]->visible = true;
+   mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx];
+   mesh->visible = i_light_on;
+
+   for (auto& kh : highlight_vect)
+   {
+      if (kh.key_idx == i_idx)
+      {
+         kh.release_time = pfm::time::get_time_millis();
+         (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+         return;
+      }
+   }
 }
 
 void mws_vkb_impl::fade_key_at(int i_idx)
 {
-
    for (auto& kh : highlight_vect)
    {
       if (kh.key_idx == i_idx)
@@ -652,8 +662,29 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
    if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
       mws_sp<mws_ptr_evt> pe = mws_ptr_evt::as_pointer_evt(i_dp);
+      bool dbl_tap_detected = dbl_tap_det.detect_helper(pe);
 
-      switch (pe->type)
+      if (dbl_tap_detected)
+      {
+         key_types active_key = impl->get_key_at(impl->selected_kernel_idx);
+         vkb_mod_lock_types active_lock = impl->get_active_lock();
+
+         switch (active_key)
+         {
+         case VKB_ALT:
+            impl->set_active_lock((active_lock != vkb_mod_lock_types::alt_lock) ? vkb_mod_lock_types::alt_lock : vkb_mod_lock_types::no_lock);
+            break;
+
+         case VKB_SHIFT:
+            impl->set_active_lock((active_lock != vkb_mod_lock_types::caps_lock) ? vkb_mod_lock_types::caps_lock : vkb_mod_lock_types::no_lock);
+            break;
+
+         case VKB_HIDE_KB:
+            impl->set_active_lock((active_lock != vkb_mod_lock_types::hide_lock) ? vkb_mod_lock_types::hide_lock : vkb_mod_lock_types::no_lock);
+            break;
+         }
+      }
+      else switch (pe->type)
       {
       case mws_ptr_evt::touch_began:
       {
@@ -664,6 +695,12 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
          if (!ta->is_action_key(key_id))
          {
+            if (key_id == VKB_HIDE_KB)
+            {
+               impl->vk->vgeom->nexus_pairs_mesh->visible = false;
+               impl->vk_keys->visible = false;
+            }
+
             mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
             impl->highlight_key_at(ret.idx);
          }
@@ -674,14 +711,45 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
       {
          auto& pt = pe->points[0];
          auto ret = impl->vk->get_kernel_idx_at(pt.x, pt.y);
+         key_types key_id = impl->get_key_at(ret.idx);
 
          impl->current_key_idx = impl->selected_kernel_idx = ret.idx;
-         impl->fade_key_at(ret.idx);
+
+         switch (key_id)
+         {
+         case VKB_HIDE_KB:
+            if (impl->get_active_lock() == vkb_mod_lock_types::hide_lock)
+            {
+               impl->set_active_lock(vkb_mod_lock_types::no_lock);
+            }
+
+            impl->vk->vgeom->nexus_pairs_mesh->visible = true;
+            impl->vk_keys->visible = true;
+
+         case VKB_SHIFT:
+            if (impl->get_active_lock() == vkb_mod_lock_types::caps_lock)
+            {
+               impl->set_active_lock(vkb_mod_lock_types::no_lock);
+            }
+
+         case VKB_ALT:
+            if (impl->get_active_lock() == vkb_mod_lock_types::alt_lock)
+            {
+               impl->set_active_lock(vkb_mod_lock_types::no_lock);
+            }
+
+            impl->highlight_key_at(ret.idx, false);
+            break;
+
+         default:
+            impl->fade_key_at(ret.idx);
+         }
+
          trx("fade i_idx {}", ret.idx);
          {
             auto vd = impl->vk->get_diag_data();
             int id = vd->geom.kernel_points[impl->selected_kernel_idx].id;
-            key_types key_id = impl->get_key_at(impl->selected_kernel_idx);
+            //key_types key_id = impl->get_key_at(impl->selected_kernel_idx);
             std::string key_name = impl->get_key_name(key_id);
             //mws_println("selected idx [ %d] dist [ %f ] id [ %d ] name [ %s ]", ret.idx, ret.dist, id, key_name.c_str());
 
