@@ -1324,8 +1324,7 @@ namespace ns_kxmd
 
          if (c != '[')
          {
-            std::string msg = trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a '['", start_idx, ss->crt_idx, c);
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a '['", start_idx, ss->crt_idx, c));
          }
 
          ss->crt_idx++;
@@ -1337,8 +1336,7 @@ namespace ns_kxmd
 
          if (c != ']')
          {
-            std::string msg = trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a ']'", start_idx, ss->crt_idx, c);
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("matchblk parse error {0}-{1}. unknown token '{2}'. expected a ']'", start_idx, ss->crt_idx, c));
          }
 
          if (kxt)
@@ -1413,8 +1411,7 @@ namespace ns_kxmd
 
          if (c != '[')
          {
-            std::string msg = trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, '[');
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, '['));
          }
 
          ss->crt_idx++;
@@ -1426,8 +1423,7 @@ namespace ns_kxmd
 
          if (c != ']')
          {
-            std::string msg = trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, ']');
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("metablk parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, ']'));
          }
 
          if (kxt)
@@ -1502,8 +1498,7 @@ namespace ns_kxmd
 
          if (c != '[')
          {
-            std::string msg = trs("ignoreblock parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, '[');
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("ignoreblock parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, '['));
          }
 
          sc = kxmd_scn_factory::nwi(kxs_ignore_block_body, ss);
@@ -1511,8 +1506,7 @@ namespace ns_kxmd
 
          if (!sc->token_found)
          {
-            std::string msg = trs("ignoreblock-body parse error");
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("ignoreblock-body parse error"));
          }
 
          mws_sp<kxmd_text> body = static_pointer_cast<kxmd_text>(kxt);
@@ -1577,8 +1571,7 @@ namespace ns_kxmd
                         mws_throw mws_exception("kxscnignoreblock_body - passed the end of the string. this shouldn't happen...");
                      }
 
-                     std::string msg = trs("ex 1 mismatched block started at {}", start_idx + 1);
-                     mws_throw mws_exception(msg);
+                     mws_throw mws_exception(trs("ex 1 mismatched block started at {}", start_idx + 1));
                   }
                }
             } while (ttoken_found);
@@ -1602,8 +1595,7 @@ namespace ns_kxmd
 
          if (!token_found)
          {
-            std::string msg = trs("ex 2 mismatched block started at {}", start_idx + 1);
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("ex 2 mismatched block started at {}", start_idx + 1));
          }
 
          mws_sp<kxmd_text> ke = kxmd_text::nwi();
@@ -1641,8 +1633,7 @@ namespace ns_kxmd
 
          if (c != ']')
          {
-            std::string msg = trs("block parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, ']');
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("block parse error {0}-{1}. unknown token '{2}'. expected a '{3}'", start_idx, ss->crt_idx, c, ']'));
          }
 
          if (kxt)
@@ -1774,8 +1765,7 @@ namespace ns_kxmd
 
          if (parse_error)
          {
-            std::string msg = trs("main line scan error {0}-{1}. unknown token '{2}'", start_idx, ss->crt_idx, c);
-            mws_throw mws_exception(msg);
+            mws_throw mws_exception(trs("main line scan error {0}-{1}. unknown token '{2}'", start_idx, ss->crt_idx, c));
          }
 
          token_found = true;

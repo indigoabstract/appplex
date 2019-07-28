@@ -227,8 +227,10 @@ public:
       }
          mws_catch(mws_exception e)
       {
+#ifdef MWS_USES_EXCEPTIONS
          is_validated = false;
          mws_signal_error(e.what());
+#endif
       }
    }
 

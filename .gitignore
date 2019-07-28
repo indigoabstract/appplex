@@ -2,6 +2,7 @@
 .svn
 *.iml
 
+/log.txt
 /cmd
 /libs
 /pfm/android/default/.gradle
