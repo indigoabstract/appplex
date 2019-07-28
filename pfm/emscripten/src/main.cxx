@@ -189,10 +189,10 @@ std::string emst_main::get_timezone_id()const
 
 umf_list emst_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool is_recursive)
 {
-	if (i_plist->find("index.txt") == i_plist->end())
+	if (i_plist->find(pfm::filesystem::res_idx_name) == i_plist->end())
 	{
 		umf_r& list = *i_plist;
-		mws_sp<pfm_file> index_txt = pfm_file::get_inst(std::make_shared<emst_file_impl>("index.txt", i_directory));
+		mws_sp<pfm_file> index_txt = pfm_file::get_inst(std::make_shared<emst_file_impl>(pfm::filesystem::res_idx_name, i_directory));
 		std::string path = index_txt->get_full_path();
 		std::ifstream infile(path);
 		//mws_println("i_directory %s file size %d path %s", i_directory.c_str(), index_txt->length(), path.c_str());
@@ -220,7 +220,7 @@ umf_list emst_main::get_directory_listing(const std::string& i_directory, umf_li
 			  list[filename] = pfm_file::get_inst(std::make_shared<emst_file_impl>(filename, dir));
 		   }
 
-		   list["index.txt"] = index_txt;
+		   list[pfm::filesystem::res_idx_name] = index_txt;
 		   infile.close();
 		}
 	}

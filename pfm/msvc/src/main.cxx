@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 class msvc_file_impl : public pfm_impl::pfm_file_impl
 {
 public:
-   msvc_file_impl(const std::string& i_filename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(i_filename, iroot_dir)
+   msvc_file_impl(const std::string& i_filename, const std::string& i_root_dir) : pfm_impl::pfm_file_impl(i_filename, i_root_dir)
    {
    }
 
@@ -208,9 +208,9 @@ mws_sp<msvc_main> msvc_main::get_instance()
    return instance;
 }
 
-mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
 {
-   return std::make_shared<msvc_file_impl>(i_filename, iroot_dir);
+   return std::make_shared<msvc_file_impl>(i_filename, i_root_dir);
 }
 
 void msvc_main::init()

@@ -430,10 +430,10 @@ namespace pfm_impl
       (*res_files_map)[i_filename] = ifile;
    }
 
-   pfm_file_impl::pfm_file_impl(const std::string& i_filename, const std::string& iroot_dir)
+   pfm_file_impl::pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
    {
       ppath.filename = i_filename;
-      ppath.aux_root_dir = iroot_dir;
+      ppath.aux_root_dir = i_root_dir;
       ppath.make_standard_path();
       file_pos = 0;
       file_is_open = false;
@@ -583,10 +583,10 @@ pfm_file::~pfm_file()
    io.close();
 }
 
-mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string iroot_dir)
+mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string i_root_dir)
 {
    mws_sp<pfm_file> inst;
-   auto ppath = pfm_path::get_inst(i_filename, iroot_dir);
+   auto ppath = pfm_path::get_inst(i_filename, i_root_dir);
 
    // if res map initialized
    if (pfm_impl::res_files_map)
@@ -606,10 +606,6 @@ mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string iroot_di
                inst = pfile;
             }
          }
-      }
-      else
-      {
-         mws_print_impl("pfm_file::get_inst pfile empty [ %s ]\n", i_filename.c_str());
       }
    }
 
@@ -1118,6 +1114,8 @@ void pfm::screen::flip_screen()
 //	return res;
 //}
 
+
+const std::string pfm::filesystem::res_idx_name = "index.txt";
 
 const umf_list pfm::filesystem::get_res_file_list()
 {

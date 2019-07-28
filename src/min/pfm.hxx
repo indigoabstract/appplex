@@ -291,6 +291,7 @@ public:
    class filesystem
    {
    public:
+      static const std::string res_idx_name;
       static const umf_list get_res_file_list();
       static std::string get_tmp_path(std::string i_name);
       static std::string get_writable_path(std::string i_name);

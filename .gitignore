@@ -18,6 +18,8 @@
 /pfm/android/default/local.properties
 /pfm/android/private
 /pfm/android.adt
+/pfm/emscripten/build
+/pfm/emscripten/src/res
 /pfm/ios/xcode
 /pfm/msvc/msvc-2017
 /pfm/msvc/msvc-2017/.vs
