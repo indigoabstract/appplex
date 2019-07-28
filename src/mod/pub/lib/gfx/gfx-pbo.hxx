@@ -13,6 +13,7 @@ class gfx_tex_info;
 
 enum class mws_read_method
 {
+   e_invalid,
    e_map_buff,
    e_map_buff_pixels_buff,
    e_get_buff,
@@ -47,7 +48,7 @@ private:
    int pbo_data_size = 0;
    int frame_idx = 0;
    mws_sp<gfx_tex_info> ti;
-   mws_read_method read_method = mws_read_method::e_map_buff;
+   mws_read_method read_method;
 };
 
 

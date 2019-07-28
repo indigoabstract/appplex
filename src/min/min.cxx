@@ -38,7 +38,7 @@ std::string mws_util::path::get_directory_from_path(const std::string& file_path
 
    if (pos_0 == std::string::npos && pos_1 == std::string::npos)
    {
-      pos = -1;
+      return "";
    }
    else if (pos_0 != std::string::npos && pos_1 != std::string::npos)
    {

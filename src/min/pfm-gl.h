@@ -27,6 +27,8 @@ extern "C"
 #include <GLES3/gl3ext.h>
 
 GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+#define hasGetBufferSubData() (true)
+#define hasMapBufferRange() (true)
 
 
 // --- IOS ---
@@ -49,6 +51,8 @@ GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, G
 #endif
     
 GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+#define hasGetBufferSubData() (true)
+#define hasMapBufferRange() (true)
 
 
 // --- EMSCRIPTEN ---
@@ -77,7 +81,11 @@ GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsiz
 #define GLAPI extern
 #endif
 
-GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data);
+GL_APICALL void* GL_APIENTRY glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
+GL_APICALL GLboolean GL_APIENTRY glUnmapBuffer(GLenum target);
+#define hasGetBufferSubData() (true)
+#define hasMapBufferRange() (false)
 
 
 // --- WINDOWS ---
@@ -121,6 +129,9 @@ GLAPI void APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsizeipt
 #pragma comment (lib, "glu32.lib")
 
 #endif
+
+#define hasGetBufferSubData() (true)
+#define hasMapBufferRange() (true)
 
 #endif
 // --- END PLATFORMS ---

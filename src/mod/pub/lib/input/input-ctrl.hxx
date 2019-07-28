@@ -59,7 +59,7 @@ public:
    void update();
    void enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_pe);
 
-   std::atomic<std::vector<mws_sp<mws_ptr_evt>>*> queue_ptr = nullptr;
+   std::atomic<std::vector<mws_sp<mws_ptr_evt>>*> queue_ptr{ nullptr };
 
 private:
    touchctrl();

@@ -588,10 +588,12 @@ void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
 
 mws_sp<mws_vkb_file_store> mws_page_tab::get_file_store()
 {
+#if MOD_MWS_VKB
    if (!vkb_store)
    {
       set_file_store(std::make_shared<mws_vkb_file_store_impl>());
    }
+#endif
 
    return vkb_store;
 }

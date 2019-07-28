@@ -91,7 +91,7 @@ public:
    std::string get_file_stem()const;
    std::string get_file_extension()const;
    const std::string& get_root_directory()const;
-   mws_sp<std::vector<mws_sp<pfm_file> > > list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false)const;
+   mws_sp<std::vector<mws_sp<pfm_file>>> list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false)const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
@@ -295,7 +295,7 @@ public:
       static std::string get_tmp_path(std::string i_name);
       static std::string get_writable_path(std::string i_name);
       static std::string get_path(std::string i_name);
-      static void load_res_file_map(mws_sp<mws_mod> i_mod = nullptr);
+      static void load_res_file_map(mws_sp<mws_mod> i_mod);
       //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& isize);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> i_file);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string i_filename);

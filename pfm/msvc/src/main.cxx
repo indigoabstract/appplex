@@ -145,8 +145,11 @@ public:
 
    virtual void close_impl() override
    {
-      fclose(file);
-      file = nullptr;
+      if (file)
+      {
+         fclose(file);
+         file = nullptr;
+      }
    }
 
    virtual void flush_impl() override
@@ -374,11 +377,11 @@ void msvc_main::write_text_nl(const wchar_t* text)const
    write_text(L"\n");
 }
 
-umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive)
+umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool is_recursive)
 {
-   if (idirectory.length() > 0)
+   if (i_directory.length() > 0)
    {
-      std::string dir = idirectory;
+      std::string dir = i_directory;
       WIN32_FIND_DATAA fd;
       HANDLE hfind = 0;
 
@@ -397,7 +400,7 @@ umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_lis
             if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                // regular file
             {
-               umf_r& list = *iplist;
+               umf_r& list = *i_plist;
                std::string key(fd.cFileName);
 
                if (list[key])
@@ -413,7 +416,7 @@ umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_lis
                // directory
             {
                std::string sub_dir = dir + fd.cFileName;
-               get_directory_listing(sub_dir, iplist, true);
+               get_directory_listing(sub_dir, i_plist, true);
             }
          } while (::FindNextFileA(hfind, &fd));
 
@@ -421,7 +424,7 @@ umf_list msvc_main::get_directory_listing(const std::string& idirectory, umf_lis
       }
    }
 
-   return iplist;
+   return i_plist;
 }
 
 bool msvc_main::init_app(int argc, char** argv)

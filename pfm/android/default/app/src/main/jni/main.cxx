@@ -43,7 +43,7 @@ public:
         return file;
     }
 
-	uint64 length() override
+	virtual uint64 length() override
 	{
 		uint64 size = 0;
 
@@ -79,21 +79,21 @@ public:
 		return size;
 	}
 
-	uint64 creation_time() const override
+	virtual uint64 creation_time() const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	uint64 last_write_time()const override
+	virtual uint64 last_write_time()const override
 	{
 		std::string path = ppath.get_full_path();
 
 		return 0;
 	}
 
-	bool open_impl(std::string iopen_mode) override
+	virtual bool open_impl(std::string iopen_mode) override
 	{
 		std::string path = ppath.get_full_path();
 
@@ -117,7 +117,7 @@ public:
 		return asset_file != nullptr;
 	}
 
-	void close_impl() override
+	virtual void close_impl() override
 	{
 		if(file)
 		{
@@ -135,7 +135,7 @@ public:
         }
 	}
 
-    void flush_impl() override
+    virtual void flush_impl() override
     {
         if(file)
         {
@@ -151,7 +151,7 @@ public:
         }
     }
 
-	void seek_impl(uint64 ipos, int iseek_pos) override
+	virtual void seek_impl(uint64 ipos, int iseek_pos) override
 	{
 		if(file)
 		{
@@ -167,7 +167,7 @@ public:
         }
 	}
 
-	uint64 tell_impl() override
+	virtual uint64 tell_impl() override
 	{
 		if(file)
 		{
@@ -179,7 +179,7 @@ public:
 		return 0;
 	}
 
-	int read_impl(uint8* ibuffer, int isize) override
+	virtual int read_impl(uint8* ibuffer, int isize) override
 	{
 		if(file)
 		{
@@ -189,7 +189,7 @@ public:
 		return AAsset_read(asset_file, ibuffer, isize);
 	}
 
-	int write_impl(const uint8* ibuffer, int isize) override
+	virtual int write_impl(const uint8* ibuffer, int isize) override
 	{
 		if(file)
 		{

@@ -56,6 +56,28 @@ void gfx_readback::set_params(int i_width, int i_height, std::string i_format)
 
 void gfx_readback::set_read_method(mws_read_method i_read_method)
 {
+   switch (read_method)
+   {
+   case mws_read_method::e_map_buff:
+   case mws_read_method::e_map_buff_pixels_buff:
+      if (!hasMapBufferRange())
+      {
+         mws_throw mws_exception("missing glMapBufferRange");
+      }
+      break;
+
+   case mws_read_method::e_get_buff:
+      if (hasGetBufferSubData())
+      {
+         mws_throw mws_exception("missing glGetBufferSubData");
+      }
+      break;
+
+   default:
+      mws_throw mws_exception("invalid read method");
+      break;
+   }
+
    read_method = i_read_method;
 
    switch (read_method)
@@ -67,10 +89,6 @@ void gfx_readback::set_read_method(mws_read_method i_read_method)
    case mws_read_method::e_map_buff_pixels_buff:
    case mws_read_method::e_get_buff:
       pbo_pixels.resize(get_pbo_size());
-      break;
-
-   default:
-      mws_assert(false);
       break;
    }
 }
@@ -153,6 +171,19 @@ void gfx_readback::update()
 gfx_readback::gfx_readback(mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_pbo_count(2);
+
+   if (hasGetBufferSubData())
+   {
+      set_read_method(mws_read_method::e_get_buff);
+   }
+   else if (hasMapBufferRange())
+   {
+      set_read_method(mws_read_method::e_map_buff);
+   }
+   else
+   {
+      read_method = mws_read_method::e_invalid;
+   }
 }
 
 void gfx_readback::set_dimensions(int i_width, int i_height)
