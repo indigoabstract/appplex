@@ -80,7 +80,7 @@ void mws_exception::set_msg(const char* i_msg)
    msg = i_msg;
 
 #ifndef MWS_USES_EXCEPTIONS
-   mws_assert(false);
+   mws_signal_error(i_msg);
 #endif
 }
 
