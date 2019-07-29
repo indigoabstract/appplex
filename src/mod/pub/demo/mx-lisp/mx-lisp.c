@@ -29,6 +29,7 @@ struct mx_env;
 // global data
 //
 
+static void (*outputf)(const char* i_text) = 0;
 static bool global_done = false;
 #define GLOBAL_INPUT_LENGTH 1024
 static char global_input[GLOBAL_INPUT_LENGTH] = {0};
@@ -1660,6 +1661,117 @@ mx_text* to_string(const struct mx_elem* exp)
 
 
 
+void mx_set_outputf(void (*i_outputf)(const char* i_text))
+{
+   outputf = i_outputf;
+}
+
+void mx_lisp_init_ctx()
+{
+   mx_print_text("initializing memory context...\nplease wait\n");
+   mx_mem_init_ctx();
+
+   mx_print_text("starting lisp repl...\ntype 'help' to list available commands\n\n");
+   global_env_vect = mx_vect_ctor(1, 1);
+
+   assign_smart_ptr((void**)& false_sym, mx_elem_ctor_ab2(t_symbol, "#f"));
+   assign_smart_ptr((void**)& true_sym, mx_elem_ctor_ab2(t_symbol, "#t"));
+   assign_smart_ptr((void**)& nil_sym, mx_elem_ctor_ab2(t_symbol, "nil"));
+
+   int size = mx_vect_size(global_env_vect);
+
+   for (int k = 0; k < size; k++)
+   {
+      struct mx_env* e = (struct mx_env*)mx_vect_elem_at(global_env_vect, k);
+
+      if (e->ref_count > 1)
+      {
+         int x = 3;
+      }
+      //reset_ref_count(e);
+      e->ext_env = 0;
+   }
+   mx_vect_del_all_elem(global_env_vect);
+
+   assign_smart_ptr((void**)& global_env, mx_env_ctor(0));
+   add_globals(global_env);
+   global_done = false;
+}
+
+void mx_lisp_eval_line(const char* i_line, int i_line_length)
+{
+   if (global_done)
+   {
+      return;
+   }
+
+   mx_char_copy_abc(i_line, global_input, i_line_length);
+
+   mx_text* linetx = 0;
+   struct mx_elem* c = 0;
+   struct mx_elem* ce = 0;
+   mx_text* ce_text = 0;
+   assign_smart_ptr((void**)& linetx, mx_text_ctor(global_input));
+   assign_smart_ptr((void**)& c, read(linetx));
+
+   if (c != 0)
+   {
+      assign_smart_ptr((void**)& ce, eval(c, global_env));
+      assign_smart_ptr((void**)& ce_text, to_string(ce));
+
+      mx_print_text(ce_text->text);
+   }
+   else
+   {
+      mx_print_text("invalid expression");
+   }
+
+   mx_print_text("\n");
+
+   assign_smart_ptr((void**)& linetx, 0);
+   assign_smart_ptr((void**)& c, 0);
+   assign_smart_ptr((void**)& ce, 0);
+   assign_smart_ptr((void**)& ce_text, 0);
+}
+
+void mx_lisp_destroy_ctx()
+{
+   assign_smart_ptr((void**)& false_sym, 0);
+   assign_smart_ptr((void**)& true_sym, 0);
+   assign_smart_ptr((void**)& nil_sym, 0);
+   mx_env_dtor(global_env);
+
+   mx_vect_dtor(global_env_vect);
+
+   {
+      mx_text* t1 = 0;
+      mx_text* t2 = 0;
+      mx_text* t3 = 0;
+      mx_text* t4 = 0;
+      assign_smart_ptr((void**)& t1, number_to_text(elem_created));
+      assign_smart_ptr((void**)& t2, number_to_text(elem_destroyed));
+      assign_smart_ptr((void**)& t3, number_to_text(env_created));
+      assign_smart_ptr((void**)& t4, number_to_text(env_destroyed));
+
+      mx_print_text("\nelements created: ");
+      mx_print_text(t1->text);
+      mx_print_text("\nelements destroyed: ");
+      mx_print_text(t2->text);
+      mx_print_text("\nenvironments created: ");
+      mx_print_text(t3->text);
+      mx_print_text("\nenvironments destroyed: ");
+      mx_print_text(t4->text);
+      mx_print_text("\n");
+
+      assign_smart_ptr((void**)& t1, 0);
+      assign_smart_ptr((void**)& t2, 0);
+      assign_smart_ptr((void**)& t3, 0);
+      assign_smart_ptr((void**)& t4, 0);
+   }
+
+   mx_mem_destroy_ctx();
+}
+
 // the default read-eval-print-loop
 void run_mx_lisp_repl()
 {
@@ -1801,19 +1913,26 @@ void mx_read_text_line()
 	}
 }
 
-void mx_print_text(const char* itext)
+void mx_print_text(const char* i_text)
 {
+   if (outputf)
+   {
+      (*outputf)(i_text);
+   }
+   else
+   {
 #ifdef STANDALONE
-	//global_output = (char*)itext;
-	//asm
-	//(
-	//	"LDA $255,global_output\n\t"
-	//	"TRAP 0,Fputs,StdOut\n\t"
-	//);
-	fputs(itext,stdout);
+      //global_output = (char*)itext;
+      //asm
+      //(
+      //	"LDA $255,global_output\n\t"
+      //	"TRAP 0,Fputs,StdOut\n\t"
+      //);
+      fputs(i_text, stdout);
 #else
-	mws_print(itext);
+      mws_print(i_text);
 #endif
+   }
 }
 
 void mx_print_indent(int ilevel)

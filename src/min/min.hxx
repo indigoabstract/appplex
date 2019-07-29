@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <numeric>
 
 
 class mws_sender;
@@ -114,6 +115,27 @@ struct mws_str
 class mws_util
 {
 public:
+   struct math
+   {
+      template<typename number> number static gcd(number i_n0, number i_n1)
+      {
+#if CXX_VERSION >= 17
+
+         return std::gcd(i_n0, i_n1);
+
+#else
+
+         if (i_n1 == 0)
+         {
+            return i_n0;
+         }
+
+         return gcd(i_n1, i_n0 % i_n1);
+
+#endif
+      }
+   };
+
    struct path
    {
       static std::string get_directory_from_path(const std::string& i_file_path);

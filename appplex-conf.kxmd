@@ -2,9 +2,9 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows, emscripten ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ vorofract ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -33,7 +33,7 @@ mod
 	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
 	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
-	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, res-ld, vector-fonts, vrn ], platf[ windows, android, ios, emscripten ], ],
+	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
 
 	@@[ npw ],
 	

@@ -110,7 +110,7 @@ std::string mws_vkb_impl::get_vkb_filename(uint32 i_map_idx)
 {
    uint32 w = pfm::screen::get_width();
    uint32 h = pfm::screen::get_height();
-   uint32 gcd = std::gcd(w, h);
+   uint32 gcd = mws_util::math::gcd(w, h);
    uint32 wd = w / gcd;
    uint32 hd = h / gcd;
 
