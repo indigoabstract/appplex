@@ -2,7 +2,7 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows, emscripten ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
 	start[ mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ], ],
 ],
@@ -12,7 +12,7 @@ mod
 	@@[ private mods ],
 	@@load-and-replace[ "src/mod/prv/mods.kxmd", mods ],
 
-	appplex-conf[ uses[ fmt, kxmd ], platf[ windows, emscripten ], ],
+	appplex-conf[ uses[ fmt, kxmd ], platf[ windows ], ],
 	barnes-hut[ enabled[ false ], ],
 	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, noise, png, res-ld, util, vector-fonts ] ],
@@ -160,8 +160,10 @@ paths
 			@@[ all android projects directory location, relative to 'appplex' dir ],
 			root-path[ 'pfm/android' ],
 			@@[ location of the assets in an android project, relative to the android project ],
-			asset-path[ 'app/src/main/assets' ],
+			res-path[ 'app/src/main/assets' ],
 			@@[ name of the default/generic android project ],
+			private-proj-name[ 'private' ],
+			public-proj-name[ 'public' ],
 			default-proj-name[ 'default' ],
 		],
 
