@@ -1133,6 +1133,17 @@ std::string pfm::filesystem::get_tmp_path(std::string i_name)
       if (mod)
       {
          p = pfm_impl::get_mod_res_path(mod) + "/../.ign";
+         auto dir = pfm_file::get_inst(p);
+
+         if (!dir->exists())
+         {
+            bool success = dir->make_dir();
+
+            if (!success)
+            {
+               mws_println("cannot create tmp dir [ %s ]", p.c_str());
+            }
+         }
       }
    }
    else
@@ -1140,13 +1151,16 @@ std::string pfm::filesystem::get_tmp_path(std::string i_name)
       p = pfm_app_inst->get_writable_path();
    }
 
-   if (i_name[0] == '/')
+   if (!i_name.empty())
    {
-      p += i_name;
-   }
-   else
-   {
-      p = p + "/" + i_name;
+      if (i_name[0] == '/')
+      {
+         p += i_name;
+      }
+      else
+      {
+         p = p + "/" + i_name;
+      }
    }
 
    return p;
@@ -1170,13 +1184,16 @@ std::string pfm::filesystem::get_writable_path(std::string i_name)
       p = pfm_app_inst->get_writable_path();
    }
 
-   if (i_name[0] == '/')
+   if (!i_name.empty())
    {
-      p += i_name;
-   }
-   else
-   {
-      p = p + "/" + i_name;
+      if (i_name[0] == '/')
+      {
+         p += i_name;
+      }
+      else
+      {
+         p = p + "/" + i_name;
+      }
    }
 
    return p;

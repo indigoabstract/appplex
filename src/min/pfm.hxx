@@ -293,8 +293,8 @@ public:
    public:
       static const std::string res_idx_name;
       static const umf_list get_res_file_list();
-      static std::string get_tmp_path(std::string i_name);
-      static std::string get_writable_path(std::string i_name);
+      static std::string get_tmp_path(std::string i_name = "");
+      static std::string get_writable_path(std::string i_name = "");
       static std::string get_path(std::string i_name);
       static void load_res_file_map(mws_sp<mws_mod> i_mod);
       //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& isize);

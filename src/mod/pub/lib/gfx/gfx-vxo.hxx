@@ -155,7 +155,7 @@ public:
    virtual void draw_in_sync(mws_sp<gfx_camera> i_camera) override;
 
    void push_material_params(mws_sp<gfx_material> i_mat);
-   void set_size(int ivx_count, int iidx_count);
+   void set_size(int ivx_count, int i_idx_count);
 
    std::vector<std::string> camera_id_list;
    gfx_primitive render_method;

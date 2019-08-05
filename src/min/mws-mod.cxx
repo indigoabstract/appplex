@@ -527,7 +527,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
 
          if (!success)
          {
-            mws_println("dir [ %s ] doesn't exist", dir_name.c_str());
+            mws_println("cannot create dir [ %s ]", dir_name.c_str());
             return;
          }
       }

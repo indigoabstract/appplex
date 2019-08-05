@@ -613,10 +613,10 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
    }
 }
 
-void gfx_vxo::set_size(int ivx_count, int iidx_count)
+void gfx_vxo::set_size(int ivx_count, int i_idx_count)
 {
    vx_count = ivx_count;
-   idx_count = iidx_count;
+   idx_count = i_idx_count;
    vertices_buffer.resize(vx_count * vxi.vertex_size);
    indices_buffer.resize(idx_count);
    index_count = indices_buffer.size();
