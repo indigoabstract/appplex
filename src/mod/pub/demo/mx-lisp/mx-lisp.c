@@ -1,5 +1,6 @@
 #include "stdafx.hxx"
 
+// this means running the bare bones console aplication
 //#define STANDALONE
 
 #ifdef STANDALONE
@@ -15,6 +16,8 @@
    typedef unsigned long long uint64;
 #else
 	#include "pfm-def.h"
+   #include <stdlib.h>
+   #include <string.h>
 #endif
 
 #include <stdio.h>
@@ -25,15 +28,45 @@ typedef int64 numeric_dt;
 struct mx_elem;
 struct mx_env;
 
+
+struct mx_mem_block
+{
+   uint16 type;
+   uint16 elem_span;
+   struct mx_mem_block* next;
+};
+
+static void (*outputf)(const char* i_text) = 0;
+
+
 //
 // global data
 //
 
-static void (*outputf)(const char* i_text) = 0;
-static bool global_done = false;
+// maximum 65535 memory partitions
+#define MAX_ELEM_COUNT 65535
+#define MIN_ELEM_SIZE 16
+#define MX_CTX_ELEM_COUNT 16000
+#define MX_CTX_ELEM_SIZE 128
 #define GLOBAL_INPUT_LENGTH 1024
+
+static const uint16 FREE_BLOCK = 0;
+static const uint16 FULL_BLOCK = 1;
+static const uint16 INVL_BLOCK = 2;
+
+#ifdef STANDALONE
+static char heap_mem[MX_CTX_ELEM_SIZE * MAX_ELEM_COUNT] = { 0 };
+// sizeof(mx_mem_block) = 2 + 2 + 4
+static char block_list_mem[sizeof(struct mx_mem_block) * MAX_ELEM_COUNT] = { 0 };
 static char global_input[GLOBAL_INPUT_LENGTH] = {0};
+#else
+static char* heap_mem = 0;
+static char* block_list_mem = 0;
+static char* global_input = 0;
+#endif
+
 static char* global_output = 0;
+static bool global_done = false;
 static struct mx_elem* false_sym = 0;
 static struct mx_elem* true_sym = 0;
 static struct mx_elem* nil_sym = 0;
@@ -42,7 +75,6 @@ static struct mx_env* test_env = 0;
 
 static int executed_test_count = 0;      // count of number of unit tests executed
 static int failed_test_count = 0;     // count of number of unit tests that fail
-
 static int elem_created = 0;
 static int elem_destroyed = 0;
 static int env_created = 0;
@@ -53,12 +85,6 @@ int size_of_address()
 	return sizeof(uint64*);
 }
 
-struct mx_mem_block
-{
-	uint16 type;
-	uint16 elem_span;
-	struct mx_mem_block* next;
-};
 
 struct mx_mem_ctx
 	// size always refers to the size in bytes, unless noted otherwise
@@ -75,19 +101,6 @@ struct mx_mem_ctx
 	int block_list_length;
 };
 
-// maximum 65535 memory partitions
-#define MAX_ELEM_COUNT 65535
-#define MIN_ELEM_SIZE 16
-#define MX_CTX_ELEM_COUNT 16000
-#define MX_CTX_ELEM_SIZE 128
-
-static const uint16 FREE_BLOCK = 0;
-static const uint16 FULL_BLOCK = 1;
-static const uint16 INVL_BLOCK = 2;
-
-static char heap_mem[MX_CTX_ELEM_SIZE * MAX_ELEM_COUNT] = {0};
-// sizeof(mx_mem_block) = 2 + 2 + 4
-static char block_list_mem[sizeof(struct mx_mem_block) * MAX_ELEM_COUNT] = {0};
 static struct mx_mem_ctx mxmc_inst = {0};
 
 
@@ -1253,6 +1266,57 @@ const struct mx_elem* eval_begin(const struct mx_elem* x, struct mx_env* env, in
 	return xr;
 }
 
+const struct mx_elem* eval_set_vkb_enabled(const struct mx_elem* x, struct mx_env* env)
+{
+   // return ptr
+   const struct mx_elem* xv = (struct mx_elem*)mx_vect_elem_at(x->list, 1);
+   mx_text* tx = 0;
+
+   check_obj_status(xv);
+
+   if (mx_text_compare(xv->val, true_sym->val) == 0)
+   {
+      assign_smart_ptr((void**)& tx, mx_text_ctor("the virtual keyboard is now enabled"));
+   }
+   else if (mx_text_compare(xv->val, false_sym->val) == 0 || mx_text_compare(xv->val, false_sym->val) == 0)
+   {
+      assign_smart_ptr((void**)& tx, mx_text_ctor("the virtual keyboard is now disabled"));
+   }
+   else
+   {
+      assign_smart_ptr((void**)& tx, mx_text_append_string_string(xv->val->text, " is invalid as parameter. please put #t, #f or nil."));
+   }
+
+   mx_char_copy_abc(tx->text, global_input, GLOBAL_INPUT_LENGTH);
+   assign_smart_ptr((void**)& tx, 0);
+
+   return mx_elem_ctor_ab2(t_symbol, global_input);
+}
+
+const struct mx_elem* eval_set_scr_brightness(const struct mx_elem* x, struct mx_env* env)
+{
+   // return ptr
+   mx_text* tx = 0;
+   const struct mx_elem* xv = (struct mx_elem*)mx_vect_elem_at(x->list, 1);
+   check_obj_status(xv);
+   const struct mx_elem* num = eval_number(xv, env);
+   check_obj_status(num);
+
+   if (num->type == t_number)
+   {
+      assign_smart_ptr((void**)& tx, mx_text_append_string_string("set the screen brigtness to ", num->val->text));
+   }
+   else
+   {
+      assign_smart_ptr((void**)& tx, mx_text_append_string_string(xv->val->text, " is invalid as parameter. please put a number."));
+   }
+
+   mx_char_copy_abc(tx->text, global_input, GLOBAL_INPUT_LENGTH);
+   assign_smart_ptr((void**)& tx, 0);
+
+   return mx_elem_ctor_ab2(t_symbol, global_input);
+}
+
 void eval_init_fun_exps(struct mx_elem** funp, mx_vect** expsp, const struct mx_elem* x, int xls, const struct mx_elem* xl0, struct mx_env* env)
 {
 	// (fun exp*)
@@ -1418,7 +1482,17 @@ const struct mx_elem* eval(const struct mx_elem* iel, struct mx_env* env)
 		{
 			return eval_begin(iel, env, xls);
 		}
-	}
+
+      if (mx_text_compare_string(xl0_tx, "set-vkb-enabled") == 0)
+      {
+         return eval_set_vkb_enabled(iel, env);
+      }
+
+      if (mx_text_compare_string(xl0_tx, "set-scr-brightness") == 0)
+      {
+         return eval_set_scr_brightness(iel, env);
+      }
+   }
 
 	// evaluate lambda and built-in functions
 	{
@@ -1591,7 +1665,7 @@ struct mx_elem* read_from(mx_vect* tokens)
 }
 
 // return the Lisp expression represented by the given string
-struct mx_elem* read(const mx_text* s)
+struct mx_elem* read_exp(const mx_text* s)
 {
 	mx_vect* tokens = 0;
 	assign_smart_ptr((void**)&tokens, tokenize(s));
@@ -1712,7 +1786,7 @@ void mx_lisp_eval_line(const char* i_line, int i_line_length)
    struct mx_elem* ce = 0;
    mx_text* ce_text = 0;
    assign_smart_ptr((void**)& linetx, mx_text_ctor(global_input));
-   assign_smart_ptr((void**)& c, read(linetx));
+   assign_smart_ptr((void**)& c, read_exp(linetx));
 
    if (c != 0)
    {
@@ -1817,7 +1891,7 @@ void run_mx_lisp_repl()
 		struct mx_elem* ce = 0;
 		mx_text* ce_text = 0;
 		assign_smart_ptr((void**)&linetx, mx_text_ctor(global_input));
-		assign_smart_ptr((void**)&c, read(linetx));
+		assign_smart_ptr((void**)&c, read_exp(linetx));
 
 		if (c != 0)
 		{
@@ -1953,7 +2027,16 @@ void mx_mem_init_ctx()
 {
 	mws_assert(MX_CTX_ELEM_SIZE >= MIN_ELEM_SIZE);
 	mws_assert(MIN_ELEM_SIZE % 8 == 0);
-	mxmc_inst.elem_size = MX_CTX_ELEM_SIZE;
+
+#ifndef STANDALONE
+   heap_mem = (char*)malloc(MX_CTX_ELEM_SIZE * MAX_ELEM_COUNT);
+   // sizeof(mx_mem_block) = 2 + 2 + 4
+   block_list_mem = (char*)malloc(sizeof(struct mx_mem_block) * MAX_ELEM_COUNT);
+   global_input = (char*)malloc(GLOBAL_INPUT_LENGTH);
+   memset(&mxmc_inst, 0, sizeof(struct mx_mem_ctx));
+#endif
+
+   mxmc_inst.elem_size = MX_CTX_ELEM_SIZE;
 	mws_assert(MX_CTX_ELEM_COUNT > 0 && MX_CTX_ELEM_COUNT < MAX_ELEM_COUNT);
 	mxmc_inst.elem_count = MX_CTX_ELEM_COUNT;
 	mxmc_inst.total_size = mxmc_inst.elem_size * mxmc_inst.elem_count;
@@ -3126,7 +3209,7 @@ void test_eq(const char* expression, const char* expected_result)
 	mx_text* expr = 0;
 	assign_smart_ptr((void**)&expr, mx_text_ctor(expression));
 	struct mx_elem* rc = 0;
-	assign_smart_ptr((void**)&rc, read(expr));
+	assign_smart_ptr((void**)&rc, read_exp(expr));
 	//mx_elem_dbg_list(rc);
 	struct mx_elem* ec = 0;
 	assign_smart_ptr((void**)&ec, eval(rc, test_env));
