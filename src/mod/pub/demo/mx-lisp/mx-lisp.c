@@ -47,6 +47,7 @@ typedef enum
 
    e_exit,
    e_clear,
+   e_list_examples,
    e_help,
    e_list_help,
    e_list_env,
@@ -84,6 +85,7 @@ static mx_eval_fnct_id eval_fncts_list[] =
 
    {"exit", e_exit},
    {"clear", e_clear},
+   {"list-examples", e_list_examples},
    {"help", e_help},
    {"list-env", e_list_env},
    {"list-help", e_list_help},
@@ -101,8 +103,53 @@ static mx_eval_fnct_id eval_fncts_list[] =
    {"status-objects", e_status_objects},
 };
 const int eval_fncts_list_size = sizeof(eval_fncts_list) / sizeof(mx_eval_fnct_id);
-static eval_fnct_type mx_fnct_id_by_name(const char* i_name);
-static void (*outputf)(const char* i_text) = 0;
+
+typedef struct
+{
+   const char* expr;
+   const char* val;
+}
+mx_test_sample;
+static mx_test_sample test_sample_list[] =
+{
+   {"(quote (testing 1 (2.0) -3.14e159))", "(testing 1 (2.0) -3.14e159)"},
+   {"(+ 2 2)", "4"},
+   {"(+ (* 2 100) (* 1 10))", "210"},
+   {"(if(> 6 5) (+ 1 1) (+ 2 2))", "2"},
+   {"(if(< 6 5) (+ 1 1) (+ 2 2))", "4"},
+   {"(define x 3)", "3"},
+   {"x", "3"},
+   {"(+ x x)", "6"},
+   {"(begin (define x 1) (set! x (+ x 1)) (+ x 1))", "3"},
+   {"((lambda (x) (+ x x)) 5)", "10"},
+   {"(define twice (lambda (x) (* 2 x)))", "<lambda>"},
+   {"(twice 5)", "10"},
+   {"(define compose (lambda (f g) (lambda (x) (f (g x)))))", "<lambda>"},
+   {"((compose list twice) 5)", "(10)"},
+   {"(define repeat (lambda (f) (compose f f)))", "<lambda>"},
+   {"((repeat twice) 5)", "20"},
+   {"((repeat (repeat twice)) 5)", "80"},
+   {"(define fact (lambda (n) (if(<= n 1) 1 (* n (fact (- n 1))))))", "<lambda>"},
+   {"(fact 3)", "6"},
+   {"(fact 12)", "479001600"}, // max for 32 bits
+   {"(fact 20)", "2432902008176640000"}, // max for 64 bits
+   {"(define abs (lambda (n) ((if(> n 0) + -) 0 n)))", "<lambda>"},
+   {"(list (abs -3) (abs 0) (abs 3))", "(3 0 3)"},
+   {"(define combine (lambda (f) (lambda (x y) (if(null? x) (quote ()) (f (list (car x) (car y)) ((combine f) (cdr x) (cdr y)))))))", "<lambda>"},
+   {"(define zip (combine cons))", "<lambda>"},
+   {"(zip (list 1 2 3 4) (list 5 6 7 8))", "((1 5) (2 6) (3 7) (4 8))"},
+   {"(define riff-shuffle (lambda (deck) (begin (define take (lambda (n seq) (if(<= n 0) (quote ()) (cons (car seq) (take (- n 1) (cdr seq)))))) \
+   (define drop (lambda (n seq) (if(<= n 0) seq (drop (- n 1) (cdr seq))))) (define mid (lambda (seq) (/ (length seq) 2))) \
+   ((combine append) (take (mid deck) deck) (drop (mid deck) deck)))))", "<lambda>"},
+   {"(riff-shuffle (list 1 2))", "(1 2)"},
+   //{"(riff-shuffle (list 1 2 3 4 5 6 7 8))", "(1 5 2 6 3 7 4 8)"},
+   //{"((repeat riff-shuffle) (list 1 2 3 4 5 6 7 8))", "(1 3 5 7 2 4 6 8)"},
+   //{"(riff-shuffle (riff-shuffle (riff-shuffle (list 1 2 3 4 5 6 7 8))))", "(1 2 3 4 5 6 7 8)"},
+   {"(define sum (lambda (n) (if(<= n 1) 1 (+ n (sum (- n 1))))))", "<lambda>"},
+   {"(sum 101)", "5151"},
+};
+const int test_sample_list_size = sizeof(test_sample_list) / sizeof(mx_test_sample);
+
 
 
 struct mx_mem_block
@@ -116,6 +163,14 @@ struct mx_mem_block
 //
 // global data
 //
+
+int size_of_address() { return sizeof(uint64*); }
+void mx_lisp_set_vkb_enabled(int i_enabled);
+float mx_lisp_set_scr_brightness(int i_brightness);
+void mx_lisp_use_sq_brackets_as_parenths(int i_enabled);
+void mx_lisp_clear();
+static eval_fnct_type mx_fnct_id_by_name(const char* i_name);
+
 
 // maximum 65535 memory partitions
 #define MAX_ELEM_COUNT 65535
@@ -135,18 +190,11 @@ static char heap_mem[MX_CTX_ELEM_SIZE * MAX_ELEM_COUNT] = { 0 };
 static char block_list_mem[sizeof(struct mx_mem_block) * MAX_ELEM_COUNT] = { 0 };
 static char global_input[GLOBAL_INPUT_LENGTH] = { 0 };
 
-void mx_lisp_set_vkb_enabled(int i_enabled) {}
-float mx_lisp_set_scr_brightness(int i_brightness) { return 0.f; }
-void mx_lisp_use_sq_brackets_as_parenths(int i_enabled) {}
-
 #else
 
 static char* heap_mem = 0;
 static char* block_list_mem = 0;
 static char* global_input = 0;
-void mx_lisp_set_vkb_enabled(int i_enabled);
-float mx_lisp_set_scr_brightness(int i_brightness);
-void mx_lisp_use_sq_brackets_as_parenths(int i_enabled);
 
 #endif
 
@@ -164,8 +212,7 @@ static int elem_created = 0;
 static int elem_destroyed = 0;
 static int env_created = 0;
 static int env_destroyed = 0;
-
-int size_of_address() { return sizeof(uint64*); }
+static void (*outputf)(const char* i_text) = 0;
 
 
 struct mx_mem_ctx
@@ -400,26 +447,17 @@ char* get_elem_type(const struct mx_elem* i_c)
 {
    if (i_c != 0)
    {
-      elem_type t = i_c->type;
-
-      if (i_c->type == t_function)
+      switch (i_c->type)
       {
+      case t_function:
          return "function elem";
-      }
-      else if (i_c->type == t_lambda)
-      {
+      case t_lambda:
          return "lambda elem";
-      }
-      else if (i_c->type == t_list)
-      {
+      case t_list:
          return "list elem";
-      }
-      else if (i_c->type == t_number)
-      {
+      case t_number:
          return "number elem";
-      }
-      else if (i_c->type == t_symbol)
-      {
+      case t_symbol:
          return "symbol elem";
       }
    }
@@ -580,7 +618,6 @@ void mx_elem_dbg_list_impl(const struct mx_elem* i_c, int i_level)
          mx_print_text(i_c->val->text);
       }
       break;
-
    case t_number:
       if (i_c->val)
       {
@@ -588,7 +625,6 @@ void mx_elem_dbg_list_impl(const struct mx_elem* i_c, int i_level)
          mx_print_text(i_c->val->text);
       }
       break;
-
    case t_list:
       if (i_c->list)
       {
@@ -605,11 +641,9 @@ void mx_elem_dbg_list_impl(const struct mx_elem* i_c, int i_level)
          }
       }
       break;
-
    case t_function:
       mx_print_text("tfun: ");
       break;
-
    case t_lambda:
    {
       int length = mx_vect_size(i_c->list);
@@ -626,18 +660,14 @@ void mx_elem_dbg_list_impl(const struct mx_elem* i_c, int i_level)
       break;
    }
    }
-
-   mx_print_text("\n");
 }
 
 void mx_elem_dbg_list(const struct mx_elem* i_c)
 {
-   if (!i_c)
+   if (i_c)
    {
-      return;
+      mx_elem_dbg_list_impl(i_c, 0);
    }
-
-   mx_elem_dbg_list_impl(i_c, 0);
 }
 
 
@@ -1101,20 +1131,26 @@ bool print_help(mx_text* i_val, struct mx_env* i_env)
    switch (fnct_id)
    {
    case e_clear:
-      for (int k = 0; k < 100; k++)
+      mx_lisp_clear();
+      break;
+   case e_list_examples:
+      mx_print_text("here's a list of examples you can type at the prompt:\n");
+      for (int k = 0; k < test_sample_list_size; k++)
       {
-         mx_print_text("\n\n\n\n\n\n\n\n\n\n");
+         mx_print_text(test_sample_list[k].expr);
+         mx_print_text("\n");
       }
       break;
    case e_help:
-      mx_print_text("     available commands:\n     clear\n     exit\n     list-help\n     keywords-help\n     test-help\n     status-help\n");
+      mx_print_text("     available commands:\n     clear\n     exit\n     list-examples\n     list-help\n     keywords-help\n     test-help\n     status-help\n\
+     (mx-set-vkb-enabled [#t, #f])\n     (mx-set-scr-brightness number)\n     (mx-use-sq-brackets-as-parenths [#t, #f])\n");
       break;
    case e_list_env:
       mx_print_text("     listing global environment contents:\n");
       mx_env_dbg_list(global_env);
       break;
    case e_list_help:
-      mx_print_text("     available commands:\n     list-i_env\n");
+      mx_print_text("     available commands:\n     list-env\n");
       break;
    case e_keywords_help:
       mx_print_text("     built-in keywords / operations:\n\n\
@@ -2100,7 +2136,7 @@ void mx_print_text(const char* i_text)
       mws_print(i_text);
 
 #endif
-}
+   }
 }
 
 void mx_print_indent(int i_level)
@@ -3283,7 +3319,7 @@ void mx_env_dbg_list(const struct mx_env* i_e)
 {
    mx_htable* h = i_e->ht_env;
 
-   mx_print_text("i_env\n[\n");
+   mx_print_text("env\n[\n");
 
    for (int k = 0; k < h->capacity; k++)
    {
@@ -3311,12 +3347,13 @@ void mx_env_dbg_list(const struct mx_env* i_e)
       mx_env_dbg_list(i_e->ext_env);
    }
 
-   mx_print_text("],\n");
+   mx_print_text("], ");
 }
 
 // evaluate the given Lisp expression and compare the result against the given i_expected_result
-void test_eq(const char* i_expression, const char* i_expected_result)
+bool test_eq(const char* i_expression, const char* i_expected_result)
 {
+   bool result_val = false;
    // local ptr
    mx_text* expr = 0;
    assign_smart_ptr(&expr, mx_text_ctor(i_expression));
@@ -3354,10 +3391,13 @@ void test_eq(const char* i_expression, const char* i_expected_result)
       mx_print_text(" : ");
       mx_print_text(result->text);
       mx_print_text("\n");
+      result_val = true;
    }
 
    assign_smart_ptr(&result, 0);
    mx_read_text_line();
+
+   return result_val;
 }
 
 void test_mx_lisp(struct mx_env* i_env)
@@ -3367,47 +3407,10 @@ void test_mx_lisp(struct mx_env* i_env)
    test_env = i_env;
 
    // the 29 unit tests for lis.py
-   test_eq("(quote (testing 1 (2.0) -3.14e159))", "(testing 1 (2.0) -3.14e159)");
-   test_eq("(+ 2 2)", "4");
-   test_eq("(+ (* 2 100) (* 1 10))", "210");
-   test_eq("(if(> 6 5) (+ 1 1) (+ 2 2))", "2");
-   test_eq("(if(< 6 5) (+ 1 1) (+ 2 2))", "4");
-   test_eq("(define i_x 3)", "3");
-   test_eq("i_x", "3");
-   test_eq("(+ i_x i_x)", "6");
-   test_eq("(begin (define i_x 1) (set! i_x (+ i_x 1)) (+ i_x 1))", "3");
-   test_eq("((lambda (i_x) (+ i_x i_x)) 5)", "10");
-   test_eq("(define twice (lambda (i_x) (* 2 i_x)))", "<lambda>");
-   test_eq("(twice 5)", "10");
-   test_eq("(define compose (lambda (f g) (lambda (i_x) (f (g i_x)))))", "<lambda>");
-   test_eq("((compose list twice) 5)", "(10)");
-   test_eq("(define repeat (lambda (f) (compose f f)))", "<lambda>");
-   test_eq("((repeat twice) 5)", "20");
-   test_eq("((repeat (repeat twice)) 5)", "80");
-   test_eq("(define fact (lambda (n) (if(<= n 1) 1 (* n (fact (- n 1))))))", "<lambda>");
-   test_eq("(fact 3)", "6");
-   test_eq("(fact 12)", "479001600"); // max for 32 bits
-   test_eq("(fact 20)", "2432902008176640000"); // max for 64 bits
-   test_eq("(define abs (lambda (n) ((if(> n 0) + -) 0 n)))", "<lambda>");
-   test_eq("(list (abs -3) (abs 0) (abs 3))", "(3 0 3)");
-   test_eq("(define combine (lambda (f)"
-      "(lambda (i_x y)"
-      "(if(null? i_x) (quote ())"
-      "(f (list (car i_x) (car y))"
-      "((combine f) (cdr i_x) (cdr y)))))))", "<lambda>");
-   test_eq("(define zip (combine cons))", "<lambda>");
-   test_eq("(zip (list 1 2 3 4) (list 5 6 7 8))", "((1 5) (2 6) (3 7) (4 8))");
-   test_eq("(define riff-shuffle (lambda (deck) (begin"
-      "(define take (lambda (n seq) (if(<= n 0) (quote ()) (cons (car seq) (take (- n 1) (cdr seq))))))"
-      "(define drop (lambda (n seq) (if(<= n 0) seq (drop (- n 1) (cdr seq)))))"
-      "(define mid (lambda (seq) (/ (length seq) 2)))"
-      "((combine append) (take (mid deck) deck) (drop (mid deck) deck)))))", "<lambda>");
-   test_eq("(riff-shuffle (list 1 2))", "(1 2)");
-   //test_eq("(riff-shuffle (list 1 2 3 4 5 6 7 8))", "(1 5 2 6 3 7 4 8)");
-   //test_eq("((repeat riff-shuffle) (list 1 2 3 4 5 6 7 8))", "(1 3 5 7 2 4 6 8)");
-   //test_eq("(riff-shuffle (riff-shuffle (riff-shuffle (list 1 2 3 4 5 6 7 8))))", "(1 2 3 4 5 6 7 8)");
-   test_eq("(define sum (lambda (n) (if(<= n 1) 1 (+ n (sum (- n 1))))))", "<lambda>");
-   test_eq("(sum 101)", "5151");
+   for (int k = 0; k < test_sample_list_size; k++)
+   {
+      test_eq(test_sample_list[k].expr, test_sample_list[k].val);
+   }
 
    mx_text* t1 = 0;
    mx_text* t2 = 0;
@@ -3538,6 +3541,17 @@ int main()
    run_mx_lisp_repl();
 
    return 0;
+}
+
+void mx_lisp_set_vkb_enabled(int i_enabled) {}
+float mx_lisp_set_scr_brightness(int i_brightness) { return 0.f; }
+void mx_lisp_use_sq_brackets_as_parenths(int i_enabled) {}
+
+void mx_lisp_clear()
+{
+   for (int k = 0; k < 100; k++)
+   {
+      mx_print_text("\n\n\n\n\n\n\n\n\n\n");
 }
 
 #endif
