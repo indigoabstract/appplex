@@ -29,6 +29,7 @@ public:
    virtual void insert_at_cursor(const std::string& i_text);
    virtual void delete_at_cursor(int32 i_count);
    virtual void scroll_text(const glm::vec2& i_off);
+   virtual void scroll_to_end(dir_types i_direction);
    virtual void set_position(const glm::vec2& i_pos);
    virtual void set_dimension(const glm::vec2& i_dim);
    virtual void set_font(mws_sp<mws_font> i_font);

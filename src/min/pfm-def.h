@@ -382,10 +382,15 @@ extern "C"
 
    enum dir_types
    {
+      DIR_NONE,
       DIR_LEFT,
+      DIR_UP_LEFT,
       DIR_UP,
+      DIR_UP_RIGHT,
       DIR_RIGHT,
+      DIR_DOWN_RIGHT,
       DIR_DOWN,
+      DIR_DOWN_LEFT,
    };
 
 

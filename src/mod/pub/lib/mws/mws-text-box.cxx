@@ -83,9 +83,9 @@ void mws_text_box::set_text(const std::string& i_text)
    tx_src = new_model();
    tx_src->set_text(i_text);
    tx_vxo->clear_text();
-   tx_vxo->add_text(i_text, glm::vec2(), font);
-   scroll_text(glm::vec2());
-   select_char_at(glm::vec2());
+   tx_vxo->add_text(i_text, glm::vec2(0.f), font);
+   scroll_text(glm::vec2(0.f));
+   select_char_at(glm::vec2(0.f));
 }
 
 void mws_text_box::push_back_text(const std::string& i_text)
@@ -107,9 +107,9 @@ void mws_text_box::push_back_text(const std::string& i_text)
       }
 
       tx_vxo->clear_text();
-      tx_vxo->add_text(text, glm::vec2(), font);
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
+      tx_vxo->add_text(text, glm::vec2(0.f), font);
+      scroll_text(glm::vec2(0.f));
+      select_char_at(glm::vec2(0.f));
    }
 }
 
@@ -132,9 +132,9 @@ void mws_text_box::push_front_text(const std::string& i_text)
       }
 
       tx_vxo->clear_text();
-      tx_vxo->add_text(text, glm::vec2(), font);
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
+      tx_vxo->add_text(text, glm::vec2(0.f), font);
+      scroll_text(glm::vec2(0.f));
+      select_char_at(glm::vec2(0.f));
    }
 }
 
@@ -173,21 +173,20 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
    }
    else
    {
-      //tx_vxo->position += glm::vec3(ioff, 0);
+      float font_height = font->get_height();
+      uint32 rows = std::min(text_rows, tx_src->get_line_count());
+
       glm::vec2 prev_off = text_offset;
       text_offset -= i_off;
-      text_offset = glm::max(text_offset, glm::vec2());
+      text_offset = glm::max(text_offset, glm::vec2(0.f));
       tx_vxo->clear_text();
-      top_line_idx = uint32(text_offset.y / font->get_height());
+      top_line_idx = uint32(text_offset.y / font_height);
 
       if (top_line_idx + text_rows > tx_src->get_line_count())
       {
-         text_offset = prev_off;
-         top_line_idx = uint32(text_offset.y / font->get_height());
-         //top_line_idx = tx_src->get_line_count() - text_rows;
+         top_line_idx = uint32(text_offset.y / font_height);
+         text_offset.y = font_height * top_line_idx;
       }
-
-      uint32 rows = std::min(text_rows, tx_src->get_line_count());
 
       if (top_line_idx + rows >= tx_src->get_line_count())
       {
@@ -195,12 +194,50 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
       }
 
       tx_rows = tx_src->get_lines_at(top_line_idx, rows);
-      text_row_remainder = glm::mod(text_offset.y, font->get_height());
+      text_row_remainder = glm::mod(text_offset.y, font_height);
       tx_vxo->position = glm::vec3(pos.x - text_offset.x, pos.y - text_row_remainder, 0);
 
       for (size_t k = 0; k < tx_rows.size(); k++)
       {
-         tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font->get_height()), font);
+         tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font_height), font);
+      }
+   }
+}
+
+void mws_text_box::scroll_to_end(dir_types i_direction)
+{
+   if (is_editable())
+   {
+      return;
+   }
+
+   if (i_direction == dir_types::DIR_DOWN_LEFT)
+   {
+      uint32 line_count = tx_src->get_line_count();
+      uint32 rows = std::min(text_rows, line_count);
+      float font_height = font->get_height();
+
+      if (rows <= line_count)
+      {
+         top_line_idx = line_count - rows;
+      }
+      else
+      {
+         top_line_idx = 0;
+      }
+
+      ks.reset();
+      text_offset.x = 0;
+      text_offset.y = font_height * rows;
+
+      tx_vxo->clear_text();
+      tx_rows = tx_src->get_lines_at(top_line_idx, rows);
+      text_row_remainder = glm::mod(text_offset.y, font_height) + font_height;
+      tx_vxo->position = glm::vec3(pos.x - text_offset.x, pos.y - text_row_remainder, 0);
+
+      for (size_t k = 0; k < tx_rows.size(); k++)
+      {
+         tx_vxo->add_text(tx_rows[k], glm::vec2(0, k * font_height), font);
       }
    }
 }
@@ -221,8 +258,8 @@ void mws_text_box::set_dimension(const glm::vec2 & i_dim)
 
    if (tx_src)
    {
-      scroll_text(glm::vec2());
-      select_char_at(glm::vec2());
+      scroll_text(glm::vec2(0.f));
+      select_char_at(glm::vec2(0.f));
    }
 }
 
