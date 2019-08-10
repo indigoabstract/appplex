@@ -158,7 +158,7 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
       uint32 rows = std::min(text_rows, text_line_count);
       glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
       cursor_row_idx = cursor_coord.y;
-      trx("scroll_text cursor_row_idx [ {} ]", cursor_row_idx);
+      mws_println("scroll_text cursor_row_idx [ %d ]", cursor_row_idx);
       cursor_col_idx = cursor_coord.x;
 
       if (cursor_row_idx >= rows)
@@ -273,7 +273,7 @@ void mws_text_box::set_font(mws_sp<mws_font> i_font)
 void mws_text_box::select_char_at(const glm::vec2 & i_pos)
 {
    cursor_row_idx = size_t((i_pos.y + text_row_remainder) / font->get_height());
-   trx("select_char_at0 cursor_row_idx [ {} ]", cursor_row_idx);
+   mws_println("select_char_at0 cursor_row_idx [ %d ]", cursor_row_idx);
    cursor_col_idx = 0;
 
    *left_char_rect = *right_char_rect = mws_rect();
@@ -282,7 +282,7 @@ void mws_text_box::select_char_at(const glm::vec2 & i_pos)
    if (cursor_row_idx >= tx_rows.size())
    {
       cursor_row_idx = std::max(0, int(tx_rows.size() - 1));
-      trx("select_char_at1 cursor_row_idx [ {} ]", cursor_row_idx);
+      mws_println("select_char_at1 cursor_row_idx [ %d ]", cursor_row_idx);
       cursor_col_idx = tx_rows[cursor_row_idx].size();
       {
          uint32 line_index = top_line_idx + cursor_row_idx;
@@ -451,7 +451,7 @@ void mws_text_box::update_text()
    glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
    cursor_row_idx = cursor_coord.y;
    cursor_col_idx = cursor_coord.x;
-   //trx("update_text cursor_row_idx [ {} ]", cursor_row_idx);
+   //mws_println("update_text cursor_row_idx [ %d ]", cursor_row_idx);
 
    tx_vxo->clear_text();
    top_line_idx = uint32(text_offset.y / font->get_height());

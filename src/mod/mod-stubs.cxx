@@ -90,6 +90,14 @@ mws_log::mws_log() {}
 mws_sp<mws_log> mws_log::inst;
 #endif
 
+#if !MOD_RES_LD
+#include "res-ld/res-ld.hxx"
+mws_sp<res_ld> res_ld::inst() { return nullptr; }
+mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename) { return nullptr; }
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file) { return nullptr; }
+mws_sp<raw_img_data> res_ld::load_image(std::string i_filename) { return nullptr; }
+#endif
+
 #if !MOD_SND
 #include "snd/snd.hxx"
 void snd::init() { err_na(); }
