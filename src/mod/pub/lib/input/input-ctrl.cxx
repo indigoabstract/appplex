@@ -319,16 +319,16 @@ enum key_status
 };
 
 
+// there are at most KEY_COUNT different keys that we're interested in handling
+static struct { uint32 time; key_status status; } key_list[KEY_COUNT];
 uint32 key_ctrl::time_until_first_key_repeat_ms = 400;
 uint32 key_ctrl::key_repeat_threshold_ms = 50;
 const uint32 INFINITE_KEY_REPEATS = 0xffffffff;
-uint32 key_ctrl::max_key_repeat_count = 5;
-uint8 key_ctrl::keys_status[KEY_COUNT] = { KEY_IDLE };
-uint32 key_ctrl::keys_status_time[KEY_COUNT] = { 0 };
+uint32 key_ctrl::max_key_repeat_count = INFINITE_KEY_REPEATS;
 
 key_ctrl::key_ctrl()
 {
-   events_pending = false;
+   clear_keys();
 }
 
 mws_sp<key_ctrl> key_ctrl::nwi()
@@ -350,29 +350,38 @@ void key_ctrl::update()
       bool events_still_pending = false;
       auto key_released = [&](int i_idx, key_types i_key_id)
       {
-         keys_status[i_idx] = KEY_RELEASED_IDLE;
-         new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_RELEASED, i_key_id));
+         key_types key_id = pfm_main::gi()->apply_key_modifiers(i_key_id);
+
+         key_list[i_idx].status = KEY_RELEASED_IDLE;
+         new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_RELEASED, key_id));
          events_still_pending = true;
       };
 
       for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
       {
-         key_types key_id = (key_types)k;
+         key_types key_id_no_mods = (key_types)k;
+         auto& kp = key_list[k];
 
-         switch (keys_status[k])
+         switch (kp.status)
          {
          case KEY_PRESSED:
+         {
+            key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+
             new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_PRESSED, key_id));
-            keys_status[k] = KEY_FIRST_PRESSED;
+            kp.status = KEY_FIRST_PRESSED;
             events_still_pending = true;
             break;
+         }
 
          case KEY_FIRST_PRESSED:
-            if (crt_time - keys_status_time[k] > time_until_first_key_repeat_ms)
+            if (crt_time - kp.time > time_until_first_key_repeat_ms)
             {
+               key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+
                new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
-               keys_status[k] = KEY_REPEATED;
-               keys_status_time[k] = crt_time;
+               kp.status = KEY_REPEATED;
+               kp.time = crt_time;
             }
 
             events_still_pending = true;
@@ -380,12 +389,15 @@ void key_ctrl::update()
 
          case KEY_REPEATED:
          {
-            uint32 dt = crt_time - keys_status_time[k];
+            uint32 dt = crt_time - kp.time;
 
             if (dt > key_repeat_threshold_ms)
             {
+               const uint64 max_repeat_threshold_ms = (uint64)key_repeat_threshold_ms * max_key_repeat_count;
+               key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+
                // if the key repeat is past the max number of repeats for this key, force release it
-               if (max_key_repeat_count != INFINITE_KEY_REPEATS && dt > key_repeat_threshold_ms * max_key_repeat_count)
+               if (max_key_repeat_count != INFINITE_KEY_REPEATS && dt > max_repeat_threshold_ms)
                {
                   key_released(k, key_id);
                }
@@ -399,11 +411,15 @@ void key_ctrl::update()
          }
 
          case KEY_RELEASED:
+         {
+            key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+
             key_released(k, key_id);
             break;
+         }
 
          case KEY_RELEASED_IDLE:
-            keys_status[k] = KEY_IDLE;
+            kp.status = KEY_IDLE;
             break;
          }
       }
@@ -416,35 +432,41 @@ bool key_ctrl::key_is_held(key_types i_key)
 {
    mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
 
-   return keys_status[i_key] != KEY_IDLE;
+   return key_list[i_key].status != KEY_IDLE;
 }
 
-void key_ctrl::key_pressed(int i_key)
+void key_ctrl::key_pressed(key_types i_key)
 {
    mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
-   events_pending = true;
 
-   if (keys_status[i_key] != KEY_FIRST_PRESSED && keys_status[i_key] != KEY_REPEATED)
+   if (i_key > KEY_INVALID)
    {
-      keys_status[i_key] = KEY_PRESSED;
-      keys_status_time[i_key] = pfm::time::get_time_millis();
+      auto& kp = key_list[i_key];
+      events_pending = true;
+
+      if (kp.status != KEY_FIRST_PRESSED && kp.status != KEY_REPEATED)
+      {
+         kp = { pfm::time::get_time_millis(), KEY_PRESSED };
+      }
    }
 }
 
-void key_ctrl::key_released(int i_key)
+void key_ctrl::key_released(key_types i_key)
 {
    mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
-   events_pending = true;
-   keys_status[i_key] = KEY_RELEASED;
+
+   if (i_key > KEY_INVALID)
+   {
+      events_pending = true;
+      key_list[i_key].status = KEY_RELEASED;
+   }
 }
 
 void key_ctrl::clear_keys()
 {
-   for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
-   {
-      keys_status[k] = KEY_IDLE;
-      keys_status_time[k] = 0;
-   }
+   int size = sizeof(key_list);
+   memset(key_list, 0, size);
+   events_pending = false;
 }
 
 mws_sp<mws_sender> key_ctrl::sender_inst()

@@ -30,7 +30,7 @@ public:
    void resume();
    void resize_app(uint32 i_width, uint32 i_height);
    void pointer_action(mws_sp<mws_ptr_evt_base> ite);
-   void key_action(key_actions i_action_type, int i_key);
+   void key_action(key_actions i_action_type, key_types i_key);
    mws_sp<mws_mod> get_current_mod();
    void set_next_mod(mws_sp<mws_mod> i_mod);
    void destroy_app();

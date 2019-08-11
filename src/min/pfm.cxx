@@ -990,6 +990,8 @@ mws_sp<pfm_main> pfm_main::gi()
 void pfm_main::init() {}
 void pfm_main::start() {}
 void pfm_main::run() {}
+key_types pfm_main::translate_key(int i_pfm_key_id) const { return KEY_INVALID; }
+key_types pfm_main::apply_key_modifiers(key_types i_key_id) const { return KEY_INVALID; }
 float pfm_main::get_screen_scale() const { return 1.f; }
 float pfm_main::get_screen_brightness() const { return 1.f; }
 void pfm_main::set_screen_brightness(float i_brightness) {}
@@ -1016,22 +1018,22 @@ const vector<unicodestring>& pfm::params::get_app_argument_vector()
    return arg_vector;
 }
 
-void pfm::params::set_app_arguments(int iargument_count, unicodechar** iargument_vector, bool iapp_path_included)
+void pfm::params::set_app_arguments(int i_argument_count, unicodechar** i_argument_vector, bool i_app_path_included)
 {
    int idx = 0;
 
-   arg_count = iargument_count;
+   arg_count = i_argument_count;
 
-   if (iapp_path_included && arg_count > 0)
+   if (i_app_path_included && arg_count > 0)
    {
       arg_count--;
       idx = 1;
-      app_path.assign(iargument_vector[0]);
+      app_path.assign(i_argument_vector[0]);
    }
 
    for (int k = 0; k < arg_count; k++, idx++)
    {
-      arg_vector.push_back(iargument_vector[idx]);
+      arg_vector.push_back(i_argument_vector[idx]);
    }
 }
 

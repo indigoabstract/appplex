@@ -14,6 +14,72 @@
 #include <fstream>
 
 
+#define VK_BACK 8
+#define VK_TAB 9
+#define VK_CLEAR 12
+#define VK_RETURN 13
+#define VK_SHIFT 16
+#define VK_CONTROL 17
+#define VK_MENU 18
+#define VK_ESCAPE 27
+#define VK_SPACE 32
+#define VK_NUMPAD9 33
+#define VK_NUMPAD3 34
+#define VK_END 35
+#define VK_HOME 36
+#define VK_LEFT 37
+#define VK_UP 38
+#define VK_RIGHT 39
+#define VK_DOWN 40
+#define VK_INSERT 45
+#define VK_NUMPAD0 96
+#define VK_NUMPAD1 97
+#define VK_NUMPAD2 98
+#define VK_NUMPAD3 99
+#define VK_NUMPAD4 100
+#define VK_NUMPAD5 101
+#define VK_NUMPAD6 102
+#define VK_NUMPAD7 103
+#define VK_NUMPAD8 104
+#define VK_NUMPAD9 105
+#define VK_DELETE 46
+#define VK_MULTIPLY 106
+#define VK_ADD 107
+#define VK_SEPARATOR 111
+#define VK_SUBTRACT 109
+#define VK_DECIMAL 110
+#define VK_DIVIDE 111
+#define VK_F1 112
+#define VK_F2 113
+#define VK_F3 114
+#define VK_F4 115
+#define VK_F5 116
+#define VK_F6 117
+#define VK_F7 118
+#define VK_F8 119
+#define VK_F9 120
+#define VK_F10 121
+#define VK_F11 122
+#define VK_F12 123
+#define VK_OEM_1 59 // ';:' for US
+#define VK_OEM_PLUS 61 // '+' any country
+#define VK_OEM_COMMA 188 // ',' any country
+#define VK_OEM_MINUS 173 // '-' any country
+#define VK_OEM_PERIOD 190 // '.' any country
+#define VK_OEM_2 191 // '/?' for US
+#define VK_OEM_3 192 // '`~' for US
+#define VK_OEM_4 219 //  '[{' for US
+#define VK_OEM_5 220 //  '\|' for US
+#define VK_OEM_6 221 //  ']}' for US
+#define VK_OEM_7 222 //  ''"' for US
+
+
+const int shift_key_down = (1 << 0);
+const int ctrl_key_down = (1 << 1);
+const int alt_key_down = (1 << 2);
+static int mod_keys_down = 0;
+
+
 class emst_file_impl : public pfm_impl::pfm_file_impl
 {
 public:
@@ -24,7 +90,7 @@ public:
    {
       return file;
    }
-   
+
    virtual uint64 length() override
    {
       uint64 size = 0;
@@ -66,12 +132,12 @@ public:
    {
       std::string path = ppath.get_full_path();
       file = fopen(path.c_str(), i_open_mode.c_str());
-	  bool file_opened = (file != nullptr);
+      bool file_opened = (file != nullptr);
       mws_println("open_impl: opening external file %s success %d", path.c_str(), (int)file_opened);
 
       return file_opened;
    }
-   
+
    virtual void close_impl() override
    {
       if (file)
@@ -83,12 +149,12 @@ public:
 
    virtual void flush_impl() override
    {
-		if(file)
-		{
-			fflush(file);
-		}
+      if (file)
+      {
+         fflush(file);
+      }
    }
-   
+
 private:
    FILE* file = nullptr;
 };
@@ -137,6 +203,169 @@ void emst_main::start()
 void emst_main::run()
 {
    mws_mod_ctrl::inst()->update();
+}
+
+key_types emst_main::translate_key(int i_pfm_key_id) const
+{
+   // test if key is a number
+   if (i_pfm_key_id >= '0' && i_pfm_key_id <= '9')
+   {
+      int diff = i_pfm_key_id - '0';
+
+      return key_types(KEY_0 + diff);
+   }
+   // test if key is a letter
+   else if (i_pfm_key_id >= 'A' && i_pfm_key_id <= 'Z')
+   {
+      int diff = i_pfm_key_id - 'A';
+
+      return key_types(KEY_A + diff);
+   }
+
+   // none of the above, so it's a special key
+   switch (i_pfm_key_id)
+   {
+   case VK_BACK: return KEY_BACKSPACE;
+   case VK_TAB: return KEY_TAB;
+   case VK_CLEAR: return KEY_NUM5;
+   case VK_RETURN: return KEY_ENTER;
+   case VK_SHIFT: return KEY_SHIFT;
+   case VK_CONTROL: return KEY_CONTROL;
+   case VK_MENU: return KEY_ALT;
+   case VK_ESCAPE: return KEY_ESCAPE;
+   case VK_SPACE: return KEY_SPACE;
+   case VK_END: return KEY_END;
+   case VK_HOME: return KEY_HOME;
+   case VK_LEFT: return KEY_LEFT;
+   case VK_UP: return KEY_UP;
+   case VK_RIGHT: return KEY_RIGHT;
+   case VK_DOWN: return KEY_DOWN;
+   case VK_INSERT: return KEY_INSERT;
+   case VK_DELETE: return KEY_DELETE;
+   case VK_NUMPAD0: return KEY_NUM0;
+   case VK_NUMPAD1: return KEY_NUM1;
+   case VK_NUMPAD2: return KEY_NUM2;
+   case VK_NUMPAD3: return KEY_NUM3;
+   case VK_NUMPAD4: return KEY_NUM4;
+   case VK_NUMPAD5: return KEY_NUM5;
+   case VK_NUMPAD6: return KEY_NUM6;
+   case VK_NUMPAD7: return KEY_NUM7;
+   case VK_NUMPAD8: return KEY_NUM8;
+   case VK_NUMPAD9: return KEY_NUM9;
+   case VK_MULTIPLY: return KEY_NUM_MULTIPLY;
+   case VK_ADD: return KEY_NUM_ADD;
+   case VK_SUBTRACT: return KEY_NUM_SUBTRACT;
+   case VK_DECIMAL: return KEY_NUM_DECIMAL;
+   case VK_DIVIDE: return KEY_NUM_DIVIDE;
+   case VK_F1: return KEY_F1;
+   case VK_F2: return KEY_F2;
+   case VK_F3: return KEY_F3;
+   case VK_F4: return KEY_F4;
+   case VK_F5: return KEY_F5;
+   case VK_F6: return KEY_F6;
+   case VK_F7: return KEY_F7;
+   case VK_F8: return KEY_F8;
+   case VK_F9: return KEY_F9;
+   case VK_F10: return KEY_F10;
+   case VK_F11: return KEY_F11;
+   case VK_F12: return KEY_F12;
+   case VK_OEM_1: return KEY_SEMICOLON; // ';:' for US
+   case VK_OEM_PLUS: return KEY_EQUAL_SIGN; // '+' any country
+   case VK_OEM_COMMA: return  KEY_COMMA; // ',' any country
+   case VK_OEM_MINUS: return KEY_MINUS_SIGN; // '-' any country
+   case VK_OEM_PERIOD: return KEY_PERIOD; // '.' any country
+   case VK_OEM_2: return KEY_SLASH; // '/?' for US
+   case VK_OEM_3: return KEY_GRAVE_ACCENT; // '`~' for US
+   case VK_OEM_4: return KEY_LEFT_BRACKET; //  '[{' for US
+   case VK_OEM_5: return KEY_BACKSLASH; //  '\|' for US
+   case VK_OEM_6: return KEY_RIGHT_BRACKET; //  ']}' for US
+   case VK_OEM_7: return KEY_SINGLE_QUOTE; //  ''"' for US
+   }
+
+   // key was not recognized. mark as invalid
+   return KEY_INVALID;
+}
+
+key_types emst_main::apply_key_modifiers(key_types i_key_id) const
+{
+   if (i_key_id == KEY_INVALID)
+   {
+      return KEY_INVALID;
+   }
+
+   bool num_lock_active = false;
+   bool shift_held = ((mod_keys_down & shift_key_down) != 0);
+
+   if (i_key_id >= KEY_0 && i_key_id <= KEY_9)
+   {
+      if (shift_held)
+      {
+         int diff = i_key_id - KEY_0;
+
+         switch (diff)
+         {
+         case 0: return KEY_RIGHT_PARENTHESIS;
+         case 1: return KEY_EXCLAMATION;
+         case 2: return KEY_AT_SYMBOL;
+         case 3: return KEY_NUMBER_SIGN;
+         case 4: return KEY_DOLLAR_SIGN;
+         case 5: return KEY_PERCENT_SIGN;
+         case 6: return KEY_CIRCUMFLEX;
+         case 7: return KEY_AMPERSAND;
+         case 8: return KEY_ASTERISK;
+         case 9: return KEY_LEFT_PARENTHESIS;
+         }
+      }
+      else
+      {
+         return i_key_id;
+      }
+   }
+   else if (i_key_id >= KEY_A && i_key_id <= KEY_Z)
+   {
+      if (shift_held)
+      {
+         int diff = i_key_id - KEY_A;
+
+         return key_types(KEY_A_UPPER_CASE + diff);
+      }
+      else
+      {
+         return i_key_id;
+      }
+   }
+
+   switch (i_key_id)
+   {
+   case KEY_NUM0: return (num_lock_active) ? KEY_0 : KEY_INSERT;
+   case KEY_NUM1: return (num_lock_active) ? KEY_1 : KEY_END;
+   case KEY_NUM2: return (num_lock_active) ? KEY_2 : KEY_DOWN;
+   case KEY_NUM3: return (num_lock_active) ? KEY_3 : KEY_PAGE_DOWN;
+   case KEY_NUM4: return (num_lock_active) ? KEY_4 : KEY_LEFT;
+   case KEY_NUM5: return (num_lock_active) ? KEY_5 : KEY_ENTER;
+   case KEY_NUM6: return (num_lock_active) ? KEY_6 : KEY_RIGHT;
+   case KEY_NUM7: return (num_lock_active) ? KEY_7 : KEY_HOME;
+   case KEY_NUM8: return (num_lock_active) ? KEY_8 : KEY_UP;
+   case KEY_NUM9: return (num_lock_active) ? KEY_9 : KEY_PAGE_UP;
+   case KEY_NUM_MULTIPLY: return (num_lock_active) ? KEY_ASTERISK : KEY_ASTERISK;
+   case KEY_NUM_ADD: return (num_lock_active) ? KEY_PLUS_SIGN : KEY_PLUS_SIGN;
+   case KEY_NUM_SUBTRACT: return (num_lock_active) ? KEY_MINUS_SIGN : KEY_MINUS_SIGN;
+   case KEY_NUM_DECIMAL: return (num_lock_active) ? KEY_PERIOD : KEY_DEL;
+   case KEY_NUM_DIVIDE: return (num_lock_active) ? KEY_SLASH : KEY_SLASH;
+   case KEY_SEMICOLON: return (shift_held) ? KEY_COLON : KEY_SEMICOLON; // ';:' for US
+   case KEY_EQUAL_SIGN: return (shift_held) ? KEY_PLUS_SIGN : KEY_EQUAL_SIGN; // '+' any country
+   case KEY_COMMA: return (shift_held) ? KEY_LESS_THAN_SIGN : KEY_COMMA; // ',' any country
+   case KEY_MINUS_SIGN: return (shift_held) ? KEY_UNDERSCORE : KEY_MINUS_SIGN; // '-' any country
+   case KEY_PERIOD: return (shift_held) ? KEY_GREATER_THAN_SIGN : KEY_PERIOD; // '.' any country
+   case KEY_SLASH: return (shift_held) ? KEY_QUESTION_MARK : KEY_SLASH; // '/?' for US
+   case KEY_GRAVE_ACCENT: return (shift_held) ? KEY_TILDE_SIGN : KEY_GRAVE_ACCENT; // '`~' for US
+   case KEY_LEFT_BRACKET: return (shift_held) ? KEY_LEFT_BRACE : KEY_LEFT_BRACKET; //  '[{' for US
+   case KEY_BACKSLASH: return (shift_held) ? KEY_VERTICAL_BAR : KEY_BACKSLASH; //  '\|' for US
+   case KEY_RIGHT_BRACKET: return (shift_held) ? KEY_RIGHT_BRACE : KEY_RIGHT_BRACKET; //  ']}' for US
+   case KEY_SINGLE_QUOTE: return (shift_held) ? KEY_DOUBLE_QUOTE : KEY_SINGLE_QUOTE; //  ''"' for US
+   }
+
+   return i_key_id;
 }
 
 float emst_main::get_screen_dpi()const
@@ -189,43 +418,43 @@ std::string emst_main::get_timezone_id()const
 
 umf_list emst_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool is_recursive)
 {
-	if (i_plist->find(pfm::filesystem::res_idx_name) == i_plist->end())
-	{
-		umf_r& list = *i_plist;
-		mws_sp<pfm_file> index_txt = pfm_file::get_inst(std::make_shared<emst_file_impl>(pfm::filesystem::res_idx_name, i_directory));
-		std::string path = index_txt->get_full_path();
-		std::ifstream infile(path);
-		//mws_println("i_directory %s file size %d path %s", i_directory.c_str(), index_txt->length(), path.c_str());
+   if (i_plist->find(pfm::filesystem::res_idx_name) == i_plist->end())
+   {
+      umf_r& list = *i_plist;
+      mws_sp<pfm_file> index_txt = pfm_file::get_inst(std::make_shared<emst_file_impl>(pfm::filesystem::res_idx_name, i_directory));
+      std::string path = index_txt->get_full_path();
+      std::ifstream infile(path);
+      //mws_println("i_directory %s file size %d path %s", i_directory.c_str(), index_txt->length(), path.c_str());
 
-		if (infile.is_open())
-		{
-		   std::string line;
+      if (infile.is_open())
+      {
+         std::string line;
 
-		   while (std::getline(infile, line))
-		   {
-			  // trim the new line at the end
-			  line = mws_str::rtrim(line);
-			  std::string filename = mws_util::path::get_filename_from_path(line);
-			  std::string dir = mws_util::path::get_directory_from_path(line);
-			  
-			  if(!dir.empty())
-			  {
-				  dir = i_directory + "/" + dir;
-			  }
-			  else
-			  {
-				  dir = i_directory;
-			  }
-			  
-			  list[filename] = pfm_file::get_inst(std::make_shared<emst_file_impl>(filename, dir));
-		   }
+         while (std::getline(infile, line))
+         {
+            // trim the new line at the end
+            line = mws_str::rtrim(line);
+            std::string filename = mws_util::path::get_filename_from_path(line);
+            std::string dir = mws_util::path::get_directory_from_path(line);
 
-		   list[pfm::filesystem::res_idx_name] = index_txt;
-		   infile.close();
-		}
-	}
-	
-	return i_plist;
+            if (!dir.empty())
+            {
+               dir = i_directory + "/" + dir;
+            }
+            else
+            {
+               dir = i_directory;
+            }
+
+            list[filename] = pfm_file::get_inst(std::make_shared<emst_file_impl>(filename, dir));
+         }
+
+         list[pfm::filesystem::res_idx_name] = index_txt;
+         infile.close();
+      }
+   }
+
+   return i_plist;
 }
 
 bool emst_main::is_full_screen_mode()
@@ -244,22 +473,26 @@ emst_main::emst_main()
 
 EM_BOOL emst_key_down(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
 {
-   key_types key = emst_main::get_instance()->map_key(e->keyCode);
+   key_types key_id = pfm_main::gi()->translate_key(e->keyCode);
 
-   if (key != KEY_INVALID)
+   switch (key_id)
    {
-      mws_mod_ctrl::inst()->key_action(KEY_PRESS, key);
+   case KEY_SHIFT: mod_keys_down |= shift_key_down; break;
+   case KEY_CONTROL: mod_keys_down |= ctrl_key_down; break;
+   case KEY_ALT: mod_keys_down |= alt_key_down; break;
+   }
 
-      switch (key)
-      {
-      case KEY_TAB:
-      case KEY_BACKSPACE:
-      case KEY_ENTER:
-         return true;
+   mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
 
-      default:
-         return false;
-      }
+   switch (key_id)
+   {
+   case KEY_TAB:
+   case KEY_BACKSPACE:
+   case KEY_ENTER:
+   case KEY_SLASH:
+   case KEY_SINGLE_QUOTE:
+   case KEY_NUM_DIVIDE:
+      return true;
    }
 
    return false;
@@ -267,12 +500,16 @@ EM_BOOL emst_key_down(int event_type, const EmscriptenKeyboardEvent* e, void* us
 
 EM_BOOL emst_key_up(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
 {
-   key_types key = emst_main::get_instance()->map_key(e->keyCode);
+   key_types key_id = pfm_main::gi()->translate_key(e->keyCode);
 
-   if (key != KEY_INVALID)
+   switch (key_id)
    {
-      mws_mod_ctrl::inst()->key_action(KEY_RELEASE, key);
+   case KEY_SHIFT: mod_keys_down &= ~shift_key_down; break;
+   case KEY_CONTROL: mod_keys_down &= ~ctrl_key_down; break;
+   case KEY_ALT: mod_keys_down &= ~alt_key_down; break;
    }
+
+   mws_mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
 
    return false;
 }
@@ -363,8 +600,6 @@ EM_BOOL emst_touch(int event_type, const EmscriptenTouchEvent* e, void* user_dat
 
 void emst_main::setup_callbacks()
 {
-   setup_key_table();
-
    emscripten_set_keydown_callback(0, this, true, emst_key_down);
    emscripten_set_keyup_callback(0, this, true, emst_key_up);
    emscripten_set_keypress_callback(0, this, true, emst_key_press);
@@ -380,124 +615,6 @@ void emst_main::setup_callbacks()
    //emscripten_set_deviceorientation_callback(this, true, emst_device_orientation);
 }
 
-void emst_main::setup_key_table()
-{
-   for (int k = 0; k < MAX_KEY_COUNT; k++)
-   {
-      key_table[k] = KEY_INVALID;
-   }
-
-   key_table[8] = KEY_BACKSPACE;
-   key_table[9] = KEY_TAB;
-   key_table[13] = KEY_ENTER;
-   key_table[16] = KEY_SHIFT;
-   key_table[17] = KEY_CONTROL;
-   key_table[18] = KEY_ALT;
-   key_table[27] = KEY_ESCAPE;
-   key_table[32] = KEY_SPACE;
-   key_table[33] = KEY_PAGE_UP;
-   key_table[34] = KEY_PAGE_DOWN;
-   key_table[35] = KEY_END;
-   key_table[36] = KEY_HOME;
-   key_table[37] = KEY_LEFT;
-   key_table[38] = KEY_UP;
-   key_table[39] = KEY_RIGHT;
-   key_table[40] = KEY_DOWN;
-   key_table[45] = KEY_INSERT;
-   key_table[46] = KEY_DELETE;
-   key_table[48] = KEY_0;
-   key_table[49] = KEY_1;
-   key_table[50] = KEY_2;
-   key_table[51] = KEY_3;
-   key_table[52] = KEY_4;
-   key_table[53] = KEY_5;
-   key_table[54] = KEY_6;
-   key_table[55] = KEY_7;
-   key_table[56] = KEY_8;
-   key_table[57] = KEY_9;
-   key_table[59] = KEY_SEMICOLON;
-   key_table[64] = KEY_EQUAL_SIGN;
-   key_table[65] = KEY_A;
-   key_table[66] = KEY_B;
-   key_table[67] = KEY_C;
-   key_table[68] = KEY_D;
-   key_table[69] = KEY_E;
-   key_table[70] = KEY_F;
-   key_table[71] = KEY_G;
-   key_table[72] = KEY_H;
-   key_table[73] = KEY_I;
-   key_table[74] = KEY_J;
-   key_table[75] = KEY_K;
-   key_table[76] = KEY_L;
-   key_table[77] = KEY_M;
-   key_table[78] = KEY_N;
-   key_table[79] = KEY_O;
-   key_table[80] = KEY_P;
-   key_table[81] = KEY_Q;
-   key_table[82] = KEY_R;
-   key_table[83] = KEY_S;
-   key_table[84] = KEY_T;
-   key_table[85] = KEY_U;
-   key_table[86] = KEY_V;
-   key_table[87] = KEY_W;
-   key_table[88] = KEY_X;
-   key_table[89] = KEY_Y;
-   key_table[90] = KEY_Z;
-   key_table[96] = KEY_NUM0;
-   key_table[97] = KEY_NUM1;
-   key_table[98] = KEY_NUM2;
-   key_table[99] = KEY_NUM3;
-   key_table[100] = KEY_NUM4;
-   key_table[101] = KEY_NUM5;
-   key_table[102] = KEY_NUM6;
-   key_table[103] = KEY_NUM7;
-   key_table[104] = KEY_NUM8;
-   key_table[105] = KEY_NUM9;
-   key_table[106] = KEY_NUM_MULTIPLY;
-   key_table[107] = KEY_NUM_ADD;
-   key_table[109] = KEY_NUM_SUBTRACT;
-   key_table[110] = KEY_NUM_DECIMAL;
-   key_table[111] = KEY_NUM_DIVIDE;
-   key_table[112] = KEY_F1;
-   key_table[113] = KEY_F2;
-   key_table[114] = KEY_F3;
-   key_table[115] = KEY_F4;
-   key_table[116] = KEY_F5;
-   key_table[117] = KEY_F6;
-   key_table[118] = KEY_F7;
-   key_table[119] = KEY_F8;
-   key_table[120] = KEY_F9;
-   key_table[121] = KEY_F10;
-   key_table[122] = KEY_F11;
-   key_table[123] = KEY_F12;
-   key_table[144] = KEY_NUM_LOCK;
-   key_table[144] = KEY_NUM_LOCK;
-   key_table[145] = KEY_SCROLL_LOCK;
-   key_table[173] = KEY_MINUS_SIGN;
-   key_table[186] = KEY_SEMICOLON;
-   key_table[187] = KEY_EQUAL_SIGN;
-   key_table[188] = KEY_COMMA;
-   key_table[189] = KEY_MINUS_SIGN;
-   key_table[190] = KEY_PERIOD;
-   key_table[191] = KEY_SLASH;
-   key_table[192] = KEY_GRAVE_ACCENT;
-   key_table[219] = KEY_LEFT_BRACKET;
-   key_table[220] = KEY_BACKSLASH;
-   key_table[221] = KEY_RIGHT_BRACKET;
-   key_table[222] = KEY_TILDE_SIGN;
-}
-
-key_types emst_main::map_key(unsigned long i_key_code) const
-{
-   if (i_key_code < MAX_KEY_COUNT)
-   {
-      return key_table[i_key_code];
-   }
-
-   return KEY_INVALID;
-}
-
-
 void report_result(int result)
 {
    if (result == 0) {
@@ -511,8 +628,8 @@ void report_result(int result)
 #endif
 }
 
-static inline const char *emscripten_event_type_to_string(int event_type) {
-   const char *events[] = { "(invalid)", "(none)", "keypress", "keydown", "keyup", "click", "mousedown", "mouseup", "dblclick", "mousemove", "wheel", "resize",
+static inline const char* emscripten_event_type_to_string(int event_type) {
+   const char* events[] = { "(invalid)", "(none)", "keypress", "keydown", "keyup", "click", "mousedown", "mouseup", "dblclick", "mousemove", "wheel", "resize",
      "scroll", "blur", "focus", "focusin", "focusout", "deviceorientation", "devicemotion", "orientationchange", "fullscreenchange", "pointerlockchange",
      "visibilitychange", "touchstart", "touchend", "touchmove", "touchcancel", "gamepadconnected", "gamepaddisconnected", "beforeunload",
      "batterychargingchange", "batterylevelchange", "webglcontextlost", "webglcontextrestored", "(invalid)" };
@@ -522,7 +639,7 @@ static inline const char *emscripten_event_type_to_string(int event_type) {
    return events[event_type];
 }
 
-const char *emscripten_result_to_string(EMSCRIPTEN_RESULT result) {
+const char* emscripten_result_to_string(EMSCRIPTEN_RESULT result) {
    if (result == EMSCRIPTEN_RESULT_SUCCESS) return "EMSCRIPTEN_RESULT_SUCCESS";
    if (result == EMSCRIPTEN_RESULT_DEFERRED) return "EMSCRIPTEN_RESULT_DEFERRED";
    if (result == EMSCRIPTEN_RESULT_NOT_SUPPORTED) return "EMSCRIPTEN_RESULT_NOT_SUPPORTED";

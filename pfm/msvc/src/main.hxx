@@ -31,6 +31,8 @@ public:
    virtual void init() override;
    virtual void start() override;
    virtual void run() override;
+   virtual key_types translate_key(int i_pfm_key_id) const override;
+   virtual key_types apply_key_modifiers(key_types i_key_id) const override;
    virtual float get_screen_dpi()const override;
    virtual void flip_screen() override;
    virtual void write_text(const char* text)const override;

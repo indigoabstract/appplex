@@ -238,6 +238,10 @@ public:
    virtual void init();
    virtual void start();
    virtual void run();
+   // translate a key from the platform encoding into the appplex encoding
+   virtual key_types translate_key(int i_pfm_key_id) const;
+   // apply any modifiers like shift, ctrl, caps, num lock etc to get the final key value
+   virtual key_types apply_key_modifiers(key_types i_key_id) const;
    virtual float get_screen_scale() const;
    virtual float get_screen_brightness() const;
    virtual void set_screen_brightness(float i_brightness);

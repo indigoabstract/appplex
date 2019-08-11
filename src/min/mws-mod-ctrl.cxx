@@ -246,7 +246,7 @@ void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
    }
 }
 
-void mws_mod_ctrl::key_action(key_actions i_action_type, int i_key)
+void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
 {
    if (mod_input_on)
    {

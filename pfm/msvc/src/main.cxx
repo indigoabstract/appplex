@@ -165,7 +165,6 @@ public:
 ATOM				register_new_window_class(HINSTANCE hinstance);
 HWND				create_app_window(HINSTANCE, RECT& iclient_rect);
 LRESULT CALLBACK	wnd_proc(HWND, UINT, WPARAM, LPARAM);
-key_types			get_key(int key);
 
 
 mws_sp<msvc_main> msvc_main::instance;
@@ -230,6 +229,169 @@ void msvc_main::start()
 void msvc_main::run()
 {
    mws_mod_ctrl::inst()->update();
+}
+
+key_types msvc_main::translate_key(int i_pfm_key_id) const
+{
+   // test if key is a number
+   if (i_pfm_key_id >= '0' && i_pfm_key_id <= '9')
+   {
+      int diff = i_pfm_key_id - '0';
+
+      return key_types(KEY_0 + diff);
+   }
+   // test if key is a letter
+   else if (i_pfm_key_id >= 'A' && i_pfm_key_id <= 'Z')
+   {
+      int diff = i_pfm_key_id - 'A';
+
+      return key_types(KEY_A + diff);
+   }
+
+   // none of the above, so it's a special key
+   switch (i_pfm_key_id)
+   {
+   case VK_BACK: return KEY_BACKSPACE;
+   case VK_TAB: return KEY_TAB;
+   case VK_CLEAR: return KEY_NUM5;
+   case VK_RETURN: return KEY_ENTER;
+   case VK_SHIFT: return KEY_SHIFT;
+   case VK_CONTROL: return KEY_CONTROL;
+   case VK_MENU: return KEY_ALT;
+   case VK_ESCAPE: return KEY_ESCAPE;
+   case VK_SPACE: return KEY_SPACE;
+   case VK_END: return KEY_END;
+   case VK_HOME: return KEY_HOME;
+   case VK_LEFT: return KEY_LEFT;
+   case VK_UP: return KEY_UP;
+   case VK_RIGHT: return KEY_RIGHT;
+   case VK_DOWN: return KEY_DOWN;
+   case VK_INSERT: return KEY_INSERT;
+   case VK_DELETE: return KEY_DELETE;
+   case VK_NUMPAD0: return KEY_NUM0;
+   case VK_NUMPAD1: return KEY_NUM1;
+   case VK_NUMPAD2: return KEY_NUM2;
+   case VK_NUMPAD3: return KEY_NUM3;
+   case VK_NUMPAD4: return KEY_NUM4;
+   case VK_NUMPAD5: return KEY_NUM5;
+   case VK_NUMPAD6: return KEY_NUM6;
+   case VK_NUMPAD7: return KEY_NUM7;
+   case VK_NUMPAD8: return KEY_NUM8;
+   case VK_NUMPAD9: return KEY_NUM9;
+   case VK_MULTIPLY: return KEY_NUM_MULTIPLY;
+   case VK_ADD: return KEY_NUM_ADD;
+   case VK_SUBTRACT: return KEY_NUM_SUBTRACT;
+   case VK_DECIMAL: return KEY_NUM_DECIMAL;
+   case VK_DIVIDE: return KEY_NUM_DIVIDE;
+   case VK_F1: return KEY_F1;
+   case VK_F2: return KEY_F2;
+   case VK_F3: return KEY_F3;
+   case VK_F4: return KEY_F4;
+   case VK_F5: return KEY_F5;
+   case VK_F6: return KEY_F6;
+   case VK_F7: return KEY_F7;
+   case VK_F8: return KEY_F8;
+   case VK_F9: return KEY_F9;
+   case VK_F10: return KEY_F10;
+   case VK_F11: return KEY_F11;
+   case VK_F12: return KEY_F12;
+   case VK_OEM_1: return KEY_SEMICOLON; // ';:' for US
+   case VK_OEM_PLUS: return KEY_EQUAL_SIGN; // '+' any country
+   case VK_OEM_COMMA: return  KEY_COMMA; // ',' any country
+   case VK_OEM_MINUS: return KEY_MINUS_SIGN; // '-' any country
+   case VK_OEM_PERIOD: return KEY_PERIOD; // '.' any country
+   case VK_OEM_2: return KEY_SLASH; // '/?' for US
+   case VK_OEM_3: return KEY_GRAVE_ACCENT; // '`~' for US
+   case VK_OEM_4: return KEY_LEFT_BRACKET; //  '[{' for US
+   case VK_OEM_5: return KEY_BACKSLASH; //  '\|' for US
+   case VK_OEM_6: return KEY_RIGHT_BRACKET; //  ']}' for US
+   case VK_OEM_7: return KEY_SINGLE_QUOTE; //  ''"' for US
+   }
+
+   // key was not recognized. mark as invalid
+   return KEY_INVALID;
+}
+
+key_types msvc_main::apply_key_modifiers(key_types i_key_id) const
+{
+   if (i_key_id == KEY_INVALID)
+   {
+      return KEY_INVALID;
+   }
+
+   bool num_lock_active = false;
+   bool shift_held = ((mod_keys_down & shift_key_down) != 0);
+
+   if (i_key_id >= KEY_0 && i_key_id <= KEY_9)
+   {
+      if (shift_held)
+      {
+         int diff = i_key_id - KEY_0;
+
+         switch (diff)
+         {
+         case 0: return KEY_RIGHT_PARENTHESIS;
+         case 1: return KEY_EXCLAMATION;
+         case 2: return KEY_AT_SYMBOL;
+         case 3: return KEY_NUMBER_SIGN;
+         case 4: return KEY_DOLLAR_SIGN;
+         case 5: return KEY_PERCENT_SIGN;
+         case 6: return KEY_CIRCUMFLEX;
+         case 7: return KEY_AMPERSAND;
+         case 8: return KEY_ASTERISK;
+         case 9: return KEY_LEFT_PARENTHESIS;
+         }
+      }
+      else
+      {
+         return i_key_id;
+      }
+   }
+   else if (i_key_id >= KEY_A && i_key_id <= KEY_Z)
+   {
+      if (shift_held)
+      {
+         int diff = i_key_id - KEY_A;
+
+         return key_types(KEY_A_UPPER_CASE + diff);
+      }
+      else
+      {
+         return i_key_id;
+      }
+   }
+
+   switch (i_key_id)
+   {
+   case KEY_NUM0: return (num_lock_active) ? KEY_0 : KEY_INSERT;
+   case KEY_NUM1: return (num_lock_active) ? KEY_1 : KEY_END;
+   case KEY_NUM2: return (num_lock_active) ? KEY_2 : KEY_DOWN;
+   case KEY_NUM3: return (num_lock_active) ? KEY_3 : KEY_PAGE_DOWN;
+   case KEY_NUM4: return (num_lock_active) ? KEY_4 : KEY_LEFT;
+   case KEY_NUM5: return (num_lock_active) ? KEY_5 : KEY_ENTER;
+   case KEY_NUM6: return (num_lock_active) ? KEY_6 : KEY_RIGHT;
+   case KEY_NUM7: return (num_lock_active) ? KEY_7 : KEY_HOME;
+   case KEY_NUM8: return (num_lock_active) ? KEY_8 : KEY_UP;
+   case KEY_NUM9: return (num_lock_active) ? KEY_9 : KEY_PAGE_UP;
+   case KEY_NUM_MULTIPLY: return (num_lock_active) ? KEY_ASTERISK : KEY_ASTERISK;
+   case KEY_NUM_ADD: return (num_lock_active) ? KEY_PLUS_SIGN : KEY_PLUS_SIGN;
+   case KEY_NUM_SUBTRACT: return (num_lock_active) ? KEY_MINUS_SIGN : KEY_MINUS_SIGN;
+   case KEY_NUM_DECIMAL: return (num_lock_active) ? KEY_PERIOD : KEY_DEL;
+   case KEY_NUM_DIVIDE: return (num_lock_active) ? KEY_SLASH : KEY_SLASH;
+   case KEY_SEMICOLON: return (shift_held) ? KEY_COLON : KEY_SEMICOLON; // ';:' for US
+   case KEY_EQUAL_SIGN: return (shift_held) ? KEY_PLUS_SIGN : KEY_EQUAL_SIGN; // '+' any country
+   case KEY_COMMA: return (shift_held) ? KEY_LESS_THAN_SIGN : KEY_COMMA; // ',' any country
+   case KEY_MINUS_SIGN: return (shift_held) ? KEY_UNDERSCORE : KEY_MINUS_SIGN; // '-' any country
+   case KEY_PERIOD: return (shift_held) ? KEY_GREATER_THAN_SIGN : KEY_PERIOD; // '.' any country
+   case KEY_SLASH: return (shift_held) ? KEY_QUESTION_MARK : KEY_SLASH; // '/?' for US
+   case KEY_GRAVE_ACCENT: return (shift_held) ? KEY_TILDE_SIGN : KEY_GRAVE_ACCENT; // '`~' for US
+   case KEY_LEFT_BRACKET: return (shift_held) ? KEY_LEFT_BRACE : KEY_LEFT_BRACKET; //  '[{' for US
+   case KEY_BACKSLASH: return (shift_held) ? KEY_VERTICAL_BAR : KEY_BACKSLASH; //  '\|' for US
+   case KEY_RIGHT_BRACKET: return (shift_held) ? KEY_RIGHT_BRACE : KEY_RIGHT_BRACKET; //  ']}' for US
+   case KEY_SINGLE_QUOTE: return (shift_held) ? KEY_DOUBLE_QUOTE : KEY_SINGLE_QUOTE; //  ''"' for US
+   }
+
+   return i_key_id;
 }
 
 float msvc_main::get_screen_dpi()const
@@ -744,20 +906,20 @@ int msvc_main::win_main_loop()
 #else
                SwapBuffers(hdc_window);
 #endif
-         }
+            }
             else
             {
                disable_paint = false;
             }
-      }
+         }
 
          next_update_time = current_time + timer_interval;
-   }
+      }
       else
       {
          Sleep(15);
       }
-}
+   }
 
    if (!IsWindowVisible(hwnd))
       // remove the tray icon
@@ -1119,7 +1281,7 @@ ATOM register_new_window_class(HINSTANCE hinstance)
    return RegisterClassEx(&wcex);
 }
 
-HWND create_app_window(HINSTANCE hinstance, RECT & iclient_rect)
+HWND create_app_window(HINSTANCE hinstance, RECT& iclient_rect)
 // creates the main window
 {
    //	HWND hWnd;
@@ -1351,21 +1513,13 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYDOWN:
    case WM_SYSKEYDOWN:
    {
-      key_types key_id = get_key(wparam);
+      key_types key_id = app->translate_key(wparam);
 
       switch (wparam)
       {
-      case VK_SHIFT:
-         mod_keys_down |= shift_key_down;
-         break;
-
-      case VK_CONTROL:
-         mod_keys_down |= ctrl_key_down;
-         break;
-
-      case VK_MENU:
-         mod_keys_down |= alt_key_down;
-         break;
+      case VK_SHIFT: mod_keys_down |= shift_key_down; break;
+      case VK_CONTROL: mod_keys_down |= ctrl_key_down; break;
+      case VK_MENU: mod_keys_down |= alt_key_down; break;
       }
 
       mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
@@ -1376,7 +1530,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYUP:
    case WM_SYSKEYUP:
    {
-      key_types key_id = get_key(wparam);
+      key_types key_id = app->translate_key(wparam);
 
       mws_mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
 
@@ -1388,17 +1542,9 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
       switch (wparam)
       {
-      case VK_SHIFT:
-         mod_keys_down &= ~shift_key_down;
-         break;
-
-      case VK_CONTROL:
-         mod_keys_down &= ~ctrl_key_down;
-         break;
-
-      case VK_MENU:
-         mod_keys_down &= ~alt_key_down;
-         break;
+      case VK_SHIFT: mod_keys_down &= ~shift_key_down; break;
+      case VK_CONTROL: mod_keys_down &= ~ctrl_key_down; break;
+      case VK_MENU: mod_keys_down &= ~alt_key_down; break;
       }
 
       return 0;
@@ -1437,96 +1583,6 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
    return DefWindowProc(hwnd, message, wparam, lparam);
 }
-
-
-key_types get_key(int i_key)
-{
-   bool shift_held = ((mod_keys_down & shift_key_down) != 0);
-
-   if (i_key >= '0' && i_key <= '9')
-   {
-      int diff = i_key - '0';
-
-      if (shift_held)
-      {
-         switch (diff)
-         {
-         case 1: return KEY_EXCLAMATION;
-         case 2: return KEY_AT_SYMBOL;
-         case 3: return KEY_NUMBER_SIGN;
-         case 4: return KEY_DOLLAR_SIGN;
-         case 5: return KEY_PERCENT_SIGN;
-         case 6: return KEY_CIRCUMFLEX;
-         case 7: return KEY_AMPERSAND;
-         case 8: return KEY_ASTERISK;
-         case 9: return KEY_LEFT_PARENTHESIS;
-         case 0: return KEY_RIGHT_PARENTHESIS;
-         }
-      }
-      else
-      {
-         return key_types(KEY_0 + diff);
-      }
-   }
-   else if (i_key >= 'A' && i_key <= 'Z')
-   {
-      int diff = i_key - 'A';
-
-      if (shift_held)
-      {
-         return key_types(KEY_A_UPPER_CASE + diff);
-      }
-      else
-      {
-         return key_types(KEY_A + diff);
-      }
-   }
-
-   switch (i_key)
-   {
-   case VK_BACK: return KEY_BACKSPACE;
-   case VK_TAB: return KEY_TAB;
-   case VK_RETURN: return KEY_ENTER;
-   case VK_SHIFT: return KEY_SHIFT;
-   case VK_CONTROL: return KEY_CONTROL;
-   case VK_MENU: return KEY_ALT;
-   case VK_ESCAPE: return KEY_ESCAPE;
-   case VK_SPACE: return KEY_SPACE;
-   case VK_END: return KEY_END;
-   case VK_HOME: return KEY_HOME;
-   case VK_LEFT: return KEY_LEFT;
-   case VK_UP: return KEY_UP;
-   case VK_RIGHT: return KEY_RIGHT;
-   case VK_DOWN: return KEY_DOWN;
-   case VK_DELETE: return KEY_DELETE;
-   case VK_F1: return KEY_F1;
-   case VK_F2: return KEY_F2;
-   case VK_F3: return KEY_F3;
-   case VK_F4: return KEY_F4;
-   case VK_F5: return KEY_F5;
-   case VK_F6: return KEY_F6;
-   case VK_F7: return KEY_F7;
-   case VK_F8: return KEY_F8;
-   case VK_F9: return KEY_F9;
-   case VK_F10: return KEY_F10;
-   case VK_F11: return KEY_F11;
-   case VK_F12: return KEY_F12;
-   case VK_OEM_1: return (shift_held) ? KEY_COLON : KEY_SEMICOLON; // ';:' for US
-   case VK_OEM_PLUS: return (shift_held) ? KEY_PLUS_SIGN : KEY_EQUAL_SIGN; // '+' any country
-   case VK_OEM_COMMA: return (shift_held) ? KEY_LESS_THAN_SIGN : KEY_COMMA; // ',' any country
-   case VK_OEM_MINUS: return (shift_held) ? KEY_UNDERSCORE : KEY_MINUS_SIGN; // '-' any country
-   case VK_OEM_PERIOD: return (shift_held) ? KEY_GREATER_THAN_SIGN : KEY_PERIOD; // '.' any country
-   case VK_OEM_2: return (shift_held) ? KEY_QUESTION_MARK : KEY_SLASH; // '/?' for US
-   case VK_OEM_3: return (shift_held) ? KEY_TILDE_SIGN : KEY_GRAVE_ACCENT; // '`~' for US
-   case VK_OEM_4: return (shift_held) ? KEY_LEFT_BRACE : KEY_LEFT_BRACKET; //  '[{' for US
-   case VK_OEM_5: return (shift_held) ? KEY_VERTICAL_BAR : KEY_BACKSLASH; //  '\|' for US
-   case VK_OEM_6: return (shift_held) ? KEY_RIGHT_BRACE : KEY_RIGHT_BRACKET; //  ']}' for US
-   case VK_OEM_7: return (shift_held) ? KEY_DOUBLE_QUOTE : KEY_SINGLE_QUOTE; //  ''"' for US
-   }
-
-   return KEY_INVALID;
-}
-
 
 int mws_is_gl_extension_supported(const char* i_extension)
 {

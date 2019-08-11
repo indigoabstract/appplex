@@ -130,8 +130,8 @@ public:
 
    void update();
    bool key_is_held(key_types i_key);
-   void key_pressed(int i_key);
-   void key_released(int i_key);
+   void key_pressed(key_types i_key);
+   void key_released(key_types i_key);
    // resets all keys to the default [ KEY_IDLE, 0 ms ]
    void clear_keys();
 
@@ -141,11 +141,9 @@ private:
    virtual mws_sp<mws_sender> sender_inst();
    void new_key_event(mws_sp<mws_key_evt> i_ke);
 
-   bool events_pending;
+   bool events_pending = false;
    // common for all instances
    static uint32 time_until_first_key_repeat_ms;
    static uint32 key_repeat_threshold_ms;
    static uint32 max_key_repeat_count;
-   static uint8 keys_status[KEY_COUNT];
-   static uint32 keys_status_time[KEY_COUNT];
 };
