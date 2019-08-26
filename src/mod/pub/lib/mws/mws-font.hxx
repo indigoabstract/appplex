@@ -8,6 +8,7 @@ class gfx_color;
 class mws_font_impl;
 class font_cache;
 class font_db_impl;
+class mws_dim;
 
 
 class mws_font : public enable_shared_from_this < mws_font >
@@ -15,6 +16,8 @@ class mws_font : public enable_shared_from_this < mws_font >
 public:
    static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, float i_size = 0.f);
    static mws_sp<mws_font> nwi(float i_size, const std::string& i_font_path = "");
+   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height);
+   static mws_sp<mws_font> nwi(const std::string& i_font_path, const mws_dim& i_height);
    mws_sp<mws_font> get_inst();
    const std::string& get_file_name()const;
    const std::string& get_full_path()const;

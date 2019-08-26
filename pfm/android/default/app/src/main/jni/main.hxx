@@ -13,6 +13,8 @@ public:
 	virtual ~android_main();
 	static mws_sp<android_main> get_instance();
 	static mws_sp<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir);
+    virtual key_types translate_key(int i_pfm_key_id) const override;
+    virtual key_types apply_key_modifiers_impl(key_types i_key_id) const override;
     virtual float get_screen_brightness() const override;
     virtual void set_screen_brightness(float i_brightness) override;
     virtual float get_screen_dpi()const override;

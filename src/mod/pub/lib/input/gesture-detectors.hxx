@@ -68,6 +68,8 @@ public:
    bool detect_helper(mws_sp<mws_ptr_evt> evt);
    gesture_state detect(const mws_sp<mws_ptr_evt> new_event);
    gesture_state reset();
+   glm::vec2 get_first_press_pos()const { return first_press_pos; }
+   glm::vec2 get_second_press_pos() const { return second_press_pos; }
 
 private:
    enum class detector_state

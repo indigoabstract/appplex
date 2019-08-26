@@ -791,20 +791,20 @@ void mws_mod::on_resume()
 {
 }
 
-void mws_mod::receive(mws_sp<mws_dp> idp)
+void mws_mod::receive(mws_sp<mws_dp> i_dp)
 {
    if (mod_input_on)
    {
       if (mod_mws_on)
       {
-         send(mws_root, idp);
+         send(mws_root, i_dp);
       }
 
-      if (!idp->is_processed())
+      if (!i_dp->is_processed())
       {
-         if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
          {
-            mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
+            mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
             if (ke->get_type() != mws_key_evt::KE_RELEASED)
             {
@@ -917,6 +917,7 @@ void mws_mod::base_init()
          mws_root->init();
          init_mws();
          mws_root->init_subobj();
+         post_init_mws();
       }
 
 #endif
@@ -943,9 +944,8 @@ void mws_mod::on_destroy()
    }
 }
 
-void mws_mod::init_mws()
-{
-}
+void mws_mod::init_mws() {}
+void mws_mod::post_init_mws() {}
 
 /**
 * Called on entering the mws_mod.
@@ -1178,18 +1178,18 @@ void mws_mod_list::on_resize()
    }
 }
 
-void mws_mod_list::receive(mws_sp<mws_dp> idp)
+void mws_mod_list::receive(mws_sp<mws_dp> i_dp)
 {
    if (mod_input_on)
    {
-      if (!idp->is_processed() && idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+      if (!i_dp->is_processed() && i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
       {
-         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       }
 
-      if (!idp->is_processed())
+      if (!i_dp->is_processed())
       {
-         mws_mod::receive(idp);
+         mws_mod::receive(i_dp);
       }
    }
 }

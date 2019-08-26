@@ -6,6 +6,7 @@
 #include "min.hxx"
 #include "gfx.hxx"
 #include "snd/snd.hxx"
+#include "mws-vkb/mws-vkb.hxx"
 #include "mod-list.hxx"
 #include <cstdlib>
 
@@ -254,15 +255,24 @@ void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
 
       if (u)
       {
-         switch (i_action_type)
+         if (mod_mws_vkb_on)
          {
-         case KEY_PRESS:
-            u->key_ctrl_inst->key_pressed(i_key);
-            break;
+            mws_sp<mws_vkb> vkb = mws_vkb::gi();
 
-         case KEY_RELEASE:
-            u->key_ctrl_inst->key_released(i_key);
-            break;
+            // disable the physical keyboard when the virtual one is visible
+            if (!(vkb && vkb->is_visible()))
+            {
+               switch (i_action_type)
+               {
+               case KEY_PRESS:
+                  u->key_ctrl_inst->key_pressed(i_key);
+                  break;
+
+               case KEY_RELEASE:
+                  u->key_ctrl_inst->key_released(i_key);
+                  break;
+               }
+            }
          }
       }
    }

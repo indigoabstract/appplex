@@ -5,6 +5,7 @@
 #if defined MOD_FONTS
 
 #include "font-db.hxx"
+#include "mws.hxx"
 #include "mws-font.hxx"
 #include "min.hxx"
 #include <glm/inc.hpp>
@@ -24,7 +25,7 @@ font_glyph::font_glyph()
    glyph = nullptr;
 }
 
-bool font_glyph::is_valid()
+bool font_glyph::is_valid() const
 {
    return glyph != nullptr;
 }
@@ -261,11 +262,18 @@ public:
 
    mws_sp<std::string> get_db_font_name(const std::string& i_font_name)
    {
-      mws_sp<std::string> fn = font_name_ht[i_font_name];
+      mws_sp<std::string> fn;
+      auto it = font_name_ht.find(i_font_name);
 
-      if (!fn)
+      if (it != font_name_ht.end())
       {
-         fn = font_name_ht[i_font_name] = mws_sp<std::string>(new std::string(i_font_name));
+         fn = it->second.font_name;
+      }
+      else
+      {
+         font_info fi;
+         fn = fi.font_name = std::make_shared<std::string>(i_font_name);
+         font_name_ht[i_font_name] = fi;
       }
 
       return fn;
@@ -374,18 +382,21 @@ public:
             }
          }
 
-         for (int k = 0; k < len; k++)
+         if (!reload_atlas)
          {
-            wchar_t c = i_text[k];
-            font_glyph glyph = fnt_cache->get_glyph_at(c);
-
-            if (!glyph.is_valid())
+            for (int k = 0; k < len; k++)
             {
-               glyph = texture_font_get_glyph(tex_font, c);
-               fnt_cache->set_glyph_at(glyph, c);
-            }
+               wchar_t c = i_text[k];
+               font_glyph glyph = fnt_cache->get_glyph_at(c);
 
-            glyph_vect.push_back(glyph);
+               if (!glyph.is_valid())
+               {
+                  glyph = texture_font_get_glyph(tex_font, c);
+                  fnt_cache->set_glyph_at(glyph, c);
+               }
+
+               glyph_vect.push_back(glyph);
+            }
          }
 
          if (!ext_tex_atlas_ref)
@@ -399,12 +410,21 @@ public:
    }
 
 public:
+   struct font_info
+   {
+      mws_sp<std::string> font_name;
+      mws_pt min_height_pt;
+      mws_px min_height_px;
+      mws_pt max_height_pt;
+      mws_px max_height_px;
+   };
+
    texture_atlas_t * tex_atlas = nullptr;
    mws_sp<gfx_shader> text_shader;
    mws_sp<gfx_tex> ext_tex_atlas_ref;
    std::vector<font_glyph> glyph_vect;
-   std::unordered_map<uint64, mws_sp<font_cache> > font_size_ht;
-   std::unordered_map<std::string, mws_sp<std::string> > font_name_ht;
+   std::unordered_map<uint64, mws_sp<font_cache>> font_size_ht;
+   std::unordered_map<std::string, font_info> font_name_ht;
    // hold weak ref to font data so the same font with different sizes can use the same font data.
    // this way, when all sizes/instances of particular font are deleted, the common font data is also deleted.
    std::unordered_map<std::string, mws_wp<std::vector<uint8>>> font_data_by_path_ht;
@@ -562,6 +582,58 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
    return pen;
 }
 
+void font_db::store_font_height(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px, const mws_pt& i_max_height_pt, const mws_px& i_max_height_px)
+{
+   std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
+   auto& ht = p->font_name_ht;
+   auto it = ht.find(font_name);
+
+   if (it != ht.end())
+   {
+      font_db_impl::font_info& fi = it->second;
+
+      fi.min_height_pt = i_min_height_pt;
+      fi.min_height_px = i_min_height_px;
+      fi.max_height_pt = i_max_height_pt;
+      fi.max_height_px = i_max_height_px;
+   }
+   else
+   {
+      font_db_impl::font_info fi;
+
+      fi.font_name = std::make_shared<std::string>(font_name);
+      fi.min_height_pt = i_min_height_pt;
+      fi.min_height_px = i_min_height_px;
+      fi.max_height_pt = i_max_height_pt;
+      fi.max_height_px = i_max_height_px;
+      ht[font_name] = fi;
+   }
+}
+
+void font_db::load_font_height(const std::string& i_font_path, mws_pt& o_min_height_pt, mws_px& o_min_height_px, mws_pt& o_max_height_pt, mws_px& o_max_height_px)
+{
+   std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
+   auto& ht = p->font_name_ht;
+   auto it = ht.find(font_name);
+
+   if (it != ht.end())
+   {
+      font_db_impl::font_info& fi = it->second;
+
+      o_min_height_pt = fi.min_height_pt;
+      o_min_height_px = fi.min_height_px;
+      o_max_height_pt = fi.max_height_pt;
+      o_max_height_px = fi.max_height_px;
+   }
+   else
+   {
+      o_min_height_pt = mws_pt(0);
+      o_min_height_px = mws_px(0);
+      o_max_height_pt = mws_pt(0);
+      o_max_height_px = mws_px(0);
+   }
+}
+
 font_db::font_db()
 {
    p = mws_sp<font_db_impl>(new font_db_impl());
@@ -621,6 +693,9 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
 {
    return glm::vec2(i_text.length() * get_height(i_font) / 2, get_height(i_font));
 }
+
+void font_db::store_font_height(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px, const mws_pt& i_max_height_pt, const mws_px& i_max_height_px) {}
+void font_db::load_font_height(const std::string& i_font_path, mws_pt& i_min_height_pt, mws_px& i_min_height_px, mws_pt& i_max_height_pt, mws_px& i_max_height_px) {}
 
 #endif
 

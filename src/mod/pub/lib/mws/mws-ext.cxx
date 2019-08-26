@@ -6,10 +6,10 @@
 using std::string;
 
 
-mws_list_menu_item::mws_list_menu_item(string idisplay, string iid)
+mws_list_menu_item::mws_list_menu_item(string idisplay, string i_id)
 {
    display = idisplay;
-   id = iid;
+   id = i_id;
 
    if (id.length() == 0)
    {
@@ -93,19 +93,19 @@ mws_list_menu_page::mws_list_menu_page()
 {
 }
 
-mws_sp<mws_list_menu_page> mws_list_menu_page::nwi(mws_sp<mws_page_tab> iparent, string iid)
+mws_sp<mws_list_menu_page> mws_list_menu_page::nwi(mws_sp<mws_page_tab> i_parent, string i_id)
 {
    auto u = mws_sp<mws_list_menu_page>(new mws_list_menu_page());
-   iparent->add_page(u);
-   u->set_id(iid);
+   i_parent->add_page(u);
+   u->set_id(i_id);
    u->item_list = mws_list::nwi();
    u->item_list->set_model(mws_sp<mws_list_model>(new mws_list_menu_model()));
    return u;
 }
 
-void mws_list_menu_page::receive(mws_sp<mws_dp> idp)
+void mws_list_menu_page::receive(mws_sp<mws_dp> i_dp)
 {
-   mws_page::receive(idp);
+   mws_page::receive(i_dp);
 }
 
 mws_sp<mws_list_menu_model> mws_list_menu_page::get_list_menu_model()

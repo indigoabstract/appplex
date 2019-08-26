@@ -75,6 +75,7 @@ int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #if !MOD_MWS_VKB
 #include "mws-vkb/mws-vkb.hxx"
 mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
+key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const { return KEY_INVALID; }
 #endif
 
 #if !MOD_OMNIRECALL

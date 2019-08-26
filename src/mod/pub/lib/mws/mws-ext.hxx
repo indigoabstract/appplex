@@ -6,7 +6,7 @@
 class mws_list_menu_item
 {
 public:
-   mws_list_menu_item(std::string idisplay, std::string iid = "");
+   mws_list_menu_item(std::string idisplay, std::string i_id = "");
    mws_list_menu_item(std::string idisplay, mws_sp<mws_page> ipage);
    virtual ~mws_list_menu_item() {}
 
@@ -43,9 +43,9 @@ class mws_list_menu_page : public mws_page
 {
 public:
    virtual ~mws_list_menu_page() {}
-   static mws_sp<mws_list_menu_page> nwi(mws_sp<mws_page_tab> iparent, std::string iid);
+   static mws_sp<mws_list_menu_page> nwi(mws_sp<mws_page_tab> i_parent, std::string i_id);
 
-   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    mws_sp<mws_list_menu_model> get_list_menu_model();
 
 protected:

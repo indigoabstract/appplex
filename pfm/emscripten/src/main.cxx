@@ -286,7 +286,7 @@ key_types emst_main::translate_key(int i_pfm_key_id) const
    return KEY_INVALID;
 }
 
-key_types emst_main::apply_key_modifiers(key_types i_key_id) const
+key_types emst_main::apply_key_modifiers_impl(key_types i_key_id) const
 {
    if (i_key_id == KEY_INVALID)
    {
@@ -525,7 +525,7 @@ EM_BOOL emst_mouse_down(int event_type, const EmscriptenMouseEvent* e, void* use
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
-   te.is_changed = false;
+   te.is_changed = true;
    te.x = (float)e->canvasX;
    te.y = (float)e->canvasY;
    pfm_te->time = pfm::time::get_time_millis();
@@ -543,7 +543,7 @@ EM_BOOL emst_mouse_up(int event_type, const EmscriptenMouseEvent* e, void* user_
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
-   te.is_changed = false;
+   te.is_changed = true;
    te.x = (float)e->canvasX;
    te.y = (float)e->canvasY;
    pfm_te->time = pfm::time::get_time_millis();
@@ -561,7 +561,7 @@ EM_BOOL emst_mouse_move(int event_type, const EmscriptenMouseEvent* e, void* use
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
-   te.is_changed = false;
+   te.is_changed = true;
    te.x = (float)e->canvasX;
    te.y = (float)e->canvasY;
    pfm_te->time = pfm::time::get_time_millis();
@@ -579,7 +579,7 @@ EM_BOOL emst_mouse_wheel(int event_type, const EmscriptenWheelEvent* e, void* us
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
-   te.is_changed = false;
+   te.is_changed = true;
    te.x = 0.f;
    te.y = 0.f;
    pfm_te->time = pfm::time::get_time_millis();

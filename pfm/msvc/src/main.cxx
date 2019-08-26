@@ -312,7 +312,7 @@ key_types msvc_main::translate_key(int i_pfm_key_id) const
    return KEY_INVALID;
 }
 
-key_types msvc_main::apply_key_modifiers(key_types i_key_id) const
+key_types msvc_main::apply_key_modifiers_impl(key_types i_key_id) const
 {
    if (i_key_id == KEY_INVALID)
    {
@@ -396,17 +396,19 @@ key_types msvc_main::apply_key_modifiers(key_types i_key_id) const
 
 float msvc_main::get_screen_dpi()const
 {
-   if (emulate_mobile_screen)
-   {
-      float dpi = 480.f * pfm::screen::get_width() / 1920.f;
-      //return 480.f;
-      return dpi;
-   }
+   //if (emulate_mobile_screen)
+   //{
+   //   float dpi = 480.f * pfm::screen::get_width() / 1920.f;
+   //   //return 480.f;
+   //   return dpi;
+   //}
 
    int w2 = GetDeviceCaps(hdc_window, HORZSIZE);
    int h2 = GetDeviceCaps(hdc_window, VERTSIZE);
+   int hr = GetDeviceCaps(hdc_window, HORZRES);
+   int vt = GetDeviceCaps(hdc_window, VERTRES);
 
-   return 127.f;
+   return 127.625f;
 }
 
 void msvc_main::flip_screen()
@@ -1426,7 +1428,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
       te.identifier = 0;
-      te.is_changed = false;
+      te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
       pfm_te->time = pfm::time::get_time_millis();
@@ -1445,7 +1447,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
       te.identifier = 0;
-      te.is_changed = false;
+      te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
       pfm_te->time = pfm::time::get_time_millis();
@@ -1464,7 +1466,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
       te.identifier = 0;
-      te.is_changed = false;
+      te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
       pfm_te->time = pfm::time::get_time_millis();

@@ -163,19 +163,9 @@ void mws_camera::drawText(const std::string& text, float x, float y, const mws_s
    }
 }
 
-void mws_camera::setColorf(float r, float g, float b, float a)
+void mws_camera::set_color(const gfx_color& i_color)
 {
-   p->color.from_float(r, g, b, a);
-}
-
-void mws_camera::setColor(uint8 r, uint8 g, uint8 b, uint8 a)
-{
-   p->color = gfx_color(r, g, b, a);
-}
-
-void mws_camera::setColor(int argb)
-{
-   p->color = gfx_color(argb);
+   p->color = i_color;
 }
 
 void mws_camera::push_transform_state()

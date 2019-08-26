@@ -233,6 +233,18 @@ mws_sp<pfm_impl::pfm_file_impl> android_main::new_pfm_file_impl(const std::strin
 	return std::make_shared<android_file_impl>(ifilename, iroot_dir);
 }
 
+key_types android_main::translate_key(int i_pfm_key_id) const
+{
+    if(i_pfm_key_id > KEY_INVALID && i_pfm_key_id < KEY_COUNT)
+    {
+        return static_cast<key_types>(i_pfm_key_id);
+    }
+
+    return KEY_INVALID;
+}
+
+key_types android_main::apply_key_modifiers_impl(key_types i_key_id) const { return i_key_id; }
+
 float android_main::get_screen_brightness() const
 {
     JNIEnv* env = JniHelper::getEnv();
@@ -255,8 +267,8 @@ float android_main::get_screen_dpi()const
 {
     JNIEnv* env = JniHelper::getEnv();
     jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()I");
-    jint dpi = env->CallStaticIntMethod(clazz, mid);
+    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()F");
+    jfloat dpi = env->CallStaticFloatMethod(clazz, mid);
 
     return (float)dpi;
 }

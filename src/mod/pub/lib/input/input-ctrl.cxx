@@ -321,8 +321,8 @@ enum key_status
 
 // there are at most KEY_COUNT different keys that we're interested in handling
 static struct { uint32 time; key_status status; } key_list[KEY_COUNT];
-uint32 key_ctrl::time_until_first_key_repeat_ms = 400;
-uint32 key_ctrl::key_repeat_threshold_ms = 50;
+uint32 key_ctrl::time_until_first_key_repeat_ms = 600;
+uint32 key_ctrl::key_repeat_threshold_ms = 150;
 const uint32 INFINITE_KEY_REPEATS = 0xffffffff;
 uint32 key_ctrl::max_key_repeat_count = INFINITE_KEY_REPEATS;
 
@@ -406,6 +406,8 @@ void key_ctrl::update()
                   new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
                   events_still_pending = true;
                }
+
+               kp.time = crt_time;
             }
             break;
          }

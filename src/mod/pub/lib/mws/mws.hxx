@@ -5,6 +5,7 @@
 #include "util/util.hxx"
 #include "input/input-ctrl.hxx"
 #include "gfx-scene.hxx"
+#include <glm/fwd.hpp>
 #include <string>
 #include <vector>
 
@@ -28,25 +29,58 @@ class mws_virtual_keyboard;
 class gfx_vxo;
 class text_vxo;
 struct vkb_file_info;
+class mws_cm;
+class mws_pt;
+class mws_px;
 
 
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
 
-
-class mws_pt
+class mws_dim
 {
 public:
-   mws_pt() {}
-   mws_pt(float i_x, float i_y) : x(i_x), y(i_y) {}
-   bool operator==(const mws_pt& i_pt) const { return x == i_pt.x && y == i_pt.y; }
-   bool operator!=(const mws_pt& i_pt) const { return x != i_pt.x || y != i_pt.y; }
-   void set(float i_x, float i_y) { x = i_x; y = i_y; }
+   virtual float val() const { return size; }
+   virtual mws_cm to_cm() const = 0;
+   virtual mws_pt to_pt() const = 0;
+   virtual mws_px to_px() const = 0;
 
-   float x = 0.f;
-   float y = 0.f;
+protected:
+   mws_dim() {}
+
+   float size = 0.f;
 };
-using mws_dim = mws_pt;
+
+
+class mws_cm : public mws_dim
+{
+public:
+   mws_cm(float i_size = 0.f) { size = i_size; }
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
+
+
+class mws_pt : public mws_dim
+{
+public:
+   mws_pt(float i_size = 0.f) { size = i_size; }
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
+
+
+class mws_px : public mws_dim
+{
+public:
+   mws_px(float i_size = 0.f) { size = i_size; }
+   uint32 int_val() const;
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
 
 
 class mws_rect
@@ -69,7 +103,7 @@ public:
    virtual ~mws_model() {}
    mws_sp<mws_model> get_instance();
 
-   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void notify_update();
    void set_view(mws_sp<mws> iview);
    mws_sp<mws> get_view();
@@ -101,18 +135,18 @@ public:
    bool is_enabled()const;
    void set_visible(bool i_is_visible);
    bool is_visible()const;
-   void set_id(std::string iid);
+   void set_id(std::string i_id);
    const std::string& get_id();
-   virtual mws_sp<mws> find_by_id(const std::string& iid);
-   virtual mws_sp<mws> contains_id(const std::string& iid);
+   virtual mws_sp<mws> find_by_id(const std::string& i_id);
+   virtual mws_sp<mws> contains_id(const std::string& i_id);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws> get_mws_parent() const;
    mws_sp<mws_page_tab> get_mws_root() const;
    virtual mws_sp<mws_mod> get_mod() const;
 
    virtual void on_focus_changed(bool i_has_focus) {}
-   virtual void receive(mws_sp<mws_dp> idp);
    virtual void process(mws_sp<mws_dp> i_dp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
    mws_rect get_pos();
@@ -152,8 +186,10 @@ class mws_virtual_keyboard : public mws
 {
 public:
    virtual ~mws_virtual_keyboard() {}
+   virtual key_types apply_key_modifiers(key_types i_key_id) const = 0;
    virtual void on_resize() = 0;
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
+   virtual mws_sp<mws_font> get_font() = 0;
    virtual void set_font(mws_sp<mws_font> i_fnt) = 0;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const = 0;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) = 0;
@@ -186,14 +222,14 @@ public:
    virtual void init_subobj();
    virtual void on_destroy();
 
-   virtual mws_sp<mws> contains_id(const std::string& iid);
+   virtual mws_sp<mws> contains_id(const std::string& i_id);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws_page_tab> get_mws_page_tab_instance();
    virtual mws_sp<mws_mod> get_mod();
    bool is_empty();
    mws_sp<text_vxo> get_text_vxo() const;
 
-   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize();
@@ -233,24 +269,24 @@ class mws_page : public mws
 {
 public:
    virtual ~mws_page() {}
-   static mws_sp<mws_page> nwi(mws_sp<mws_page_tab> iparent);
+   static mws_sp<mws_page> nwi(mws_sp<mws_page_tab> i_parent);
    virtual void init();
    virtual void on_destroy();
 
-   virtual mws_sp<mws> contains_id(const std::string& iid);
+   virtual mws_sp<mws> contains_id(const std::string& i_id);
    virtual bool contains_mws(const mws_sp<mws> i_mws);
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent() const;
 
-   virtual void on_show_transition(const mws_sp<linear_transition> itransition);
-   virtual void on_hide_transition(const mws_sp<linear_transition> itransition);
+   virtual void on_show_transition(const mws_sp<linear_transition> i_transition);
+   virtual void on_hide_transition(const mws_sp<linear_transition> i_transition);
 
-   virtual void receive(mws_sp<mws_dp> idp);
-   virtual void update_input_sub_mws(mws_sp<mws_dp> idp);
-   virtual void update_input_std_behaviour(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
+   virtual void update_input_sub_mws(mws_sp<mws_dp> i_dp);
+   virtual void update_input_std_behaviour(mws_sp<mws_dp> i_dp);
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
-   virtual mws_dim get_dim() const;
+   virtual glm::vec2 get_dim() const;
    mws_sp<mws> get_mws_at(uint32 i_idx);
    virtual bool is_selected(mws_sp<mws> i_item);
    virtual void select(mws_sp<mws> i_item);

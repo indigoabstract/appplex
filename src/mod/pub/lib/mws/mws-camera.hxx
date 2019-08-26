@@ -23,9 +23,7 @@ public:
    mws_sp<mws_font> get_font()const;
    void set_font(mws_sp<mws_font> ifont);
    void drawText(const std::string& text, float x, float y, const mws_sp<mws_font> ifnt = mws_sp<mws_font>());
-   void setColorf(float r, float g, float b, float a = 1.f);
-   void setColor(uint8 r, uint8 g, uint8 b, uint8 a = 0xFF);
-   void setColor(int argb);
+   void set_color(const gfx_color& i_color);
    void push_transform_state();
    void pop_transform_state();
    void rotate(float angle);

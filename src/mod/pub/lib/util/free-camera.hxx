@@ -21,7 +21,7 @@ public:
 
    free_camera(mws_sp<mws_mod> i_mod);
 
-	void update_input(mws_sp<mws_dp> idp);
+	void update_input(mws_sp<mws_dp> i_dp);
 	void update();
 
 	mws_sp<gfx_camera> persp_cam;

@@ -132,7 +132,7 @@ public:
    bool key_is_held(key_types i_key);
    void key_pressed(key_types i_key);
    void key_released(key_types i_key);
-   // resets all keys to the default [ KEY_IDLE, 0 ms ]
+   // resets all keys to the default [ 0 ms, KEY_IDLE ]
    void clear_keys();
 
 private:

@@ -133,12 +133,13 @@ protected:
    virtual void on_resize();
    virtual void on_pause();
    virtual void on_resume();
-   virtual void receive(mws_sp<mws_dp> idp);
+   virtual void receive(mws_sp<mws_dp> i_dp);
    // finish-constructor. here you can use things that won't work in the constructor, ie shared_from_this(), etc
    virtual void base_init();
    virtual void init();
    virtual void on_destroy();
    virtual void init_mws();
+   virtual void post_init_mws();
    virtual void load();
    virtual void unload();
    virtual mws_sp<mws_sender> sender_inst();

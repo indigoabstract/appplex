@@ -86,7 +86,7 @@ mws_sp<mws_vrn_cell_borders> mws_vrn_cell_borders::nwi() { return mws_sp<mws_vrn
 
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
-   const float line_half_thickness = 35.f;
+   const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
    const float z_pos = 1.f;
 
    struct vx_fmt_3f_2f
@@ -563,8 +563,8 @@ mws_vrn_geom::mws_vrn_geom(mws_sp<mws_vrn_data> i_diag_data) : gfx_node(gfx::i()
 
 void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
 {
-   float alpha_val = 0.8f;
-   float line_thickness = 6.f;
+   float alpha_val = 1.f;
+   float line_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * 0.009f;
 
    // cache the shaders, to prevent recompiling
    init_shaders();
@@ -577,7 +577,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       (*voronoi_kernels_mesh)[MP_SHADER_NAME] = vkb_point_sh;
       (*voronoi_kernels_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       (*voronoi_kernels_mesh)[MP_CULL_BACK] = false;
-      (*voronoi_kernels_mesh)["u_v1_point_size"] = 2.f;
+      (*voronoi_kernels_mesh)["u_v1_point_size"] = 5.f;
       (*voronoi_kernels_mesh)["u_v4_color"] = glm::vec4(0.f, 1.f, 1.f, alpha_val);
       (*voronoi_kernels_mesh)[MP_BLENDING] = MV_ALPHA;
       voronoi_kernels_mesh->camera_id_list = { i_cam->camera_id() };
@@ -590,7 +590,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       (*voronoi_nexus_mesh)[MP_SHADER_NAME] = vkb_point_sh;
       (*voronoi_nexus_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
       (*voronoi_nexus_mesh)[MP_CULL_BACK] = false;
-      (*voronoi_nexus_mesh)["u_v1_point_size"] = 2.5f;
+      (*voronoi_nexus_mesh)["u_v1_point_size"] = 5.5f;
       (*voronoi_nexus_mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, alpha_val);
       (*voronoi_nexus_mesh)[MP_BLENDING] = MV_ALPHA;
       voronoi_nexus_mesh->camera_id_list = { i_cam->camera_id() };
@@ -602,7 +602,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       nexus_pairs_mesh->visible = diag_data->info.nexus_pairs_visible;
       (*nexus_pairs_mesh)[MP_SHADER_NAME] = vkb_line_sh;
       (*nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
-      (*nexus_pairs_mesh)["u_v1_depth_offset"] = 0.001f;
+      (*nexus_pairs_mesh)["u_v1_depth_offset"] = 0.f;
       (*nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, alpha_val);
       (*nexus_pairs_mesh)[MP_CULL_FRONT] = false;
       (*nexus_pairs_mesh)[MP_CULL_BACK] = false;

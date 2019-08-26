@@ -246,13 +246,13 @@ void mws_text_box::set_position(const glm::vec2 & i_pos)
 {
    pos = i_pos;
    tx_vxo->position = glm::vec3(i_pos, 0.f);
-   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
+   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos - glm::vec2(0, 1), dim + glm::vec2(0, 1));
 }
 
 void mws_text_box::set_dimension(const glm::vec2 & i_dim)
 {
    dim = i_dim;
-   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos, dim);
+   (*tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(pos - glm::vec2(0, 1), dim + glm::vec2(0, 1));
    text_rows = int(dim.y / font->get_height() + 1);
    mws_r = mws_rect(pos.x, pos.y, dim.x, dim.y);
 
@@ -272,6 +272,11 @@ void mws_text_box::set_font(mws_sp<mws_font> i_font)
 
 void mws_text_box::select_char_at(const glm::vec2 & i_pos)
 {
+   if (tx_rows.empty())
+   {
+      return;
+   }
+
    cursor_row_idx = size_t((i_pos.y + text_row_remainder) / font->get_height());
    mws_println("select_char_at0 cursor_row_idx [ %d ]", cursor_row_idx);
    cursor_col_idx = 0;
@@ -320,6 +325,11 @@ void mws_text_box::select_char_at(const glm::vec2 & i_pos)
    float x_off = -text_offset.x;
    size_t text_length = (text.back() != '\n') ? text.length() : text.length() - 1;
    size_t k = 0;
+
+   if (glyphs.size() < text_length)
+   {
+      return;
+   }
 
    for (k = 0; k < text_length; k++)
    {
@@ -387,7 +397,10 @@ void mws_text_box::update_state()
 
 void mws_text_box::update_view(mws_sp<mws_camera> g)
 {
-   g->drawRect(pos.x, pos.y, dim.x, dim.y);
+   //g->setColor(0x7fff0000);
+   //g->fillRect(pos.x, pos.y, dim.x, dim.y);
+   //g->setColor(0xffffffff);
+   //g->drawRect(pos.x, pos.y, dim.x, dim.y);
 
    if(has_focus())
    {
@@ -488,6 +501,11 @@ void mws_text_box::update_text()
 
 void mws_text_box::update_gfx_cursor()
 {
+   if (cursor_row_idx >= tx_rows.size())
+   {
+      return;
+   }
+
    std::string& text = tx_rows[cursor_row_idx];
 
    // if we have at least one char on this line( even if it's a single '\n' )
@@ -498,6 +516,11 @@ void mws_text_box::update_gfx_cursor()
       size_t text_length = (is_new_line_terminated) ? text.length() - 1 : text.length();
       float x_off = -text_offset.x;
       mws_assert(cursor_col_idx <= text_length);
+
+      if (glyphs.empty())
+      {
+         return;
+      }
 
       // special case for cursor position before first char
       if (cursor_col_idx == 0)

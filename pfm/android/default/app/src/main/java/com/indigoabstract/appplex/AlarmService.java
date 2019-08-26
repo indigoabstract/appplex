@@ -55,7 +55,7 @@ public class AlarmService extends IntentService
                 .setAutoCancel(true)
                 .setContentTitle("haiku2break")
                 .setContentText(message)
-                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification))
+                //.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification))
                 .setDefaults(Notification.DEFAULT_LIGHTS);
 
         // Fire it.

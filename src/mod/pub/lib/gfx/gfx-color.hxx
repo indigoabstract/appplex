@@ -2,50 +2,62 @@
 
 #include "pfm-def.h"
 #include <glm/fwd.hpp>
+#include <vector>
 
 
 class gfx_color
 {
 public:
-   uint8 r, g, b, a;
+   union
+   {
+      // 0xaabbggrr is stored in memory as 0xrrggbbaa, because little endian
+      // we need this order to be compatible with opengl's RGBA8 format
+      uint32 abgr;
+      struct
+      {
+         uint8 r;
+         uint8 g;
+         uint8 b;
+         uint8 a;
+      };
+   };
 
    gfx_color();
-   gfx_color(uint8 ir, uint8 ig, uint8 ib, uint8 ia = 255);
-   gfx_color(const uint8* c);
-   gfx_color(const gfx_color& c);
-   gfx_color(int argb);
-   ~gfx_color() {}
+   gfx_color(uint8 i_r, uint8 i_g, uint8 i_b, uint8 i_a = 0xff);
+   gfx_color(const uint8* i_c);
+   gfx_color(const gfx_color& i_c);
 
-   void from_float(float fr, float fg, float fb);
-   void from_float(float fr, float fg, float fb, float fa);
-   void to_float(float& fr, float& fg, float& fb, float& fa);
+   static gfx_color from_abgr(uint32 i_abgr);
+   static gfx_color from_argb(uint32 i_argb);
+   static gfx_color from_rgba(uint32 i_rgba);
 
-   gfx_color operator = (gfx_color const & c);
-   gfx_color operator + (gfx_color const & c);
-   gfx_color operator * (gfx_color const & c);
-   gfx_color operator * (float f);
+   void from_float(float i_r, float i_g, float i_b);
+   void from_float(float i_r, float i_g, float i_b, float i_a);
+   void to_float(float& i_r, float& i_g, float& i_b, float& i_a);
+
+   gfx_color operator = (gfx_color const& i_c);
+   gfx_color operator + (gfx_color const& i_c);
+   gfx_color operator * (gfx_color const& i_c);
+   gfx_color operator * (float i_f);
    operator uint8* ();
-   bool operator == (gfx_color const & c);
-   bool operator != (gfx_color const & c);
-   gfx_color operator += (gfx_color const & c);
-   uint8* rgba_array() { return &r; }
-   int rgba() { return (r << 24) | (g << 16) | (b << 8) | a; };
-   int argb() { return (a << 24) | (r << 16) | (g << 8) | (b << 0); };
+   bool operator == (gfx_color const& i_c);
+   bool operator != (gfx_color const& i_c);
+   gfx_color operator += (gfx_color const& i_c);
+   const uint8* rgba_array() const { return &r; }
+   uint32 to_rgba() const { return abgr; };
+   uint32 to_argb() const;
    glm::vec4 to_vec4()const;
-   bool is_white();
    uint8 intensity();
-   void to_hsv(float& hue, float& saturation, float& value);
-   void hsv2rgb_smooth(float& hue, float& saturation, float& value);
-   void from_hsv(float hue, float saturation, float value);
-   void to_hsb(float& hue, float& saturation, float& brightness);
-   void from_hsb(float hue, float saturation, float brightness);
-
-   static gfx_color interpolate(const gfx_color& c1, const gfx_color& c2, float f);
+   void to_hsv(float& i_hue, float& i_saturation, float& i_value);
+   void hsv2rgb_smooth(float& i_hue, float& i_saturation, float& i_value);
+   void from_hsv(float hue, float i_saturation, float i_value);
+   void to_hsb(float& i_hue, float& i_saturation, float& i_brightness);
+   void from_hsb(float i_hue, float i_saturation, float i_brightness);
+   static gfx_color mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_mixf);
 
    // color list
-   class colors
+   struct colors
    {
-   public:
       static gfx_color black;
       static gfx_color blue;
       static gfx_color blue_violet;
@@ -78,5 +90,31 @@ public:
    };
 
 private:
-   void clamp(int& r, int& g, int& b, int& a);
+   gfx_color(int i_abgr) { abgr = i_abgr; }
+
+   static void clamp(int& i_r, int& i_g, int& i_b, int& i_a);
+};
+
+
+class gfx_color_mixer
+{
+public:
+   gfx_color_mixer();
+
+   void clear();
+   int set_color_at(gfx_color i_color, float i_position);
+   gfx_color get_color_at(float i_position);
+   bool remove_idx(uint32 i_idx);
+
+protected:
+   struct pos_color
+   {
+      float pos;
+      gfx_color color;
+   };
+
+   // find the the closest match that's not less than i_position (can be equal)
+   std::vector<pos_color>::iterator closest_gte_val(std::vector<pos_color>& i_vect, float i_position);
+
+   std::vector<pos_color> pos_color_vect;
 };

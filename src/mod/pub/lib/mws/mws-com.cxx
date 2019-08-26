@@ -233,7 +233,7 @@ void mws_img_btn::set_img_name(std::string i_img_name)
    (*vxo)["u_s2d_tex"] = i_img_name;
 }
 
-void mws_img_btn::receive(mws_sp<mws_dp> idp)
+void mws_img_btn::receive(mws_sp<mws_dp> i_dp)
 {
    if (!is_enabled())
    {
@@ -242,11 +242,11 @@ void mws_img_btn::receive(mws_sp<mws_dp> idp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
-   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -336,7 +336,7 @@ void mws_button::set_rect(const mws_rect& i_rect)
    mws_r = i_rect;
 }
 
-void mws_button::receive(mws_sp<mws_dp> idp)
+void mws_button::receive(mws_sp<mws_dp> i_dp)
 {
    if (!is_enabled())
    {
@@ -345,11 +345,11 @@ void mws_button::receive(mws_sp<mws_dp> idp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
-   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
       if (!is_hit(ts->points[0].x, ts->points[0].y))
       {
@@ -494,7 +494,7 @@ void mws_slider::set_rect(const mws_rect& i_rect)
    set_value(value);
 }
 
-void mws_slider::receive(mws_sp<mws_dp> idp)
+void mws_slider::receive(mws_sp<mws_dp> i_dp)
 {
    if (!is_enabled())
    {
@@ -503,11 +503,11 @@ void mws_slider::receive(mws_sp<mws_dp> idp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
-   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
       bool process_evt = false;
 
@@ -695,7 +695,7 @@ mws_sp<mws_list> mws_list::nwi()
    return inst;
 }
 
-void mws_list::receive(mws_sp<mws_dp> idp)
+void mws_list::receive(mws_sp<mws_dp> i_dp)
 {
    if (!is_enabled())
    {
@@ -704,9 +704,9 @@ void mws_list::receive(mws_sp<mws_dp> idp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
-   else if (idp->is_type(MWS_EVT_MODEL_UPDATE))
+   else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
    {
       float listheight = 0;
 
@@ -722,9 +722,9 @@ void mws_list::receive(mws_sp<mws_dp> idp)
 
       mws_r.h = listheight;
    }
-   else if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
       //switch (ts->get_type())
       //{
@@ -839,7 +839,7 @@ mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
    return root;
 }
 
-mws_tree::mws_tree(mws_sp<mws_page> iparent)
+mws_tree::mws_tree(mws_sp<mws_page> i_parent)
 {
 }
 
@@ -848,9 +848,9 @@ void mws_tree::setup()
    mws_page_item::setup();
 }
 
-mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> iparent)
+mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> i_parent)
 {
-   mws_sp<mws_tree> u(new mws_tree(iparent));
+   mws_sp<mws_tree> u(new mws_tree(i_parent));
    u->setup();
    return u;
 }
@@ -865,7 +865,7 @@ void mws_tree::init()
 {
 }
 
-void mws_tree::receive(mws_sp<mws_dp> idp)
+void mws_tree::receive(mws_sp<mws_dp> i_dp)
 {
    if (!is_enabled())
    {
@@ -874,9 +874,9 @@ void mws_tree::receive(mws_sp<mws_dp> idp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), idp);
+      receive_handler(get_instance(), i_dp);
    }
-   else if (idp->is_type(MWS_EVT_MODEL_UPDATE))
+   else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
    {
       float h = 25.f + model->get_length() * 20.f;
       float w = 0;
@@ -952,7 +952,7 @@ void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_
       mws_sp<mws_tree_model_node> kv = node->nodes[k];
       glm::vec2 dim = g->get_font()->get_text_dim(kv->data);
 
-      g->setColor(0xff00ff);
+      g->set_color(gfx_color(0xff, 0, 0xff));
       g->drawRect(r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
       g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y);
       i_elem_idx++;

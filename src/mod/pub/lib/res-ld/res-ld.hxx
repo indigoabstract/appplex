@@ -8,7 +8,7 @@ class gfx_tex;
 
 union rgba_32_fmt
 {
-   uint32 rgba;
+   uint32 abgr;
 
    struct
    {

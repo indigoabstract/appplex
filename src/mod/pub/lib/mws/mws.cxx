@@ -20,6 +20,64 @@
 #endif
 
 
+static const float pt_in_cm = 0.03528f;
+
+mws_cm mws_cm::to_cm() const { return *this; }
+
+mws_pt mws_cm::to_pt() const
+{
+   return mws_pt(size / pt_in_cm);
+}
+
+mws_px mws_cm::to_px() const
+{
+   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
+   float px_count = size * px_per_cm;
+
+   return mws_px(px_count);
+}
+
+
+mws_cm mws_pt::to_cm() const
+{
+   return mws_cm(size * pt_in_cm);
+}
+
+mws_pt mws_pt::to_pt() const
+{
+   return *this;
+}
+
+mws_px mws_pt::to_px() const
+{
+   return mws_cm(size * pt_in_cm).to_px();
+}
+
+
+uint32 mws_px::int_val() const
+{
+   return static_cast<uint32>(glm::round(size));
+}
+
+mws_cm mws_px::to_cm() const
+{
+   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
+   float cm_count = size / px_per_cm;
+
+   return mws_cm(cm_count);
+}
+
+mws_pt mws_px::to_pt() const
+{
+   return to_cm().to_pt();
+}
+
+mws_px mws_px::to_px() const
+{
+   return *this;
+}
+
+
 mws_rect::mws_rect() {}
 mws_rect::mws_rect(float i_x, float i_y, float i_w, float i_h)
 {
@@ -160,9 +218,9 @@ bool mws::is_visible()const
    return visible;
 }
 
-void mws::set_id(std::string iid)
+void mws::set_id(std::string i_id)
 {
-   id = iid;
+   id = i_id;
 }
 
 const std::string& mws::get_id()
@@ -170,14 +228,14 @@ const std::string& mws::get_id()
    return id;
 }
 
-mws_sp<mws> mws::find_by_id(const std::string& iid)
+mws_sp<mws> mws::find_by_id(const std::string& i_id)
 {
-   return mwsroot.lock()->contains_id(iid);
+   return mwsroot.lock()->contains_id(i_id);
 }
 
-mws_sp<mws> mws::contains_id(const std::string& iid)
+mws_sp<mws> mws::contains_id(const std::string& i_id)
 {
-   if (iid == id)
+   if (i_id == id)
    {
       return get_instance();
    }
@@ -204,6 +262,8 @@ mws_sp<mws_mod> mws::get_mod() const
 {
    return std::static_pointer_cast<mws_mod>(mwsroot.lock()->get_mod());
 }
+
+void mws::process(mws_sp<mws_dp> i_dp) { i_dp->process(get_instance()); }
 
 void mws::receive(mws_sp<mws_dp> i_dp)
 {
@@ -232,8 +292,6 @@ void mws::receive(mws_sp<mws_dp> i_dp)
       }
    }
 }
-
-void mws::process(mws_sp<mws_dp> i_dp) { i_dp->process(get_instance()); }
 
 void mws::update_state()
 {
@@ -347,18 +405,18 @@ void mws_page_tab::on_destroy()
    }
 }
 
-mws_sp<mws> mws_page_tab::contains_id(const std::string& iid)
+mws_sp<mws> mws_page_tab::contains_id(const std::string& i_id)
 {
-   if (iid.length() > 0)
+   if (i_id.length() > 0)
    {
-      if (iid == get_id())
+      if (i_id == get_id())
       {
          return get_instance();
       }
 
       for (auto p : page_tab)
       {
-         mws_sp<mws> u = p->contains_id(iid);
+         mws_sp<mws> u = p->contains_id(i_id);
 
          if (u)
          {
@@ -409,7 +467,8 @@ void mws_page_tab::receive(mws_sp<mws_dp> i_dp)
    {
       vkb->receive(i_dp);
    }
-   else
+   
+   if(!i_dp->is_processed())
    {
       if (receive_handler)
       {
@@ -638,11 +697,11 @@ void mws_page::on_destroy()
    }
 }
 
-mws_sp<mws> mws_page::contains_id(const std::string& iid)
+mws_sp<mws> mws_page::contains_id(const std::string& i_id)
 {
-   if (iid.length() > 0)
+   if (i_id.length() > 0)
    {
-      if (iid == get_id())
+      if (i_id == get_id())
       {
          return get_instance();
       }
@@ -653,7 +712,7 @@ mws_sp<mws> mws_page::contains_id(const std::string& iid)
          {
             auto w = mws_dynamic_pointer_cast<mws>(c);
 
-            mws_sp<mws> u = w->contains_id(iid);
+            mws_sp<mws> u = w->contains_id(i_id);
 
             if (u)
             {
@@ -694,9 +753,9 @@ mws_sp<mws_page_tab> mws_page::get_mws_page_parent() const
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
 }
 
-void mws_page::on_show_transition(const mws_sp<linear_transition> itransition) {}
+void mws_page::on_show_transition(const mws_sp<linear_transition> i_transition) {}
 
-void mws_page::on_hide_transition(const mws_sp<linear_transition> itransition) {}
+void mws_page::on_hide_transition(const mws_sp<linear_transition> i_transition) {}
 
 void mws_page::receive(mws_sp<mws_dp> i_dp)
 {
@@ -932,9 +991,9 @@ void mws_page::update_view(mws_sp<mws_camera> g)
    }
 }
 
-mws_dim mws_page::get_dim() const
+glm::vec2 mws_page::get_dim() const
 {
-   return mws_dim(mws_r.w - mws_r.x, mws_r.h - mws_r.y);
+   return glm::vec2(mws_r.w - mws_r.x, mws_r.h - mws_r.y);
 }
 
 mws_sp<mws> mws_page::get_mws_at(uint32 i_idx)

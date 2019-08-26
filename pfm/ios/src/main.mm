@@ -231,6 +231,9 @@ mws_sp<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& i
 	return std::make_shared<ios_file_impl>(ifilename, iroot_dir);
 }
 
+key_types ios_main::translate_key(int i_pfm_key_id) const { return i_pfm_key_id; }
+key_types ios_main::apply_key_modifiers_impl(key_types i_key_id) const { return i_key_id; }
+
 float ios_main::get_screen_dpi() const
 {
     return 480;

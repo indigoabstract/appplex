@@ -4,59 +4,55 @@
 #include <glm/inc.hpp>
 
 
-gfx_color gfx_color::colors::black = gfx_color(0x000000);
-gfx_color gfx_color::colors::blue = gfx_color(0x0000ff);
-gfx_color gfx_color::colors::blue_violet = gfx_color(0x8a2be2);
-gfx_color gfx_color::colors::cyan = gfx_color(0x00ffff);
-gfx_color gfx_color::colors::dark_orange = gfx_color(0xff8c00);
-gfx_color gfx_color::colors::dark_orchid = gfx_color(0x9932cc);
-gfx_color gfx_color::colors::dark_red = gfx_color(0x8b0000);
-gfx_color gfx_color::colors::deep_pink = gfx_color(0xff1493);
-gfx_color gfx_color::colors::dodger_blue = gfx_color(0x1e90ff);
-gfx_color gfx_color::colors::gold = gfx_color(0xffd700);
-gfx_color gfx_color::colors::gray = gfx_color(0x808080);
-gfx_color gfx_color::colors::green = gfx_color(0x00ff00);
-gfx_color gfx_color::colors::indigo = gfx_color(0x4b0082);
-gfx_color gfx_color::colors::lavender = gfx_color(0xe6e6fa);
-gfx_color gfx_color::colors::magenta = gfx_color(0xff00ff);
-gfx_color gfx_color::colors::orange = gfx_color(0xffa500);
-gfx_color gfx_color::colors::orchid = gfx_color(0xda70d6);
-gfx_color gfx_color::colors::papaya_whip = gfx_color(0xffefd5);
-gfx_color gfx_color::colors::pink = gfx_color(0xffc0cb);
-gfx_color gfx_color::colors::plum = gfx_color(0xdda0dd);
-gfx_color gfx_color::colors::red = gfx_color(0xff0000);
-gfx_color gfx_color::colors::saddle_brown = gfx_color(0x8b4513);
-gfx_color gfx_color::colors::salmon = gfx_color(0xfa8072);
-gfx_color gfx_color::colors::slate_gray = gfx_color(0x708090);
-gfx_color gfx_color::colors::spring_green = gfx_color(0x00ff7f);
-gfx_color gfx_color::colors::thistle = gfx_color(0xd8bfd8);
-gfx_color gfx_color::colors::wheat = gfx_color(0xf5deb3);
-gfx_color gfx_color::colors::white = gfx_color(0xffffff);
-gfx_color gfx_color::colors::yellow = gfx_color(0xffff00);
+gfx_color gfx_color::colors::black = gfx_color::from_rgba(0x000000ff);
+gfx_color gfx_color::colors::blue = gfx_color::from_rgba(0x0000ffff);
+gfx_color gfx_color::colors::blue_violet = gfx_color::from_rgba(0x8a2be2ff);
+gfx_color gfx_color::colors::cyan = gfx_color::from_rgba(0x00ffff);
+gfx_color gfx_color::colors::dark_orange = gfx_color::from_rgba(0xff8c00ff);
+gfx_color gfx_color::colors::dark_orchid = gfx_color::from_rgba(0x9932ccff);
+gfx_color gfx_color::colors::dark_red = gfx_color::from_rgba(0x8b0000ff);
+gfx_color gfx_color::colors::deep_pink = gfx_color::from_rgba(0xff1493ff);
+gfx_color gfx_color::colors::dodger_blue = gfx_color::from_rgba(0x1e90ffff);
+gfx_color gfx_color::colors::gold = gfx_color::from_rgba(0xffd700ff);
+gfx_color gfx_color::colors::gray = gfx_color::from_rgba(0x808080ff);
+gfx_color gfx_color::colors::green = gfx_color::from_rgba(0x00ff00ff);
+gfx_color gfx_color::colors::indigo = gfx_color::from_rgba(0x4b0082ff);
+gfx_color gfx_color::colors::lavender = gfx_color::from_rgba(0xe6e6faff);
+gfx_color gfx_color::colors::magenta = gfx_color::from_rgba(0xff00ffff);
+gfx_color gfx_color::colors::orange = gfx_color::from_rgba(0xffa500ff);
+gfx_color gfx_color::colors::orchid = gfx_color::from_rgba(0xda70d6ff);
+gfx_color gfx_color::colors::papaya_whip = gfx_color::from_rgba(0xffefd5ff);
+gfx_color gfx_color::colors::pink = gfx_color::from_rgba(0xffc0cbff);
+gfx_color gfx_color::colors::plum = gfx_color::from_rgba(0xdda0ddff);
+gfx_color gfx_color::colors::red = gfx_color::from_rgba(0xff0000ff);
+gfx_color gfx_color::colors::saddle_brown = gfx_color::from_rgba(0x8b4513ff);
+gfx_color gfx_color::colors::salmon = gfx_color::from_rgba(0xfa8072ff);
+gfx_color gfx_color::colors::slate_gray = gfx_color::from_rgba(0x708090ff);
+gfx_color gfx_color::colors::spring_green = gfx_color::from_rgba(0x00ff7fff);
+gfx_color gfx_color::colors::thistle = gfx_color::from_rgba(0xd8bfd8ff);
+gfx_color gfx_color::colors::wheat = gfx_color::from_rgba(0xf5deb3ff);
+gfx_color gfx_color::colors::white = gfx_color::from_rgba(0xffffffff);
+gfx_color gfx_color::colors::yellow = gfx_color::from_rgba(0xffff00ff);
 
 
-#define ALPHA_CHANNEL(color)	((color & 0xff000000) >> 24)
-#define RED_CHANNEL(color)		((color & 0x00ff0000) >> 16)
-#define GREEN_CHANNEL(color)	((color & 0x0000ff00) >> 8)
-#define BLUE_CHANNEL(color)		((color & 0x000000ff) >> 0)
+gfx_color::gfx_color() { abgr = 0xffffffff; }
+gfx_color::gfx_color(uint8 i_r, uint8 i_g, uint8 i_b, uint8 i_a) { r = i_r; g = i_g; b = i_b; a = i_a; }
+gfx_color::gfx_color(const uint8* i_c) { r = i_c[0]; g = i_c[1]; b = i_c[2]; a = i_c[3]; }
+gfx_color::gfx_color(const gfx_color& i_c) { abgr = i_c.abgr; }
 
-gfx_color::gfx_color() { r = g = b = a = 255; }
-gfx_color::gfx_color(uint8 ir, uint8 ig, uint8 ib, uint8 ia) { this->r = ir; this->g = ig; this->b = ib; this->a = ia; }
-gfx_color::gfx_color(const uint8* c) { r = c[0]; g = c[1]; b = c[2]; a = c[3]; }
-gfx_color::gfx_color(const gfx_color& c) { r = c.r; g = c.g; b = c.b; a = c.a; }
-
-gfx_color::gfx_color(int argb) //rgba
+gfx_color gfx_color::from_abgr(uint32 i_abgr)
 {
-   r = RED_CHANNEL(argb);
-   g = GREEN_CHANNEL(argb);
-   b = BLUE_CHANNEL(argb);
-   a = ALPHA_CHANNEL(argb);
+   return gfx_color(i_abgr);
+}
 
-   if (a == 0)
-      // if a == 0, consider it as not set
-   {
-      a = 255;
-   }
+gfx_color gfx_color::from_argb(uint32 i_argb)
+{
+   return gfx_color((i_argb >> 16) & 0x000000ff, (i_argb >> 8) & 0x000000ff, (i_argb >> 0) & 0x000000ff, (i_argb >> 24) & 0x000000ff);
+}
+
+gfx_color gfx_color::from_rgba(uint32 i_rgba)
+{
+   return gfx_color((i_rgba >> 24) & 0x000000ff, (i_rgba >> 16) & 0x000000ff, (i_rgba >> 8) & 0x000000ff, (i_rgba >> 0) & 0x000000ff);
 }
 
 void gfx_color::from_float(float fr, float fg, float fb, float fa)
@@ -95,7 +91,7 @@ void gfx_color::from_float(float fr, float fg, float fb)
    a = aa;
 }
 
-gfx_color gfx_color::operator = (gfx_color const & c)
+gfx_color gfx_color::operator = (gfx_color const& c)
 {
    r = c.r;
    g = c.g;
@@ -105,7 +101,7 @@ gfx_color gfx_color::operator = (gfx_color const & c)
    return *this;
 }
 
-gfx_color gfx_color::operator + (gfx_color const & c)
+gfx_color gfx_color::operator + (gfx_color const& c)
 {
    int rr = (c.r + r);
    int gg = (c.g + g);
@@ -117,7 +113,7 @@ gfx_color gfx_color::operator + (gfx_color const & c)
    return gfx_color((uint8)rr, (uint8)gg, (uint8)bb, (uint8)aa);
 }
 
-gfx_color gfx_color::operator * (gfx_color const & c)
+gfx_color gfx_color::operator * (gfx_color const& c)
 {
    int rr = (c.r * r) / 255;
    int gg = (c.g * g) / 255;
@@ -145,23 +141,23 @@ gfx_color::operator uint8* ()
    return &r;
 }
 
-bool gfx_color::operator == (gfx_color const & c)
+bool gfx_color::operator == (gfx_color const& c)
 {
-   const long* l = (long*)&r;
-   const long* l2 = (long*)&c.r;
+   const long* l = (long*)& r;
+   const long* l2 = (long*)& c.r;
 
    return *l == *l2;
 }
 
-bool gfx_color::operator != (gfx_color const & c)
+bool gfx_color::operator != (gfx_color const& c)
 {
-   const long* l = (long*)&r;
-   const long* l2 = (long*)&c.r;
+   const long* l = (long*)& r;
+   const long* l2 = (long*)& c.r;
 
    return *l != *l2;
 }
 
-gfx_color gfx_color::operator += (gfx_color const & c)
+gfx_color gfx_color::operator += (gfx_color const& c)
 {
    int rr = (c.r + r);
    int gg = (c.g + g);
@@ -178,16 +174,11 @@ gfx_color gfx_color::operator += (gfx_color const & c)
    return *this;
 }
 
+uint32 gfx_color::to_argb() const { return (a << 24) | (r << 16) | (g << 8) | (b << 0); };
+
 glm::vec4 gfx_color::to_vec4()const
 {
    return glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-}
-
-bool gfx_color::is_white()
-{
-   const long* l = (long*)&r;
-
-   return *l == 0xffffffff;
 }
 
 uint8 gfx_color::intensity()
@@ -201,7 +192,7 @@ uint8 gfx_color::intensity()
 void gfx_color::to_hsv(float& hue, float& saturation, float& value)
 {
    glm::vec4 c = to_vec4();
-   glm::vec3 rgb = glm::clamp(glm::abs(glm::mod(c.x*6.f + glm::vec3(0.f, 4.f, 2.f), 6.f) - 3.f) - 1.f, 0.f, 1.f);
+   glm::vec3 rgb = glm::clamp(glm::abs(glm::mod(c.x * 6.f + glm::vec3(0.f, 4.f, 2.f), 6.f) - 3.f) - 1.f, 0.f, 1.f);
 
    glm::vec3 res = c.z * glm::mix(glm::vec3(1.0), rgb, c.y);
    hue = res.x;
@@ -212,7 +203,7 @@ void gfx_color::to_hsv(float& hue, float& saturation, float& value)
 void gfx_color::hsv2rgb_smooth(float& hue, float& saturation, float& value)
 {
    glm::vec4 c = to_vec4();
-   glm::vec3 rgb = glm::clamp(glm::abs(glm::mod(c.x*6.f + glm::vec3(0.f, 4.f, 2.f), 6.f) - 3.f) - 1.f, 0.f, 1.f);
+   glm::vec3 rgb = glm::clamp(glm::abs(glm::mod(c.x * 6.f + glm::vec3(0.f, 4.f, 2.f), 6.f) - 3.f) - 1.f, 0.f, 1.f);
    rgb = rgb * rgb * (3.f - 2.f * rgb); // cubic smoothing	
    glm::vec3 res = c.z * glm::mix(glm::vec3(1.0), rgb, c.y);
    hue = res.x;
@@ -333,19 +324,107 @@ void gfx_color::from_hsb(float hue, float saturation, float brightness)
    from_float(fr, fg, fb);
 }
 
-gfx_color gfx_color::interpolate(const gfx_color& c1, const gfx_color& c2, float f)
+gfx_color gfx_color::mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_mixf)
 {
-   int r = (c2.r - c1.r) * f + c1.r;
-   int g = (c2.g - c1.g) * f + c1.g;
-   int b = (c2.b - c1.b) * f + c1.b;
-   int a = (c2.a - c1.a) * f + c1.a;
-   return gfx_color(r, g, b, a);
+   float one_minus_mixf = 1.f - i_mixf;
+   return gfx_color(
+      one_minus_mixf * i_c0.r + i_mixf * i_c1.r,
+      one_minus_mixf * i_c0.g + i_mixf * i_c1.g,
+      one_minus_mixf * i_c0.b + i_mixf * i_c1.b,
+      one_minus_mixf * i_c0.a + i_mixf * i_c1.a);
 }
 
-void gfx_color::clamp(int& r, int& g, int& b, int& a)
+void gfx_color::clamp(int& i_r, int& i_g, int& i_b, int& i_a)
 {
-   if (r > 255) r = 255;
-   if (g > 255) g = 255;
-   if (b > 255) b = 255;
-   if (a > 255) a = 255;
+   if (i_r > 255) { i_r = 255; }
+   if (i_g > 255) { i_g = 255; }
+   if (i_b > 255) { i_b = 255; }
+   if (i_a > 255) { i_a = 255; }
 }
+
+
+gfx_color_mixer::gfx_color_mixer()
+{
+   clear();
+}
+
+void gfx_color_mixer::clear()
+{
+   pos_color_vect.clear();
+   pos_color_vect.push_back(pos_color{ 0.f, gfx_color::colors::black });
+   pos_color_vect.push_back(pos_color{ 1.f, gfx_color::colors::white });
+}
+
+int gfx_color_mixer::set_color_at(gfx_color i_color, float i_position)
+{
+   if (i_position < 0.f || i_position > 1.f)
+   {
+      return -1;
+   }
+
+   // find the the closest match that's not less than i_position (can be equal)
+   auto it = closest_gte_val(pos_color_vect, i_position);
+   int idx = -1;
+
+   if (it != pos_color_vect.end())
+   {
+      idx = it - pos_color_vect.begin();
+
+      if (it->pos == i_position)
+      {
+         *it = pos_color{ i_position, i_color };
+      }
+      else
+      {
+         pos_color_vect.insert(it, pos_color{ i_position, i_color });
+      }
+   }
+
+   return idx;
+}
+
+gfx_color gfx_color_mixer::get_color_at(float i_position)
+{
+   if (i_position <= 0.f)
+   {
+      return pos_color_vect.front().color;
+   }
+
+   if (i_position >= 1.f)
+   {
+      return pos_color_vect.back().color;
+   }
+
+   // find the the closest match that's not less than i_position (can be equal)
+   auto lim_sup = closest_gte_val(pos_color_vect, i_position);
+   auto lim_inf = lim_sup - 1;
+   // switch interval to [0, lim_sup - lim_inf]
+   float interval = lim_sup->pos - lim_inf->pos;
+   float mixf = (i_position - lim_inf->pos) / interval;
+
+   return gfx_color::mix(lim_inf->color, lim_sup->color, mixf);
+}
+
+bool gfx_color_mixer::remove_idx(uint32 i_idx)
+{
+   if (i_idx <= 0 || i_idx >= pos_color_vect.size() - 1)
+   {
+      return false;
+   }
+
+   pos_color_vect.erase(pos_color_vect.begin() + i_idx);
+
+   return true;
+}
+
+// find the the closest match that's not less than i_position
+std::vector<gfx_color_mixer::pos_color>::iterator gfx_color_mixer::closest_gte_val(std::vector<pos_color>& i_vect, float i_position)
+{
+   static auto cmp_positions = [](const pos_color& i_a, const pos_color& i_b) { return i_a.pos < i_b.pos; };
+   pos_color pc;
+   pc.pos = i_position;
+   // i_vect is ordered, so we can do a binary search
+   auto it = std::lower_bound(i_vect.begin(), i_vect.end(), pc, cmp_positions);
+
+   return it;
+};

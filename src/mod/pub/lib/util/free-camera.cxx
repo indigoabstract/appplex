@@ -23,9 +23,9 @@ free_camera::free_camera(mws_sp<mws_mod> i_mod)
    mov_type = e_roll_view_axis;
 }
 
-void free_camera::update_input(mws_sp<mws_dp> idp)
+void free_camera::update_input(mws_sp<mws_dp> i_dp)
 {
-   if (idp->is_processed())
+   if (i_dp->is_processed())
    {
       return;
    }
@@ -41,9 +41,9 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
       mov_type = e_roll_view_axis;
    }
 
-   if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
       bool dragging_detected = dragging_det.detect_helper(ts);
 
@@ -123,9 +123,9 @@ void free_camera::update_input(mws_sp<mws_dp> idp)
          }
       }
    }
-   else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
    {
-      mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
+      mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
       if (!ke->is_released())
       {

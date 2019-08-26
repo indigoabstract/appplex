@@ -469,7 +469,7 @@ public class main extends Activity
         });
     }
 
-    public static int get_screen_dpi()
+    public static float get_screen_dpi()
     {
         if(inst().display_metrics == null)
         {
@@ -477,7 +477,9 @@ public class main extends Activity
             inst().getWindowManager().getDefaultDisplay().getRealMetrics(inst().display_metrics);
         }
 
-        return inst().display_metrics.densityDpi;
+        float avg_dpi = (inst().display_metrics.xdpi + inst().display_metrics.ydpi) / 2.f;
+
+        return avg_dpi;
     }
 
     public static String get_timezone_id()

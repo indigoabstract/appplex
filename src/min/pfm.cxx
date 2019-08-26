@@ -5,6 +5,8 @@
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
+#include "mod-list.hxx"
+#include "mws-vkb/mws-vkb.hxx"
 
 #include <cstdio>
 #include <cstdlib>
@@ -990,8 +992,22 @@ mws_sp<pfm_main> pfm_main::gi()
 void pfm_main::init() {}
 void pfm_main::start() {}
 void pfm_main::run() {}
-key_types pfm_main::translate_key(int i_pfm_key_id) const { return KEY_INVALID; }
-key_types pfm_main::apply_key_modifiers(key_types i_key_id) const { return KEY_INVALID; }
+
+key_types pfm_main::apply_key_modifiers(key_types i_key_id) const
+{
+   if (mod_mws_vkb_on)
+   {
+      mws_sp<mws_vkb> vkb = mws_vkb::gi();
+
+      if (vkb && vkb->is_visible())
+      {
+         return vkb->apply_key_modifiers(i_key_id);
+      }
+   }
+
+   return apply_key_modifiers_impl(i_key_id);
+}
+
 float pfm_main::get_screen_scale() const { return 1.f; }
 float pfm_main::get_screen_brightness() const { return 1.f; }
 void pfm_main::set_screen_brightness(float i_brightness) {}

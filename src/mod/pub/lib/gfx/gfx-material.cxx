@@ -18,9 +18,9 @@ static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha,
 static int blending_list_length = sizeof(blending_list) / sizeof(gfx_uint);
 
 
-mws_sp<gfx_material_entry> gfx_material_entry::nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent)
+mws_sp<gfx_material_entry> gfx_material_entry::nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent)
 {
-   return mws_sp<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, iparent));
+   return mws_sp<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, i_parent));
 }
 
 mws_sp<gfx_material_entry> gfx_material_entry::get_inst()
@@ -28,10 +28,10 @@ mws_sp<gfx_material_entry> gfx_material_entry::get_inst()
    return shared_from_this();
 }
 
-gfx_material_entry::gfx_material_entry(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent)
+gfx_material_entry::gfx_material_entry(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent)
 {
    root = imaterial_inst;
-   parent = iparent;
+   parent = i_parent;
    enabled = true;
    name = i_name;
    value.clear();

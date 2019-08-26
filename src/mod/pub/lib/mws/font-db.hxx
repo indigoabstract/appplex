@@ -9,6 +9,8 @@ struct texture_glyph_t;
 class gfx_tex;
 class mws_font;
 class font_db_impl;
+class mws_pt;
+class mws_px;
 
 
 class font_glyph
@@ -16,7 +18,7 @@ class font_glyph
 public:
    font_glyph();
 
-   bool is_valid();
+   bool is_valid() const;
    /**
    * Wide character this glyph represents
    */
@@ -111,6 +113,8 @@ public:
    float get_descender(mws_sp<mws_font> i_font);
    float get_height(mws_sp<mws_font> i_font);
    glm::vec2 get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text);
+   void store_font_height(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px, const mws_pt& i_max_height_pt, const mws_px& i_max_height_px);
+   void load_font_height(const std::string& i_font_path, mws_pt& o_min_height_pt, mws_px& o_min_height_px, mws_pt& o_max_height_pt, mws_px& o_max_height_px);
 
 private:
    friend class mws_mod;

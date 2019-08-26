@@ -103,8 +103,8 @@ public:
 
 protected:
    friend class gfx_material;
-   static mws_sp<gfx_material_entry> nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent);
-   gfx_material_entry(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> iparent);
+   static mws_sp<gfx_material_entry> nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
+   gfx_material_entry(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
 
    mws_wp<gfx_material> root;
    mws_wp<gfx_material_entry> parent;
