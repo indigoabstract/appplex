@@ -7,6 +7,7 @@
 /libs
 /pfm/android/default/.gradle
 /pfm/android/default/.idea
+/pfm/android/default/app/.cxx
 /pfm/android/default/app/.externalNativeBuild
 /pfm/android/default/app/build
 /pfm/android/default/app/src/main/assets

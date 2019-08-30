@@ -61,6 +61,79 @@ namespace pfm_impl
 }
 
 
+// set debug flags for use in conditional expressions to print debug output
+// there should be no cost to using this on release builds, as anything that depends on it should be optimized out,
+// as dead / unreachable code (because mws_debug_enabled will be 'false' on release builds)
+class mws_dbg
+{
+public:
+   // standard flags list
+   // touch events
+   static inline const uint64 pfm_touch = 1 << 0;
+   static inline const uint64 app_touch = 1 << 1;
+   // net events
+   static inline const uint64 pfm_net = 1 << 2;
+   static inline const uint64 app_net = 1 << 3;
+   // last standard flag. flag values greater than this are considered custom flag values
+   static inline const uint64 last_std_flag = app_net;
+
+   static bool enabled(uint64 i_flags) { return mws_debug_enabled && ((flags & i_flags) != 0); }
+   static uint64 get_active_flags() { return flags; }
+
+   static void set_flags(uint64 i_flags, bool i_clear_flags = false)
+   {
+      // used flags must have already been registered
+      mws_assert((i_flags & used_flags) == i_flags);
+
+      if (i_clear_flags)
+      {
+         flags &= ~i_flags;
+      }
+      else
+      {
+         flags |= i_flags;
+      }
+   }
+
+   // returns the most significant bit set in the registered flags
+   // use this to register a new custom flag, by shifting left the returned value
+   static uint64 get_registered_flags_msb_val()
+   {
+      if (!used_flags)
+      {
+         return 0;
+      }
+
+      uint64 msb_val = 1;
+
+      while (used_flags >>= 1)
+      {
+         msb_val <<= 1;
+      }
+
+      return msb_val;
+   }
+
+   // if using non standard flag, register it first, to prevent collisions with other non standard flags
+   static void register_flags(uint64 i_flags)
+   {
+      uint64 std_flags = last_std_flag + last_std_flag - 1;
+      // standard flags are already taken, cannot register
+      mws_assert((i_flags & std_flags) == 0);
+      // flags must not already be registered
+      mws_assert((i_flags & used_flags) == 0);
+      // register the custom flags
+      used_flags |= i_flags;
+   }
+
+private:
+   // current active debug flags
+   static inline uint64 flags = 0;
+   // set the standard flags
+   static inline uint64 used_flags = last_std_flag + last_std_flag - 1;
+};
+
+
 class mws_exception
 #ifdef MWS_USES_EXCEPTIONS
    : public std::exception

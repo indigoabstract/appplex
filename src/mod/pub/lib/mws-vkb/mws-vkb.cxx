@@ -709,7 +709,7 @@ void mws_vkb_impl::set_mod_key_lock(mod_key_types i_mod_key, bool i_set_lock)
    if (mod_key_idx != -1)
    {
       base_key_state_types state = (i_set_lock) ? base_key_state_types::key_locked : base_key_state_types::key_free;
-      set_key_state(mod_key_idx, base_key_state_types::key_free);
+      set_key_state(mod_key_idx, state);
    }
 }
 
@@ -765,8 +765,7 @@ bool mws_vkb_impl::touch_began(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
    {
       auto& pt = i_pe->points[k];
       auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
-      key_types key_id = get_key_at(ret.idx);
-      //trx("pressed i_idx {}", (char)key_id);
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("pressed key {} at {}", (char)get_key_at(ret.idx), ret.idx); }
 
       held_keys_st[crt_keys_st_idx][ret.idx] = pt.is_changed;
    }
@@ -787,8 +786,7 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
    {
       auto& pt = i_pe->points[k];
       auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
-      key_types key_id = get_key_at(ret.idx);
-      //trx("highlight i_idx {}", ret.idx);
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("moved key {} at {}", (char)get_key_at(ret.idx), ret.idx); }
 
       held_keys_st[crt_keys_st_idx][ret.idx] = pt.is_changed;
    }
@@ -814,7 +812,14 @@ bool mws_vkb_impl::touch_ended(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
       {
          auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
 
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("released key {} at {}", (char)get_key_at(ret.idx), ret.idx); }
          held_keys_st[crt_keys_st_idx][ret.idx] = pt.is_changed;
+      }
+      else
+      {
+         auto ret = vk->get_kernel_idx_at(pt.x, pt.y);
+
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("NOT released key {} at {}", (char)get_key_at(ret.idx), ret.idx); }
       }
    }
 
@@ -837,33 +842,43 @@ bool mws_vkb_impl::touch_cancelled(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_are
 
 void mws_vkb_impl::highlight_key_at(int i_idx, bool i_light_on)
 {
-   mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx];
-   mesh->visible = i_light_on;
+   auto& mesh_vect = vk->vgeom->cell_borders->cell_borders_mesh_vect;
 
-   for (auto it = highlight_vect.begin(); it != highlight_vect.end(); ++it)
+   if (!mesh_vect.empty())
    {
-      if (it->key_idx == i_idx)
+      mws_sp<gfx_vxo> mesh = mesh_vect[i_idx];
+      mesh->visible = i_light_on;
+
+      for (auto it = highlight_vect.begin(); it != highlight_vect.end(); ++it)
       {
-         (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
-         highlight_vect.erase(it);
-         break;
+         if (it->key_idx == i_idx)
+         {
+            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+            highlight_vect.erase(it);
+            break;
+         }
       }
    }
 }
 
 void mws_vkb_impl::fade_key_at(int i_idx)
 {
-   for (auto& kh : highlight_vect)
-   {
-      if (kh.key_idx == i_idx)
-      {
-         kh.release_time = pfm::time::get_time_millis();
-         mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[i_idx];
-         return;
-      }
-   }
+   auto& mesh_vect = vk->vgeom->cell_borders->cell_borders_mesh_vect;
 
-   highlight_vect.push_back(key_highlight{ i_idx, pfm::time::get_time_millis() });
+   if (!mesh_vect.empty())
+   {
+      for (auto& kh : highlight_vect)
+      {
+         if (kh.key_idx == i_idx)
+         {
+            kh.release_time = pfm::time::get_time_millis();
+            mws_sp<gfx_vxo> mesh = mesh_vect[i_idx];
+            return;
+         }
+      }
+
+      highlight_vect.push_back(key_highlight{ i_idx, pfm::time::get_time_millis() });
+   }
 }
 
 void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
@@ -880,6 +895,7 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
       // this will become true when keyboard becomes hidden
       bool keys_iter_invalidated = false;
 
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt pressed, {} keys to press", crt_st.size()); }
       // for every key that's present in the current ht, if it's changed, call key_pressed() and highlight it
       for (auto it = crt_st.begin(); it != crt_st.end(); ++it)
       {
@@ -890,7 +906,10 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
             int pos_idx = it->first;
 
             kc->key_pressed(key_types(pos_idx));
-            trx("kp {}", pos_idx);
+            if (mws_dbg::enabled(mws_dbg::app_touch))
+            {
+               trx("handle_ptr_evt {} key {} at {}", (i_pe->type == mws_ptr_evt::touch_began) ? "began" : "moved", (char)get_key_at(pos_idx), pos_idx);
+            }
             keys_iter_invalidated = set_key_state(pos_idx, base_key_state_types::key_held);
 
             if (keys_iter_invalidated)
@@ -899,9 +918,11 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
             }
          }
       }
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt pressed, finished pressing keys"); }
 
       if (!keys_iter_invalidated)
       {
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt pressed, {} keys to release", prev_st.size()); }
          // for every key that's not present in the current ht, call key_released() and fade it out
          for (auto it = prev_st.begin(); it != prev_st.end(); ++it)
          {
@@ -910,7 +931,10 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
                int pos_idx = it->first;
 
                kc->key_released(key_types(pos_idx));
-               trx("kr0 {}", pos_idx);
+               if (mws_dbg::enabled(mws_dbg::app_touch))
+               {
+                  trx("handle_ptr_evt {} released key {} at {}", (i_pe->type == mws_ptr_evt::touch_began) ? "began" : "moved", (char)get_key_at(pos_idx), pos_idx);
+               }
                keys_iter_invalidated = set_key_state(pos_idx, base_key_state_types::key_free);
 
                if (keys_iter_invalidated)
@@ -919,6 +943,7 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
                }
             }
          }
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt pressed, finished releasing keys"); }
       }
       break;
    }
@@ -928,13 +953,14 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
       // this will become true when keyboard becomes hidden
       bool keys_iter_invalidated = false;
 
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt released, released {} keys", crt_st.size()); }
       // for every key that's present in the current ht, call key_released() and fade it out
       for (auto it = crt_st.begin(); it != crt_st.end(); ++it)
       {
          int pos_idx = it->first;
 
          kc->key_released(key_types(pos_idx));
-         trx("kr1 {}", pos_idx);
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt released key {} at {}", (char)get_key_at(pos_idx), pos_idx); }
          keys_iter_invalidated = set_key_state(pos_idx, base_key_state_types::key_free);
 
          if (keys_iter_invalidated)
@@ -955,10 +981,12 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
 
             if (st.state == base_key_state_types::key_held)
             {
+               if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt released, releasing key {} at {}", st.key_id, k); }
                set_key_state(k, base_key_state_types::key_free);
             }
          }
       }
+      if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("handle_ptr_evt released, finished releasing keys"); }
 
       crt_st.clear();
       break;
@@ -972,9 +1000,12 @@ void mws_vkb_impl::handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe)
    prev_st.clear();
    std::swap(crt_keys_st_idx, prev_keys_st_idx);
 
-   for (auto p : crt_st)
+   if (mws_dbg::enabled(mws_dbg::app_touch))
    {
-      trx("key-held {}", p.first);
+      for (auto p : crt_st)
+      {
+         trx("handle_ptr_evt key-held {} at {}", (char)get_key_at(p.first), p.first);
+      }
    }
 }
 
@@ -1049,7 +1080,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
             }
          }
 
-         trx("alt key_mod {}", (int)key_mod);
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("alt key_mod {}", (int)key_mod); }
          update_lights(i_key_idx, i_state);
          break;
       }
@@ -1072,7 +1103,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
             }
          }
 
-         trx("shift key_mod {} state {}", (int)key_mod, (int)i_state);
+         if (mws_dbg::enabled(mws_dbg::app_touch)) { trx("shift key_mod {} state {}", (int)key_mod, (int)i_state); }
          update_lights(i_key_idx, i_state);
          break;
       }
@@ -1150,6 +1181,7 @@ mws_sp<mws_vkb> mws_vkb::gi()
 {
    if (!inst)
    {
+      if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::app_touch); }
       inst = mws_sp<mws_vkb>(new mws_vkb());
       inst->setup();
    }

@@ -493,7 +493,7 @@ inline std::string data_sequence_reader::read_line()
 {
    std::string text;
    std::vector<char> line;
-   char c = 0;
+   int8 c = 0;
    line.reserve(256);
 
    while (true)
