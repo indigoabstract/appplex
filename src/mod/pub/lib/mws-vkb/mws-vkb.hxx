@@ -131,9 +131,8 @@ protected:
    virtual bool touch_cancelled(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    void highlight_key_at(int i_idx, bool i_light_on = true);
    void fade_key_at(int i_idx);
-   void handle_ptr_evt(mws_sp<mws_ptr_evt> i_pe);
    void release_all_keys();
-   // set the state of the keys. if return value is true, the held_keys_st iterators are invalidated and need to be aborted
+   // set the state of the keys. if return value is true, the iterators are invalidated and need to be aborted
    // returns true when keyboard has been hidden (and the key state cleared), false otherwise
    bool set_key_state(int i_key_idx, base_key_state_types i_state);
    // call this after modifying / inserting / deleting a base key (a mod_node key)
@@ -150,11 +149,9 @@ protected:
    struct key_highlight { int key_idx; uint32 release_time; };
    std::vector<key_highlight> highlight_vect;
    double_tap_detector dbl_tap_det;
-   std::vector<std::unordered_map<int, bool>> held_keys_st;
-   int crt_keys_st_idx = 0;
-   int prev_keys_st_idx = 1;
-   struct base_key_state { key_types key_id; base_key_state_types state; };
+   struct base_key_state { key_types key_id; base_key_state_types state; uint8 pressed_count; };
    std::vector<base_key_state> base_key_st;
+   mws_sp<mws_ptr_evt> prev_ptr_evt;
    std::unordered_map<int, key_types> mod_keys_st;
 
 private:

@@ -130,6 +130,7 @@ bool touchctrl::is_pointer_down = false;
 
 touchctrl::touchctrl()
 {
+   //if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::pfm_touch); }
    queue_tab.resize(2);
    queue_ptr = &queue_tab[queue_idx];
 }
@@ -163,23 +164,122 @@ void touchctrl::update()
    {
       for (auto i_pe : *input_queue_ptr)
       {
+         if (mws_dbg::enabled(mws_dbg::pfm_touch))
+         {
+            const char* evt_type = nullptr;
+
+            switch (i_pe->type)
+            {
+            case mws_ptr_evt::touch_invalid:
+               break;
+
+            case mws_ptr_evt::touch_began:
+               if (!evt_type) { evt_type = "began"; }
+            case mws_ptr_evt::touch_moved:
+               if (!evt_type) { evt_type = "moved"; }
+            case mws_ptr_evt::touch_ended:
+            {
+               if (!evt_type) { evt_type = "ended"; }
+               std::string msg = mws_to_str_fmt("ptr-%s[ ", evt_type);
+
+               for (uint32 k = 0; k < i_pe->touch_count; k++)
+               {
+                  const mws_ptr_evt::touch_point& pt = i_pe->points[k];
+
+                  if (pt.is_changed)
+                  {
+                     msg += mws_to_str_fmt("%d[%4.2f, %4.2f] !CHANGED!, ", pt.identifier, pt.x, pt.y);
+                  }
+                  else
+                  {
+                     msg += mws_to_str_fmt("%d[%4.2f, %4.2f], ", pt.identifier, pt.x, pt.y);
+                  }
+               }
+               mws_println("%s]", msg.c_str());
+               break;
+            }
+
+            case mws_ptr_evt::touch_cancelled:
+               mws_println("ptr-cancelled[  ]");
+               break;
+
+            case mws_ptr_evt::mouse_wheel:
+               mws_println("ptr-mouse-wheel[ %4.2f ]", i_pe->mouse_wheel_delta);
+               break;
+            }
+         }
+
          switch (i_pe->type)
          {
-         case mws_ptr_evt::touch_began:
-            on_pointer_action_pressed(i_pe);
+         case mws_ptr_evt::touch_invalid:
             break;
 
-         case mws_ptr_evt::touch_ended:
-            on_pointer_action_released(i_pe);
+         case mws_ptr_evt::touch_began:
+         {
+            if (i_pe->touch_count == 1)
+            {
+               prev_ptr_evt = nullptr;
+            }
+
+            is_pointer_down = true;
+            broadcast(get_instance(), i_pe);
+            prev_ptr_evt = i_pe;
             break;
+         }
 
          case mws_ptr_evt::touch_moved:
-            on_pointer_action_dragged(i_pe);
+         {
+            if (is_pointer_down)
+            {
+               // calculate 'is_changed' for pointer move events
+               if (prev_ptr_evt)
+               {
+                  for (uint32 k = 0; k < i_pe->touch_count; k++)
+                  {
+                     mws_ptr_evt::touch_point& pt = i_pe->points[k];
+
+                     if (!pt.is_changed)
+                     {
+                        const mws_ptr_evt::touch_point* same_id = prev_ptr_evt->find_point(pt.identifier);
+
+                        if (same_id)
+                        {
+                           if ((pt.x != same_id->x) || (pt.y != same_id->y))
+                           {
+                              pt.is_changed = true;
+                           }
+                        }
+                     }
+                  }
+               }
+
+               broadcast(get_instance(), i_pe);
+               prev_ptr_evt = i_pe;
+            }
+
             break;
+         }
+
+         case mws_ptr_evt::touch_ended:
+         {
+            is_pointer_down = false;
+            broadcast(get_instance(), i_pe);
+            prev_ptr_evt = i_pe;
+            break;
+         }
+
+         case mws_ptr_evt::touch_cancelled:
+         {
+            broadcast(get_instance(), i_pe);
+            prev_ptr_evt = i_pe;
+            break;
+         }
 
          case mws_ptr_evt::mouse_wheel:
-            on_pointer_action_mouse_wheel(i_pe);
+         {
+            broadcast(get_instance(), i_pe);
             break;
+         }
          }
       }
    }
@@ -187,38 +287,16 @@ void touchctrl::update()
 
 void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_te)
 {
-   mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
-   (*queue_ptr).push_back(te);
+   if (queue_ptr)
+   {
+      mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
+      (*queue_ptr).push_back(te);
+   }
 }
 
 mws_sp<mws_sender> touchctrl::sender_inst()
 {
    return get_instance();
-}
-
-void touchctrl::on_pointer_action_pressed(mws_sp<mws_ptr_evt> i_pe)
-{
-   is_pointer_down = true;
-   broadcast(get_instance(), i_pe);
-}
-
-void touchctrl::on_pointer_action_dragged(mws_sp<mws_ptr_evt> i_pe)
-{
-   if (is_pointer_down)
-   {
-      broadcast(get_instance(), i_pe);
-   }
-}
-
-void touchctrl::on_pointer_action_released(mws_sp<mws_ptr_evt> i_pe)
-{
-   is_pointer_down = false;
-   broadcast(get_instance(), i_pe);
-}
-
-void touchctrl::on_pointer_action_mouse_wheel(mws_sp<mws_ptr_evt> i_pe)
-{
-   broadcast(get_instance(), i_pe);
 }
 
 

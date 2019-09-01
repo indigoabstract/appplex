@@ -67,6 +67,7 @@ public class main_glsv extends GLSurfaceView
 				touch_type = TOUCH_MOVED;
 				break;
 
+            case MotionEvent.ACTION_OUTSIDE:
 			case MotionEvent.ACTION_CANCEL:
 				touch_type = TOUCH_CANCELLED;
 				break;

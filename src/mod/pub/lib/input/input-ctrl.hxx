@@ -66,14 +66,11 @@ private:
 
    virtual mws_sp<mws_sender> sender_inst();
 
-   void on_pointer_action_pressed(mws_sp<mws_ptr_evt> i_pe);
-   void on_pointer_action_dragged(mws_sp<mws_ptr_evt> i_pe);
-   void on_pointer_action_released(mws_sp<mws_ptr_evt> i_pe);
-   void on_pointer_action_mouse_wheel(mws_sp<mws_ptr_evt> i_pe);
-
    int queue_idx = 0;
    std::vector<std::vector<mws_sp<mws_ptr_evt>>> queue_tab;
+   mws_sp<mws_ptr_evt> prev_ptr_evt;
 
+   // prevents mouse-move events from messing up the touch/pointer events
    static bool is_pointer_down;
    static point2d first_press;
    static point2d last_pointer_pos;

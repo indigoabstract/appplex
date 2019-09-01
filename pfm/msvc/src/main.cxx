@@ -509,11 +509,11 @@ void msvc_main::write_text(const wchar_t* text)const
 
 void msvc_main::write_text_v(const char* iformat, ...)const
 {
-   char dest[1024 * 16];
+   char dest[16000];
    va_list argptr;
 
    va_start(argptr, iformat);
-   vsnprintf_s(dest, 1024 * 16 - 1, _TRUNCATE, iformat, argptr);
+   vsnprintf_s(dest, 16000 - 1, _TRUNCATE, iformat, argptr);
    va_end(argptr);
 
    if (iformat && instance->console_handle != INVALID_HANDLE_VALUE)

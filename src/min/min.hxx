@@ -184,7 +184,7 @@ public:
    static mws_sp<mws_ptr_evt_base> nwi();
    virtual ~mws_ptr_evt_base() {}
 
-   static const int MAX_TOUCH_POINTS = 8;
+   static const uint32 MAX_TOUCH_POINTS = 8;
 
    enum e_touch_type
    {

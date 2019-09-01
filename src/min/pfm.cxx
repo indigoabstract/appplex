@@ -1390,11 +1390,11 @@ mws_sp<pfm_main> pfm::get_pfm_main_inst()
 
 std::string mws_to_str_fmt(const char* i_format, ...)
 {
-   char dest[1024 * 16];
+   char dest[16000];
    va_list arg_ptr;
 
    va_start(arg_ptr, i_format);
-   vsnprintf(dest, 1024 * 16 - 1, i_format, arg_ptr);
+   vsnprintf(dest, 16000 - 1, i_format, arg_ptr);
    va_end(arg_ptr);
 
    return std::string(dest);
@@ -1407,11 +1407,11 @@ void mws_nl_impl()
 
 void mws_print_impl(const char* i_format, ...)
 {
-   char dest[1024 * 16];
+   char dest[16000];
    va_list arg_ptr;
 
    va_start(arg_ptr, i_format);
-   vsnprintf(dest, 1024 * 16 - 1, i_format, arg_ptr);
+   vsnprintf(dest, 16000 - 1, i_format, arg_ptr);
    va_end(arg_ptr);
    pfm::get_pfm_main_inst()->write_text(dest);
 }
