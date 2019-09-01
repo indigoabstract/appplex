@@ -2,9 +2,9 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows, emscripten ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ multi-touch-input ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -123,6 +123,7 @@ mod
 	test-res-ld[ uses[ gfx, png, res-ld ], platf[ all ], ],
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
 	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts], ],
+	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
 ],
 
 mod-dependencies

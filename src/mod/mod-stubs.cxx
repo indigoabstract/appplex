@@ -76,6 +76,18 @@ int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #include "mws-vkb/mws-vkb.hxx"
 mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
 key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const { return KEY_INVALID; }
+void mws_vkb::receive(mws_sp<mws_dp>) {}
+void mws_vkb::update_state() {}
+void mws_vkb::setup() {}
+void mws_vkb::on_resize() {}
+void mws_vkb::set_target(mws_sp<mws_text_area>) {}
+mws_sp<mws_font> mws_vkb::get_font() { return nullptr; }
+void mws_vkb::set_font(mws_sp<mws_font>) {}
+mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const { return nullptr; }
+void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store>) {}
+mws_sp<gfx_tex> mws_vkb::get_cell_border_tex() { return nullptr; }
+void mws_vkb::done() {}
+mws_sp<mws_vkb_impl> mws_vkb::get_impl() { return nullptr; }
 #endif
 
 #if !MOD_OMNIRECALL

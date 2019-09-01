@@ -663,6 +663,11 @@ mws_sp<font_db> font_db::inst()
    return instance;
 }
 
+mws_sp<mws_font> font_db::get_global_font() const
+{
+   return nullptr;
+}
+
 void font_db::on_frame_start()
 {
 }

@@ -1,5 +1,6 @@
 #include "stdafx.hxx"
 
+#include "appplex-conf.hxx"
 #include "mws-text-box.hxx"
 #include "mws-mod.hxx"
 #include "mws-camera.hxx"
@@ -10,6 +11,8 @@
 #include "mws-vkb/mws-vkb.hxx"
 #include "min.hxx"
 
+
+#if defined MOD_VECTOR_FONTS
 
 static const std::string nl_char_size = "n";
 
@@ -1222,3 +1225,5 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
    }
    }
 }
+
+#endif
