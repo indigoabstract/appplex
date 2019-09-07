@@ -4,6 +4,9 @@
 #include <vector>
 #include "pfm-def.h"
 
+class mws_cm;
+class mws_pt;
+class mws_px;
 class gfx_obj;
 class gfx_rt;
 class gfx_shader_listener;
@@ -13,6 +16,53 @@ class gfx_tex;
 class gfx_tex_cube_map;
 class gfx_state;
 class mws_mod_ctrl;
+
+
+// screen metrix
+class mws_dim
+{
+public:
+   virtual float val() const { return size; }
+   virtual mws_cm to_cm() const = 0;
+   virtual mws_pt to_pt() const = 0;
+   virtual mws_px to_px() const = 0;
+
+protected:
+   mws_dim() {}
+
+   float size = 0.f;
+};
+
+
+class mws_cm : public mws_dim
+{
+public:
+   mws_cm(float i_size = 0.f) { size = i_size; }
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
+
+
+class mws_pt : public mws_dim
+{
+public:
+   mws_pt(float i_size = 0.f) { size = i_size; }
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
+
+
+class mws_px : public mws_dim
+{
+public:
+   mws_px(float i_size = 0.f) { size = i_size; }
+   uint32 int_val() const;
+   virtual mws_cm to_cm() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px() const override;
+};
 
 
 class gfx

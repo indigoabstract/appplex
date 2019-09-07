@@ -29,59 +29,10 @@ class mws_virtual_keyboard;
 class gfx_vxo;
 class text_vxo;
 struct vkb_file_info;
-class mws_cm;
-class mws_pt;
-class mws_px;
 
 
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
-
-class mws_dim
-{
-public:
-   virtual float val() const { return size; }
-   virtual mws_cm to_cm() const = 0;
-   virtual mws_pt to_pt() const = 0;
-   virtual mws_px to_px() const = 0;
-
-protected:
-   mws_dim() {}
-
-   float size = 0.f;
-};
-
-
-class mws_cm : public mws_dim
-{
-public:
-   mws_cm(float i_size = 0.f) { size = i_size; }
-   virtual mws_cm to_cm() const override;
-   virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
-};
-
-
-class mws_pt : public mws_dim
-{
-public:
-   mws_pt(float i_size = 0.f) { size = i_size; }
-   virtual mws_cm to_cm() const override;
-   virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
-};
-
-
-class mws_px : public mws_dim
-{
-public:
-   mws_px(float i_size = 0.f) { size = i_size; }
-   uint32 int_val() const;
-   virtual mws_cm to_cm() const override;
-   virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
-};
-
 
 class mws_rect
 {

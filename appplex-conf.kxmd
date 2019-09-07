@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ multi-touch-input ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ screen-metrix ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -63,7 +63,7 @@ mod
 	input[],
 	vrn[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
 	kxmd[],
-	mws[],
+	mws[ uses[ gfx, fonts, input ] ],
 	mws-vkb[],
 	noise[],
 	notifications[],
@@ -74,6 +74,7 @@ mod
 	rng[],
 	snd[],
 	stk,
+	tex-atlas[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], app-uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	tiny-obj-loader[],
 	util[],
 	vg,
@@ -124,6 +125,7 @@ mod
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
 	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts], ],
 	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
+	screen-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

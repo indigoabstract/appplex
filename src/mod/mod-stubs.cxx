@@ -55,9 +55,9 @@ void gfx_scene::post_draw() { err_na(); }
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
 mws_sp<key_ctrl> key_ctrl::nwi() { err_na(); return nullptr; }
-void key_ctrl::key_pressed(int) { err_na(); }
-void key_ctrl::key_released(int) { err_na(); }
-void key_ctrl::update() { err_na(); }
+void key_ctrl::key_pressed(key_types) {}
+void key_ctrl::key_released(key_types) {}
+void key_ctrl::update() {}
 const std::string mws_key_evt::KEYEVT_EVT_TYPE;
 mws_sp<mws_key_evt> mws_key_evt::as_key_evt(mws_sp<mws_dp>) { err_na(); return nullptr; }
 key_types mws_key_evt::get_key(void) const { err_na(); return KEY_INVALID; }
@@ -66,8 +66,8 @@ const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE;
 mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { err_na(); return nullptr; }
 mws_sp<mws_ptr_evt> mws_ptr_evt::as_pointer_evt(mws_sp<mws_dp>) { err_na(); return nullptr; }
 mws_sp<touchctrl> touchctrl::nwi() { err_na(); return nullptr; }
-void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base>) { err_na(); }
-void touchctrl::update() { err_na(); }
+void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base>) {}
+void touchctrl::update() {}
 mws_sp<updatectrl> updatectrl::nwi() { err_na(); return nullptr; }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
@@ -94,7 +94,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl() { return nullptr; }
 #include "pfm.hxx"
 bool mws_log::is_enabled() { return false; }
 void mws_log::set_enabled(bool i_is_enabled) {}
-mws_sp<mws_log> mws_log::i() { return nullptr; }
+mws_sp<mws_log> mws_log::i() { err_na(); return nullptr; }
 const std::vector<std::string> mws_log::get_log() { return std::vector<std::string>(); }
 void mws_log::push(const char* i_msg) {}
 void mws_log::pushf(const char* i_fmt, ...) {}

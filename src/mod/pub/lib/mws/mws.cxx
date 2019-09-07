@@ -20,64 +20,6 @@
 #endif
 
 
-static const float pt_in_cm = 0.03528f;
-
-mws_cm mws_cm::to_cm() const { return *this; }
-
-mws_pt mws_cm::to_pt() const
-{
-   return mws_pt(size / pt_in_cm);
-}
-
-mws_px mws_cm::to_px() const
-{
-   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
-   float px_count = size * px_per_cm;
-
-   return mws_px(px_count);
-}
-
-
-mws_cm mws_pt::to_cm() const
-{
-   return mws_cm(size * pt_in_cm);
-}
-
-mws_pt mws_pt::to_pt() const
-{
-   return *this;
-}
-
-mws_px mws_pt::to_px() const
-{
-   return mws_cm(size * pt_in_cm).to_px();
-}
-
-
-uint32 mws_px::int_val() const
-{
-   return static_cast<uint32>(glm::round(size));
-}
-
-mws_cm mws_px::to_cm() const
-{
-   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
-   float cm_count = size / px_per_cm;
-
-   return mws_cm(cm_count);
-}
-
-mws_pt mws_px::to_pt() const
-{
-   return to_cm().to_pt();
-}
-
-mws_px mws_px::to_px() const
-{
-   return *this;
-}
-
-
 mws_rect::mws_rect() {}
 mws_rect::mws_rect(float i_x, float i_y, float i_w, float i_h)
 {
