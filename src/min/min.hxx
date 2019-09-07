@@ -184,7 +184,7 @@ public:
    static mws_sp<mws_ptr_evt_base> nwi();
    virtual ~mws_ptr_evt_base() {}
 
-   static const uint32 MAX_TOUCH_POINTS = 8;
+   static const uint32 max_touch_points = 8;
 
    enum e_touch_type
    {
@@ -207,7 +207,7 @@ public:
    e_touch_type type = touch_invalid;
    uint32 time = 0;
    uint32 touch_count = 0;
-   touch_point points[MAX_TOUCH_POINTS];
+   touch_point points[max_touch_points];
    real32 mouse_wheel_delta = 0;
 
 protected:

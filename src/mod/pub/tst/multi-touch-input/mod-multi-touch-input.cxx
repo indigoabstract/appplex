@@ -29,16 +29,16 @@ namespace mod_multi_touch_input_ns
             gfx_color::colors::red, gfx_color::colors::white, gfx_color::colors::yellow, gfx_color::colors::magenta,
          };
 
-         ptr_vxo_assigned.assign(mws_ptr_evt::MAX_TOUCH_POINTS, false);
-         ptr_vxo_vect.resize(mws_ptr_evt::MAX_TOUCH_POINTS);
+         ptr_vxo_assigned.assign(mws_ptr_evt::max_touch_points, false);
+         ptr_vxo_vect.resize(mws_ptr_evt::max_touch_points);
 
-         for(uint32 k = 0; k < mws_ptr_evt::MAX_TOUCH_POINTS; k++)
+         for(uint32 k = 0; k < mws_ptr_evt::max_touch_points; k++)
          {
             ptr_vxo_vect[k] = gfx_2d_sprite::nwi();
             gfx_2d_sprite& vxo = *ptr_vxo_vect[k];
             vxo.name = mws_to_str_fmt("ptr-%d", k);
             vxo.visible = false;
-            vxo[MP_SHADER_NAME] = "c-o-shader";
+            vxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
             vxo["u_v4_color"] = color_vect[k].to_vec4();
             vxo[MP_DEPTH_TEST] = true;
             vxo[MP_DEPTH_WRITE] = true;
@@ -59,7 +59,7 @@ namespace mod_multi_touch_input_ns
             gfx_2d_sprite& vxo = *ready_vxo;
             vxo.name = "ready-vxo";
             vxo.visible = true;
-            vxo[MP_SHADER_NAME] = "c-o-shader";
+            vxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
             vxo["u_v4_color"] = gfx_color::colors::green.to_vec4();
             vxo[MP_DEPTH_TEST] = true;
             vxo[MP_DEPTH_WRITE] = true;
@@ -99,7 +99,7 @@ namespace mod_multi_touch_input_ns
                   {
                      int idx = -1;
 
-                     for (int i = 0; i < mws_ptr_evt::MAX_TOUCH_POINTS; i++)
+                     for (int i = 0; i < mws_ptr_evt::max_touch_points; i++)
                      {
                         if (ptr_vxo_assigned[i] == false)
                         {

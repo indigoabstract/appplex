@@ -18,6 +18,12 @@ class mws_mod_ctrl;
 class gfx
 {
 public:
+   static const inline std::string black_sh_id = "black-shader";
+   static const inline std::string wireframe_sh_id = "wireframe-shader";
+   static const inline std::string basic_tex_sh_id = "basic-tex-shader";
+   static const inline std::string c_o_sh_id = "c-o-shader";
+   static const inline std::string mws_sh_id = "mws-shader";
+
    static mws_sp<gfx> nwi();
    static mws_sp<gfx> i() { return main_instance; }
    mws_sp<gfx_state> get_gfx_state();
@@ -63,20 +69,24 @@ public:
       mws_sp<gfx_shader> new_program_from_src
       (
          const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src,
-         mws_sp<gfx_shader_listener> ilistener = nullptr
+         mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
-      mws_sp<gfx_shader> new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener = nullptr);
+      mws_sp<gfx_shader> new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false);
       mws_sp<gfx_shader> new_program
       (
-         const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener = nullptr
+         const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
       mws_sp<gfx_shader> new_program
       (
          const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
-         mws_sp<gfx_shader_listener> ilistener = nullptr
+         mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
       mws_sp<gfx_shader> get_program_by_shader_id(std::string ishader_id);
       mws_sp<gfx_shader> get_program_by_name(std::string iprg_name);
+      // check for a shader named i_shader_root_name, return it if not null, otherwise,
+      // check if i_shader_root_name.vsh and i_shader_root_name.fsh exist, then load them in a new shader, otherwise give up and return nullptr
+      // useful for loading shaders from disk and/or code
+      mws_sp<gfx_shader> nwi_inex_by_shader_root_name(const std::string& i_shader_root_name, bool i_suppress_nex_msg = false);
       mws_sp<gfx_shader> get_current_program();
       void set_current_program(mws_sp<gfx_shader> iglp, bool force = false);
 

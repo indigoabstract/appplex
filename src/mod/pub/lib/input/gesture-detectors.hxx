@@ -70,6 +70,8 @@ public:
    gesture_state reset();
    glm::vec2 get_first_press_pos()const { return first_press_pos; }
    glm::vec2 get_second_press_pos() const { return second_press_pos; }
+   // distance evaluator custom function
+   std::function<bool(const glm::vec2& i_first_press, const glm::vec2& i_second_press)> dist_eval;
 
 private:
    enum class detector_state
@@ -81,6 +83,7 @@ private:
    };
 
    void set_state(detector_state i_st);
+   bool leq_max_dist(const glm::vec2& i_first_press, const glm::vec2& i_second_press);
 
    // get start position of tap
    glm::vec2 first_press_pos = glm::vec2(0.f);

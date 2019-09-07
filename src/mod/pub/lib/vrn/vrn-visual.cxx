@@ -666,7 +666,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       gfx_plane& r_quad_mesh = *quad_mesh;
       //r_quad_mesh.camera_id_list.clear();
       //r_quad_mesh.camera_id_list.push_back(persp_cam->camera_id());
-      r_quad_mesh[MP_SHADER_NAME] = "c-o-shader";
+      r_quad_mesh[MP_SHADER_NAME] = gfx::c_o_sh_id;
       r_quad_mesh["u_v4_color"] = glm::vec4(0, 0.05f, 0, 1);
       r_quad_mesh[MP_CULL_BACK] = false;
       r_quad_mesh.set_dimensions((float)diag_data->info.diag_width, (float)diag_data->info.diag_height);
@@ -679,7 +679,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
 void mws_vrn_geom::init_shaders()
 {
    // cell borders shader
-   vkb_cell_borders_shader = gfx::i()->shader.get_program_by_name(vkb_cell_borders_sh);
+   vkb_cell_borders_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_cell_borders_sh, true);
    if (!vkb_cell_borders_shader)
    {
       auto vsh = std::make_shared<std::string>(
@@ -734,7 +734,7 @@ void mws_vrn_geom::init_shaders()
    }
 
    // line shader
-   vkb_line_shader = gfx::i()->shader.get_program_by_name(vkb_line_sh);
+   vkb_line_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_line_sh, true);
    if (!vkb_line_shader)
    {
       auto vsh = std::make_shared<std::string>(
@@ -805,7 +805,7 @@ void mws_vrn_geom::init_shaders()
    }
 
    // point shader
-   vkb_point_shader = gfx::i()->shader.get_program_by_name(vkb_point_sh);
+   vkb_point_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_point_sh, true);
    if (!vkb_point_shader)
    {
       auto vsh = std::make_shared<std::string>(
@@ -865,7 +865,7 @@ void mws_vrn_geom::init_shaders()
    }
 
    // triangle shader
-   vkb_triangle_shader = gfx::i()->shader.get_program_by_name(vkb_triangle_sh);
+   vkb_triangle_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_triangle_sh, true);
    if (!vkb_triangle_shader)
    {
       auto vsh = std::make_shared<std::string>(

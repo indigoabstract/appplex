@@ -449,7 +449,7 @@ void msvc_main::flip_screen()
       height = t;
    }
 
-#if defined MWS_DEBUG_BUILD
+//#if defined MWS_DEBUG_BUILD
 
    x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
    y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
@@ -468,7 +468,7 @@ void msvc_main::flip_screen()
       portrait_flip_count++;
    }
 
-#endif
+//#endif
    window_coord.left = x;
    window_coord.right = x + width;
    window_coord.top = y;
@@ -643,7 +643,7 @@ bool msvc_main::init_app(int argc, char** argv)
          }
       }
 
-#if defined MWS_DEBUG_BUILD
+//#if defined MWS_DEBUG_BUILD
 
       x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
 
@@ -656,7 +656,7 @@ bool msvc_main::init_app(int argc, char** argv)
          y = 5;
       }
 
-#endif
+//#endif
 
       window_coord.left = x;
       window_coord.right = x + width;

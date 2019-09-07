@@ -14,7 +14,7 @@ draw_context::draw_context(mws_sp<gfx_camera> icam)
 {
    cam = icam;
    line_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-   (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
+   (*line_mesh)[MP_SHADER_NAME] = gfx::c_o_sh_id;
    (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
    (*line_mesh)[MP_DEPTH_TEST] = true;
    (*line_mesh)[MP_DEPTH_WRITE] = true;
@@ -25,7 +25,7 @@ draw_context::draw_context(mws_sp<gfx_camera> icam)
    //line_mesh->render_method = GLPT_POINTS;
 
    img_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-   (*img_mesh)[MP_SHADER_NAME] = "basic-tex-shader";
+   (*img_mesh)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
    (*img_mesh)["u_s2d_tex"] = "";
    (*img_mesh)[MP_DEPTH_TEST] = true;
    (*img_mesh)[MP_DEPTH_WRITE] = true;
@@ -581,7 +581,7 @@ public:
    gfx_camera_impl()
    {
       line_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
-      (*line_mesh)[MP_SHADER_NAME] = "c-o-shader";
+      (*line_mesh)[MP_SHADER_NAME] = gfx::c_o_sh_id;
       (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
       (*line_mesh)[MP_DEPTH_TEST] = true;
       (*line_mesh)[MP_DEPTH_WRITE] = true;

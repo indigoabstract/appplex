@@ -280,7 +280,7 @@ void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float it
    q2d->set_dimensions(1, 1);
    q2d->set_translation(itx, ity);
    q2d->set_scale(iw, ih);
-   (*q2d)[MP_SHADER_NAME] = "basic-tex-shader";
+   (*q2d)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
    (*q2d)["u_s2d_tex"][MP_TEXTURE_INST] = itex;
    (*q2d)[MP_DEPTH_TEST] = false;
    (*q2d)[MP_DEPTH_WRITE] = true;

@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "gfx.hxx"
+#include "mod-list.hxx"
 #include "gfx-util.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-shader.hxx"
@@ -300,36 +301,54 @@ bool gfx::ic_shader::reload_shader_on_modify()
 
 mws_sp<gfx_shader> gfx::ic_shader::new_program_from_src
 (
-   const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src, mws_sp<gfx_shader_listener> ilistener
+   const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg
 )
 {
    mws_sp<gfx_shader> prg = get_program_by_name(iprg_name);
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst_inline(iprg_name, ivs_shader_src, ifs_shader_src, ilistener, gi());
-      gi()->shader_list.push_back(prg);
+      prg = gfx_shader::new_inst_inline(iprg_name, ivs_shader_src, ifs_shader_src, i_listener, i_suppress_nex_msg, gi());
+
+      if (prg->is_valid())
+      {
+         gi()->shader_list.push_back(prg);
+      }
+      else
+      {
+         prg = nullptr;
+      }
    }
 
    return prg;
 }
 
-mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener)
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg)
 {
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
 
-   return gi()->shader.new_program(shader_id, ishader_name, ilistener);
+   return new_program(shader_id, ishader_name, i_listener, i_suppress_nex_msg);
 }
 
-mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> ilistener)
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg)
 {
    std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
    mws_sp<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
-      prg = gfx_shader::nwi(iprg_name, ishader_name, ilistener, gi());
-      gi()->shader_list.push_back(prg);
+      prg = gfx_shader::nwi(iprg_name, ishader_name, i_listener, i_suppress_nex_msg, gi());
+
+      if (prg->is_valid())
+      {
+         gi()->shader_list.push_back(prg);
+      }
+      else
+      {
+         prg = nullptr;
+      }
    }
 
    return prg;
@@ -337,7 +356,8 @@ mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, con
 
 mws_sp<gfx_shader> gfx::ic_shader::new_program
 (
-   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader, mws_sp<gfx_shader_listener> ilistener
+   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg
 )
 {
    std::string shader_id = gfx_shader::create_shader_id(ivertex_shader, ifragment_shader);
@@ -345,8 +365,16 @@ mws_sp<gfx_shader> gfx::ic_shader::new_program
 
    if (!prg)
    {
-      prg = gfx_shader::nwi(iprg_name, ivertex_shader, ifragment_shader, ilistener, gi());
-      gi()->shader_list.push_back(prg);
+      prg = gfx_shader::nwi(iprg_name, ivertex_shader, ifragment_shader, i_listener, i_suppress_nex_msg, gi());
+
+      if (prg->is_valid())
+      {
+         gi()->shader_list.push_back(prg);
+      }
+      else
+      {
+         prg = nullptr;
+      }
    }
 
    return prg;
@@ -388,6 +416,18 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
    return glp;
 }
 
+mws_sp<gfx_shader> gfx::ic_shader::nwi_inex_by_shader_root_name(const std::string& i_shader_root_name, bool i_suppress_nex_msg)
+{
+   mws_sp<gfx_shader> sh = get_program_by_name(i_shader_root_name);
+
+   if (!sh)
+   {
+      sh = new_program(i_shader_root_name, i_shader_root_name, nullptr, i_suppress_nex_msg);
+   }
+
+   return sh;
+}
+
 mws_sp<gfx_shader> gfx::ic_shader::get_current_program()
 {
    return gi()->active_shader;
@@ -409,7 +449,7 @@ void gfx::ic_shader::set_current_program(mws_sp<gfx_shader> iglp, bool force)
          }
          else
          {
-            gi()->active_shader = get_program_by_name("black-shader");
+            gi()->active_shader = get_program_by_name(gfx::black_sh_id);
          }
       }
    }
@@ -552,6 +592,8 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    rt.set_current_render_target(nullptr);
 
    // black shader
+   black_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::black_sh_id, true);
+   if(!black_shader)
    {
       auto vsh = mws_sp<std::string>(new std::string(
          R"(
@@ -577,11 +619,12 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      black_shader = shader.new_program_from_src("black-shader", vsh, fsh);
-      //vprint("fsh %s\n", fsh.c_str());
+      black_shader = shader.new_program_from_src(gfx::black_sh_id, vsh, fsh);
    }
 
    // wireframe shader
+   wireframe_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::wireframe_sh_id, true);
+   if (!wireframe_shader)
    {
       auto vsh = mws_sp<std::string>(new std::string(
          R"(
@@ -608,10 +651,12 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      wireframe_shader = shader.new_program_from_src("wireframe-shader", vsh, fsh);
+      wireframe_shader = shader.new_program_from_src(gfx::wireframe_sh_id, vsh, fsh);
    }
 
    // basic-tex shader
+   basic_tex_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::basic_tex_sh_id, true);
+   if (!basic_tex_shader)
    {
       auto vsh = mws_sp<std::string>(new std::string(
          R"(
@@ -650,10 +695,12 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      basic_tex_shader = shader.new_program_from_src("basic-tex-shader", vsh, fsh);
+      basic_tex_shader = shader.new_program_from_src(gfx::basic_tex_sh_id, vsh, fsh);
    }
 
    // c-o shader
+   c_o_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::c_o_sh_id, true);
+   if (!c_o_shader)
    {
       auto vsh = mws_sp<std::string>(new std::string(
          R"(
@@ -683,13 +730,17 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       )"
       ));
 
-      c_o_shader = shader.new_program_from_src("c-o-shader", vsh, fsh);
+      c_o_shader = shader.new_program_from_src(gfx::c_o_sh_id, vsh, fsh);
    }
 
    // mws shader
+   if (mod_mws_on)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
+      mws_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::mws_sh_id, true);
+      if (!mws_shader)
+      {
+         auto vsh = mws_sp<std::string>(new std::string(
+            R"(
       attribute vec3 a_v3_position;
       attribute vec2 a_v2_tex_coord;
 
@@ -704,10 +755,10 @@ void gfx::init(mws_sp<gfx> i_new_inst)
          gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
       )"
-      ));
+         ));
 
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
+         auto fsh = mws_sp<std::string>(new std::string(
+            R"(
 #ifdef GL_ES
       precision lowp float;
 #endif
@@ -742,9 +793,10 @@ void gfx::init(mws_sp<gfx> i_new_inst)
          gl_FragColor = v4_color;
       }
       )"
-      ));
+         ));
 
-      mws_shader = shader.new_program_from_src("mws-shader", vsh, fsh);
+         mws_shader = shader.new_program_from_src(gfx::mws_sh_id, vsh, fsh);
+      }
    }
 }
 

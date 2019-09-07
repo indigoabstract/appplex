@@ -504,11 +504,7 @@ public class main extends Activity
 
     static native void native_resize(int i_w, int i_h);
 
-    static native void native_touch_event
-    (
-            int i_touch_type, int i_touch_count, int[] i_touch_points_identifier,
-            boolean[] i_touch_points_is_changed, float[] i_touch_points_x, float[] i_touch_points_y
-    );
+    static native void native_touch_event(java.nio.ByteBuffer i_touch_data);
 
 	private static native boolean native_back_evt();
 	private static native void native_snd_init(int i_sample_rate, int i_buffer_size);

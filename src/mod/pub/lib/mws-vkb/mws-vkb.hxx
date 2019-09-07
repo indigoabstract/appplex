@@ -131,7 +131,8 @@ protected:
    virtual bool touch_cancelled(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    void highlight_key_at(int i_idx, bool i_light_on = true);
    void fade_key_at(int i_idx);
-   void release_all_keys();
+   // release all held and locked keys (optional)
+   void release_all_keys(bool i_release_locked_keys = true);
    // set the state of the keys. if return value is true, the iterators are invalidated and need to be aborted
    // returns true when keyboard has been hidden (and the key state cleared), false otherwise
    bool set_key_state(int i_key_idx, base_key_state_types i_state);

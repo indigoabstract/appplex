@@ -179,7 +179,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
          second_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
          set_state(detector_state::ST_PRESSED_1);
 
-         if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (!leq_max_dist(first_press_pos, second_press_pos))
          {
             return reset();
          }
@@ -200,7 +200,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       {
          auto release = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (!leq_max_dist(mws_ptr_evt::get_pos(*release), first_press_pos))
          {
             return reset();
          }
@@ -217,7 +217,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       {
          auto press = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(mws_ptr_evt::get_pos(*press), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (!leq_max_dist(mws_ptr_evt::get_pos(*press), first_press_pos))
          {
             return reset();
          }
@@ -240,6 +240,26 @@ gesture_state double_tap_detector::reset()
 void double_tap_detector::set_state(detector_state i_st)
 {
    det_state = i_st;
+}
+
+bool double_tap_detector::leq_max_dist(const glm::vec2& i_first_press, const glm::vec2& i_second_press)
+{
+   if (dist_eval)
+   {
+      if (!dist_eval(i_first_press, i_second_press))
+      {
+         return false;
+      }
+   }
+   else
+   {
+      if (glm::distance(i_first_press, i_second_press) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+      {
+         return false;
+      }
+   }
+
+   return true;
 }
 
 

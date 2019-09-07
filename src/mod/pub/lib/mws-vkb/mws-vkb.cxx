@@ -150,6 +150,14 @@ void mws_vkb_impl::setup()
       attach(vk_keys);
       vk_keys->camera_id_list.clear();
       vk_keys->camera_id_list.push_back(mws_cam.lock()->camera_id);
+      // mark this as a double tap if the touches fall within the same key
+      dbl_tap_det.dist_eval = [vk = vk](const glm::vec2& i_first_press, const glm::vec2& i_second_press)
+      {
+         auto idx_0 = vk->get_kernel_idx_at(i_first_press.x, i_first_press.y);
+         auto idx_1 = vk->get_kernel_idx_at(i_second_press.x, i_second_press.y);
+
+         return (idx_0.idx == idx_1.idx);
+      };
    }
 }
 
@@ -226,21 +234,15 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
       if (dbl_tap_detected)
       {
          glm::vec2 press_0 = dbl_tap_det.get_first_press_pos();
-         glm::vec2 press_1 = dbl_tap_det.get_second_press_pos();
          auto idx_0 = vk->get_kernel_idx_at(press_0.x, press_0.y);
-         auto idx_1 = vk->get_kernel_idx_at(press_1.x, press_1.y);
+         key_types active_key = get_key_at(idx_0.idx);
 
-         if (idx_0.idx == idx_1.idx)
+         if (is_mod_key(active_key))
          {
-            key_types active_key = get_key_at(idx_0.idx);
+            const base_key_state& st = base_key_st[idx_0.idx];
+            base_key_state_types new_state = (st.state == base_key_state_types::key_free) ? base_key_state_types::key_locked : base_key_state_types::key_free;
 
-            if (is_mod_key(active_key))
-            {
-               const base_key_state& st = base_key_st[idx_0.idx];
-               base_key_state_types new_state = (st.state == base_key_state_types::key_free) ? base_key_state_types::key_locked : base_key_state_types::key_free;
-
-               set_key_state(idx_0.idx, new_state);
-            }
+            set_key_state(idx_0.idx, new_state);
          }
       }
    }
@@ -260,28 +262,22 @@ void mws_vkb_impl::on_update_state()
       return;
    }
 
-   uint32 crt_time = pfm::time::get_time_millis();
    auto root = get_mws_root();
    auto vd = vk->get_diag_data();
    auto& kp_vect = vd->geom.kernel_points;
-   uint32 size = get_key_vect_size();
+   base_key_state_types hide_vkb_state;
+   int hide_vkb_key_idx;
 
    // show keys
    vk_keys->clear_text();
 
-   for (uint32 k = 0; k < size; k++)
+   if (is_mod_key_held(mod_key_types::hide_vkb, &hide_vkb_state, &hide_vkb_key_idx))
    {
       mws_sp<mws_font> font = key_font;
       mws_sp<mws_font> font_base = key_font_base;
-
-      if (k == current_key_idx)
-      {
-         font = selected_key_font;
-      }
-
-      key_types key_id = get_key_at(k);
-      std::string key = get_key_name(key_id);
-      auto& kp = kp_vect[k];
+      key_types key_id = get_key_at(hide_vkb_key_idx);
+      std::string key = "show";
+      auto& kp = kp_vect[hide_vkb_key_idx];
       glm::vec2 dim = font->get_text_dim(key);
       glm::vec2 pos(kp.position.x, kp.position.y);
       glm::vec2 dim_base = font_base->get_text_dim(key);
@@ -295,9 +291,42 @@ void mws_vkb_impl::on_update_state()
       vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
       vk_keys->add_text(key, pos, font);
    }
+   else
+   {
+      uint32 size = get_key_vect_size();
+
+      for (uint32 k = 0; k < size; k++)
+      {
+         mws_sp<mws_font> font = key_font;
+         mws_sp<mws_font> font_base = key_font_base;
+
+         if (k == current_key_idx)
+         {
+            font = selected_key_font;
+         }
+
+         key_types key_id = get_key_at(k);
+         std::string key = get_key_name(key_id);
+         auto& kp = kp_vect[k];
+         glm::vec2 dim = font->get_text_dim(key);
+         glm::vec2 pos(kp.position.x, kp.position.y);
+         glm::vec2 dim_base = font_base->get_text_dim(key);
+         glm::vec2 pos_base = pos - dim_base / 2.f;
+         float offset = 3.f;
+
+         pos -= dim / 2.f;
+         vk_keys->add_text(key, pos_base + glm::vec2(-offset, -offset), font_base);
+         vk_keys->add_text(key, pos_base + glm::vec2(offset, -offset), font_base);
+         vk_keys->add_text(key, pos_base + glm::vec2(offset, offset), font_base);
+         vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
+         vk_keys->add_text(key, pos, font);
+      }
+   }
 
    // key lights
    {
+      uint32 crt_time = pfm::time::get_time_millis();
+
       for (auto it = highlight_vect.begin(); it != highlight_vect.end();)
       {
          mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[it->key_idx];
@@ -662,10 +691,10 @@ bool mws_vkb_impl::is_mod_key_held(mod_key_types i_mod_key, base_key_state_types
 {
    for (auto it = mod_keys_st.begin(); it != mod_keys_st.end(); ++it)
    {
-      const base_key_state& st = base_key_st[it->first];
-
-      if (st.key_id == static_cast<key_types>(i_mod_key))
+      if (it->second == static_cast<key_types>(i_mod_key))
       {
+         const base_key_state& st = base_key_st[it->first];
+
          if (st.state == base_key_state_types::key_held || st.state == base_key_state_types::key_locked)
          {
             if (i_state != nullptr)
@@ -996,6 +1025,27 @@ bool mws_vkb_impl::touch_ended(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
       prev_ptr_evt = i_pe;
    }
 
+   // last pointer released. release all stuck keys
+   if (i_pe->touch_count == 1 && i_pe->points[0].is_changed)
+   {
+      uint32 size = base_key_st.size();
+
+      get_mod()->key_ctrl_inst->clear_keys();
+      prev_ptr_evt = nullptr;
+
+      for (uint32 k = 0; k < size; ++k)
+      {
+         base_key_state& st = base_key_st[k];
+
+         if (st.pressed_count > 0)
+         {
+            st.state = base_key_state_types::key_free;
+            st.pressed_count = 0;
+            fade_key_at(k);
+         }
+      }
+   }
+
    return is_processed;
 }
 
@@ -1050,7 +1100,7 @@ void mws_vkb_impl::fade_key_at(int i_idx)
    }
 }
 
-void mws_vkb_impl::release_all_keys()
+void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
 {
    uint32 size = base_key_st.size();
 
@@ -1059,9 +1109,14 @@ void mws_vkb_impl::release_all_keys()
 
    for (uint32 k = 0; k < size; ++k)
    {
-      highlight_key_at(k, false);
-      base_key_st[k].state = base_key_state_types::key_free;
-      base_key_st[k].pressed_count = 0;
+      base_key_state& st = base_key_st[k];
+
+      if (i_release_locked_keys || (!i_release_locked_keys && st.state != base_key_state_types::key_locked))
+      {
+         highlight_key_at(k, false);
+         st.state = base_key_state_types::key_free;
+         st.pressed_count = 0;
+      }
    }
 }
 
@@ -1154,7 +1209,6 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
          uint32 size = base_key_st.size();
          bool show_vkb = (i_state == base_key_state_types::key_free);
          vk->vgeom->nexus_pairs_mesh->visible = show_vkb;
-         vk_keys->visible = show_vkb;
 
          // if we need to hide the keyboard
          if (show_vkb)

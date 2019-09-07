@@ -682,6 +682,16 @@ bool pfm_file::is_regular_file() const
 
 bool pfm_file::exists() const
 {
+   if (pfm_impl::res_files_map)
+   {
+      auto pfile = pfm_impl::get_res_file(get_file_name());
+
+      if (pfile)
+      {
+         return true;
+      }
+   }
+
    struct stat info;
 
    if (stat(get_full_path().c_str(), &info) != 0)
@@ -689,7 +699,7 @@ bool pfm_file::exists() const
       return io.impl->exists();
    }
 
-   return true;
+   return false;
 }
 
 bool pfm_file::is_opened()const

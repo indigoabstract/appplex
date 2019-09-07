@@ -37,6 +37,75 @@ private:
 };
 
 
+class mws_ro_mem_seq : public data_sequence
+{
+public:
+   mws_ro_mem_seq(const uint8* i_data, uint64 i_elem_count) : seq(i_data), seq_size(i_elem_count) {}
+   ~mws_ro_mem_seq() {}
+
+   const uint8* get_data_as_byte_array()
+   {
+      return seq;
+   }
+
+   virtual uint64 get_size() const { return seq_size; }
+   virtual void reset() { rewind(); }
+   virtual void rewind() override { set_read_position(0); }
+
+   mws_sp<std::vector<uint8> > get_data_as_byte_vector()
+   {
+      mws_sp<std::vector<uint8> > s;
+      size_t size = static_cast<size_t>(get_size());
+
+      if (size > 0)
+      {
+         s = mws_sp<std::vector<uint8> >(new std::vector<uint8>(size));
+         memcpy(s->data(), seq, size);
+      }
+
+      return s;
+   }
+
+   void set_read_position(uint64 position)
+   {
+      if (position >= 0 && position <= get_size())
+      {
+         read_position = position;
+      }
+   }
+
+   void set_write_position(uint64 position)
+   {
+      mws_throw mws_exception("n/a");
+   }
+
+protected:
+   int read_int8(int8* s, int i_elem_count, int offset)
+   {
+      int bytes_to_read = 0;
+
+      if (i_elem_count > 0 && get_read_position() < get_size())
+      {
+         bytes_to_read = (int)std::min((uint64)i_elem_count, get_size() - get_read_position());
+         memcpy(&s[offset], &seq[(size_t)get_read_position()], bytes_to_read);
+      }
+
+      return bytes_to_read;
+   }
+
+   int write_int8(const int8* s, int i_elem_count, int offset)
+   {
+      mws_throw mws_exception("n/a");
+
+      return -1;
+   }
+
+private:
+   const uint8* seq;
+   uint64 seq_size;
+};
+
+
 class memory_data_sequence : public data_sequence
 {
 public:
@@ -82,46 +151,183 @@ private:
 };
 
 
-class data_sequence_reader
+template<class seq_ptr> class data_seq_rdr
 {
 public:
-   data_sequence_reader() {}
-   data_sequence_reader(mws_sp<data_sequence> isequence) : sequence(isequence) {}
-   ~data_sequence_reader() {}
+   data_seq_rdr() : sequence(nullptr) {}
+   data_seq_rdr(seq_ptr isequence) : sequence(isequence) {}
+   ~data_seq_rdr() {}
 
-   mws_sp<data_sequence> get_data_sequence() { return sequence.lock(); }
-   void set_data_sequence(mws_sp<data_sequence> isequence) { sequence = isequence; }
+   seq_ptr get_data_sequence() { return sequence; }
+   void set_data_sequence(seq_ptr isequence) { sequence = isequence; }
 
    // single data versions
-   int8 read_int8();
-   uint8 read_uint8();
-   int16 read_int16();
-   uint16 read_uint16();
-   int32 read_int32();
-   uint32 read_uint32();
-   int64 read_int64();
-   uint64 read_uint64();
-   real32 read_real32();
-   real64 read_real64();
-   std::string read_string();
-   std::string read_line();
-   template<class T> void read_pointer(T*& s);
+   int8 read_int8()
+   {
+      int8 s;
+      read_int8(&s, 1, 0);
+
+      return s;
+   }
+
+   uint8 read_uint8()
+   {
+      return (uint8)read_int8();
+   }
+
+   int16 read_int16()
+   {
+      int8 s[2];
+      read_int8(s, 2, 0);
+
+      return *(int16*)s;
+   }
+
+   uint16 read_uint16()
+   {
+      return (uint16)read_int16();
+   }
+
+   int32 read_int32()
+   {
+      int8 s[4];
+      read_int8(s, 4, 0);
+
+      return *(int32*)s;
+   }
+
+   uint32 read_uint32()
+   {
+      return (uint32)read_int32();
+   }
+
+   int64 read_int64()
+   {
+      int8 s[8];
+      read_int8(s, 8, 0);
+
+      return *(int64*)s;
+   }
+
+   uint64 read_uint64()
+   {
+      return (uint64)read_int64();
+   }
+
+   real32 read_real32()
+   {
+      int32 r = read_int32();
+
+      return *(real32*)& r;
+   }
+
+   real64 read_real64()
+   {
+      int64 r = read_int64();
+
+      return *(real64*)& r;
+   }
+
+   std::string read_string()
+   {
+      int32 elem_count = read_int32();
+      std::string text(elem_count, 0);
+      read_int8((int8*)& text[0], elem_count, 0);
+
+      return text;
+   }
+
+   std::string read_line()
+   {
+      std::string text;
+      std::vector<char> line;
+      int8 c = 0;
+      line.reserve(256);
+
+      while (true)
+      {
+         int bytes_read = read_int8(&c, 1, 0);
+
+         if (bytes_read <= 0 || (c == '\n') || (c == '\r'))
+         {
+            break;
+         }
+
+         line.push_back(c);
+      }
+
+      if (!line.empty())
+      {
+         text = std::string(line.data(), line.size());
+      }
+
+      return text;
+   }
+
+   template<class T> void read_pointer(T*& s)
+   {
+      int8* p = (int8*)& s;
+      sequence->read_bytes(p, sizeof(p), 0);
+   }
 
    // sequence data versions. return the number of bytes read
-   int read_int8(int8* s, int elem_count, int offset);
-   int read_uint8(uint8* s, int elem_count, int offset);
-   int read_int16(int16* s, int elem_count, int offset);
-   int read_uint16(uint16* s, int elem_count, int offset);
-   int read_int32(int32* s, int elem_count, int offset);
-   int read_uint32(uint32* s, int elem_count, int offset);
-   int read_int64(int64* s, int elem_count, int offset);
-   int read_uint64(uint64* s, int elem_count, int offset);
-   int read_real32(real32* s, int elem_count, int offset);
-   int read_real64(real64* s, int elem_count, int offset);
+   int read_int8(int8* s, int elem_count, int offset)
+   {
+      return sequence->read_bytes(s, elem_count, offset);
+   }
+
+   int read_uint8(uint8* s, int elem_count, int offset)
+   {
+      return read_int8((int8*)s, elem_count, offset);
+   }
+
+   int read_int16(int16* s, int elem_count, int offset)
+   {
+      return read_int8((int8*)s, elem_count * 2, offset * 2);
+   }
+
+   int read_uint16(uint16* s, int elem_count, int offset)
+   {
+      return read_int16((int16*)s, elem_count, offset);
+   }
+
+   int read_int32(int32* s, int elem_count, int offset)
+   {
+      return read_int8((int8*)s, elem_count * 4, offset * 4);
+   }
+
+   int read_uint32(uint32* s, int elem_count, int offset)
+   {
+      return read_int32((int32*)s, elem_count, offset);
+   }
+
+   int read_int64(int64* s, int elem_count, int offset)
+   {
+      return read_int8((int8*)s, elem_count * 8, offset * 8);
+   }
+
+   int read_uint64(uint64* s, int elem_count, int offset)
+   {
+      return read_int64((int64*)s, elem_count, offset);
+   }
+
+   int read_real32(real32* s, int elem_count, int offset)
+   {
+      return read_int32((int32*)s, elem_count, offset);
+   }
+
+   int read_real64(real64* s, int elem_count, int offset)
+   {
+      return read_int64((int64*)s, elem_count, offset);
+   }
 
 private:
-   mws_wp<data_sequence> sequence;
+   seq_ptr sequence;
 };
+
+
+using data_sequence_reader = data_seq_rdr<mws_sp<data_sequence>>;
+using data_seq_rdr_ptr = data_seq_rdr<data_sequence*>;
 
 
 class data_sequence_writer
@@ -131,7 +337,7 @@ public:
    data_sequence_writer(mws_sp<data_sequence> isequence) : sequence(isequence) {}
    ~data_sequence_writer() {}
 
-   mws_sp<data_sequence> get_data_sequence() { return sequence.lock(); }
+   mws_sp<data_sequence> get_data_sequence() { return sequence; }
    void set_data_sequence(mws_sp<data_sequence> isequence) { sequence = isequence; }
 
    // single data versions
@@ -162,7 +368,7 @@ public:
    void write_real64(const real64* s, int elem_count, int offset);
 
 private:
-   mws_wp<data_sequence> sequence;
+   mws_sp<data_sequence> sequence;
 };
 
 
@@ -414,178 +620,6 @@ inline int file_data_sequence::write_int8(const int8 * s, int elem_count, int of
 }
 
 
-inline int8 data_sequence_reader::read_int8()
-{
-   int8 s;
-   read_int8(&s, 1, 0);
-
-   return s;
-}
-
-inline uint8 data_sequence_reader::read_uint8()
-{
-   return (uint8)read_int8();
-}
-
-inline int16 data_sequence_reader::read_int16()
-{
-   int8 s[2];
-   read_int8(s, 2, 0);
-
-   return *(int16*)s;
-}
-
-inline uint16 data_sequence_reader::read_uint16()
-{
-   return (uint16)read_int16();
-}
-
-inline int32 data_sequence_reader::read_int32()
-{
-   int8 s[4];
-   read_int8(s, 4, 0);
-
-   return *(int32*)s;
-}
-
-inline uint32 data_sequence_reader::read_uint32()
-{
-   return (uint32)read_int32();
-}
-
-inline int64 data_sequence_reader::read_int64()
-{
-   int8 s[8];
-   read_int8(s, 8, 0);
-
-   return *(int64*)s;
-}
-
-inline uint64 data_sequence_reader::read_uint64()
-{
-   return (uint64)read_int64();
-}
-
-inline real32 data_sequence_reader::read_real32()
-{
-   int32 r = read_int32();
-
-   return *(real32*)&r;
-}
-
-inline real64 data_sequence_reader::read_real64()
-{
-   int64 r = read_int64();
-
-   return *(real64*)&r;
-}
-
-inline std::string data_sequence_reader::read_string()
-{
-   int32 elem_count = read_int32();
-   std::string text(elem_count, 0);
-   read_int8((int8*)&text[0], elem_count, 0);
-
-   return text;
-}
-
-inline std::string data_sequence_reader::read_line()
-{
-   std::string text;
-   std::vector<char> line;
-   int8 c = 0;
-   line.reserve(256);
-
-   while (true)
-   {
-      int bytes_read = read_int8(&c, 1, 0);
-
-      if (bytes_read <= 0 || (c == '\n') || (c == '\r'))
-      {
-         break;
-      }
-
-      line.push_back(c);
-   }
-
-   if (!line.empty())
-   {
-      text = std::string(line.data(), line.size());
-   }
-
-   return text;
-}
-
-template<int> void read_pointer_helper(mws_sp<data_sequence> sequence, void* p);
-
-// 32-bit systems
-template<> inline void read_pointer_helper<4>(mws_sp<data_sequence> sequence, void* p)
-{
-   sequence->read_bytes((int8*)p, 4, 0);
-}
-
-// 64-bit systems
-template<> inline void read_pointer_helper<8>(mws_sp<data_sequence> sequence, void* p)
-{
-   sequence->read_bytes((int8*)p, 8, 0);
-}
-
-template<class T> inline void data_sequence_reader::read_pointer(T*& s)
-{
-   read_pointer_helper<sizeof(void*)>(sequence.lock(), (void*)&s);
-}
-
-inline int data_sequence_reader::read_int8(int8* s, int elem_count, int offset)
-{
-   return sequence.lock()->read_bytes(s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_uint8(uint8* s, int elem_count, int offset)
-{
-   return read_int8((int8*)s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_int16(int16* s, int elem_count, int offset)
-{
-   return read_int8((int8*)s, elem_count * 2, offset * 2);
-}
-
-inline int data_sequence_reader::read_uint16(uint16* s, int elem_count, int offset)
-{
-   return read_int16((int16*)s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_int32(int32* s, int elem_count, int offset)
-{
-   return read_int8((int8*)s, elem_count * 4, offset * 4);
-}
-
-inline int data_sequence_reader::read_uint32(uint32* s, int elem_count, int offset)
-{
-   return read_int32((int32*)s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_int64(int64* s, int elem_count, int offset)
-{
-   return read_int8((int8*)s, elem_count * 8, offset * 8);
-}
-
-inline int data_sequence_reader::read_uint64(uint64* s, int elem_count, int offset)
-{
-   return read_int64((int64*)s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_real32(real32* s, int elem_count, int offset)
-{
-   return read_int32((int32*)s, elem_count, offset);
-}
-
-inline int data_sequence_reader::read_real64(real64* s, int elem_count, int offset)
-{
-   return read_int64((int64*)s, elem_count, offset);
-}
-
-
 inline void data_sequence_writer::write_int8(int8 s)
 {
    write_int8(&s, 1, 0);
@@ -668,12 +702,12 @@ template<> inline void write_pointer_helper<8>(mws_sp<data_sequence> sequence, v
 
 template<class T> inline void data_sequence_writer::write_pointer(T* const s)
 {
-   write_pointer_helper<sizeof(void*)>(sequence.lock(), (void*)&s);
+   write_pointer_helper<sizeof(void*)>(sequence, (void*)&s);
 }
 
 inline void data_sequence_writer::write_int8(const int8* s, int elem_count, int offset)
 {
-   sequence.lock()->write_bytes(s, elem_count, offset);
+   sequence->write_bytes(s, elem_count, offset);
 }
 
 inline void data_sequence_writer::write_uint8(const uint8* s, int elem_count, int offset)

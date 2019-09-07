@@ -12,9 +12,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+
 public class main_glsv extends GLSurfaceView
 {
-	public main_glsv(main context)
+    public main_glsv(main context)
 	{
 		super(context);
         Log.i("activity_life_cycle", "main_glsv.construct()");
@@ -42,56 +43,58 @@ public class main_glsv extends GLSurfaceView
 		setRenderer(main_rend_inst);
 		setRenderMode(RENDERMODE_CONTINUOUSLY);
         setPreserveEGLContextOnPause(true);
-	}
+        touch_data = java.nio.ByteBuffer.allocateDirect(touch_data_size);
+        touch_data.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+    }
 
 	@Override
 	public boolean onTouchEvent(final MotionEvent event)
 	{
 		int action = event.getAction();
 		int flags = action & MotionEvent.ACTION_MASK;
-		int touch_type = TOUCH_INVALID;
+		final int touch_type;
 
 		switch (flags)
 		{
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_POINTER_DOWN:
-				touch_type = TOUCH_BEGAN;
+				touch_type = mws_ptr_evt_touch_began;
 				break;
 
 			case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
-				touch_type = TOUCH_ENDED;
+				touch_type = mws_ptr_evt_touch_ended;
 				break;
 
 			case MotionEvent.ACTION_MOVE:
-				touch_type = TOUCH_MOVED;
+				touch_type = mws_ptr_evt_touch_moved;
 				break;
 
             case MotionEvent.ACTION_OUTSIDE:
 			case MotionEvent.ACTION_CANCEL:
-				touch_type = TOUCH_CANCELLED;
+				touch_type = mws_ptr_evt_touch_cancelled;
 				break;
 
 			default:
 				return false;
 		}
 
-		int touch_count = Math.min(event.getPointerCount(), MAX_TOUCH_POINTS);
+		int touch_count = Math.min(event.getPointerCount(), mws_ptr_evt_max_touch_points);
 		int pointer_index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+        touch_data.putInt(touch_type);
+        touch_data.putInt(touch_count);
 
 		for (int k = 0; k < touch_count; k++)
 		{
-			touch_points_identifier[k] = event.getPointerId(k);
-			touch_points_is_changed[k] = (k == pointer_index);
-			touch_points_x[k] = event.getX(k);
-			touch_points_y[k] = event.getY(k);
-
-			main.native_touch_event
-            (
-                touch_type, touch_count, touch_points_identifier, touch_points_is_changed,
-                touch_points_x, touch_points_y
-            );
+            touch_data.putInt(event.getPointerId(k));
+            touch_data.putFloat(event.getX(k));
+            touch_data.putFloat(event.getY(k));
+            touch_data.putInt((k == pointer_index) ? 1 : 0);
 		}
+
+        touch_data.rewind();
+        main.native_touch_event(touch_data);
 
 		return true;
 	}
@@ -130,17 +133,15 @@ public class main_glsv extends GLSurfaceView
 
     public main_rend main_rend_inst;
 
-    public static final int MAX_TOUCH_POINTS = 8;
-    public static final int TOUCH_INVALID = 0;
-    public static final int TOUCH_BEGAN = 1;
-    public static final int TOUCH_MOVED = 2;
-    public static final int TOUCH_ENDED = 3;
-    public static final int TOUCH_CANCELLED = 4;
-
-    public int[] touch_points_identifier = new int[MAX_TOUCH_POINTS];
-    public float[] touch_points_x = new float[MAX_TOUCH_POINTS];
-    public float[] touch_points_y = new float[MAX_TOUCH_POINTS];
-    public boolean[] touch_points_is_changed = new boolean[MAX_TOUCH_POINTS];
+    public static final int mws_ptr_evt_max_touch_points = 8;
+    public static final int mws_ptr_evt_touch_invalid = 0;
+    public static final int mws_ptr_evt_touch_began = 1;
+    public static final int mws_ptr_evt_touch_moved = 2;
+    public static final int mws_ptr_evt_touch_ended = 3;
+    public static final int mws_ptr_evt_touch_cancelled = 4;
+    // type + count + 8 * (id, x, y, is_changed)
+    public static final int touch_data_size = 4 + 4 + mws_ptr_evt_max_touch_points * (4 + 4 + 4 + 4);
+    private java.nio.ByteBuffer touch_data;
 }
 
 class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser

@@ -129,7 +129,7 @@ void mws_panel::setup()
       auto& rvxo = *vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -296,7 +296,7 @@ void mws_img_btn::setup()
       auto& rvxo = *vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -441,7 +441,7 @@ void mws_button::setup()
       auto& rvxo = *vxo;
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -628,7 +628,7 @@ void mws_slider::setup()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(slider_bar);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
@@ -643,7 +643,7 @@ void mws_slider::setup()
       auto& rvxo = *std::static_pointer_cast<gfx_quad_2d>(slider_ball);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
-      rvxo[MP_SHADER_NAME] = "mws-shader";
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
       rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;

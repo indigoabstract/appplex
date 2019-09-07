@@ -782,7 +782,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> icamera)
    {
    case MV_WF_OVERLAY:
    {
-      mws_sp<gfx_shader> p = gi()->shader.get_program_by_name("wireframe-shader");
+      mws_sp<gfx_shader> p = gi()->shader.get_program_by_name(gfx::wireframe_sh_id);
 
       gi()->shader.set_current_program(p);
 

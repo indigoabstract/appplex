@@ -287,11 +287,8 @@ void touchctrl::update()
 
 void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_te)
 {
-   if (queue_ptr)
-   {
-      mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
-      (*queue_ptr).push_back(te);
-   }
+   mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
+   (*queue_ptr).push_back(te);
 }
 
 mws_sp<mws_sender> touchctrl::sender_inst()

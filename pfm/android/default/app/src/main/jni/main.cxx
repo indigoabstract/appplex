@@ -2,6 +2,7 @@
 
 #include "pfm-gl.h"
 #include "min.hxx"
+#include "data-sequence.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "java-callbacks.h"
 #include "jni-helper.hxx"
@@ -550,36 +551,30 @@ extern "C"
 		mws_mod_ctrl::inst()->resize_app(i_w, i_h);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event
-			(JNIEnv*  env, jobject thiz, jint i_touch_type, jint i_touch_count, jintArray i_touch_points_identifier,
-			 jbooleanArray i_touch_points_is_changed, jfloatArray i_touch_points_x, jfloatArray i_touch_points_y)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)
 	{
-		auto pfm_te = mws_ptr_evt_base::nwi();
-		jint* touch_points_identifier = env->GetIntArrayElements(i_touch_points_identifier, NULL);
-		jboolean* touch_points_is_changed = env->GetBooleanArrayElements(i_touch_points_is_changed, NULL);
-		jfloat* touch_points_x = env->GetFloatArrayElements(i_touch_points_x, NULL);
-		jfloat* touch_points_y = env->GetFloatArrayElements(i_touch_points_y, NULL);
+        uint8* byte_buff_addr = (uint8*)i_env->GetDirectBufferAddress(i_byte_buff);
+        // type + count + 8 * (id, x, y, is_changed)
+        const int touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
+        mws_ro_mem_seq ro_mem(byte_buff_addr, touch_data_size);
+        data_seq_rdr_ptr dsr(&ro_mem);
+        auto pfm_te = mws_ptr_evt_base::nwi();
 
-		for (int k = 0; k < i_touch_count; k++)
-		{
+        pfm_te->type = static_cast<mws_ptr_evt_base::e_touch_type>(dsr.read_int32());
+        pfm_te->touch_count = dsr.read_uint32();
+        pfm_te->time = pfm::time::get_time_millis();
+
+        for (uint32 k = 0; k < pfm_te->touch_count; k++)
+        {
             auto& te = pfm_te->points[k];
 
-			te.identifier = touch_points_identifier[k];
-			te.is_changed = touch_points_is_changed[k];
-			te.x = touch_points_x[k];
-			te.y = touch_points_y[k];
-		}
+            te.identifier = dsr.read_uint32();
+            te.x = dsr.read_real32();
+            te.y = dsr.read_real32();
+            te.is_changed = static_cast<bool>(dsr.read_uint32());
+        }
 
-		env->ReleaseIntArrayElements(i_touch_points_identifier, touch_points_identifier, 0);
-		env->ReleaseBooleanArrayElements(i_touch_points_is_changed, touch_points_is_changed, 0);
-		env->ReleaseFloatArrayElements(i_touch_points_x, touch_points_x, 0);
-		env->ReleaseFloatArrayElements(i_touch_points_y, touch_points_y, 0);
-
-		pfm_te->time = pfm::time::get_time_millis();
-		pfm_te->touch_count = i_touch_count;
-		pfm_te->type = (mws_ptr_evt_base::e_touch_type)i_touch_type;
-
-		mws_mod_ctrl::inst()->pointer_action(pfm_te);
+        mws_mod_ctrl::inst()->pointer_action(pfm_te);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1render(JNIEnv*  env, jobject thiz)

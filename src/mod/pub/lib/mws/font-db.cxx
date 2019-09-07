@@ -178,8 +178,13 @@ public:
    font_db_impl()
    {
       // text shader
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
+      const std::string text_shader_name = "text-shader";
+      text_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(text_shader_name, true);
+
+      if (!text_shader)
+      {
+         auto vsh = mws_sp<std::string>(new std::string(
+            R"(
       uniform mat4 model;
       uniform mat4 view;
       uniform mat4 projection;
@@ -198,10 +203,10 @@ public:
             gl_Position = projection*(view*(model*vec4(vertex, 1.0)));
       }
       )"
-      ));
+         ));
 
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
+         auto fsh = mws_sp<std::string>(new std::string(
+            R"(
 #ifdef GL_ES
    	precision lowp float;
 #endif
@@ -215,9 +220,11 @@ public:
           gl_FragColor = vec4(v_v4_color.rgb, v_v4_color.a * v1_a);
       }
       )"
-      ));
+         ));
 
-      text_shader = gfx::i()->shader.new_program_from_src("text-shader", vsh, fsh);
+         text_shader = gfx::i()->shader.new_program_from_src(text_shader_name, vsh, fsh);
+      }
+
       clear_db();
    }
 

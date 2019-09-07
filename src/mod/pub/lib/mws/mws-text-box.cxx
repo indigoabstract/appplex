@@ -157,12 +157,18 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
 {
    if (is_editable())
    {
+      float font_height = font->get_height();
       uint32 text_line_count = tx_src->get_line_count();
       uint32 rows = std::min(text_rows, text_line_count);
       glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
       cursor_row_idx = cursor_coord.y;
       mws_println("scroll_text cursor_row_idx [ %d ]", cursor_row_idx);
       cursor_col_idx = cursor_coord.x;
+
+      //glm::vec2 prev_off = text_offset;
+      //text_offset -= i_off;
+      //text_offset = glm::max(text_offset, glm::vec2(0.f));
+      //top_line_idx = uint32(text_offset.y / font_height);
 
       if (cursor_row_idx >= rows)
       {
@@ -171,7 +177,7 @@ void mws_text_box::scroll_text(const glm::vec2& i_off)
       }
 
       update_text();
-      tx_rows = tx_src->get_lines_at(top_line_idx, rows);
+      //tx_rows = tx_src->get_lines_at(top_line_idx, rows);
       update_gfx_cursor();
    }
    else
@@ -489,6 +495,8 @@ void mws_text_box::update_text()
       top_line_idx = cursor_row_idx - rows;
       cursor_row_idx = rows - 1;
    }
+
+   //mws_println("top_line_idx %d", top_line_idx);
 
    tx_rows = tx_src->get_lines_at(top_line_idx, rows);
    text_row_remainder = glm::mod(text_offset.y, font->get_height());

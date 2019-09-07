@@ -142,17 +142,17 @@ public:
    static mws_sp<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ishader_name,
-      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
+      mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
    static mws_sp<gfx_shader> nwi
    (
       const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name,
-      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
+      mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
    static mws_sp<gfx_shader> new_inst_inline
    (
       const std::string& iprg_name, const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src,
-      mws_sp<gfx_shader_listener> ilistener = nullptr, mws_sp<gfx> i_gi = nullptr
+      mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
 
    static std::string create_shader_id(std::string ivertex_shader_name, std::string ifragment_shader_name);
@@ -176,7 +176,7 @@ public:
    bool contains_param(std::string iparam_name);
    void reload();
    void reload_on_modifications();
-   void set_listener(mws_sp<gfx_shader_listener> ilistener);
+   void set_listener(mws_sp<gfx_shader_listener> i_listener);
 
 private:
    friend class gfx;
