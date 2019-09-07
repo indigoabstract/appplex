@@ -1019,8 +1019,7 @@ std::string swipe_detector::to_string(detector_state i_st) const
 // https://github.com/prime31/TouchKit/blob/master/Assets/TouchKit/Recognizers/TKSwipeRecognizer.cs
 bool swipe_detector::is_valid_swipe()
 {
-   //float screen_pixels_per_cm = 1920.f / 38.3f;
-   float screen_pixels_per_cm = pfm::get_pfm_main_inst()->get_screen_dpcm();
+   float screen_pixels_per_cm = pfm::get_pfm_main_inst()->get_avg_screen_dpcm();
    // if we have a time stipulation and we exceeded it stop listening for swipes, fail
    if (max_swipe_duration > 0 && (pfm::time::get_time_millis() - start_time) > max_swipe_duration)
    {

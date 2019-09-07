@@ -13,64 +13,90 @@
 #include "min.hxx"
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
+#include <limits>
 #include <unordered_map>
 
 
+static const float cm_in_pt = 28.3465f;
+static const float in_in_cm = 2.54f;
+static const float in_in_pt = 72.f;
 static const float pt_in_cm = 0.03528f;
+static const float pt_in_in = 0.0138889f;
 
 mws_cm mws_cm::to_cm() const { return *this; }
-
-mws_pt mws_cm::to_pt() const
+mws_in mws_cm::to_in() const { return mws_in(size / in_in_cm); }
+mws_pt mws_cm::to_pt() const { return mws_pt(size * cm_in_pt); }
+mws_px mws_cm::to_px(dpi_types i_dpi_type) const
 {
-   return mws_pt(size / pt_in_cm);
-}
-
-mws_px mws_cm::to_px() const
-{
-   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
+   float px_per_cm = mws_px::get_px_per_cm(i_dpi_type);
    float px_count = size * px_per_cm;
 
-   return mws_px(px_count);
+   return mws_px(px_count, i_dpi_type);
 }
 
 
-mws_cm mws_pt::to_cm() const
+mws_cm mws_in::to_cm() const { return mws_cm(size * in_in_cm); }
+mws_in mws_in::to_in() const { return *this; }
+mws_pt mws_in::to_pt() const { return mws_pt(size * in_in_pt); }
+mws_px mws_in::to_px(dpi_types i_dpi_type) const
 {
-   return mws_cm(size * pt_in_cm);
-}
+   float px_per_in = mws_px::get_px_per_in(i_dpi_type);
+   float px_count = size * px_per_in;
 
-mws_pt mws_pt::to_pt() const
-{
-   return *this;
-}
-
-mws_px mws_pt::to_px() const
-{
-   return mws_cm(size * pt_in_cm).to_px();
+   return mws_px(px_count, i_dpi_type);
 }
 
 
-uint32 mws_px::int_val() const
-{
-   return static_cast<uint32>(glm::round(size));
-}
+mws_cm mws_pt::to_cm() const { return mws_cm(size * pt_in_cm); }
+mws_in mws_pt::to_in() const { return mws_in(size * pt_in_in); }
+mws_pt mws_pt::to_pt() const { return *this; }
+mws_px mws_pt::to_px(dpi_types i_dpi_type) const { return mws_cm(size * pt_in_cm).to_px(i_dpi_type); }
 
+
+uint32 mws_px::int_val() const { return static_cast<uint32>(glm::round(size)); }
 mws_cm mws_px::to_cm() const
 {
-   float px_per_cm = pfm_main::gi()->get_screen_dpcm();
+   float px_per_cm = get_px_per_cm(dpi_type);
    float cm_count = size / px_per_cm;
 
    return mws_cm(cm_count);
 }
-
-mws_pt mws_px::to_pt() const
+mws_in mws_px::to_in() const
 {
-   return to_cm().to_pt();
+   float px_per_in = get_px_per_in(dpi_type);
+   float in_count = size / px_per_in;
+
+   return mws_in(in_count);
 }
-
-mws_px mws_px::to_px() const
+mws_pt mws_px::to_pt() const { return to_cm().to_pt(); }
+mws_px mws_px::to_px(dpi_types i_dpi_type) const { return mws_px(size, i_dpi_type); }
+float mws_px::get_px_per_cm(dpi_types i_dpi_type)
 {
-   return *this;
+   switch (i_dpi_type)
+   {
+   case dpi_types::average:
+      return pfm_main::gi()->get_avg_screen_dpcm();
+   case dpi_types::horizontal:
+      return pfm_main::gi()->get_screen_dpcm().first;
+   case dpi_types::vertical:
+      return pfm_main::gi()->get_screen_dpcm().second;
+   }
+
+   return std::numeric_limits<float>::quiet_NaN();
+}
+float mws_px::get_px_per_in(dpi_types i_dpi_type)
+{
+   switch (i_dpi_type)
+   {
+   case dpi_types::average:
+      return pfm_main::gi()->get_avg_screen_dpi();
+   case dpi_types::horizontal:
+      return pfm_main::gi()->get_screen_dpi().first;
+   case dpi_types::vertical:
+      return pfm_main::gi()->get_screen_dpi().second;
+   }
+
+   return std::numeric_limits<float>::quiet_NaN();
 }
 
 
@@ -139,7 +165,7 @@ void gfx::global_init()
       }
 
       mws_print("\n");
-   }
+}
 
 #else
 
@@ -211,7 +237,7 @@ void gfx::global_init()
 
    main_instance = mws_sp<gfx>(new gfx());
    main_instance->init(main_instance);
-}
+   }
 
 void gfx::on_destroy()
 {
@@ -651,7 +677,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
 
    // black shader
    black_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::black_sh_id, true);
-   if(!black_shader)
+   if (!black_shader)
    {
       auto vsh = mws_sp<std::string>(new std::string(
          R"(
@@ -906,7 +932,7 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
          bool operator()(mws_wp<gfx_shader> wp) { return wp.expired(); }
       };
       auto it = std::find_if(shader_list.begin(), shader_list.end(), pred());
-      if(it != shader_list.end())shader_list.erase(it);
+      if (it != shader_list.end())shader_list.erase(it);
       break;
    }
 

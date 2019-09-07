@@ -5,6 +5,7 @@
 #include "pfm-def.h"
 
 class mws_cm;
+class mws_in;
 class mws_pt;
 class mws_px;
 class gfx_obj;
@@ -22,10 +23,19 @@ class mws_mod_ctrl;
 class mws_dim
 {
 public:
+   // specifies whether to take the horizontal, vertical or average dpi when converting a physical dimension to pixels
+   enum dpi_types
+   {
+      average,
+      horizontal,
+      vertical,
+   };
+
    virtual float val() const { return size; }
    virtual mws_cm to_cm() const = 0;
+   virtual mws_in to_in() const = 0;
    virtual mws_pt to_pt() const = 0;
-   virtual mws_px to_px() const = 0;
+   virtual mws_px to_px(dpi_types i_dpi_type = average) const = 0;
 
 protected:
    mws_dim() {}
@@ -39,8 +49,20 @@ class mws_cm : public mws_dim
 public:
    mws_cm(float i_size = 0.f) { size = i_size; }
    virtual mws_cm to_cm() const override;
+   virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+};
+
+
+class mws_in : public mws_dim
+{
+public:
+   mws_in(float i_size = 0.f) { size = i_size; }
+   virtual mws_cm to_cm() const override;
+   virtual mws_in to_in() const override;
+   virtual mws_pt to_pt() const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
 };
 
 
@@ -49,19 +71,27 @@ class mws_pt : public mws_dim
 public:
    mws_pt(float i_size = 0.f) { size = i_size; }
    virtual mws_cm to_cm() const override;
+   virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
 };
 
 
 class mws_px : public mws_dim
 {
 public:
-   mws_px(float i_size = 0.f) { size = i_size; }
+   mws_px(float i_size = 0.f, dpi_types i_dpi_type = average) : dpi_type(i_dpi_type) { size = i_size; }
    uint32 int_val() const;
    virtual mws_cm to_cm() const override;
+   virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px() const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+
+   static float get_px_per_cm(dpi_types i_dpi_type = average);
+   static float get_px_per_in(dpi_types i_dpi_type = average);
+
+protected:
+   dpi_types dpi_type = average;
 };
 
 

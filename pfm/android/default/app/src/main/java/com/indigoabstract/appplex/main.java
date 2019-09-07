@@ -469,17 +469,15 @@ public class main extends Activity
         });
     }
 
-    public static float get_screen_dpi()
+    public DisplayMetrics get_display_metrix()
     {
-        if(inst().display_metrics == null)
+        if(display_metrics == null)
         {
-            inst().display_metrics = new DisplayMetrics();
-            inst().getWindowManager().getDefaultDisplay().getRealMetrics(inst().display_metrics);
+            display_metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getRealMetrics(display_metrics);
         }
 
-        float avg_dpi = (inst().display_metrics.xdpi + inst().display_metrics.ydpi) / 2.f;
-
-        return avg_dpi;
+        return display_metrics;
     }
 
     public static String get_timezone_id()
@@ -496,7 +494,8 @@ public class main extends Activity
 
     static native void native_pause();
 
-    static native void native_init_renderer(AssetManager i_asset_manager, String i_apk_path);
+    // pass asset manager inst, apk path and screen metrix (width, height, horizontal and vertical dpi)
+    static native void native_init_renderer(AssetManager i_asset_mgr, String i_apk_path, int i_w, int i_h, float i_xdpi, float i_ydpi);
 
     static native void native_start_app();
 

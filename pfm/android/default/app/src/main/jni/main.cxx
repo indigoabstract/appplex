@@ -4,6 +4,7 @@
 #include "min.hxx"
 #include "data-sequence.hxx"
 #include "mws-mod-ctrl.hxx"
+#include "gfx.hxx"
 #include "java-callbacks.h"
 #include "jni-helper.hxx"
 #include <zip/zip.h>
@@ -212,7 +213,6 @@ mws_sp<android_main> android_main::instance;
 android_main::android_main()
 {
 	plist = std::make_shared<umf_r>();
-	is_started = false;
 }
 
 android_main::~android_main()
@@ -264,15 +264,14 @@ void android_main::set_screen_brightness(float i_brightness)
     env->CallStaticVoidMethod(clazz, mid, (jfloat)i_brightness);
 }
 
-float android_main::get_screen_dpi()const
-{
-    JNIEnv* env = JniHelper::getEnv();
-    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_dpi", "()F");
-    jfloat dpi = env->CallStaticFloatMethod(clazz, mid);
-
-    return (float)dpi;
-}
+// screen metrix
+std::pair<uint32, uint32> android_main::get_screen_res_px() const { return screen_res; }
+float android_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
+std::pair<float, float> android_main::get_screen_dpi() const { return screen_dpi; }
+std::pair<float, float> android_main::get_screen_dim_inch() const { return screen_dim_inch; }
+float android_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
+std::pair<float, float> android_main::get_screen_dpcm() const { return screen_dpcm; }
+std::pair<float, float> android_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
 void android_main::write_text(const char* text)const
 {
@@ -439,8 +438,6 @@ void android_main::init()
 	mws_mod_ctrl::inst()->pre_init_app();
 	mws_mod_ctrl::inst()->set_gfx_available(true);
 	mws_mod_ctrl::inst()->init_app();
-
-	is_started = true;
 }
 
 void android_main::start()
@@ -451,6 +448,41 @@ void android_main::start()
 void android_main::run()
 {
 	mws_mod_ctrl::inst()->update();
+}
+
+void android_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
+{
+    float horizontal_dim_inch = i_screen_width / i_screen_horizontal_dpi;
+    float vertical_dim_inch = i_screen_height / i_screen_vertical_dpi;
+    float horizontal_dim_cm = mws_in(horizontal_dim_inch).to_cm().val();
+    float vertical_dim_cm = mws_in(vertical_dim_inch).to_cm().val();
+    float horizontal_screen_dpcm = mws_cm(i_screen_horizontal_dpi).to_in().val();
+    float vertical_screen_dpcm = mws_cm(i_screen_vertical_dpi).to_in().val();
+
+    screen_res = std::make_pair((uint32)i_screen_width, (uint32)i_screen_height);
+    screen_dim_inch = std::make_pair(horizontal_dim_inch, vertical_dim_inch);
+    screen_dpi = std::make_pair(i_screen_horizontal_dpi, i_screen_vertical_dpi);
+    avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
+    screen_dim_cm = std::make_pair(horizontal_dim_cm, vertical_dim_cm);
+    screen_dpcm = std::make_pair(horizontal_screen_dpcm, vertical_screen_dpcm);
+    avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
+}
+
+void android_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
+{
+    bool is_landscape_0 = (i_screen_width > i_screen_height);
+    bool is_landscape_1 = (screen_res.first > screen_res.second);
+
+    if(is_landscape_0 != is_landscape_1)
+    {
+        std::swap(screen_res.first, screen_res.second);
+        std::swap(screen_dpi.first, screen_dpi.second);
+        std::swap(screen_dim_inch.first, screen_dim_inch.second);
+        std::swap(screen_dpcm.first, screen_dpcm.second);
+        std::swap(screen_dim_cm.first, screen_dim_cm.second);
+    }
+
+    mws_mod_ctrl::inst()->resize_app(i_screen_width, i_screen_height);
 }
 
 
@@ -501,7 +533,9 @@ extern "C"
         env->CallStaticVoidMethod(clazz, mid);
 	}
 
-	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1init_1renderer(JNIEnv* env, jobject obj, jobject i_asset_manager, jstring i_apk_path)
+	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1init_1renderer
+	(JNIEnv* env, jobject obj, jobject i_asset_manager, jstring i_apk_path,
+	        jint i_screen_width, jint i_screen_height, jfloat i_screen_horizontal_dpi, jfloat i_screen_vertical_dpi)
 	{
 		initJavaMethodsIDs(env, obj);
 
@@ -524,6 +558,10 @@ extern "C"
         {
             mws_print("error loading asset manager");
         }
+
+        // screen metrix
+        mws_assert(i_screen_width > 0 && i_screen_height > 0);
+        android_main::get_instance()->init_screen_metrix(i_screen_width, i_screen_height, i_screen_horizontal_dpi, i_screen_vertical_dpi);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1start_1app(JNIEnv*  env, jobject thiz)
@@ -548,7 +586,8 @@ extern "C"
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1resize(JNIEnv*  env, jobject  thiz, jint i_w, jint i_h)
 	{
-		mws_mod_ctrl::inst()->resize_app(i_w, i_h);
+	    mws_assert(i_w > 0 && i_h > 0);
+        android_main::get_instance()->on_resize(i_w, i_h);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)

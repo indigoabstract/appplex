@@ -33,7 +33,14 @@ public:
    virtual void run() override;
    virtual key_types translate_key(int i_pfm_key_id) const override;
    virtual key_types apply_key_modifiers_impl(key_types i_key_id) const override;
-   virtual float get_screen_dpi()const override;
+   // screen metrix
+   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual float get_avg_screen_dpi() const override;
+   virtual std::pair<float, float> get_screen_dpi() const override;
+   virtual std::pair<float, float> get_screen_dim_inch() const override;
+   virtual float get_avg_screen_dpcm() const override;
+   virtual std::pair<float, float> get_screen_dpcm() const override;
+   virtual std::pair<float, float> get_screen_dim_cm() const override;
    virtual void flip_screen() override;
    virtual void write_text(const char* text)const override;
    virtual void write_text_nl(const char* text)const override;
@@ -85,6 +92,14 @@ private:
    UINT wm_taskbarcreated;
    HDC hdc_window;
    HANDLE console_handle;
+   // screen metrix
+   std::pair<uint32, uint32> screen_res;
+   float avg_screen_dpi = 0.f;
+   std::pair<float, float> screen_dpi;
+   std::pair<float, float> screen_dim_inch;
+   float avg_screen_dpcm = 0.f;
+   std::pair<float, float> screen_dpcm;
+   std::pair<float, float> screen_dim_cm;
 
 #if defined USES_OPENGL_ES
    EGLDisplay egl_display;

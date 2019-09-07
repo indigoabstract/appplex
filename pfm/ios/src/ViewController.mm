@@ -90,7 +90,7 @@ static float native_scale = 0.f;
     
     fbo_width = (int)glk_view.drawableWidth;
     fbo_height = (int)glk_view.drawableHeight;
-    mws_mod_ctrl::inst()->resize_app(fbo_width, fbo_height);
+	ios_main::get_instance()->on_resize((uint32)fbo_width, (uint32)fbo_height);
     ios_main::get_instance()->init();
     ios_main::get_instance()->start();
 }
@@ -174,7 +174,7 @@ static float native_scale = 0.f;
     {
         fbo_width = glk_view.drawableWidth;
         fbo_height = glk_view.drawableHeight;
-        mws_mod_ctrl::inst()->resize_app((int)fbo_width, (int)fbo_height);
+		ios_main::get_instance()->on_resize((uint32)fbo_width, (uint32)fbo_height);
     }
 
     ios_main::get_instance()->run();

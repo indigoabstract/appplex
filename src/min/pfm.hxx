@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <utility>
 #ifdef MWS_USES_EXCEPTIONS
 #include <exception>
 #endif
@@ -159,12 +160,12 @@ class pfm_path
 {
 public:
    static mws_sp<pfm_path> get_inst(std::string i_file_path, std::string i_aux_root_dir = "");
-   std::string get_full_path()const;
-   const std::string& get_file_name()const;
-   std::string get_file_stem()const;
-   std::string get_file_extension()const;
-   const std::string& get_root_directory()const;
-   mws_sp<std::vector<mws_sp<pfm_file>>> list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false)const;
+   std::string get_full_path() const;
+   const std::string& get_file_name() const;
+   std::string get_file_stem() const;
+   std::string get_file_extension() const;
+   const std::string& get_root_directory() const;
+   mws_sp<std::vector<mws_sp<pfm_file>>> list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false) const;
 
 private:
    friend class pfm_impl::pfm_file_impl;
@@ -189,17 +190,17 @@ public:
    bool is_directory() const;
    bool is_regular_file() const;
    bool exists() const;
-   bool is_opened()const;
-   bool is_writable()const;
+   bool is_opened() const;
+   bool is_writable() const;
    uint64 length();
-   uint64 creation_time()const;
-   uint64 last_write_time()const;
-   std::string get_full_path()const;
-   const std::string& get_file_name()const;
-   std::string get_file_stem()const;
-   std::string get_file_extension()const;
-   const std::string& get_root_directory()const;
-   FILE* get_file_impl()const;
+   uint64 creation_time() const;
+   uint64 last_write_time() const;
+   std::string get_full_path() const;
+   const std::string& get_file_name() const;
+   std::string get_file_stem() const;
+   std::string get_file_extension() const;
+   const std::string& get_root_directory() const;
+   FILE* get_file_impl() const;
 
    class io_op
    {
@@ -242,11 +243,11 @@ namespace pfm_impl
       virtual ~pfm_file_impl();
       virtual FILE* get_file_impl() const = 0;
       virtual bool exists();
-      virtual bool is_opened()const;
-      virtual bool is_writable()const;
+      virtual bool is_opened() const;
+      virtual bool is_writable() const;
       virtual uint64 length() = 0;
-      virtual uint64 creation_time()const = 0;
-      virtual uint64 last_write_time()const = 0;
+      virtual uint64 creation_time() const = 0;
+      virtual uint64 last_write_time() const = 0;
       virtual bool open(std::string i_open_mode);
       virtual void close();
       virtual void flush();
@@ -256,7 +257,7 @@ namespace pfm_impl
       virtual int write(const std::vector<uint8>& i_buffer);
       virtual int read(uint8* i_buffer, int i_size);
       virtual int write(const uint8* i_buffer, int i_size);
-      virtual void check_state()const;
+      virtual void check_state() const;
 
       pfm_path ppath;
       uint64 file_pos;
@@ -319,19 +320,32 @@ public:
    virtual float get_screen_scale() const;
    virtual float get_screen_brightness() const;
    virtual void set_screen_brightness(float i_brightness);
-   // dots(pixels) per inch
-   virtual float get_screen_dpi()const = 0;
-   // dots(pixels) per cm
-   virtual float get_screen_dpcm()const;
+   
+   // screen metrix
+   // horizontal and vertical screen resolution in dots(pixels)
+   virtual std::pair<uint32, uint32> get_screen_res_px() const = 0;
+   // average dots(pixels) per inch
+   virtual float get_avg_screen_dpi() const = 0;
+   // horizontal and vertical dots(pixels) per inch
+   virtual std::pair<float, float> get_screen_dpi() const = 0;
+   // horizontal and vertical dimensions in inch
+   virtual std::pair<float, float> get_screen_dim_inch() const = 0;
+   // average dots(pixels) per cm
+   virtual float get_avg_screen_dpcm() const;
+   // horizontal and vertical dots(pixels) per cm
+   virtual std::pair<float, float> get_screen_dpcm() const = 0;
+   // horizontal and vertical dimensions in cm
+   virtual std::pair<float, float> get_screen_dim_cm() const = 0;
+
    // switches between screen width and height. this only works in windowed desktop applications
    virtual void flip_screen() {};
-   virtual void write_text(const char* i_text)const = 0;
-   virtual void write_text_nl(const char* i_text)const = 0;
-   virtual void write_text(const wchar_t* i_text)const = 0;
-   virtual void write_text_nl(const wchar_t* i_text)const = 0;
-   virtual void write_text_v(const char* i_format, ...)const = 0;
-   virtual std::string get_writable_path()const = 0;
-   virtual std::string get_timezone_id()const = 0;
+   virtual void write_text(const char* i_text) const = 0;
+   virtual void write_text_nl(const char* i_text) const = 0;
+   virtual void write_text(const wchar_t* i_text) const = 0;
+   virtual void write_text_nl(const wchar_t* i_text) const = 0;
+   virtual void write_text_v(const char* i_format, ...) const = 0;
+   virtual std::string get_writable_path() const = 0;
+   virtual std::string get_timezone_id() const = 0;
    // return true to exit the app
    virtual bool back_evt();
 };
@@ -357,7 +371,7 @@ public:
       static float get_scaled_width();
       static float get_scaled_height();
       static int get_target_fps();
-      static float get_screen_dpi();
+      static float get_avg_screen_dpi();
       static bool is_full_screen_mode();
       static void set_full_screen_mode(bool i_enabled);
       static bool is_gfx_available();

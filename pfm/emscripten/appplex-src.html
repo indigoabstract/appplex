@@ -49,6 +49,7 @@
     </style>
   </head>
   <body class="page_bg">
+	<div id='mws_screen_dpi_div' style='height: 1in; left: -100%; position: absolute; top: -100%; width: 1in;'></div>
     <div class="emscripten_border">
       <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     </div>
@@ -60,6 +61,10 @@
     </div>
 
     <script type='text/javascript'>
+		var mws_device_pixel_ratio = window.devicePixelRatio || 1;
+		var mws_screen_dpi_div = document.getElementById('mws_screen_dpi_div');
+		var mws_horizontal_screen_dpi = mws_screen_dpi_div.offsetWidth * mws_device_pixel_ratio;
+		var mws_vertical_screen_dpi = mws_screen_dpi_div.offsetHeight * mws_device_pixel_ratio;
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');

@@ -33,8 +33,10 @@ public class main_rend implements GLSurfaceView.Renderer
 	public void onSurfaceCreated(GL10 gl, EGLConfig config)
 	{
 		Log.i("activity_life_cycle", "main_rend.onSurfaceCreated(GL)");
+        android.util.DisplayMetrics dm = main.inst().get_display_metrix();
+
 		app_state = app_state_types.e_created;
-        main.native_init_renderer(asset_manager, main.apk_file_path);
+        main.native_init_renderer(asset_manager, main.apk_file_path, dm.widthPixels, dm.heightPixels, dm.xdpi, dm.ydpi);
 	}
 
 	public void onSurfaceChanged(GL10 gl, int w, int h)

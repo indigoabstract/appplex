@@ -13,12 +13,12 @@ class mws_font;
 class point2d
 {
 public:
-	point2d(){x = y = 0;}
-	point2d(float iX, float iY) : x(iX), y(iY){}
-	void set(float iX, float iY){x = iX; y= iY;}
+   point2d() { x = y = 0; }
+   point2d(float iX, float iY) : x(iX), y(iY) {}
+   void set(float iX, float iY) { x = iX; y = iY; }
 
-	float x;
-	float y;
+   float x;
+   float y;
 };
 
 
@@ -263,69 +263,122 @@ template <typename T> uint32 ping_pong_time_slider<T>::fp_2_int_time(T i_seconds
 }
 
 
+inline float inverse(float v, float vmax)
+{
+   float i = v / vmax;
+   float r = 1 + powf((1 - i), 3) * -1;
+   return r;
+}
+
+
 class kinetic_scrolling
 {
 public:
-	kinetic_scrolling();
-	point2d update();
-	void begin(float x, float y);
-	void grab(float x, float y);
-	void start_slowdown();
-	void reset();
+   kinetic_scrolling() { reset(); }
 
-	bool is_active();
-	point2d get_speed();
+   // decrease scrolling speed once mouse is released
+   point2d update()
+   {
+      point2d d(0, 0);
+
+      if (active)
+      {
+         // if there is still some scrolling energy
+         if (decay > 0)
+         {
+            uint32 delta_t = pfm::time::get_time_millis() - decay_start;
+            decay = 1.f - inverse((float)delta_t, (float)decay_maxmillis);
+
+            //decay = 1 - inverse(mws_mod_ctrl::get_current_mod()->update_ctrl->getTime() - decay_start, decay_maxmillis);
+            //decay = 1 - sigmoid(pfm::getCurrentTime() - decay_start, decay_maxmillis);
+            //decay=decay*.9;
+            d.x = speedx * decay;
+            d.y = speedy * decay;
+         }
+         else
+         {
+            decay = 0;
+            active = false;
+         }
+      }
+
+      return d;
+   }
+
+   // the initial scrolling speed is the speed it was being dragged
+   void begin(float i_x, float i_y) { speedx = i_x - startx; speedy = i_y - starty; startx = i_x; starty = i_y; }
+   // while grabbing is occuring, the scrolling link to mouse movement
+   void grab(float i_x, float i_y) { reset(); startx = i_x; starty = i_y; }
+
+   void start_slowdown()
+   {
+      // the mouse has been released and we can start slowing the scroll
+      // the speed starts at 100% of the current scroll speed
+      // record the time so we can calualte the decay rate
+
+      if (speedx != 0 || speedy != 0)
+      {
+         decay = 1;
+         decay_start = pfm::time::get_time_millis();
+
+         //decay_start = mws_mod_ctrl::get_current_mod()->update_ctrl->getTime();
+         active = true;
+      }
+   }
+
+   void reset() { speedx = 0; speedy = 0; decay_maxmillis = 3500; decay = 0; active = false; }
+   bool is_active() const { return active; }
+   point2d get_speed() const { return point2d(speedx, speedy); }
 
 private:
-	float speedx;
-	float speedy;
-	float startx;
-	float starty;
-	float decay;
-	uint32 decay_start;
-	int decay_maxmillis;
-	bool active;
+   float speedx;
+   float speedy;
+   float startx;
+   float starty;
+   float decay;
+   uint32 decay_start;
+   int decay_maxmillis;
+   bool active;
 };
 
 
 class slide_scrolling
 {
 public:
-	enum scroll_dir
-	{
-		SD_LEFT_RIGHT,
-		SD_RIGHT_LEFT,
-		SD_UP_DOWN,
-		SD_DOWN_UP,
-	};
+   enum scroll_dir
+   {
+      SD_LEFT_RIGHT,
+      SD_RIGHT_LEFT,
+      SD_UP_DOWN,
+      SD_DOWN_UP,
+   };
 
-	slide_scrolling(int transitionms);
+   slide_scrolling(int transitionms);
 
-	bool is_finished();
-	void start();
-	void stop();
-	void update();
+   bool is_finished();
+   void start();
+   void stop();
+   void update();
 
-	const mws_sp<ms_linear_transition> get_transition();
-	void set_scroll_dir(scroll_dir itype);
+   const mws_sp<ms_linear_transition> get_transition();
+   void set_scroll_dir(scroll_dir itype);
 
-	point2d srcpos;
-	point2d dstpos;
+   point2d srcpos;
+   point2d dstpos;
 
 private:
-	mws_sp<ms_linear_transition> mslt;
-	scroll_dir type;
-	float pstart, pstop;
+   mws_sp<ms_linear_transition> mslt;
+   scroll_dir type;
+   float pstart, pstop;
 };
 
 
 float sigmoid(float v, float vmax);
-float inverse(float v,float vmax);
 
 inline float smooth_step(float x)
 {
-	return sqrtf(x);
-	//return (x * x * (3 - 2 * x));
+   return sqrtf(x);
+   //return (x * x * (3 - 2 * x));
 }
 
 float interpolate_smooth_step(float intervalPosition, float start, float end, int octaveCount);

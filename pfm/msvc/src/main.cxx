@@ -9,6 +9,7 @@
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "input/input-ctrl.hxx"
+#include "gfx.hxx"
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
@@ -394,22 +395,14 @@ key_types msvc_main::apply_key_modifiers_impl(key_types i_key_id) const
    return i_key_id;
 }
 
-float msvc_main::get_screen_dpi()const
-{
-   //if (emulate_mobile_screen)
-   //{
-   //   float dpi = 480.f * pfm::screen::get_width() / 1920.f;
-   //   //return 480.f;
-   //   return dpi;
-   //}
-
-   int w2 = GetDeviceCaps(hdc_window, HORZSIZE);
-   int h2 = GetDeviceCaps(hdc_window, VERTSIZE);
-   int hr = GetDeviceCaps(hdc_window, HORZRES);
-   int vt = GetDeviceCaps(hdc_window, VERTRES);
-
-   return 127.625f;
-}
+// screen metrix
+std::pair<uint32, uint32> msvc_main::get_screen_res_px() const { return screen_res; }
+float msvc_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
+std::pair<float, float> msvc_main::get_screen_dpi() const { return screen_dpi; }
+std::pair<float, float> msvc_main::get_screen_dim_inch() const { return screen_dim_inch; }
+float msvc_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
+std::pair<float, float> msvc_main::get_screen_dpcm() const { return screen_dpcm; }
+std::pair<float, float> msvc_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
 void msvc_main::flip_screen()
 {
@@ -678,6 +671,24 @@ bool msvc_main::init_app(int argc, char** argv)
       if (!create_open_gl_context())
       {
          return false;
+      }
+
+      // screen metrix
+      {
+         int horizontal_dim_mm = GetDeviceCaps(hdc_window, HORZSIZE);
+         float horizontal_dim_cm = horizontal_dim_mm / 10.f;
+         int vertical_dim_mm = GetDeviceCaps(hdc_window, VERTSIZE);
+         float vertical_dim_cm = vertical_dim_mm / 10.f;
+         uint32 horizontal_res_px = (uint32)GetDeviceCaps(hdc_window, HORZRES);
+         uint32 vertical_res_px = (uint32)GetDeviceCaps(hdc_window, VERTRES);
+
+         screen_res = std::make_pair(horizontal_res_px, vertical_res_px);
+         screen_dim_cm = std::make_pair(horizontal_dim_cm, vertical_dim_cm);
+         screen_dpcm = std::make_pair(screen_res.first / screen_dim_cm.first, screen_res.second / screen_dim_cm.second);
+         avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
+         screen_dim_inch = std::make_pair(mws_cm(screen_dim_cm.first).to_in().val(), mws_cm(screen_dim_cm.second).to_in().val());
+         screen_dpi = std::make_pair(screen_res.first / screen_dim_inch.first, screen_res.second / screen_dim_inch.second);
+         avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
       }
 
       if (start_full_screen)

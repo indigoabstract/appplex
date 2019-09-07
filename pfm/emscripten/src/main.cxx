@@ -4,6 +4,7 @@
 #include "pfm-gl.h"
 #include "pfm.hxx"
 #include "mws-mod-ctrl.hxx"
+#include "gfx.hxx"
 #include "input/input-ctrl.hxx"
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -185,12 +186,20 @@ void emst_main::init()
 {
    pfm_main::init();
 
+   // screen metrix
+   {
+      double screen_width = EM_ASM_DOUBLE({ return window.screen.width; });
+      double screen_height = EM_ASM_DOUBLE({ return window.screen.height; });
+      double horizontal_screen_dpi = EM_ASM_DOUBLE({ return mws_horizontal_screen_dpi; });
+      double vertical_screen_dpi = EM_ASM_DOUBLE({ return mws_vertical_screen_dpi; });
+
+      init_screen_metrix((uint32)screen_width, (uint32)screen_height, (float)horizontal_screen_dpi, (float)vertical_screen_dpi);
+   }
+
    setup_callbacks();
    mws_mod_ctrl::inst()->pre_init_app();
    mws_mod_ctrl::inst()->set_gfx_available(true);
    mws_mod_ctrl::inst()->init_app();
-
-   is_started = true;
 }
 
 void emst_main::start()
@@ -368,10 +377,14 @@ key_types emst_main::apply_key_modifiers_impl(key_types i_key_id) const
    return i_key_id;
 }
 
-float emst_main::get_screen_dpi()const
-{
-   return 127;
-}
+// screen metrix
+std::pair<uint32, uint32> emst_main::get_screen_res_px() const { return screen_res; }
+float emst_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
+std::pair<float, float> emst_main::get_screen_dpi() const { return screen_dpi; }
+std::pair<float, float> emst_main::get_screen_dim_inch() const { return screen_dim_inch; }
+float emst_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
+std::pair<float, float> emst_main::get_screen_dpcm() const { return screen_dpcm; }
+std::pair<float, float> emst_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
 void emst_main::write_text(const char* text)const
 {
@@ -466,10 +479,48 @@ void emst_main::set_full_screen_mode(bool ienabled)
 {
 }
 
-emst_main::emst_main()
+void emst_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
 {
-   is_started = false;
+   const float scale_factor = 1.33f;
+   i_screen_horizontal_dpi *= scale_factor;
+   i_screen_vertical_dpi *= scale_factor;
+   mws_println("resolution width [ %d ] height [ %d ] horizontal_dpi [ %3.2f ] vertical_dpi [ %3.2f ]",
+      i_screen_width, i_screen_height, i_screen_horizontal_dpi, i_screen_vertical_dpi);
+
+   float horizontal_dim_inch = i_screen_width / i_screen_horizontal_dpi;
+   float vertical_dim_inch = i_screen_height / i_screen_vertical_dpi;
+   float horizontal_dim_cm = mws_in(horizontal_dim_inch).to_cm().val();
+   float vertical_dim_cm = mws_in(vertical_dim_inch).to_cm().val();
+   float horizontal_screen_dpcm = mws_cm(i_screen_horizontal_dpi).to_in().val();
+   float vertical_screen_dpcm = mws_cm(i_screen_vertical_dpi).to_in().val();
+
+   screen_res = std::make_pair((uint32)i_screen_width, (uint32)i_screen_height);
+   screen_dim_inch = std::make_pair(horizontal_dim_inch, vertical_dim_inch);
+   screen_dpi = std::make_pair(i_screen_horizontal_dpi, i_screen_vertical_dpi);
+   avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
+   screen_dim_cm = std::make_pair(horizontal_dim_cm, vertical_dim_cm);
+   screen_dpcm = std::make_pair(horizontal_screen_dpcm, vertical_screen_dpcm);
+   avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
 }
+
+void emst_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
+{
+   bool is_landscape_0 = (i_screen_width > i_screen_height);
+   bool is_landscape_1 = (screen_res.first > screen_res.second);
+
+   if (is_landscape_0 != is_landscape_1)
+   {
+      std::swap(screen_res.first, screen_res.second);
+      std::swap(screen_dpi.first, screen_dpi.second);
+      std::swap(screen_dim_inch.first, screen_dim_inch.second);
+      std::swap(screen_dpcm.first, screen_dpcm.second);
+      std::swap(screen_dim_cm.first, screen_dim_cm.second);
+   }
+
+   mws_mod_ctrl::inst()->resize_app(i_screen_width, i_screen_height);
+}
+
+emst_main::emst_main() {}
 
 EM_BOOL emst_key_down(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
 {
@@ -615,20 +666,9 @@ void emst_main::setup_callbacks()
    //emscripten_set_deviceorientation_callback(this, true, emst_device_orientation);
 }
 
-void report_result(int result)
-{
-   if (result == 0) {
-      printf("Test successful!\n");
-   }
-   else {
-      printf("Test failed!\n");
-   }
-#ifdef REPORT_RESULT
-   REPORT_RESULT(result);
-#endif
-}
 
-static inline const char* emscripten_event_type_to_string(int event_type) {
+static inline const char* emscripten_event_type_to_string(int event_type)
+{
    const char* events[] = { "(invalid)", "(none)", "keypress", "keydown", "keyup", "click", "mousedown", "mouseup", "dblclick", "mousemove", "wheel", "resize",
      "scroll", "blur", "focus", "focusin", "focusout", "deviceorientation", "devicemotion", "orientationchange", "fullscreenchange", "pointerlockchange",
      "visibilitychange", "touchstart", "touchend", "touchmove", "touchcancel", "gamepadconnected", "gamepaddisconnected", "beforeunload",
@@ -639,7 +679,8 @@ static inline const char* emscripten_event_type_to_string(int event_type) {
    return events[event_type];
 }
 
-const char* emscripten_result_to_string(EMSCRIPTEN_RESULT result) {
+const char* emscripten_result_to_string(EMSCRIPTEN_RESULT result)
+{
    if (result == EMSCRIPTEN_RESULT_SUCCESS) return "EMSCRIPTEN_RESULT_SUCCESS";
    if (result == EMSCRIPTEN_RESULT_DEFERRED) return "EMSCRIPTEN_RESULT_DEFERRED";
    if (result == EMSCRIPTEN_RESULT_NOT_SUPPORTED) return "EMSCRIPTEN_RESULT_NOT_SUPPORTED";
@@ -683,7 +724,7 @@ EM_BOOL on_canvassize_changed(int event_type, const void* reserved, void* user_d
    double css_width, css_height;
    emscripten_get_element_css_size(0, &css_width, &css_height);
    height = (height > 0) ? height : 1;
-   mws_mod_ctrl::inst()->resize_app(width, height);
+   emst_main::get_instance()->on_resize(width, height);
 
    printf("Canvas resized: WebGL RTT size: %dx%d, canvas CSS size: %02gx%02g\n", width, height, css_width, css_height);
 

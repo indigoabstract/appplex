@@ -234,10 +234,14 @@ mws_sp<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& i
 key_types ios_main::translate_key(int i_pfm_key_id) const { return i_pfm_key_id; }
 key_types ios_main::apply_key_modifiers_impl(key_types i_key_id) const { return i_key_id; }
 
-float ios_main::get_screen_dpi() const
-{
-    return 480;
-}
+// screen metrix
+std::pair<uint32, uint32> ios_main::get_screen_res_px() const { return screen_res; }
+float ios_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
+std::pair<float, float> ios_main::get_screen_dpi() const { return screen_dpi; }
+std::pair<float, float> ios_main::get_screen_dim_inch() const { return screen_dim_inch; }
+float ios_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
+std::pair<float, float> ios_main::get_screen_dpcm() const { return screen_dpcm; }
+std::pair<float, float> ios_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
 void ios_main::write_text(const char* text) const
 {
@@ -353,6 +357,14 @@ void ios_main::init()
 {
 	load_apk_file_list();
 
+   // screen metrix
+   {
+      float horizontal_screen_dpi = 480.f;
+      float vertical_screen_dpi = 480.f;
+
+      init_screen_metrix(screen_width, screen_height, horizontal_screen_dpi, vertical_screen_dpi);
+   }
+   
 	mws_mod_ctrl::inst()->pre_init_app();
 	mws_mod_ctrl::inst()->set_gfx_available(true);
 	mws_mod_ctrl::inst()->init_app();
@@ -369,4 +381,42 @@ void ios_main::start()
 void ios_main::run()
 {
 	mws_mod_ctrl::inst()->update();
+}
+
+void ios_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
+{
+    float horizontal_dim_inch = i_screen_width / i_screen_horizontal_dpi;
+    float vertical_dim_inch = i_screen_height / i_screen_vertical_dpi;
+    float horizontal_dim_cm = mws_in(horizontal_dim_inch).to_cm().val();
+    float vertical_dim_cm = mws_in(vertical_dim_inch).to_cm().val();
+    float horizontal_screen_dpcm = mws_cm(i_screen_horizontal_dpi).to_in().val();
+    float vertical_screen_dpcm = mws_cm(i_screen_vertical_dpi).to_in().val();
+
+    screen_res = std::make_pair((uint32)i_screen_width, (uint32)i_screen_height);
+    screen_dim_inch = std::make_pair(horizontal_dim_inch, vertical_dim_inch);
+    screen_dpi = std::make_pair(i_screen_horizontal_dpi, i_screen_vertical_dpi);
+    avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
+    screen_dim_cm = std::make_pair(horizontal_dim_cm, vertical_dim_cm);
+    screen_dpcm = std::make_pair(horizontal_screen_dpcm, vertical_screen_dpcm);
+    avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
+}
+
+void ios_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
+{
+    bool is_landscape_0 = (i_screen_width > i_screen_height);
+    bool is_landscape_1 = (screen_res.first > screen_res.second);
+
+    if(is_landscape_0 != is_landscape_1)
+    {
+        std::swap(screen_res.first, screen_res.second);
+        std::swap(screen_dpi.first, screen_dpi.second);
+        std::swap(screen_dim_inch.first, screen_dim_inch.second);
+        std::swap(screen_dpcm.first, screen_dpcm.second);
+        std::swap(screen_dim_cm.first, screen_dim_cm.second);
+    }
+	
+	screen_width = i_screen_width;
+	screen_height = i_screen_height;
+
+    mws_mod_ctrl::inst()->resize_app(i_screen_width, i_screen_height);
 }

@@ -1021,7 +1021,7 @@ key_types pfm_main::apply_key_modifiers(key_types i_key_id) const
 float pfm_main::get_screen_scale() const { return 1.f; }
 float pfm_main::get_screen_brightness() const { return 1.f; }
 void pfm_main::set_screen_brightness(float i_brightness) {}
-float pfm_main::get_screen_dpcm()const { return get_screen_dpi() / 2.54f; }
+float pfm_main::get_avg_screen_dpcm()const { return get_avg_screen_dpi() / 2.54f; }
 
 bool pfm_main::back_evt()
 {
@@ -1094,9 +1094,9 @@ int pfm::screen::get_target_fps()
    return 30;
 }
 
-float pfm::screen::get_screen_dpi()
+float pfm::screen::get_avg_screen_dpi()
 {
-   return pfm_app_inst->get_screen_dpi();
+   return pfm_app_inst->get_avg_screen_dpi();
 }
 
 bool pfm::screen::is_full_screen_mode()
