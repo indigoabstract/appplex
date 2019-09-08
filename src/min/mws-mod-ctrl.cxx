@@ -255,23 +255,30 @@ void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
 
       if (u)
       {
+         bool physical_keyboard_enabled = true;
+
          if (mod_mws_vkb_on)
          {
             mws_sp<mws_vkb> vkb = mws_vkb::gi();
 
-            // disable the physical keyboard when the virtual one is visible
-            if (!(vkb && vkb->is_visible()))
+            if (vkb && vkb->is_visible())
             {
-               switch (i_action_type)
-               {
-               case KEY_PRESS:
-                  u->key_ctrl_inst->key_pressed(i_key);
-                  break;
+               physical_keyboard_enabled = false;
+            }
+         }
 
-               case KEY_RELEASE:
-                  u->key_ctrl_inst->key_released(i_key);
-                  break;
-               }
+         // disable the physical keyboard when the virtual one is visible
+         if (physical_keyboard_enabled)
+         {
+            switch (i_action_type)
+            {
+            case KEY_PRESS:
+               u->key_ctrl_inst->key_pressed(i_key);
+               break;
+
+            case KEY_RELEASE:
+               u->key_ctrl_inst->key_released(i_key);
+               break;
             }
          }
       }
