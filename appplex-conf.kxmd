@@ -2,9 +2,9 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ screen-metrix ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ glowing-text ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -126,6 +126,7 @@ mod
 	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts], ],
 	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
 	screen-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
+	glowing-text[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

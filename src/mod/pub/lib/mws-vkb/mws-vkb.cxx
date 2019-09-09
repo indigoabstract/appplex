@@ -131,7 +131,6 @@ void mws_vkb_impl::setup()
       {VKB_DELETE, "delete"},
       {KEY_SPACE, ""/*"space"*/},
    };
-   float dpcm = pfm_main::gi()->get_screen_dpcm();
    set_font(mws_font::nwi(72.f));
    {
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());

@@ -1,6 +1,7 @@
 .ign
 .svn
 *.iml
+index.txt
 
 /log.txt
 /cmd
