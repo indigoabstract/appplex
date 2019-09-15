@@ -51,7 +51,9 @@ class gfx_2d_sprite : public gfx_quad_2d
 public:
    static mws_sp<gfx_2d_sprite> nwi(mws_sp<gfx> i_gi = nullptr)
    {
-      return mws_sp<gfx_2d_sprite>(new gfx_2d_sprite(i_gi));
+      mws_sp<gfx_2d_sprite> inst(new gfx_2d_sprite(i_gi));
+      inst->set_dimensions(1.f, 1.f);
+      return inst;
    }
 
    gfx_2d_sprite(mws_sp<gfx> gfx_inst) : gfx_quad_2d(gfx_inst)

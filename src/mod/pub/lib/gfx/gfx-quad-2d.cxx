@@ -12,7 +12,9 @@ using gfx_vxo_util::set_mesh_data;
 
 mws_sp<gfx_quad_2d> gfx_quad_2d::nwi(mws_sp<gfx> i_gi)
 {
-   return mws_sp<gfx_quad_2d>(new gfx_quad_2d(i_gi));
+   mws_sp<gfx_quad_2d> inst(new gfx_quad_2d(i_gi));
+   inst->set_dimensions(1.f, 1.f);
+   return inst;
 }
 
 void gfx_quad_2d::set_anchor(e_anchor_types ianchor_type)
