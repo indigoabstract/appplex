@@ -7,8 +7,13 @@
 #include "mws/mws-camera.hxx"
 #include "mws/text-vxo.hxx"
 #include "mws/mws-font.hxx"
+#include "mws/font-db.hxx"
+#include "gfx-rt.hxx"
+#include "gfx-tex.hxx"
+#include "tex-atlas/mws-tex-atlas.hxx"
 #include "mws-mod.hxx"
 #include "kxmd/kxmd.hxx"
+#include <array>
 #include <numeric>
 
 
@@ -131,14 +136,16 @@ void mws_vkb_impl::setup()
       {VKB_DELETE, "delete"},
       {KEY_SPACE, ""/*"space"*/},
    };
-   set_font(mws_font::nwi(72.f));
    {
+      mws_sp<mws_font> font = font_db::inst()->get_global_font();
+      mws_sp<mws_font> vkb_font = mws_font::nwi(font, mws_cm(0.55f));
+
+      set_font(vkb_font);
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
       vk->toggle_voronoi_object(obj_type_mask);
       vk->init();
       vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
       attach(vk->vgeom);
-      build_cell_border_tex();
    }
    // finish setup
    {
@@ -621,6 +628,11 @@ void mws_vkb_impl::set_on_top()
    vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
 }
 
+mws_sp<gfx_tex> mws_vkb_impl::get_cell_border_tex()
+{
+   return cell_border_tex;
+}
+
 void mws_vkb_impl::build_cell_border_tex()
 {
    std::string tex_id = "cell-border-tex";
@@ -671,6 +683,64 @@ void mws_vkb_impl::build_cell_border_tex()
    }
 
    vk->vgeom->cell_borders->tex = cell_border_tex;
+}
+
+mws_sp<gfx_tex> mws_vkb_impl::get_keys_tex()
+{
+   if (keys_atlas)
+   {
+      return keys_atlas->get_tex();
+   }
+
+   return nullptr;
+}
+
+void mws_vkb_impl::build_keys_tex_atlas()
+{
+   keys_atlas = mws_tex_atlas::nwi(1024, 512, 4);
+   keys_atlas->create_tex();
+   key_atlas_ht.clear();
+   uint32 size = get_key_vect_size();
+   mws_sp<mws_font> font = key_font;
+   mws_sp<gfx_rt> rt = gfx::i()->rt.new_rt();
+   mws_sp<gfx_tex> tex = keys_atlas->get_tex();
+   mws_sp<mws_camera> g = get_mod()->mws_cam;
+   float zone_scale = 2.5f;
+   float center_fact = 0.5f * (zone_scale - 1.f) / zone_scale;
+   std::array<key_mod_types, 3> mod_vect = { key_mod_types::mod_none, key_mod_types::mod_alt, key_mod_types::mod_shift };
+
+   rt->set_color_attachment(tex);
+   gfx::i()->rt.set_current_render_target(rt);
+   g->set_color(gfx_color::colors::cyan);
+
+   for (key_mod_types mod : mod_vect)
+   {
+      for (uint32 k = 0; k < size; k++)
+      {
+         key_types key_id = get_mod_key_at(mod, k);
+
+         if (key_atlas_ht.find(key_id) == key_atlas_ht.end())
+         {
+            std::string key = get_key_name(key_id);
+
+            // exclude space bar
+            if (!key.empty())
+            {
+               glm::vec2 dim = font->get_text_dim(key) * zone_scale;
+               glm::ivec4 reg = keys_atlas->get_region((uint32)glm::ceil(dim.x), (uint32)glm::ceil(dim.y));
+               float width = (float)reg.z;
+               float height = (float)reg.w;
+
+               key_atlas_ht[key_id] = reg;
+               g->drawRect((float)reg.x, (float)reg.y, width, height);
+               g->drawText(key, (float)reg.x + width * center_fact, (float)reg.y + height * center_fact, font);
+            }
+         }
+      }
+   }
+
+   g->update_camera_state();
+   gfx::i()->rt.set_current_render_target();
 }
 
 bool mws_vkb_impl::is_mod_key(key_types i_key_id)
@@ -1375,7 +1445,12 @@ void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
 
 mws_sp<gfx_tex> mws_vkb::get_cell_border_tex()
 {
-   return get_impl()->cell_border_tex;
+   return get_impl()->get_cell_border_tex();
+}
+
+mws_sp<gfx_tex> mws_vkb::get_keys_tex()
+{
+   return get_impl()->get_keys_tex();
 }
 
 
@@ -1405,8 +1480,10 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       impl->file_store = get_file_store();
       attach(impl);
       impl->setup();
+      impl->build_cell_border_tex();
       impl->set_on_top();
       impl->on_resize(w, h);
+      impl->build_keys_tex_atlas();
    }
 
    return impl;

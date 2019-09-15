@@ -116,9 +116,14 @@ class font_cache
 public:
    const int inf_lim = 32;
    const int sup_lim = 126;
+   std::string font_file_name;
+   float font_size = 0.f;
 
-   font_cache(texture_font_t* itex_font, mws_sp<std::vector<uint8> > i_font_mem_data)
+   font_cache(std::string i_font_file_name, float i_font_size, texture_font_t* itex_font, mws_sp<std::vector<uint8> > i_font_mem_data)
    {
+      mws_assert(!i_font_file_name.empty());
+      font_file_name = i_font_file_name;
+      font_size = i_font_size;
       tex_font = itex_font;
       font_mem_data = i_font_mem_data;
       glyph_vect.resize(sup_lim - inf_lim + 1);
@@ -245,10 +250,10 @@ public:
       mws_print("font texture atlas size: [%d]\n", size);
    }
 
-   uint64 get_key(mws_sp<mws_font> i_font)
+   uint64 get_key(const std::string& i_font_file_name, float i_size)
    {
-      uint32* x = (uint32*)&i_font->get_file_name();
-      float t = i_font->get_size();
+      uint32* x = (uint32*)&i_font_file_name;
+      float t = i_size;
       uint32* y = (uint32*)&t;
       uint64 x64 = *x & 0xffffffff;
       uint64 y64 = *y & 0xffffffff;
@@ -264,7 +269,14 @@ public:
 
    void set_global_font(mws_sp<mws_font> i_font)
    {
-      global_font = i_font;
+      if (i_font->get_full_path().empty())
+      {
+         global_font = mws_font::nwi(i_font->get_size(), global_font->get_full_path());
+      }
+      else
+      {
+         global_font = i_font;
+      }
    }
 
    mws_sp<std::string> get_db_font_name(const std::string& i_font_name)
@@ -288,23 +300,27 @@ public:
 
    mws_sp<font_cache> get_font_cache(mws_sp<mws_font> i_font)
    {
-      const std::string& font_file_name = i_font->get_file_name();
-
-      if (font_file_name.empty() && !global_font->get_file_name().empty())
-      {
-         return get_font_cache(global_font);
-      }
-
       mws_sp<font_cache> fnt_cache = i_font->fnt_cache.lock();
+      const std::string& font_file_name_0 = i_font->get_file_name();
+
+      // fonts having empty font_file_name are global fonts. if the global font has changed, then invalidate the font cache
+      if (font_file_name_0.empty() && fnt_cache)
+      {
+         if (fnt_cache->font_file_name != global_font->get_file_name())
+         {
+            fnt_cache = nullptr;
+         }
+      }
 
       if (!fnt_cache)
       {
-         uint64 key = get_key(i_font);
+         const std::string& font_file_name = (font_file_name_0.empty()) ? global_font->get_file_name() : font_file_name_0;
+         float font_size = i_font->get_size();
+         uint64 key = get_key(font_file_name, font_size);
          fnt_cache = font_size_ht[key];
 
          if (!fnt_cache)
          {
-            float font_size = i_font->get_size();
             auto res = font_data_by_path_ht[font_file_name].lock();
 
             if (!res)
@@ -328,7 +344,7 @@ public:
             }
 
             texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, begin_ptr(*res), res->size());
-            fnt_cache = std::make_shared<font_cache>(tex_font, res);
+            fnt_cache = std::make_shared<font_cache>(font_file_name, font_size, tex_font, res);
 
             if (!tex_font)
             {

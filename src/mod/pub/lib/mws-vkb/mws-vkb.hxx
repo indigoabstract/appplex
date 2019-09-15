@@ -9,6 +9,7 @@ class mws_font;
 class mws_vrn_main;
 class text_vxo;
 class gfx_tex;
+class mws_tex_atlas;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -101,7 +102,10 @@ public:
    void next_page();
    void prev_page();
    void set_on_top();
+   mws_sp<gfx_tex> get_cell_border_tex();
    void build_cell_border_tex();
+   mws_sp<gfx_tex> get_keys_tex();
+   void build_keys_tex_atlas();
    mws_sp<mws_font> get_key_font() const { return key_font; }
    mws_sp<mws_font> get_selected_key_font() const { return selected_key_font; }
    bool is_mod_key(key_types i_key_id);
@@ -118,7 +122,6 @@ public:
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
    bool keys_visible = true;
-   mws_sp<gfx_tex> cell_border_tex;
 
 protected:
    void set_key_vect_size(uint32 i_size);
@@ -159,6 +162,9 @@ private:
    mws_sp<mws_font> key_font;
    mws_sp<mws_font> key_font_base;
    mws_sp<mws_font> selected_key_font;
+   mws_sp<gfx_tex> cell_border_tex;
+   mws_sp<mws_tex_atlas> keys_atlas;
+   std::unordered_map<key_types, glm::ivec4> key_atlas_ht;
 };
 
 
@@ -178,6 +184,7 @@ public:
    virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
    virtual mws_sp<gfx_tex> get_cell_border_tex() override;
+   virtual mws_sp<gfx_tex> get_keys_tex() override;
 
 protected:
    mws_vkb() {}

@@ -25,6 +25,8 @@ public:
    // get the underlying texture
    mws_sp<gfx_tex> get_tex() const;
 
+   void create_tex();
+
    // transfers atlas data from client(CPU) to texture(GPU) memory
    void upload();
 

@@ -24,17 +24,22 @@ mws_sp<mws_tex_atlas> mws_tex_atlas::nwi(uint32 i_width, uint32 i_height, uint32
 
 mws_sp<gfx_tex> mws_tex_atlas::get_tex() const { return tex; }
 
+void mws_tex_atlas::create_tex()
+{
+   std::string tex_id = mws_to_str_fmt("mws-tex-atlas-%d", inst_count);
+   gfx_tex_params prm;
+
+   prm.set_rt_params();
+   tex = gfx::i()->tex.nwi(tex_id, width, height, &prm);
+}
+
 void mws_tex_atlas::upload()
 {
    mws_assert(!data.empty());
 
    if (!tex)
    {
-      std::string tex_id = mws_to_str_fmt("mws-tex-atlas-%d", inst_count);
-      gfx_tex_params prm;
-
-      prm.set_rt_params();
-      tex = gfx::i()->tex.nwi(tex_id, width, height, &prm);
+      create_tex();
    }
 
    tex->update(0, (const char*)data.data());

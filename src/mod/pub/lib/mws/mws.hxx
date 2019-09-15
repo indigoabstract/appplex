@@ -145,6 +145,7 @@ public:
    virtual mws_sp<mws_vkb_file_store> get_file_store() const = 0;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) = 0;
    virtual mws_sp<gfx_tex> get_cell_border_tex() = 0;
+   virtual mws_sp<gfx_tex> get_keys_tex() = 0;
 
 protected:
    mws_virtual_keyboard() {}

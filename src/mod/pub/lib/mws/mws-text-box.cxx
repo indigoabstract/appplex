@@ -29,7 +29,7 @@ void mws_text_box::setup()
    tx_vxo = text_vxo::nwi();
    tx_vxo->camera_id_list.push_back("mws_cam");
    (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
-   font = mws_font::nwi(36.f);
+   font = font_db::inst()->get_global_font();
    font->set_color(gfx_color::colors::white);
    left_char_rect = std::make_shared<mws_rect>();
    right_char_rect = std::make_shared<mws_rect>();
