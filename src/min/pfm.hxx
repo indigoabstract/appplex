@@ -160,6 +160,12 @@ class pfm_path
 {
 public:
    static mws_sp<pfm_path> get_inst(std::string i_file_path, std::string i_aux_root_dir = "");
+   bool remove();
+   bool make_dir();
+   bool is_directory() const;
+   bool is_regular_file() const;
+   bool exists() const;
+   std::string get_current_path() const;
    std::string get_full_path() const;
    const std::string& get_file_name() const;
    std::string get_file_stem() const;
@@ -185,10 +191,6 @@ public:
    static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> i_impl);
    virtual ~pfm_file();
 
-   bool remove();
-   bool make_dir();
-   bool is_directory() const;
-   bool is_regular_file() const;
    bool exists() const;
    bool is_opened() const;
    bool is_writable() const;

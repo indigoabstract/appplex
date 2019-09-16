@@ -239,10 +239,28 @@ void mws_pbo_bundle::update(mws_sp<gfx_camera> i_cam)
 
 
 mws_gfx_ppb::mws_gfx_ppb() {}
+mws_gfx_ppb::mws_gfx_ppb(mws_sp<gfx_tex> i_tex) { init(i_tex); }
 
 mws_gfx_ppb::mws_gfx_ppb(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm)
 {
    init(i_tex_id, i_tex_width, i_tex_height, i_prm);
+}
+
+void mws_gfx_ppb::init(mws_sp<gfx_tex> i_tex)
+{
+   tex = i_tex;
+
+   // rt
+   {
+      rt = gfx::i()->rt.new_rt();
+      rt->set_color_attachment(tex);
+   }
+   // tex quad
+   {
+      quad = gfx_quad_2d::nwi();
+      (*quad)[MP_SHADER_NAME] = gfx::black_sh_id;
+      quad->set_scale((float)tex->get_width(), (float)tex->get_width());
+   }
 }
 
 void mws_gfx_ppb::init(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm)
@@ -255,17 +273,8 @@ void mws_gfx_ppb::init(const std::string& i_tex_id, uint32 i_tex_width, uint32 i
       if (!i_prm) { prm.set_rt_params(); }
       tex = gfx::i()->tex.nwi(i_tex_id, i_tex_width, i_tex_height, prm_ref);
    }
-   // rt
-   {
-      rt = gfx::i()->rt.new_rt();
-      rt->set_color_attachment(tex);
-   }
-   // tex quad
-   {
-      quad = gfx_quad_2d::nwi();
-      (*quad)[MP_SHADER_NAME] = gfx::black_sh_id;
-      quad->set_scale((float)tex->get_width(), (float)tex->get_width());
-   }
+
+   init(tex);
 }
 
 mws_sp<gfx_rt> mws_gfx_ppb::get_rt() { return rt; }

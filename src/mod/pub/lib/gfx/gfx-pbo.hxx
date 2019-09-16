@@ -72,7 +72,9 @@ class mws_gfx_ppb
 {
 public:
    mws_gfx_ppb();
+   mws_gfx_ppb(mws_sp<gfx_tex> i_tex);
    mws_gfx_ppb(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm = nullptr);
+   void init(mws_sp<gfx_tex> i_tex);
    void init(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm = nullptr);
    mws_sp<gfx_rt> get_rt();
    mws_sp<gfx_tex> get_tex() const;

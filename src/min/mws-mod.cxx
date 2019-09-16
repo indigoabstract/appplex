@@ -517,7 +517,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
          "00", "0"
       };
       std::string dir_name = pfm::filesystem::get_tmp_path("screens");
-      auto dir = pfm_file::get_inst(dir_name);
+      auto dir = pfm_path::get_inst(dir_name);
       int screenshot_idx = 0;
 
       // if dir doesn't exist, create it

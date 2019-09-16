@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ kawase-bloom ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ voronoi-keyboard ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -31,7 +31,7 @@ mod
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
-	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, tex-atlas, util, vector-fonts, vrn ] ],
+	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, tex-atlas, util, vector-fonts, vrn ] ],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
 
@@ -62,6 +62,7 @@ mod
 	glm,
 	input[],
 	vrn[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
+	kawase-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	kxmd[],
 	mws[ uses[ gfx, fonts, input ] ],
 	mws-vkb[],
@@ -126,7 +127,6 @@ mod
 	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts], ],
 	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
 	screen-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
-	kawase-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

@@ -100,7 +100,7 @@ float mws_px::get_px_per_in(dpi_types i_dpi_type)
 }
 
 
-glm::vec4 default_viewport_dim;
+glm::ivec4 default_viewport_dim;
 gfx_int gfx::default_framebuffer_id = 0;
 mws_sp<gfx> gfx::main_instance;
 
@@ -232,7 +232,7 @@ void gfx::global_init()
 
       glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_id);
       default_framebuffer_id = framebuffer_id;
-      glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
+      glGetIntegerv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
    }
 
    main_instance = mws_sp<gfx>(new gfx());
@@ -255,7 +255,7 @@ void gfx::on_destroy()
 
 void gfx::on_resize(int i_width, int i_height)
 {
-   glGetFloatv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
+   glGetIntegerv(GL_VIEWPORT, glm::value_ptr(default_viewport_dim));
    default_viewport_dim.z = i_width;
    default_viewport_dim.w = i_height;
 }

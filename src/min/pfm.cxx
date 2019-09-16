@@ -126,10 +126,15 @@ uint32 pfm::time::get_time_millis()
    return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-bool pfm_file::make_dir()
+bool pfm_path::make_dir()
 {
    int rval = mkdir(get_full_path().c_str(), 0777);
    return (rval == 0);
+}
+
+std::string pfm_path::get_current_path() const
+{
+   return "";
 }
 
 
@@ -165,10 +170,15 @@ uint32 pfm::time::get_time_millis()
    return uint32(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 }
 
-bool pfm_file::make_dir()
+bool pfm_path::make_dir()
 {
    int rval = mkdir(get_full_path().c_str(), 0777);
    return (rval == 0);
+}
+
+std::string pfm_path::get_current_path() const
+{
+   return "";
 }
 
 
@@ -203,9 +213,14 @@ uint32 pfm::time::get_time_millis()
    return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-bool pfm_file::make_dir()
+bool pfm_path::make_dir()
 {
    return false;
+}
+
+std::string pfm_path::get_current_path() const
+{
+   return "";
 }
 
 
@@ -214,6 +229,7 @@ bool pfm_file::make_dir()
 
 #include "main.hxx"
 #include <direct.h>
+#include <filesystem>
 
 #define pfm_app_inst		msvc_main::get_instance()
 
@@ -241,10 +257,15 @@ uint32 pfm::time::get_time_millis()
    return GetTickCount();
 }
 
-bool pfm_file::make_dir()
+bool pfm_path::make_dir()
 {
    int rval = _mkdir(get_full_path().c_str());
    return (rval == 0);
+}
+
+std::string pfm_path::get_current_path() const
+{
+   return std::filesystem::current_path().generic_string();
 }
 
 
@@ -639,49 +660,9 @@ mws_sp<pfm_file> pfm_file::get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl)
    return inst;
 }
 
-bool pfm_file::remove()
-{
-   mws_throw mws_exception("not implemented");
-
-   return false;
-}
-
-bool pfm_file::is_directory() const
-{
-   struct stat info;
-
-   if (stat(get_full_path().c_str(), &info) != 0)
-   {
-      return false;
-   }
-
-   if (info.st_mode & S_IFDIR)
-   {
-      return true;
-   }
-
-   return false;
-}
-
-bool pfm_file::is_regular_file() const
-{
-   struct stat info;
-
-   if (stat(get_full_path().c_str(), &info) != 0)
-   {
-      return false;
-   }
-
-   if (!(info.st_mode & S_IFDIR))
-   {
-      return true;
-   }
-
-   return false;
-}
-
 bool pfm_file::exists() const
 {
+   // check if this is a resource file
    if (pfm_impl::res_files_map)
    {
       auto pfile = pfm_impl::get_res_file(get_file_name());
@@ -692,14 +673,12 @@ bool pfm_file::exists() const
       }
    }
 
+   // external(non-resource file). use stat() to check for existence
    struct stat info;
+   std::string full_path = get_full_path();
+   bool exists = (stat(full_path.c_str(), &info) == 0);
 
-   if (stat(get_full_path().c_str(), &info) != 0)
-   {
-      return io.impl->exists();
-   }
-
-   return false;
+   return exists;
 }
 
 bool pfm_file::is_opened()const
@@ -836,6 +815,68 @@ mws_sp<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string i_aux_ro
    inst->make_standard_path();
 
    return inst;
+}
+
+bool pfm_path::remove()
+{
+   mws_throw mws_exception("not implemented");
+
+   return false;
+}
+
+bool pfm_path::is_directory() const
+{
+   struct stat info;
+
+   if (stat(get_full_path().c_str(), &info) != 0)
+   {
+      return false;
+   }
+
+   if (info.st_mode & S_IFDIR)
+   {
+      return true;
+   }
+
+   return false;
+}
+
+bool pfm_path::is_regular_file() const
+{
+   struct stat info;
+
+   if (stat(get_full_path().c_str(), &info) != 0)
+   {
+      return false;
+   }
+
+   if (!(info.st_mode & S_IFDIR))
+   {
+      return true;
+   }
+
+   return false;
+}
+
+bool pfm_path::exists() const
+{
+   // check if this is a resource file
+   if (pfm_impl::res_files_map)
+   {
+      auto pfile = pfm_impl::get_res_file(get_file_name());
+
+      if (pfile)
+      {
+         return true;
+      }
+   }
+
+   // external(non-resource file). use stat() to check for existence
+   struct stat info;
+   std::string full_path = get_full_path();
+   bool exists = (stat(full_path.c_str(), &info) == 0);
+
+   return exists;
 }
 
 std::string pfm_path::get_full_path() const
@@ -1161,7 +1202,7 @@ std::string pfm::filesystem::get_tmp_path(std::string i_name)
       if (mod)
       {
          p = pfm_impl::get_mod_res_path(mod) + "/../.ign";
-         auto dir = pfm_file::get_inst(p);
+         auto dir = pfm_path::get_inst(p);
 
          if (!dir->exists())
          {
