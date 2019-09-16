@@ -45,10 +45,12 @@ void mws_tex_atlas::upload()
    tex->update(0, (const char*)data.data());
 }
 
-glm::ivec4 mws_tex_atlas::get_region(uint32 i_width, uint32 i_height)
+const mws_tex_atlas::region& mws_tex_atlas::get_region_by_id(int i_region_id) const { return region_vect[i_region_id]; }
+
+const mws_tex_atlas::region& mws_tex_atlas::get_region(uint32 i_width, uint32 i_height)
 {
    int best_index = -1;
-   glm::ivec4 region = { 0, 0, i_width, i_height };
+   glm::ivec4 reg = { 0, 0, i_width, i_height };
 
    {
       uint32 best_height = INT_MAX;
@@ -67,20 +69,21 @@ glm::ivec4 mws_tex_atlas::get_region(uint32 i_width, uint32 i_height)
                best_height = y + i_height;
                best_index = i;
                best_width = node->z;
-               region.x = node->x;
-               region.y = y;
+               reg.x = node->x;
+               reg.y = y;
             }
          }
       }
    }
+
+   // atlas has run out of space
    if (best_index == -1)
    {
-      region = { -1, -1, 0, 0 };
-
-      return region;
+      return out_of_space;
    }
+
    {
-      glm::ivec3 t_node = { region.x, region.y + i_height, i_width };
+      glm::ivec3 t_node = { reg.x, reg.y + i_height, i_width };
       nodes.insert(nodes.begin() + best_index, t_node);
    }
 
@@ -114,22 +117,23 @@ glm::ivec4 mws_tex_atlas::get_region(uint32 i_width, uint32 i_height)
 
    merge();
    used += i_width * i_height;
+   region_vect.push_back(region{ reg, (int)region_vect.size() });
 
-   return region;
+   return region_vect.back();
 }
 
-void mws_tex_atlas::set_region(uint32 i_x, uint32 i_y, uint32 i_width, uint32 i_height, const uint8* i_data, uint32 i_stride)
+void mws_tex_atlas::set_region(const region& i_reg, const uint8* i_data, uint32 i_stride)
 {
-   mws_assert(i_x > 0);
-   mws_assert(i_y > 0);
-   mws_assert(i_x < (width - 1));
-   mws_assert((i_x + i_width) <= (width - 1));
-   mws_assert(i_y < (height - 1));
-   mws_assert((i_y + i_height) <= (height - 1));
+   mws_assert(i_reg.rect.x > 0);
+   mws_assert(i_reg.rect.y > 0);
+   mws_assert((uint32)i_reg.rect.x < (width - 1));
+   mws_assert(uint32(i_reg.rect.x + i_reg.rect.z) <= (width - 1));
+   mws_assert((uint32)i_reg.rect.y < (height - 1));
+   mws_assert(uint32(i_reg.rect.y + i_reg.rect.w) <= (height - 1));
 
-   for (uint32 i = 0; i < i_height; ++i)
+   for (uint32 i = 0; i < (uint32)i_reg.rect.w; ++i)
    {
-      memcpy(data.data() + ((i_y + i) * width + i_x) * depth, i_data + (i * i_stride), i_width * depth);
+      memcpy(data.data() + ((i_reg.rect.y + i) * width + i_reg.rect.x) * depth, i_data + (i * i_stride), i_reg.rect.z * depth);
    }
 }
 
@@ -140,6 +144,7 @@ void mws_tex_atlas::clear()
 
    nodes.clear();
    nodes.push_back(node);
+   region_vect.clear();
    used = 0;
    data.assign(width * height * depth, uint8(0));
 }

@@ -719,12 +719,12 @@ void mws_vkb_impl::build_keys_tex_atlas()
             glm::vec2 text_dim = i_font->get_text_dim(key);
             glm::vec2 dim = text_dim + glow_offset;
             glm::vec2 half_dim = (dim - text_dim) * 0.5f;
-            const glm::ivec4& reg = kv.second;
-            float width = (float)reg.z;
-            float height = (float)reg.w;
+            const mws_tex_atlas::region& reg = keys_atlas->get_region_by_id(kv.second);
+            float width = (float)reg.rect.z;
+            float height = (float)reg.rect.w;
 
             //g->drawRect((float)reg.x, (float)reg.y, width, height);
-            g->drawText(key, (float)reg.x + half_dim.x, (float)reg.y + half_dim.y, i_font);
+            g->drawText(key, (float)reg.rect.x + half_dim.x, (float)reg.rect.y + half_dim.y, i_font);
          }
       }
       else
@@ -748,13 +748,13 @@ void mws_vkb_impl::build_keys_tex_atlas()
                      glm::vec2 text_dim = i_font->get_text_dim(key);
                      glm::vec2 dim = text_dim + glow_offset;
                      glm::vec2 half_dim = (dim - text_dim) * 0.5f;
-                     glm::ivec4 reg = keys_atlas->get_region((uint32)glm::ceil(dim.x), (uint32)glm::ceil(dim.y));
-                     float width = (float)reg.z;
-                     float height = (float)reg.w;
+                     mws_tex_atlas::region reg = keys_atlas->get_region((uint32)glm::ceil(dim.x), (uint32)glm::ceil(dim.y));
+                     float width = (float)reg.rect.z;
+                     float height = (float)reg.rect.w;
 
-                     key_atlas_ht[key_id] = reg;
+                     key_atlas_ht[key_id] = reg.id;
                      //g->drawRect((float)reg.x, (float)reg.y, width, height);
-                     g->drawText(key, (float)reg.x + half_dim.x, (float)reg.y + half_dim.y, i_font);
+                     g->drawText(key, (float)reg.rect.x + half_dim.x, (float)reg.rect.y + half_dim.y, i_font);
                   }
                }
             }

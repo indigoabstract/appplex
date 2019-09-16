@@ -110,11 +110,11 @@ namespace mod_tex_atlas_ns
             gfx_color color = color_vect[rng.nextInt(color_vect.size())];
             int width = rng.range(15, 120);
             int height = rng.range(15, 120);
-            glm::ivec4 reg = tex_atlas->get_region(width, height);
+            mws_tex_atlas::region reg = tex_atlas->get_region(width, height);
             std::vector<gfx_color> tex;
 
-            tex.assign(reg.z * reg.w, color);
-            tex_atlas->set_region(reg.x, reg.y, reg.z, reg.w, (const unsigned char*)tex.data(), reg.z * sizeof(gfx_color));
+            tex.assign(reg.rect.z * reg.rect.w, color);
+            tex_atlas->set_region(reg, (const unsigned char*)tex.data(), reg.rect.z * sizeof(gfx_color));
          }
 
          tex_atlas->upload();

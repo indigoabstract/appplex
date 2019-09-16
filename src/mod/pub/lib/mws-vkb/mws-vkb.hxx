@@ -164,7 +164,7 @@ private:
    mws_sp<mws_font> selected_key_font;
    mws_sp<gfx_tex> cell_border_tex;
    mws_sp<mws_tex_atlas> keys_atlas;
-   std::unordered_map<key_types, glm::ivec4> key_atlas_ht;
+   std::unordered_map<key_types, int> key_atlas_ht;
 };
 
 
