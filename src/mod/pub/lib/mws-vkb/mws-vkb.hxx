@@ -10,6 +10,7 @@ class mws_vrn_main;
 class text_vxo;
 class gfx_tex;
 class mws_tex_atlas;
+class mws_atlas_sprite_list;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -165,6 +166,8 @@ private:
    mws_sp<gfx_tex> cell_border_tex;
    mws_sp<mws_tex_atlas> keys_atlas;
    std::unordered_map<key_types, int> key_atlas_ht;
+   mws_sp<mws_atlas_sprite_list> keys_list;
+   mws_sp<mws_atlas_sprite_list> keys_bg_list;
 };
 
 

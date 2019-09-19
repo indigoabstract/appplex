@@ -53,6 +53,36 @@ void gfx_rt::set_color_attachment(mws_sp<gfx_tex> icolor_att)
    }
 }
 
+void gfx_rt::clear_buffers(bool i_clear_color, bool i_clear_depth, bool i_clear_stencil, gfx_color i_clear_color_val)
+{
+   mws_assert((color_att) ? (gfx::i()->rt.get_current_render_target() == get_inst()) : true);
+
+   gfx_bitfield bf = 0;
+
+   if (i_clear_color)
+   {
+      glm::vec4 cc = i_clear_color_val.to_vec4();
+
+      bf |= GL_COLOR_BUFFER_BIT;
+      glClearColor(cc.r, cc.g, cc.b, cc.a);
+   }
+
+   if (i_clear_depth)
+   {
+      bf |= GL_DEPTH_BUFFER_BIT;
+   }
+
+   if (i_clear_stencil)
+   {
+      bf |= GL_STENCIL_BUFFER_BIT;
+   }
+
+   if (bf != 0)
+   {
+      glClear(bf);
+   }
+}
+
 void gfx_rt::reload()
 {
    glGenFramebuffers(1, &framebuffer);

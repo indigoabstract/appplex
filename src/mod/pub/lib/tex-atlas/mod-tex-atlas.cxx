@@ -28,14 +28,24 @@ namespace mod_tex_atlas_ns
          tex_atlas = mws_tex_atlas::nwi(512, 512, 4);
          gen_atlas_regions();
 
+         // sprite list
+         {
+            mws_sp<gfx_tex> tex = tex_atlas->get_tex();
+            sprite_list = mws_atlas_sprite_list::nwi(tex_atlas);
+            sprite_list->camera_id_list = { "mws_cam" };
+            (*sprite_list)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
+            (*sprite_list)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+            attach(sprite_list);
+
+            fill_sprite_list();
+         }
          // tex quad
          {
             mws_sp<gfx_tex> tex = tex_atlas->get_tex();
             tex_quad = gfx_quad_2d::nwi();
             auto& rvxo = *tex_quad;
 
-            rvxo.camera_id_list.clear();
-            rvxo.camera_id_list.push_back("mws_cam");
+            rvxo.camera_id_list = { "mws_cam" };
             //rvxo[MP_BLENDING] = MV_ALPHA;
             rvxo[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             rvxo["u_s2d_tex"][MP_TEXTURE_INST] = tex;
@@ -62,6 +72,7 @@ namespace mod_tex_atlas_ns
                case KEY_R:
                {
                   gen_atlas_regions();
+                  fill_sprite_list();
                   break;
                }
 
@@ -120,8 +131,25 @@ namespace mod_tex_atlas_ns
          tex_atlas->upload();
       }
 
+      void fill_sprite_list()
+      {
+         mws_sp<gfx_tex> tex = tex_atlas->get_tex();
+         float x_off = 100.f + (float)tex->get_width();
+         float y_off = 50.f;
+
+         sprite_list->clear();
+         sprite_list->add(0, x_off, y_off);
+         sprite_list->add(1, x_off + 150, y_off);
+         sprite_list->add(2, x_off + 350, y_off);
+         sprite_list->add(3, x_off, y_off + 150);
+         sprite_list->add(4, x_off + 150, y_off + 150);
+         sprite_list->add(5, x_off + 350, y_off + 150);
+         sprite_list->push_data();
+      }
+
       mws_sp<mws_tex_atlas> tex_atlas;
       mws_sp<gfx_quad_2d> tex_quad;
+      mws_sp<mws_atlas_sprite_list> sprite_list;
    };
 }
 

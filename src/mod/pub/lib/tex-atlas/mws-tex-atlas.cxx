@@ -6,6 +6,7 @@
 #include "gfx.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-tex.hxx"
+#include <array>
 
 
 mws_sp<mws_tex_atlas> mws_tex_atlas::nwi(uint32 i_width, uint32 i_height, uint32 i_depth)
@@ -198,3 +199,70 @@ void mws_tex_atlas::merge()
       }
    }
 }
+
+
+mws_sp<mws_atlas_sprite_list> mws_atlas_sprite_list::nwi(mws_sp<mws_tex_atlas> i_atlas)
+{
+   mws_sp<mws_atlas_sprite_list> inst(new mws_atlas_sprite_list());
+   inst->atlas = i_atlas;
+   return inst;
+}
+
+void mws_atlas_sprite_list::add(int i_sprite_id, float i_x, float i_y, gfx_quad_2d::e_anchor_types i_anchor)
+{
+   static const std::array<gfx_indices_type, 6> indices = { 1, 0, 2, 3, 2, 0, };
+   mws_sp<gfx_tex> tex = atlas->get_tex();
+   float tw = (float)tex->get_width();
+   float th = (float)tex->get_height();
+   const mws_tex_atlas::region& reg = atlas->get_region_by_id(i_sprite_id);
+   const glm::ivec4& r = reg.rect;
+   float dx = float(r.z);
+   float dy = float(r.w);
+   float z_val = 0.f;
+   float p = 0.5f;
+   uint32 vx_start = vx_buff.size();
+   float px = i_x;
+   float py = i_y;
+   glm::vec4 tc(r.x / tw, 1.f - r.y / th, (r.x + r.z) / tw, 1.f - (r.y + r.w) / th);
+
+   switch (i_anchor)
+   {
+   case gfx_quad_2d::e_top_left:
+      px = px + dx * 0.5f;
+      py = py + dy * 0.5f;
+      break;
+
+   case gfx_quad_2d::e_center:
+      break;
+
+   case gfx_quad_2d::e_btm_center:
+      py = py - dy * 0.5f;
+      break;
+   }
+
+   vx_buff.push_back(vx_data{ { -p * dx + px,  p * dy + py, z_val }, { tc.x, tc.w } /*{ 0, 1 }*/ });
+   vx_buff.push_back(vx_data{ { -p * dx + px, -p * dy + py, z_val }, { tc.x, tc.y } /*{ 0, 0 }*/ });
+   vx_buff.push_back(vx_data{ { p * dx + px, -p * dy + py, z_val }, { tc.z, tc.y } /*{ 1, 0 }*/ });
+   vx_buff.push_back(vx_data{ { p * dx + px,  p * dy + py, z_val }, { tc.z, tc.w } /*{ 1, 1 }*/ });
+
+   for (gfx_indices_type idx : indices)
+   {
+      idx_buff.push_back(vx_start + idx);
+   }
+}
+
+void mws_atlas_sprite_list::push_data()
+{
+   gfx_vxo_util::set_mesh_data(
+      (const uint8*)vx_buff.data(), vx_buff.size() * sizeof(vx_data),
+      idx_buff.data(), idx_buff.size() * sizeof(gfx_indices_type),
+      std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+}
+
+void mws_atlas_sprite_list::clear()
+{
+   vx_buff.clear();
+   idx_buff.clear();
+}
+
+mws_atlas_sprite_list::mws_atlas_sprite_list() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")) {}

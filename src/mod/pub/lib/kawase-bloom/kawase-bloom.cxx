@@ -56,6 +56,8 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          rt.init(mws_to_str_fmt("tex-%d", k), input_tex->get_width(), input_tex->get_width(), &prm);
          (*rt.get_quad())[MP_SHADER_NAME] = kawase_blur_sh_id;
          rt.get_quad()->set_v_flip(true);
+         gfx::i()->rt.set_current_render_target(rt.get_rt());
+         rt.get_rt()->clear_buffers();
       }
 
       (*ping_pong_vect[0].get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[1].get_tex();
@@ -72,7 +74,11 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          rvxo[MP_BLENDING] = MV_ADD;
          rvxo[MP_SHADER_NAME] = accumulation_sh_id;
          rvxo.set_v_flip(true);
+         gfx::i()->rt.set_current_render_target(rt.get_rt());
+         rt.get_rt()->clear_buffers();
       }
+
+      gfx::i()->rt.set_current_render_target();
    }
    // tex quad
    {

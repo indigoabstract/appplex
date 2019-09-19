@@ -439,6 +439,7 @@ void mws_button::setup()
 
    {
       auto& rvxo = *vxo;
+      color = gfx_color::from_argb(0xff333333);
       rvxo.camera_id_list.clear();
       rvxo.camera_id_list.push_back("mws_cam");
       rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;

@@ -7,6 +7,7 @@
 #include "gfx-shader.hxx"
 #include "gfx-state.hxx"
 #include "gfx-color.hxx"
+#include "gfx-rt.hxx"
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
 
@@ -660,30 +661,9 @@ gfx_obj::e_gfx_obj_type gfx_camera::get_type()const
 
 void gfx_camera::clear_buffers()
 {
-   gfx_bitfield bf = 0;
+   mws_sp<gfx_rt> crt_rt = gi()->rt.get_current_render_target();
 
-   if (clear_color)
-   {
-      auto cc = clear_color_value.to_vec4();
-
-      bf |= GL_COLOR_BUFFER_BIT;
-      glClearColor(cc.r, cc.g, cc.b, cc.a);
-   }
-
-   if (clear_depth)
-   {
-      bf |= GL_DEPTH_BUFFER_BIT;
-   }
-
-   if (clear_stencil)
-   {
-      bf |= GL_STENCIL_BUFFER_BIT;
-   }
-
-   if (bf != 0)
-   {
-      glClear(bf);
-   }
+   crt_rt->clear_buffers(clear_color, clear_depth, clear_stencil, clear_color_value);
 }
 
 void gfx_camera::update_glp_params(mws_sp<gfx_vxo> imesh, mws_sp<gfx_shader> glp)

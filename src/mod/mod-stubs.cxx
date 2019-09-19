@@ -86,6 +86,7 @@ void mws_vkb::set_font(mws_sp<mws_font>) {}
 mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const { return nullptr; }
 void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store>) {}
 mws_sp<gfx_tex> mws_vkb::get_cell_border_tex() { return nullptr; }
+mws_sp<gfx_tex> mws_vkb::get_keys_tex() { return nullptr; }
 void mws_vkb::done() {}
 mws_sp<mws_vkb_impl> mws_vkb::get_impl() { return nullptr; }
 #endif

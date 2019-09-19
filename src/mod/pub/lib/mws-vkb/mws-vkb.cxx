@@ -141,7 +141,7 @@ void mws_vkb_impl::setup()
    };
    {
       mws_sp<mws_font> font = font_db::inst()->get_global_font();
-      mws_sp<mws_font> vkb_font = mws_font::nwi(font, mws_cm(0.55f));
+      mws_sp<mws_font> vkb_font = mws_font::nwi(font, mws_cm(0.85f));
 
       set_font(vkb_font);
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
@@ -287,22 +287,34 @@ void mws_vkb_impl::on_update_state()
       key_types key_id = get_key_at(hide_vkb_key_idx);
       std::string key = "show";
       auto& kp = kp_vect[hide_vkb_key_idx];
-      glm::vec2 dim = font->get_text_dim(key);
-      glm::vec2 pos(kp.position.x, kp.position.y);
-      glm::vec2 dim_base = font_base->get_text_dim(key);
-      glm::vec2 pos_base = pos - dim_base / 2.f;
-      float offset = 3.f;
+      //glm::vec2 dim = font->get_text_dim(key);
+      //glm::vec2 pos(kp.position.x, kp.position.y);
+      //glm::vec2 dim_base = font_base->get_text_dim(key);
+      //glm::vec2 pos_base = pos - dim_base / 2.f;
+      //float offset = 3.f;
 
-      pos -= dim / 2.f;
-      vk_keys->add_text(key, pos_base + glm::vec2(-offset, -offset), font_base);
-      vk_keys->add_text(key, pos_base + glm::vec2(offset, -offset), font_base);
-      vk_keys->add_text(key, pos_base + glm::vec2(offset, offset), font_base);
-      vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
-      vk_keys->add_text(key, pos, font);
+      keys_list->clear();
+
+      //pos -= dim / 2.f;
+      //vk_keys->add_text(key, pos_base + glm::vec2(-offset, -offset), font_base);
+      //vk_keys->add_text(key, pos_base + glm::vec2(offset, -offset), font_base);
+      //vk_keys->add_text(key, pos_base + glm::vec2(offset, offset), font_base);
+      //vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
+      //vk_keys->add_text(key, pos, font);
+      auto it = key_atlas_ht.find(key_id);
+
+      if (it != key_atlas_ht.end())
+      {
+         keys_list->add(it->second, kp.position.x, kp.position.y, gfx_quad_2d::e_center);
+      }
+
+      keys_list->push_data();
    }
    else
    {
       uint32 size = get_key_vect_size();
+      keys_list->clear();
+      keys_bg_list->clear();
 
       for (uint32 k = 0; k < size; k++)
       {
@@ -315,21 +327,32 @@ void mws_vkb_impl::on_update_state()
          }
 
          key_types key_id = get_key_at(k);
-         std::string key = get_key_name(key_id);
          auto& kp = kp_vect[k];
-         glm::vec2 dim = font->get_text_dim(key);
-         glm::vec2 pos(kp.position.x, kp.position.y);
-         glm::vec2 dim_base = font_base->get_text_dim(key);
-         glm::vec2 pos_base = pos - dim_base / 2.f;
-         float offset = 3.f;
+         //std::string key = get_key_name(key_id);
+         //glm::vec2 dim = font->get_text_dim(key);
+         //glm::vec2 pos(kp.position.x, kp.position.y);
+         //glm::vec2 dim_base = font_base->get_text_dim(key);
+         //glm::vec2 pos_base = pos - dim_base / 2.f;
+         //float offset = 3.f;
 
-         pos -= dim / 2.f;
-         vk_keys->add_text(key, pos_base + glm::vec2(-offset, -offset), font_base);
-         vk_keys->add_text(key, pos_base + glm::vec2(offset, -offset), font_base);
-         vk_keys->add_text(key, pos_base + glm::vec2(offset, offset), font_base);
-         vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
-         vk_keys->add_text(key, pos, font);
+         //pos -= dim / 2.f;
+         //vk_keys->add_text(key, pos_base + glm::vec2(-offset, -offset), font_base);
+         //vk_keys->add_text(key, pos_base + glm::vec2(offset, -offset), font_base);
+         //vk_keys->add_text(key, pos_base + glm::vec2(offset, offset), font_base);
+         //vk_keys->add_text(key, pos_base + glm::vec2(-offset, offset), font_base);
+         //vk_keys->add_text(key, pos, font);
+
+         auto it = key_atlas_ht.find(key_id);
+
+         if (it != key_atlas_ht.end())
+         {
+            keys_list->add(it->second, kp.position.x, kp.position.y, gfx_quad_2d::e_center);
+            keys_bg_list->add(it->second, kp.position.x, kp.position.y, gfx_quad_2d::e_center);
+         }
       }
+
+      keys_list->push_data();
+      keys_bg_list->push_data();
    }
 
    // key lights
@@ -707,7 +730,27 @@ void mws_vkb_impl::build_keys_tex_atlas()
    mws_gfx_ppb output_ppb(tex);
    mws_sp<mws_camera> g = get_mod()->mws_cam;
    glm::vec2 dim = key_font->get_text_dim("M");
-   glm::vec2 glow_offset(4.9f * dim.x, 2.5f * dim.y);
+   glm::vec2 glow_offset(2.5f * dim.x, 1.f * dim.y);
+   {
+      keys_bg_list = mws_atlas_sprite_list::nwi(keys_atlas);
+      keys_bg_list->camera_id_list = { "mws_cam" };
+      (*keys_bg_list)[MP_SHADER_NAME] = "keys-bg";
+      (*keys_bg_list)[MP_BLENDING] = MV_ALPHA;
+      (*keys_bg_list)[MP_DEPTH_TEST] = false;
+      (*keys_bg_list)[MP_DEPTH_WRITE] = false;
+      (*keys_bg_list)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+      attach(keys_bg_list);
+   }
+   {
+      keys_list = mws_atlas_sprite_list::nwi(keys_atlas);
+      keys_list->camera_id_list = { "mws_cam" };
+      (*keys_list)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
+      (*keys_list)[MP_BLENDING] = MV_ADD;
+      (*keys_list)[MP_DEPTH_TEST] = false;
+      (*keys_list)[MP_DEPTH_WRITE] = false;
+      (*keys_list)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+      attach(keys_list);
+   }
 
    auto draw_keys = [this, g, glow_offset](mws_sp<mws_font> i_font, bool i_atlas_loaded)
    {
@@ -723,7 +766,7 @@ void mws_vkb_impl::build_keys_tex_atlas()
             float width = (float)reg.rect.z;
             float height = (float)reg.rect.w;
 
-            //g->drawRect((float)reg.x, (float)reg.y, width, height);
+            //g->drawRect((float)reg.rect.x, (float)reg.rect.y, width, height);
             g->drawText(key, (float)reg.rect.x + half_dim.x, (float)reg.rect.y + half_dim.y, i_font);
          }
       }
@@ -748,7 +791,7 @@ void mws_vkb_impl::build_keys_tex_atlas()
                      glm::vec2 text_dim = i_font->get_text_dim(key);
                      glm::vec2 dim = text_dim + glow_offset;
                      glm::vec2 half_dim = (dim - text_dim) * 0.5f;
-                     mws_tex_atlas::region reg = keys_atlas->get_region((uint32)glm::ceil(dim.x), (uint32)glm::ceil(dim.y));
+                     const mws_tex_atlas::region& reg = keys_atlas->get_region((uint32)glm::ceil(dim.x), (uint32)glm::ceil(dim.y));
                      float width = (float)reg.rect.z;
                      float height = (float)reg.rect.w;
 

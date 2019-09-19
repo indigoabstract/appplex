@@ -8,6 +8,7 @@
 #include "mws/font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-quad-2d.hxx"
+#include "gfx-rt.hxx"
 #include "gfx-tex.hxx"
 #include <array>
 
@@ -57,7 +58,7 @@ namespace mod_kawase_bloom_ns
          }
 
          mws_sp<mws_font> fnt = ortho_cam->get_font();
-         mws_sp<mws_font> fnt_big = mws_font::nwi(fnt, mws_cm(1.2f));
+         mws_sp<mws_font> fnt_big = mws_font::nwi(fnt, mws_px(60, mws_px::vertical));
          std::string text = "glowing text";
          float text_width = fnt_big->get_text_width(text);
 
@@ -70,6 +71,7 @@ namespace mod_kawase_bloom_ns
             {
                mws_sp<gfx_tex> tex = input_ppb.get_tex();
                gfx::i()->rt.set_current_render_target(input_ppb.get_rt());
+               input_ppb.get_rt()->clear_buffers();
                ortho_cam->drawText(text, (tex->get_height() - text_width) / 2.f, (tex->get_height() - fnt_big->get_height()) / 2.f, fnt_big);
                ortho_cam->update_camera_state();
                gfx::i()->rt.set_current_render_target();
@@ -95,6 +97,7 @@ namespace mod_kawase_bloom_ns
             {
                fnt_big->set_color(gfx_color::colors::white);
                gfx::i()->rt.set_current_render_target(output_ppb.get_rt());
+               output_ppb.get_rt()->clear_buffers();
                fnt_big->set_color(gfx_color::colors::white);
                ortho_cam->drawText(text, (bloom_tex->get_height() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big->get_height()) / 2.f, fnt_big);
                ortho_cam->update_camera_state();

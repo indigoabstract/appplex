@@ -2,6 +2,8 @@
 
 
 #include "pfm-def.h"
+#include "gfx-quad-2d.hxx"
+#include "gfx-vxo.hxx"
 #include <glm/vec4.hpp>
 #include <vector>
 
@@ -78,4 +80,22 @@ protected:
    mws_sp<gfx_tex> tex;
    static inline region out_of_space = { { -1, -1, 0, 0 }, -1 };
    static inline uint32 inst_count = 0;
+};
+
+
+class mws_atlas_sprite_list : public gfx_vxo
+{
+public:
+   static mws_sp<mws_atlas_sprite_list> nwi(mws_sp<mws_tex_atlas> i_atlas);
+   void add(int i_sprite_id, float i_x, float i_y, gfx_quad_2d::e_anchor_types i_anchor = gfx_quad_2d::e_top_left);
+   void push_data();
+   void clear();
+
+protected:
+   mws_atlas_sprite_list();
+
+   mws_sp<mws_tex_atlas> atlas;
+   struct vx_data { glm::vec3 pos; glm::vec2 tex; };
+   std::vector<vx_data> vx_buff;
+   std::vector<gfx_indices_type> idx_buff;
 };
