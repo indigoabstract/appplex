@@ -2,15 +2,14 @@
 
 #include "mws/mws.hxx"
 #include "input/gesture-detectors.hxx"
-#include <unordered_map>
+#include "gfx-pbo.hxx"
+//#include <unordered_map>
 
 
 class mws_font;
 class mws_vrn_main;
 class text_vxo;
 class gfx_tex;
-class mws_tex_atlas;
-class mws_atlas_sprite_list;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -89,7 +88,7 @@ public:
    virtual void on_resize(uint32 i_width, uint32 i_height);
    virtual vkb_file_info get_closest_match(uint32 i_width, uint32 i_height);
    virtual mws_sp<mws_font> get_font() const;
-   virtual void set_font(mws_sp<mws_font> i_fnt);
+   virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt);
    virtual void done();
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
@@ -106,9 +105,8 @@ public:
    mws_sp<gfx_tex> get_cell_border_tex();
    void build_cell_border_tex();
    mws_sp<gfx_tex> get_keys_tex();
-   void build_keys_tex_atlas();
-   mws_sp<mws_font> get_key_font() const { return key_font; }
-   mws_sp<mws_font> get_selected_key_font() const { return selected_key_font; }
+   void build_keys_tex();
+   mws_sp<mws_font> get_key_font() const { return letter_font; }
    bool is_mod_key(key_types i_key_id);
    // check if i_mod_key is pressed or locked
    enum class mod_key_types { alt = VKB_ALT, hide_vkb = VKB_HIDE_KB, shift = VKB_SHIFT, };
@@ -146,7 +144,6 @@ protected:
    uint32 obj_type_mask = 0;
    key_mod_types key_mod = key_mod_types::mod_none;
    std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
-   mws_sp<text_vxo> vk_keys;
    std::unordered_map<key_types, std::string> key_map;
    int map_idx = 0;
    std::string loaded_filename;
@@ -160,14 +157,13 @@ protected:
    std::unordered_map<int, key_types> mod_keys_st;
 
 private:
-   mws_sp<mws_font> key_font;
-   mws_sp<mws_font> key_font_base;
-   mws_sp<mws_font> selected_key_font;
+   mws_sp<mws_font> letter_font;
+   mws_sp<mws_font> word_font;
    mws_sp<gfx_tex> cell_border_tex;
-   mws_sp<mws_tex_atlas> keys_atlas;
-   std::unordered_map<key_types, int> key_atlas_ht;
-   mws_sp<mws_atlas_sprite_list> keys_list;
-   mws_sp<mws_atlas_sprite_list> keys_bg_list;
+   mws_gfx_ppb key_border_tex;
+   mws_sp<gfx_quad_2d> key_border_quad;
+   std::vector<mws_gfx_ppb> keys_tex;
+   mws_sp<gfx_quad_2d> keys_quad;
 };
 
 
@@ -183,7 +179,7 @@ public:
    virtual void on_resize() override;
    virtual void set_target(mws_sp<mws_text_area> i_tbx) override;
    virtual mws_sp<mws_font> get_font() override;
-   virtual void set_font(mws_sp<mws_font> i_fnt) override;
+   virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt) override;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
    virtual mws_sp<gfx_tex> get_cell_border_tex() override;

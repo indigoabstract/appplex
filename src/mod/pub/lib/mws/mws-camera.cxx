@@ -72,6 +72,11 @@ namespace ns_mws_camera
          tx.clear();
       }
 
+      void set_text_blending(const std::string& i_blend_type)
+      {
+         (*tx_vxo)[MP_BLENDING] = i_blend_type;
+      }
+
       mws_sp<text_vxo> tx_vxo;
       std::string tx;
       float x;
@@ -89,6 +94,7 @@ namespace ns_mws_camera
       void on_update_start(mws_sp<draw_context> idc) {}
       void draw(mws_sp<draw_context> idc) {}
       void on_update_end(mws_sp<draw_context> idc) {}
+      void set_text_blending(const std::string& i_blend_type) {}
 
 #endif
    };
@@ -204,6 +210,11 @@ void mws_camera::load(mws_sp<gfx_camera> inst)
    p = mws_sp<mws_camera_impl>(new mws_camera_impl());
    projection_type = gfx_camera::e_orthographic_proj;
    rendering_priority = 0xffff;
+}
+
+void mws_camera::set_text_blending(const std::string& i_blend_type)
+{
+   p->d_text.set_text_blending(i_blend_type);
 }
 
 void mws_camera::update_camera_state()

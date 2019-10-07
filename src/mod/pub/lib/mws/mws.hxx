@@ -141,7 +141,7 @@ public:
    virtual void on_resize() = 0;
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
    virtual mws_sp<mws_font> get_font() = 0;
-   virtual void set_font(mws_sp<mws_font> i_fnt) = 0;
+   virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt) = 0;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const = 0;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) = 0;
    virtual mws_sp<gfx_tex> get_cell_border_tex() = 0;

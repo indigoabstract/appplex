@@ -35,4 +35,5 @@ protected:
    mws_gfx_ppb accumulation_buff;
    mws_sp<gfx_shader> accumulation_shader;
    static const inline std::string accumulation_sh_id = "accumulation";
+   static inline uint32 tex_count = 0;
 };

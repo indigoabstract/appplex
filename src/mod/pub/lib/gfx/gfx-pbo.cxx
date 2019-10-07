@@ -259,7 +259,7 @@ void mws_gfx_ppb::init(mws_sp<gfx_tex> i_tex)
    {
       quad = gfx_quad_2d::nwi();
       (*quad)[MP_SHADER_NAME] = gfx::black_sh_id;
-      quad->set_scale((float)tex->get_width(), (float)tex->get_width());
+      quad->set_scale((float)tex->get_width(), (float)tex->get_height());
    }
 }
 

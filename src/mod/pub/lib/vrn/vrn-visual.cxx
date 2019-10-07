@@ -606,6 +606,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       (*nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, alpha_val);
       (*nexus_pairs_mesh)[MP_CULL_FRONT] = false;
       (*nexus_pairs_mesh)[MP_CULL_BACK] = false;
+      (*nexus_pairs_mesh)[MP_DEPTH_TEST] = false;
       (*nexus_pairs_mesh)[MP_BLENDING] = MV_ALPHA;
       //nexus_pairs_mesh->render_method = GLPT_POINTS;
       nexus_pairs_mesh->camera_id_list = { i_cam->camera_id() };

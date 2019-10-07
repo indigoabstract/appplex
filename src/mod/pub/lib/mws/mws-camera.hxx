@@ -31,6 +31,7 @@ public:
    void translate(float tx, float ty);
    void fillAlphaRect(int x, int y, int w, int h, int color);
    //void fillAlphaGradientQuad(vxfmt_v2fc4b* iva);
+   void set_text_blending(const std::string& i_blend_type);
    void update_camera_state() override;
 
 protected:

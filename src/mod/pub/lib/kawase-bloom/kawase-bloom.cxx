@@ -49,15 +49,16 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       prm.set_rt_params();
       kawase_blur_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(kawase_blur_sh_id);
 
-      for (uint32 k = 0; k < ping_pong_vect.size(); k++)
+      for (uint32 k = 0; k < 2; k++)
       {
          mws_gfx_ppb& rt = ping_pong_vect[k];
 
-         rt.init(mws_to_str_fmt("tex-%d", k), input_tex->get_width(), input_tex->get_width(), &prm);
+         rt.init(mws_to_str_fmt("mws-kawase-bloom-tex-%d", tex_count), input_tex->get_width(), input_tex->get_height(), &prm);
          (*rt.get_quad())[MP_SHADER_NAME] = kawase_blur_sh_id;
          rt.get_quad()->set_v_flip(true);
          gfx::i()->rt.set_current_render_target(rt.get_rt());
          rt.get_rt()->clear_buffers();
+         tex_count++;
       }
 
       (*ping_pong_vect[0].get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[1].get_tex();
@@ -68,7 +69,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          mws_gfx_ppb& rt = accumulation_buff;
 
          accumulation_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(accumulation_sh_id);
-         rt.init(mws_to_str_fmt("tex-acc-buff"), input_tex->get_width(), input_tex->get_width(), &prm);
+         rt.init(mws_to_str_fmt("mws-kawase-bloom-tex-%d", tex_count), input_tex->get_width(), input_tex->get_height(), &prm);
          auto& rvxo = *rt.get_quad();
 
          rvxo[MP_BLENDING] = MV_ADD;
@@ -76,6 +77,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          rvxo.set_v_flip(true);
          gfx::i()->rt.set_current_render_target(rt.get_rt());
          rt.get_rt()->clear_buffers();
+         tex_count++;
       }
 
       gfx::i()->rt.set_current_render_target();
@@ -88,7 +90,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       rvxo.camera_id_list = { ortho_cam->camera_id };
       rvxo[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
       rvxo["u_s2d_tex"][MP_TEXTURE_INST] = input_tex;
-      rvxo.set_scale((float)input_tex->get_width(), (float)input_tex->get_width());
+      rvxo.set_scale((float)input_tex->get_width(), (float)input_tex->get_height());
       rvxo.set_v_flip(true);
    }
 }
@@ -110,7 +112,7 @@ void mws_kawase_bloom::update()
       mws_gfx_ppb& rt = ping_pong_vect[k % 2];
 
       gfx::i()->rt.set_current_render_target(rt.get_rt());
-      (*rt.get_quad())["u_v2_offset"] = glm::vec2(sample_factor / rt.get_tex()->get_width(), sample_factor / rt.get_tex()->get_width());
+      (*rt.get_quad())["u_v2_offset"] = glm::vec2(sample_factor / rt.get_tex()->get_width(), sample_factor / rt.get_tex()->get_height());
       rt.get_quad()->draw_out_of_sync(ortho_cam);
       output_tex = rt.get_tex();
       gfx::i()->rt.set_current_render_target(accumulation_buff.get_rt());
