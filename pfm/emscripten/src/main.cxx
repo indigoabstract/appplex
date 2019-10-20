@@ -190,8 +190,8 @@ void emst_main::init()
    {
       double screen_width = EM_ASM_DOUBLE({ return window.screen.width; });
       double screen_height = EM_ASM_DOUBLE({ return window.screen.height; });
-      double horizontal_screen_dpi = EM_ASM_DOUBLE({ return mws_horizontal_screen_dpi; });
-      double vertical_screen_dpi = EM_ASM_DOUBLE({ return mws_vertical_screen_dpi; });
+      double horizontal_screen_dpi = EM_ASM_DOUBLE({ return Module.mws_horizontal_screen_dpi(); });
+      double vertical_screen_dpi = EM_ASM_DOUBLE({ return Module.mws_vertical_screen_dpi(); });
 
       init_screen_metrix((uint32)screen_width, (uint32)screen_height, (float)horizontal_screen_dpi, (float)vertical_screen_dpi);
    }

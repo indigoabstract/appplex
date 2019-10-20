@@ -423,9 +423,9 @@ namespace pfm_impl
             if (res_path_release.empty())
             {
                std::string rp = "res";
-               bool exists = std::filesystem::exists(rp);
+               mws_sp<pfm_path> dir = pfm_path::get_inst(rp);
 
-               if (exists)
+               if (dir->exists())
                {
                   res_path_release = rp;
                }

@@ -70,25 +70,16 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(EMSC_EXE_LINKER_FLAGS)
 	#set(EMSC_AR_FLAGS)
 
-	#set(EMSC_EXE_LINKER_FLAGS "${EMSC_EXE_LINKER_FLAGS} --shell-file ${CMAKE_CURRENT_LIST_DIR}/test_html5_fullscreen.html")
-
 	# c++ compiler flags
-	set(CMAKE_CXX_FLAGS "${EMSC_COMMON_FLAGS} ${EMSC_CXX_FLAGS} -std=c++14 -stdlib=libc++ -fno-rtti")
+	set(CMAKE_CXX_FLAGS "${EMSC_COMMON_FLAGS} ${EMSC_CXX_FLAGS} -std=c++17 -stdlib=libc++ -fno-rtti")
 	set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g4 --emit-symbol-map")
-	#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Oz --llvm-lto 3 --closure 1")
-	#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
-	#set(CMAKE_CXX_FLAGS "${EMSC_COMMON_FLAGS} ${EMSC_CXX_FLAGS} -std=c++11 -stdlib=libc++ -fstrict-aliasing -Wall -Wno-multichar -Wextra -Wno-unused-parameter -Wno-unknown-pragmas -Wno-ignored-qualifiers -Wno-long-long -Wno-overloaded-virtual -Wno-deprecated-writable-strings -Wno-unused-volatile-lvalue -Wno-inconsistent-missing-override -Wno-warn-absolute-paths -Wno-expansion-to-defined")
-	set(CMAKE_CXX_FLAGS_RELEASE "${EMSCRIPTEN_OPT} -DNDEBUG -Oz --llvm-lto 3 --closure 1")
+	set(CMAKE_CXX_FLAGS_RELEASE "${EMSCRIPTEN_OPT} -DNDEBUG -Oz --llvm-lto 3 --closure 0")
 	#set(CMAKE_CXX_FLAGS_PROFILING "${EMSCRIPTEN_OPT} -DNDEBUG --profiling")
 
 	# c compiler flags
 	set(CMAKE_C_FLAGS "${EMSC_COMMON_FLAGS} ${CMAKE_C_FLAGS} -Wall")
-	#set(CMAKE_C_FLAGS "${EMSC_COMMON_FLAGS} ${CMAKE_C_FLAGS} -std=c99 -Wall")
 	set(CMAKE_C_FLAGS_DEBUG "-O0 -g4 --emit-symbol-map")
-	#set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG -Oz --llvm-lto 3 --closure 1")
-	#set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3")
-	#set(CMAKE_C_FLAGS "${EMSC_COMMON_FLAGS} -fstrict-aliasing -Wall -Wextra -Wno-multichar -Wno-unused-parameter -Wno-unknown-pragmas -Wno-ignored-qualifiers -Wno-long-long -Wno-overloaded-virtual -Wno-deprecated-writable-strings -Wno-unused-volatile-lvalue -Wno-warn-absolute-paths -Wno-expansion-to-defined")
-	set(CMAKE_C_FLAGS_RELEASE "${EMSCRIPTEN_OPT} -DNDEBUG -Oz --llvm-lto 3 --closure 1")
+	set(CMAKE_C_FLAGS_RELEASE "${EMSCRIPTEN_OPT} -DNDEBUG -Oz --llvm-lto 3 --closure 0")
 	#set(CMAKE_C_FLAGS_PROFILING "${EMSCRIPTEN_OPT} -DNDEBUG --profiling")
 
 	# linker flags
@@ -113,20 +104,15 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
-	#include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/emscripten/src")
-	#include_directories("${CMAKE_CURRENT_LIST_DIR}src/mod/pub/lib/ffmpeg")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/emscripten/lib")
-	#find_library(ZLIB_LIB libz.a)
-	#find_library(PNG_LIB libpng.a)
 	find_library(FREETYPE_LIB libfreetype.a)
 	message("CMAKE_LIBRARY_PATH: " ${CMAKE_LIBRARY_PATH})
 	link_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/emscripten/lib")
 	
-	#if(NOT (ZLIB_LIB AND PNG_LIB AND FREETYPE_LIB))
 	if(NOT (FREETYPE_LIB))
 		message(FATAL_ERROR "Libraries not found! "  ${ZLIB_LIB} " and " ${PNG_LIB} " and " ${FREETYPE_LIB})
 	else()
