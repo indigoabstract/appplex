@@ -703,15 +703,15 @@ bool msvc_main::init_app(int argc, char** argv)
    }
 
    // find console status
-   bool consoleExists = (subsys == subsys_console) ? true : AttachConsole(ATTACH_PARENT_PROCESS);
+   bool console_exists = (subsys == subsys_console) ? true : AttachConsole(ATTACH_PARENT_PROCESS);
 
-   if (consoleExists)
+   if (console_exists)
    {
       console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
       // redirect unbuffered STDOUT to the console
-      int hConHandle = _open_osfhandle((long)console_handle, _O_TEXT);
-      FILE* fp = _fdopen(hConHandle, "w");
+      int hcon_handle = _open_osfhandle((long)console_handle, _O_TEXT);
+      FILE* fp = _fdopen(hcon_handle, "w");
       *stdout = *fp;
       setvbuf(stdout, NULL, _IONBF, 0);
       std::ios_base::sync_with_stdio();

@@ -305,10 +305,11 @@ void gfx_tex::set_active(int itex_unit_index)
 
       texture_updated = false;
    }
-   //if (prm.regen_mipmaps && (prm.gen_mipmaps && mipmaps_supported(prm.internal_format)))
-   //{
-   //   glGenerateMipmap(gl_tex_target);
-   //}
+
+   if (prm.regen_mipmaps && (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())))
+   {
+      glGenerateMipmap(gl_tex_target);
+   }
 
    mws_report_gfx_errs();
 }

@@ -133,7 +133,7 @@ class file_data_sequence : public data_sequence
 {
 public:
    file_data_sequence(mws_sp<pfm_file> ifile);
-   ~file_data_sequence();
+   virtual ~file_data_sequence() {}
    bool reached_end_of_sequence() override;
    void close();
    virtual uint64 get_size()const;
@@ -396,7 +396,7 @@ private:
 class rw_file_sequence : public file_data_sequence
 {
 public:
-   ~rw_file_sequence() {}
+   virtual ~rw_file_sequence() {}
 
    static mws_sp<rw_file_sequence> nwi(mws_sp<pfm_file> ifile)
    {
@@ -540,10 +540,6 @@ inline int memory_data_sequence::write_int8(const int8 * s, int elem_count, int 
 inline file_data_sequence::file_data_sequence(mws_sp<pfm_file> ifile)
 {
    file = ifile;
-}
-
-inline file_data_sequence::~file_data_sequence()
-{
 }
 
 inline bool file_data_sequence::reached_end_of_sequence()

@@ -55,18 +55,16 @@ gfx_color gfx_color::from_rgba(uint32 i_rgba)
    return gfx_color((i_rgba >> 24) & 0x000000ff, (i_rgba >> 16) & 0x000000ff, (i_rgba >> 8) & 0x000000ff, (i_rgba >> 0) & 0x000000ff);
 }
 
-void gfx_color::from_float(float fr, float fg, float fb, float fa)
+gfx_color gfx_color::from_float(float i_r, float i_g, float i_b, float i_a)
 {
-   int rr = (int)(fr * 255.0f);
-   int gg = (int)(fg * 255.0f);
-   int bb = (int)(fb * 255.0f);
-   int aa = (int)(fa * 255.0f);
+   int r = int(i_r * 255.0f);
+   int g = int(i_g * 255.0f);
+   int b = int(i_b * 255.0f);
+   int a = int(i_a * 255.0f);
 
-   clamp(rr, gg, bb, aa);
-   r = rr;
-   g = gg;
-   b = bb;
-   a = aa;
+   clamp(r, g, b, a);
+
+   return gfx_color(r, g, b, a);
 }
 
 void gfx_color::to_float(float& fr, float& fg, float& fb, float& fa)
@@ -75,20 +73,6 @@ void gfx_color::to_float(float& fr, float& fg, float& fb, float& fa)
    fg = (float)g / 255.0f;
    fb = (float)b / 255.0f;
    fa = (float)a / 255.0f;
-}
-
-void gfx_color::from_float(float fr, float fg, float fb)
-{
-   int rr = (int)(fr * 255.0f);
-   int gg = (int)(fg * 255.0f);
-   int bb = (int)(fb * 255.0f);
-   int aa = 255;
-
-   clamp(rr, gg, bb, aa);
-   r = rr;
-   g = gg;
-   b = bb;
-   a = aa;
 }
 
 gfx_color gfx_color::operator = (gfx_color const& c)

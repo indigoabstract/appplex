@@ -17,7 +17,7 @@ public:
    mws_sp<gfx_tex> get_color_attachment();
    void set_color_attachment(mws_sp<gfx_tex> icolor_att);
    void set_depth_stencil_attachment(mws_sp<gfx_tex> idepth_stencil_att);
-   void clear_buffers(bool i_clear_color = true, bool i_clear_depth = true, bool i_clear_stencil = true, gfx_color i_clear_color_val = gfx_color::colors::black);
+   static void clear_buffers(bool i_clear_color = true, bool i_clear_depth = true, bool i_clear_stencil = true, gfx_color i_clear_color_val = gfx_color::colors::black);
    void reload();
    void check_valid_state();
 

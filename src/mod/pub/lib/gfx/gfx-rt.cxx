@@ -55,8 +55,6 @@ void gfx_rt::set_color_attachment(mws_sp<gfx_tex> icolor_att)
 
 void gfx_rt::clear_buffers(bool i_clear_color, bool i_clear_depth, bool i_clear_stencil, gfx_color i_clear_color_val)
 {
-   mws_assert((color_att) ? (gfx::i()->rt.get_current_render_target() == get_inst()) : true);
-
    gfx_bitfield bf = 0;
 
    if (i_clear_color)

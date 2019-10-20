@@ -410,15 +410,32 @@ namespace pfm_impl
 
       case platform_windows_pc:
       {
+         static std::string res_path = get_appplex_proj_path() + "/" + i_mod->get_proj_rel_path() + "/res";
+
          if (res_is_bundled_with_src())
          {
-            static std::string res_path = get_appplex_proj_path() + "/" + i_mod->get_proj_rel_path() + "/res";
             return res_path;
          }
          else
          {
-            static std::string res_path = "res";
-            return res_path;
+            static std::string res_path_release;
+
+            if (res_path_release.empty())
+            {
+               std::string rp = "res";
+               bool exists = std::filesystem::exists(rp);
+
+               if (exists)
+               {
+                  res_path_release = rp;
+               }
+               else
+               {
+                  res_path_release = res_path;
+               }
+            }
+
+            return res_path_release;
          }
       }
       }

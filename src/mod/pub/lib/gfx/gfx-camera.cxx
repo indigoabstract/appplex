@@ -661,9 +661,7 @@ gfx_obj::e_gfx_obj_type gfx_camera::get_type()const
 
 void gfx_camera::clear_buffers()
 {
-   mws_sp<gfx_rt> crt_rt = gi()->rt.get_current_render_target();
-
-   crt_rt->clear_buffers(clear_color, clear_depth, clear_stencil, clear_color_value);
+   gfx_rt::clear_buffers(clear_color, clear_depth, clear_stencil, clear_color_value);
 }
 
 void gfx_camera::update_glp_params(mws_sp<gfx_vxo> imesh, mws_sp<gfx_shader> glp)

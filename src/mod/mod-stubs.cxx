@@ -42,13 +42,32 @@ static void err_na() { mws_throw mws_exception("call not available"); }
 #if !MOD_GFX
 #include "gfx/gfx-inc.hxx"
 void mws_report_gfx_errs_impl(const char*, uint32) { err_na(); }
+
 mws_sp<gfx> gfx::main_instance;
 void gfx::global_init() { err_na(); }
 void gfx::on_destroy() { err_na(); }
 void gfx::on_resize(int, int) { err_na(); }
 void gfx::ic_rt::set_current_render_target(mws_sp<gfx_rt> irdt, bool i_force_binding) { err_na(); }
+
 void gfx_scene::draw() { err_na(); }
 void gfx_scene::post_draw() { err_na(); }
+
+mws_cm mws_cm::to_cm() const { return mws_cm(); }
+mws_in mws_cm::to_in() const { return mws_in(); }
+mws_pt mws_cm::to_pt() const { return mws_pt(); }
+mws_px mws_cm::to_px(dpi_types i_dpi_type) const { return mws_px(); }
+mws_cm mws_in::to_cm() const { return mws_cm(); }
+mws_in mws_in::to_in() const { return mws_in(); }
+mws_pt mws_in::to_pt() const { return mws_pt(); }
+mws_px mws_in::to_px(dpi_types i_dpi_type) const { return mws_px(); }
+mws_cm mws_pt::to_cm() const { return mws_cm(); }
+mws_in mws_pt::to_in() const { return mws_in(); }
+mws_pt mws_pt::to_pt() const { return mws_pt(); }
+mws_px mws_pt::to_px(dpi_types i_dpi_type) const { return mws_px(); }
+mws_cm mws_px::to_cm() const { return mws_cm(); }
+mws_in mws_px::to_in() const { return mws_in(); }
+mws_pt mws_px::to_pt() const { return mws_pt(); }
+mws_px mws_px::to_px(dpi_types i_dpi_type) const { return mws_px(); }
 #endif
 
 #if !MOD_INPUT
@@ -72,6 +91,11 @@ mws_sp<updatectrl> updatectrl::nwi() { err_na(); return nullptr; }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
 
+#if !MOD_MWS
+#include "mws/mws.hxx"
+bool mws::is_visible() const { return false; }
+#endif
+
 #if !MOD_MWS_VKB
 #include "mws-vkb/mws-vkb.hxx"
 mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
@@ -82,7 +106,7 @@ void mws_vkb::setup() {}
 void mws_vkb::on_resize() {}
 void mws_vkb::set_target(mws_sp<mws_text_area>) {}
 mws_sp<mws_font> mws_vkb::get_font() { return nullptr; }
-void mws_vkb::set_font(mws_sp<mws_font>) {}
+void mws_vkb::set_font(mws_sp<mws_font>, mws_sp<mws_font>) {}
 mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const { return nullptr; }
 void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store>) {}
 mws_sp<gfx_tex> mws_vkb::get_cell_border_tex() { return nullptr; }

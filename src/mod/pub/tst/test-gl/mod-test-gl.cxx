@@ -48,7 +48,7 @@ void mod_test_gl::load()
       ortho_cam->near_clip_distance = -100;
       ortho_cam->far_clip_distance = 100;
       ortho_cam->clear_color = true;
-      cc.from_float(0.5f, 0.f, 1.f, 1.f);
+      cc = gfx_color::from_float(0.5f, 0.f, 1.f, 1.f);
       ortho_cam->clear_color_value = cc;
 
    }
