@@ -11,7 +11,19 @@
 #include "mws/mws-com.hxx"
 
 
-mod_who_am_i::mod_who_am_i() : mws_mod(mws_stringify(MOD_WHO_AM_I)) {}
+namespace ns_mod_who_am_i
+{
+   class mod_preferences_detail : public mws_mod_preferences
+   {
+   public:
+      virtual bool show_fps() const override { return false; }
+   };
+}
+
+mod_who_am_i::mod_who_am_i() : mws_mod(mws_stringify(MOD_WHO_AM_I))
+{
+   prefs = mws_sp<mws_mod_preferences>(new ns_mod_who_am_i::mod_preferences_detail());
+}
 
 mws_sp<mod_who_am_i> mod_who_am_i::nwi()
 {
@@ -120,6 +132,7 @@ namespace mod_who_am_i_ns
          {
          case stages_types::e_i_i_stage:
          {
+            glm::vec2 scr_dim((float)pfm::screen::get_width(), (float)pfm::screen::get_height());
             double v = 1.f;
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -148,10 +161,11 @@ namespace mod_who_am_i_ns
 
             // https://sol.gfxile.net/interpolation/
             v = v * v * v * v * v * v * v * v * v * v * v;
-            float mixf = glm::mix(1.f, 8192.f, (float)v);
+            // 'I' width is around 16% of the texture width
+            float max_width = scr_dim.x / 0.16f;
+            float mixf = glm::mix(1.f, max_width, (float)v);
             mws_sp<gfx_tex> tex = font_tex.get_tex();
             glm::vec2 tex_dim(mixf, mixf * 2.f);
-            glm::vec2 scr_dim((float)pfm::screen::get_width(), (float)pfm::screen::get_height());
             glm::vec2 off((scr_dim - tex_dim) / 2.f);
 
             i_g->drawImage(tex, off.x, off.y, tex_dim.x, tex_dim.y);

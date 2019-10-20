@@ -1091,7 +1091,7 @@ void mws_mod::update_view(int update_count)
 
 #ifdef MWS_DEBUG_BUILD
 
-   if (fps > 0 && !storage.is_recording_screen())
+   if (prefs->show_fps() && fps > 0 && !storage.is_recording_screen())
    {
       float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
       string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
