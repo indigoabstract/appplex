@@ -32,6 +32,8 @@ mws_sp<mod_who_am_i> mod_who_am_i::nwi()
 
 void mod_who_am_i::init()
 {
+   // set brightness
+   pfm::get_pfm_main_inst()->set_screen_brightness(1.f);
 }
 
 
@@ -67,7 +69,8 @@ namespace mod_who_am_i_ns
             prm.regen_mipmaps = true;
             font_tex.init("mws-vkb-keys-border-tex", tex_dim.x, tex_dim.y, &prm);
             gfx::i()->rt.set_current_render_target(font_tex.get_rt());
-            //font_tex.get_rt()->clear_buffers(true, true, true, gfx_color::colors::blue);
+            gfx_rt::clear_buffers();
+            //gfx_rt::clear_buffers(true, true, true, gfx_color::colors::blue);
             g->drawText("I", (tex_dim.x - letter_dim.x) / 2.f, (tex_dim.y - 0.7f * letter_dim.y) / 2.f, letter_font);
             g->update_camera_state();
             gfx::i()->rt.set_current_render_target();
@@ -163,7 +166,7 @@ namespace mod_who_am_i_ns
             v = v * v * v * v * v * v * v * v * v * v * v;
             // 'I' width is around 16% of the texture width
             float max_width = scr_dim.x / 0.16f;
-            float mixf = glm::mix(1.f, max_width, (float)v);
+            float mixf = glm::mix(0.1f, max_width, (float)v);
             mws_sp<gfx_tex> tex = font_tex.get_tex();
             glm::vec2 tex_dim(mixf, mixf * 2.f);
             glm::vec2 off((scr_dim - tex_dim) / 2.f);
