@@ -1063,13 +1063,6 @@ void pfm_main::run() {}
 
 key_types pfm_main::apply_key_modifiers(key_types i_key_id) const
 {
-   bool is_f_key = (i_key_id >= KEY_F1 && i_key_id <= KEY_F12);
-
-   if (is_f_key)
-   {
-      return i_key_id;
-   }
-
    if (mod_mws_vkb_on)
    {
       mws_sp<mws_vkb> vkb = mws_vkb::gi();
