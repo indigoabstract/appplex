@@ -1385,7 +1385,7 @@ key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const
 {
    uint32 idx = i_key_id;
 
-   if (idx < impl->get_key_vect().size())
+   if (impl && idx < impl->get_key_vect().size())
    {
       key_types key_id = impl->get_key_at(i_key_id);
 
@@ -1485,6 +1485,8 @@ mws_sp<gfx_tex> mws_vkb::get_keys_tex()
    return get_impl()->get_keys_tex();
 }
 
+
+mws_vkb::mws_vkb() { visible = false; }
 
 void mws_vkb::setup()
 {

@@ -260,8 +260,9 @@ void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
          if (mod_mws_vkb_on)
          {
             mws_sp<mws_vkb> vkb = mws_vkb::gi();
+            bool is_f_key = (i_key >= KEY_F1 && i_key <= KEY_F12);
 
-            if (vkb && vkb->is_visible())
+            if (vkb && vkb->is_visible() && !is_f_key)
             {
                physical_keyboard_enabled = false;
             }

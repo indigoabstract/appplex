@@ -2,9 +2,9 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ who-am-i ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ voronoi-keyboard ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod

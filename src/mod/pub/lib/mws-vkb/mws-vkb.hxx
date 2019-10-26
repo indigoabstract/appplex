@@ -186,7 +186,7 @@ public:
    virtual mws_sp<gfx_tex> get_keys_tex() override;
 
 protected:
-   mws_vkb() {}
+   mws_vkb();
    virtual void setup() override;
    // when finished, call this to hide the keyboard
    virtual void done();
