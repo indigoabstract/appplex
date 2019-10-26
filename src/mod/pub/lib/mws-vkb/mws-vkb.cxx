@@ -631,7 +631,7 @@ mws_sp<gfx_tex> mws_vkb_impl::get_keys_tex()
 
 void mws_vkb_impl::build_keys_tex()
 {
-   keys_tex.resize(1);// (uint32)key_mod_types::count);
+   keys_tex.resize((uint32)key_mod_types::count);
    uint32 key_map_size = keys_tex.size();
    glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
    mws_sp<mws_camera> g = get_mod()->mws_cam;
@@ -649,6 +649,7 @@ void mws_vkb_impl::build_keys_tex()
       (*key_border_quad)["u_s2d_tex"][MP_TEXTURE_INST] = key_border_tex.get_tex();
       key_border_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
       key_border_quad->set_v_flip(true);
+      key_border_quad->set_z(0.99f);
       attach(key_border_quad);
 
       {
@@ -691,8 +692,10 @@ void mws_vkb_impl::build_keys_tex()
       ppb.init(mws_to_str_fmt("keys-map-%d", k), scr_dim.x, scr_dim.y);
    }
 
+   // keys
    {
       keys_quad = gfx_quad_2d::nwi();
+      keys_quad->name = "mws-vkb-keys-quad";
       keys_quad->camera_id_list = { "mws_cam" };
       (*keys_quad)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
       (*keys_quad)[MP_BLENDING] = MV_ALPHA;
@@ -701,6 +704,7 @@ void mws_vkb_impl::build_keys_tex()
       (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
       keys_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
       keys_quad->set_v_flip(true);
+      keys_quad->set_z(1.f);
       attach(keys_quad);
    }
 
@@ -1277,6 +1281,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch)) { mws_println("alt key_mod %d", (int)key_mod); }
+         (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
          update_lights(i_key_idx, i_state);
          break;
       }
@@ -1300,6 +1305,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch)) { mws_println("shift key_mod %d state %d", (int)key_mod, (int)i_state); }
+         (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
          update_lights(i_key_idx, i_state);
          break;
       }
@@ -1308,8 +1314,8 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
       {
          uint32 size = base_key_st.size();
          bool show_vkb = (i_state == base_key_state_types::key_free);
-         vk->vgeom->nexus_pairs_mesh->visible = show_vkb;
          keys_quad->visible = show_vkb;
+         key_border_quad->visible = show_vkb;
 
          // if we need to hide the keyboard
          if (show_vkb)
