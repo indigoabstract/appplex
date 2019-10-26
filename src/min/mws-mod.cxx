@@ -808,50 +808,14 @@ void mws_mod::receive(mws_sp<mws_dp> i_dp)
 
             if (ke->get_type() != mws_key_evt::KE_RELEASED)
             {
-               bool do_action = false;
-
                if (ke->get_type() != mws_key_evt::KE_REPEATED)
                {
-                  do_action = true;
+                  bool key_handled = handle_function_key(ke->get_key());
 
-                  switch (ke->get_key())
+                  if (key_handled)
                   {
-                  case KEY_F1:
-                     mws_mod_ctrl::inst()->pause();
-                     break;
-
-                  case KEY_F2:
-                     mws_mod_ctrl::inst()->resume();
-                     break;
-
-                  case KEY_F3:
-                     pfm::screen::flip_screen();
-                     break;
-
-                  case KEY_F4:
-                     storage.toggle_screen_recording();
-                     break;
-
-                  case KEY_F5:
-                     storage.save_screenshot();
-                     break;
-
-                  case KEY_F6:
-                     mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
-                     break;
-
-                  case KEY_F11:
-                     pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
-                     break;
-
-                  default:
-                     do_action = false;
+                     process(ke);
                   }
-               }
-
-               if (do_action)
-               {
-                  process(ke);
                }
             }
          }
@@ -862,6 +826,47 @@ void mws_mod::receive(mws_sp<mws_dp> i_dp)
 void mws_mod::process(mws_sp<mws_dp> i_dp)
 {
    i_dp->process(get_smtp_instance());
+}
+
+bool mws_mod::handle_function_key(key_types i_key)
+{
+   bool key_handled = true;
+
+   switch (i_key)
+   {
+   case KEY_F1:
+      mws_mod_ctrl::inst()->pause();
+      break;
+
+   case KEY_F2:
+      mws_mod_ctrl::inst()->resume();
+      break;
+
+   case KEY_F3:
+      pfm::screen::flip_screen();
+      break;
+
+   case KEY_F4:
+      storage.toggle_screen_recording();
+      break;
+
+   case KEY_F5:
+      storage.save_screenshot();
+      break;
+
+   case KEY_F6:
+      mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
+      break;
+
+   case KEY_F11:
+      pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+      break;
+
+   default:
+      key_handled = false;
+   }
+
+   return key_handled;
 }
 
 void mws_mod::base_init()

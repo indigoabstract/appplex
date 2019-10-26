@@ -110,6 +110,7 @@ public:
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
    bool i_m_is_null() const { return p.get() == nullptr; }
    virtual void process(mws_sp<mws_dp> i_dp);
+   bool handle_function_key(key_types i_key);
 
    int game_time;
    mws_sp<updatectrl> update_ctrl_inst;
