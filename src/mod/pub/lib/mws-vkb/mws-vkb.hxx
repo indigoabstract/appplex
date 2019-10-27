@@ -115,12 +115,16 @@ public:
    bool is_mod_key_held(mod_key_types i_mod_key, base_key_state_types* i_state = nullptr, int* i_key_idx = nullptr) const;
    void set_mod_key_lock(mod_key_types i_mod_key, bool i_set_lock = true);
    void clear_mod_key_locks();
+   // release all held and locked keys (optional)
+   void release_all_keys(bool i_release_locked_keys = true);
 
    mws_sp<mws_vkb_file_store> file_store;
    mws_sp<mws_vrn_main> vk;
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
+   glm::vec2 diag_dim;
    bool keys_visible = true;
+   std::string loaded_filename;
 
 protected:
    void set_key_vect_size(uint32 i_size);
@@ -133,8 +137,6 @@ protected:
    virtual bool touch_cancelled(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    void highlight_key_at(int i_idx, bool i_light_on = true);
    void fade_key_at(int i_idx);
-   // release all held and locked keys (optional)
-   void release_all_keys(bool i_release_locked_keys = true);
    // set the state of the keys. if return value is true, the iterators are invalidated and need to be aborted
    // returns true when keyboard has been hidden (and the key state cleared), false otherwise
    bool set_key_state(int i_key_idx, base_key_state_types i_state);
@@ -146,7 +148,6 @@ protected:
    std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
    std::unordered_map<key_types, std::string> key_map;
    int map_idx = 0;
-   std::string loaded_filename;
    uint32 crt_page_idx = 0;
    struct key_highlight { int key_idx; uint32 release_time; };
    std::vector<key_highlight> highlight_vect;
@@ -191,9 +192,17 @@ protected:
    // when finished, call this to hide the keyboard
    virtual void done();
    virtual mws_sp<mws_vkb_impl> get_impl();
+   virtual mws_sp<mws_vkb_impl> nwi_impl();
 
    mws_sp<mws_vkb_file_store> file_store;
+   // points to the current active vkb
    mws_sp<mws_vkb_impl> impl;
+   // points to the first vkb loaded, which contains the filestore
+   mws_sp<mws_vkb_impl> vkb_file_store;
+   // two vkbs are used, one for landscape, one for portrait orientations
+   mws_sp<mws_vkb_impl> vkb_landscape;
+   mws_sp<mws_vkb_impl> vkb_portrait;
+   bool size_changed = false;
    mws_sp<mws_text_area> ta;
    std::string vkb_filename;
    static mws_sp<mws_vkb> inst;

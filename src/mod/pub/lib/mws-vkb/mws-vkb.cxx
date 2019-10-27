@@ -87,6 +87,7 @@ mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_f
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
+   diag_dim = glm::vec2(0.f);
 }
 
 vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
@@ -260,11 +261,6 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
 
 void mws_vkb_impl::on_update_state()
 {
-   if (!keys_visible)
-   {
-      return;
-   }
-
    // key lights
    {
       uint32 crt_time = pfm::time::get_time_millis();
@@ -318,7 +314,7 @@ vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
    std::sort(vkb_info_vect.begin(), vkb_info_vect.end(), cmp_aspect_ratio);
 
    // find the vkb file with the closest match to the screen's aspect ratio
-   auto closest_val = [&cmp_aspect_ratio](const std::vector<vkb_file_info>& i_vect, float i_value) -> const vkb_file_info &
+   auto closest_val = [&cmp_aspect_ratio](const std::vector<vkb_file_info>& i_vect, float i_value) -> const vkb_file_info&
    {
       vkb_file_info vkb_i_t;
       vkb_i_t.info.aspect_ratio = i_value;
@@ -419,7 +415,6 @@ void mws_vkb_impl::load_map(std::string i_filename)
    auto db = kxmd::nwi(data->c_str(), data->length());
    kv_ref main = db->main();
    uint32 point_count = 0;
-   glm::vec2 diag_dim(0.f);
    glm::vec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
    glm::vec2 resize_fact(0.f);
 
@@ -569,7 +564,7 @@ mws_sp<gfx_tex> mws_vkb_impl::get_cell_border_tex()
 
 void mws_vkb_impl::build_cell_border_tex()
 {
-   std::string tex_id = "cell-border-tex";
+   std::string tex_id = "mws-vkb-cell-border-tex";
    cell_border_tex = gi()->tex.get_texture_by_name(tex_id);
 
    if (!cell_border_tex)
@@ -636,10 +631,11 @@ void mws_vkb_impl::build_keys_tex()
    glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
    mws_sp<mws_camera> g = get_mod()->mws_cam;
    glm::vec2 dim = letter_font->get_text_dim("M");
+   std::string vkb_type = (diag_dim.x > diag_dim.y) ? "landscape" : "portrait";
 
    // key border
    {
-      key_border_tex.init("mws-vkb-keys-border-tex", scr_dim.x, scr_dim.y);
+      key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s", vkb_type.c_str()), scr_dim.x, scr_dim.y);
       key_border_quad = gfx_quad_2d::nwi();
       key_border_quad->camera_id_list = { "mws_cam" };
       (*key_border_quad)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
@@ -649,6 +645,7 @@ void mws_vkb_impl::build_keys_tex()
       (*key_border_quad)["u_s2d_tex"][MP_TEXTURE_INST] = key_border_tex.get_tex();
       key_border_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
       key_border_quad->set_v_flip(true);
+      // key_border_quad must be drawn before keys_quad
       key_border_quad->set_z(0.99f);
       attach(key_border_quad);
 
@@ -689,7 +686,7 @@ void mws_vkb_impl::build_keys_tex()
    for (uint32 k = 0; k < key_map_size; k++)
    {
       mws_gfx_ppb& ppb = keys_tex[k];
-      ppb.init(mws_to_str_fmt("keys-map-%d", k), scr_dim.x, scr_dim.y);
+      ppb.init(mws_to_str_fmt("keys-map-%s-%d", vkb_type.c_str(), k), scr_dim.x, scr_dim.y);
    }
 
    // keys
@@ -704,6 +701,7 @@ void mws_vkb_impl::build_keys_tex()
       (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
       keys_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
       keys_quad->set_v_flip(true);
+      // keys_quad must be drawn after (on top of) key_border_quad
       keys_quad->set_z(1.f);
       attach(keys_quad);
    }
@@ -850,6 +848,26 @@ void mws_vkb_impl::clear_mod_key_locks()
    for (auto it = mod_keys_st.begin(); it != mod_keys_st.end(); ++it)
    {
       set_key_state(it->first, base_key_state_types::key_free);
+   }
+}
+
+void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
+{
+   uint32 size = base_key_st.size();
+
+   get_mod()->key_ctrl_inst->clear_keys();
+   prev_ptr_evt = nullptr;
+
+   for (uint32 k = 0; k < size; ++k)
+   {
+      base_key_state& st = base_key_st[k];
+
+      if (i_release_locked_keys || (!i_release_locked_keys && st.state != base_key_state_types::key_locked))
+      {
+         highlight_key_at(k, false);
+         st.state = base_key_state_types::key_free;
+         st.pressed_count = 0;
+      }
    }
 }
 
@@ -1204,26 +1222,6 @@ void mws_vkb_impl::fade_key_at(int i_idx)
    }
 }
 
-void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
-{
-   uint32 size = base_key_st.size();
-
-   get_mod()->key_ctrl_inst->clear_keys();
-   prev_ptr_evt = nullptr;
-
-   for (uint32 k = 0; k < size; ++k)
-   {
-      base_key_state& st = base_key_st[k];
-
-      if (i_release_locked_keys || (!i_release_locked_keys && st.state != base_key_state_types::key_locked))
-      {
-         highlight_key_at(k, false);
-         st.state = base_key_state_types::key_free;
-         st.pressed_count = 0;
-      }
-   }
-}
-
 bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
 {
    base_key_state& st = base_key_st[i_key_idx];
@@ -1448,11 +1446,7 @@ void mws_vkb::on_resize()
    mws_r.y = 0;
    mws_r.w = (float)w;
    mws_r.h = (float)h;
-
-   if (impl)
-   {
-      impl->on_resize(w, h);
-   }
+   size_changed = true;
 }
 
 void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
@@ -1511,20 +1505,77 @@ void mws_vkb::done()
 
 mws_sp<mws_vkb_impl> mws_vkb::get_impl()
 {
+   // if impl is null, load a vkb into it and also assign it to the landscape/portrait references
    if (!impl)
    {
       uint32 w = pfm::screen::get_width();
       uint32 h = pfm::screen::get_height();
 
-      impl = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);// | mws_vrn_obj_types::cells);
-      impl->file_store = get_file_store();
-      attach(impl);
-      impl->setup();
-      impl->build_cell_border_tex();
-      impl->set_on_top();
-      impl->on_resize(w, h);
-      impl->build_keys_tex();
+      size_changed = false;
+      vkb_file_store = impl = nwi_impl();
+
+      (w > h) ? vkb_landscape = impl : vkb_portrait = impl;
+   }
+   // if current impl is not null, but the size has changed, we need to do some (elaborate) checking..
+   else if (size_changed)
+   {
+      uint32 w = pfm::screen::get_width();
+      uint32 h = pfm::screen::get_height();
+      mws_sp<mws_vkb_impl> inst;
+
+      size_changed = false;
+      inst = (w > h) ? vkb_landscape : vkb_portrait;
+
+      // if inst is not null, then we already have the landscape or portrait instance we need, but we have to check if it needs to be modified
+      if (inst)
+      {
+         vkb_file_info vfi = vkb_file_store->get_closest_match(w, h);
+         std::string filename = vfi.file->get_file_name();
+
+         // check if 'inst->loaded_filename' is the best fit for current resolution and load 'filename' if not
+         if (inst->loaded_filename != filename)
+         {
+            inst->on_resize(w, h);
+         }
+
+         if (inst != impl)
+         {
+            // hide current keyboard as we need to show a new one
+            impl->release_all_keys(true);
+            impl->visible = false;
+            inst->visible = true;
+         }
+      }
+      // if inst is null, we need to load a vkb into it and also assign it to the landscape/portrait references
+      else
+      {
+         inst = nwi_impl();
+         (w > h) ? vkb_landscape = inst : vkb_portrait = inst;
+         // hide current keyboard as we need to show a new one
+         impl->release_all_keys(true);
+         impl->visible = false;
+      }
+
+      (w > h) ? vkb_landscape = inst : vkb_portrait = inst;
+      impl = inst;
    }
 
    return impl;
+}
+
+mws_sp<mws_vkb_impl> mws_vkb::nwi_impl()
+{
+   uint32 w = pfm::screen::get_width();
+   uint32 h = pfm::screen::get_height();
+   mws_sp<mws_vkb_impl> inst = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);// | mws_vrn_obj_types::cells);
+
+   inst->file_store = get_file_store();
+   attach(inst);
+   inst->setup();
+   inst->build_cell_border_tex();
+   inst->set_on_top();
+   inst->on_resize(w, h);
+   inst->build_keys_tex();
+
+   return inst;
 }
