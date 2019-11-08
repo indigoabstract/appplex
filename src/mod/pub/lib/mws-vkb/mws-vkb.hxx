@@ -102,9 +102,8 @@ public:
    void next_page();
    void prev_page();
    void set_on_top();
-   mws_sp<gfx_tex> get_cell_border_tex();
+   std::vector<mws_sp<gfx_tex>> get_tex_list();
    void build_cell_border_tex();
-   mws_sp<gfx_tex> get_keys_tex();
    void build_keys_tex();
    mws_sp<mws_font> get_key_font() const { return letter_font; }
    bool is_mod_key(key_types i_key_id);
@@ -183,8 +182,7 @@ public:
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt) override;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
-   virtual mws_sp<gfx_tex> get_cell_border_tex() override;
-   virtual mws_sp<gfx_tex> get_keys_tex() override;
+   virtual std::vector<mws_sp<gfx_tex>> get_tex_list() override;
 
 protected:
    mws_vkb();

@@ -557,9 +557,19 @@ void mws_vkb_impl::set_on_top()
    vk->vgeom->position = glm::vec3(0.f, 0.f, 1.f);
 }
 
-mws_sp<gfx_tex> mws_vkb_impl::get_cell_border_tex()
+std::vector<mws_sp<gfx_tex>> mws_vkb_impl::get_tex_list()
 {
-   return cell_border_tex;
+   std::vector<mws_sp<gfx_tex>> vect;
+
+   vect.push_back(cell_border_tex);
+   vect.push_back(key_border_tex.get_tex());
+
+   for (auto& p : keys_tex)
+   {
+      vect.push_back(p.get_tex());
+   }
+
+   return vect;
 }
 
 void mws_vkb_impl::build_cell_border_tex()
@@ -614,16 +624,6 @@ void mws_vkb_impl::build_cell_border_tex()
    vk->vgeom->cell_borders->tex = cell_border_tex;
 }
 
-mws_sp<gfx_tex> mws_vkb_impl::get_keys_tex()
-{
-   if (!keys_tex.empty())
-   {
-      return keys_tex[0].get_tex();
-   }
-
-   return nullptr;
-}
-
 void mws_vkb_impl::build_keys_tex()
 {
    keys_tex.resize((uint32)key_mod_types::count);
@@ -652,6 +652,7 @@ void mws_vkb_impl::build_keys_tex()
       {
          vk->vgeom->nexus_pairs_mesh->visible = true;
          gfx::i()->rt.set_current_render_target(key_border_tex.get_rt());
+         gfx_rt::clear_buffers();
          //rvxo.draw_out_of_sync(g);
          float line_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * 0.007f;
          (*vk->vgeom->nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
@@ -743,6 +744,7 @@ void mws_vkb_impl::build_keys_tex()
    for (uint32 k = 0; k < key_map_size; k++)
    {
       gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
+      gfx_rt::clear_buffers();
       g->set_color(gfx_color::colors::cyan);
       draw_keys(letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
       g->update_camera_state();
@@ -753,6 +755,7 @@ void mws_vkb_impl::build_keys_tex()
    letter_font_bg->set_color(gfx_color::colors::white);
    word_font_bg->set_color(gfx_color::colors::white);
    g->set_text_blending(MV_ADD);
+
    for (uint32 k = 0; k < key_map_size; k++)
    {
       mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(keys_tex[k].get_tex());
@@ -1475,16 +1478,10 @@ void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
    file_store = i_store;
 }
 
-mws_sp<gfx_tex> mws_vkb::get_cell_border_tex()
+std::vector<mws_sp<gfx_tex>> mws_vkb::get_tex_list()
 {
-   return get_impl()->get_cell_border_tex();
+   return get_impl()->get_tex_list();
 }
-
-mws_sp<gfx_tex> mws_vkb::get_keys_tex()
-{
-   return get_impl()->get_keys_tex();
-}
-
 
 mws_vkb::mws_vkb() { visible = false; }
 
