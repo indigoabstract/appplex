@@ -196,6 +196,15 @@ public:
       mouse_wheel,
    };
 
+   enum e_pointer_press_type
+   {
+      e_not_pressed,
+      e_touch_pressed,
+      e_left_mouse_btn,
+      e_middle_mouse_btn,
+      e_right_mouse_btn,
+   };
+
    struct touch_point
    {
       uintptr_t identifier = 0;
@@ -205,6 +214,7 @@ public:
    };
 
    e_touch_type type = touch_invalid;
+   e_pointer_press_type press_type = e_touch_pressed;
    uint32 time = 0;
    uint32 touch_count = 0;
    touch_point points[max_touch_points];

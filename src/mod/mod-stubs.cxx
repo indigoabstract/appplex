@@ -91,6 +91,13 @@ mws_sp<updatectrl> updatectrl::nwi() { err_na(); return nullptr; }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
 
+#if !MOD_KAWASE_BLOOM
+#include "kawase-bloom/kawase-bloom.hxx"
+mws_sp<mws_kawase_bloom> mws_kawase_bloom::nwi(mws_sp<gfx_tex> i_input_tex) { return nullptr; }
+mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return nullptr; }
+void mws_kawase_bloom::update() {}
+#endif
+
 #if !MOD_MWS
 #include "mws/mws.hxx"
 bool mws::is_visible() const { return false; }

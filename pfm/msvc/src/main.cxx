@@ -6,6 +6,7 @@
 
 #include "pfm.hxx"
 #include "pfm-gl.h"
+#include "min.hxx"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "input/input-ctrl.hxx"
@@ -25,10 +26,14 @@
 #define WM_TRAYICON						(WM_USER + 1)
 
 
-const int shift_key_down = (1 << 0);
-const int ctrl_key_down = (1 << 1);
-const int alt_key_down = (1 << 2);
-static int mod_keys_down = 0;
+namespace
+{
+   const int shift_key_down = (1 << 0);
+   const int ctrl_key_down = (1 << 1);
+   const int alt_key_down = (1 << 2);
+   static int mod_keys_down = 0;
+   mws_ptr_evt_base::e_pointer_press_type mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
+}
 
 // app entry points
 int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpcmd_line, int ncmd_show)
@@ -1433,6 +1438,8 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    break;
 
    case WM_LBUTTONDOWN:
+   case WM_RBUTTONDOWN:
+   case WM_MBUTTONDOWN:
    {
       auto pfm_te = mws_ptr_evt_base::nwi();
       POINT pointer_coord = get_pointer_coord(hwnd);
@@ -1446,12 +1453,24 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_began;
 
+      switch (message)
+      {
+      case WM_LBUTTONDOWN:
+         mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
+      case WM_RBUTTONDOWN:
+         mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_right_mouse_btn; break;
+      case WM_MBUTTONDOWN:
+         mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_middle_mouse_btn; break;
+      }
+
       mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
       return 0;
    }
 
    case WM_LBUTTONUP:
+   case WM_RBUTTONUP:
+   case WM_MBUTTONUP:
    {
       auto pfm_te = mws_ptr_evt_base::nwi();
       POINT pointer_coord = get_pointer_coord(hwnd);
@@ -1465,6 +1484,17 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_ended;
 
+      switch (message)
+      {
+      case WM_LBUTTONUP:
+         pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
+      case WM_RBUTTONUP:
+         pfm_te->press_type = mws_ptr_evt_base::e_right_mouse_btn; break;
+      case WM_MBUTTONUP:
+         pfm_te->press_type = mws_ptr_evt_base::e_middle_mouse_btn; break;
+      }
+
+      mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
       mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
       return 0;
@@ -1483,6 +1513,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pfm_te->time = pfm::time::get_time_millis();
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_moved;
+      pfm_te->press_type = mouse_btn_down;
 
       mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
