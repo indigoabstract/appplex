@@ -19,12 +19,14 @@
 #include <glm/inc.hpp>
 
 
+using namespace ftgl;
+
+
 struct vertex_t
 {
    float x, y, z;    // position
    float s, t;       // texture
    float r, g, b, a; // color
-   float shift, gamma;
 };
 
 
@@ -42,7 +44,7 @@ public:
       ti[MP_DEPTH_WRITE] = false;
       ti[MP_DEPTH_TEST] = false;
 
-      vbuffer = vertex_buffer_new("vertex:3f,tex_coord:2f,color:4f,ashift:1f,agamma:1f");
+      vbuffer = vertex_buffer_new("vertex:3f,tex_coord:2f,color:4f");
       update_projection_mx();
 
       mws_report_gfx_errs();
@@ -83,6 +85,7 @@ public:
 
       if (atlas && atlas->is_valid())
       {
+         mws_report_gfx_errs();
          mws_sp<gfx_shader> shader = mat.get_shader();
 
          mat["texture"][MP_TEXTURE_INST] = atlas;
@@ -100,8 +103,8 @@ public:
          }
          else
          {
-            model[3][0] = ipos.x;// mPosition.x;
-            model[3][1] = -ipos.y;// gi()->rt.get_render_target_height() - mPosition.y;// -mFontHeight;
+            model[3][0] = glm::round(ipos.x);// mPosition.x;
+            model[3][1] = glm::round(-ipos.y);// gi()->rt.get_render_target_height() - mPosition.y;// -mFontHeight;
          }
 
          if (rt_width != inst->gi()->rt.get_render_target_width() || rt_height != inst->gi()->rt.get_render_target_height())
@@ -112,11 +115,11 @@ public:
          shader->update_uniform("model", glm::value_ptr(model));
          shader->update_uniform("view", glm::value_ptr(view));
          shader->update_uniform("projection", glm::value_ptr(projection));
+         mws_report_gfx_errs();
 
          vertex_buffer_render(vbuffer, GL_TRIANGLES);
+         mws_report_gfx_errs();
       }
-
-      mws_report_gfx_errs();
    }
 
    void add_text_2d(const std::string& Text, const glm::vec2& Pos, const mws_sp<mws_font> Fnt)
@@ -258,8 +261,8 @@ public:
                pen.x += kerning;
                float x0 = (float)(pen.x + glyph.get_offset_x());
                float y0 = (float)(irt_height - pen.y + glyph.get_offset_y());
-               float x1 = (float)(x0 + glyph.get_width());
-               float y1 = (float)(y0 - glyph.get_height());
+               float x1 = (int)(x0 + glyph.get_width()); x0 = (int)x0;
+               float y1 = (int)(y0 - glyph.get_height()); y0 = (int)y0;
                float s0 = glyph.get_s0();
                float t0 = glyph.get_t0();
                float s1 = glyph.get_s1();
@@ -332,7 +335,7 @@ void text_vxo::draw_in_sync(mws_sp<gfx_camera> icamera)
    p->draw_in_sync(static_pointer_cast<text_vxo>(get_mws_sp()), icamera, position);
 }
 
-text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color, a_v1_shift, a_v1_gamma"))
+text_vxo::text_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord, a_v4_color"))
 {
 }
 

@@ -1,37 +1,7 @@
-#include "stdafx.hxx"
-
-/* ============================================================================
- * Freetype GL - A C OpenGL Freetype engine
- * Platform:    Any
- * WWW:         http://code.google.com/p/freetype-gl/
- * ----------------------------------------------------------------------------
- * Copyright 2011,2012 Nicolas P. Rougier. All rights reserved.
+/* Freetype GL - A C OpenGL Freetype engine
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  1. Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY NICOLAS P. ROUGIER ''AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL NICOLAS P. ROUGIER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * The views and conclusions contained in the software and documentation are
- * those of the authors and should not be interpreted as representing official
- * policies, either expressed or implied, of Nicolas P. Rougier.
- * ============================================================================
+ * Distributed under the OSI-approved BSD 2-Clause License.  See accompanying
+ * file `LICENSE` for more details.
  */
 #include <assert.h>
 #include <string.h>
@@ -416,8 +386,8 @@ vertex_buffer_render_finish ( vertex_buffer_t *self )
 
     for( i=0; i<MAX_VERTEX_ATTRIBUTE; ++i )
     {
-		vertex_attribute_t *attribute = self->attributes[i];
-		if (attribute == 0 || (GLint)attribute->index == -1)
+        vertex_attribute_t *attribute = self->attributes[i];
+        if( attribute == 0 )
         {
             continue;
         }
@@ -425,9 +395,9 @@ vertex_buffer_render_finish ( vertex_buffer_t *self )
         {
             glDisableVertexAttribArray( attribute->index );
         }
-	}
+    }
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 #endif
 }
@@ -465,9 +435,8 @@ vertex_buffer_render ( vertex_buffer_t *self, GLenum mode )
     size_t vcount = self->vertices->size;
     size_t icount = self->indices->size;
 
-	vertex_buffer_render_setup(self, mode);
-
-	if (icount)
+    vertex_buffer_render_setup( self, mode );
+    if( icount )
     {
         glDrawElements( mode, icount, GL_UNSIGNED_INT, 0 );
     }
@@ -475,8 +444,7 @@ vertex_buffer_render ( vertex_buffer_t *self, GLenum mode )
     {
         glDrawArrays( mode, 0, vcount );
     }
-
-	vertex_buffer_render_finish(self);
+    vertex_buffer_render_finish( self );
 }
 
 
@@ -580,7 +548,7 @@ vertex_buffer_erase_vertices( vertex_buffer_t *self,
     assert( self );
     assert( self->vertices );
     assert( first < self->vertices->size );
-    assert( (first+last) <= self->vertices->size );
+    assert( last <= self->vertices->size );
     assert( last > first );
 
     self->state |= DIRTY;
@@ -651,7 +619,8 @@ vertex_buffer_erase( vertex_buffer_t * self,
                      const size_t index )
 {
     ivec4 * item;
-    size_t vstart, vcount, istart, icount, i;
+    int vstart;
+    size_t vcount, istart, icount, i;
 
     assert( self );
     assert( index < vector_size( self->items ) );

@@ -1,40 +1,13 @@
-/* ============================================================================
- * Freetype GL - A C OpenGL Freetype engine
- * Platform:    Any
- * WWW:         http://code.google.com/p/freetype-gl/
- * ----------------------------------------------------------------------------
- * Copyright 2011,2012 Nicolas P. Rougier. All rights reserved.
+/* Freetype GL - A C OpenGL Freetype engine
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  1. Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY NICOLAS P. ROUGIER ''AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL NICOLAS P. ROUGIER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * The views and conclusions contained in the software and documentation are
- * those of the authors and should not be interpreted as representing official
- * policies, either expressed or implied, of Nicolas P. Rougier.
- * ============================================================================
+ * Distributed under the OSI-approved BSD 2-Clause License.  See accompanying
+ * file `LICENSE` for more details.
  */
 #ifndef __TEXTURE_FONT_H__
 #define __TEXTURE_FONT_H__
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +17,7 @@ extern "C" {
 #include "texture-atlas.h"
 
 #ifdef __cplusplus
-//namespace ftgl {
+namespace ftgl {
 #endif
 
 /**
@@ -69,19 +42,32 @@ extern "C" {
  */
 
 
+/**
+ * A list of possible ways to render a glyph.
+ */
+typedef enum rendermode_t
+{
+    RENDER_NORMAL,
+    RENDER_OUTLINE_EDGE,
+    RENDER_OUTLINE_POSITIVE,
+    RENDER_OUTLINE_NEGATIVE,
+    RENDER_SIGNED_DISTANCE_FIELD
+} rendermode_t;
+
 
 /**
- * A structure that hold a kerning value relatively to a charcode.
+ * A structure that hold a kerning value relatively to a Unicode
+ * codepoint.
  *
- * This structure cannot be used alone since the (necessary) right charcode is
- * implicitely held by the owner of this structure.
+ * This structure cannot be used alone since the (necessary) right
+ * Unicode codepoint is implicitely held by the owner of this structure.
  */
 typedef struct kerning_t
 {
     /**
-     * Left character code in the kern pair.
+     * Left Unicode codepoint in the kern pair in UTF-32 LE encoding.
      */
-    wchar_t charcode;
+    uint32_t codepoint;
 
     /**
      * Kerning value (in fractional pixels).
@@ -132,14 +118,9 @@ typedef struct kerning_t
 typedef struct texture_glyph_t
 {
     /**
-     * Wide character this glyph represents
+     * Unicode codepoint this glyph represents in UTF-32 LE encoding.
      */
-    wchar_t charcode;
-
-    /**
-     * Glyph id (used for display lists)
-     */
-    unsigned int id;
+    uint32_t codepoint;
 
     /**
      * Glyph's width in pixels.
@@ -204,9 +185,9 @@ typedef struct texture_glyph_t
     vector_t * kerning;
 
     /**
-     * Glyph outline type (0 = None, 1 = line, 2 = inner, 3 = outer)
+     * Mode this glyph was rendered
      */
-    int outline_type;
+    rendermode_t rendermode;
 
     /**
      * Glyph outline thickness
@@ -216,11 +197,6 @@ typedef struct texture_glyph_t
 } texture_glyph_t;
 
 
-
-typedef enum {
-	TEXTURE_FONT_FILE = 0,
-	TEXTURE_FONT_MEMORY,
-} e_location;
 
 /**
  *  Texture font structure.
@@ -240,7 +216,10 @@ typedef struct texture_font_t
     /**
      * font location
      */
-	e_location location;
+    enum {
+        TEXTURE_FONT_FILE = 0,
+        TEXTURE_FONT_MEMORY,
+    } location;
 
     union {
         /**
@@ -268,9 +247,9 @@ typedef struct texture_font_t
     int hinting;
 
     /**
-     * Outline type (0 = None, 1 = line, 2 = inner, 3 = outer)
+     * Mode the font is rendering its next glyph
      */
-    int outline_type;
+    rendermode_t rendermode;
 
     /**
      * Outline thickness
@@ -283,14 +262,15 @@ typedef struct texture_font_t
     int filtering;
 
     /**
+     * LCD filter weights
+     */
+    unsigned char lcd_weights[5];
+
+    /**
      * Whether to use kerning if available
      */
     int kerning;
 
-    /**
-     * LCD filter weights
-     */
-    unsigned char lcd_weights[5];
 
     /**
      * This field is simply used to compute a default line spacing (i.e., the
@@ -340,6 +320,12 @@ typedef struct texture_font_t
      * formats.
      */
     float underline_thickness;
+
+    /**
+    * The padding to be add to the glyph's texture that are loaded by this font.
+    * Usefull when adding effects with shaders.
+    */
+    int padding;
 
 } texture_font_t;
 
@@ -400,8 +386,8 @@ typedef struct texture_font_t
  * Request a new glyph from the font. If it has not been created yet, it will
  * be.
  *
- * @param self     A valid texture font
- * @param charcode Character codepoint to be loaded.
+ * @param self      A valid texture font
+ * @param codepoint Character codepoint to be loaded in UTF-8 encoding.
  *
  * @return A pointer on the new glyph or 0 if the texture atlas is not big
  *         enough
@@ -409,33 +395,72 @@ typedef struct texture_font_t
  */
   texture_glyph_t *
   texture_font_get_glyph( texture_font_t * self,
-                          wchar_t charcode );
+                          const char * codepoint );
 
+/**
+ * Request an already loaded glyph from the font.
+ *
+ * @param self      A valid texture font
+ * @param codepoint Character codepoint to be found in UTF-8 encoding.
+ *
+ * @return A pointer on the glyph or 0 if the glyph is not loaded
+ */
+ texture_glyph_t *
+ texture_font_find_glyph( texture_font_t * self,
+                          const char * codepoint );
+
+/**
+ * Request the loading of a given glyph.
+ *
+ * @param self       A valid texture font
+ * @param codepoints Character codepoint to be loaded in UTF-8 encoding.
+ *
+ * @return One if the glyph could be loaded, zero if not.
+ */
+  int
+  texture_font_load_glyph( texture_font_t * self,
+                           const char * codepoint );
 
 /**
  * Request the loading of several glyphs at once.
  *
- * @param self      a valid texture font
- * @param charcodes character codepoints to be loaded.
+ * @param self       A valid texture font
+ * @param codepoints Character codepoints to be loaded in UTF-8 encoding. May
+ *                   contain duplicates.
  *
  * @return Number of missed glyph if the texture is not big enough to hold
  *         every glyphs.
  */
   size_t
   texture_font_load_glyphs( texture_font_t * self,
-                            const wchar_t * charcodes );
+                            const char * codepoints );
+
+/*
+ * Increases the size of a fonts texture atlas
+ * Invalidates all pointers to font->atlas->data
+ * Changes the UV Coordinates of existing glyphs in the font
+ *
+ * @param self A valid texture font
+ * @param width_new Width of the texture atlas after resizing (must be bigger
+ *                  or equal to current width)
+ * @param height_new Height of the texture atlas after resizing (must be bigger or
+ *                   equal to current height)
+ */
+void
+texture_font_enlarge_atlas( texture_font_t * self, size_t width_new,
+                            size_t height_new );
 
 /**
  * Get the kerning between two horizontal glyphs.
  *
- * @param self      a valid texture glyph
- * @param charcode  codepoint of the peceding glyph
+ * @param self      A valid texture glyph
+ * @param codepoint Character codepoint of the peceding character in UTF-8 encoding.
  *
  * @return x kerning value
  */
 float
 texture_glyph_get_kerning( const texture_glyph_t * self,
-                           const wchar_t charcode );
+                           const char * codepoint );
 
 
 /**
@@ -450,7 +475,7 @@ texture_glyph_new( void );
 
 
 #ifdef __cplusplus
-//}
+}
 }
 #endif
 

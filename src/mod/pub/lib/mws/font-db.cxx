@@ -30,14 +30,9 @@ bool font_glyph::is_valid() const
    return glyph != nullptr;
 }
 
-wchar_t font_glyph::get_charcode()const
+uint32_t font_glyph::get_charcode()const
 {
-   return glyph->charcode;
-}
-
-unsigned int font_glyph::get_id()const
-{
-   return glyph->id;
+   return glyph->codepoint;
 }
 
 size_t font_glyph::get_width()const
@@ -90,14 +85,15 @@ float font_glyph::get_t1()const
    return glyph->t1;
 }
 
-float font_glyph::get_kerning(wchar_t icharcode)const
+float font_glyph::get_kerning(char i_charcode)const
 {
-   return texture_glyph_get_kerning(glyph, icharcode);
+   char c[2] = { i_charcode, 0 };
+   return texture_glyph_get_kerning(glyph, c);
 }
 
-int font_glyph::get_outline_type()const
+mws_font_rendermode font_glyph::get_rendermode()const
 {
-   return glyph->outline_type;
+   return static_cast<mws_font_rendermode>(glyph->rendermode);
 }
 
 float font_glyph::get_outline_thickness()const
@@ -105,9 +101,9 @@ float font_glyph::get_outline_thickness()const
    return glyph->outline_thickness;
 }
 
-font_glyph::font_glyph(texture_glyph_t* iglyph)
+font_glyph::font_glyph(texture_glyph_t* i_glyph)
 {
-   glyph = iglyph;
+   glyph = i_glyph;
 }
 
 
@@ -205,7 +201,7 @@ public:
       {
 	      v_v2_tex_coord = tex_coord;
 	      v_v4_color = color;
-            gl_Position = projection*(view*(model*vec4(vertex, 1.0)));
+         gl_Position = projection*(view*(model*vec4(vertex, 1.0)));
       }
       )"
          ));
@@ -244,10 +240,18 @@ public:
          texture_atlas_delete(tex_atlas);
       }
 
-      tex_atlas = texture_atlas_new(size, size, 1);
-      ext_tex_atlas_ref = nullptr;
-      reload_atlas = false;
-      mws_print("font texture atlas size: [%d]\n", size);
+      {
+         gfx_tex_params prm;
+
+         prm.set_format_id("R8");
+         prm.set_rt_params();
+         prm.mag_filter = prm.e_tf_nearest;
+         prm.min_filter = prm.e_tf_nearest;
+         tex_atlas = texture_atlas_new(size, size, 1);
+         glyph_atlas = gfx::i()->tex.nwi("texture-atlas-" + gfx_tex::gen_id(), size, size, &prm);
+         reload_atlas = false;
+         mws_print("font texture atlas size: [%d]\n", size);
+      }
    }
 
    uint64 get_key(const std::string& i_font_file_name, float i_size)
@@ -356,6 +360,10 @@ public:
 
                return nullptr;
             }
+            else
+            {
+               tex_font->padding = 0;
+            }
 
             font_size_ht[key] = fnt_cache;
          }
@@ -380,7 +388,7 @@ public:
 
          for (int k = 0; k < len; k++)
          {
-            wchar_t c = i_text[k];
+            char c = i_text[k];
             font_glyph glyph = fnt_cache->get_glyph_at(c);
 
             if (!glyph.is_valid() && !marked_for_loading[c])
@@ -393,7 +401,7 @@ public:
          if (!glyphs_to_load.empty())
          {
             glyphs_to_load.push_back(0);
-            int missed_chars = texture_font_load_glyphs(tex_font, begin_ptr(glyphs_to_load));
+            int missed_chars = texture_font_load_glyphs(tex_font, glyphs_to_load.data());
 
             if (missed_chars != 0)
             {
@@ -403,29 +411,25 @@ public:
                   reload_atlas = true;
                }
             }
+
+            glyph_atlas->update(0, (const char*)tex_font->atlas->data);
          }
 
          if (!reload_atlas)
          {
             for (int k = 0; k < len; k++)
             {
-               wchar_t c = i_text[k];
-               font_glyph glyph = fnt_cache->get_glyph_at(c);
+               char c[2] = { i_text[k], 0 };
+               font_glyph glyph = fnt_cache->get_glyph_at(c[0]);
 
                if (!glyph.is_valid())
                {
                   glyph = texture_font_get_glyph(tex_font, c);
-                  fnt_cache->set_glyph_at(glyph, c);
+                  fnt_cache->set_glyph_at(glyph, c[0]);
                }
 
                glyph_vect.push_back(glyph);
             }
-         }
-
-         if (!ext_tex_atlas_ref)
-         {
-            ext_tex_atlas_ref = gfx::i()->tex.nwi_external("texture-atlas-" + gfx_tex::gen_id(), tex_atlas->id, "R8");
-            ext_tex_atlas_ref->set_dim(tex_atlas->width, tex_atlas->height);
          }
       }
 
@@ -444,15 +448,15 @@ public:
 
    texture_atlas_t * tex_atlas = nullptr;
    mws_sp<gfx_shader> text_shader;
-   mws_sp<gfx_tex> ext_tex_atlas_ref;
+   mws_sp<gfx_tex> glyph_atlas;
    std::vector<font_glyph> glyph_vect;
    std::unordered_map<uint64, mws_sp<font_cache>> font_size_ht;
    std::unordered_map<std::string, font_info> font_name_ht;
    // hold weak ref to font data so the same font with different sizes can use the same font data.
    // this way, when all sizes/instances of particular font are deleted, the common font data is also deleted.
    std::unordered_map<std::string, mws_wp<std::vector<uint8>>> font_data_by_path_ht;
-   std::vector<wchar_t> glyphs_to_load;
-   std::unordered_map<wchar_t, bool> marked_for_loading;
+   std::vector<char> glyphs_to_load;
+   std::unordered_map<uint32_t, bool> marked_for_loading;
    mws_sp<mws_font> global_font;
    bool reload_atlas = false;
    int pow_of_two = 9;
@@ -515,7 +519,7 @@ const std::vector<font_glyph>& font_db::get_glyph_vect(mws_sp<mws_font> i_font, 
 
 mws_sp<gfx_tex> font_db::get_texture_atlas()
 {
-   return p->ext_tex_atlas_ref;
+   return p->glyph_atlas;
 }
 
 float font_db::get_ascender(mws_sp<mws_font> i_font)

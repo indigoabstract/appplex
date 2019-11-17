@@ -4,13 +4,26 @@
 #include <glm/fwd.hpp>
 
 
+namespace ftgl
+{
+   struct texture_glyph_t;
+}
 class mws_mod;
-struct texture_glyph_t;
 class gfx_tex;
 class mws_font;
 class font_db_impl;
 class mws_pt;
 class mws_px;
+
+
+enum class mws_font_rendermode
+{
+   e_normal,
+   e_outline_edge,
+   e_outline_positive,
+   e_outline_negative,
+   e_signed_distance_field
+};
 
 
 class font_glyph
@@ -20,13 +33,9 @@ public:
 
    bool is_valid() const;
    /**
-   * Wide character this glyph represents
+   * character this glyph represents
    */
-   wchar_t get_charcode()const;
-   /**
-   * Glyph id (used for display lists)
-   */
-   unsigned int get_id()const;
+   uint32_t get_charcode()const;
    /**
    * Glyph's width in pixels.
    */
@@ -77,11 +86,11 @@ public:
    /**
    * A vector of kerning pairs relative to this glyph.
    */
-   float get_kerning(wchar_t icharcode)const;
+   float get_kerning(char i_charcode)const;
    /**
-   * Glyph outline type (0 = None, 1 = line, 2 = inner, 3 = outer)
+   * get rendermode: RENDER_NORMAL, RENDER_OUTLINE_EDGE, RENDER_OUTLINE_POSITIVE, RENDER_OUTLINE_NEGATIVE, RENDER_SIGNED_DISTANCE_FIELD
    */
-   int get_outline_type()const;
+   mws_font_rendermode get_rendermode()const;
    /**
    * Glyph outline thickness
    */
@@ -90,9 +99,9 @@ public:
 private:
    friend class font_db_impl;
 
-   font_glyph(texture_glyph_t* iglyph);
+   font_glyph(ftgl::texture_glyph_t* i_glyph);
 
-   texture_glyph_t* glyph;
+   ftgl::texture_glyph_t* glyph;
 };
 
 
