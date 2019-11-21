@@ -23,8 +23,6 @@ raw_img_data::~raw_img_data()
 }
 
 
-mws_sp<res_ld> res_ld::res_loader_inst;
-
 res_ld::res_ld()
 {
 }
@@ -78,6 +76,11 @@ mws_sp<std::vector<uint8>> res_ld::flip_buffer(int i_width, int i_height, uint8*
    }
 
    return buffer;
+}
+
+namespace
+{
+   mws_sp<res_ld> res_loader_inst;
 }
 
 mws_sp<res_ld> res_ld::inst()

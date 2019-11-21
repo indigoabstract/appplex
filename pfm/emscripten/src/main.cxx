@@ -75,10 +75,14 @@
 #define VK_OEM_7 222 //  ''"' for US
 
 
-const int shift_key_down = (1 << 0);
-const int ctrl_key_down = (1 << 1);
-const int alt_key_down = (1 << 2);
-static int mod_keys_down = 0;
+namespace
+{
+	const int shift_key_down = (1 << 0);
+	const int ctrl_key_down = (1 << 1);
+	const int alt_key_down = (1 << 2);
+	int mod_keys_down = 0;
+	mws_ptr_evt_base::e_pointer_press_type mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
+}
 
 
 class emst_file_impl : public pfm_impl::pfm_file_impl
@@ -582,6 +586,16 @@ EM_BOOL emst_mouse_down(int event_type, const EmscriptenMouseEvent* e, void* use
    pfm_te->time = pfm::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_began;
+   
+	switch (e->button)
+	{
+	case 0:
+	 mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
+	case 1:
+	 mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_middle_mouse_btn; break;
+	case 2:
+	 mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_right_mouse_btn; break;
+	}
 
    mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
@@ -601,6 +615,17 @@ EM_BOOL emst_mouse_up(int event_type, const EmscriptenMouseEvent* e, void* user_
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_ended;
 
+	switch (e->button)
+	{
+	case 0:
+	 pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
+	case 1:
+	 pfm_te->press_type = mws_ptr_evt_base::e_middle_mouse_btn; break;
+	case 2:
+	 pfm_te->press_type = mws_ptr_evt_base::e_right_mouse_btn; break;
+	}
+
+	mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
    mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
    return true;
@@ -618,7 +643,8 @@ EM_BOOL emst_mouse_move(int event_type, const EmscriptenMouseEvent* e, void* use
    pfm_te->time = pfm::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_moved;
-
+   pfm_te->press_type = mouse_btn_down;
+   
    mws_mod_ctrl::inst()->pointer_action(pfm_te);
 
    return true;

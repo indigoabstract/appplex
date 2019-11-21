@@ -31,7 +31,7 @@ namespace
    const int shift_key_down = (1 << 0);
    const int ctrl_key_down = (1 << 1);
    const int alt_key_down = (1 << 2);
-   static int mod_keys_down = 0;
+   int mod_keys_down = 0;
    mws_ptr_evt_base::e_pointer_press_type mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
 }
 
