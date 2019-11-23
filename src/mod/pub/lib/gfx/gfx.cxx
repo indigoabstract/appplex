@@ -851,7 +851,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
       uniform vec4 u_v4_color;
       uniform float u_v1_has_tex;
       uniform sampler2D u_s2d_tex;
-      uniform float u_v1_has_alpha;
+      uniform float u_v1_mul_color_alpha;
 
       varying vec2 v_v2_tex_coord;
 
@@ -862,6 +862,11 @@ void gfx::init(mws_sp<gfx> i_new_inst)
          if(u_v1_has_tex == 1.)
          {
             v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+            
+            if(u_v1_mul_color_alpha)
+            {
+               v4_color.a *= u_v4_color.a;
+            }
          }
          else
          {

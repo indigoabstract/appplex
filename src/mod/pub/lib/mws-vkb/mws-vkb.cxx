@@ -261,6 +261,15 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
 
 void mws_vkb_impl::on_update_state()
 {
+   if (fade_slider.is_enabled())
+   {
+      fade_slider.update();
+      float alpha = fade_slider.get_value();
+      if (fade_type == fade_types::e_hide_vkb) { alpha = 1.f - alpha; }
+      set_key_transparency(alpha);
+      if (!fade_slider.is_enabled()) { fade_type = fade_types::e_none; }
+   }
+
    // key lights
    {
       uint32 crt_time = pfm::time::get_time_millis();
@@ -345,6 +354,16 @@ void mws_vkb_impl::set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_wo
    letter_font->set_color(gfx_color::colors::yellow);
    word_font = mws_font::nwi(i_word_fnt);
    word_font->set_color(gfx_color::colors::yellow);
+}
+
+void mws_vkb_impl::start_anim()
+{
+   if (keys_quad && key_border_quad && !is_mod_key_held(mod_key_types::hide_vkb))
+   {
+      fade_slider.start(fade_duration_in_seconds);
+      fade_type = fade_types::e_show_vkb;
+      keys_quad->visible = key_border_quad->visible = true;
+   }
 }
 
 void mws_vkb_impl::done()
@@ -637,16 +656,22 @@ void mws_vkb_impl::build_keys_tex()
    {
       key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s", vkb_type.c_str()), scr_dim.x, scr_dim.y);
       key_border_quad = gfx_quad_2d::nwi();
-      key_border_quad->camera_id_list = { "mws_cam" };
-      (*key_border_quad)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
-      (*key_border_quad)[MP_BLENDING] = MV_ADD;
-      (*key_border_quad)[MP_DEPTH_TEST] = false;
-      (*key_border_quad)[MP_DEPTH_WRITE] = false;
-      (*key_border_quad)["u_s2d_tex"][MP_TEXTURE_INST] = key_border_tex.get_tex();
-      key_border_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
-      key_border_quad->set_v_flip(true);
+
+      auto& rvxo = *key_border_quad;
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
+      rvxo[MP_BLENDING] = MV_ADD;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo["u_v4_color"] = gfx_color::colors::white.to_vec4();
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 1.f;
+      rvxo["u_v1_mul_color_alpha"] = 1.f;
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = key_border_tex.get_tex();
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
+      rvxo.set_v_flip(true);
       // key_border_quad must be drawn before keys_quad
-      key_border_quad->set_z(0.99f);
+      rvxo.set_z(0.99f);
       attach(key_border_quad);
 
       {
@@ -693,47 +718,29 @@ void mws_vkb_impl::build_keys_tex()
    // keys
    {
       keys_quad = gfx_quad_2d::nwi();
-      keys_quad->name = "mws-vkb-keys-quad";
-      keys_quad->camera_id_list = { "mws_cam" };
-      (*keys_quad)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
-      (*keys_quad)[MP_BLENDING] = MV_ALPHA;
-      (*keys_quad)[MP_DEPTH_TEST] = false;
-      (*keys_quad)[MP_DEPTH_WRITE] = false;
-      (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
-      keys_quad->set_scale((float)scr_dim.x, (float)scr_dim.y);
-      keys_quad->set_v_flip(true);
+      auto& rvxo = *keys_quad;
+
+      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
+      rvxo[MP_BLENDING] = MV_ALPHA;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo["u_v4_color"] = gfx_color::colors::white.to_vec4();
+      rvxo["u_v1_is_enabled"] = 1.f;
+      rvxo["u_v1_has_tex"] = 1.f;
+      rvxo["u_v1_mul_color_alpha"] = 1.f;
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
+      rvxo.name = "mws-vkb-keys-quad";
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
+      rvxo.set_v_flip(true);
       // keys_quad must be drawn after (on top of) key_border_quad
-      keys_quad->set_z(1.f);
+      rvxo.set_z(1.f);
       attach(keys_quad);
    }
 
    auto root = get_mws_root();
    auto vd = vk->get_diag_data();
    mws_vrn_kernel_pt_vect& kp_vect = vd->geom.kernel_points;
-
-   auto draw_keys = [this, g](mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect)
-   {
-      uint32 size = get_key_vect_size();
-
-      for (uint32 k = 0; k < size; k++)
-      {
-         key_types key_id = get_mod_key_at(i_mod, k);
-         std::string key = get_key_name(key_id);
-
-         // exclude space bar
-         if (!key.empty())
-         {
-            mws_sp<mws_font> font = (key.length() > 1) ? i_word_font : i_letter_font;
-            auto& kp = i_kp_vect[k];
-            glm::vec2 text_dim = font->get_text_dim(key);
-            glm::vec2 pos(kp.position.x, kp.position.y);
-            pos -= text_dim / 2.f;
-
-            g->drawText(key, pos.x, pos.y, font);
-         }
-      }
-   };
-
    std::array<key_mod_types, (uint32)key_mod_types::count> mod_vect = { key_mod_types::mod_none, key_mod_types::mod_alt, key_mod_types::mod_shift };
    mws_sp<mws_font> letter_font_bg = mws_font::nwi(letter_font);
    mws_sp<mws_font> word_font_bg = mws_font::nwi(word_font);
@@ -746,7 +753,7 @@ void mws_vkb_impl::build_keys_tex()
       gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
       gfx_rt::clear_buffers();
       g->set_color(gfx_color::colors::cyan);
-      draw_keys(letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+      draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
       g->update_camera_state();
       gfx::i()->rt.set_current_render_target();
    }
@@ -772,11 +779,13 @@ void mws_vkb_impl::build_keys_tex()
 
       gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
       rvxo.draw_out_of_sync(g);
-      draw_keys(letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+      draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
       g->update_camera_state();
       gfx::i()->rt.set_current_render_target();
    }
+
    g->set_text_blending(MV_ALPHA);
+   set_key_transparency(0.f);
 }
 
 bool mws_vkb_impl::is_mod_key(key_types i_key_id)
@@ -870,6 +879,37 @@ void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
          highlight_key_at(k, false);
          st.state = base_key_state_types::key_free;
          st.pressed_count = 0;
+      }
+   }
+}
+
+void mws_vkb_impl::set_key_transparency(float i_alpha)
+{
+   glm::vec4 color = gfx_color::from_float(1.f, 1.f, 1.f, i_alpha).to_vec4();
+
+   (*key_border_quad)["u_v4_color"] = color;
+   (*keys_quad)["u_v4_color"] = color;
+}
+
+void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect)
+{
+   uint32 size = get_key_vect_size();
+
+   for (uint32 k = 0; k < size; k++)
+   {
+      key_types key_id = get_mod_key_at(i_mod, k);
+      std::string key = get_key_name(key_id);
+
+      // exclude space bar
+      if (!key.empty())
+      {
+         mws_sp<mws_font> font = (key.length() > 1) ? i_word_font : i_letter_font;
+         auto& kp = i_kp_vect[k];
+         glm::vec2 text_dim = font->get_text_dim(key);
+         glm::vec2 pos(kp.position.x, kp.position.y);
+         pos -= text_dim / 2.f;
+
+         i_g->drawText(key, pos.x, pos.y, font);
       }
    }
 }
@@ -1282,8 +1322,12 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch)) { mws_println("alt key_mod %d", (int)key_mod); }
-         (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
-         update_lights(i_key_idx, i_state);
+
+         if (keys_quad)
+         {
+            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
+            update_lights(i_key_idx, i_state);
+         }
          break;
       }
 
@@ -1306,39 +1350,51 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch)) { mws_println("shift key_mod %d state %d", (int)key_mod, (int)i_state); }
-         (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
-         update_lights(i_key_idx, i_state);
+
+         if (keys_quad)
+         {
+            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
+            update_lights(i_key_idx, i_state);
+         }
          break;
       }
 
       case VKB_HIDE_KB:
       {
-         uint32 size = base_key_st.size();
-         bool show_vkb = (i_state == base_key_state_types::key_free);
-         keys_quad->visible = show_vkb;
-         key_border_quad->visible = show_vkb;
-
-         // if we need to hide the keyboard
-         if (show_vkb)
+         if (keys_quad && key_border_quad)
          {
-            fade_key_at(i_key_idx);
-         }
-         else
-         {
-            get_mod()->key_ctrl_inst->clear_keys();
-            highlight_key_at(i_key_idx);
+            bool show_vkb = (i_state == base_key_state_types::key_free);
 
-            for (uint32 k = 0; k < size; ++k)
+            // if we need to show the keyboard
+            if (show_vkb)
             {
-               if (k != i_key_idx)
-               {
-                  highlight_key_at(k, false);
-                  base_key_st[k].state = base_key_state_types::key_free;
-                  base_key_st[k].pressed_count = 0;
-               }
+               fade_slider.start(fade_duration_in_seconds);
+               fade_type = fade_types::e_show_vkb;
+               keys_quad->visible = key_border_quad->visible = true;
+               fade_key_at(i_key_idx);
             }
+            // if we need to hide the keyboard
+            else if(init_state != base_key_state_types::key_locked)
+            {
+               uint32 size = base_key_st.size();
 
-            return true;
+               fade_slider.start(fade_duration_in_seconds);
+               fade_type = fade_types::e_hide_vkb;
+               get_mod()->key_ctrl_inst->clear_keys();
+               highlight_key_at(i_key_idx);
+
+               for (uint32 k = 0; k < size; ++k)
+               {
+                  if (k != i_key_idx)
+                  {
+                     highlight_key_at(k, false);
+                     base_key_st[k].state = base_key_state_types::key_free;
+                     base_key_st[k].pressed_count = 0;
+                  }
+               }
+
+               return true;
+            }
          }
          break;
       }
@@ -1346,7 +1402,10 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
    }
    else
    {
-      update_lights(i_key_idx, i_state);
+      if (key_border_quad)
+      {
+         update_lights(i_key_idx, i_state);
+      }
    }
 
    return false;
@@ -1456,6 +1515,7 @@ void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 {
    ta = i_ta;
    impl = get_impl();
+   impl->start_anim();
 }
 
 mws_sp<mws_font> mws_vkb::get_font()

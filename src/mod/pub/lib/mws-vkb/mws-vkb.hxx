@@ -3,13 +3,14 @@
 #include "mws/mws.hxx"
 #include "input/gesture-detectors.hxx"
 #include "gfx-pbo.hxx"
-//#include <unordered_map>
+#include "util/util.hxx"
 
 
 class mws_font;
 class mws_vrn_main;
 class text_vxo;
 class gfx_tex;
+class mws_vrn_kernel_pt_vect;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -89,6 +90,7 @@ public:
    virtual vkb_file_info get_closest_match(uint32 i_width, uint32 i_height);
    virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt);
+   virtual void start_anim();
    virtual void done();
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
@@ -126,6 +128,8 @@ public:
    std::string loaded_filename;
 
 protected:
+   void set_key_transparency(float i_alpha);
+   void draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
    void set_key_vect_size(uint32 i_size);
    void set_key_at(int i_idx, key_types i_key_id);
    void erase_key_at(int i_idx);
@@ -155,8 +159,10 @@ protected:
    std::vector<base_key_state> base_key_st;
    mws_sp<mws_ptr_evt> prev_ptr_evt;
    std::unordered_map<int, key_types> mod_keys_st;
-
-private:
+   const float fade_duration_in_seconds = 0.65f;
+   basic_time_slider<float> fade_slider;
+   enum class fade_types { e_none, e_hide_vkb, e_show_vkb };
+   fade_types fade_type = fade_types::e_none;
    mws_sp<mws_font> letter_font;
    mws_sp<mws_font> word_font;
    mws_sp<gfx_tex> cell_border_tex;
