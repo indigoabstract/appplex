@@ -117,21 +117,25 @@
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         },
-		mws_horizontal_screen_dpi: function()
+		mws_horiz_screen_dpi: 0,
+		mws_vert_screen_dpi: 0,
+		mws_query_screen_dpi: function()
 		{
 			var mws_device_pixel_ratio = window.devicePixelRatio || 1;
 			var mws_screen_dpi_div = document.getElementById('mws_screen_dpi_div');
-			var horizontal_screen_dpi = mws_screen_dpi_div.offsetWidth * mws_device_pixel_ratio;
-			return horizontal_screen_dpi;
+			mws_horiz_screen_dpi = mws_screen_dpi_div.offsetWidth * mws_device_pixel_ratio;
+			mws_vert_screen_dpi = mws_screen_dpi_div.offsetHeight * mws_device_pixel_ratio;
+		},
+		mws_horizontal_screen_dpi: function()
+		{
+			return mws_horiz_screen_dpi;
 		},
 		mws_vertical_screen_dpi: function()
 		{
-			var mws_device_pixel_ratio = window.devicePixelRatio || 1;
-			var mws_screen_dpi_div = document.getElementById('mws_screen_dpi_div');
-			var vertical_screen_dpi = mws_screen_dpi_div.offsetHeight * mws_device_pixel_ratio;
-			return vertical_screen_dpi;
+			return mws_vert_screen_dpi;
 		}
       };
+	  Module.mws_query_screen_dpi();
       Module.setStatus('Downloading...');
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');

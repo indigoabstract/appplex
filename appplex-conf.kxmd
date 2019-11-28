@@ -129,6 +129,7 @@ mod
 	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
 	screen-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	mouse-input[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, vector-fonts ], ],
+	font-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

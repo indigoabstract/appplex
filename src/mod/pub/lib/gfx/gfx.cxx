@@ -863,7 +863,7 @@ void gfx::init(mws_sp<gfx> i_new_inst)
          {
             v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
             
-            if(u_v1_mul_color_alpha)
+            if(u_v1_mul_color_alpha == 1.)
             {
                v4_color.a *= u_v4_color.a;
             }

@@ -479,14 +479,14 @@ void font_db::clear_db()
    p->reload_atlas = true;
 }
 
-void font_db::resize_db(int ipow_of_two)
+void font_db::resize_db(int i_pow_of_two)
 {
-   if (ipow_of_two < 6 || ipow_of_two > 13)
+   if (i_pow_of_two < 6 || i_pow_of_two > 13)
    {
-      mws_throw mws_exception("6 <= ipow_of_two <= 13");
+      mws_throw mws_exception("6 <= i_pow_of_two <= 13");
    }
 
-   p->pow_of_two = ipow_of_two;
+   p->pow_of_two = i_pow_of_two;
    p->reload_atlas = true;
 }
 
