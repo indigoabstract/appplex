@@ -122,7 +122,7 @@ public:
        // i_force_binding - force a rebinding to the default FB, even if it was already bound. useful for resync of opengl state with outside libs
       void set_current_render_target(mws_sp<gfx_rt> i_rdt = nullptr, bool i_force_binding = false);
 
-      template<typename T> mws_sp<std::vector<T> > get_render_target_pixels(mws_sp<gfx_rt> irt = nullptr)
+      template<typename T> mws_sp<std::vector<T>> get_render_target_pixels(mws_sp<gfx_rt> irt = nullptr)
       {
          mws_sp<std::vector<T> > vect(new std::vector<T>(get_render_target_width() * get_render_target_height()));
 

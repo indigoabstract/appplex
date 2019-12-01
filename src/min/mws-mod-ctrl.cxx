@@ -122,9 +122,16 @@ void mws_mod_ctrl::pre_init_app()
 
 void mws_mod_ctrl::init_app()
 {
+   mws_sp<mws_mod> start_mod = get_app_start_mod();
+
    if (mod_gfx_on && pfm::data.gfx_available)
    {
       gfx::global_init();
+
+      if (start_mod)
+      {
+         start_mod->config_font_db_size();
+      }
    }
 
    if (mod_snd_on)
@@ -134,6 +141,11 @@ void mws_mod_ctrl::init_app()
 
    if (ul)
    {
+      if (!start_mod)
+      {
+         ul->config_font_db_size();
+      }
+
       ul->base_init();
       ul->base_load();
       ul->set_init(true);

@@ -88,7 +88,7 @@ namespace
 class emst_file_impl : public pfm_impl::pfm_file_impl
 {
 public:
-   emst_file_impl(const std::string& ifilename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(ifilename, iroot_dir) {}
+   emst_file_impl(const std::string& i_filename, const std::string& i_root_dir) : pfm_impl::pfm_file_impl(i_filename, i_root_dir) {}
    virtual ~emst_file_impl() {}
 
    virtual FILE* get_file_impl() const override
@@ -181,9 +181,9 @@ mws_sp<emst_main> emst_main::get_instance()
    return instance;
 }
 
-mws_sp<pfm_impl::pfm_file_impl> emst_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+mws_sp<pfm_impl::pfm_file_impl> emst_main::new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
 {
-   return std::make_shared<emst_file_impl>(ifilename, iroot_dir);
+   return std::make_shared<emst_file_impl>(i_filename, i_root_dir);
 }
 
 void emst_main::init()

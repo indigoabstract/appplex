@@ -868,6 +868,15 @@ bool mws_mod::handle_function_key(key_types i_key)
 
    return key_handled;
 }
+void mws_mod::config_font_db_size()
+{
+#if MOD_VECTOR_FONTS
+
+   uint32 pow_of_two = get_preferences()->get_font_db_pow_of_two_size();
+   font_db::nwi_inex(pow_of_two);
+
+#endif
+}
 
 void mws_mod::base_init()
 {

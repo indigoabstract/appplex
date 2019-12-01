@@ -22,13 +22,13 @@ bool gfx_rt::is_valid()const
    return is_valid_state;
 }
 
-int gfx_rt::get_width()
+uint32 gfx_rt::get_width()
 {
    check_valid_state();
    return color_att->get_width();
 }
 
-int gfx_rt::get_height()
+uint32 gfx_rt::get_height()
 {
    check_valid_state();
    return color_att->get_height();

@@ -63,23 +63,7 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height)
 mws_sp<mws_font> mws_font::nwi(const std::string& i_font_path, const mws_dim& i_height)
 {
    mws_assert(i_height.to_pt().val() > 1.f);
-
-   mws_pt min_height_pt;
-   mws_px min_height_px;
-   mws_pt max_height_pt;
-   mws_px max_height_px;
-   font_db::inst()->load_font_height(i_font_path, min_height_pt, min_height_px, max_height_pt, max_height_px);
-
-   if (min_height_pt.val() > 0.f && min_height_px.int_val() > 0 && max_height_pt.val() > 0.f && max_height_px.int_val() > 0)
-   {
-      float px_count = i_height.to_px().val();
-      float pos = (px_count - min_height_px.val()) / (max_height_px.val() - min_height_px.val());
-      float size_pt = glm::mix(min_height_pt.val(), max_height_pt.val(), pos);
-
-      return nwi(size_pt, i_font_path);
-   }
-
-   return nwi(i_height.to_pt().val(), i_font_path);
+   return font_db::inst()->load_font_by_metrix(i_font_path, i_height);
 }
 
 mws_sp<mws_font> mws_font::get_inst()

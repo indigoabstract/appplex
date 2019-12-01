@@ -42,6 +42,7 @@ public:
    virtual bool draw_touch_symbols_trail() { return false; }
    virtual bool show_onscreen_console() { return false; }
    virtual bool show_fps() const { return true; }
+   virtual uint32 get_font_db_pow_of_two_size() const { return 9; }
 
    virtual bool emulate_mobile_screen() { return false; }
 };
@@ -111,6 +112,7 @@ public:
    bool i_m_is_null() const { return p.get() == nullptr; }
    virtual void process(mws_sp<mws_dp> i_dp);
    bool handle_function_key(key_types i_key);
+   virtual void config_font_db_size();
 
    int game_time;
    mws_sp<updatectrl> update_ctrl_inst;

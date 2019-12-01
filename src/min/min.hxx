@@ -50,7 +50,7 @@ template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
    {
       i_val = mws_to<T>(i_input);
    }
-   mws_catch(...)
+      mws_catch(...)
    {
 #ifdef MWS_USES_EXCEPTIONS
       result = false;
@@ -148,6 +148,120 @@ public:
       static std::string get_current_date();
       static std::string get_duration_as_string(uint32 i_duration);
    };
+};
+
+
+template <typename T, typename mixer> class mws_val_mixer
+{
+public:
+   struct pos_val
+   {
+      float pos;
+      T val;
+   };
+
+   mws_val_mixer() { clear(); }
+
+   uint32 size() const { return pos_val_vect.size(); }
+
+   const pos_val& operator[](uint32 i_idx) const { return pos_val_vect[i_idx]; }
+
+   void clear()
+   {
+      pos_val_vect.clear();
+   }
+
+   void set_edges(T i_start, T i_end)
+   {
+      pos_val_vect.push_back(pos_val{ 0.f, i_start });
+      pos_val_vect.push_back(pos_val{ 1.f, i_end });
+   }
+
+   // values in i_pos_val_vect must be in ascending order by pos;
+   void set_values(const std::vector<pos_val>& i_pos_val_vect)
+   {
+      mws_assert(i_pos_val_vect.size() >= 2);
+      mws_assert(i_pos_val_vect.front().pos == 0.f && i_pos_val_vect.back().pos == 1.f);
+      pos_val_vect = i_pos_val_vect;
+   }
+
+   int set_val_at(T i_val, float i_position)
+   {
+      mws_assert(pos_val_vect.size() >= 2);
+      if (i_position < 0.f || i_position > 1.f)
+      {
+         return -1;
+      }
+
+      // find the the closest match that's not less than i_position (can be equal)
+      auto it = closest_gte_val(pos_val_vect, i_position);
+      int idx = -1;
+
+      if (it != pos_val_vect.end())
+      {
+         idx = it - pos_val_vect.begin();
+
+         if (it->pos == i_position)
+         {
+            *it = pos_val{ i_position, i_val };
+         }
+         else
+         {
+            pos_val_vect.insert(it, pos_val{ i_position, i_val });
+         }
+      }
+
+      return idx;
+   }
+
+   T get_val_at(float i_position)
+   {
+      if (i_position <= 0.f)
+      {
+         return pos_val_vect.front().val;
+      }
+
+      if (i_position >= 1.f)
+      {
+         return pos_val_vect.back().val;
+      }
+
+      // find the the closest match that's not less than i_position (can be equal)
+      auto lim_sup = closest_gte_val(pos_val_vect, i_position);
+      auto lim_inf = lim_sup - 1;
+      // switch interval to [0, lim_sup - lim_inf]
+      float interval = lim_sup->pos - lim_inf->pos;
+      float mixf = (i_position - lim_inf->pos) / interval;
+
+      return mixer()(lim_inf->val, lim_sup->val, mixf);
+   }
+
+   bool remove_idx(uint32 i_idx)
+   {
+      if (i_idx <= 0 || i_idx >= pos_val_vect.size() - 1)
+      {
+         return false;
+      }
+
+      pos_val_vect.erase(pos_val_vect.begin() + i_idx);
+
+      return true;
+   }
+
+protected:
+   // find the the closest match that's not less than i_position (can be equal)
+   typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, float i_position)
+   {
+      static auto cmp_positions = [](const pos_val& i_a, const pos_val& i_b) { return i_a.pos < i_b.pos; };
+      pos_val pc;
+      pc.pos = i_position;
+      // i_vect is ordered, so we can do a binary search
+      auto it = std::lower_bound(i_vect.begin(), i_vect.end(), pc, cmp_positions);
+
+      return it;
+   };
+
+   std::vector<pos_val> pos_val_vect;
 };
 
 
@@ -360,10 +474,10 @@ inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
 
-bool ends_with(const std::string & istr, const std::string & ifind);
+bool ends_with(const std::string& istr, const std::string& ifind);
 
 // trim from start
-inline std::string ltrim(const std::string & is)
+inline std::string ltrim(const std::string& is)
 {
    std::string s(is);
    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
@@ -371,7 +485,7 @@ inline std::string ltrim(const std::string & is)
 }
 
 // trim from end
-inline std::string rtrim(const std::string & is)
+inline std::string rtrim(const std::string& is)
 {
    std::string s(is);
    s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
@@ -379,16 +493,16 @@ inline std::string rtrim(const std::string & is)
 }
 
 // trim from both ends
-inline std::string trim(const std::string & is)
+inline std::string trim(const std::string& is)
 {
    return ltrim(rtrim(is));
 }
 
-std::string replace_string(std::string subject, const std::string & search, const std::string & replace);
-template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1> & original, unary_operation mapping_function);
+std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
+template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1>& original, unary_operation mapping_function);
 std::string escape_char(char character);
-std::string escape_string(const std::string & str);
-std::vector<std::string> escape_strings(const std::vector<std::string> & delimiters);
-std::string str_join(const std::vector<std::string> & tokens, const std::string & delimiter);
-std::vector<std::string> str_split(const std::string & str, const std::vector<std::string> & delimiters);
-std::vector<std::string> str_split(const std::string & str, const std::string & delimiter);
+std::string escape_string(const std::string& str);
+std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
+std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
+std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
+std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);

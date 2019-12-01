@@ -12,12 +12,12 @@ public:
    ~gfx_rt();
    virtual gfx_obj::e_gfx_obj_type get_type()const;
    virtual bool is_valid()const;
-   int get_width();
-   int get_height();
+   uint32 get_width();
+   uint32 get_height();
    mws_sp<gfx_tex> get_color_attachment();
    void set_color_attachment(mws_sp<gfx_tex> icolor_att);
    void set_depth_stencil_attachment(mws_sp<gfx_tex> idepth_stencil_att);
-   static void clear_buffers(bool i_clear_color = true, bool i_clear_depth = true, bool i_clear_stencil = true, gfx_color i_clear_color_val = gfx_color::colors::black);
+   static void clear_buffers(bool i_clear_color = true, bool i_clear_depth = true, bool i_clear_stencil = true, gfx_color i_clear_color_val = gfx_color::from_abgr(0));
    void reload();
    void check_valid_state();
 

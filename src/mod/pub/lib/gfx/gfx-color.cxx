@@ -127,16 +127,16 @@ gfx_color::operator uint8* ()
 
 bool gfx_color::operator == (gfx_color const& c)
 {
-   const long* l = (long*)& r;
-   const long* l2 = (long*)& c.r;
+   const long* l = (long*)&r;
+   const long* l2 = (long*)&c.r;
 
    return *l == *l2;
 }
 
 bool gfx_color::operator != (gfx_color const& c)
 {
-   const long* l = (long*)& r;
-   const long* l2 = (long*)& c.r;
+   const long* l = (long*)&r;
+   const long* l2 = (long*)&c.r;
 
    return *l != *l2;
 }
