@@ -472,7 +472,7 @@ mws_sp<font_db> font_db::nwi_inex(uint32 i_pow_of_two_db_size)
 {
    mws_assert(!instance);
    instance = mws_sp<font_db>(new font_db(i_pow_of_two_db_size));
-   instance->p->global_font = mws_font::nwi(40.f, font_db::default_font_name);
+   instance->p->global_font = mws_font::nwi(font_db::default_font_name, mws_cm(0.4f));
    return instance;
 }
 
@@ -677,6 +677,8 @@ mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, co
 font_db::font_db(uint32 i_pow_of_two)
 {
    p = mws_sp<font_db_impl>(new font_db_impl(i_pow_of_two));
+   store_font_metrix(font_db::default_font_name, mws_pt(min_height_pt), mws_px(min_height_px),
+      mws_pt(max_height_pt), mws_px(max_height_px), mws_def_font_data_metrix, mws_def_font_data_metrix_size);
 }
 
 void font_db::on_frame_start()

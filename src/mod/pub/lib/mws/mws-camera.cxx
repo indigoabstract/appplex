@@ -6,6 +6,7 @@
 
 #include "mws-camera.hxx"
 #include "mws-font.hxx"
+#include "font-db.hxx"
 #include "text-vxo.hxx"
 
 
@@ -107,7 +108,8 @@ class mws_camera_impl
 public:
    mws_camera_impl()
    {
-      font = mws_font::nwi(32);
+      mws_sp<mws_font> global_font = font_db::inst()->get_global_font();
+      font = mws_font::nwi(global_font);
       font->set_color(gfx_color::colors::cyan);
    }
 

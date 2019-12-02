@@ -280,7 +280,7 @@ namespace mod_font_metrix_ns
       glm::vec2 tex_dim;
       mws_sp<gfx_2d_sprite> font_quad;
       mws_sp<mws_font> ref_font;
-      std::vector<font_step> font_steps = { {2, 19, 5}, {20, 50, 10} };
+      std::vector<font_step> font_steps = { {2, 19, 1}, {20, 90, 10}, {100, 1000, 100} };
       uint32 smallest_font_size = 0;
       uint32 largest_font_size = 0;
       uint32 current_font_size = 0;

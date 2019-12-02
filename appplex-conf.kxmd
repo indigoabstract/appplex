@@ -31,7 +31,13 @@ mod
 	metrolife[ uses[ gfx, ffmpeg, test-ffmpeg ], platf[ windows, android ], ],
 	tangled-memories[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, vector-fonts ] ],
 	spacetime-sinkhole[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
-	voronoi-keyboard[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, tex-atlas, util, vector-fonts, vrn ] ],
+	voronoi-keyboard
+	[
+		uses
+		[
+			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, tex-atlas, util, vector-fonts, vrn
+		]
+	],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
 
