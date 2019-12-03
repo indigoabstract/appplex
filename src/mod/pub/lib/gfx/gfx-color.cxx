@@ -334,81 +334,21 @@ gfx_color_mixer::gfx_color_mixer()
 
 void gfx_color_mixer::clear()
 {
-   pos_color_vect.clear();
-   pos_color_vect.push_back(pos_color{ 0.f, gfx_color::colors::black });
-   pos_color_vect.push_back(pos_color{ 1.f, gfx_color::colors::white });
+   mixer.clear();
+   mixer.set_edges(gfx_color::colors::black, gfx_color::colors::white);
 }
 
 int gfx_color_mixer::set_color_at(gfx_color i_color, float i_position)
 {
-   if (i_position < 0.f || i_position > 1.f)
-   {
-      return -1;
-   }
-
-   // find the the closest match that's not less than i_position (can be equal)
-   auto it = closest_gte_val(pos_color_vect, i_position);
-   int idx = -1;
-
-   if (it != pos_color_vect.end())
-   {
-      idx = it - pos_color_vect.begin();
-
-      if (it->pos == i_position)
-      {
-         *it = pos_color{ i_position, i_color };
-      }
-      else
-      {
-         pos_color_vect.insert(it, pos_color{ i_position, i_color });
-      }
-   }
-
-   return idx;
+   return mixer.set_val_at(i_color, i_position);
 }
 
 gfx_color gfx_color_mixer::get_color_at(float i_position)
 {
-   if (i_position <= 0.f)
-   {
-      return pos_color_vect.front().color;
-   }
-
-   if (i_position >= 1.f)
-   {
-      return pos_color_vect.back().color;
-   }
-
-   // find the the closest match that's not less than i_position (can be equal)
-   auto lim_sup = closest_gte_val(pos_color_vect, i_position);
-   auto lim_inf = lim_sup - 1;
-   // switch interval to [0, lim_sup - lim_inf]
-   float interval = lim_sup->pos - lim_inf->pos;
-   float mixf = (i_position - lim_inf->pos) / interval;
-
-   return gfx_color::mix(lim_inf->color, lim_sup->color, mixf);
+   return mixer.get_val_at(i_position);
 }
 
 bool gfx_color_mixer::remove_idx(uint32 i_idx)
 {
-   if (i_idx <= 0 || i_idx >= pos_color_vect.size() - 1)
-   {
-      return false;
-   }
-
-   pos_color_vect.erase(pos_color_vect.begin() + i_idx);
-
-   return true;
+   return mixer.remove_idx(i_idx);
 }
-
-// find the the closest match that's not less than i_position
-std::vector<gfx_color_mixer::pos_color>::iterator gfx_color_mixer::closest_gte_val(std::vector<pos_color>& i_vect, float i_position)
-{
-   static auto cmp_positions = [](const pos_color& i_a, const pos_color& i_b) { return i_a.pos < i_b.pos; };
-   pos_color pc;
-   pc.pos = i_position;
-   // i_vect is ordered, so we can do a binary search
-   auto it = std::lower_bound(i_vect.begin(), i_vect.end(), pc, cmp_positions);
-
-   return it;
-};

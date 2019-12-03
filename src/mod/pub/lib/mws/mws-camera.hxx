@@ -21,7 +21,7 @@ public:
    void drawRect(float x, float y, float width, float height);
    void fillRect(float x, float y, float width, float height);
    mws_sp<mws_font> get_font()const;
-   void set_font(mws_sp<mws_font> ifont);
+   void set_font(mws_sp<mws_font> i_font);
    void drawText(const std::string& text, float x, float y, const mws_sp<mws_font> ifnt = mws_sp<mws_font>());
    void set_color(const gfx_color& i_color);
    void push_transform_state();

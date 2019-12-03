@@ -5,6 +5,7 @@
 #if defined MOD_MWS
 
 #include "mws-camera.hxx"
+#include "gfx.hxx"
 #include "mws-font.hxx"
 #include "font-db.hxx"
 #include "text-vxo.hxx"
@@ -106,16 +107,23 @@ using namespace ns_mws_camera;
 class mws_camera_impl
 {
 public:
-   mws_camera_impl()
+   mws_camera_impl() {}
+
+   mws_sp<mws_font> get_font()const
    {
-      mws_sp<mws_font> global_font = font_db::inst()->get_global_font();
-      font = mws_font::nwi(global_font);
-      font->set_color(gfx_color::colors::cyan);
+      return (font) ? font : font_db::inst()->get_global_font();
    }
 
-   mws_sp<mws_font> font;
+   void set_font(mws_sp<mws_font> i_font)
+   {
+      font = i_font;
+   }
+
    gfx_color color;
    draw_text_op d_text;
+
+private:
+   mws_sp<mws_font> font;
 };
 
 
@@ -154,19 +162,19 @@ void mws_camera::fillRect(float x, float y, float width, float height)
 
 mws_sp<mws_font> mws_camera::get_font()const
 {
-   return p->font;
+   return p->get_font();
 }
 
-void mws_camera::set_font(mws_sp<mws_font> ifont)
+void mws_camera::set_font(mws_sp<mws_font> i_font)
 {
-   p->font = ifont;
+   p->set_font(i_font);
 }
 
 void mws_camera::drawText(const std::string& text, float x, float y, const mws_sp<mws_font> ifnt)
 {
    if (enabled)
    {
-      const mws_sp<mws_font> fnt = (ifnt) ? ifnt : p->font;
+      const mws_sp<mws_font> fnt = (ifnt) ? ifnt : p->get_font();
       p->d_text.push_data(draw_ops, text, x, y, fnt);
    }
 }

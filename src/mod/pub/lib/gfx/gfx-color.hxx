@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
+#include "min.hxx"
 #include <glm/fwd.hpp>
 #include <vector>
 
@@ -106,14 +107,8 @@ public:
    bool remove_idx(uint32 i_idx);
 
 protected:
-   struct pos_color
-   {
-      float pos;
-      gfx_color color;
-   };
-
-   // find the the closest match that's not less than i_position (can be equal)
-   std::vector<pos_color>::iterator closest_gte_val(std::vector<pos_color>& i_vect, float i_position);
-
-   std::vector<pos_color> pos_color_vect;
+   struct mix_f { gfx_color operator()(const gfx_color& i_c0, const gfx_color& i_c1, float i_f) { return gfx_color::mix(i_c0, i_c1, i_f); } };
+   // this maps positions from [0, 1] to colors in the list
+   using pos_to_color_mixer = mws_val_mixer<gfx_color, mix_f>;
+   pos_to_color_mixer mixer;
 };
