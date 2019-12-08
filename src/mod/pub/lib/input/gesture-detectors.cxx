@@ -150,7 +150,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       auto delta = crt_time - start_event->time;
 
       // check for max double tap duration
-      if (delta > DOUBLE_TAP_MAX_DURATION)
+      if (delta > max_duration)
       {
          reset();
 
@@ -237,6 +237,14 @@ gesture_state double_tap_detector::reset()
    return GS_NONE;
 }
 
+uint32 double_tap_detector::get_double_tap_max_duration() const { return max_duration; }
+
+void double_tap_detector::set_double_tap_max_duration(uint32 i_max_duration) { max_duration = i_max_duration; }
+
+mws_cm double_tap_detector::get_double_tap_max_pointer_distance() const { return max_distance; }
+
+void double_tap_detector::set_double_tap_max_pointer_distance(mws_cm i_max_distance) { max_distance = i_max_distance; }
+
 void double_tap_detector::set_state(detector_state i_st)
 {
    det_state = i_st;
@@ -253,7 +261,7 @@ bool double_tap_detector::leq_max_dist(const glm::vec2& i_first_press, const glm
    }
    else
    {
-      if (glm::distance(i_first_press, i_second_press) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+      if (glm::distance(i_first_press, i_second_press) > max_distance.to_px().val())
       {
          return false;
       }
@@ -289,7 +297,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       auto delta = crt_time - start_event->time;
 
       // check for max double tap duration
-      if (delta > DOUBLE_TAP_MAX_DURATION)
+      if (delta > max_duration)
       {
          reset();
 
@@ -318,7 +326,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
          second_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
          set_state(detector_state::ST_PRESSED_1);
 
-         if (glm::distance(second_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(second_press_pos, first_press_pos) > max_distance.to_px().val())
          {
             return reset();
          }
@@ -330,7 +338,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
          third_press_pos = mws_ptr_evt::get_pos(*new_event->get_pointer_press_by_index(0));
          set_state(detector_state::ST_PRESSED_2);
 
-         if (glm::distance(third_press_pos, first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(third_press_pos, first_press_pos) > max_distance.to_px().val())
          {
             return reset();
          }
@@ -352,7 +360,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       {
          auto release = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > max_distance.to_px().val())
          {
             return reset();
          }
@@ -365,7 +373,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       {
          auto release = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(mws_ptr_evt::get_pos(*release), first_press_pos) > max_distance.to_px().val())
          {
             return reset();
          }
@@ -383,7 +391,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       {
          auto press = new_event->get_pointer_press_by_index(0);
 
-         if (glm::distance(mws_ptr_evt::get_pos(*press), first_press_pos) > DOUBLE_TAP_MAX_POINTER_DISTANCE)
+         if (glm::distance(mws_ptr_evt::get_pos(*press), first_press_pos) > max_distance.to_px().val())
          {
             return reset();
          }

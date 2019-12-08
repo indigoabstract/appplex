@@ -654,6 +654,7 @@ mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, co
       if (fi.min_height_pt.val() > 0.f && fi.min_height_px.int_val() > 0 && fi.max_height_pt.val() > 0.f && fi.max_height_px.int_val() > 0)
       {
          float px_count = i_height.to_px().val();
+         mws_assert(px_count > 0);
          float px_idx = float(px_count - fi.min_height_px.val()) / (fi.max_height_px.val() - fi.min_height_px.val());
          float font_size_pt = 0.f;
 

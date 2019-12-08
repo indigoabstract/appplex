@@ -24,7 +24,7 @@ mod
 	[
 		uses
 		[
-			gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, kxmdb, notifications, mws, mws-vkb, png, res-ld, techno-globe, util, vector-fonts, voronoi-keyboard, vrn
+			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, kxmdb, notifications, mws, mws-vkb, png, res-ld, techno-globe, util, vector-fonts, voronoi-keyboard, vrn
 		],
 		platf[ windows, android, ios ],
 	],

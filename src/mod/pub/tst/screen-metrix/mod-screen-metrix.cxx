@@ -74,8 +74,12 @@ namespace mod_screen_metrix_ns
          std::string screen_height = mws_to_str_fmt("screen height [ %2.2f ] cm", pfm_main::gi()->get_screen_dim_cm().second);
          std::string screen_res_width = mws_to_str_fmt("screen res width [ %d ] px", pfm_main::gi()->get_screen_res_px().first);
          std::string screen_res_height = mws_to_str_fmt("screen res height [ %d ] px", pfm_main::gi()->get_screen_res_px().second);
+         std::string screen_avg_dpi = mws_to_str_fmt("screen average dpi [ %f ] px", pfm_main::gi()->get_avg_screen_dpi());
+         std::string screen_avg_dpcm = mws_to_str_fmt("screen average dpcm [ %f ] px", pfm_main::gi()->get_avg_screen_dpcm());
+         std::string screen_h_dpcm = mws_to_str_fmt("screen horizontal dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().first);
+         std::string screen_v_dpcm = mws_to_str_fmt("screen vertical dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().second);
          float row_height = font_height;
-         float y_off = vert_off - row_height;
+         float y_off = vert_off;// - row_height;
 
          i_g->drawText("_|{g", horz_off, tl_margin_y.to_px().val(), test_font);
          i_g->drawText(box_left_margin, horz_off, y_off += row_height);
@@ -86,6 +90,10 @@ namespace mod_screen_metrix_ns
          i_g->drawText(screen_height, horz_off, y_off += row_height);
          i_g->drawText(screen_res_width, horz_off, y_off += row_height);
          i_g->drawText(screen_res_height, horz_off, y_off += row_height);
+         i_g->drawText(screen_avg_dpi, horz_off, y_off += row_height);
+         i_g->drawText(screen_avg_dpcm, horz_off, y_off += row_height);
+         i_g->drawText(screen_h_dpcm, horz_off, y_off += row_height);
+         i_g->drawText(screen_v_dpcm, horz_off, y_off += row_height);
       }
 
       virtual void on_resize() override

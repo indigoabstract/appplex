@@ -2,6 +2,7 @@
 
 #include "pfm.hxx"
 #include "input-ctrl.hxx"
+#include "gfx.hxx"
 
 
 // gesture action codes
@@ -21,11 +22,11 @@ enum gesture_state
 
 
 // max duration of a double tap. if more that this time has passed between taps, it's not considered a double tap anymore
-const unsigned long DOUBLE_TAP_MAX_DURATION = 500;
+const uint32 DOUBLE_TAP_MAX_DURATION = 500;
 // max distance between first press position an subsequent pointer positions
-const unsigned long DOUBLE_TAP_MAX_POINTER_DISTANCE = 25;
+const mws_cm DOUBLE_TAP_MAX_POINTER_DISTANCE(0.1f);
 // max distance between first press position an subsequent pointer positions for rotating with touch gestures
-const unsigned long ROTATION_MAX_POINTER_DEVIATION = 15;
+const uint32 ROTATION_MAX_POINTER_DEVIATION = 15;
 
 
 class dragging_detector
@@ -70,6 +71,13 @@ public:
    gesture_state reset();
    glm::vec2 get_first_press_pos()const { return first_press_pos; }
    glm::vec2 get_second_press_pos() const { return second_press_pos; }
+   // max duration of a double tap(in ms). if more that this time has passed between taps, it's not considered a double tap anymore
+   uint32 get_double_tap_max_duration() const;
+   void set_double_tap_max_duration(uint32 i_max_duration);
+   // max distance between first press position an subsequent pointer positions
+   mws_cm get_double_tap_max_pointer_distance() const;
+   void set_double_tap_max_pointer_distance(mws_cm i_max_distance);
+
    // distance evaluator custom function
    std::function<bool(const glm::vec2& i_first_press, const glm::vec2& i_second_press)> dist_eval;
 
@@ -88,6 +96,8 @@ private:
    // get start position of tap
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
+   uint32 max_duration = DOUBLE_TAP_MAX_DURATION;
+   mws_cm max_distance = DOUBLE_TAP_MAX_POINTER_DISTANCE;
 
    mws_sp<mws_ptr_evt> start_event;
    detector_state det_state;
@@ -119,6 +129,8 @@ private:
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
    glm::vec2 third_press_pos = glm::vec2(0.f);
+   uint32 max_duration = DOUBLE_TAP_MAX_DURATION;
+   mws_cm max_distance = DOUBLE_TAP_MAX_POINTER_DISTANCE;
 
    mws_sp<mws_ptr_evt> start_event;
    detector_state det_state;

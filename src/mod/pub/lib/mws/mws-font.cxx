@@ -26,7 +26,7 @@ public:
    mws_sp<pfm_path> ppath;
    mws_sp<std::string> font_name;
    std::string font_path;
-   float size;
+   float size = 0.f;
    mws_sp<gfx_color> color;
 };
 

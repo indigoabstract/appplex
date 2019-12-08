@@ -908,7 +908,7 @@ void mws_vrn_geom::init_shaders()
                //@dt #version 330 core
 
                #ifdef GL_ES
-                  precision highp float;
+                  precision lowp float;
                #endif
 
                layout(location = 0) out vec4 v4_frag_color;

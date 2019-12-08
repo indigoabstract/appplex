@@ -538,6 +538,9 @@ extern "C"
 	        jint i_screen_width, jint i_screen_height, jfloat i_screen_horizontal_dpi, jfloat i_screen_vertical_dpi)
 	{
 		initJavaMethodsIDs(env, obj);
+        // screen metrix
+        mws_assert(i_screen_width > 0 && i_screen_height > 0);
+        android_main::get_instance()->init_screen_metrix(i_screen_width, i_screen_height, i_screen_horizontal_dpi, i_screen_vertical_dpi);
 
 		const char* apk_path = env->GetStringUTFChars(i_apk_path, 0);
 
@@ -558,10 +561,6 @@ extern "C"
         {
             mws_print("error loading asset manager");
         }
-
-        // screen metrix
-        mws_assert(i_screen_width > 0 && i_screen_height > 0);
-        android_main::get_instance()->init_screen_metrix(i_screen_width, i_screen_height, i_screen_horizontal_dpi, i_screen_vertical_dpi);
 	}
 
 	JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1start_1app(JNIEnv*  env, jobject thiz)

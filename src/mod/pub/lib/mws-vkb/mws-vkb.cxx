@@ -141,9 +141,14 @@ void mws_vkb_impl::setup()
       {KEY_SPACE, ""/*"space"*/},
    };
    {
+      uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
+      mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
+      mws_cm letter_font_height_cm = letter_font_height.to_cm();
+      mws_px word_font_height(vkb_size / 5.f / 3.5f, mws_dim::vertical);
+      mws_cm word_font_height_cm = word_font_height.to_cm();
       mws_sp<mws_font> font = font_db::inst()->get_global_font();
-      mws_sp<mws_font> letter_font = mws_font::nwi(font, mws_cm(1.f));
-      mws_sp<mws_font> word_font = mws_font::nwi(font, mws_cm(0.65f));
+      mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height_cm);
+      mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height_cm);
 
       set_font(letter_font, word_font);
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
