@@ -3,6 +3,7 @@
 #include "pfm-def.h"
 #include "min.hxx"
 #include <glm/fwd.hpp>
+#include <string>
 #include <vector>
 
 
@@ -46,13 +47,14 @@ public:
    const uint8* rgba_array() const { return &r; }
    uint32 to_rgba() const { return abgr; };
    uint32 to_argb() const;
-   glm::vec4 to_vec4()const;
+   glm::vec4 to_vec4() const;
    uint8 intensity();
    void to_hsv(float& i_hue, float& i_saturation, float& i_value);
    void hsv2rgb_smooth(float& i_hue, float& i_saturation, float& i_value);
    void from_hsv(float hue, float i_saturation, float i_value);
    void to_hsb(float& i_hue, float& i_saturation, float& i_brightness);
    void from_hsb(float i_hue, float i_saturation, float i_brightness);
+   std::string to_str() const;
    static gfx_color mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_mixf);
 
    // color list

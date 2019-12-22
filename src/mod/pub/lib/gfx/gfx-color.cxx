@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "gfx-color.hxx"
+#include "pfm.hxx"
 #include <glm/inc.hpp>
 
 
@@ -160,7 +161,7 @@ gfx_color gfx_color::operator += (gfx_color const& c)
 
 uint32 gfx_color::to_argb() const { return (a << 24) | (r << 16) | (g << 8) | (b << 0); };
 
-glm::vec4 gfx_color::to_vec4()const
+glm::vec4 gfx_color::to_vec4() const
 {
    return glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
@@ -306,6 +307,13 @@ void gfx_color::from_hsb(float hue, float saturation, float brightness)
    }
 
    from_float(fr, fg, fb);
+}
+
+std::string gfx_color::to_str() const
+{
+   glm::vec4 v4 = to_vec4();
+
+   return mws_to_str_fmt("[ %1.2f, %1.2f, %1.2f, %1.2f ]", v4.r, v4.g, v4.b, v4.a);
 }
 
 gfx_color gfx_color::mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_mixf)

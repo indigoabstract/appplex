@@ -13,13 +13,19 @@
 class mws_font_impl
 {
 public:
-   mws_font_impl(mws_sp<mws_font> i_font, const std::string& i_font_path)
+   mws_font_impl(mws_sp<mws_font> i_font, const std::string& i_font_path, const mws_font_markup* i_markup)
    {
       mws_font_ref = i_font;
       color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::white));
       ppath = pfm_path::get_inst(i_font_path);
       font_name = font_db::inst()->get_db_font_name(ppath->get_file_name());
       font_path = ppath->get_full_path();
+
+      if (i_markup)
+      {
+         markup = *i_markup;
+         has_markup = true;
+      }
    }
 
    mws_wp<mws_font> mws_font_ref;
@@ -28,27 +34,29 @@ public:
    std::string font_path;
    float size = 0.f;
    mws_sp<gfx_color> color;
+   mws_font_markup markup;
+   bool has_markup = false;
 };
 
 
-mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, float i_size)
+mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, float i_size, const mws_font_markup* i_markup)
 {
    float size = (i_size > 0.f) ? i_size : i_fnt->p->size;
-   return nwi(size, i_fnt->get_full_path());
+   return nwi(size, i_fnt->get_full_path(), i_markup);
 }
 
-mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path)
+mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path, const mws_font_markup* i_markup)
 {
    mws_sp<mws_font> font(new mws_font());
    std::string font_path = i_font_path;
 
-   font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path));
+   font->p = mws_sp<mws_font_impl>(new mws_font_impl(font, font_path, i_markup));
    font->p->size = i_size;
 
    return font;
 }
 
-mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height)
+mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
    std::string path = i_fnt->get_full_path();
 
@@ -57,13 +65,13 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height)
       path = font_db::inst()->get_global_font()->get_full_path();
    }
 
-   return nwi(path, i_height);
+   return nwi(path, i_height, i_markup);
 }
 
-mws_sp<mws_font> mws_font::nwi(const std::string& i_font_path, const mws_dim& i_height)
+mws_sp<mws_font> mws_font::nwi(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
    mws_assert(i_height.to_pt().val() > 1.f);
-   return font_db::inst()->load_font_by_metrix(i_font_path, i_height);
+   return font_db::inst()->load_font_by_metrix(i_font_path, i_height, i_markup);
 }
 
 mws_sp<mws_font> mws_font::get_inst()
@@ -140,6 +148,9 @@ void mws_font::set_color(const gfx_color& icolor)
 {
    *p->color = icolor;
 }
+bool mws_font::has_markup() const { return p->has_markup; }
+
+const mws_font_markup& mws_font::get_markup() const { return p->markup; }
 
 
 mws_font::mws_font()

@@ -132,14 +132,14 @@ private:
 class file_data_sequence : public data_sequence
 {
 public:
-   file_data_sequence(mws_sp<pfm_file> ifile);
+   file_data_sequence(mws_sp<pfm_file> i_file);
    virtual ~file_data_sequence() {}
    bool reached_end_of_sequence() override;
    void close();
    virtual uint64 get_size()const;
    virtual void reset() override;
    virtual void rewind() override;
-   virtual void seek(uint64 ipos);
+   virtual void seek(uint64 i_pos);
 
 protected:
    int read_int8(int8* s, int elem_count, int offset);
@@ -351,8 +351,8 @@ public:
    void write_uint64(uint64 d);
    void write_real32(real32 d);
    void write_real64(real64 d);
-   void write_string(const std::string& itext);
-   void write_line(const std::string& itext, bool inew_line = true);
+   void write_string(const std::string& i_text);
+   void write_line(const std::string& i_text, bool inew_line = true);
    template<class T> void write_pointer(T* const s);
 
    // sequence data versions
@@ -398,9 +398,9 @@ class rw_file_sequence : public file_data_sequence
 public:
    virtual ~rw_file_sequence() {}
 
-   static mws_sp<rw_file_sequence> nwi(mws_sp<pfm_file> ifile)
+   static mws_sp<rw_file_sequence> nwi(mws_sp<pfm_file> i_file)
    {
-      mws_sp<rw_file_sequence> inst(new rw_file_sequence(ifile));
+      mws_sp<rw_file_sequence> inst(new rw_file_sequence(i_file));
       inst->r.set_data_sequence(inst);
       inst->w.set_data_sequence(inst);
       return inst;
@@ -410,7 +410,7 @@ public:
    data_sequence_writer w;
 
 private:
-   rw_file_sequence(mws_sp<pfm_file> ifile) : file_data_sequence(ifile) {}
+   rw_file_sequence(mws_sp<pfm_file> i_file) : file_data_sequence(i_file) {}
 };
 
 
@@ -537,9 +537,9 @@ inline int memory_data_sequence::write_int8(const int8 * s, int elem_count, int 
 }
 
 
-inline file_data_sequence::file_data_sequence(mws_sp<pfm_file> ifile)
+inline file_data_sequence::file_data_sequence(mws_sp<pfm_file> i_file)
 {
-   file = ifile;
+   file = i_file;
 }
 
 inline bool file_data_sequence::reached_end_of_sequence()
@@ -666,15 +666,15 @@ inline void data_sequence_writer::write_real64(real64 s)
    write_int8((int8*)&s, 8, 0);
 }
 
-inline void data_sequence_writer::write_string(const std::string& itext)
+inline void data_sequence_writer::write_string(const std::string& i_text)
 {
-   write_int32(itext.length());
-   write_int8((int8*)&itext[0], itext.length(), 0);
+   write_int32(i_text.length());
+   write_int8((int8*)&i_text[0], i_text.length(), 0);
 }
 
-inline void data_sequence_writer::write_line(const std::string& itext, bool inew_line)
+inline void data_sequence_writer::write_line(const std::string& i_text, bool inew_line)
 {
-   write_int8((int8*)&itext[0], itext.length(), 0);
+   write_int8((int8*)&i_text[0], i_text.length(), 0);
 
    if (inew_line)
    {

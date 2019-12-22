@@ -165,7 +165,7 @@ protected:
    friend class gfx_scene;
    friend class gfx_camera;
 
-   virtual void render_mesh_impl(mws_sp<gfx_camera> icamera);
+   virtual void render_mesh_impl(mws_sp<gfx_camera> i_camera);
    void compute_tangent_basis();
 
    vx_info vxi;

@@ -622,25 +622,25 @@ void gfx_vxo::set_size(int ivx_count, int i_idx_count)
    index_count = indices_buffer.size();
 }
 
-void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> icamera)
+void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
 {
    if (!visible)
    {
       return;
    }
 
-   mws_sp<gfx_material> mat_sp = (icamera->overriding_mat) ? icamera->overriding_mat : get_material();
+   mws_sp<gfx_material> mat_sp = (i_camera->overriding_mat) ? i_camera->overriding_mat : get_material();
    gfx_material& mat = *mat_sp;
    mws_sp<gfx_shader> glp = mat.get_shader();
 
    if (is_submesh)
    {
-      icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), glp);
+      i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), glp);
    }
    else
    {
       push_material_params(mat_sp);
-      icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
+      i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
    }
 
    if (buffer_changed)
@@ -788,11 +788,11 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> icamera)
 
       if (is_submesh)
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), p);
+         i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), p);
       }
       else
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
+         i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
       }
 
       glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
@@ -804,11 +804,11 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> icamera)
    {
       if (is_submesh)
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), glp);
+         i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_parent()), glp);
       }
       else
       {
-         icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
+         i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
       }
 
       glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);

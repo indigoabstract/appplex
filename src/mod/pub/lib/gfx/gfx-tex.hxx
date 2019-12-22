@@ -152,7 +152,7 @@ public:
 
 protected:
    gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi = nullptr);
-   gfx_tex_cube_map(uint32 isize, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex_cube_map(uint32 i_size, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };

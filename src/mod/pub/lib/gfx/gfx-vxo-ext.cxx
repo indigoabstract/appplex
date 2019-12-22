@@ -9,9 +9,9 @@ gfx_debug_vxo::gfx_debug_vxo(vx_info ivxi, bool iis_submesh) : gfx_vxo(ivxi, iis
 {
 }
 
-void gfx_debug_vxo::draw_in_sync(mws_sp<gfx_camera> icamera)
+void gfx_debug_vxo::draw_in_sync(mws_sp<gfx_camera> i_camera)
 {
-   gfx_vxo::draw_in_sync(icamera);
+   gfx_vxo::draw_in_sync(i_camera);
 }
 
 
@@ -25,13 +25,13 @@ void gfx_obj_vxo::operator=(const std::string& imesh_name)
    set_mesh_name(imesh_name);
 }
 
-//void gfx_obj_mesh::draw_in_sync(mws_sp<gfx_camera> icamera)
+//void gfx_obj_mesh::draw_in_sync(mws_sp<gfx_camera> i_camera)
 //{
 //	std::vector<mws_sp<gfx_mesh> >::iterator it = mesh_list.begin();
 //
 //	for(; it != mesh_list.end(); it++)
 //	{
-//		(*it)->draw_in_sync(icamera);
+//		(*it)->draw_in_sync(i_camera);
 //	}
 //}
 

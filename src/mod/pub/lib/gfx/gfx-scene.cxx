@@ -85,8 +85,8 @@ void gfx_node::attach(mws_sp<gfx_node> inode)
    {
       if (inode->node_type == camera_node)
       {
-         mws_sp<gfx_camera> icamera = static_pointer_cast<gfx_camera>(inode);
-         root.lock()->add_camera_node(icamera);
+         mws_sp<gfx_camera> i_camera = static_pointer_cast<gfx_camera>(inode);
+         root.lock()->add_camera_node(i_camera);
       }
 
       children.push_back(inode);
@@ -104,9 +104,9 @@ void gfx_node::detach()
    {
       if (node_type == camera_node)
       {
-         mws_sp<gfx_camera> icamera = static_pointer_cast<gfx_camera>(get_mws_sp());
+         mws_sp<gfx_camera> i_camera = static_pointer_cast<gfx_camera>(get_mws_sp());
 
-         root.lock()->remove_camera_node(icamera);
+         root.lock()->remove_camera_node(i_camera);
       }
 
       parent_node->children.erase(std::find(parent_node->children.begin(), parent_node->children.end(), get_mws_sp()));
@@ -389,12 +389,12 @@ void gfx_scene::post_draw()
    }
 }
 
-void gfx_scene::add_camera_node(mws_sp<gfx_camera> icamera)
+void gfx_scene::add_camera_node(mws_sp<gfx_camera> i_camera)
 {
-   camera_list.push_back(icamera);
+   camera_list.push_back(i_camera);
 }
 
-void gfx_scene::remove_camera_node(mws_sp<gfx_camera> icamera)
+void gfx_scene::remove_camera_node(mws_sp<gfx_camera> i_camera)
 {
-   camera_list.erase(std::find(camera_list.begin(), camera_list.end(), icamera));
+   camera_list.erase(std::find(camera_list.begin(), camera_list.end(), i_camera));
 }

@@ -658,6 +658,6 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gf
    is_valid_state = true;
 }
 
-gfx_tex_cube_map::gfx_tex_cube_map(uint32 isize, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_cube_map::gfx_tex_cube_map(uint32 i_size, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
 }

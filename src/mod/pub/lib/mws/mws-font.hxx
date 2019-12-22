@@ -11,13 +11,30 @@ class font_db_impl;
 class mws_dim;
 
 
-class mws_font : public enable_shared_from_this < mws_font >
+enum class mws_font_rendermode
+{
+   e_normal,
+   e_outline_edge,
+   e_outline_positive,
+   e_outline_negative,
+   e_signed_distance_field
+};
+
+
+struct mws_font_markup
+{
+   mws_font_rendermode rendermode = mws_font_rendermode::e_normal;
+   float outline_thickness = 0.f;
+};
+
+
+class mws_font : public enable_shared_from_this<mws_font>
 {
 public:
-   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, float i_size = 0.f);
-   static mws_sp<mws_font> nwi(float i_size, const std::string& i_font_path = "");
-   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height);
-   static mws_sp<mws_font> nwi(const std::string& i_font_path, const mws_dim& i_height);
+   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, float i_size = 0.f, const mws_font_markup* i_markup = nullptr);
+   static mws_sp<mws_font> nwi(float i_size, const std::string& i_font_path = "", const mws_font_markup* i_markup = nullptr);
+   static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
+   static mws_sp<mws_font> nwi(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
    mws_sp<mws_font> get_inst();
    const std::string& get_file_name()const;
    const std::string& get_full_path()const;
@@ -33,6 +50,8 @@ public:
    float get_text_height(const std::string& i_text);
    const gfx_color& get_color()const;
    void set_color(const gfx_color& icolor);
+   bool has_markup() const;
+   const mws_font_markup& get_markup() const;
 
 private:
    friend class font_db_impl;

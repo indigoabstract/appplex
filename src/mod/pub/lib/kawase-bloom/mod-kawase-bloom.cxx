@@ -83,7 +83,19 @@ namespace mod_kawase_bloom_ns
                mws_sp<gfx_tex> tex = input_ppb.get_tex();
                gfx::i()->rt.set_current_render_target(input_ppb.get_rt());
                input_ppb.get_rt()->clear_buffers();
-               ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_big);
+               //ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_big);
+               {
+                  mws_font_markup mk = { mws_font_rendermode::e_outline_positive, 2.5f };
+                  auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
+                  fnt_mk->set_color(gfx_color::colors::blue);
+                  ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
+               }
+               {
+                  mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 0.75f };
+                  auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
+                  fnt_mk->set_color(font_glow_color);
+                  ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
+               }
                ortho_cam->update_camera_state();
                gfx::i()->rt.set_current_render_target();
             }
@@ -91,6 +103,7 @@ namespace mod_kawase_bloom_ns
 
          mws_sp<gfx_tex> tex = input_ppb.get_tex();
          bloom = mws_kawase_bloom::nwi(tex);
+         //bloom->u_v1_mul_fact = 0.5f;
          bloom->update();
 
          // output pbb
@@ -110,9 +123,17 @@ namespace mod_kawase_bloom_ns
                gfx::i()->rt.set_current_render_target(output_ppb.get_rt());
                output_ppb.get_rt()->clear_buffers();
                fnt_big->set_color(gfx_color::colors::white);
-               ortho_cam->drawText(text, (bloom_tex->get_width() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big_height) / 2.f, fnt_big);
+               ortho_cam->set_text_blending(MV_ADD);
+               //ortho_cam->drawText(text, (bloom_tex->get_width() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big_height) / 2.f, fnt_big);
+               {
+                  mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 1.35f };
+                  auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
+                  fnt_mk->set_color(gfx_color::colors::white);
+                  ortho_cam->drawText(text, (bloom_tex->get_width() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
+               }
                ortho_cam->update_camera_state();
                output_ppb.get_quad()->draw_out_of_sync(ortho_cam);
+               ortho_cam->set_text_blending(MV_ALPHA);
                gfx::i()->rt.set_current_render_target();
             }
          }

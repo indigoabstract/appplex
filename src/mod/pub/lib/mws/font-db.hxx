@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm.hxx"
+#include "mws-font.hxx"
 #include <glm/fwd.hpp>
 #include <utility>
 
@@ -11,21 +12,10 @@ namespace ftgl
 }
 class mws_mod;
 class gfx_tex;
-class mws_font;
 class font_db_impl;
 class mws_dim;
 class mws_pt;
 class mws_px;
-
-
-enum class mws_font_rendermode
-{
-   e_normal,
-   e_outline_edge,
-   e_outline_positive,
-   e_outline_negative,
-   e_signed_distance_field
-};
 
 
 class font_glyph
@@ -127,7 +117,7 @@ public:
    glm::vec2 get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text);
    void store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
       const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count);
-   mws_sp<mws_font> load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height);
+   mws_sp<mws_font> load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
 
 private:
    friend class mws_mod;

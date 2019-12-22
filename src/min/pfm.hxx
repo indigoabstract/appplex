@@ -13,10 +13,10 @@
 
 #if defined PLATFORM_WINDOWS_PC
 
-//void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value);
+//void* operator new(std::size_t i_size, const std::nothrow_t& nothrow_value);
 //void operator delete(void* iptr, const std::nothrow_t& nothrow_constant);
 //
-//void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value);
+//void* operator new[](std::size_t i_size, const std::nothrow_t& nothrow_value);
 //void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant);
 
 #endif
@@ -272,7 +272,7 @@ namespace pfm_impl
       virtual void flush_impl() = 0;
       virtual void seek_impl(uint64 i_pos, int i_seek_pos);
       virtual uint64 tell_impl();
-      virtual int read_impl(uint8* i_buffer, int isize);
+      virtual int read_impl(uint8* i_buffer, int i_size);
       virtual int write_impl(const uint8* i_buffer, int i_size);
    };
 }
@@ -391,7 +391,7 @@ public:
       static std::string get_writable_path(std::string i_name = "");
       static std::string get_path(std::string i_name);
       static void load_res_file_map(mws_sp<mws_mod> i_mod);
-      //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& isize);
+      //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& i_size);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> i_file);
       static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string i_filename);
       static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> i_file);
@@ -402,7 +402,7 @@ public:
       friend class mws_mod;
 
       static mws_sp<std::vector<uint8> > load_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename);
-      //static shared_array<uint8> load_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, int& isize);
+      //static shared_array<uint8> load_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, int& i_size);
       static bool store_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, const uint8* i_res, int i_size);
       static bool store_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename, const std::vector<uint8>& i_res);
       static mws_sp<pfm_file> random_access(mws_sp<mws_mod> i_mod, std::string i_filename);

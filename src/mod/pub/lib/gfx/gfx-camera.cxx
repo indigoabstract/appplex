@@ -17,7 +17,7 @@ draw_context::draw_context(mws_sp<gfx_camera> icam)
    line_mesh = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
    (*line_mesh)[MP_SHADER_NAME] = gfx::c_o_sh_id;
    (*line_mesh)["u_v4_color"] = glm::vec4(0.f, 0, 1, 1.f);
-   (*line_mesh)[MP_DEPTH_TEST] = true;
+   (*line_mesh)[MP_DEPTH_TEST] = false;
    (*line_mesh)[MP_DEPTH_WRITE] = true;
    (*line_mesh)[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
    (*line_mesh)[MP_BLENDING] = MV_ALPHA;
@@ -177,10 +177,10 @@ public:
 class draw_box_op : public draw_op
 {
 public:
-   void push_data(mws_sp<rw_sequence> seq, glm::vec3& iposition, glm::vec3& isize, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& iposition, glm::vec3& i_size, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
    {
       position = iposition;
-      size = isize;
+      size = i_size;
       orientation = iorientation;
       color = icolor;
       thickness = ithickness;
@@ -380,11 +380,11 @@ public:
 class draw_plane_op : public draw_op
 {
 public:
-   void push_data(mws_sp<rw_sequence> seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& isize, const glm::vec4& icolor)
+   void push_data(mws_sp<rw_sequence> seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& i_size, const glm::vec4& icolor)
    {
       center = icenter;
       look_at_dir = ilook_at_dir;
-      size = isize;
+      size = i_size;
       color = icolor;
       seq->w.write_pointer(this);
       write_data(seq);

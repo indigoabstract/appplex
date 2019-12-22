@@ -28,10 +28,10 @@ namespace ns_mws_camera
          tx = text;
          x = ix;
          y = iy;
-         font_idx = fonts.size();
          fonts.push_back(ifont);
          seq->w.write_pointer(this);
          write_data(seq);
+         font_idx++;
       }
 
       virtual void read_data(mws_sp<rw_sequence> seq)
@@ -72,6 +72,7 @@ namespace ns_mws_camera
          tx_vxo->draw_in_sync(idc->get_cam());
          fonts.clear();
          tx.clear();
+         font_idx = 0;
       }
 
       void set_text_blending(const std::string& i_blend_type)
@@ -83,7 +84,7 @@ namespace ns_mws_camera
       std::string tx;
       float x;
       float y;
-      int font_idx;
+      int font_idx = 0;
       // hold refs to the fonts, so they don't get destroyed before they're used for drawing
       std::vector<mws_sp<mws_font> > fonts;
 

@@ -124,8 +124,8 @@ public:
 
 private:
    friend class gfx_node;
-   void add_camera_node(mws_sp<gfx_camera> icamera);
-   void remove_camera_node(mws_sp<gfx_camera> icamera);
+   void add_camera_node(mws_sp<gfx_camera> i_camera);
+   void remove_camera_node(mws_sp<gfx_camera> i_camera);
 
    std::vector<mws_sp<gfx_camera> > camera_list;
    std::vector<gfx_param> plist;

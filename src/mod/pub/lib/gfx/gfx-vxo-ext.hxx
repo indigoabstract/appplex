@@ -8,7 +8,7 @@ class gfx_debug_vxo : public gfx_vxo
 public:
    gfx_debug_vxo(vx_info ivxi, bool iis_submesh = false);
 
-   virtual void draw_in_sync(mws_sp<gfx_camera> icamera);
+   virtual void draw_in_sync(mws_sp<gfx_camera> i_camera);
 };
 
 
@@ -17,7 +17,7 @@ class gfx_obj_vxo : public gfx_vxo
 public:
    gfx_obj_vxo();
    void operator=(const std::string& imesh_name);
-   //virtual void draw_in_sync(mws_sp<gl_camera> icamera);
+   //virtual void draw_in_sync(mws_sp<gl_camera> i_camera);
 
    //std::vector<mws_sp<gl_mesh> > mesh_list;
    bool is_loaded;

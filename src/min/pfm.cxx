@@ -456,7 +456,7 @@ namespace pfm_impl
       return file;
    }
 
-   void put_res_file(const std::string& i_filename, mws_sp<pfm_file> ifile)
+   void put_res_file(const std::string& i_filename, mws_sp<pfm_file> i_file)
    {
       auto it = res_files_map->find(i_filename);
 
@@ -467,7 +467,7 @@ namespace pfm_impl
          mws_throw mws_exception(msg.c_str());
       }
 
-      (*res_files_map)[i_filename] = ifile;
+      (*res_files_map)[i_filename] = i_file;
    }
 
    pfm_file_impl::pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
@@ -540,44 +540,44 @@ namespace pfm_impl
       return is_eof != 0;
    }
 
-   void pfm_file_impl::seek(uint64 ipos)
+   void pfm_file_impl::seek(uint64 i_pos)
    {
       check_state();
 
-      seek_impl(ipos, SEEK_SET);
-      file_pos = ipos;
+      seek_impl(i_pos, SEEK_SET);
+      file_pos = i_pos;
    }
 
-   int pfm_file_impl::read(std::vector<uint8>& ibuffer)
+   int pfm_file_impl::read(std::vector<uint8>& i_buffer)
    {
       check_state();
 
-      ibuffer.resize((size_t)length());
+      i_buffer.resize((size_t)length());
 
-      return read(begin_ptr(ibuffer), ibuffer.size());
+      return read(begin_ptr(i_buffer), i_buffer.size());
    }
 
-   int pfm_file_impl::write(const std::vector<uint8>& ibuffer)
+   int pfm_file_impl::write(const std::vector<uint8>& i_buffer)
    {
       check_state();
 
-      return write(begin_ptr(ibuffer), ibuffer.size());
+      return write(begin_ptr(i_buffer), i_buffer.size());
    }
 
-   int pfm_file_impl::read(uint8* ibuffer, int isize)
+   int pfm_file_impl::read(uint8* i_buffer, int i_size)
    {
       check_state();
 
-      int bytesread = read_impl(ibuffer, isize);
+      int bytesread = read_impl(i_buffer, i_size);
 
       return bytesread;
    }
 
-   int pfm_file_impl::write(const uint8* ibuffer, int isize)
+   int pfm_file_impl::write(const uint8* i_buffer, int i_size)
    {
       check_state();
 
-      int byteswritten = write_impl(ibuffer, isize);
+      int byteswritten = write_impl(i_buffer, i_size);
 
       return byteswritten;
    }
@@ -592,9 +592,9 @@ namespace pfm_impl
       }
    }
 
-   void pfm_file_impl::seek_impl(uint64 ipos, int iseek_pos)
+   void pfm_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
    {
-      fseek(get_file_impl(), (long)ipos, iseek_pos);
+      fseek(get_file_impl(), (long)i_pos, i_seek_pos);
    }
 
    uint64 pfm_file_impl::tell_impl()
@@ -602,14 +602,14 @@ namespace pfm_impl
       return ftell(get_file_impl());
    }
 
-   int pfm_file_impl::read_impl(uint8* ibuffer, int isize)
+   int pfm_file_impl::read_impl(uint8* i_buffer, int i_size)
    {
-      return fread(ibuffer, 1, isize, get_file_impl());
+      return fread(i_buffer, 1, i_size, get_file_impl());
    }
 
-   int pfm_file_impl::write_impl(const uint8* ibuffer, int isize)
+   int pfm_file_impl::write_impl(const uint8* i_buffer, int i_size)
    {
-      return fwrite(ibuffer, 1, isize, get_file_impl());
+      return fwrite(i_buffer, 1, i_size, get_file_impl());
    }
 }
 
@@ -658,20 +658,20 @@ mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string i_root_d
    return inst;
 }
 
-mws_sp<pfm_file> pfm_file::get_inst(mws_sp<pfm_impl::pfm_file_impl> iimpl)
+mws_sp<pfm_file> pfm_file::get_inst(mws_sp<pfm_impl::pfm_file_impl> i_impl)
 {
    mws_sp<pfm_file> inst;
 
    if (pfm_impl::res_files_map)
       // res map initialized
    {
-      inst = pfm_impl::get_res_file(iimpl->ppath.get_file_name());
+      inst = pfm_impl::get_res_file(i_impl->ppath.get_file_name());
    }
 
    if (!inst)
    {
       inst = mws_sp<pfm_file>(new pfm_file());
-      inst->io.impl = iimpl;
+      inst->io.impl = i_impl;
    }
 
    return inst;
@@ -796,38 +796,38 @@ bool pfm_file::io_op::reached_eof() const
    return impl->reached_eof();
 }
 
-void pfm_file::io_op::seek(uint64 ipos)
+void pfm_file::io_op::seek(uint64 i_pos)
 {
-   impl->seek(ipos);
+   impl->seek(i_pos);
 }
 
-int pfm_file::io_op::read(std::vector<uint8>& ibuffer)
+int pfm_file::io_op::read(std::vector<uint8>& i_buffer)
 {
-   return impl->read(ibuffer);
+   return impl->read(i_buffer);
 }
 
-int pfm_file::io_op::write(const std::vector<uint8>& ibuffer)
+int pfm_file::io_op::write(const std::vector<uint8>& i_buffer)
 {
-   return impl->write(ibuffer);
+   return impl->write(i_buffer);
 }
 
-int pfm_file::io_op::read(uint8* ibuffer, int isize)
+int pfm_file::io_op::read(uint8* i_buffer, int i_size)
 {
-   return impl->read(ibuffer, isize);
+   return impl->read(i_buffer, i_size);
 }
 
-int pfm_file::io_op::write(const uint8* ibuffer, int isize)
+int pfm_file::io_op::write(const uint8* i_buffer, int i_size)
 {
-   return impl->write(ibuffer, isize);
+   return impl->write(i_buffer, i_size);
 }
 
 
-mws_sp<pfm_path> pfm_path::get_inst(std::string ifile_path, std::string i_aux_root_dir)
+mws_sp<pfm_path> pfm_path::get_inst(std::string i_file_path, std::string i_aux_root_dir)
 {
    struct make_shared_enabler : public pfm_path {};
    auto inst = std::make_shared<make_shared_enabler>();
 
-   inst->filename = ifile_path;
+   inst->filename = i_file_path;
    inst->aux_root_dir = i_aux_root_dir;
    inst->make_standard_path();
 
@@ -1007,9 +1007,9 @@ void pfm_path::make_standard_path()
       }
    }
 }
-void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > ifile_list, bool irecursive) const
+void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const
 {
-   if (irecursive)
+   if (i_recursive)
    {
       auto it = pfm_impl::res_files_map->begin();
 
@@ -1020,7 +1020,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
 
          if (mws_str::starts_with(rdir, ibase_dir))
          {
-            ifile_list->push_back(file);
+            i_file_list->push_back(file);
          }
       }
    }
@@ -1034,7 +1034,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
 
          if (file->get_root_directory() == ibase_dir)
          {
-            ifile_list->push_back(file);
+            i_file_list->push_back(file);
          }
       }
    }
@@ -1178,7 +1178,7 @@ void pfm::screen::flip_screen()
 }
 
 
-//shared_array<uint8> pfm::storage::load_res_byte_array(string i_filename, int& isize)
+//shared_array<uint8> pfm::storage::load_res_byte_array(string i_filename, int& i_size)
 //{
 //	shared_array<uint8> res;
 //	path p(i_filename.c_str());
@@ -1191,10 +1191,10 @@ void pfm::screen::flip_screen()
 //	if(exists(p))
 //	{
 //		mws_sp<random_access_file> fs = get_random_access(p);
-//		isize = file_size(p);
+//		i_size = file_size(p);
 //
-//		res = shared_array<uint8>(new uint8[isize]);
-//		fs->read(res.get(), isize);
+//		res = shared_array<uint8>(new uint8[i_size]);
+//		fs->read(res.get(), i_size);
 //	}
 //
 //	return res;
@@ -1307,17 +1307,17 @@ void pfm::filesystem::load_res_file_map(mws_sp<mws_mod> i_mod)
    }
 }
 
-mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(mws_sp<pfm_file> ifile)
+mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(mws_sp<pfm_file> i_file)
 {
    mws_sp<vector<uint8> > res;
 
-   if (ifile->io.open())
+   if (i_file->io.open())
    {
-      int size = (int)ifile->length();
+      int size = (int)i_file->length();
 
       res = mws_sp<vector<uint8> >(new vector<uint8>(size));
-      ifile->io.read(begin_ptr(res), size);
-      ifile->io.close();
+      i_file->io.read(begin_ptr(res), size);
+      i_file->io.close();
    }
 
    return res;
@@ -1330,18 +1330,18 @@ mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string i_filenam
    return load_res_byte_vect(fs);
 }
 
-mws_sp<std::string> pfm::filesystem::load_res_as_string(mws_sp<pfm_file> ifile)
+mws_sp<std::string> pfm::filesystem::load_res_as_string(mws_sp<pfm_file> i_file)
 {
    mws_sp<std::string> text;
 
-   if (ifile->io.open("rt"))
+   if (i_file->io.open("rt"))
    {
-      int size = (int)ifile->length();
+      int size = (int)i_file->length();
       auto res = std::make_shared<vector<uint8> >(size);
       const char* res_bytes = (const char*)begin_ptr(res);
-      int text_size = ifile->io.read(begin_ptr(res), size);
+      int text_size = i_file->io.read(begin_ptr(res), size);
 
-      ifile->io.close();
+      i_file->io.close();
       text = std::make_shared<std::string>(res_bytes, text_size);
    }
 
@@ -1355,7 +1355,7 @@ mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string i_filename)
    return load_res_as_string(fs);
 }
 
-//shared_array<uint8> pfm::storage::load_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, int& isize)
+//shared_array<uint8> pfm::storage::load_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, int& i_size)
 //{
 //	if(!i_mod)
 //	{
@@ -1364,7 +1364,7 @@ mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string i_filename)
 //
 //	i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
 //
-//	return load_res_byte_array(i_filename, isize);
+//	return load_res_byte_array(i_filename, i_size);
 //}
 
 mws_sp<std::vector<uint8> > pfm::filesystem::load_mod_byte_vect(mws_sp<mws_mod> i_mod, string i_filename)
@@ -1379,7 +1379,7 @@ mws_sp<std::vector<uint8> > pfm::filesystem::load_mod_byte_vect(mws_sp<mws_mod> 
    return load_res_byte_vect(i_filename);
 }
 
-bool pfm::filesystem::store_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, const uint8* ires, int isize)
+bool pfm::filesystem::store_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, const uint8* ires, int i_size)
 {
    if (!i_mod)
    {
@@ -1393,7 +1393,7 @@ bool pfm::filesystem::store_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filen
 
    //if(exists(p))
    //{
-   //	fs->write(ires, isize);
+   //	fs->write(ires, i_size);
 
    //	return true;
    //}
@@ -1487,38 +1487,38 @@ void mws_print_impl(const char* i_format, ...)
 
 #if defined PLATFORM_WINDOWS_PC
 
-//void* operator new(std::size_t isize, const std::nothrow_t& nothrow_value)
+//void* operator new(std::size_t i_size, const std::nothrow_t& nothrow_value)
 //{
 //	void* ptr = 0;
 //
-//	if (isize > 0)
+//	if (i_size > 0)
 //	{
-//		ptr = _aligned_malloc(isize, 16);
+//		ptr = _aligned_malloc(i_size, 16);
 //
 //		mws_assert(ptr);
 //
 //		if (ptr)
 //		{
-//			memset(ptr, 0, isize);
+//			memset(ptr, 0, i_size);
 //		}
 //	}
 //
 //	return ptr;
 //}
 //
-//void* operator new[](std::size_t isize, const std::nothrow_t& nothrow_value)
+//void* operator new[](std::size_t i_size, const std::nothrow_t& nothrow_value)
 //{
 //	void* ptr = 0;
 //
-//	if (isize > 0)
+//	if (i_size > 0)
 //	{
-//		ptr = _aligned_malloc(isize, 16);
+//		ptr = _aligned_malloc(i_size, 16);
 //
 //		mws_assert(ptr);
 //
 //		if (ptr)
 //		{
-//			memset(ptr, 0, isize);
+//			memset(ptr, 0, i_size);
 //		}
 //	}
 //

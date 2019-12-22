@@ -627,9 +627,9 @@ mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bo
    return tex_cube_map;
 }
 
-mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 isize)
+mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 i_size)
 {
-   mws_sp<gfx_tex_cube_map> tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(isize));
+   mws_sp<gfx_tex_cube_map> tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(i_size));
 
    gi()->tex_list.push_back(tex_cube_map);
 

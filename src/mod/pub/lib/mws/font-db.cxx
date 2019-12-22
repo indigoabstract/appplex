@@ -254,16 +254,9 @@ public:
       }
    }
 
-   uint64 get_key(const std::string& i_font_file_name, float i_size)
+   std::string get_key(const std::string& i_font_file_name, float i_size)
    {
-      uint32* x = (uint32*)&i_font_file_name;
-      float t = i_size;
-      uint32* y = (uint32*)&t;
-      uint64 x64 = *x & 0xffffffff;
-      uint64 y64 = *y & 0xffffffff;
-      uint64 r = (x64 << 32) | y64;
-
-      return r;
+      return i_font_file_name + mws_to_str_fmt("%.2f", i_size);
    }
 
    mws_sp<mws_font> get_global_font() const
@@ -320,7 +313,8 @@ public:
       {
          const std::string& font_file_name = (font_file_name_0.empty()) ? global_font->get_file_name() : font_file_name_0;
          float font_size = i_font->get_size();
-         uint64 key = get_key(font_file_name, font_size);
+         bool has_markup = i_font->has_markup();
+         std::string key = (has_markup) ? mws_to_str_fmt("markup-font-%d", markup_idx++) : get_key(font_file_name, font_size);
          fnt_cache = font_size_ht[key];
 
          if (!fnt_cache)
@@ -366,6 +360,13 @@ public:
             }
 
             font_size_ht[key] = fnt_cache;
+
+            if (has_markup)
+            {
+               const mws_font_markup& mk = i_font->get_markup();
+               tex_font->rendermode = static_cast<ftgl::rendermode_t>(mk.rendermode);
+               tex_font->outline_thickness = mk.outline_thickness;
+            }
          }
 
          i_font->fnt_cache = fnt_cache;
@@ -455,7 +456,7 @@ public:
    mws_sp<gfx_shader> text_shader;
    mws_sp<gfx_tex> glyph_atlas;
    std::vector<font_glyph> glyph_vect;
-   std::unordered_map<uint64, mws_sp<font_cache>> font_size_ht;
+   std::unordered_map<std::string, mws_sp<font_cache>> font_size_ht;
    std::unordered_map<std::string, font_info> font_name_ht;
    // hold weak ref to font data so the same font with different sizes can use the same font data.
    // this way, when all sizes/instances of particular font are deleted, the common font data is also deleted.
@@ -465,6 +466,7 @@ public:
    mws_sp<mws_font> global_font;
    bool reload_atlas = false;
    uint32 pow_of_two = 0;
+   static inline uint32 markup_idx = 0;
 };
 
 
@@ -641,7 +643,7 @@ void font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_
    }
 }
 
-mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height)
+mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
    std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
    auto& ht = p->font_name_ht;
@@ -668,11 +670,11 @@ mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, co
             font_size_pt = fi.px_to_pt_mix.get_val_at(px_idx);
          }
 
-         return mws_font::nwi(font_size_pt, i_font_path);
+         return mws_font::nwi(font_size_pt, i_font_path, i_markup);
       }
    }
 
-   return mws_font::nwi(i_height.to_pt().val(), i_font_path);
+   return mws_font::nwi(i_height.to_pt().val(), i_font_path, i_markup);
 }
 
 font_db::font_db(uint32 i_pow_of_two)

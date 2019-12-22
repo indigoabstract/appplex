@@ -189,7 +189,7 @@ public:
       [itex_name-posx.png, itex_name-negx.png, itex_name-posy.png, itex_name-negy.png, itex_name-posz.png, itex_name-negz.png]
       */
       mws_sp<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
-      mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32 isize);
+      mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32 i_size);
       mws_sp<gfx_tex> get_texture_by_name(std::string i_filename);
       // returns an existing texture by that name, or creates an new one if it doesn't exist yet
       mws_sp<gfx_tex> load_tex(std::string iname);
