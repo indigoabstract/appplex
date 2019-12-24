@@ -4,7 +4,7 @@ default
 [
 	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
 	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ voronoi-keyboard ], exclusive [ true ], launch-mod [ true ], ],
+	start[ mod-list[ demo-fx ], exclusive [ true ], launch-mod [ true ], ],
 ],
 
 mod
@@ -40,6 +40,7 @@ mod
 	],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
+	demo-fx[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ] ],
 
 	@@[ npw ],
 	

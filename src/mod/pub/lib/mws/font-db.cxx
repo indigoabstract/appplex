@@ -410,6 +410,7 @@ public:
                {
                   pow_of_two++;
                   reload_atlas = true;
+                  mws_println("WARNING: font tex too small. reloading atlas with new pot size [ %d ]", pow_of_two);
                }
             }
 
