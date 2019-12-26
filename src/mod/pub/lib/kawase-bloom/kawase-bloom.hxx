@@ -11,11 +11,11 @@ class gfx_shader;
 class mws_kawase_bloom
 {
 public:
-   uint32 iteration_count = 19;
-   float u_v1_mul_fact = 0.745f;
    float sample_offset_start_val = 1.5f;
 
    static mws_sp<mws_kawase_bloom> nwi(mws_sp<gfx_tex> i_input_tex = nullptr);
+   void set_iter_count(uint32 i_iter_count, float i_weight_fact);
+   void set_iter_count(uint32 i_iter_count, const std::vector<float>& i_weight_fact);
    mws_sp<gfx_tex> get_blurred_tex() const;
    mws_sp<gfx_tex> get_bloom_tex() const;
    void init(mws_sp<gfx_tex> i_input_tex);
@@ -25,6 +25,9 @@ protected:
    mws_kawase_bloom();
    void init_shaders();
 
+   uint32 iteration_count = 0;
+   float weight_fact = 0.f;
+   std::vector<float> weight_fact_vect;
    mws_sp<gfx_camera> ortho_cam;
    mws_sp<gfx_tex> input_tex;
    mws_sp<gfx_quad_2d> input_quad;

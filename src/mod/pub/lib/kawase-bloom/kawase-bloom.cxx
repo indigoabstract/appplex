@@ -18,7 +18,32 @@ mws_sp<mws_kawase_bloom> mws_kawase_bloom::nwi(mws_sp<gfx_tex> i_input_tex)
    return inst;
 }
 
+void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, float i_weight_fact)
+{
+   if (i_iter_count == 0 || weight_fact <= 0.f)
+   {
+      mws_throw mws_exception("invalid arguments");
+   }
+
+   iteration_count = i_iter_count;
+   weight_fact = i_weight_fact;
+   weight_fact_vect.assign(iteration_count, weight_fact);
+}
+
+void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, const std::vector<float>& i_weight_fact)
+{
+   if (i_iter_count == 0 || i_weight_fact.size() != i_iter_count)
+   {
+      mws_throw mws_exception("invalid arguments");
+   }
+
+   iteration_count = i_iter_count;
+   weight_fact_vect = i_weight_fact;
+   weight_fact = 0.f;
+}
+
 mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return output_tex; }
+
 mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return accumulation_buff.get_tex(); }
 
 void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
@@ -97,14 +122,22 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
 
 void mws_kawase_bloom::update()
 {
+   if (iteration_count == 0)
+   {
+      mws_throw mws_exception("iteration_count must > 0");
+   }
+
+   if (weight_fact == 0.f && weight_fact_vect.size() != iteration_count)
+   {
+      mws_throw mws_exception("weights are set incorrectly");
+   }
+
    mws_sp<gfx_rt> rt = ping_pong_vect[1].get_rt();
 
    // put the input texture in input_tex ping_pong_vect[1].tex, to be used by ping_pong_vect[0]
    gfx::i()->rt.set_current_render_target(rt);
    input_quad->draw_out_of_sync(ortho_cam);
    gfx::i()->rt.set_current_render_target();
-   // set mul fact
-   (*accumulation_buff.get_quad())["u_v1_mul_fact"] = u_v1_mul_fact;
 
    for (uint32 k = 0; k < iteration_count; k++)
    {
@@ -116,6 +149,9 @@ void mws_kawase_bloom::update()
       rt.get_quad()->draw_out_of_sync(ortho_cam);
       output_tex = rt.get_tex();
       gfx::i()->rt.set_current_render_target(accumulation_buff.get_rt());
+      // set weight fact
+      (*accumulation_buff.get_quad())["u_v1_weight_fact"] = weight_fact_vect[k];
+      (*accumulation_buff.get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = output_tex;
       accumulation_buff.get_quad()->draw_out_of_sync(ortho_cam);
       gfx::i()->rt.set_current_render_target();
    }
@@ -168,13 +204,13 @@ void mws_kawase_bloom::init_shaders()
       {
           vec3 v3_col;
 	
-	      v3_col = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgb;
+	       v3_col = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgb;
           v3_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(u_v2_offset.x, -u_v2_offset.y)).rgb;
           v3_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(-u_v2_offset.x, u_v2_offset.y)).rgb;
           v3_col += texture(u_s2d_tex, v_v2_tex_coord - u_v2_offset).rgb;
           v3_col *= 0.25;
 
-	      v4_frag_color = vec4(v3_col, 1.0);
+	       v4_frag_color = vec4(v3_col, 1.0);
       }
       )"
       ));
@@ -216,14 +252,14 @@ void mws_kawase_bloom::init_shaders()
       layout(location = 0) out vec4 v4_frag_color;
 
       uniform sampler2D u_s2d_tex;
-      uniform float u_v1_mul_fact;
+      uniform float u_v1_weight_fact;
 
       smooth in vec2 v_v2_tex_coord;
 
       void main()
       {
-          vec3 v3_col = texture(u_s2d_tex, v_v2_tex_coord).rgb;
-          v3_col *= u_v1_mul_fact;
+            vec3 v3_col = texture(u_s2d_tex, v_v2_tex_coord).rgb;
+            v3_col *= u_v1_weight_fact;
 
 	      v4_frag_color = vec4(v3_col, 1.0);
       }

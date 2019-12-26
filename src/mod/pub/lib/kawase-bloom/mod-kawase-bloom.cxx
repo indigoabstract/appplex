@@ -66,8 +66,12 @@ namespace mod_kawase_bloom_ns
             ortho_cam->clear_depth = true;
          }
 
+         uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
+         mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
+         mws_px word_font_height(vkb_size / 5.f / 4.f, mws_dim::vertical);
          mws_sp<mws_font> fnt = ortho_cam->get_font();
-         mws_px fnt_big_px(60, mws_px::vertical);
+         //mws_px fnt_big_px(60, mws_px::vertical);
+         mws_px fnt_big_px = letter_font_height;
          float fnt_big_height = fnt_big_px.val();
          mws_sp<mws_font> fnt_big = mws_font::nwi(fnt, fnt_big_px);
          std::string text = "glowing text";
@@ -83,13 +87,13 @@ namespace mod_kawase_bloom_ns
                mws_sp<gfx_tex> tex = input_ppb.get_tex();
                gfx::i()->rt.set_current_render_target(input_ppb.get_rt());
                input_ppb.get_rt()->clear_buffers();
-               //ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_big);
-               {
-                  mws_font_markup mk = { mws_font_rendermode::e_outline_positive, 2.5f };
-                  auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
-                  fnt_mk->set_color(gfx_color::colors::blue);
-                  ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
-               }
+              // ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_big);
+               //{
+               //   mws_font_markup mk = { mws_font_rendermode::e_outline_positive, 2.5f };
+               //   auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
+               //   fnt_mk->set_color(gfx_color::colors::blue);
+               //   ortho_cam->drawText(text, (tex->get_width() - text_width) / 2.f, (tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
+               //}
                {
                   mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 0.75f };
                   auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
@@ -103,7 +107,11 @@ namespace mod_kawase_bloom_ns
 
          mws_sp<gfx_tex> tex = input_ppb.get_tex();
          bloom = mws_kawase_bloom::nwi(tex);
-         //bloom->u_v1_mul_fact = 0.5f;
+         std::vector<float> weight_fact =
+         {
+            0.125f, 0.125f, 0.125f, 0.125f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.5f, 1.5f, 1.5f, 1.5f, 2.f, 2.f
+         };
+         bloom->set_iter_count(weight_fact.size(), weight_fact);
          bloom->update();
 
          // output pbb
@@ -126,9 +134,9 @@ namespace mod_kawase_bloom_ns
                ortho_cam->set_text_blending(MV_ADD);
                //ortho_cam->drawText(text, (bloom_tex->get_width() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big_height) / 2.f, fnt_big);
                {
-                  mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 1.35f };
+                  mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 0.95f };
                   auto fnt_mk = mws_font::nwi(fnt_big, fnt_big->get_size(), &mk);
-                  fnt_mk->set_color(gfx_color::colors::white);
+                  fnt_mk->set_color(gfx_color::from_argb(0xffa5dfff));
                   ortho_cam->drawText(text, (bloom_tex->get_width() - text_width) / 2.f, (bloom_tex->get_height() - fnt_big_height) / 2.f, fnt_mk);
                }
                ortho_cam->update_camera_state();
@@ -186,7 +194,7 @@ namespace mod_kawase_bloom_ns
       virtual void update_view(mws_sp<mws_camera> i_g) override {}
 
       mws_sp<mws_kawase_bloom> bloom;
-      static const inline gfx_color font_glow_color = gfx_color::from_argb(0xff007fff);
+      static const inline gfx_color font_glow_color = gfx_color::from_argb(0xff257fff);
       mws_sp<mws_camera> ortho_cam;
       mws_gfx_ppb input_ppb;
       mws_gfx_ppb output_ppb;
