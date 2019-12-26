@@ -41,6 +41,7 @@ mod
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
 	demo-fx[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ] ],
+	robobo1221-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 
 	@@[ npw ],
 	

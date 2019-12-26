@@ -108,8 +108,8 @@ protected:
    void check_valid_state();
    void release();
 
-   bool is_valid_state;
-   bool is_external;
+   bool is_valid_state = false;
+   bool is_external = false;
    gfx_enum gl_tex_target;
    std::string	tex_name;
    gfx_uint texture_gl_id;
@@ -117,7 +117,7 @@ protected:
    int height;
    gfx_tex_types uni_tex_type;
    gfx_tex_params prm;
-   bool texture_updated;
+   bool texture_updated = false;
 };
 
 

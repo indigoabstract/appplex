@@ -233,12 +233,12 @@ int gfx_tex::get_texture_gl_id()
    return texture_gl_id;
 }
 
-void gfx_tex::set_texture_gl_id(int itexture_id)
+void gfx_tex::set_texture_gl_id(int i_texture_id)
 {
    check_valid_state();
    // only available for external textures
    assert(is_external);
-   texture_gl_id = itexture_id;
+   texture_gl_id = i_texture_id;
 }
 
 int gfx_tex::get_width()
@@ -261,7 +261,7 @@ void gfx_tex::set_dim(int i_width, int i_height)
     init_dimensions(i_width, i_height);
 }
 
-void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_index)
+void gfx_tex::send_uniform(const std::string iuniform_name, int i_active_tex_index)
 {
    check_valid_state();
 
@@ -271,18 +271,18 @@ void gfx_tex::send_uniform(const std::string iuniform_name, int iactive_tex_inde
    if (param_location != -1)
    {
       mws_report_gfx_errs();
-      glUniform1i(param_location, iactive_tex_index);
+      glUniform1i(param_location, i_active_tex_index);
       mws_report_gfx_errs();
-      set_active(iactive_tex_index);
+      set_active(i_active_tex_index);
       mws_report_gfx_errs();
    }
 }
 
-void gfx_tex::set_active(int itex_unit_index)
+void gfx_tex::set_active(int i_tex_unit_index)
 {
    check_valid_state();
    mws_report_gfx_errs();
-   glActiveTexture(GL_TEXTURE0 + itex_unit_index);
+   glActiveTexture(GL_TEXTURE0 + i_tex_unit_index);
    mws_report_gfx_errs();
    glBindTexture(gl_tex_target, texture_gl_id);
 
@@ -314,14 +314,14 @@ void gfx_tex::set_active(int itex_unit_index)
    mws_report_gfx_errs();
 }
 
-void gfx_tex::update(int iactive_tex_index, const char* ibb)
+void gfx_tex::update(int i_active_tex_index, const char* i_bb)
 {
    check_valid_state();
-   set_active(iactive_tex_index);
+   set_active(i_active_tex_index);
 
    if (!is_external && uni_tex_type == TEX_2D)
    {
-      glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, prm.get_format(), prm.get_type(), ibb);
+      glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, prm.get_format(), prm.get_type(), i_bb);
 
       glTexParameteri(gl_tex_target, GL_TEXTURE_MIN_FILTER, prm.gl_min_filter());
       glTexParameteri(gl_tex_target, GL_TEXTURE_MAG_FILTER, prm.gl_mag_filter());
@@ -388,14 +388,11 @@ void gfx_tex::reload()
 gfx_tex::gfx_tex(const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
-   is_external = false;
-   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
-   is_external = false;
    uni_tex_type = TEX_2D;
    set_texture_name(i_tex_name);
 
@@ -439,7 +436,6 @@ gfx_tex::gfx_tex(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx
 
    mws_report_gfx_errs();
    is_valid_state = true;
-   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
@@ -461,13 +457,11 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_heig
 
    mws_report_gfx_errs();
    is_valid_state = true;
-   texture_updated = false;
 }
 
 gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
-   is_external = false;
    uni_tex_type = iuni_tex_type;
    set_texture_name(itex_name);
    init_dimensions(i_width, i_height);
@@ -509,7 +503,6 @@ gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types
 
    mws_report_gfx_errs();
    is_valid_state = true;
-   texture_updated = false;
 }
 
 void gfx_tex::set_texture_name(std::string itex_name)
