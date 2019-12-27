@@ -300,6 +300,8 @@ class mws_vrn_data
 public:
    struct settings
    {
+      uint32 original_diag_width = 0;
+      uint32 original_diag_height = 0;
       uint32 diag_width = 0;
       uint32 diag_height = 0;
       bool kernel_points_visible = false;

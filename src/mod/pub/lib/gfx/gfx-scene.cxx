@@ -165,7 +165,7 @@ mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & iname)
       }
    }
 
-   return mws_sp<gfx_node>();
+   return nullptr;
 }
 
 void gfx_node::update_recursive(const glm::mat4 & i_global_tf_mx, bool i_update_global_mx)

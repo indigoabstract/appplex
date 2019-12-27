@@ -86,7 +86,6 @@ mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_f
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
-   diag_dim = glm::vec2(0.f);
 }
 
 vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
@@ -140,14 +139,7 @@ void mws_vkb_impl::setup()
       {KEY_SPACE, ""/*"space"*/},
    };
    {
-      uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
-      mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
-      mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::vertical);
-      mws_sp<mws_font> font = font_db::inst()->get_global_font();
-      mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height);
-      mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height);
-
-      set_font(letter_font, word_font);
+      setup_font_dimensions();
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
       vk->toggle_voronoi_object(obj_type_mask);
       vk->init();
@@ -300,11 +292,26 @@ void mws_vkb_impl::on_update_state()
 
 void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 {
-   vk->resize(i_width, i_height);
-   vkb_file_info vkb_fi = get_closest_match(i_width, i_height);
-   mws_sp<pfm_file> file = vkb_fi.file;
+   mws_sp<gfx_tex> kb_tex = key_border_tex.get_tex();
 
-   load_map(file->get_file_name());
+   if (!kb_tex || (kb_tex->get_width() != i_width || kb_tex->get_height() != i_height))
+   {
+      vkb_file_info vkb_fi = get_closest_match(i_width, i_height);
+      mws_sp<pfm_file> file = vkb_fi.file;
+      std::string new_filename = file->get_file_name();
+
+      // check if 'loaded_filename' is the best fit for current resolution and load 'new_filename' if not
+      if (loaded_filename != new_filename)
+      {
+         load_map(new_filename);
+      }
+      else
+      {
+         vk->resize(i_width, i_height);
+      }
+
+      build_keys_tex();
+   }
 }
 
 vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
@@ -461,14 +468,14 @@ void mws_vkb_impl::load_map(std::string i_filename)
    auto db = kxmd::nwi(data->c_str(), data->length());
    kv_ref main = db->main();
    uint32 point_count = 0;
-   glm::vec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::ivec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
    glm::vec2 resize_fact(0.f);
 
    // size
    {
       kv_ref size = main["size"];
       diag_dim = glm::vec2(mws_to<float>(size[0].key()), mws_to<float>(size[1].key()));
-      resize_fact = screen_dim / diag_dim;
+      resize_fact = glm::vec2(screen_dim) / diag_dim;
    }
    // pages
    {
@@ -557,6 +564,10 @@ void mws_vkb_impl::load_map(std::string i_filename)
             key_coord_pos.push_back(dim);
          }
 
+         vk->diag_data->info.original_diag_width = screen_dim.x;
+         vk->diag_data->info.original_diag_height = screen_dim.y;
+         vk->diag_data->info.diag_width = screen_dim.x;
+         vk->diag_data->info.diag_height = screen_dim.y;
          vk->set_kernel_points(key_coord_pos);
       }
    }
@@ -672,6 +683,14 @@ void mws_vkb_impl::build_cell_border_tex()
 
 void mws_vkb_impl::build_keys_tex()
 {
+   if (key_border_quad)
+   {
+      key_border_quad->detach();
+      keys_bg_outline_quad->detach();
+      keys_quad->detach();
+   }
+
+   setup_font_dimensions();
    keys_tex.resize((uint32)key_mod_types::count);
    uint32 key_map_size = keys_tex.size();
    glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
@@ -681,7 +700,7 @@ void mws_vkb_impl::build_keys_tex()
 
    // key border
    {
-      key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s", vkb_type.c_str()), scr_dim.x, scr_dim.y);
+      key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s-%d-%d", vkb_type.c_str()), scr_dim.x, scr_dim.y);
       key_border_quad = gfx_quad_2d::nwi();
 
       auto& rvxo = *key_border_quad;
@@ -742,7 +761,7 @@ void mws_vkb_impl::build_keys_tex()
    for (uint32 k = 0; k < key_map_size; k++)
    {
       mws_gfx_ppb& ppb = keys_tex[k];
-      ppb.init(mws_to_str_fmt("keys-map-%s-%d", vkb_type.c_str(), k), scr_dim.x, scr_dim.y);
+      ppb.init(mws_to_str_fmt("keys-map-%s-%d-%d-%d", vkb_type.c_str(), k, scr_dim.x, scr_dim.y), scr_dim.x, scr_dim.y);
    }
 
    // keys
@@ -990,6 +1009,18 @@ void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
          st.pressed_count = 0;
       }
    }
+}
+
+void mws_vkb_impl::setup_font_dimensions()
+{
+   uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
+   mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
+   mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::vertical);
+   mws_sp<mws_font> font = font_db::inst()->get_global_font();
+   mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height);
+   mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height);
+
+   set_font(letter_font, word_font);
 }
 
 void mws_vkb_impl::set_key_transparency(float i_alpha)
@@ -1689,6 +1720,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       vkb_file_store = impl = nwi_impl();
 
       (w > h) ? vkb_landscape = impl : vkb_portrait = impl;
+      impl->start_anim();
    }
    // if current impl is not null, but the size has changed, we need to do some (elaborate) checking..
    else if (size_changed)
@@ -1703,14 +1735,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       // if inst is not null, then we already have the landscape or portrait instance we need, but we have to check if it needs to be modified
       if (inst)
       {
-         vkb_file_info vfi = vkb_file_store->get_closest_match(w, h);
-         std::string filename = vfi.file->get_file_name();
-
-         // check if 'inst->loaded_filename' is the best fit for current resolution and load 'filename' if not
-         if (inst->loaded_filename != filename)
-         {
-            inst->on_resize(w, h);
-         }
+         inst->on_resize(w, h);
 
          if (inst != impl)
          {
@@ -1732,6 +1757,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
 
       (w > h) ? vkb_landscape = inst : vkb_portrait = inst;
       impl = inst;
+      impl->start_anim();
    }
 
    return impl;
@@ -1749,7 +1775,6 @@ mws_sp<mws_vkb_impl> mws_vkb::nwi_impl()
    inst->build_cell_border_tex();
    inst->set_on_top();
    inst->on_resize(w, h);
-   inst->build_keys_tex();
 
    return inst;
 }

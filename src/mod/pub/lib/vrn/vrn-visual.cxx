@@ -1027,8 +1027,26 @@ void mws_vrn_main::update_geometry()
 
 void mws_vrn_main::resize(uint32 i_diag_width, uint32 i_diag_height)
 {
+   mws_assert(i_diag_width > 0 && i_diag_height > 0);
+   const std::vector<float>& vx = vgen->vx;
+   const std::vector<float>& vy = vgen->vy;
    diag_data->info.diag_width = i_diag_width;
    diag_data->info.diag_height = i_diag_height;
+
+   uint32 size = vx.size();
+   glm::vec2 resize_fact = glm::vec2(diag_data->info.diag_width, diag_data->info.diag_height) /
+      glm::vec2(diag_data->info.original_diag_width, diag_data->info.original_diag_height);
+   std::vector<float> kvx(size);
+   std::vector<float> kvy(size);
+
+   for (uint32 k = 0; k < size; k++)
+   {
+      kvx[k] = vx[k] * resize_fact.x;
+      kvy[k] = vy[k] * resize_fact.y;
+   }
+
+   vgen->voronoi_diag_impl->init_data(diag_data, kvx, kvy);
+   update_diag();
 }
 
 const mws_sp<mws_vrn_data> mws_vrn_main::get_diag_data() const { return diag_data; }
@@ -1044,12 +1062,14 @@ void mws_vrn_main::update_nexus_pairs_geometry()
 
 void mws_vrn_main::set_kernel_points(std::vector<glm::vec2> i_kernel_points)
 {
-   std::vector<float> vx, vy;
+   std::vector<float>& vx = vgen->vx;
+   std::vector<float>& vy = vgen->vy;
+   uint32 size = i_kernel_points.size();
 
-   vx.resize(i_kernel_points.size());
-   vy.resize(i_kernel_points.size());
+   vx.resize(size);
+   vy.resize(size);
 
-   for (uint32 k = 0; k < i_kernel_points.size(); k++)
+   for (uint32 k = 0; k < size; k++)
    {
       vx[k] = i_kernel_points[k].x;
       vy[k] = i_kernel_points[k].y;

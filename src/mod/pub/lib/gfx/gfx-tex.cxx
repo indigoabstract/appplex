@@ -531,7 +531,7 @@ int gfx_tex::gen_texture_gl_id()
 
    glGenTextures(1, &tex_id);
 
-   mws_print("gfx-info gen_texture_gl_id [%d]\n", tex_id);
+   mws_print("gfx-info: gen_texture_gl_id [ %d ]\n", tex_id);
    mws_report_gfx_errs();
 
    return tex_id;
@@ -552,7 +552,7 @@ void gfx_tex::release()
       {
          glDeleteTextures(1, &texture_gl_id);
 
-         mws_print("gfx-info del-tex GlTex2D.release tex-id[%d]\n", texture_gl_id);
+         mws_print("gfx-info: released tex name[ %s ] id[ %d ]\n", tex_name.c_str(), texture_gl_id);
       }
 
       gi()->remove_gfx_obj(this);

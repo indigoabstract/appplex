@@ -218,11 +218,11 @@ public:
 
          if (fsh_file_name.length() > 0)
          {
-            mws_print("shader [%s, %s] compiled.\n", vsh_name.c_str(), fsh_name.c_str());
+            mws_print("gfx-info: shader [ %s, %s ] compiled.\n", vsh_name.c_str(), fsh_name.c_str());
          }
          else
          {
-            mws_print("shader [%s] compiled.\n", program_name.c_str());
+            mws_print("gfx-info: shader [ %s ] compiled.\n", program_name.c_str());
          }
       }
          mws_catch(mws_exception e)
@@ -842,7 +842,7 @@ void gfx_shader::release()
    if (was_validated)
    {
       gi()->remove_gfx_obj(this);
-      mws_print("shader [%s] released.\n", get_program_name().c_str());
+      mws_print("gfx-info: shader [ %s ] released.\n", get_program_name().c_str());
    }
 
    mws_report_gfx_errs();
