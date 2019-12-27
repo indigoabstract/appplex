@@ -2,6 +2,8 @@
 
 #include "pfm-def.h"
 #include "gfx-state-const.hxx"
+#include <glm/vec4.hpp>
+
 
 class gl_state_impl;
 
@@ -52,6 +54,7 @@ public:
    void enable_state(gfx_param iplist[], int ielem_count = 0);
    void disable_state(gl::rsv_states istate);
    void disable_state(gfx_param iplist[], int ielem_count = 0);
+   glm::bvec4 get_color_mask();
    void get_state(const gfx_param iplist[], int ielem_count = 0);
    void set_state(const gfx_param& iplist);
    void set_state(const gfx_param iplist[], int ielem_count = 0);

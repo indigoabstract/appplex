@@ -269,6 +269,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
       gfx_uint scissor_enabled = mat[MP_SCISSOR_ENABLED].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
 
+      glm::bvec4 color_write = mat[MP_COLOR_WRITE].get_value<glm::bvec4>();
       gfx_uint depth_test = mat[MP_DEPTH_TEST].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
       gfx_uint depth_test_enabled = gl_st->is_enabled(gl::DEPTH_TEST) ? gl::TRUE_GL : gl::FALSE_GL;
       gfx_uint depth_write = mat[MP_DEPTH_WRITE].get_value<bool>() ? gl::TRUE_GL : gl::FALSE_GL;
@@ -294,6 +295,11 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
          blend_dst = gl::ONE_GL;
          break;
 
+      case gfx_material::e_add_color:
+         blend_src = gl::ONE_GL;
+         blend_dst = gl::ONE_GL;
+         break;
+
       case gfx_material::e_multiply:
          blend_src = gl::SRC_ALPHA_GL;
          blend_dst = gl::ONE_MINUS_SRC_ALPHA_GL;
@@ -312,6 +318,17 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
       else if (gl_st->is_enabled(gl::CULL_FACE))
       {
          plist.push_back({ gl::CULL_FACE, gl::FALSE_GL });
+      }
+
+      if (color_write != glm::bvec4(true))
+      {
+         plist.push_back({ gl::COLOR_MASK, (color_write.r) ? gl::TRUE_GL : gl::FALSE_GL,
+            (color_write.g) ? gl::TRUE_GL : gl::FALSE_GL, (color_write.b) ? gl::TRUE_GL : gl::FALSE_GL,
+            (color_write.a) ? gl::TRUE_GL : gl::FALSE_GL });
+      }
+      else if (gl_st->get_color_mask() != glm::bvec4(true))
+      {
+         plist.push_back({ gl::COLOR_MASK, gl::TRUE_GL, gl::TRUE_GL, gl::TRUE_GL, gl::TRUE_GL });
       }
 
       if (depth_test != depth_test_enabled)
@@ -369,7 +386,6 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
          plist.push_back({ gl::SCISSOR_TEST, gl::FALSE_GL });
       }
 
-      plist.push_back({ gl::COLOR_MASK, gl::TRUE_GL, gl::TRUE_GL, gl::TRUE_GL, gl::TRUE_GL });
       gl_st->set_state(&plist[0], plist.size());
 
       if (name_changed && mesh_name.length() > 0)

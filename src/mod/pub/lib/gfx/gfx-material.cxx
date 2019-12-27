@@ -13,8 +13,8 @@ static std::string depth_func_name_list[] = { MV_NEVER, MV_LESS, MV_EQUAL, MV_LE
 static gfx_uint depth_func_list[] = { gl::NEVER_GL, gl::LESS_GL, gl::EQUAL_GL, gl::LEQUAL_GL, gl::GREATER_GL, gl::NOTEQUAL_GL, gl::GEQUAL_GL, gl::ALWAYS_GL };
 static int depth_func_list_length = sizeof(depth_func_list) / sizeof(gfx_uint);
 
-static std::string blending_name_list[] = { MV_NONE, MV_ALPHA, MV_ADD, MV_MUL };
-static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha, gfx_material::e_add, gfx_material::e_multiply };
+static std::string blending_name_list[] = { MV_NONE, MV_ALPHA, MV_ADD, MV_ADD_COLOR, MV_MUL };
+static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha, gfx_material::e_add, gfx_material::e_add_color, gfx_material::e_multiply };
 static int blending_list_length = sizeof(blending_list) / sizeof(gfx_uint);
 
 
@@ -39,8 +39,8 @@ gfx_material_entry::gfx_material_entry(std::string i_name, mws_sp<gfx_material> 
 
    if (name == MP_COLOR_WRITE)
    {
-      value = true;
-      value_type = gfx_input::bvec1;
+      value = glm::bvec4(true);
+      value_type = gfx_input::bvec4;
    }
    else if (name == MP_CULL_BACK)
    {
@@ -142,6 +142,14 @@ gfx_material_entry& gfx_material_entry::operator=(const std::vector<glm::vec3>& 
 gfx_material_entry& gfx_material_entry::operator=(const glm::vec4& ivalue)
 {
    value_type = gfx_input::vec4;
+   value = ivalue;
+
+   return *this;
+}
+
+gfx_material_entry& gfx_material_entry::operator=(const glm::bvec4& ivalue)
+{
+   value_type = gfx_input::bvec4;
    value = ivalue;
 
    return *this;

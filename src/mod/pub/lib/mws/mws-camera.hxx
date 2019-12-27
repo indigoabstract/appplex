@@ -8,6 +8,7 @@ class mws_font;
 class mws_camera;
 class mws_camera_impl;
 class gfx_tex;
+class text_vxo;
 
 
 class mws_camera : public gfx_camera
@@ -31,6 +32,7 @@ public:
    void translate(float tx, float ty);
    void fillAlphaRect(int x, int y, int w, int h, int color);
    //void fillAlphaGradientQuad(vxfmt_v2fc4b* iva);
+   mws_sp<text_vxo> get_text_vxo();
    void set_text_blending(const std::string& i_blend_type);
    void update_camera_state() override;
 

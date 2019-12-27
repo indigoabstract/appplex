@@ -223,6 +223,11 @@ void mws_camera::load(mws_sp<gfx_camera> inst)
    rendering_priority = 0xffff;
 }
 
+mws_sp<text_vxo> mws_camera::get_text_vxo()
+{
+   return p->d_text.tx_vxo;
+}
+
 void mws_camera::set_text_blending(const std::string& i_blend_type)
 {
    p->d_text.set_text_blending(i_blend_type);

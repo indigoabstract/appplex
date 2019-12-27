@@ -47,6 +47,7 @@ enum wireframe_mode
 const std::string MV_NONE = "none";
 const std::string MV_ALPHA = "alpha";
 const std::string MV_ADD = "add";
+const std::string MV_ADD_COLOR = "add-color";
 const std::string MV_MUL = "multiply";
 
 const std::string MV_NEVER = "never";
@@ -86,6 +87,7 @@ public:
    gfx_material_entry& operator=(const glm::vec3& ivalue);
    gfx_material_entry& operator=(const std::vector<glm::vec3>& ivalue);
    gfx_material_entry& operator=(const glm::vec4& ivalue);
+   gfx_material_entry& operator=(const glm::bvec4& i_value);
    gfx_material_entry& operator=(const glm::mat2& ivalue);
    gfx_material_entry& operator=(const glm::mat3& ivalue);
    gfx_material_entry& operator=(const glm::mat4& ivalue);
@@ -124,6 +126,7 @@ public:
       e_none,
       e_alpha,
       e_add,
+      e_add_color,
       e_multiply,
    };
 

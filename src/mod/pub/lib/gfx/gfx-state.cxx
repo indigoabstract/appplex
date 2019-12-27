@@ -62,6 +62,7 @@ public:
       rsv_blend = GL_FALSE;
       rsv_blend_dst = GL_ZERO;
       rsv_blend_src = GL_ONE;
+      rsv_color_mask = glm::bvec4(true);
       rsv_cull_face = GL_FALSE;
       rsv_cull_face_mode = GL_BACK;
       rsv_depth_clear_value = 1;
@@ -610,8 +611,13 @@ public:
             //	and -1.0 returns the most negative representable integer value. The initial value is (1, 1, 1, 1). See glColor.
 
          case gl::COLOR_MASK:
+         {
+            auto& val = iplist->val;
+
             glColorMask(iplist->val[0].int_val, iplist->val[1].int_val, iplist->val[2].int_val, iplist->val[3].int_val);
+            rsv_color_mask = glm::bvec4(val[0].int_val != 0, val[1].int_val != 0, val[2].int_val != 0, val[3].int_val != 0);
             break;
+         }
 
          case gl::SCISSOR_BOX:
             if (rsv_scissor_test)
@@ -674,6 +680,7 @@ public:
    GLboolean rsv_blend;
    GLenum rsv_blend_dst;
    GLenum rsv_blend_src;
+   glm::bvec4 rsv_color_mask;
    GLboolean rsv_cull_face;
    GLenum rsv_cull_face_mode;
    GLfloat rsv_depth_clear_value;
@@ -745,6 +752,11 @@ void gfx_state::disable_state(gl::rsv_states istate)
 void gfx_state::disable_state(gfx_param iplist[], int ielem_count)
 {
    rsi->disable_state(iplist, ielem_count);
+}
+
+glm::bvec4 gfx_state::get_color_mask()
+{
+   return rsi->rsv_color_mask;
 }
 
 void gfx_state::get_state(const gfx_param iplist[], int ielem_count)
