@@ -83,7 +83,6 @@ mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_f
    return nullptr;
 }
 
-
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
@@ -130,7 +129,7 @@ void mws_vkb_impl::setup()
 {
    key_map =
    {
-      {KEY_BACKSPACE, "BkSp"},
+      {KEY_BACKSPACE, "Backsp"},
       {VKB_ENTER, "Enter"},
       {VKB_ALT, "Alt"},
       {VKB_SHIFT, "Shift"},
@@ -143,12 +142,10 @@ void mws_vkb_impl::setup()
    {
       uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
       mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
-      mws_cm letter_font_height_cm = letter_font_height.to_cm();
-      mws_px word_font_height(vkb_size / 5.f / 3.5f, mws_dim::vertical);
-      mws_cm word_font_height_cm = word_font_height.to_cm();
+      mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::vertical);
       mws_sp<mws_font> font = font_db::inst()->get_global_font();
-      mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height_cm);
-      mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height_cm);
+      mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height);
+      mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height);
 
       set_font(letter_font, word_font);
       vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
@@ -324,7 +321,7 @@ vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
    }
 
    // sort the vkb files by aspect ratio
-   auto cmp_aspect_ratio = [](const vkb_file_info& i_a, const vkb_file_info& i_b) { return i_a.info.aspect_ratio > i_b.info.aspect_ratio; };
+   auto cmp_aspect_ratio = [](const vkb_file_info& i_a, const vkb_file_info& i_b) { return i_a.info.aspect_ratio < i_b.info.aspect_ratio; };
    std::sort(vkb_info_vect.begin(), vkb_info_vect.end(), cmp_aspect_ratio);
 
    // find the vkb file with the closest match to the screen's aspect ratio
@@ -334,12 +331,37 @@ vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
       vkb_i_t.info.aspect_ratio = i_value;
       auto const it = std::lower_bound(i_vect.begin(), i_vect.end(), vkb_i_t, cmp_aspect_ratio);
 
+      // if we have an exact match, return 'it'
       if (it == i_vect.end())
       {
          return i_vect.back();
       }
 
-      return *it;
+      // we don't have an exact match. return the closest value
+      float upper_diff = it->info.aspect_ratio - i_value;
+
+      // first check if i_value is less than last aspect ration and that we have a lower aspect ratio
+      if (upper_diff > 0.f && it > i_vect.begin())
+      {
+         auto const it_lower = it - 1;
+         float lower_diff = i_value - it_lower->info.aspect_ratio;
+
+         // if i_value is closer to the lower aspect ratio, return 'it_lower'
+         if (lower_diff < upper_diff)
+         {
+            return *it_lower;
+         }
+         // i_value is closer to the upper/last aspect ratio, so return 'it'
+         else
+         {
+            return *it;
+         }
+      }
+      // if we don't, then 'it' is already the closest available aspect ratio. return 'it'
+      else
+      {
+         return *it;
+      }
    };
 
    // found it
@@ -367,7 +389,7 @@ void mws_vkb_impl::start_anim()
    {
       fade_slider.start(fade_duration_in_seconds);
       fade_type = fade_types::e_show_vkb;
-      keys_quad->visible = key_border_quad->visible = true;
+      keys_bg_outline_quad->visible = keys_quad->visible = key_border_quad->visible = true;
    }
 }
 
@@ -608,9 +630,9 @@ void mws_vkb_impl::build_cell_border_tex()
 
       pal.set_color_at(gfx_color(0, 0, 0), 0.f);
       pal.set_color_at(gfx_color(85, 0, 0), 0.5f);
-      pal.set_color_at(gfx_color(225, 0, 0), 0.87f);
-      pal.set_color_at(gfx_color(255, 100, 0), 0.92f);
-      pal.set_color_at(gfx_color(255, 240, 120), 0.97f);
+      pal.set_color_at(gfx_color(225, 0, 0), 0.85f);
+      pal.set_color_at(gfx_color(255, 100, 0), 0.96f);
+      pal.set_color_at(gfx_color(255, 240, 120), 0.98f);
       pal.set_color_at(gfx_color(255, 255, 150), 1.f);
 
       prm.wrap_s = prm.wrap_t = gfx_tex_params::e_twm_repeat;
@@ -621,7 +643,7 @@ void mws_vkb_impl::build_cell_border_tex()
       //prm.gen_mipmaps = false;
       //prm.min_filter = prm.mag_filter = gfx_tex_params::e_tf_nearest;
 
-      cell_border_tex = gi()->tex.nwi(tex_id, 512, 1, &prm);
+      cell_border_tex = gi()->tex.nwi(tex_id, 1024, 1, &prm);
 
       uint32 width = cell_border_tex->get_width();
       uint32 height = cell_border_tex->get_height();
@@ -676,7 +698,7 @@ void mws_vkb_impl::build_keys_tex()
       rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
       rvxo.set_v_flip(true);
       // key_border_quad must be drawn before keys_quad
-      rvxo.set_z(0.99f);
+      rvxo.set_z(0.97f);
       attach(key_border_quad);
 
       {
@@ -695,8 +717,11 @@ void mws_vkb_impl::build_keys_tex()
 
          mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(key_border_tex.get_tex());
          auto& rvxo = *key_border_tex.get_quad();
-         bloom->iteration_count = 15;
-         bloom->u_v1_mul_fact = 0.125f;
+         std::vector<float> weight_fact =
+         {
+            0.505f, 0.525f
+         };
+         bloom->set_iter_count(weight_fact.size(), weight_fact);
          bloom->update();
 
          rvxo[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
@@ -722,73 +747,152 @@ void mws_vkb_impl::build_keys_tex()
 
    // keys
    {
-      keys_quad = gfx_quad_2d::nwi();
-      auto& rvxo = *keys_quad;
+      {
+         keys_bg_outline_quad = gfx_quad_2d::nwi();
+         auto& rvxo = *keys_bg_outline_quad;
 
-      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
-      rvxo[MP_BLENDING] = MV_ALPHA;
-      rvxo[MP_DEPTH_TEST] = false;
-      rvxo[MP_DEPTH_WRITE] = false;
-      rvxo["u_v4_color"] = gfx_color::colors::white.to_vec4();
-      rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 1.f;
-      rvxo["u_v1_mul_color_alpha"] = 1.f;
-      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
-      rvxo.name = "mws-vkb-keys-quad";
-      rvxo.camera_id_list = { "mws_cam" };
-      rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
-      rvxo.set_v_flip(true);
-      // keys_quad must be drawn after (on top of) key_border_quad
-      rvxo.set_z(1.f);
-      attach(keys_quad);
+         rvxo[MP_SHADER_NAME] = "keys-outline";
+         rvxo[MP_BLENDING] = MV_ALPHA;
+         rvxo[MP_DEPTH_TEST] = false;
+         rvxo[MP_DEPTH_WRITE] = false;
+         rvxo["u_v1_outline_transparency"] = 0.85f;
+         rvxo["u_v1_transparency"] = 1.f;
+         rvxo["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
+         rvxo.name = "mws-vkb-keys-quad-bg-outline";
+         rvxo.camera_id_list = { "mws_cam" };
+         rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
+         rvxo.set_v_flip(true);
+         // keys_quad must be drawn after (on top of) key_border_quad
+         rvxo.set_z(0.98f);
+         attach(keys_bg_outline_quad);
+      }
+      {
+         keys_quad = gfx_quad_2d::nwi();
+         auto& rvxo = *keys_quad;
+
+         rvxo[MP_SHADER_NAME] = "keys-fonts";
+         rvxo[MP_BLENDING] = MV_ADD_COLOR;
+         rvxo[MP_DEPTH_TEST] = false;
+         rvxo[MP_DEPTH_WRITE] = false;
+         rvxo["u_v1_transparency"] = 1.f;
+         rvxo["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[0].get_tex();
+         rvxo.name = "mws-vkb-keys-quad";
+         rvxo.camera_id_list = { "mws_cam" };
+         rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
+         rvxo.set_v_flip(true);
+         // keys_quad must be drawn after (on top of) key_border_quad
+         rvxo.set_z(0.99f);
+         attach(keys_quad);
+      }
    }
 
    auto root = get_mws_root();
    auto vd = vk->get_diag_data();
    mws_vrn_kernel_pt_vect& kp_vect = vd->geom.kernel_points;
    std::array<key_mod_types, (uint32)key_mod_types::count> mod_vect = { key_mod_types::mod_none, key_mod_types::mod_alt, key_mod_types::mod_shift };
-   mws_sp<mws_font> letter_font_bg = mws_font::nwi(letter_font);
-   mws_sp<mws_font> word_font_bg = mws_font::nwi(word_font);
-   letter_font_bg->set_color(gfx_color::from_argb(0xff107fff));
-   word_font_bg->set_color(gfx_color::from_argb(0xff107fff));
 
-   // draw keys
-   for (uint32 k = 0; k < key_map_size; k++)
+   // keys bg font outline
    {
-      gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
-      gfx_rt::clear_buffers();
-      g->set_color(gfx_color::colors::cyan);
-      draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
-      g->update_camera_state();
+      mws_sp<mws_font> letter_font_bg_outline;
+      mws_sp<mws_font> word_font_bg_outline;
+      float bg_outline_scale = 5.f;
+      gfx_color bg_outline_color = gfx_color::colors::black;
+      {
+         mws_font_markup mk = { mws_font_rendermode::e_outline_positive, bg_outline_scale };
+         letter_font_bg_outline = mws_font::nwi(letter_font, letter_font->get_size(), &mk);
+         letter_font_bg_outline->set_color(bg_outline_color);
+      }
+      {
+         mws_font_markup mk = { mws_font_rendermode::e_outline_positive, bg_outline_scale };
+         word_font_bg_outline = mws_font::nwi(word_font, word_font->get_size(), &mk);
+         word_font_bg_outline->set_color(bg_outline_color);
+      }
+
+      // draw keys bg outline
+      for (uint32 k = 0; k < key_map_size; k++)
+      {
+         gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
+         gfx_rt::clear_buffers();
+         draw_keys(g, letter_font_bg_outline, word_font_bg_outline, mod_vect[k], kp_vect);
+         g->update_camera_state();
+      }
+
+      gfx::i()->rt.set_current_render_target();
+   }
+
+   // disable writing to alpha channel
+   mws_sp<text_vxo> cam_txt_vxo = g->get_text_vxo();
+   (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, false);
+   g->set_text_blending(MV_ADD);
+
+   // draw the key letters/words
+   {
+      mws_sp<mws_font> letter_font_bg = mws_font::nwi(letter_font);
+      mws_sp<mws_font> word_font_bg = mws_font::nwi(word_font);
+      uint32 argb = 0xff107fff;
+      letter_font_bg->set_color(gfx_color::from_argb(argb));
+      word_font_bg->set_color(gfx_color::from_argb(argb));
+
+      // draw keys
+      for (uint32 k = 0; k < key_map_size; k++)
+      {
+         gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
+         draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+         g->update_camera_state();
+      }
+
       gfx::i()->rt.set_current_render_target();
    }
 
    // apply bloom
-   letter_font_bg->set_color(gfx_color::colors::white);
-   word_font_bg->set_color(gfx_color::colors::white);
-   g->set_text_blending(MV_ADD);
-
-   for (uint32 k = 0; k < key_map_size; k++)
    {
-      mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(keys_tex[k].get_tex());
-      auto& rvxo = *keys_tex[k].get_quad();
+      for (uint32 k = 0; k < key_map_size; k++)
+      {
+         mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(keys_tex[k].get_tex());
+         std::vector<float> weight_fact =
+         {
+            0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f
+         };
+         mws_sp<mws_font> letter_font_bg;
+         mws_sp<mws_font> word_font_bg;
 
-      bloom->iteration_count = 19;
-      bloom->u_v1_mul_fact = 1.2f;
-      bloom->update();
+         letter_font_bg = mws_font::nwi(letter_font);
+         word_font_bg = mws_font::nwi(word_font);
+         letter_font_bg->set_color(gfx_color::colors::white);
+         word_font_bg->set_color(gfx_color::colors::white);
+         //{
+         //   mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 0.2f };
+         //   letter_font_bg = mws_font::nwi(letter_font, letter_font->get_size(), &mk);
+         //   letter_font_bg->set_color(gfx_color::colors::white);
+         //}
+         //{
+         //   mws_font_markup mk = { mws_font_rendermode::e_outline_negative, 0.2f };
+         //   word_font_bg = mws_font::nwi(word_font, word_font->get_size(), &mk);
+         //   word_font_bg->set_color(gfx_color::colors::white);
+         //}
 
-      rvxo[MP_SHADER_NAME] = "keys-bg";
-      rvxo[MP_BLENDING] = MV_NONE;
-      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = bloom->get_bloom_tex();
-      rvxo.set_v_flip(true);
+         bloom->set_iter_count(weight_fact.size(), weight_fact);
+         bloom->set_alpha_op_type(mws_kawase_bloom::e_set_alpha_to_original);
+         bloom->update();
 
-      gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
-      rvxo.draw_out_of_sync(g);
-      draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
-      g->update_camera_state();
+         auto& rvxo = *keys_tex[k].get_quad();
+         rvxo[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
+         rvxo[MP_BLENDING] = MV_NONE;
+         rvxo["u_s2d_tex"][MP_TEXTURE_INST] = bloom->get_bloom_tex();
+         rvxo.set_v_flip(true);
+
+         // draw the white keys on top
+         gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
+         rvxo.draw_out_of_sync(g);
+         draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+         g->update_camera_state();
+      }
+
       gfx::i()->rt.set_current_render_target();
    }
 
+   // reenable writing to alpha channel
+   (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, true);
    g->set_text_blending(MV_ALPHA);
    set_key_transparency(0.f);
 }
@@ -893,10 +997,12 @@ void mws_vkb_impl::set_key_transparency(float i_alpha)
    glm::vec4 color = gfx_color::from_float(1.f, 1.f, 1.f, i_alpha).to_vec4();
 
    (*key_border_quad)["u_v4_color"] = color;
-   (*keys_quad)["u_v4_color"] = color;
+   (*keys_bg_outline_quad)["u_v1_transparency"] = i_alpha;
+   (*keys_quad)["u_v1_transparency"] = i_alpha;
 }
 
-void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect)
+void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font,
+   key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect)
 {
    uint32 size = get_key_vect_size();
 
@@ -1330,7 +1436,10 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
 
          if (keys_quad)
          {
-            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
+            mws_sp<gfx_tex> tex = keys_tex[(uint32)key_mod].get_tex();
+
+            (*keys_bg_outline_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
             update_lights(i_key_idx, i_state);
          }
          break;
@@ -1358,7 +1467,10 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
 
          if (keys_quad)
          {
-            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = keys_tex[(uint32)key_mod].get_tex();
+            mws_sp<gfx_tex> tex = keys_tex[(uint32)key_mod].get_tex();
+
+            (*keys_bg_outline_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+            (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
             update_lights(i_key_idx, i_state);
          }
          break;
@@ -1375,7 +1487,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
             {
                fade_slider.start(fade_duration_in_seconds);
                fade_type = fade_types::e_show_vkb;
-               keys_quad->visible = key_border_quad->visible = true;
+               keys_bg_outline_quad->visible = keys_quad->visible = key_border_quad->visible = true;
                fade_key_at(i_key_idx);
             }
             // if we need to hide the keyboard

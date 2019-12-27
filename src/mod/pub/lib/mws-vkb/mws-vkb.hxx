@@ -169,6 +169,7 @@ protected:
    mws_gfx_ppb key_border_tex;
    mws_sp<gfx_quad_2d> key_border_quad;
    std::vector<mws_gfx_ppb> keys_tex;
+   mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
 };
 
