@@ -18,6 +18,10 @@ mws_sp<mws_kawase_bloom> mws_kawase_bloom::nwi(mws_sp<gfx_tex> i_input_tex)
    return inst;
 }
 
+mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return output_tex; }
+
+mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return accumulation_buff.get_tex(); }
+
 void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, float i_weight_fact)
 {
    if (i_iter_count == 0 || weight_fact <= 0.f)
@@ -42,9 +46,16 @@ void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, const std::vector<flo
    weight_fact = 0.f;
 }
 
-mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return output_tex; }
+void mws_kawase_bloom::set_alpha_op_type(set_alpha_op_types i_alpha_op, float i_new_alpha_val)
+{
+   if (i_new_alpha_val < 0.f || i_new_alpha_val > 1.f)
+   {
+      mws_throw mws_exception("new alpha val out of range");
+   }
 
-mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return accumulation_buff.get_tex(); }
+   alpha_op = i_alpha_op;
+   new_alpha_val = i_new_alpha_val;
+}
 
 void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
 {
@@ -79,15 +90,13 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          mws_gfx_ppb& rt = ping_pong_vect[k];
 
          rt.init(mws_to_str_fmt("mws-kawase-bloom-tex-%d", tex_count), input_tex->get_width(), input_tex->get_height(), &prm);
-         (*rt.get_quad())[MP_SHADER_NAME] = kawase_blur_sh_id;
-         rt.get_quad()->set_v_flip(true);
+         auto& rvxo = *rt.get_quad();
+         rvxo[MP_SHADER_NAME] = kawase_blur_sh_id;
+         rvxo.set_v_flip(true);
          gfx::i()->rt.set_current_render_target(rt.get_rt());
          rt.get_rt()->clear_buffers();
          tex_count++;
       }
-
-      (*ping_pong_vect[0].get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[1].get_tex();
-      (*ping_pong_vect[1].get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[0].get_tex();
 
       // accumulation buffer
       {
@@ -97,7 +106,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
          rt.init(mws_to_str_fmt("mws-kawase-bloom-tex-%d", tex_count), input_tex->get_width(), input_tex->get_height(), &prm);
          auto& rvxo = *rt.get_quad();
 
-         rvxo[MP_BLENDING] = MV_ADD;
+         rvxo[MP_BLENDING] = MV_ADD_COLOR;
          rvxo[MP_SHADER_NAME] = accumulation_sh_id;
          rvxo.set_v_flip(true);
          gfx::i()->rt.set_current_render_target(rt.get_rt());
@@ -132,12 +141,26 @@ void mws_kawase_bloom::update()
       mws_throw mws_exception("weights are set incorrectly");
    }
 
-   mws_sp<gfx_rt> rt = ping_pong_vect[1].get_rt();
-
-   // put the input texture in input_tex ping_pong_vect[1].tex, to be used by ping_pong_vect[0]
-   gfx::i()->rt.set_current_render_target(rt);
-   input_quad->draw_out_of_sync(ortho_cam);
-   gfx::i()->rt.set_current_render_target();
+   // set uniforms
+   {
+      auto& rvxo = *ping_pong_vect[0].get_quad();
+      rvxo["u_v1_alpha_op"] = static_cast<float>(alpha_op);
+      rvxo["u_v1_alpha_val"] = new_alpha_val;
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[1].get_tex();
+   }
+   {
+      auto& rvxo = *ping_pong_vect[1].get_quad();
+      rvxo["u_v1_alpha_op"] = static_cast<float>(alpha_op);
+      rvxo["u_v1_alpha_val"] = new_alpha_val;
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[0].get_tex();
+   }
+   {
+      mws_sp<gfx_rt> rt = ping_pong_vect[1].get_rt();
+      // put the input texture in input_tex ping_pong_vect[1].tex, to be used by ping_pong_vect[0]
+      gfx::i()->rt.set_current_render_target(rt);
+      input_quad->draw_out_of_sync(ortho_cam);
+      gfx::i()->rt.set_current_render_target();
+   }
 
    for (uint32 k = 0; k < iteration_count; k++)
    {
@@ -195,6 +218,8 @@ void mws_kawase_bloom::init_shaders()
 
       layout(location = 0) out vec4 v4_frag_color;
 
+      uniform float u_v1_alpha_op;
+      uniform float u_v1_alpha_val;
       uniform sampler2D u_s2d_tex;
       uniform vec2 u_v2_offset;
 
@@ -202,15 +227,41 @@ void mws_kawase_bloom::init_shaders()
 
       void main()
       {
-          vec3 v3_col;
+          vec4 v4_col;
 	
-	       v3_col = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgb;
-          v3_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(u_v2_offset.x, -u_v2_offset.y)).rgb;
-          v3_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(-u_v2_offset.x, u_v2_offset.y)).rgb;
-          v3_col += texture(u_s2d_tex, v_v2_tex_coord - u_v2_offset).rgb;
-          v3_col *= 0.25;
-
-	       v4_frag_color = vec4(v3_col, 1.0);
+	      // e_set_alpha_to_blur
+	      if(u_v1_alpha_op == 0.)
+	      {
+		      v4_col = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgba;
+		      v4_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(u_v2_offset.x, -u_v2_offset.y)).rgba;
+		      v4_col += texture(u_s2d_tex, v_v2_tex_coord + vec2(-u_v2_offset.x, u_v2_offset.y)).rgba;
+		      v4_col += texture(u_s2d_tex, v_v2_tex_coord - u_v2_offset).rgba;
+		      v4_col *= 0.25;
+	      }
+	      // e_set_alpha_to_original
+	      else if(u_v1_alpha_op == 1.)
+	      {
+		      float v1_alpha = texture(u_s2d_tex, v_v2_tex_coord).a;
+		
+		      v4_col.rgb = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord + vec2(u_v2_offset.x, -u_v2_offset.y)).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord + vec2(-u_v2_offset.x, u_v2_offset.y)).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord - u_v2_offset).rgb;
+		      v4_col.rgb *= 0.25;
+		      v4_col.a = v1_alpha;
+	      }
+	      // e_set_alpha_to_new_val
+	      else if(u_v1_alpha_op == 2.)
+	      {
+		      v4_col.rgb = texture(u_s2d_tex, v_v2_tex_coord + u_v2_offset).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord + vec2(u_v2_offset.x, -u_v2_offset.y)).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord + vec2(-u_v2_offset.x, u_v2_offset.y)).rgb;
+		      v4_col.rgb += texture(u_s2d_tex, v_v2_tex_coord - u_v2_offset).rgb;
+		      v4_col.rgb *= 0.25;
+		      v4_col.a = u_v1_alpha_val;
+	      }
+	
+	      v4_frag_color = vec4(v4_col);
       }
       )"
       ));
@@ -258,10 +309,10 @@ void mws_kawase_bloom::init_shaders()
 
       void main()
       {
-            vec3 v3_col = texture(u_s2d_tex, v_v2_tex_coord).rgb;
-            v3_col *= u_v1_weight_fact;
+          vec4 v4_col = texture(u_s2d_tex, v_v2_tex_coord).rgba;
+          vec3 v3_col = v4_col.rgb * u_v1_weight_fact;
 
-	      v4_frag_color = vec4(v3_col, 1.0);
+          v4_frag_color = vec4(v3_col, v4_col.a);
       }
       )"
       ));

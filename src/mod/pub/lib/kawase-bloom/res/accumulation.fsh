@@ -14,8 +14,8 @@ smooth in vec2 v_v2_tex_coord;
 
 void main()
 {
-    vec3 v3_col = texture(u_s2d_tex, v_v2_tex_coord).rgb;
-    v3_col *= u_v1_weight_fact;
+    vec4 v4_col = texture(u_s2d_tex, v_v2_tex_coord).rgba;
+    vec3 v3_col = v4_col.rgb * u_v1_weight_fact;
 
-	v4_frag_color = vec4(v3_col, 1.0);
+    v4_frag_color = vec4(v3_col, v4_col.a);
 }
