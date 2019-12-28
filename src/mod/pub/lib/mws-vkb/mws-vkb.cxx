@@ -270,14 +270,13 @@ void mws_vkb_impl::on_update_state()
 
       for (auto it = highlight_vect.begin(); it != highlight_vect.end();)
       {
-         mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[it->key_idx];
+         mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->get_cell_borders_mesh_at(it->key_idx);
          float delta_seconds = (crt_time - it->release_time) / 1000.f;
 
          if (delta_seconds < key_lights_off_seconds)
          {
             float alpha = 1.f - delta_seconds / key_lights_off_seconds;
             (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, alpha);
-            //mws_println("idx %d alpha %f", it->key_idx, alpha);
             ++it;
          }
          else
@@ -292,13 +291,14 @@ void mws_vkb_impl::on_update_state()
 
 void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 {
-   mws_sp<gfx_tex> kb_tex = key_border_tex.get_tex();
+   glm::ivec2 scr_dim(i_width, i_height);
 
-   if (!kb_tex || (kb_tex->get_width() != i_width || kb_tex->get_height() != i_height))
+   if (vkb_dim != scr_dim)
    {
       vkb_file_info vkb_fi = get_closest_match(i_width, i_height);
       mws_sp<pfm_file> file = vkb_fi.file;
       std::string new_filename = file->get_file_name();
+      vkb_dim = scr_dim;
 
       // check if 'loaded_filename' is the best fit for current resolution and load 'new_filename' if not
       if (loaded_filename != new_filename)
@@ -310,7 +310,10 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
          vk->resize(i_width, i_height);
       }
 
-      build_keys_tex();
+      if (build_textures)
+      {
+         build_keys_tex();
+      }
    }
 }
 
@@ -392,7 +395,9 @@ void mws_vkb_impl::set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_wo
 
 void mws_vkb_impl::start_anim()
 {
-   if (keys_quad && key_border_quad && !is_mod_key_held(mod_key_types::hide_vkb))
+   bool valid_state = visible && keys_quad && key_border_quad && !is_mod_key_held(mod_key_types::hide_vkb);
+
+   if (valid_state)
    {
       fade_slider.start(fade_duration_in_seconds);
       fade_type = fade_types::e_show_vkb;
@@ -406,7 +411,7 @@ void mws_vkb_impl::done()
 
    while (it != highlight_vect.end())
    {
-      mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->cell_borders_mesh_vect[it->key_idx];
+      mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->get_cell_borders_mesh_at(it->key_idx);
       (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
       mesh->visible = false;
       ++it;
@@ -414,6 +419,11 @@ void mws_vkb_impl::done()
 
    highlight_vect.clear();
    release_all_keys();
+}
+
+glm::ivec2 mws_vkb_impl::get_dimensions() const
+{
+   return vkb_dim;
 }
 
 std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
@@ -474,8 +484,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
    // size
    {
       kv_ref size = main["size"];
-      diag_dim = glm::vec2(mws_to<float>(size[0].key()), mws_to<float>(size[1].key()));
-      resize_fact = glm::vec2(screen_dim) / diag_dim;
+      diag_original_dim = glm::vec2(mws_to<float>(size[0].key()), mws_to<float>(size[1].key()));
+      resize_fact = glm::vec2(screen_dim) / diag_original_dim;
    }
    // pages
    {
@@ -678,7 +688,7 @@ void mws_vkb_impl::build_cell_border_tex()
       cell_border_tex->update(0, (char*)pixel_data.data());
    }
 
-   vk->vgeom->cell_borders->tex = cell_border_tex;
+   vk->vgeom->cell_borders->set_cell_borders_tex(cell_border_tex);
 }
 
 void mws_vkb_impl::build_keys_tex()
@@ -690,13 +700,18 @@ void mws_vkb_impl::build_keys_tex()
       keys_quad->detach();
    }
 
+   if (!vkb_keys_fonts_shader)
+   {
+      init_shaders();
+   }
+
    setup_font_dimensions();
    keys_tex.resize((uint32)key_mod_types::count);
    uint32 key_map_size = keys_tex.size();
    glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
    mws_sp<mws_camera> g = get_mod()->mws_cam;
    glm::vec2 dim = letter_font->get_text_dim("M");
-   std::string vkb_type = (diag_dim.x > diag_dim.y) ? "landscape" : "portrait";
+   std::string vkb_type = (diag_original_dim.x > diag_original_dim.y) ? "landscape" : "portrait";
 
    // key border
    {
@@ -704,15 +719,13 @@ void mws_vkb_impl::build_keys_tex()
       key_border_quad = gfx_quad_2d::nwi();
 
       auto& rvxo = *key_border_quad;
-      rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
+      rvxo[MP_SHADER_NAME] = "mws-vkb-keys-fonts";
       rvxo[MP_BLENDING] = MV_ADD;
       rvxo[MP_DEPTH_TEST] = false;
       rvxo[MP_DEPTH_WRITE] = false;
-      rvxo["u_v4_color"] = gfx_color::colors::white.to_vec4();
-      rvxo["u_v1_is_enabled"] = 1.f;
-      rvxo["u_v1_has_tex"] = 1.f;
-      rvxo["u_v1_mul_color_alpha"] = 1.f;
+      rvxo["u_v1_transparency"] = 1.f;
       rvxo["u_s2d_tex"][MP_TEXTURE_INST] = key_border_tex.get_tex();
+      rvxo.name = "mws-vkb-keys-border-quad";
       rvxo.camera_id_list = { "mws_cam" };
       rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
       rvxo.set_v_flip(true);
@@ -770,7 +783,7 @@ void mws_vkb_impl::build_keys_tex()
          keys_bg_outline_quad = gfx_quad_2d::nwi();
          auto& rvxo = *keys_bg_outline_quad;
 
-         rvxo[MP_SHADER_NAME] = "keys-outline";
+         rvxo[MP_SHADER_NAME] = "mws-vkb-keys-outline";
          rvxo[MP_BLENDING] = MV_ALPHA;
          rvxo[MP_DEPTH_TEST] = false;
          rvxo[MP_DEPTH_WRITE] = false;
@@ -789,7 +802,7 @@ void mws_vkb_impl::build_keys_tex()
          keys_quad = gfx_quad_2d::nwi();
          auto& rvxo = *keys_quad;
 
-         rvxo[MP_SHADER_NAME] = "keys-fonts";
+         rvxo[MP_SHADER_NAME] = "mws-vkb-keys-fonts";
          rvxo[MP_BLENDING] = MV_ADD_COLOR;
          rvxo[MP_DEPTH_TEST] = false;
          rvxo[MP_DEPTH_WRITE] = false;
@@ -1023,11 +1036,123 @@ void mws_vkb_impl::setup_font_dimensions()
    set_font(letter_font, word_font);
 }
 
+void mws_vkb_impl::init_shaders()
+{
+   // keys fonts shader
+   vkb_keys_fonts_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_fonts_sh, true);
+   if (!vkb_keys_fonts_shader)
+   {
+      auto vsh = std::make_shared<std::string>(
+         R"(
+         //@es #version 300 es
+         //@dt #version 330 core
+
+         layout (location = 0) in vec3 a_v3_position;
+         layout (location = 1) in vec2 a_v2_tex_coord;
+
+         uniform mat4 u_m4_model_view_proj;
+
+         smooth out vec2 v_v2_tex_coord;
+
+         void main()
+         {
+	         v_v2_tex_coord = a_v2_tex_coord;
+	         vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+	
+	         gl_Position = v4_position;
+         }
+         )"
+         );
+
+      auto fsh = std::make_shared<std::string>(
+         R"(
+         //@es #version 300 es
+         //@dt #version 330 core
+
+         #ifdef GL_ES
+	         precision lowp float;
+         #endif
+
+         layout(location = 0) out vec4 v4_frag_color;
+
+         uniform sampler2D u_s2d_tex;
+         uniform float u_v1_transparency;
+
+         smooth in vec2 v_v2_tex_coord;
+
+         void main()
+         {
+	         vec3 v3_color = texture(u_s2d_tex, v_v2_tex_coord).rgb;
+	         vec4 v4_color = vec4(v3_color, 1.) * u_v1_transparency;
+	
+	         v4_frag_color = v4_color;
+         }
+         )"
+         );
+
+      vkb_keys_fonts_shader = gfx::i()->shader.new_program_from_src(vkb_keys_fonts_sh, vsh, fsh);
+   }
+
+   // keys outline shader
+   vkb_keys_outline_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_outline_sh, true);
+   if (!vkb_keys_outline_shader)
+   {
+      auto vsh = std::make_shared<std::string>(
+         R"(
+         //@es #version 300 es
+         //@dt #version 330 core
+
+         layout (location = 0) in vec3 a_v3_position;
+         layout (location = 1) in vec2 a_v2_tex_coord;
+
+         uniform mat4 u_m4_model_view_proj;
+
+         smooth out vec2 v_v2_tex_coord;
+
+         void main()
+         {
+	         v_v2_tex_coord = a_v2_tex_coord;
+	         vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+	
+	         gl_Position = v4_position;
+         }
+         )"
+         );
+
+      auto fsh = std::make_shared<std::string>(
+         R"(
+         //@es #version 300 es
+         //@dt #version 330 core
+
+         #ifdef GL_ES
+	         precision lowp float;
+         #endif
+
+         layout(location = 0) out vec4 v4_frag_color;
+
+         uniform sampler2D u_s2d_tex;
+         uniform float u_v1_outline_transparency;
+         uniform float u_v1_transparency;
+
+         smooth in vec2 v_v2_tex_coord;
+
+         void main()
+         {
+	         float v1_tex_alpha = texture(u_s2d_tex, v_v2_tex_coord).a;
+	         float v1_alpha_val = v1_tex_alpha * u_v1_outline_transparency * u_v1_transparency;
+	
+	         v4_frag_color = vec4(vec3(0.), v1_alpha_val);
+         }
+         )"
+         );
+
+      vkb_keys_outline_shader = gfx::i()->shader.new_program_from_src(vkb_keys_outline_sh, vsh, fsh);
+   }
+}
+
 void mws_vkb_impl::set_key_transparency(float i_alpha)
 {
-   glm::vec4 color = gfx_color::from_float(1.f, 1.f, 1.f, i_alpha).to_vec4();
-
-   (*key_border_quad)["u_v4_color"] = color;
+   (*key_border_quad)["u_v1_transparency"] = i_alpha;
    (*keys_bg_outline_quad)["u_v1_transparency"] = i_alpha;
    (*keys_quad)["u_v1_transparency"] = i_alpha;
 }
@@ -1368,11 +1493,11 @@ bool mws_vkb_impl::touch_cancelled(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_are
 
 void mws_vkb_impl::highlight_key_at(int i_idx, bool i_light_on)
 {
-   auto& mesh_vect = vk->vgeom->cell_borders->cell_borders_mesh_vect;
+   auto& cell_borders = vk->vgeom->cell_borders;
 
-   if (!mesh_vect.empty())
+   if (cell_borders->get_cell_borders_mesh_size() > 0)
    {
-      mws_sp<gfx_vxo> mesh = mesh_vect[i_idx];
+      mws_sp<gfx_vxo> mesh = cell_borders->get_cell_borders_mesh_at(i_idx);
       mesh->visible = i_light_on;
 
       for (auto it = highlight_vect.begin(); it != highlight_vect.end(); ++it)
@@ -1389,16 +1514,15 @@ void mws_vkb_impl::highlight_key_at(int i_idx, bool i_light_on)
 
 void mws_vkb_impl::fade_key_at(int i_idx)
 {
-   auto& mesh_vect = vk->vgeom->cell_borders->cell_borders_mesh_vect;
+   auto& cell_borders = vk->vgeom->cell_borders;
 
-   if (!mesh_vect.empty())
+   if (cell_borders->get_cell_borders_mesh_size() > 0)
    {
       for (auto& kh : highlight_vect)
       {
          if (kh.key_idx == i_idx)
          {
             kh.release_time = pfm::time::get_time_millis();
-            mws_sp<gfx_vxo> mesh = mesh_vect[i_idx];
             return;
          }
       }
@@ -1522,7 +1646,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
                fade_key_at(i_key_idx);
             }
             // if we need to hide the keyboard
-            else if(init_state != base_key_state_types::key_locked)
+            else if (init_state != base_key_state_types::key_locked)
             {
                uint32 size = base_key_st.size();
 
@@ -1582,7 +1706,6 @@ void mws_vkb_impl::rebuild_key_state()
 }
 
 
-mws_sp<mws_vkb> mws_vkb::inst;
 mws_sp<mws_vkb> mws_vkb::gi()
 {
    if (!inst)
@@ -1599,11 +1722,16 @@ key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const
 {
    uint32 idx = i_key_id;
 
-   if (impl && idx < impl->get_key_vect().size())
+   if (active_vkb && idx < active_vkb->get_key_vect().size())
    {
-      key_types key_id = impl->get_key_at(i_key_id);
+      glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
 
-      return key_id;
+      if (active_vkb->get_dimensions() == scr_dim)
+      {
+         key_types key_id = active_vkb->get_key_at(i_key_id);
+
+         return key_id;
+      }
    }
 
    return KEY_INVALID;
@@ -1611,10 +1739,13 @@ key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const
 
 void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 {
-   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   bool valid_state = active_vkb && (active_vkb->get_dimensions() == scr_dim);
+
+   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE) && valid_state)
    {
       mws_sp<mws_ptr_evt> pe = mws_ptr_evt::as_pointer_evt(i_dp);
-      mws_sp<mws_ptr_evt> forwarded_ptr = get_impl()->on_receive(pe, ta);
+      mws_sp<mws_ptr_evt> forwarded_ptr = (ta) ? active_vkb->on_receive(pe, ta) : nullptr;
 
       // check if we need to close the keyboard
       if (!forwarded_ptr && pe->type == mws_ptr_evt::touch_ended)
@@ -1625,10 +1756,10 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
             if (pt.is_changed)
             {
-               auto ret = get_impl()->vk->get_kernel_idx_at(pt.x, pt.y);
-               key_types key_id = get_impl()->get_key_at(ret.idx);
+               auto ret = active_vkb->vk->get_kernel_idx_at(pt.x, pt.y);
+               key_types key_id = active_vkb->get_key_at(ret.idx);
 
-               if (ta->is_action_key(key_id))
+               if (ta && ta->is_action_key(key_id))
                {
                   done();
                }
@@ -1636,7 +1767,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          }
       }
    }
-   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE) && ta)
    {
       ta->receive(i_dp);
    }
@@ -1644,7 +1775,22 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 
 void mws_vkb::update_state()
 {
-   get_impl()->on_update_state();
+   if (upcoming_loading_wait())
+   {
+      std::function<void()> op_load_vkb = [this]()
+      {
+         nwi_inex();
+         active_vkb->start_anim();
+         active_vkb->on_update_state();
+      };
+
+      get_mod()->enq_op_on_next_frame_start(op_load_vkb);
+      get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+   }
+   else
+   {
+      get_active_vkb()->on_update_state();
+   }
 }
 
 void mws_vkb::on_resize()
@@ -1662,18 +1808,32 @@ void mws_vkb::on_resize()
 void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
 {
    ta = i_ta;
-   impl = get_impl();
-   impl->start_anim();
+
+   if (upcoming_loading_wait())
+   {
+      std::function<void()> op_load_vkb = [this]()
+      {
+         nwi_inex();
+         active_vkb->start_anim();
+      };
+
+      get_mod()->enq_op_on_next_frame_start(op_load_vkb);
+      get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+   }
+   else
+   {
+      get_active_vkb()->start_anim();
+   }
 }
 
 mws_sp<mws_font> mws_vkb::get_font()
 {
-   return get_impl()->get_font();
+   return get_active_vkb()->get_font();
 }
 
 void mws_vkb::set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt)
 {
-   get_impl()->set_font(i_letter_fnt, i_word_fnt);
+   get_active_vkb()->set_font(i_letter_fnt, i_word_fnt);
 }
 
 mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const
@@ -1688,7 +1848,7 @@ void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store> i_store)
 
 std::vector<mws_sp<gfx_tex>> mws_vkb::get_tex_list()
 {
-   return get_impl()->get_tex_list();
+   return get_active_vkb()->get_tex_list();
 }
 
 mws_vkb::mws_vkb() { visible = false; }
@@ -1702,27 +1862,155 @@ void mws_vkb::setup()
 
 void mws_vkb::done()
 {
-   get_impl()->done();
+   get_active_vkb()->done();
    visible = false;
    ta->do_action();
    ta = nullptr;
 }
 
-mws_sp<mws_vkb_impl> mws_vkb::get_impl()
+void mws_vkb::load(bool i_blocking_load)
 {
-   // if impl is null, load a vkb into it and also assign it to the landscape/portrait references
-   if (!impl)
+   if (i_blocking_load)
+   {
+      nwi_inex();
+      active_vkb->start_anim();
+   }
+   else
+   {
+      if (upcoming_loading_wait())
+      {
+         std::function<void()> op_load_vkb = [this]()
+         {
+            nwi_inex();
+            active_vkb->start_anim();
+         };
+
+         get_mod()->enq_op_on_next_frame_start(op_load_vkb);
+         get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+      }
+   }
+}
+
+bool mws_vkb::upcoming_loading_wait()
+{
+   if (!active_vkb)
+   {
+      return true;
+   }
+
+   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+
+   // landscape
+   if (scr_dim.x > scr_dim.y)
+   {
+      if (!vkb_landscape)
+      {
+         return true;
+      }
+
+      glm::ivec2 vkb_dim = vkb_landscape->get_dimensions();
+
+      if (vkb_dim != scr_dim)
+      {
+         return true;
+      }
+   }
+   // portrait
+   else
+   {
+      if (!vkb_portrait)
+      {
+         return true;
+      }
+
+      glm::ivec2 vkb_dim = vkb_portrait->get_dimensions();
+
+      if (vkb_dim != scr_dim)
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+std::function<void()> mws_vkb::get_waiting_msg_op()
+{
+   if (!show_waiting_msg_op)
+   {
+      mws_wp<mws_camera> cam = get_mod()->mws_cam;
+
+      show_waiting_msg_op = [cam]()
+      {
+         mws_sp<mws_camera> camera = cam.lock();
+         gfx_rt::clear_buffers();
+
+         if (camera)
+         {
+            std::string text = "Loading keyboard\nPlease wait...";
+            glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+            float vert_size = std::min(scr_dim.x, scr_dim.y);
+            mws_sp<mws_font> global_font = font_db::inst()->get_global_font();
+            mws_px font_height(vert_size / 20.f, mws_dim::vertical);
+            mws_sp<mws_font> font = mws_font::nwi(global_font, font_height);
+            font->set_color(gfx_color::colors::white);
+            glm::vec2 text_dim = font->get_text_dim(text);
+            glm::vec2 pos((scr_dim.x - text_dim.x) / 2.f, (scr_dim.y - text_dim.y) / 2.f);
+
+            camera->drawText(text, pos.x, pos.y, font);
+            camera->update_camera_state();
+         }
+      };
+   }
+
+   return show_waiting_msg_op;
+}
+
+mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb()
+{
+   uint32 w = pfm::screen::get_width();
+   uint32 h = pfm::screen::get_height();
+
+   if (w > h)
+   {
+      if (active_vkb != vkb_landscape)
+      {
+         // hide current keyboard as we need to show a new one
+         active_vkb->release_all_keys(true);
+         active_vkb->visible = false;
+         active_vkb = vkb_landscape;
+         active_vkb->visible = true;
+      }
+   }
+   else
+   {
+      if (active_vkb != vkb_portrait)
+      {
+         // hide current keyboard as we need to show a new one
+         active_vkb->release_all_keys(true);
+         active_vkb->visible = false;
+         active_vkb = vkb_portrait;
+         active_vkb->visible = true;
+      }
+   }
+
+   return active_vkb;
+}
+
+void mws_vkb::nwi_inex()
+{
+   // if active_vkb is null, load a vkb into it and also assign it to the landscape/portrait references
+   if (!active_vkb)
    {
       uint32 w = pfm::screen::get_width();
       uint32 h = pfm::screen::get_height();
 
       size_changed = false;
-      vkb_file_store = impl = nwi_impl();
+      vkb_file_store = active_vkb = nwi_vkb();
 
-      (w > h) ? vkb_landscape = impl : vkb_portrait = impl;
-      impl->start_anim();
+      (w > h) ? vkb_landscape = active_vkb : vkb_portrait = active_vkb;
    }
-   // if current impl is not null, but the size has changed, we need to do some (elaborate) checking..
+   // if current active_vkb is not null, but the size has changed, we need to do some (elaborate) checking..
    else if (size_changed)
    {
       uint32 w = pfm::screen::get_width();
@@ -1737,37 +2025,34 @@ mws_sp<mws_vkb_impl> mws_vkb::get_impl()
       {
          inst->on_resize(w, h);
 
-         if (inst != impl)
+         if (inst != active_vkb)
          {
             // hide current keyboard as we need to show a new one
-            impl->release_all_keys(true);
-            impl->visible = false;
+            active_vkb->release_all_keys(true);
+            active_vkb->visible = false;
             inst->visible = true;
          }
       }
       // if inst is null, we need to load a vkb into it and also assign it to the landscape/portrait references
       else
       {
-         inst = nwi_impl();
+         inst = nwi_vkb();
          (w > h) ? vkb_landscape = inst : vkb_portrait = inst;
          // hide current keyboard as we need to show a new one
-         impl->release_all_keys(true);
-         impl->visible = false;
+         active_vkb->release_all_keys(true);
+         active_vkb->visible = false;
       }
 
       (w > h) ? vkb_landscape = inst : vkb_portrait = inst;
-      impl = inst;
-      impl->start_anim();
+      active_vkb = inst;
    }
-
-   return impl;
 }
 
-mws_sp<mws_vkb_impl> mws_vkb::nwi_impl()
+mws_sp<mws_vkb_impl> mws_vkb::nwi_vkb()
 {
    uint32 w = pfm::screen::get_width();
    uint32 h = pfm::screen::get_height();
-   mws_sp<mws_vkb_impl> inst = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);// | mws_vrn_obj_types::cells);
+   mws_sp<mws_vkb_impl> inst = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);
 
    inst->file_store = get_file_store();
    attach(inst);

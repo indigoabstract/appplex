@@ -118,8 +118,8 @@ mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const { return nullptr; }
 void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store>) {}
 std::vector<mws_sp<gfx_tex>> mws_vkb::get_tex_list() { return std::vector<mws_sp<gfx_tex>>(); }
 void mws_vkb::done() {}
-mws_sp<mws_vkb_impl> mws_vkb::get_impl() { return nullptr; }
-mws_sp<mws_vkb_impl> mws_vkb::nwi_impl() { return nullptr; }
+mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb() { return nullptr; }
+mws_sp<mws_vkb_impl> mws_vkb::nwi_vkb() { return nullptr; }
 #endif
 
 #if !MOD_OMNIRECALL

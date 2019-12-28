@@ -139,12 +139,17 @@ public:
    virtual ~mws_virtual_keyboard() {}
    virtual key_types apply_key_modifiers(key_types i_key_id) const = 0;
    virtual void on_resize() = 0;
+   // directs the keyboard output to the target text_area
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
    virtual mws_sp<mws_font> get_font() = 0;
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt) = 0;
    virtual mws_sp<mws_vkb_file_store> get_file_store() const = 0;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) = 0;
    virtual std::vector<mws_sp<gfx_tex>> get_tex_list() = 0;
+   // explicitly loads the keyboard in a blocking or non-blocking way
+   virtual void load(bool i_blocking_load = false) = 0;
+   // if this returns true, then the keyboard needs to be (re)loaded first, which means a (potentially long) loading wait time
+   virtual bool upcoming_loading_wait() = 0;
 
 protected:
    mws_virtual_keyboard() {}

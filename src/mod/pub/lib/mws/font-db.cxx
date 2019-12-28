@@ -254,9 +254,16 @@ public:
       }
    }
 
-   std::string get_key(const std::string& i_font_file_name, float i_size)
+   std::string get_key(const std::string& i_font_file_name, float i_size, const mws_font_markup* i_mk)
    {
-      return i_font_file_name + mws_to_str_fmt("%.2f", i_size);
+      std::string key = i_font_file_name + mws_to_str_fmt("-%.2f", i_size);
+
+      if (i_mk && i_mk->rendermode != mws_font_rendermode::e_normal)
+      {
+         key += mws_to_str_fmt("-%d-%.2f", static_cast<uint32>(i_mk->rendermode), i_mk->outline_thickness);
+      }
+
+      return key;
    }
 
    mws_sp<mws_font> get_global_font() const
@@ -313,8 +320,8 @@ public:
       {
          const std::string& font_file_name = (font_file_name_0.empty()) ? global_font->get_file_name() : font_file_name_0;
          float font_size = i_font->get_size();
-         bool has_markup = i_font->has_markup();
-         std::string key = (has_markup) ? mws_to_str_fmt("markup-font-%d", markup_idx++) : get_key(font_file_name, font_size);
+         const mws_font_markup* markup = (i_font->has_markup()) ? &i_font->get_markup() : nullptr;
+         std::string key = get_key(font_file_name, font_size, markup);
          fnt_cache = font_size_ht[key];
 
          if (!fnt_cache)
@@ -361,11 +368,10 @@ public:
 
             font_size_ht[key] = fnt_cache;
 
-            if (has_markup)
+            if (markup)
             {
-               const mws_font_markup& mk = i_font->get_markup();
-               tex_font->rendermode = static_cast<ftgl::rendermode_t>(mk.rendermode);
-               tex_font->outline_thickness = mk.outline_thickness;
+               tex_font->rendermode = static_cast<ftgl::rendermode_t>(markup->rendermode);
+               tex_font->outline_thickness = markup->outline_thickness;
             }
          }
 
@@ -467,7 +473,6 @@ public:
    mws_sp<mws_font> global_font;
    bool reload_atlas = false;
    uint32 pow_of_two = 0;
-   static inline uint32 markup_idx = 0;
 };
 
 
@@ -574,17 +579,20 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
    int len = glm::min(i_text.length(), glyphs.size());
    glm::vec2 pen(0, get_height(i_font));
    float kerning = 0.0f;
+   float max_x = 0;
 
    for (int i = 0; i < len; ++i)
    {
       font_glyph glyph = glyphs[i];
-
       char ch = i_text[i];
       // ignore carriage returns
+
       if (ch < ' ')
       {
          if (ch == '\n')
          {
+            max_x = std::max(max_x, pen.x);
+            pen.x = 0;
             pen.y += i_font->get_height();
          }
          else if (ch == '\t')
@@ -615,6 +623,8 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
          }
       }
    }
+
+   pen.x = std::max(max_x, pen.x);
 
    return pen;
 }

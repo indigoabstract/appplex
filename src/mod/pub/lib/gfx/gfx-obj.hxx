@@ -26,7 +26,7 @@ public:
       e_mws,
    };
 
-   //const std::string& get_id();
+   virtual ~gfx_obj();
    virtual e_gfx_obj_type get_type()const = 0;
    virtual bool is_valid()const { return true; }
    mws_sp<gfx> gi();
@@ -35,11 +35,9 @@ protected:
    gfx_obj(mws_sp<gfx> i_gi);
    mws_sp<gfx_obj> get_inst();
 
-   //std::string oid;
-
 private:
    friend class gfx;
 
    mws_wp<gfx> g;
-   static uint32 obj_idx;
+   static inline uint32 obj_idx = 0;
 };

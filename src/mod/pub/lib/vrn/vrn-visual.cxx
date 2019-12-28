@@ -84,6 +84,12 @@ void mws_vrn_gen::init(mws_sp<mws_vrn_data> i_diag_data)
 // mws_vrn_cell_borders
 mws_sp<mws_vrn_cell_borders> mws_vrn_cell_borders::nwi() { return mws_sp<mws_vrn_cell_borders>(new mws_vrn_cell_borders()); }
 
+uint32 mws_vrn_cell_borders::get_cell_borders_mesh_size() const { return cell_borders_mesh_vect.size(); }
+
+mws_sp<gfx_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32 i_idx) const { return cell_borders_mesh_vect[i_idx]; }
+
+void mws_vrn_cell_borders::set_cell_borders_tex(mws_sp<gfx_tex> i_tex) { tex = i_tex; }
+
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
    const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
@@ -102,6 +108,11 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    std::vector<glm::vec3> nexus_side_dir_list;
    uint32 cell_count = i_point_count_list.size();
    std::vector<mws_sp<gfx_vxo>> borders_mesh_vect(cell_count);
+
+   for (mws_sp<gfx_vxo> border : cell_borders_mesh_vect)
+   {
+      border->detach();
+   }
 
    cell_borders_mesh_vect.clear();
 
@@ -602,7 +613,6 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       nexus_pairs_mesh->visible = diag_data->info.nexus_pairs_visible;
       (*nexus_pairs_mesh)[MP_SHADER_NAME] = vkb_line_sh;
       (*nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
-      (*nexus_pairs_mesh)["u_v1_depth_offset"] = 0.f;
       (*nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, alpha_val);
       (*nexus_pairs_mesh)[MP_CULL_FRONT] = false;
       (*nexus_pairs_mesh)[MP_CULL_BACK] = false;
@@ -685,51 +695,49 @@ void mws_vrn_geom::init_shaders()
    {
       auto vsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               layout (location = 0) in vec3 a_v3_position;
-               layout (location = 1) in vec2 a_v2_tex_coord;
+         layout (location = 0) in vec3 a_v3_position;
+         layout (location = 1) in vec2 a_v2_tex_coord;
 
-               uniform mat4 u_m4_model_view_proj;
+         uniform mat4 u_m4_model_view_proj;
 
-               smooth out vec2 v_v2_tex_coord;
+         smooth out vec2 v_v2_tex_coord;
 
-               void main()
-               {
-	               v_v2_tex_coord = a_v2_tex_coord;
-	               vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+         void main()
+         {
+	         v_v2_tex_coord = a_v2_tex_coord;
+	         vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
 	
-	               //v4_position.z -= u_v1_depth_offset;	
-	               //v4_position.z -= 0.001;	
-	               gl_Position = v4_position;
-               }
-               )"
-      );
+	         gl_Position = v4_position;
+         }
+         )"
+         );
 
       auto fsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               #ifdef GL_ES
-	               precision lowp float;
-               #endif
+         #ifdef GL_ES
+	         precision lowp float;
+         #endif
 
-               layout(location = 0) out vec4 v4_frag_color;
+         layout(location = 0) out vec4 v4_frag_color;
 
-               uniform vec4 u_v4_color;
-               uniform sampler2D u_s2d_tex;
+         uniform vec4 u_v4_color;
+         uniform sampler2D u_s2d_tex;
 
-               smooth in vec2 v_v2_tex_coord;
+         smooth in vec2 v_v2_tex_coord;
 
-               void main()
-               {
-	               vec4 v4_diff_color = texture(u_s2d_tex, v_v2_tex_coord);
-	               v4_frag_color = v4_diff_color * u_v4_color.a;
-               }
-               )"
-      );
+         void main()
+         {
+	         vec4 v4_diff_color = texture(u_s2d_tex, v_v2_tex_coord);
+	         v4_frag_color = v4_diff_color * u_v4_color.a;
+         }
+         )"
+         );
 
       vkb_cell_borders_shader = gfx::i()->shader.new_program_from_src(vkb_cell_borders_sh, vsh, fsh);
    }
@@ -740,67 +748,64 @@ void mws_vrn_geom::init_shaders()
    {
       auto vsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
+         layout(location = 0) in vec3 a_v3_position;
+         layout(location = 1) in vec4 a_v4_seg_data;
+         layout(location = 2) in vec4 a_iv4_color;
+         layout(location = 3) in vec2 a_v2_tex_coord;
 
-               layout(location = 0) in vec3 a_v3_position;
-               layout(location = 1) in vec4 a_v4_seg_data;
-               layout(location = 2) in vec4 a_iv4_color;
-               layout(location = 3) in vec2 a_v2_tex_coord;
+         uniform mat4 u_m4_model_view;
+         uniform mat4 u_m4_model_view_proj;
+         uniform mat4 u_m4_projection;
 
-               uniform mat4 u_m4_model_view;
-               uniform mat4 u_m4_model_view_proj;
-               uniform mat4 u_m4_projection;
+         uniform float u_v1_line_thickness;
 
-               uniform float u_v1_line_thickness;
-               uniform float u_v1_depth_offset;
+         flat out vec4 v_v4_color;
+         smooth out vec2 v_v2_tex_coord;
 
-               flat out vec4 v_v4_color;
-               out vec2 v_v2_tex_coord;
-
-               void main()
-               {
-	               vec3 v3_cam_dir = normalize(u_m4_model_view[3].xyz);
-	               vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
-	               vec3 v3_direction = (u_m4_model_view * vec4(a_v4_seg_data.xyz, 0.0)).xyz;
-	               vec3 vect = cross(v3_cam_dir, v3_direction);
-	               float vsize = a_v4_seg_data.w * u_v1_line_thickness;
+         void main()
+         {
+	         vec3 v3_cam_dir = normalize(u_m4_model_view[3].xyz);
+	         vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
+	         vec3 v3_direction = (u_m4_model_view * vec4(a_v4_seg_data.xyz, 0.0)).xyz;
+	         vec3 vect = cross(v3_cam_dir, v3_direction);
+	         float vsize = a_v4_seg_data.w * u_v1_line_thickness;
 	
-	               v3_position = v3_position + vect * vsize;
-	               v_v4_color = a_iv4_color;
-	               v_v2_tex_coord = a_v2_tex_coord;
+	         v3_position = v3_position + vect * vsize;
+	         v_v4_color = a_iv4_color;
+	         v_v2_tex_coord = a_v2_tex_coord;
 	
-	               vec4 v4_position = u_m4_projection * vec4(v3_position, 1.0);
+	         vec4 v4_position = u_m4_projection * vec4(v3_position, 1.0);
 	
-	               //v4_position.z -= u_v1_depth_offset;
-	               gl_Position = v4_position;
-               }
-               )"
-      );
+	         gl_Position = v4_position;
+         }
+         )"
+         );
 
       auto fsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               #ifdef GL_ES
-	               precision highp float;
-               #endif
+         #ifdef GL_ES
+	         precision highp float;
+         #endif
 
-               layout(location = 0) out vec4 v4_frag_color;
+         layout(location = 0) out vec4 v4_frag_color;
 
-               uniform vec4 u_v4_color;
+         uniform vec4 u_v4_color;
 
-               flat in vec4 v_v4_color;
-               in vec2 v_v2_tex_coord;
+         flat in vec4 v_v4_color;
+         in vec2 v_v2_tex_coord;
 
-               void main()
-               {
-	               v4_frag_color = u_v4_color;
-               }
-               )"
-      );
+         void main()
+         {
+	         v4_frag_color = u_v4_color;
+         }
+         )"
+         );
 
       vkb_line_shader = gfx::i()->shader.new_program_from_src(vkb_line_sh, vsh, fsh);
    }
@@ -811,56 +816,55 @@ void mws_vrn_geom::init_shaders()
    {
       auto vsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
+         layout(location = 0) in vec3 a_v3_position;
+         layout(location = 1) in vec2 a_v2_tex_coord;
 
-               layout(location = 0) in vec3 a_v3_position;
-               layout(location = 1) in vec2 a_v2_tex_coord;
+         uniform mat4 u_m4_model_view;
+         uniform mat4 u_m4_model_view_proj;
+         uniform mat4 u_m4_projection;
 
-               uniform mat4 u_m4_model_view;
-               uniform mat4 u_m4_model_view_proj;
-               uniform mat4 u_m4_projection;
+         uniform float u_v1_point_size;
 
-               uniform float u_v1_point_size;
+         smooth out vec2 v_v2_tex_coord;
 
-               out vec2 v_v2_tex_coord;
-
-               void main()
-               {
-	               float vsize = u_v1_point_size;
-	               vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
+         void main()
+         {
+	         float vsize = u_v1_point_size;
+	         vec3 v3_position = (u_m4_model_view * vec4(a_v3_position, 1.0)).xyz;
 	
-	               v_v2_tex_coord = a_v2_tex_coord;
-	               v3_position = v3_position + vec3(1., 0., 0.) * vsize * a_v2_tex_coord.x;
-	               v3_position = v3_position + vec3(0., 1., 0.) * vsize * a_v2_tex_coord.y;
+	         v_v2_tex_coord = a_v2_tex_coord;
+	         v3_position = v3_position + vec3(1., 0., 0.) * vsize * a_v2_tex_coord.x;
+	         v3_position = v3_position + vec3(0., 1., 0.) * vsize * a_v2_tex_coord.y;
 	
-	               gl_Position = u_m4_projection * vec4(v3_position, 1.0);
-               }
-               )"
-      );
+	         gl_Position = u_m4_projection * vec4(v3_position, 1.0);
+         }
+         )"
+         );
 
       auto fsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               #ifdef GL_ES
-	               precision highp float;	
-               #endif
+         #ifdef GL_ES
+	         precision highp float;	
+         #endif
 
-               layout(location = 0) out vec4 v4_frag_color;
+         layout(location = 0) out vec4 v4_frag_color;
 
-               uniform vec4 u_v4_color;
+         uniform vec4 u_v4_color;
 
-               in vec2 v_v2_tex_coord;
+         in vec2 v_v2_tex_coord;
 
-               void main()
-               {
-	               v4_frag_color = u_v4_color;
-               }
-               )"
-      );
+         void main()
+         {
+	         v4_frag_color = u_v4_color;
+         }
+         )"
+         );
 
       vkb_point_shader = gfx::i()->shader.new_program_from_src(vkb_point_sh, vsh, fsh);
    }
@@ -871,56 +875,56 @@ void mws_vrn_geom::init_shaders()
    {
       auto vsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               layout (location = 0) in vec3 a_v3_position;
-               layout (location = 1) in vec4 a_iv4_color;
-               layout (location = 2) in vec2 a_v2_tex_coord;
+         layout (location = 0) in vec3 a_v3_position;
+         layout (location = 1) in vec4 a_iv4_color;
+         layout (location = 2) in vec2 a_v2_tex_coord;
 
-               uniform mat4 u_m4_model;
-               uniform mat4 u_m4_model_view_proj;
-               uniform mat4 u_m4_projection;
-               uniform mat4 u_m4_view_inv;
+         uniform mat4 u_m4_model;
+         uniform mat4 u_m4_model_view_proj;
+         uniform mat4 u_m4_projection;
+         uniform mat4 u_m4_view_inv;
 
-               out vec2 v_v2_tex_coord;
-               out vec4 v_v4_color;
-               out vec3 v_v3_pos_ms;
-               out vec3 v_v3_pos_ws;
-               out vec3 v_v3_cam_dir_ws;
+         smooth out vec2 v_v2_tex_coord;
+         smooth out vec4 v_v4_color;
+         smooth out vec3 v_v3_pos_ms;
+         smooth out vec3 v_v3_pos_ws;
+         smooth out vec3 v_v3_cam_dir_ws;
 
-               void main()
-               {
-	               v_v2_tex_coord = a_v2_tex_coord;
-	               v_v4_color = a_iv4_color;
-	               v_v3_pos_ms = a_v3_position;
-	               v_v3_pos_ws = (u_m4_model * vec4(a_v3_position, 1.0)).xyz;
-	               v_v3_cam_dir_ws = normalize(v_v3_pos_ws - u_m4_view_inv[3].xyz);
+         void main()
+         {
+	         v_v2_tex_coord = a_v2_tex_coord;
+	         v_v4_color = a_iv4_color;
+	         v_v3_pos_ms = a_v3_position;
+	         v_v3_pos_ws = (u_m4_model * vec4(a_v3_position, 1.0)).xyz;
+	         v_v3_cam_dir_ws = normalize(v_v3_pos_ws - u_m4_view_inv[3].xyz);
 	
-	               gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-               }
-               )"
-      );
+	         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+         }
+         )"
+         );
 
       auto fsh = std::make_shared<std::string>(
          R"(
-               //@es #version 300 es
-               //@dt #version 330 core
+         //@es #version 300 es
+         //@dt #version 330 core
 
-               #ifdef GL_ES
-                  precision lowp float;
-               #endif
+         #ifdef GL_ES
+	         precision lowp float;
+         #endif
 
-               layout(location = 0) out vec4 v4_frag_color;
+         layout(location = 0) out vec4 v4_frag_color;
 
-               uniform vec4 u_v4_color;
+         uniform vec4 u_v4_color;
 
-               void main()
-               {
-	               v4_frag_color = u_v4_color;
-               }
-               )"
-      );
+         void main()
+         {
+	         v4_frag_color = u_v4_color;
+         }
+         )"
+         );
 
       vkb_triangle_shader = gfx::i()->shader.new_program_from_src(vkb_triangle_sh, vsh, fsh);
    }
@@ -928,6 +932,14 @@ void mws_vrn_geom::init_shaders()
 
 
 // mws_vrn_main
+mws_vrn_main::~mws_vrn_main()
+{
+   if (vgeom->get_parent())
+   {
+      vgeom->detach();
+   }
+}
+
 mws_sp<mws_vrn_main> mws_vrn_main::nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
 {
    mws_sp<mws_vrn_main> inst(new mws_vrn_main());

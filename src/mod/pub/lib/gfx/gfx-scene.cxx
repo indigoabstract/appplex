@@ -38,6 +38,8 @@ const glm::mat4& gfx_transform::get_global_tf_mx() const { return global_tf_mx; 
 
 gfx_node::gfx_node(mws_sp<gfx> i_gi) : gfx_obj(i_gi), name(this), visible(this) { node_type = regular_node; visible = true; }
 
+gfx_node::~gfx_node() {}
+
 gfx_obj::e_gfx_obj_type gfx_node::get_type()const { return e_node; }
 
 mws_sp<gfx_node> gfx_node::get_mws_sp() { return std::static_pointer_cast<gfx_node>(get_inst()); }

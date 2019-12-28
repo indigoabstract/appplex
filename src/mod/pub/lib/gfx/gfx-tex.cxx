@@ -531,7 +531,7 @@ int gfx_tex::gen_texture_gl_id()
 
    glGenTextures(1, &tex_id);
 
-   mws_print("gfx-info: gen_texture_gl_id [ %d ]\n", tex_id);
+   mws_print("gfx-info: gen tex id [ %d ] name [ %s ]\n", tex_id, tex_name.c_str());
    mws_report_gfx_errs();
 
    return tex_id;

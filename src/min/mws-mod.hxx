@@ -104,9 +104,8 @@ public:
    mws_sp<mws_mod_preferences> get_preferences();
    // true to exit app, false to continue
    virtual bool back();
-   bool rsk_was_hit(int x0, int y0);
-   int schedule_operation(const std::function<void()>& ioperation);
-   bool cancel_operation(int ioperation_id);
+   void enq_op_on_next_frame_start(const std::function<void()>& i_op);
+   void enq_op_on_crt_frame_end(const std::function<void()>& i_op);
    /// return a reference to the app_impl implementation
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
    bool i_m_is_null() const { return p.get() == nullptr; }
@@ -174,7 +173,8 @@ private:
    std::string proj_rel_path;
    mws_wp<mws_mod> parent;
    bool init_val;
-   std::vector<std::function<void()> > operation_list;
+   std::vector<std::function<void()>> operation_list;
+   std::vector<std::function<void()>> end_of_frame_op_list;
    std::mutex operation_mutex;
 
    static int mod_count;

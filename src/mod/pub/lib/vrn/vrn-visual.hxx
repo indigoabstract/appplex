@@ -62,9 +62,12 @@ class mws_vrn_cell_borders : public gfx_node
 {
 public:
    static mws_sp<mws_vrn_cell_borders> nwi();
+   uint32 get_cell_borders_mesh_size() const;
+   mws_sp<gfx_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
+   void set_cell_borders_tex(mws_sp<gfx_tex> i_tex);
    void set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list);
 
-//protected:
+protected:
    mws_vrn_cell_borders();
 
    std::vector<mws_sp<gfx_vxo>> cell_borders_mesh_vect;
@@ -129,14 +132,17 @@ private:
 class mws_vrn_main
 {
 public:
+   ~mws_vrn_main();
    static mws_sp<mws_vrn_main> nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam);
    void init();
    void toggle_voronoi_object(uint32 i_obj_type_mask);
    void update_diag();
    void update_geometry();
+   // resizes the diagram using the existing kernel point set
    void resize(uint32 i_diag_width, uint32 i_diag_height);
    const mws_sp<mws_vrn_data> get_diag_data() const;
    void update_nexus_pairs_geometry();
+   // creates a new diagram using a new set of kernel points
    void set_kernel_points(std::vector<glm::vec2> i_kernel_points);
    mws_vrn_diag::idx_dist get_kernel_idx_at(float i_x, float i_y) const;
    void move_kernel_to(uint32 i_idx, float i_x, float i_y);

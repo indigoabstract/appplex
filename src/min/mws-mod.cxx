@@ -868,6 +868,7 @@ bool mws_mod::handle_function_key(key_types i_key)
 
    return key_handled;
 }
+
 void mws_mod::config_font_db_size()
 {
 #if MOD_VECTOR_FONTS
@@ -975,35 +976,18 @@ void mws_mod::unload()
 {
 }
 
-bool mws_mod::rsk_was_hit(int x0, int y0)
-{
-   int w = 32, h = 32;
-   int radius = std::max(w, h) / 2;
-   int cx = get_width() - w / 2 - 4;
-   int cy = get_height() - h / 2 - 4;
-   int dx = cx - x0;
-   int dy = cy - y0;
-
-   if ((int)sqrtf(float(dx* dx + dy * dy)) <= radius)
-   {
-      return true;
-   }
-
-   return false;
-}
-
-int mws_mod::schedule_operation(const std::function<void()> & ioperation)
+void mws_mod::enq_op_on_next_frame_start(const std::function<void()>& i_op)
 {
    operation_mutex.lock();
-   operation_list.push_back(ioperation);
+   operation_list.push_back(i_op);
    operation_mutex.unlock();
-
-   return 0;
 }
 
-bool mws_mod::cancel_operation(int ioperation_id)
+void mws_mod::enq_op_on_crt_frame_end(const std::function<void()>& i_op)
 {
-   return false;
+   operation_mutex.lock();
+   end_of_frame_op_list.push_back(i_op);
+   operation_mutex.unlock();
 }
 
 bool mws_mod::back()
@@ -1065,6 +1049,16 @@ void mws_mod::run_step()
    }
 
    update();
+
+   if (!end_of_frame_op_list.empty())
+   {
+      for (const auto& function : end_of_frame_op_list)
+      {
+         function();
+      }
+
+      end_of_frame_op_list.clear();
+   }
 
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 

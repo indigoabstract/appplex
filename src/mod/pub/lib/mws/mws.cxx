@@ -583,7 +583,6 @@ void mws_page_tab::show_keyboard(mws_sp<mws_text_area> i_tbx)
 
       kb->visible = true;
       kb->set_target(i_tbx);
-      mws_println("mws_page_tab::show_keyboard");
    }
 }
 

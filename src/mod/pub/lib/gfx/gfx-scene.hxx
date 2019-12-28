@@ -51,6 +51,7 @@ public:
    };
 
    gfx_node(mws_sp<gfx> i_gi);
+   virtual ~gfx_node();
    virtual e_gfx_obj_type get_type() const override;
    mws_sp<gfx_node> get_mws_sp();
    mws_sp<gfx_node> get_parent() const;

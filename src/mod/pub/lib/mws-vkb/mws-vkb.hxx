@@ -92,6 +92,8 @@ public:
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt);
    virtual void start_anim();
    virtual void done();
+   // returns keyboard dimensions
+   glm::ivec2 get_dimensions() const;
    std::string get_key_name(key_types i_key_id) const;
    key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
@@ -123,12 +125,12 @@ public:
    mws_sp<mws_vrn_main> vk;
    int selected_kernel_idx = -1;
    int current_key_idx = -1;
-   glm::vec2 diag_dim = glm::vec2(0.f);
    bool keys_visible = true;
    std::string loaded_filename;
 
 protected:
    void setup_font_dimensions();
+   void init_shaders();
    void set_key_transparency(float i_alpha);
    void draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
    void set_key_vect_size(uint32 i_size);
@@ -147,7 +149,10 @@ protected:
    // call this after modifying / inserting / deleting a base key (a mod_node key)
    void rebuild_key_state();
 
+   bool build_textures = true;
    uint32 obj_type_mask = 0;
+   glm::ivec2 vkb_dim = glm::ivec2(0);
+   glm::vec2 diag_original_dim = glm::vec2(0.f);
    key_mod_types key_mod = key_mod_types::mod_none;
    std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
    std::unordered_map<key_types, std::string> key_map;
@@ -172,6 +177,10 @@ protected:
    std::vector<mws_gfx_ppb> keys_tex;
    mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
+   inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
+   inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
+   mws_sp<gfx_shader> vkb_keys_fonts_shader;
+   mws_sp<gfx_shader> vkb_keys_outline_shader;
 };
 
 
@@ -191,18 +200,22 @@ public:
    virtual mws_sp<mws_vkb_file_store> get_file_store() const override;
    virtual void set_file_store(mws_sp<mws_vkb_file_store> i_store) override;
    virtual std::vector<mws_sp<gfx_tex>> get_tex_list() override;
+   virtual void load(bool i_blocking_load = false) override;
+   virtual bool upcoming_loading_wait() override;
 
 protected:
    mws_vkb();
    virtual void setup() override;
    // when finished, call this to hide the keyboard
    virtual void done();
-   virtual mws_sp<mws_vkb_impl> get_impl();
-   virtual mws_sp<mws_vkb_impl> nwi_impl();
+   virtual std::function<void()> get_waiting_msg_op();
+   virtual mws_sp<mws_vkb_impl> get_active_vkb();
+   virtual void nwi_inex();
+   virtual mws_sp<mws_vkb_impl> nwi_vkb();
 
    mws_sp<mws_vkb_file_store> file_store;
    // points to the current active vkb
-   mws_sp<mws_vkb_impl> impl;
+   mws_sp<mws_vkb_impl> active_vkb;
    // points to the first vkb loaded, which contains the filestore
    mws_sp<mws_vkb_impl> vkb_file_store;
    // two vkbs are used, one for landscape, one for portrait orientations
@@ -211,5 +224,6 @@ protected:
    bool size_changed = false;
    mws_sp<mws_text_area> ta;
    std::string vkb_filename;
-   static mws_sp<mws_vkb> inst;
+   std::function<void()> show_waiting_msg_op;
+   static inline mws_sp<mws_vkb> inst;
 };
