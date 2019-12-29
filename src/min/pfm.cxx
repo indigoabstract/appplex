@@ -1450,6 +1450,14 @@ bool pfm::has_touchscreen()
    return false;
 }
 
+bool pfm::uses_touchscreen()
+{
+   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+   bool uses_touchscreen = (mod) ? mod->get_preferences()->emulate_mobile_screen() : false;
+
+   return has_touchscreen() || uses_touchscreen;
+}
+
 mws_sp<pfm_main> pfm::get_pfm_main_inst()
 {
    return pfm_app_inst;

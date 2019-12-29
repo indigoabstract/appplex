@@ -245,7 +245,7 @@ public:
    virtual glm::vec2 get_dim() const;
    mws_sp<mws> get_mws_at(uint32 i_idx);
    virtual bool is_selected(mws_sp<mws> i_item);
-   virtual void select(mws_sp<mws> i_item);
+   virtual void set_focus(mws_sp<mws> i_item, bool i_set_focus = true);
 
 protected:
    mws_page();
@@ -268,7 +268,7 @@ public:
    virtual void set_size(float i_width, float i_height);
    mws_sp<mws_page> get_page();
    virtual bool has_focus();
-   virtual void select();
+   virtual void set_focus(bool i_set_focus = true);
 
 protected:
    mws_page_item();

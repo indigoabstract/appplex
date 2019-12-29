@@ -16,6 +16,14 @@ class text_vxo;
 class mws_text_box : public mws_text_area
 {
 public:
+   enum cursor_types
+   {
+      e_left_cursor,
+      e_middle_vbar_cursor,
+      e_middle_cursor,
+      e_right_cursor,
+   };
+
    static mws_sp<mws_text_box> nwi();
    void setup() override;
    virtual bool is_action_key(key_types i_key) const override;
@@ -39,6 +47,7 @@ public:
    virtual void on_focus_changed(bool i_has_focus);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_text();
+   mws_rect get_cursor(cursor_types i_cursor_type, bool i_absolute_pos = true);
    virtual void update_gfx_cursor();
 
    // called after a click inside the text box

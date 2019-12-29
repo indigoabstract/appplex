@@ -416,7 +416,10 @@ public:
 
 
    static platform_id get_platform_id();
+   // true if device has a touchscreen
    static bool has_touchscreen();
+   // true if device has an active touchscreen or emulates one
+   static bool uses_touchscreen();
    static gfx_type_id get_gfx_type_id();
    static mws_sp<pfm_main> get_pfm_main_inst();
 

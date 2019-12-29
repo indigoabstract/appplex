@@ -52,6 +52,11 @@ void mws_text_box::do_action()
    {
       on_action();
    }
+
+   if (pfm::uses_touchscreen())
+   {
+      set_focus(false);
+   }
 }
 
 bool mws_text_box::is_editable() const
@@ -510,6 +515,64 @@ void mws_text_box::update_text()
    update_gfx_cursor();
 }
 
+mws_rect mws_text_box::get_cursor(cursor_types i_cursor_type, bool i_absolute_pos)
+{
+   mws_rect cursor;
+
+   switch (i_cursor_type)
+   {
+   case mws_text_box::e_left_cursor:
+      if (cursor_left)
+      {
+         cursor = *cursor_left;
+      }
+      break;
+
+   case mws_text_box::e_right_cursor:
+      if (cursor_right)
+      {
+         cursor = *cursor_right;
+      }
+      break;
+
+   case mws_text_box::e_middle_vbar_cursor:
+      if (cursor_right)
+      {
+         cursor = *cursor_right;
+         cursor.w = 0;
+      }
+      else if (cursor_left)
+      {
+         cursor = *cursor_left;
+         cursor.x += cursor.w;
+         cursor.w = 0;
+      }
+      break;
+
+   case mws_text_box::e_middle_cursor:
+      if (cursor_right)
+      {
+         cursor = *cursor_right;
+         cursor.x -= cursor.w / 2.f;
+      }
+      else if (cursor_left)
+      {
+         cursor = *cursor_left;
+         cursor.x += cursor.w / 2.f;
+      }
+      break;
+   }
+
+
+   if (i_absolute_pos && cursor.h > 0)
+   {
+      cursor.x += pos.x;
+      cursor.y += pos.y;
+   }
+
+   return cursor;
+}
+
 void mws_text_box::update_gfx_cursor()
 {
    if (cursor_row_idx >= tx_rows.size())
@@ -652,7 +715,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
    {
       if (is_editable())
       {
-         if (pfm::has_touchscreen() || get_mod()->get_preferences()->emulate_mobile_screen())
+         if (pfm::uses_touchscreen())
          {
             auto inst = static_pointer_cast<mws_text_area>(get_instance());
             get_mws_root()->show_keyboard(inst);

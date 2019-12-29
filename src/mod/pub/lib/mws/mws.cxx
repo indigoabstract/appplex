@@ -963,21 +963,36 @@ bool mws_page::is_selected(mws_sp<mws> i_item)
    return i_item == selected_item;
 }
 
-void mws_page::select(mws_sp<mws> i_item)
+void mws_page::set_focus(mws_sp<mws> i_item, bool i_set_focus)
 {
    if (contains_mws(i_item))
    {
-      if (selected_item)
+      if (i_set_focus && (i_item != selected_item))
       {
-         i_item->on_focus_changed(false);
-      }
+         if (selected_item)
+         {
+            i_item->on_focus_changed(false);
+         }
 
-      selected_item = i_item;
-      selected_item->on_focus_changed(true);
+         selected_item = i_item;
+         selected_item->on_focus_changed(true);
+      }
+      else
+      {
+         if (i_item == selected_item)
+         {
+            selected_item->on_focus_changed(false);
+            selected_item = nullptr;
+         }
+         else
+         {
+            mws_println("mws_page::set_focus[ i_item was not focused ]");
+         }
+      }
    }
    else
    {
-      mws_println("mws_page::select[ i_item is not in mws_page ]");
+      mws_println("mws_page::set_focus[ i_item is not in mws_page ]");
    }
 }
 
@@ -1031,9 +1046,9 @@ bool mws_page_item::has_focus()
    return parent->is_selected(get_instance());
 }
 
-void mws_page_item::select()
+void mws_page_item::set_focus(bool i_set_focus)
 {
-   get_page()->select(get_instance());
+   get_page()->set_focus(get_instance(), i_set_focus);
 }
 
 mws_page_item::mws_page_item() {}
