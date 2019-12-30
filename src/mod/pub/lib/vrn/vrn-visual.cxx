@@ -95,12 +95,6 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
    const float z_pos = 1.f;
 
-   struct vx_fmt_3f_2f
-   {
-      glm::vec3 pos;
-      glm::vec2 tex;
-   };
-
    std::vector<glm::vec3> cell_nexus_list;
    // ortho dir for each edge
    std::vector<glm::vec3> edge_ortho_dir_list;
@@ -122,21 +116,23 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       mws_sp<gfx_vxo> border = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
       uint32 vx_count = cell_nexus_count * 4;
       uint32 ix_count = cell_nexus_count * 6;
+      gfx_vxo& rvxo = *border;
 
-      border->set_size(vx_count, ix_count);
-      border->camera_id_list = { "mws_cam" };
-      border->name = "voronoi_cell_borders";
-      border->visible = false;
-      (*border)[MP_SHADER_NAME] = vkb_cell_borders_sh;
-      (*border)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
-      (*border)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
-      (*border)[MP_DEPTH_TEST] = false;
-      (*border)[MP_CULL_FRONT] = false;
-      (*border)[MP_CULL_BACK] = false;
-      (*border)[MP_BLENDING] = MV_ADD;
+      rvxo.set_keep_geometry_data(true);
+      rvxo.set_size(vx_count, ix_count);
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "voronoi_cell_borders";
+      rvxo.visible = false;
+      rvxo[MP_SHADER_NAME] = vkb_cell_borders_sh;
+      rvxo["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ADD;
+      rvxo.position = glm::vec3(0, 0, 0.1f);
       borders_mesh_vect[k] = border;
       attach(border);
-      border->position = glm::vec3(0, 0, 0.1f);
    }
 
    // loop through each cell and build its contour
@@ -661,15 +657,14 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
    }
    // attach them into the scene
    {
-      auto node = get_mws_sp();
-      node->name = "vrn-geom";
-      node->attach(delaunay_diag_mesh);
-      node->attach(nexus_pairs_mesh);
-      node->attach(convex_hull_mesh);
-      node->attach(voronoi_kernels_mesh);
-      node->attach(voronoi_nexus_mesh);
-      node->attach(voronoi_cell_faces_mesh);
-      node->attach(cell_borders);
+      name = "vrn-geom";
+      attach(delaunay_diag_mesh);
+      attach(nexus_pairs_mesh);
+      attach(convex_hull_mesh);
+      attach(voronoi_kernels_mesh);
+      attach(voronoi_nexus_mesh);
+      attach(voronoi_cell_faces_mesh);
+      attach(cell_borders);
    }
    {
       mws_sp<gfx_plane> quad_mesh(new gfx_plane());
@@ -683,7 +678,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
       r_quad_mesh.set_dimensions((float)diag_data->info.diag_width, (float)diag_data->info.diag_height);
       r_quad_mesh.position = glm::vec3(0, 0, -0.5f);
       quad_mesh->camera_id_list = { i_cam->camera_id() };
-      //node->attach(quad_mesh);
+      //attach(quad_mesh);
    }
 }
 
@@ -1094,6 +1089,11 @@ void mws_vrn_main::set_kernel_points(std::vector<glm::vec2> i_kernel_points)
 mws_vrn_diag::idx_dist mws_vrn_main::get_kernel_idx_at(float i_x, float i_y) const
 {
    return vgen->voronoi_diag_impl->get_kernel_idx_at(i_x, i_y);
+}
+
+glm::vec2 mws_vrn_main::get_kernel_at(uint32 i_idx) const
+{
+   return vgen->voronoi_diag_impl->get_kernel_at(i_idx);
 }
 
 void mws_vrn_main::move_kernel_to(uint32 i_idx, float i_x, float i_y)

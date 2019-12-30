@@ -102,7 +102,10 @@ void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gf
       {
          for (auto it = children.begin(); it != children.end(); it++)
          {
-            (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+            if ((*it)->visible)
+            {
+               (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+            }
          }
       }
    }
@@ -971,7 +974,7 @@ void mws_page::set_focus(mws_sp<mws> i_item, bool i_set_focus)
       {
          if (selected_item)
          {
-            i_item->on_focus_changed(false);
+            selected_item->on_focus_changed(false);
          }
 
          selected_item = i_item;

@@ -123,9 +123,6 @@ public:
 
    mws_sp<mws_vkb_file_store> file_store;
    mws_sp<mws_vrn_main> vk;
-   int selected_kernel_idx = -1;
-   int current_key_idx = -1;
-   bool keys_visible = true;
    std::string loaded_filename;
 
 protected:
@@ -133,6 +130,7 @@ protected:
    void init_shaders();
    void set_key_transparency(float i_alpha);
    void draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
+   void show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx);
    void set_key_vect_size(uint32 i_size);
    void set_key_at(int i_idx, key_types i_key_id);
    void erase_key_at(int i_idx);
@@ -177,6 +175,7 @@ protected:
    std::vector<mws_gfx_ppb> keys_tex;
    mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
+   mws_sp<gfx_vxo> pressed_key;
    inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
    inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
    mws_sp<gfx_shader> vkb_keys_fonts_shader;

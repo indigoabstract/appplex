@@ -126,6 +126,7 @@ private:
 class mws_vkb_file_store
 {
 public:
+   virtual ~mws_vkb_file_store() {}
    virtual std::vector<vkb_file_info> get_vkb_list() = 0;
    virtual bool file_exists(const std::string& i_vkb_filename) = 0;
    virtual void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) = 0;
@@ -279,9 +280,18 @@ protected:
 class mws_text_area : public mws_page_item
 {
 public:
+   enum cursor_types
+   {
+      e_left_cursor,
+      e_middle_vbar_cursor,
+      e_middle_cursor,
+      e_right_cursor,
+   };
+
    virtual ~mws_text_area() {}
    virtual void do_action() {}
    virtual bool is_action_key(key_types i_key) const { return false; }
+   virtual mws_rect get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos = true) = 0;
    virtual void set_text(const std::string& i_text) = 0;
 
 protected:

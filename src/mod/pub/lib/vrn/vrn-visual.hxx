@@ -61,6 +61,12 @@ private:
 class mws_vrn_cell_borders : public gfx_node
 {
 public:
+   struct vx_fmt_3f_2f
+   {
+      glm::vec3 pos;
+      glm::vec2 tex;
+   };
+
    static mws_sp<mws_vrn_cell_borders> nwi();
    uint32 get_cell_borders_mesh_size() const;
    mws_sp<gfx_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
@@ -145,6 +151,7 @@ public:
    // creates a new diagram using a new set of kernel points
    void set_kernel_points(std::vector<glm::vec2> i_kernel_points);
    mws_vrn_diag::idx_dist get_kernel_idx_at(float i_x, float i_y) const;
+   glm::vec2 get_kernel_at(uint32 i_idx) const;
    void move_kernel_to(uint32 i_idx, float i_x, float i_y);
    void insert_kernel_at(float i_x, float i_y);
    void remove_kernel(uint32 i_idx);

@@ -60,6 +60,13 @@ public:
       return ret;
    }
 
+   virtual glm::vec2 get_kernel_at(uint32 i_idx) const override
+   {
+      mws_assert(i_idx < kernels_list.size());
+      const jcv_point& ker = kernels_list[i_idx];
+      return glm::vec2(ker.x, ker.y);
+   }
+
    virtual void update_data() override
    {
       mws_sp<mws_vrn_data> vdata = vrn_data.lock();

@@ -54,7 +54,10 @@ void gfx_node::add_to_draw_list(const std::string & i_camera_id, std::vector<mws
 {
    for (auto it = children.begin(); it != children.end(); it++)
    {
-      (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+      if ((*it)->visible)
+      {
+         (*it)->add_to_draw_list(i_camera_id, i_opaque, i_translucent);
+      }
    }
 }
 
@@ -316,7 +319,10 @@ void gfx_scene::draw()
 
       for (auto it = children.begin(); it != children.end(); it++)
       {
-         (*it)->add_to_draw_list(camera_id, opaque_obj_list, translucent_obj_list);
+         if ((*it)->visible)
+         {
+            (*it)->add_to_draw_list(camera_id, opaque_obj_list, translucent_obj_list);
+         }
       }
 
       if (cam->sort_function)

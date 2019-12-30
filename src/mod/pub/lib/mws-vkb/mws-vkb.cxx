@@ -927,6 +927,37 @@ void mws_vkb_impl::build_keys_tex()
    (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, true);
    g->set_text_blending(MV_ALPHA);
    set_key_transparency(0.f);
+
+   {
+      mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(0);
+      pressed_key = mws_sp<gfx_vxo>(new gfx_vxo(cell_border->get_vx_info()));
+      uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
+      uint32 ix_count = cell_border->get_ix_buffer().size();
+      gfx_vxo& rvxo = *pressed_key;
+
+      rvxo.set_size(vx_count, ix_count);
+      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
+      ks_indices_data = cell_border->get_ix_buffer();
+      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
+      ks_vertices_data = cell_border->get_vx_buffer();
+      rvxo.update_data();
+
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "mws-vkb-pressed-key";
+      rvxo.visible = false;
+      rvxo[MP_SHADER_NAME] = vkb_cell_borders_sh;
+      rvxo["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = cell_border_tex;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ADD;
+      rvxo.position = glm::vec3(0);
+      // pressed_key must be drawn on top of the keyboard
+      rvxo.position = glm::vec3(0.f, 0.f, 1.f);
+      attach(pressed_key);
+   }
 }
 
 bool mws_vkb_impl::is_mod_key(key_types i_key_id)
@@ -1181,6 +1212,28 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_f
    }
 }
 
+void mws_vkb_impl::show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx)
+{
+   glm::vec2 ker_pos = vk->get_kernel_at(i_kernel_idx);
+   mws_rect cursor_pos = i_ta->get_cursor_rect(mws_text_area::e_middle_vbar_cursor);
+
+   mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_kernel_idx);
+   //pressed_key = mws_sp<gfx_vxo>(new gfx_vxo(cell_border->get_vx_info()));
+   uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
+   uint32 ix_count = cell_border->get_ix_buffer().size();
+   gfx_vxo& rvxo = *pressed_key;
+
+   rvxo.set_size(vx_count, ix_count);
+   std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
+   ks_indices_data = cell_border->get_ix_buffer();
+   std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
+   ks_vertices_data = cell_border->get_vx_buffer();
+   rvxo.update_data();
+
+   pressed_key->visible = true;
+   pressed_key->position = glm::vec3(cursor_pos.x - ker_pos.x, cursor_pos.y - ker_pos.y, 1.f);
+}
+
 void mws_vkb_impl::set_key_vect_size(uint32 i_size)
 {
    for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
@@ -1235,6 +1288,7 @@ bool mws_vkb_impl::touch_began(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
          {
             auto& kc = get_mod()->key_ctrl_inst;
             kc->key_pressed(key_types(pos_idx));
+            //show_pressed_key(i_ta, pos_idx);
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch))

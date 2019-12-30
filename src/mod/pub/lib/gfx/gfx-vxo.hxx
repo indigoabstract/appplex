@@ -133,15 +133,15 @@ public:
    virtual ~gfx_vxo();
    virtual e_gfx_obj_type get_type()const override;
    bool is_translucent();
-   virtual void set_mesh_name(const std::string& imesh_name);
-   virtual void operator=(const std::string& imesh_name);
+   virtual void set_mesh_name(const std::string& i_mesh_name);
+   virtual void operator=(const std::string& i_mesh_name);
    std::vector<uint8>& get_vx_buffer();
    std::vector<gfx_indices_type>& get_ix_buffer();
-   virtual void set_data(const std::vector<uint8>& ivertices_buffer, const std::vector<gfx_indices_type>& iindices_buffer);
+   virtual void set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer);
    void update_data();
-   virtual gfx_material_entry& operator[](const std::string iname);
+   virtual gfx_material_entry& operator[](const std::string i_name);
    mws_sp<gfx_material> get_material();
-   void set_material(mws_sp<gfx_material> imaterial);
+   void set_material(mws_sp<gfx_material> i_material);
    vx_info& get_vx_info();
    void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent) override;
 
@@ -155,10 +155,11 @@ public:
    virtual void draw_in_sync(mws_sp<gfx_camera> i_camera) override;
 
    void push_material_params(mws_sp<gfx_material> i_mat);
-   void set_size(int ivx_count, int i_idx_count);
+   void set_size(uint32 i_vx_count, uint32 i_idx_count);
+   void set_keep_geometry_data(bool i_keep_geometry_data);
 
    std::vector<std::string> camera_id_list;
-   gfx_primitive render_method;
+   gfx_primitive render_method = GLPT_TRIANGLES;
 
 protected:
    friend class gfx;
@@ -170,20 +171,19 @@ protected:
 
    vx_info vxi;
    std::string mesh_name;
-   bool name_changed;
-   bool setup_tangent_basis;
+   bool name_changed = false;
+   bool setup_tangent_basis = false;
    mws_sp<gfx_material> material;
    std::vector<uint8> vertices_buffer;
    std::vector<uint8> aux_vertices_buffer;
    std::vector<gfx_indices_type> indices_buffer;
-   uint32 index_count;
-   int vx_count;
-   int idx_count;
-   gfx_uint array_buffer_id;
-   gfx_uint elem_buffer_id;
-   bool buffer_changed;
-   bool is_submesh;
+   uint32 vx_count = 0;
+   uint32 idx_count = 0;
+   gfx_uint array_buffer_id = 0;
+   gfx_uint elem_buffer_id = 0;
+   bool buffer_changed = false;
+   bool is_submesh = false;
    std::vector<gfx_param> plist;
    static gfx_uint method_type[];
-   bool keep_geometry_data;
+   bool keep_geometry_data = false;
 };

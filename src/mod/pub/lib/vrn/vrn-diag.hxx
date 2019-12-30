@@ -1,7 +1,9 @@
 #pragma once
 
 #include "pfm-def.h"
+#include <glm/vec2.hpp>
 #include <vector>
+
 
 class mws_vrn_data;
 
@@ -20,6 +22,7 @@ public:
    virtual void init_data(mws_sp<mws_vrn_data> i_vdata, std::vector<float>& vx, std::vector<float>& vy) = 0;
    virtual const mws_sp<mws_vrn_data> get_data() const = 0;
    virtual idx_dist get_kernel_idx_at(float i_x, float i_y) const = 0;
+   virtual glm::vec2 get_kernel_at(uint32 i_idx) const = 0;
    virtual void update_data() = 0;
    virtual void move_kernel_to(uint32 i_idx, float i_x, float i_y) = 0;
    virtual void insert_kernel_at(float i_x, float i_y) = 0;

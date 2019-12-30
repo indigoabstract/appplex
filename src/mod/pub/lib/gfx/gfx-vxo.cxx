@@ -41,41 +41,20 @@ gfx_uint gfx_vxo::method_type[] =
 
 gfx_vxo::gfx_vxo(vx_info i_vxi, mws_sp<gfx> i_gi) : gfx_node(i_gi)
 {
-   keep_geometry_data = false;
-   vx_count = 0;
-   idx_count = 0;
    vxi = i_vxi;
-   name_changed = false;
    setup_tangent_basis = vxi.has_tangent_basis;
    camera_id_list.push_back("default");
    scaling = glm::vec3(1.f);
-   render_method = GLPT_TRIANGLES;
-   is_submesh = false;
-   array_buffer_id = elem_buffer_id = 0;
-   index_count = 0;
-   buffer_changed = false;
-
-   if (!is_submesh)
-   {
-      material = gfx_material::nwi();
-   }
+   material = gfx_material::nwi();
 }
 
 gfx_vxo::gfx_vxo(vx_info i_vxi, bool i_is_submesh, mws_sp<gfx> i_gi) : gfx_node(i_gi)
 {
-   keep_geometry_data = false;
-   vx_count = 0;
-   idx_count = 0;
    vxi = i_vxi;
-   name_changed = false;
    setup_tangent_basis = vxi.has_tangent_basis;
    camera_id_list.push_back("default");
    scaling = glm::vec3(1.f);
-   render_method = GLPT_TRIANGLES;
    is_submesh = i_is_submesh;
-   array_buffer_id = elem_buffer_id = 0;
-   index_count = 0;
-   buffer_changed = false;
 
    if (!is_submesh)
    {
@@ -108,15 +87,15 @@ bool gfx_vxo::is_translucent()
    return false;
 }
 
-void gfx_vxo::set_mesh_name(const std::string& imesh_name)
+void gfx_vxo::set_mesh_name(const std::string& i_mesh_name)
 {
-   mesh_name = imesh_name;
+   mesh_name = i_mesh_name;
    name_changed = true;
 }
 
-void gfx_vxo::operator=(const std::string& imesh_name)
+void gfx_vxo::operator=(const std::string& i_mesh_name)
 {
-   set_mesh_name(imesh_name);
+   set_mesh_name(i_mesh_name);
 }
 
 std::vector<uint8>& gfx_vxo::get_vx_buffer()
@@ -129,11 +108,11 @@ std::vector<gfx_indices_type>& gfx_vxo::get_ix_buffer()
    return indices_buffer;
 }
 
-void gfx_vxo::set_data(const std::vector<uint8>& ivertices_buffer, const std::vector<gfx_indices_type>& iindices_buffer)
+void gfx_vxo::set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer)
 {
-   vertices_buffer = ivertices_buffer;
-   indices_buffer = iindices_buffer;
-   index_count = indices_buffer.size();
+   vertices_buffer = i_vertices_buffer;
+   indices_buffer = i_indices_buffer;
+   idx_count = indices_buffer.size();
    buffer_changed = true;
 
    if (vxi.uses_tangent_basis && vxi.has_tangent_basis && setup_tangent_basis)
@@ -175,9 +154,9 @@ mws_sp<gfx_material> gfx_vxo::get_material()
    return material;
 }
 
-void gfx_vxo::set_material(mws_sp<gfx_material> imaterial)
+void gfx_vxo::set_material(mws_sp<gfx_material> i_material)
 {
-   material = imaterial;
+   material = i_material;
    material->set_mesh(static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
@@ -629,13 +608,17 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
    }
 }
 
-void gfx_vxo::set_size(int ivx_count, int i_idx_count)
+void gfx_vxo::set_size(uint32 i_vx_count, uint32 i_idx_count)
 {
-   vx_count = ivx_count;
+   vx_count = i_vx_count;
    idx_count = i_idx_count;
    vertices_buffer.resize(vx_count * vxi.vertex_size);
    indices_buffer.resize(idx_count);
-   index_count = indices_buffer.size();
+}
+
+void gfx_vxo::set_keep_geometry_data(bool i_keep_geometry_data)
+{
+   keep_geometry_data = i_keep_geometry_data;
 }
 
 void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
@@ -678,7 +661,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
       glBindBuffer(GL_ARRAY_BUFFER, array_buffer_id);
       glBufferData(GL_ARRAY_BUFFER, size, begin_ptr(vertices_buffer), GL_STATIC_DRAW);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elem_buffer_id);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * index_count, begin_ptr(indices_buffer), GL_STATIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * idx_count, begin_ptr(indices_buffer), GL_STATIC_DRAW);
 
       if (!keep_geometry_data)
       {
@@ -790,7 +773,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
    if (wf_mode != MV_WF_WIREFRAME_ONLY)
    {
       mws_report_gfx_errs();
-      glDrawElements(method, index_count, GL_UNSIGNED_INT, 0);
+      glDrawElements(method, idx_count, GL_UNSIGNED_INT, 0);
       mws_report_gfx_errs();
    }
 
@@ -811,7 +794,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
          i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
       }
 
-      glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_LINES, idx_count, GL_UNSIGNED_INT, 0);
       gi()->shader.set_current_program(glp);
       break;
    }
@@ -827,7 +810,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
          i_camera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), glp);
       }
 
-      glDrawElements(GL_LINES, index_count, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_LINES, idx_count, GL_UNSIGNED_INT, 0);
       break;
    }
    }
@@ -892,7 +875,7 @@ void gfx_vxo::compute_tangent_basis()
 
    total_size = offset;
    int vertex_count = vertices_buffer.size() / total_size;
-   int triangle_count = index_count / 3;
+   int triangle_count = idx_count / 3;
 
    for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
    {
@@ -955,8 +938,8 @@ void gfx_vxo::compute_tangent_basis()
    {
       float* np = (float*)&vertices_buffer[k * total_size + a_nrm];
       glm::vec3 n(np[0], np[1], np[2]);
-      glm::vec3 & t = tangents[k];
-      glm::vec3 & b = bitangents[k];
+      glm::vec3& t = tangents[k];
+      glm::vec3& b = bitangents[k];
 
       b = glm::normalize(b);
       // Gram-Schmidt orthogonalize

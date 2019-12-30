@@ -11,19 +11,12 @@ class mws_font;
 class mws_camera;
 class mws_text_area_model;
 class text_vxo;
+class gfx_quad_2d;
 
 
 class mws_text_box : public mws_text_area
 {
 public:
-   enum cursor_types
-   {
-      e_left_cursor,
-      e_middle_vbar_cursor,
-      e_middle_cursor,
-      e_right_cursor,
-   };
-
    static mws_sp<mws_text_box> nwi();
    void setup() override;
    virtual bool is_action_key(key_types i_key) const override;
@@ -47,7 +40,7 @@ public:
    virtual void on_focus_changed(bool i_has_focus);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_text();
-   mws_rect get_cursor(cursor_types i_cursor_type, bool i_absolute_pos = true);
+   virtual mws_rect get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos = true) override;
    virtual void update_gfx_cursor();
 
    // called after a click inside the text box
@@ -70,6 +63,10 @@ protected:
 
    bool editable = false;
    mws_sp<mws_text_area_model> tx_src;
+   mws_sp<gfx_node> gfx_cursor;
+   mws_sp<gfx_quad_2d> gfx_cursor_left;
+   mws_sp<gfx_quad_2d> gfx_cursor_right;
+   uint32 start_time = 0;
    mws_sp<text_vxo> tx_vxo;
    mws_sp<mws_font> font;
    glm::vec2 pos = glm::vec2(0.f);

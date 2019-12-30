@@ -8,6 +8,7 @@
 #include "mws-font.hxx"
 #include "font-db.hxx"
 #include "text-vxo.hxx"
+#include "gfx-quad-2d.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 #include "min.hxx"
 
@@ -26,14 +27,46 @@ mws_sp<mws_text_box> mws_text_box::nwi()
 void mws_text_box::setup()
 {
    mws_page_item::setup();
-   tx_vxo = text_vxo::nwi();
-   tx_vxo->camera_id_list.push_back("mws_cam");
-   (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
    font = font_db::inst()->get_global_font();
    font->set_color(gfx_color::colors::white);
    left_char_rect = std::make_shared<mws_rect>();
    right_char_rect = std::make_shared<mws_rect>();
-   attach(tx_vxo);
+   {
+      gfx_cursor = std::make_shared<gfx_node>(nullptr);
+      gfx_cursor->visible = false;
+      attach(gfx_cursor);
+
+      {
+         gfx_cursor_left = gfx_quad_2d::nwi();
+         auto& rvxo = *gfx_cursor_left;
+         rvxo.camera_id_list = { "mws_cam" };
+         rvxo[MP_SHADER_NAME] = "mws-ta-cursor";
+         rvxo[MP_DEPTH_TEST] = true;
+         rvxo[MP_DEPTH_WRITE] = true;
+         rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+         rvxo["u_v4_color"] = gfx_color::colors::blue.to_vec4();
+         rvxo.set_dimensions(1, 1);
+         gfx_cursor->attach(gfx_cursor_left);
+      }
+      {
+         gfx_cursor_right = gfx_quad_2d::nwi();
+         auto& rvxo = *gfx_cursor_right;
+         rvxo.camera_id_list = { "mws_cam" };
+         rvxo[MP_SHADER_NAME] = "mws-ta-cursor";
+         rvxo[MP_DEPTH_TEST] = true;
+         rvxo[MP_DEPTH_WRITE] = true;
+         rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+         rvxo["u_v4_color"] = gfx_color::colors::blue.to_vec4();
+         rvxo.set_dimensions(1, 1);
+         gfx_cursor->attach(gfx_cursor_right);
+      }
+   }
+   {
+      tx_vxo = text_vxo::nwi();
+      tx_vxo->camera_id_list = { "mws_cam" };
+      (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
+      attach(tx_vxo);
+   }
 }
 
 bool mws_text_box::is_action_key(key_types i_key) const
@@ -407,6 +440,20 @@ void mws_text_box::update_state()
       point2d scroll_pos = ks.update();
       scroll_text(glm::vec2(scroll_pos.x, scroll_pos.y));
    }
+
+   if (gfx_cursor->visible)
+   {
+      float time = (pfm::time::get_time_millis() - start_time) / 1000.f;
+      mws_sp<gfx_quad_2d> q2d[2] = { gfx_cursor_left, gfx_cursor_right };
+      float sign[2] = { 1.f, -1.f };
+
+      for (uint32 k = 0; k < 2; k++)
+      {
+         gfx_quad_2d& rvxo = *q2d[k];
+         rvxo["u_v1_time"] = time;
+         rvxo["u_v1_sign"] = sign[k];
+      }
+   }
 }
 
 void mws_text_box::update_view(mws_sp<mws_camera> g)
@@ -416,25 +463,25 @@ void mws_text_box::update_view(mws_sp<mws_camera> g)
    //g->setColor(0xffffffff);
    //g->drawRect(pos.x, pos.y, dim.x, dim.y);
 
-   if(has_focus())
-   {
-      if (cursor_left && cursor_right)
-      {
-         mws_rect cursor_rect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
-         g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
-      }
-      else if (cursor_left || cursor_right)
-      {
-         if (cursor_left)
-         {
-            g->drawRect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_left->w, cursor_left->h);
-         }
-         else if (cursor_right)
-         {
-            g->drawRect(cursor_right->x + pos.x, cursor_right->y + pos.y, cursor_right->w, cursor_right->h);
-         }
-      }
-   }
+   //if(has_focus())
+   //{
+   //   if (cursor_left && cursor_right)
+   //   {
+   //      mws_rect cursor_rect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
+   //      g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
+   //   }
+   //   else if (cursor_left || cursor_right)
+   //   {
+   //      if (cursor_left)
+   //      {
+   //         g->drawRect(cursor_left->x + pos.x, cursor_left->y + pos.y, cursor_left->w, cursor_left->h);
+   //      }
+   //      else if (cursor_right)
+   //      {
+   //         g->drawRect(cursor_right->x + pos.x, cursor_right->y + pos.y, cursor_right->w, cursor_right->h);
+   //      }
+   //   }
+   //}
 }
 
 void mws_text_box::on_focus_changed(bool i_has_focus)
@@ -445,9 +492,17 @@ void mws_text_box::on_focus_changed(bool i_has_focus)
       {
          on_gained_focus();
       }
+
+      if (is_editable())
+      {
+         gfx_cursor->visible = true;
+         start_time = pfm::time::get_time_millis();
+      }
    }
    else
    {
+      gfx_cursor->visible = false;
+
       if (on_lost_focus)
       {
          on_lost_focus();
@@ -515,7 +570,7 @@ void mws_text_box::update_text()
    update_gfx_cursor();
 }
 
-mws_rect mws_text_box::get_cursor(cursor_types i_cursor_type, bool i_absolute_pos)
+mws_rect mws_text_box::get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos)
 {
    mws_rect cursor;
 
@@ -658,6 +713,14 @@ void mws_text_box::update_gfx_cursor()
       left_char_rect->y = cursor_row_idx * font->get_height() - text_row_remainder;
       left_char_rect->w = font->get_text_width(nl_char_size);
       cursor_right = nullptr;
+   }
+   {
+      mws_rect cursor_l = get_cursor_rect(e_left_cursor);
+      mws_rect cursor_r = get_cursor_rect(e_right_cursor);
+      gfx_cursor_left->set_translation(cursor_l.x, cursor_l.y);
+      gfx_cursor_left->set_scale(cursor_l.w, cursor_l.h);
+      gfx_cursor_right->set_translation(cursor_r.x, cursor_r.y);
+      gfx_cursor_right->set_scale(cursor_r.w, cursor_r.h);
    }
 }
 
