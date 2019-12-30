@@ -64,9 +64,11 @@ protected:
    bool editable = false;
    mws_sp<mws_text_area_model> tx_src;
    mws_sp<gfx_node> gfx_cursor;
-   mws_sp<gfx_quad_2d> gfx_cursor_left;
-   mws_sp<gfx_quad_2d> gfx_cursor_right;
-   uint32 start_time = 0;
+   mws_sp<gfx_quad_2d> gfx_cursor_bg;
+   mws_sp<gfx_quad_2d> gfx_cursor_middle;
+   //mws_sp<gfx_quad_2d> gfx_cursor_left;
+   //mws_sp<gfx_quad_2d> gfx_cursor_right;
+   ping_pong_time_slider<float> gfx_cursor_slider;
    mws_sp<text_vxo> tx_vxo;
    mws_sp<mws_font> font;
    glm::vec2 pos = glm::vec2(0.f);
@@ -79,6 +81,7 @@ protected:
    uint32 cursor_col_idx = 0;
    kinetic_scrolling ks;
    std::vector<std::string> tx_rows;
+   mws_rect cursor_word_rect;
    mws_sp<mws_rect> cursor_left;
    mws_sp<mws_rect> cursor_right;
    mws_sp<mws_rect> left_char_rect;

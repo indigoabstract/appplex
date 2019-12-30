@@ -1215,7 +1215,7 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_f
 void mws_vkb_impl::show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx)
 {
    glm::vec2 ker_pos = vk->get_kernel_at(i_kernel_idx);
-   mws_rect cursor_pos = i_ta->get_cursor_rect(mws_text_area::e_middle_vbar_cursor);
+   mws_rect cursor_pos = i_ta->get_cursor_rect(mws_text_area::e_middle_vertical_cursor);
 
    mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_kernel_idx);
    //pressed_key = mws_sp<gfx_vxo>(new gfx_vxo(cell_border->get_vx_info()));

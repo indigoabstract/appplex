@@ -283,9 +283,10 @@ public:
    enum cursor_types
    {
       e_left_cursor,
-      e_middle_vbar_cursor,
+      e_middle_vertical_cursor,
       e_middle_cursor,
       e_right_cursor,
+      e_left_right_cursor,
    };
 
    virtual ~mws_text_area() {}

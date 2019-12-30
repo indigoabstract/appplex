@@ -37,29 +37,55 @@ void mws_text_box::setup()
       attach(gfx_cursor);
 
       {
-         gfx_cursor_left = gfx_quad_2d::nwi();
-         auto& rvxo = *gfx_cursor_left;
+         gfx_cursor_bg = gfx_quad_2d::nwi();
+         auto& rvxo = *gfx_cursor_bg;
          rvxo.camera_id_list = { "mws_cam" };
-         rvxo[MP_SHADER_NAME] = "mws-ta-cursor";
+         rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
          rvxo[MP_DEPTH_TEST] = true;
          rvxo[MP_DEPTH_WRITE] = true;
          rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
          rvxo["u_v4_color"] = gfx_color::colors::blue.to_vec4();
          rvxo.set_dimensions(1, 1);
-         gfx_cursor->attach(gfx_cursor_left);
+         gfx_cursor->attach(gfx_cursor_bg);
       }
       {
-         gfx_cursor_right = gfx_quad_2d::nwi();
-         auto& rvxo = *gfx_cursor_right;
+         gfx_cursor_middle = gfx_quad_2d::nwi();
+         auto& rvxo = *gfx_cursor_middle;
          rvxo.camera_id_list = { "mws_cam" };
-         rvxo[MP_SHADER_NAME] = "mws-ta-cursor";
-         rvxo[MP_DEPTH_TEST] = true;
-         rvxo[MP_DEPTH_WRITE] = true;
-         rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
-         rvxo["u_v4_color"] = gfx_color::colors::blue.to_vec4();
+         rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+         rvxo[MP_BLENDING] = MV_ALPHA;
+         rvxo[MP_DEPTH_TEST] = false;
+         rvxo[MP_DEPTH_WRITE] = false;
+         //rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+         rvxo["u_v4_color"] = gfx_color::colors::red.to_vec4();
          rvxo.set_dimensions(1, 1);
-         gfx_cursor->attach(gfx_cursor_right);
+         rvxo.position += glm::vec3(0.f, 0.f, -0.1f);
+         gfx_cursor->attach(gfx_cursor_middle);
       }
+      //{
+      //   gfx_cursor_left = gfx_quad_2d::nwi();
+      //   auto& rvxo = *gfx_cursor_left;
+      //   rvxo.camera_id_list = { "mws_cam" };
+      //   rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+      //   rvxo[MP_DEPTH_TEST] = true;
+      //   rvxo[MP_DEPTH_WRITE] = true;
+      //   rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      //   rvxo["u_v4_color"] = gfx_color::colors::red.to_vec4();
+      //   rvxo.set_dimensions(1, 1);
+      //   gfx_cursor->attach(gfx_cursor_left);
+      //}
+      //{
+      //   gfx_cursor_right = gfx_quad_2d::nwi();
+      //   auto& rvxo = *gfx_cursor_right;
+      //   rvxo.camera_id_list = { "mws_cam" };
+      //   rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+      //   rvxo[MP_DEPTH_TEST] = true;
+      //   rvxo[MP_DEPTH_WRITE] = true;
+      //   rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+      //   rvxo["u_v4_color"] = gfx_color::colors::red.to_vec4();
+      //   rvxo.set_dimensions(1, 1);
+      //   gfx_cursor->attach(gfx_cursor_right);
+      //}
    }
    {
       tx_vxo = text_vxo::nwi();
@@ -443,16 +469,15 @@ void mws_text_box::update_state()
 
    if (gfx_cursor->visible)
    {
-      float time = (pfm::time::get_time_millis() - start_time) / 1000.f;
-      mws_sp<gfx_quad_2d> q2d[2] = { gfx_cursor_left, gfx_cursor_right };
-      float sign[2] = { 1.f, -1.f };
-
-      for (uint32 k = 0; k < 2; k++)
-      {
-         gfx_quad_2d& rvxo = *q2d[k];
-         rvxo["u_v1_time"] = time;
-         rvxo["u_v1_sign"] = sign[k];
-      }
+      float iv = gfx_cursor_slider.get_value();
+      //mws_rect cursor_l = get_cursor_rect(e_left_cursor);
+      //mws_rect cursor_r = get_cursor_rect(e_right_cursor);
+      //gfx_cursor_left->set_translation(glm::vec2(glm::mix(cursor_l.x, cursor_r.x - gfx_cursor_left->get_scale().x, iv), cursor_l.y));
+      //gfx_cursor_right->set_translation(glm::vec2(glm::mix(cursor_r.x + cursor_r.w - gfx_cursor_right->get_scale().x, cursor_r.x, iv), cursor_l.y));
+      glm::vec4 color = gfx_color::colors::red.to_vec4();
+      color.a = glm::round(iv);
+      (*gfx_cursor_middle)["u_v4_color"] = color;
+      gfx_cursor_slider.update();
    }
 }
 
@@ -496,12 +521,13 @@ void mws_text_box::on_focus_changed(bool i_has_focus)
       if (is_editable())
       {
          gfx_cursor->visible = true;
-         start_time = pfm::time::get_time_millis();
+         gfx_cursor_slider.start(0.25f);
       }
    }
    else
    {
       gfx_cursor->visible = false;
+      gfx_cursor_slider.stop();
 
       if (on_lost_focus)
       {
@@ -581,6 +607,11 @@ mws_rect mws_text_box::get_cursor_rect(cursor_types i_cursor_type, bool i_absolu
       {
          cursor = *cursor_left;
       }
+      else
+      {
+         cursor = *cursor_right;
+         cursor.w = 0;
+      }
       break;
 
    case mws_text_box::e_right_cursor:
@@ -588,9 +619,14 @@ mws_rect mws_text_box::get_cursor_rect(cursor_types i_cursor_type, bool i_absolu
       {
          cursor = *cursor_right;
       }
+      else
+      {
+         cursor = *cursor_left;
+         cursor.w = 0;
+      }
       break;
 
-   case mws_text_box::e_middle_vbar_cursor:
+   case mws_text_box::e_middle_vertical_cursor:
       if (cursor_right)
       {
          cursor = *cursor_right;
@@ -616,10 +652,25 @@ mws_rect mws_text_box::get_cursor_rect(cursor_types i_cursor_type, bool i_absolu
          cursor.x += cursor.w / 2.f;
       }
       break;
+
+   case mws_text_box::e_left_right_cursor:
+      if (cursor_left)
+      {
+         cursor = *cursor_left;
+      }
+      else
+      {
+         cursor = *cursor_right;
+         cursor.w = 0;
+      }
+      if (cursor_right)
+      {
+         cursor.w += cursor_right->w;
+      }
+      break;
    }
 
-
-   if (i_absolute_pos && cursor.h > 0)
+   if (i_absolute_pos)
    {
       cursor.x += pos.x;
       cursor.y += pos.y;
@@ -715,12 +766,17 @@ void mws_text_box::update_gfx_cursor()
       cursor_right = nullptr;
    }
    {
-      mws_rect cursor_l = get_cursor_rect(e_left_cursor);
-      mws_rect cursor_r = get_cursor_rect(e_right_cursor);
-      gfx_cursor_left->set_translation(cursor_l.x, cursor_l.y);
-      gfx_cursor_left->set_scale(cursor_l.w, cursor_l.h);
-      gfx_cursor_right->set_translation(cursor_r.x, cursor_r.y);
-      gfx_cursor_right->set_scale(cursor_r.w, cursor_r.h);
+      mws_rect cursor_bg = get_cursor_rect(e_left_right_cursor);
+      mws_rect cursor_m = get_cursor_rect(e_middle_cursor);
+      //mws_rect cursor_l = get_cursor_rect(e_left_cursor);
+      //mws_rect cursor_r = get_cursor_rect(e_right_cursor);
+      //float width = cursor_r.h / 5.f;
+      //gfx_cursor_left->set_scale(width, cursor_l.h);
+      //gfx_cursor_right->set_scale(width, cursor_r.h);
+      gfx_cursor_bg->set_translation(cursor_bg.x, cursor_bg.y);
+      gfx_cursor_bg->set_scale(cursor_bg.w, cursor_bg.h);
+      gfx_cursor_middle->set_translation(cursor_m.x + cursor_m.w / 4.f, cursor_m.y);
+      gfx_cursor_middle->set_scale(cursor_m.w / 2.f, cursor_m.h);
    }
 }
 
