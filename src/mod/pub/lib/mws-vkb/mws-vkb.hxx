@@ -176,6 +176,8 @@ protected:
    mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
    mws_sp<gfx_vxo> pressed_key;
+   uintptr_t pressed_vkb_hide_finger_id = -1;
+   uint32 pressed_vkb_hide_idx = -1;
    inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
    inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
    mws_sp<gfx_shader> vkb_keys_fonts_shader;
