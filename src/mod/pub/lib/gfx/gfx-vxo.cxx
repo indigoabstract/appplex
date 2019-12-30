@@ -199,7 +199,7 @@ void gfx_vxo::draw_in_sync(mws_sp<gfx_camera> i_camera)
    {
       std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
-      for (; it != children.end(); it++)
+      for (; it != children.end(); ++it)
       {
          mws_sp<gfx_vxo> mesh = static_pointer_cast<gfx_vxo>(*it);
 
@@ -684,7 +684,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
 
    mws_report_gfx_errs();
 
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); ++it)
    {
       mws_sp<vx_attribute> at = *it;
       gfx_int loc_idx = glp->get_param_location(at->get_name());
@@ -731,7 +731,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
 
    // aux vertex attribs
    int offset_aux = 0;
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); ++it)
    {
       mws_sp<vx_attribute> at = *it;
       gfx_int loc_idx = glp->get_param_location(at->get_name());
@@ -818,7 +818,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
    mws_report_gfx_errs();
 
    // aux vertex attribs
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); ++it)
    {
       gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -828,7 +828,7 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
       }
    }
 
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); ++it)
    {
       gfx_int loc_idx = glp->get_param_location((*it)->get_name());
 
@@ -852,7 +852,7 @@ void gfx_vxo::compute_tangent_basis()
    int aux_total_size = 0;
    int offset = 0;
 
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); ++it)
    {
       mws_sp<vx_attribute> at = *it;
       const std::string& attr_name = at->get_name();
@@ -877,7 +877,7 @@ void gfx_vxo::compute_tangent_basis()
    int vertex_count = vertices_buffer.size() / total_size;
    int triangle_count = idx_count / 3;
 
-   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); it++)
+   for (std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_aux_attr_vect.begin(); it != vxi.vx_aux_attr_vect.end(); ++it)
    {
       mws_sp<vx_attribute> at = *it;
       aux_total_size += at->get_aligned_size();

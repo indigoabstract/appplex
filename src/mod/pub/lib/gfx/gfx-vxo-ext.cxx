@@ -29,7 +29,7 @@ void gfx_obj_vxo::operator=(const std::string& imesh_name)
 //{
 //	std::vector<mws_sp<gfx_mesh> >::iterator it = mesh_list.begin();
 //
-//	for(; it != mesh_list.end(); it++)
+//	for(; it != mesh_list.end(); ++it)
 //	{
 //		(*it)->draw_in_sync(i_camera);
 //	}

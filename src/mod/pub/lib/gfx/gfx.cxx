@@ -274,21 +274,21 @@ mws_sp<gfx_state> gfx::get_gfx_state()
 
 void gfx::reload()
 {
-   for (auto it = rt_list.begin(); it != rt_list.end(); it++)
+   for (auto it = rt_list.begin(); it != rt_list.end(); ++it)
    {
       mws_sp<gfx_rt> rt = it->lock();
 
       rt->reload();
    }
 
-   for (auto it = shader_list.begin(); it != shader_list.end(); it++)
+   for (auto it = shader_list.begin(); it != shader_list.end(); ++it)
    {
       mws_sp<gfx_shader> prg = it->lock();
 
       prg->reload();
    }
 
-   for (auto it = tex_list.begin(); it != tex_list.end(); it++)
+   for (auto it = tex_list.begin(); it != tex_list.end(); ++it)
    {
       mws_sp<gfx_tex> tex = it->lock();
 
@@ -468,7 +468,7 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_
 {
    mws_sp<gfx_shader> glp;
 
-   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
+   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); ++it)
    {
       mws_sp<gfx_shader> prg = it->lock();
 
@@ -486,7 +486,7 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
 {
    mws_sp<gfx_shader> glp;
 
-   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); it++)
+   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); ++it)
    {
       mws_sp<gfx_shader> prg = it->lock();
 
@@ -640,7 +640,7 @@ mws_sp<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
 {
    mws_sp<gfx_tex> tex;
 
-   for (auto it = gi()->tex_list.begin(); it != gi()->tex_list.end(); it++)
+   for (auto it = gi()->tex_list.begin(); it != gi()->tex_list.end(); ++it)
    {
       mws_sp<gfx_tex> t = it->lock();
 

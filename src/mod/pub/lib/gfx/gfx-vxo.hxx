@@ -53,7 +53,7 @@ public:
       uses_tangent_basis = false;
       vx_attr_vect = gfx_util::parse_attribute_list(ivx_attr_list);
 
-      for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_attr_vect.begin(); it != vx_attr_vect.end(); it++)
+      for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_attr_vect.begin(); it != vx_attr_vect.end(); ++it)
       {
          const std::string& attr_name = (*it)->get_name();
 
@@ -77,13 +77,13 @@ public:
          has_tangent_basis = true;
          vx_aux_attr_vect = gfx_util::parse_attribute_list("a_v3_tangent, a_v3_bitangent");
 
-         for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_aux_attr_vect.begin(); it != vx_aux_attr_vect.end(); it++)
+         for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_aux_attr_vect.begin(); it != vx_aux_attr_vect.end(); ++it)
          {
             aux_vertex_size += (*it)->get_aligned_size();
          }
       }
 
-      for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_attr_vect.begin(); it != vx_attr_vect.end(); it++)
+      for (std::vector<mws_sp<vx_attribute> >::iterator it = vx_attr_vect.begin(); it != vx_attr_vect.end(); ++it)
       {
          vertex_size += (*it)->get_aligned_size();
       }

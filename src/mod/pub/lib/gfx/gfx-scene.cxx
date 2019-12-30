@@ -52,7 +52,7 @@ mws_sp<gfx_scene> gfx_node::get_scene() const { return std::static_pointer_cast<
 
 void gfx_node::add_to_draw_list(const std::string & i_camera_id, std::vector<mws_sp<gfx_vxo> > & i_opaque, std::vector<mws_sp<gfx_vxo> > & i_translucent)
 {
-   for (auto it = children.begin(); it != children.end(); it++)
+   for (auto it = children.begin(); it != children.end(); ++it)
    {
       if ((*it)->visible)
       {
@@ -63,7 +63,7 @@ void gfx_node::add_to_draw_list(const std::string & i_camera_id, std::vector<mws
 
 void gfx_node::draw_in_sync(mws_sp<gfx_camera> i_cam)
 {
-   for (auto it = children.begin(); it != children.end(); it++)
+   for (auto it = children.begin(); it != children.end(); ++it)
    {
       (*it)->draw_in_sync(i_cam);
    }
@@ -74,7 +74,7 @@ void gfx_node::draw_out_of_sync(mws_sp<gfx_camera> i_cam)
    i_cam->update_camera_state();
    update_recursive(glm::mat4(1.f), true);
 
-   for (auto it = children.begin(); it != children.end(); it++)
+   for (auto it = children.begin(); it != children.end(); ++it)
    {
       (*it)->draw_in_sync(i_cam);
    }
@@ -138,7 +138,7 @@ bool gfx_node::contains(const mws_sp<gfx_node> inode)
 
    std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
-   for (; it != children.end(); it++)
+   for (; it != children.end(); ++it)
    {
       bool contains_node = (*it)->contains(inode);
 
@@ -160,7 +160,7 @@ mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & iname)
 
    std::vector<mws_sp<gfx_node> >::iterator it = children.begin();
 
-   for (; it != children.end(); it++)
+   for (; it != children.end(); ++it)
    {
       mws_sp<gfx_node> node = (*it)->find_node_by_name(iname);
 
@@ -267,7 +267,7 @@ void gfx_scene::draw()
 
    std::sort(camera_list.begin(), camera_list.end(), pred());
 
-   for (auto it = camera_list.begin(); it != camera_list.end(); it++)
+   for (auto it = camera_list.begin(); it != camera_list.end(); ++it)
    {
       mws_sp<gfx_camera> cam = *it;
 
@@ -317,7 +317,7 @@ void gfx_scene::draw()
       translucent_obj_list.clear();
       cam->update_camera_state();
 
-      for (auto it = children.begin(); it != children.end(); it++)
+      for (auto it = children.begin(); it != children.end(); ++it)
       {
          if ((*it)->visible)
          {
@@ -332,7 +332,7 @@ void gfx_scene::draw()
 
       // draw opaque objects first
       {
-         for (auto it = opaque_obj_list.begin(); it != opaque_obj_list.end(); it++)
+         for (auto it = opaque_obj_list.begin(); it != opaque_obj_list.end(); ++it)
          {
             mws_sp<gfx_vxo> mesh = *it;
 
@@ -357,7 +357,7 @@ void gfx_scene::draw()
 
       // draw translucent objects after opaque ones
       {
-         for (auto it = translucent_obj_list.begin(); it != translucent_obj_list.end(); it++)
+         for (auto it = translucent_obj_list.begin(); it != translucent_obj_list.end(); ++it)
          {
             mws_sp<gfx_vxo> mesh = *it;
 
@@ -384,7 +384,7 @@ void gfx_scene::draw()
 
 void gfx_scene::post_draw()
 {
-   for (auto it = camera_list.begin(); it != camera_list.end(); it++)
+   for (auto it = camera_list.begin(); it != camera_list.end(); ++it)
    {
       mws_sp<gfx_camera> cam = *it;
 

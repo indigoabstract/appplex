@@ -100,7 +100,7 @@ void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gf
 
       if (cam->camera_id() == i_camera_id)
       {
-         for (auto it = children.begin(); it != children.end(); it++)
+         for (auto it = children.begin(); it != children.end(); ++it)
          {
             if ((*it)->visible)
             {

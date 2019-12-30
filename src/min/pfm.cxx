@@ -1013,7 +1013,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
    {
       auto it = pfm_impl::res_files_map->begin();
 
-      for (; it != pfm_impl::res_files_map->end(); it++)
+      for (; it != pfm_impl::res_files_map->end(); ++it)
       {
          mws_sp<pfm_file> file = it->second;
          std::string rdir = file->get_root_directory();
@@ -1028,7 +1028,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
    {
       auto it = pfm_impl::res_files_map->begin();
 
-      for (; it != pfm_impl::res_files_map->end(); it++)
+      for (; it != pfm_impl::res_files_map->end(); ++it)
       {
          mws_sp<pfm_file> file = it->second;
 

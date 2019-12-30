@@ -422,7 +422,7 @@ public:
       {
          //std::unordered_map<std::string, shader_param>::iterator it = params.begin();
 
-         //for (; it != params.end(); it++)
+         //for (; it != params.end(); ++it)
          //{
          //	set_param_val(it->second);
          //}

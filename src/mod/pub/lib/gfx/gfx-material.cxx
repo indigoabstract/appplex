@@ -337,7 +337,7 @@ void gfx_material_entry::debug_print()
    std::unordered_map<std::string, mws_sp<gfx_material_entry> >::iterator it = entries.begin();
 
    mws_print("[");
-   for (; it != entries.end(); it++)
+   for (; it != entries.end(); ++it)
    {
       mws_print("[name[%s] ", it->first.c_str());
       it->second->debug_print();
@@ -441,7 +441,7 @@ void gfx_material::debug_print()
 
    mws_print("[\n");
 
-   for (; it != other_params.end(); it++)
+   for (; it != other_params.end(); ++it)
    {
       mws_print("[%s\t", it->first.c_str());
       it->second->debug_print();
