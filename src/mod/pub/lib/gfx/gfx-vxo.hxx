@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
+#include "gfx-color.hxx"
 #include "gfx-material.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"
@@ -98,11 +99,6 @@ public:
 };
 
 
-struct vx_color_coord_4b
-{
-   gfx_ubyte r, g, b, a;
-};
-
 struct vx_fmt_p3f_t2f
 {
    glm::vec3 pos;
@@ -119,7 +115,7 @@ struct vx_fmt_p3f_n3f_t2f
 struct vx_fmt_p3f_c4b_n3f_t2f
 {
    glm::vec3 pos;
-   vx_color_coord_4b clr;
+   gfx_color clr;
    glm::vec3 nrm;
    glm::vec2 tex;
 };

@@ -303,14 +303,14 @@ void mws_vrn_geom::set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws
    std::vector<vx_fmt_3f_4f_4b_2f_1i>& ks_vertices_data = *((std::vector<vx_fmt_3f_4f_4b_2f_1i>*) & i_mesh->get_vx_buffer());
 
    glm::vec3 pos;
-   vx_seg_data_4f nrm;
-   vx_color_coord_4b color0;
-   vx_color_coord_4b color1;
+   glm::vec4 nrm;
+   gfx_color color0;
+   gfx_color color1;
    gfx_uint id = 0;
 
    struct line_setup
    {
-      static void setup(mws_sp<mws_vrn_data> diag_data, mws_vrn_nexus_pair& inp, mws_vrn_nexus_pt& ip, float& i_size, vx_color_coord_4b& ic)
+      static void setup(mws_sp<mws_vrn_data> diag_data, mws_vrn_nexus_pair& inp, mws_vrn_nexus_pt& ip, float& i_size, gfx_color& ic)
       {
          mws_vrn_nexus_pt* p0 = diag_data->get_nexus_point_by_id(inp.nexus0_id);
          mws_vrn_nexus_pt* p1 = diag_data->get_nexus_point_by_id(inp.nexus1_id);
@@ -339,22 +339,22 @@ void mws_vrn_geom::set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws
       line_setup::setup(diag_data, p, *np1, line_thickness2, color1);
 
       pos = p0;
-      nrm.set(glm::vec4(seg_dir, -0.5f * line_thickness));
+      nrm = glm::vec4(seg_dir, -0.5f * line_thickness);
       vx_fmt_3f_4f_4b_2f_1i vx0 = { pos, nrm, color0, tex0, id };
       ks_vertices_data[4 * k] = vx0;
 
       pos = p0;
-      nrm.set(glm::vec4(seg_dir, +0.5f * line_thickness));
+      nrm = glm::vec4(seg_dir, +0.5f * line_thickness);
       vx_fmt_3f_4f_4b_2f_1i vx1 = { pos, nrm, color0, tex1, id };
       ks_vertices_data[4 * k + 1] = vx1;
 
       pos = p1;
-      nrm.set(glm::vec4(seg_dir, -0.5f * line_thickness2));
+      nrm = glm::vec4(seg_dir, -0.5f * line_thickness2);
       vx_fmt_3f_4f_4b_2f_1i vx2 = { pos, nrm, color1, tex2, id };
       ks_vertices_data[4 * k + 2] = vx2;
 
       pos = p1;
-      nrm.set(glm::vec4(seg_dir, +0.5f * line_thickness2));
+      nrm = glm::vec4(seg_dir, +0.5f * line_thickness2);
       vx_fmt_3f_4f_4b_2f_1i vx3 = { pos, nrm, color1, tex3, id };
       ks_vertices_data[4 * k + 3] = vx3;
    }
@@ -438,13 +438,13 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
    struct vx_fmt_3f_4b_2f_1i
    {
       glm::vec3 pos;
-      vx_color_coord_4b clr;
+      gfx_color clr;
       glm::vec2 tex;
       gfx_uint id;
    };
 
    glm::vec3 pos;
-   vx_color_coord_4b clr;
+   gfx_color clr;
    glm::vec2 tex;
    uint32 list_size = i_point_count_list.size();
    uint32 vx_count = 0;

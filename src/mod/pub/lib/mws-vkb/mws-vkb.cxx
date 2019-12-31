@@ -958,10 +958,10 @@ void mws_vkb_impl::build_keys_tex()
 
    {
       mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(0);
-      pressed_key = mws_sp<gfx_vxo>(new gfx_vxo(cell_border->get_vx_info()));
+      pressed_key_border = mws_vrn_cell_vxo::nwi();
       uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
       uint32 ix_count = cell_border->get_ix_buffer().size();
-      gfx_vxo& rvxo = *pressed_key;
+      gfx_vxo& rvxo = *pressed_key_border;
 
       rvxo.set_size(vx_count, ix_count);
       std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
@@ -982,9 +982,9 @@ void mws_vkb_impl::build_keys_tex()
       rvxo[MP_CULL_BACK] = false;
       rvxo[MP_BLENDING] = MV_ADD;
       rvxo.position = glm::vec3(0);
-      // pressed_key must be drawn on top of the keyboard
+      // pressed_key_border must be drawn on top of the keyboard
       rvxo.position = glm::vec3(0.f, 0.f, 1.f);
-      attach(pressed_key);
+      attach(pressed_key_border);
    }
 }
 
@@ -1240,24 +1240,44 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_f
 
 void mws_vkb_impl::show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx)
 {
-   glm::vec2 ker_pos = vk->get_kernel_at(i_kernel_idx);
-   mws_rect cursor_pos = i_ta->get_cursor_rect(mws_text_area::e_middle_vertical_cursor);
-
-   mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_kernel_idx);
-   //pressed_key = mws_sp<gfx_vxo>(new gfx_vxo(cell_border->get_vx_info()));
+   glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   mws_sp<mws_vrn_cell_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_kernel_idx);
+   glm::vec4 bb = cell_border->bounding_box;
+   glm::vec2 cell_dim(bb.z - bb.x, bb.w - bb.y);
+   mws_rect cursor_rect = i_ta->get_cursor_rect(mws_text_area::e_middle_vertical_cursor);
+   glm::vec2 cell_pos = glm::vec2(cursor_rect.x, cursor_rect.y) - glm::vec2(bb.x, bb.y);
+   glm::vec2 cell_offset(std::min(scr_dim.x, scr_dim.y) * 0.05f);
+   glm::vec2 quadrant(1.f);
    uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
    uint32 ix_count = cell_border->get_ix_buffer().size();
-   gfx_vxo& rvxo = *pressed_key;
+   mws_vrn_cell_vxo& rvxo = *pressed_key_border;
+   {
+      rvxo.set_size(vx_count, ix_count);
+      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
+      ks_indices_data = cell_border->get_ix_buffer();
+      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
+      ks_vertices_data = cell_border->get_vx_buffer();
+      rvxo.update_data();
+   }
 
-   rvxo.set_size(vx_count, ix_count);
-   std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
-   ks_indices_data = cell_border->get_ix_buffer();
-   std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
-   ks_vertices_data = cell_border->get_vx_buffer();
-   rvxo.update_data();
-
-   pressed_key->visible = true;
-   pressed_key->position = glm::vec3(cursor_pos.x - ker_pos.x, cursor_pos.y - ker_pos.y, 1.f);
+   if (cursor_rect.x >= scr_dim.x / 2.f)
+   {
+      quadrant.x = -1.f;
+      cell_pos.x -= cell_dim.x;
+   }
+   if (cursor_rect.y >= scr_dim.y / 2.f)
+   {
+      quadrant.y = -1.f;
+      cell_pos.y -= cell_dim.y;
+   }
+   else
+   {
+      cell_pos.y += cursor_rect.h;
+   }
+   
+   cell_pos += quadrant * cell_offset;
+   pressed_key_border->visible = true;
+   pressed_key_border->position = glm::vec3(cell_pos, 1.f);
 }
 
 void mws_vkb_impl::set_key_vect_size(uint32 i_size)

@@ -98,21 +98,11 @@ protected:
 class mws_vrn_geom : public gfx_node
 {
 public:
-   struct vx_seg_data_4f
-   {
-      gfx_float x, y, z, w;
-
-      void set(const glm::vec4& iv)
-      {
-         x = iv.x; y = iv.y; z = iv.z; w = iv.w;
-      }
-   };
-
    struct vx_fmt_3f_4f_4b_2f_1i
    {
       glm::vec3 pos;
-      vx_seg_data_4f nrm;
-      vx_color_coord_4b clr;
+      glm::vec4 nrm;
+      gfx_color clr;
       glm::vec2 tex;
       gfx_uint id;
    };

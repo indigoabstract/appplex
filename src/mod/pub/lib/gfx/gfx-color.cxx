@@ -36,7 +36,7 @@ gfx_color gfx_color::colors::white = gfx_color::from_rgba(0xffffffff);
 gfx_color gfx_color::colors::yellow = gfx_color::from_rgba(0xffff00ff);
 
 
-gfx_color::gfx_color() { abgr = 0xffffffff; }
+gfx_color::gfx_color() { abgr = 0; }
 gfx_color::gfx_color(uint8 i_r, uint8 i_g, uint8 i_b, uint8 i_a) { r = i_r; g = i_g; b = i_b; a = i_a; }
 gfx_color::gfx_color(const uint8* i_c) { r = i_c[0]; g = i_c[1]; b = i_c[2]; a = i_c[3]; }
 gfx_color::gfx_color(const gfx_color& i_c) { abgr = i_c.abgr; }
