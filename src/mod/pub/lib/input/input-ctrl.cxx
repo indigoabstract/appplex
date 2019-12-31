@@ -126,8 +126,6 @@ glm::vec2 mws_ptr_evt::get_pos(const mws_ptr_evt::touch_point& i_tp)
 }
 
 
-bool touchctrl::is_pointer_down = false;
-
 touchctrl::touchctrl()
 {
    //if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::pfm_touch); }

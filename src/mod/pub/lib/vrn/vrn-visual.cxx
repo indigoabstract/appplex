@@ -99,11 +99,23 @@ mws_sp<mws_vrn_cell_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32 i
 
 void mws_vrn_cell_borders::set_cell_borders_tex(mws_sp<gfx_tex> i_tex) { tex = i_tex; }
 
+glm::vec4 mws_vrn_cell_borders::calc_2d_bounding_box(const std::vector<glm::vec3>& i_point_list)
+{
+   auto x_min_max = std::minmax_element(i_point_list.begin(), i_point_list.end(),
+      [](const glm::vec3& i_p0, const glm::vec3& i_p1) {return i_p0.x < i_p1.x; });
+   auto y_min_max = std::minmax_element(i_point_list.begin(), i_point_list.end(),
+      [](const glm::vec3& i_p0, const glm::vec3& i_p1) { return i_p0.y < i_p1.y; });
+
+   glm::vec2 upper_left(x_min_max.first->x, y_min_max.first->y);
+   glm::vec2 lower_right(x_min_max.second->x, y_min_max.second->y);
+
+   return glm::vec4(upper_left, lower_right);
+}
+
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
    const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
    const float z_pos = 0.f;
-
    std::vector<glm::vec3> cell_nexus_list;
    uint32 cell_count = i_point_count_list.size();
    std::vector<mws_sp<mws_vrn_cell_vxo>> borders_mesh_vect(cell_count);
@@ -165,6 +177,7 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
          idx++;
       }
 
+      mesh->bounding_box = calc_2d_bounding_box(cell_nexus_list);
       // push first nexus at the back of the list, so we can easily wrap around the direction calculations
       cell_nexus_list.push_back(cell_nexus_list[0]);
 

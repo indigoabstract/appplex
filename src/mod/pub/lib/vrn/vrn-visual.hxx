@@ -84,6 +84,7 @@ public:
    uint32 get_cell_borders_mesh_size() const;
    mws_sp<mws_vrn_cell_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
    void set_cell_borders_tex(mws_sp<gfx_tex> i_tex);
+   glm::vec4 calc_2d_bounding_box(const std::vector<glm::vec3>& i_point_list);
    void set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list);
 
 protected:

@@ -106,7 +106,7 @@ void slide_scrolling::start()
       break;
    }
 
-   srcpos = dstpos = point2d(0, 0);
+   srcpos = dstpos = glm::vec2(0.f);
 
    mslt->start();
 }

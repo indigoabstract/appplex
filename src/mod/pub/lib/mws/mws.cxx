@@ -876,7 +876,7 @@ void mws_page::update_input_std_behaviour(mws_sp<mws_dp> i_dp)
 
 void mws_page::update_state()
 {
-   //point2d p = ks.update();
+   //glm::vec2 p = ks.update();
 
    //mws_r.x += p.x;
    //mws_r.y += p.y;

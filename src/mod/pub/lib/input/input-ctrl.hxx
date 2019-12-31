@@ -71,12 +71,7 @@ private:
    mws_sp<mws_ptr_evt> prev_ptr_evt;
 
    // prevents mouse-move events from messing up the touch/pointer events
-   static bool is_pointer_down;
-   static point2d first_press;
-   static point2d last_pointer_pos;
-   static uint32 pointer_press_time;
-   static uint32 pointer_last_event_time;
-   static uint32 pointer_release_time;
+   inline static bool is_pointer_down = false;
 };
 
 

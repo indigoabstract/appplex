@@ -208,7 +208,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 void free_camera::update()
 {
 
-   point2d scroll_pos = ks->update();
+   glm::vec2 scroll_pos = ks->update();
 
    switch (mov_type)
    {

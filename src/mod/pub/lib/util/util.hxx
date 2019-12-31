@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm.hxx"
+#include <glm/vec2.hpp>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -8,18 +9,6 @@
 
 class ms_linear_transition;
 class mws_font;
-
-
-class point2d
-{
-public:
-   point2d() { x = y = 0; }
-   point2d(float iX, float iY) : x(iX), y(iY) {}
-   void set(float iX, float iY) { x = iX; y = iY; }
-
-   float x;
-   float y;
-};
 
 
 template <typename T> class basic_time_slider
@@ -277,9 +266,9 @@ public:
    kinetic_scrolling() { reset(); }
 
    // decrease scrolling speed once mouse is released
-   point2d update()
+   glm::vec2 update()
    {
-      point2d d(0, 0);
+      glm::vec2 d(0.f);
 
       if (active)
       {
@@ -328,7 +317,7 @@ public:
 
    void reset() { speedx = 0; speedy = 0; decay_maxmillis = 3500; decay = 0; active = false; }
    bool is_active() const { return active; }
-   point2d get_speed() const { return point2d(speedx, speedy); }
+   glm::vec2 get_speed() const { return glm::vec2(speedx, speedy); }
 
 private:
    float speedx;
@@ -363,8 +352,8 @@ public:
    const mws_sp<ms_linear_transition> get_transition();
    void set_scroll_dir(scroll_dir itype);
 
-   point2d srcpos;
-   point2d dstpos;
+   glm::vec2 srcpos;
+   glm::vec2 dstpos;
 
 private:
    mws_sp<ms_linear_transition> mslt;

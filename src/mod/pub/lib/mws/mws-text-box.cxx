@@ -463,7 +463,7 @@ void mws_text_box::update_state()
 {
    if (ks.is_active())
    {
-      point2d scroll_pos = ks.update();
+      glm::vec2 scroll_pos = ks.update();
       scroll_text(glm::vec2(scroll_pos.x, scroll_pos.y));
    }
 
