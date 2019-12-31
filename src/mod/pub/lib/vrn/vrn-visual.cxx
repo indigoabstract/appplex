@@ -81,29 +81,34 @@ void mws_vrn_gen::init(mws_sp<mws_vrn_data> i_diag_data)
 }
 
 
+// mws_vrn_cell_vxo
+mws_sp<mws_vrn_cell_vxo> mws_vrn_cell_vxo::nwi()
+{
+   return mws_sp<mws_vrn_cell_vxo>(new mws_vrn_cell_vxo());
+}
+
+mws_vrn_cell_vxo::mws_vrn_cell_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")) {}
+
+
 // mws_vrn_cell_borders
 mws_sp<mws_vrn_cell_borders> mws_vrn_cell_borders::nwi() { return mws_sp<mws_vrn_cell_borders>(new mws_vrn_cell_borders()); }
 
 uint32 mws_vrn_cell_borders::get_cell_borders_mesh_size() const { return cell_borders_mesh_vect.size(); }
 
-mws_sp<gfx_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32 i_idx) const { return cell_borders_mesh_vect[i_idx]; }
+mws_sp<mws_vrn_cell_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32 i_idx) const { return cell_borders_mesh_vect[i_idx]; }
 
 void mws_vrn_cell_borders::set_cell_borders_tex(mws_sp<gfx_tex> i_tex) { tex = i_tex; }
 
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
    const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
-   const float z_pos = 1.f;
+   const float z_pos = 0.f;
 
    std::vector<glm::vec3> cell_nexus_list;
-   // ortho dir for each edge
-   std::vector<glm::vec3> edge_ortho_dir_list;
-   // side dir for each nexus (it's the sum of the ortho dirs of the front and back edges)
-   std::vector<glm::vec3> nexus_side_dir_list;
    uint32 cell_count = i_point_count_list.size();
-   std::vector<mws_sp<gfx_vxo>> borders_mesh_vect(cell_count);
+   std::vector<mws_sp<mws_vrn_cell_vxo>> borders_mesh_vect(cell_count);
 
-   for (mws_sp<gfx_vxo> border : cell_borders_mesh_vect)
+   for (mws_sp<mws_vrn_cell_vxo> border : cell_borders_mesh_vect)
    {
       border->detach();
    }
@@ -113,10 +118,10 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    for (uint32 k = 0; k < cell_count; k++)
    {
       uint32 cell_nexus_count = i_point_count_list[k] - 1;
-      mws_sp<gfx_vxo> border = mws_sp<gfx_vxo>(new gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord")));
+      mws_sp<mws_vrn_cell_vxo> border = mws_vrn_cell_vxo::nwi();
       uint32 vx_count = cell_nexus_count * 4;
       uint32 ix_count = cell_nexus_count * 6;
-      gfx_vxo& rvxo = *border;
+      mws_vrn_cell_vxo& rvxo = *border;
 
       rvxo.set_keep_geometry_data(true);
       rvxo.set_size(vx_count, ix_count);
@@ -127,9 +132,10 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       rvxo["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
       rvxo["u_s2d_tex"][MP_TEXTURE_INST] = tex;
       rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
       rvxo[MP_CULL_FRONT] = false;
       rvxo[MP_CULL_BACK] = false;
-      rvxo[MP_BLENDING] = MV_ADD;
+      rvxo[MP_BLENDING] = MV_ADD_COLOR;
       rvxo.position = glm::vec3(0, 0, 0.1f);
       borders_mesh_vect[k] = border;
       attach(border);
@@ -138,16 +144,17 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    // loop through each cell and build its contour
    for (uint32 k = 0, idx = 0; k < cell_count; k++)
    {
-      mws_sp<gfx_vxo> mesh = borders_mesh_vect[k];
+      mws_sp<mws_vrn_cell_vxo> mesh = borders_mesh_vect[k];
       std::vector<gfx_indices_type>& ks_indices_data = mesh->get_ix_buffer();
       vx_fmt_3f_2f* ks_vertices_data = (vx_fmt_3f_2f*)begin_ptr(mesh->get_vx_buffer());
-      //gfx_uint id = i_point_list.get_id_at(k);
       uint32 cell_vx_count = i_point_count_list[k];
 
       // build a temp list with the cell's nexus points and with the same first and last point
       cell_nexus_list.clear();
-      edge_ortho_dir_list.clear();
-      nexus_side_dir_list.clear();
+
+      glm::vec3 kernel_pos = i_point_list.get_position_at(idx);
+      glm::vec2 kernel_pos_2d = glm::vec2(kernel_pos.x, kernel_pos.y);
+      mesh->kernel_pos = kernel_pos_2d;
 
       // we only need nexus points to build the contour and since the first vertex is always the kernel, skip it
       idx++;
@@ -162,61 +169,41 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       cell_nexus_list.push_back(cell_nexus_list[0]);
 
       uint32 cell_nexus_list_count = cell_nexus_list.size();
-      // the axis coming out of the screen and towards the camera
-      glm::vec3 pos_z_axis(0.f, 0.f, 1.f);
+      std::vector<glm::vec3> inside_border_points;
+      std::vector<glm::vec3> outside_border_points;
 
-      // calc the ortho dir for each edge
-      for (uint32 i = 1; i < cell_nexus_list_count; i++)
+      for (glm::vec3& nexus : cell_nexus_list)
       {
-         const glm::vec3& p0 = cell_nexus_list[i - 1];
-         const glm::vec3& p1 = cell_nexus_list[i];
-         glm::vec3 dir = p1 - p0;
-         dir = glm::normalize(dir);
-         glm::vec3 edge_ortho = glm::cross(dir, pos_z_axis);
-         edge_ortho = glm::normalize(edge_ortho);
-         edge_ortho_dir_list.push_back(edge_ortho);
+         glm::vec2 nexus_2d(nexus.x, nexus.y);
+         glm::vec2 kernel_nexus_dir = nexus_2d - kernel_pos_2d;
+         kernel_nexus_dir = glm::normalize(kernel_nexus_dir);
+         float segment_length = glm::distance(nexus_2d, kernel_pos_2d);
+         glm::vec2 inside_point(nexus_2d - kernel_nexus_dir * segment_length * 4.f / 5.f);
+         glm::vec2 outside_point(nexus_2d + kernel_nexus_dir * segment_length * 4.f / 5.f);
+
+         inside_border_points.push_back(glm::vec3(inside_point, 0.f));
+         outside_border_points.push_back(glm::vec3(outside_point, 0.f));
       }
-
-      // calc the side dir for each nexus
-      glm::vec3 first_side_dir = (edge_ortho_dir_list.front() + edge_ortho_dir_list.back()) * 0.5f;
-      first_side_dir = glm::normalize(first_side_dir);
-      nexus_side_dir_list.push_back(first_side_dir);
-
-      for (uint32 i = 1; i < edge_ortho_dir_list.size(); i++)
-      {
-         const glm::vec3& up_dir = edge_ortho_dir_list[i - 1];
-         const glm::vec3& down_dir = edge_ortho_dir_list[i];
-         glm::vec3 dir = (down_dir + up_dir) * 0.5f;
-         dir = glm::normalize(dir);
-         nexus_side_dir_list.push_back(dir);
-      }
-
-      // the first side dir must be the same as the last
-      nexus_side_dir_list.push_back(first_side_dir);
 
       // build the contour as a list of rectangles
       for (uint32 i = 1; i < cell_nexus_list_count; i++)
       {
          uint32 ix_idx = 6 * (i - 1);
          uint32 vx_idx = 4 * (i - 1);
-         const glm::vec3& p0 = cell_nexus_list[i - 1];
-         const glm::vec3& p1 = cell_nexus_list[i];
-         glm::vec3 up_side = nexus_side_dir_list[i - 1];
-         glm::vec3 down_side = nexus_side_dir_list[i];
 
-         vx_fmt_3f_2f vx0 = { p0 - up_side * line_half_thickness, glm::vec2(0.f, 1.f) };
+         vx_fmt_3f_2f vx0 = { inside_border_points[i - 1], glm::vec2(1.f, 0.f) };
          vx0.pos.z = z_pos;
          ks_vertices_data[vx_idx + 0] = vx0;
 
-         vx_fmt_3f_2f vx1 = { p1 - down_side * line_half_thickness, glm::vec2(0.f, 0.f) };
+         vx_fmt_3f_2f vx1 = { outside_border_points[i - 1], glm::vec2(0.f, 0.f) };
          vx1.pos.z = z_pos;
          ks_vertices_data[vx_idx + 1] = vx1;
 
-         vx_fmt_3f_2f vx2 = { p1 + down_side * line_half_thickness, glm::vec2(1.f, 0.f) };
+         vx_fmt_3f_2f vx2 = { outside_border_points[i], glm::vec2(0.f, 1.f) };
          vx2.pos.z = z_pos;
          ks_vertices_data[vx_idx + 2] = vx2;
 
-         vx_fmt_3f_2f vx3 = { p0 + up_side * line_half_thickness, glm::vec2(1.f, 1.f) };
+         vx_fmt_3f_2f vx3 = { inside_border_points[i], glm::vec2(1.f, 1.f) };
          vx3.pos.z = z_pos;
          ks_vertices_data[vx_idx + 3] = vx3;
 
@@ -654,6 +641,7 @@ void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
    {
       cell_borders = mws_vrn_cell_borders::nwi();
       cell_borders->visible = diag_data->info.cell_borders_visible;
+      cell_borders->position += glm::vec3(0, 0, 1.f);
    }
    // attach them into the scene
    {

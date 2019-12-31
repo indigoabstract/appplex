@@ -678,9 +678,9 @@ void mws_vkb_impl::build_cell_border_tex()
       gfx_tex_params prm;
 
       pal.set_color_at(gfx_color(0, 0, 0), 0.f);
-      pal.set_color_at(gfx_color(85, 0, 0), 0.5f);
-      pal.set_color_at(gfx_color(225, 0, 0), 0.85f);
-      pal.set_color_at(gfx_color(255, 100, 0), 0.96f);
+      pal.set_color_at(gfx_color(75, 0, 0), 0.5f);
+      pal.set_color_at(gfx_color(185, 0, 0), 0.85f);
+      pal.set_color_at(gfx_color(255, 100, 0), 0.975f);
       pal.set_color_at(gfx_color(255, 240, 120), 0.98f);
       pal.set_color_at(gfx_color(255, 255, 150), 1.f);
 

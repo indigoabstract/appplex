@@ -58,6 +58,19 @@ private:
 };
 
 
+class mws_vrn_cell_vxo : public gfx_vxo
+{
+public:
+   static mws_sp<mws_vrn_cell_vxo> nwi();
+
+   glm::vec2 kernel_pos;
+   glm::vec4 bounding_box;
+
+protected:
+   mws_vrn_cell_vxo();
+};
+
+
 class mws_vrn_cell_borders : public gfx_node
 {
 public:
@@ -69,14 +82,14 @@ public:
 
    static mws_sp<mws_vrn_cell_borders> nwi();
    uint32 get_cell_borders_mesh_size() const;
-   mws_sp<gfx_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
+   mws_sp<mws_vrn_cell_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
    void set_cell_borders_tex(mws_sp<gfx_tex> i_tex);
    void set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list);
 
 protected:
    mws_vrn_cell_borders();
 
-   std::vector<mws_sp<gfx_vxo>> cell_borders_mesh_vect;
+   std::vector<mws_sp<mws_vrn_cell_vxo>> cell_borders_mesh_vect;
    mws_sp<gfx_tex> tex;
 };
 
