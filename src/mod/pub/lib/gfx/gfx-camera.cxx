@@ -640,7 +640,8 @@ void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opa
       return (pos_0.z < pos_1.z);
    };
 
-   std::sort(i_opaque.begin(), i_opaque.end(), z_sort);
+   // why sort the opaque obj? we have zbuffer for that.
+   //std::sort(i_opaque.begin(), i_opaque.end(), z_sort);
    std::sort(i_translucent.begin(), i_translucent.end(), z_sort);
 }
 
@@ -813,7 +814,10 @@ void gfx_camera::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update
 
    for (auto c : children)
    {
-      c->update_recursive(global_tf_mx, i_update_global_mx);
+      if (c->visible)
+      {
+         c->update_recursive(global_tf_mx, i_update_global_mx);
+      }
    }
 }
 

@@ -3,7 +3,6 @@
 #include "mws/mws.hxx"
 #include "input/gesture-detectors.hxx"
 #include "gfx-pbo.hxx"
-#include "util/util.hxx"
 
 
 class mws_font;
@@ -11,7 +10,6 @@ class mws_vrn_main;
 class text_vxo;
 class gfx_tex;
 class mws_vrn_kernel_pt_vect;
-class mws_vrn_cell_vxo;
 
 
 const std::string VKB_PREFIX = "vkb-";
@@ -77,6 +75,8 @@ class mws_vkb_impl : public mws
 {
 public:
    static inline const float key_lights_off_seconds = 2.5f;
+   static inline const float pressed_key_lights_hold_seconds = 0.3f;
+   static inline const float pressed_key_lights_off_seconds = 0.8f;
 
    mws_vkb_impl(uint32 i_obj_type_mask);
    static vkb_info get_vkb_info(const std::string& i_filename);
@@ -110,6 +110,7 @@ public:
    std::vector<mws_sp<gfx_tex>> get_tex_list();
    void build_cell_border_tex();
    void build_keys_tex();
+   void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx);
    mws_sp<mws_font> get_key_font() const { return letter_font; }
    bool is_mod_key(key_types i_key_id);
    // check if i_mod_key is pressed or locked
@@ -122,16 +123,35 @@ public:
    // release all held and locked keys (optional)
    void release_all_keys(bool i_release_locked_keys = true);
 
+   int pressed_key_ker_idx = -1;
    mws_sp<mws_vkb_file_store> file_store;
    mws_sp<mws_vrn_main> vk;
    std::string loaded_filename;
 
 protected:
+   class mws_vkb_pressed_key : public gfx_node
+   {
+   public:
+      mws_vkb_pressed_key();
+      void init(mws_sp<gfx_tex> i_cell_border_tex);
+      void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx, mws_sp<mws_vrn_main> i_vk, mws_sp<gfx_tex> i_keys_tex);
+      void start_light_turnoff();
+      bool is_fading(uint32 i_crt_time);
+      void set_fade_gradient(float i_gradient);
+
+      glm::vec4 arrow_color = glm::vec4(0.9f, 0.08f, 1.f, 0.7f);
+      glm::vec4 label_bg_color = glm::vec4(0.f, 0.f, 0.f, 0.93f);
+      mws_sp<gfx_vxo> arrow;
+      mws_sp<gfx_vxo> label;
+      mws_sp<gfx_vxo> label_bg;
+      mws_sp<gfx_vxo> border;
+      uint32 light_turnoff_start = 0;
+   };
+
    void setup_font_dimensions();
    void init_shaders();
    void set_key_transparency(float i_alpha);
    void draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
-   void show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx);
    void set_key_vect_size(uint32 i_size);
    void set_key_at(int i_idx, key_types i_key_id);
    void erase_key_at(int i_idx);
@@ -176,13 +196,15 @@ protected:
    std::vector<mws_gfx_ppb> keys_tex;
    mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
-   mws_sp<mws_vrn_cell_vxo> pressed_key_border;
+   mws_sp<mws_vkb_pressed_key> pressed_key;
    uintptr_t pressed_vkb_hide_finger_id = -1;
    uint32 pressed_vkb_hide_idx = -1;
    inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
    inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
+   inline static const std::string vkb_hsv_shift_sh = "mws-vkb-hsv-shift";
    mws_sp<gfx_shader> vkb_keys_fonts_shader;
    mws_sp<gfx_shader> vkb_keys_outline_shader;
+   mws_sp<gfx_shader> vkb_hsv_shift_shader;
 };
 
 
@@ -208,6 +230,7 @@ public:
 protected:
    mws_vkb();
    virtual void setup() override;
+   virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) override;
    // when finished, call this to hide the keyboard
    virtual void done();
    virtual std::function<void()> get_waiting_msg_op();

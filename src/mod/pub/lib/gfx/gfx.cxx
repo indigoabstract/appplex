@@ -244,12 +244,7 @@ void gfx::on_destroy()
    main_instance->rt_list.clear();
    main_instance->shader_list.clear();
    main_instance->tex_list.clear();
-
-   main_instance->black_shader = nullptr;
-   main_instance->wireframe_shader = nullptr;
-   main_instance->basic_tex_shader = nullptr;
-   main_instance->mws_shader = nullptr;
-   main_instance->c_o_shader = nullptr;
+   main_instance->name_shader_ht.clear();
    main_instance = nullptr;
 }
 
@@ -485,15 +480,44 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_
 mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
 {
    mws_sp<gfx_shader> glp;
+   // check if the shader is a standard shader
+   auto& ref_ht = gi()->name_shader_ht;
+   auto it = ref_ht.find(iprg_name);
 
-   for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); ++it)
+   // standard shader
+   if (it != ref_ht.end())
    {
-      mws_sp<gfx_shader> prg = it->lock();
+      mws_sp<gfx_shader> shader = it->second;
 
-      if (prg->get_program_name() == iprg_name)
+      // already loaded
+      if (shader)
       {
-         glp = prg;
-         break;
+         glp = shader;
+      }
+      // needs to be loaded
+      else
+      {
+         shader_src src = get_std_shader_src(iprg_name);
+         mws_assert(src.vsh && src.fsh);
+         shader = gfx_shader::new_inst_inline(iprg_name, src.vsh, src.fsh, nullptr, true, gi());
+         mws_assert(shader->is_valid());
+         gi()->shader_list.push_back(shader);
+         ref_ht[iprg_name] = shader;
+         glp = shader;
+      }
+   }
+   //custom shader
+   else
+   {
+      for (auto it = gi()->shader_list.begin(); it != gi()->shader_list.end(); ++it)
+      {
+         mws_sp<gfx_shader> prg = it->lock();
+
+         if (prg->get_program_name() == iprg_name)
+         {
+            glp = prg;
+            break;
+         }
       }
    }
 
@@ -675,217 +699,9 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    gfx_state_inst = mws_sp<gfx_state>(new gfx_state());
    rt.set_current_render_target(nullptr);
 
-   // black shader
-   black_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::black_sh_id, true);
-   if (!black_shader)
+   for (const std::string& shader_name : std_shader_list)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
-      uniform mat4 u_m4_model_view_proj;
-      attribute vec3 a_v3_position;
-
-      void main()
-      {
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-      }
-      )"
-      ));
-
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
-#ifdef GL_ES
-         precision lowp float;
-#endif
-         void main()
-      {
-         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-      }
-      )"
-      ));
-
-      black_shader = shader.new_program_from_src(gfx::black_sh_id, vsh, fsh);
-   }
-
-   // wireframe shader
-   wireframe_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::wireframe_sh_id, true);
-   if (!wireframe_shader)
-   {
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
-      uniform mat4 u_m4_model_view_proj;
-      attribute vec3 a_v3_position;
-
-      void main()
-      {
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-         gl_Position.z -= 0.001;
-      }
-      )"
-      ));
-
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
-#ifdef GL_ES
-         precision lowp float;
-#endif
-         void main()
-      {
-         gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0);
-      }
-      )"
-      ));
-
-      wireframe_shader = shader.new_program_from_src(gfx::wireframe_sh_id, vsh, fsh);
-   }
-
-   // basic-tex shader
-   basic_tex_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::basic_tex_sh_id, true);
-   if (!basic_tex_shader)
-   {
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
-      attribute vec3 a_v3_position;
-      attribute vec2 a_v2_tex_coord;
-
-      uniform mat4 u_m4_model_view_proj;
-
-      varying vec2 v_v2_tex_coord;
-
-      void main()
-      {
-         v_v2_tex_coord = a_v2_tex_coord;
-
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-      }
-      )"
-      ));
-
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
-#ifdef GL_ES
-      precision lowp float;
-#endif
-
-      uniform sampler2D u_s2d_tex;
-
-      varying vec2 v_v2_tex_coord;
-
-      void main()
-      {
-         vec4 v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
-
-         gl_FragColor = v4_color;
-      }
-      )"
-      ));
-
-      basic_tex_shader = shader.new_program_from_src(gfx::basic_tex_sh_id, vsh, fsh);
-   }
-
-   // c-o shader
-   c_o_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::c_o_sh_id, true);
-   if (!c_o_shader)
-   {
-      auto vsh = mws_sp<std::string>(new std::string(
-         R"(
-      attribute vec3 a_v3_position;
-
-      uniform mat4 u_m4_model_view_proj;
-
-      void main()
-      {
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-      }
-      )"
-      ));
-
-      auto fsh = mws_sp<std::string>(new std::string(
-         R"(
-#ifdef GL_ES
-         precision lowp float;
-#endif
-
-         uniform vec4 u_v4_color;
-
-      void main()
-      {
-         gl_FragColor = u_v4_color;
-      }
-      )"
-      ));
-
-      c_o_shader = shader.new_program_from_src(gfx::c_o_sh_id, vsh, fsh);
-   }
-
-   // mws shader
-   if (mod_mws_on)
-   {
-      mws_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(gfx::mws_sh_id, true);
-      if (!mws_shader)
-      {
-         auto vsh = mws_sp<std::string>(new std::string(
-            R"(
-      attribute vec3 a_v3_position;
-      attribute vec2 a_v2_tex_coord;
-
-      uniform mat4 u_m4_model_view_proj;
-
-      varying vec2 v_v2_tex_coord;
-
-      void main()
-      {
-         v_v2_tex_coord = a_v2_tex_coord;
-
-         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
-      }
-      )"
-         ));
-
-         auto fsh = mws_sp<std::string>(new std::string(
-            R"(
-#ifdef GL_ES
-      precision lowp float;
-#endif
-
-      uniform float u_v1_is_enabled;
-      uniform vec4 u_v4_color;
-      uniform float u_v1_has_tex;
-      uniform sampler2D u_s2d_tex;
-      uniform float u_v1_mul_color_alpha;
-
-      varying vec2 v_v2_tex_coord;
-
-      void main()
-      {
-         vec4 v4_color;
-
-         if(u_v1_has_tex == 1.)
-         {
-            v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
-            
-            if(u_v1_mul_color_alpha == 1.)
-            {
-               v4_color.a *= u_v4_color.a;
-            }
-         }
-         else
-         {
-            v4_color = u_v4_color;
-         }
-
-         if(u_v1_is_enabled == 0.)
-         {
-            float v1_gray = dot(v4_color.rgb, vec3(0.299, 0.587, 0.114));
-            v4_color.rgb = vec3(v1_gray);
-         }
-
-         gl_FragColor = v4_color;
-      }
-      )"
-         ));
-
-         mws_shader = shader.new_program_from_src(gfx::mws_sh_id, vsh, fsh);
-      }
+      name_shader_ht[shader_name] = nullptr;
    }
 }
 
@@ -956,4 +772,200 @@ void gfx::remove_gfx_obj(const gfx_obj* iobj)
 
 gfx::gfx()
 {
+}
+
+gfx::shader_src gfx::get_std_shader_src(const std::string& i_shader_name)
+{
+   shader_src src;
+
+   // black shader
+   if (i_shader_name == gfx::black_sh_id)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      uniform mat4 u_m4_model_view_proj;
+      attribute vec3 a_v3_position;
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+      void main()
+      {
+         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+   // wireframe shader
+   else if (i_shader_name == gfx::wireframe_sh_id)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      uniform mat4 u_m4_model_view_proj;
+      attribute vec3 a_v3_position;
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+         gl_Position.z -= 0.001;
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+      void main()
+      {
+         gl_FragColor = vec4(0.5, 0.0, 1.0, 1.0);
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+   // basic-tex shader
+   else if (i_shader_name == gfx::basic_tex_sh_id)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      attribute vec3 a_v3_position;
+      attribute vec2 a_v2_tex_coord;
+      uniform mat4 u_m4_model_view_proj;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         v_v2_tex_coord = a_v2_tex_coord;
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+      uniform sampler2D u_s2d_tex;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         vec4 v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+         gl_FragColor = v4_color;
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+   // texture transparency shader
+   else if (i_shader_name == gfx::sh_id_texture_transparency)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      attribute vec3 a_v3_position;
+      attribute vec2 a_v2_tex_coord;
+      uniform mat4 u_m4_model_view_proj;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         v_v2_tex_coord = a_v2_tex_coord;
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+      uniform sampler2D u_s2d_tex;
+      uniform float u_v1_transparency;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         vec4 v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+         gl_FragColor = v4_color * u_v1_transparency;
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+   // c-o shader
+   else if (i_shader_name == gfx::c_o_sh_id)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      attribute vec3 a_v3_position;
+      uniform mat4 u_m4_model_view_proj;
+      void main()
+      {
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+      uniform vec4 u_v4_color;
+      void main()
+      {
+         gl_FragColor = u_v4_color;
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+   // mws shader
+   else if (i_shader_name == gfx::mws_sh_id && mod_mws_on)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      attribute vec3 a_v3_position;
+      attribute vec2 a_v2_tex_coord;
+      uniform mat4 u_m4_model_view_proj;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         v_v2_tex_coord = a_v2_tex_coord;
+         gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      #ifdef GL_ES
+         precision lowp float;
+      #endif
+
+      uniform float u_v1_is_enabled;
+      uniform vec4 u_v4_color;
+      uniform float u_v1_has_tex;
+      uniform sampler2D u_s2d_tex;
+      uniform float u_v1_mul_color_alpha;
+      varying vec2 v_v2_tex_coord;
+      void main()
+      {
+         vec4 v4_color;
+         if(u_v1_has_tex == 1.)
+         {
+            v4_color = texture2D(u_s2d_tex, v_v2_tex_coord);
+            
+            if(u_v1_mul_color_alpha == 1.)
+            {
+               v4_color.a *= u_v4_color.a;
+            }
+         }
+         else
+         {
+            v4_color = u_v4_color;
+         }
+         if(u_v1_is_enabled == 0.)
+         {
+            float v1_gray = dot(v4_color.rgb, vec3(0.299, 0.587, 0.114));
+            v4_color.rgb = vec3(v1_gray);
+         }
+         gl_FragColor = v4_color;
+      }
+      )");
+
+      src = { vsh, fsh };
+   }
+
+   return src;
 }

@@ -332,7 +332,16 @@ void mws_text_box::set_dimension(const glm::vec2 & i_dim)
    if (tx_src)
    {
       scroll_text(glm::vec2(0.f));
-      select_char_at(glm::vec2(0.f));
+
+      if (is_editable())
+      {
+         glm::ivec2 cursor_coord = tx_src->get_cursor_coord();
+         select_char_at(cursor_coord);
+      }
+      else
+      {
+         select_char_at(glm::vec2(0.f));
+      }
    }
 }
 
@@ -1274,26 +1283,25 @@ int mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; 
 
 void mws_text_area_model_rw::insert_at_cursor(const std::string & i_text)
 {
-   text.insert(cursor_pos, i_text);
-   cursor_pos += i_text.length();
-   //mws_println(text.c_str());
+   text.insert(get_cursor_pos(), i_text);
+   set_cursor_pos(get_cursor_pos() + i_text.length());
 }
 
 void mws_text_area_model_rw::delete_at_cursor(int32 i_count)
 {
    if (i_count > 0)
    {
-      text.erase(cursor_pos, i_count);
+      text.erase(get_cursor_pos(), i_count);
    }
    else if (i_count < 0)
    {
-      int start_idx = cursor_pos + i_count;
+      int start_idx = get_cursor_pos() + i_count;
       int count = -i_count;
 
       if (start_idx >= 0)
       {
          text.erase(start_idx, count);
-         cursor_pos = start_idx;
+         set_cursor_pos(start_idx);
       }
    }
    //mws_println(text.c_str());
@@ -1309,14 +1317,16 @@ void mws_text_area_model_rw::set_cursor_pos(uint32 i_cursor_pos)
    if (i_cursor_pos >= 0 && i_cursor_pos <= text.length())
    {
       cursor_pos = i_cursor_pos;
+      //mws_println("get_cursor_pos() %d", get_cursor_pos());
    }
 }
 
 glm::ivec2 mws_text_area_model_rw::get_cursor_coord()
 {
+   uint32 cp = get_cursor_pos();
    glm::ivec2 cursor_coord(0);
 
-   for (uint32 k = 0; k < cursor_pos; k++)
+   for (uint32 k = 0; k < cp; k++)
    {
       cursor_coord.x++;
 
@@ -1362,7 +1372,7 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
    switch (i_direction)
    {
    case DIR_LEFT:
-      set_cursor_pos(cursor_pos - 1);
+      set_cursor_pos(get_cursor_pos() - 1);
       break;
 
    case DIR_UP:
@@ -1388,7 +1398,7 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
    }
 
    case DIR_RIGHT:
-      set_cursor_pos(cursor_pos + 1);
+      set_cursor_pos(get_cursor_pos() + 1);
       break;
 
    case DIR_DOWN:

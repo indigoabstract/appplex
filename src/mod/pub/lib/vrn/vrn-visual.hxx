@@ -64,6 +64,7 @@ public:
    static mws_sp<mws_vrn_cell_vxo> nwi();
 
    glm::vec2 kernel_pos;
+   std::vector<glm::vec2> nexus_pos_vect;
    glm::vec4 bounding_box;
 
 protected:

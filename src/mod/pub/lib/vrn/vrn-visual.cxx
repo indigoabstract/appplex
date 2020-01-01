@@ -141,7 +141,7 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       rvxo.name = "voronoi_cell_borders";
       rvxo.visible = false;
       rvxo[MP_SHADER_NAME] = vkb_cell_borders_sh;
-      rvxo["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+      rvxo["u_v1_transparency"] = 1.f;
       rvxo["u_s2d_tex"][MP_TEXTURE_INST] = tex;
       rvxo[MP_DEPTH_TEST] = false;
       rvxo[MP_DEPTH_WRITE] = false;
@@ -162,17 +162,18 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       uint32 cell_vx_count = i_point_count_list[k];
 
       // build a temp list with the cell's nexus points and with the same first and last point
-      cell_nexus_list.clear();
-
       glm::vec3 kernel_pos = i_point_list.get_position_at(idx);
       glm::vec2 kernel_pos_2d = glm::vec2(kernel_pos.x, kernel_pos.y);
       mesh->kernel_pos = kernel_pos_2d;
+      mesh->nexus_pos_vect.reserve(cell_vx_count - 1);
+      cell_nexus_list.clear();
 
       // we only need nexus points to build the contour and since the first vertex is always the kernel, skip it
       idx++;
       for (uint32 l = 1; l < cell_vx_count; l++)
       {
          const glm::vec3& p = i_point_list.get_position_at(idx);
+         mesh->nexus_pos_vect.push_back(p);
          cell_nexus_list.push_back(p);
          idx++;
       }
@@ -722,7 +723,7 @@ void mws_vrn_geom::init_shaders()
 
          layout(location = 0) out vec4 v4_frag_color;
 
-         uniform vec4 u_v4_color;
+         uniform float u_v1_transparency;
          uniform sampler2D u_s2d_tex;
 
          smooth in vec2 v_v2_tex_coord;
@@ -730,7 +731,7 @@ void mws_vrn_geom::init_shaders()
          void main()
          {
 	         vec4 v4_diff_color = texture(u_s2d_tex, v_v2_tex_coord);
-	         v4_frag_color = v4_diff_color * u_v4_color.a;
+	         v4_frag_color = v4_diff_color * u_v1_transparency;
          }
          )"
          );

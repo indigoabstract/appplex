@@ -304,14 +304,26 @@ void mws_vkb_impl::on_update_state()
          if (delta_seconds < key_lights_off_seconds)
          {
             float alpha = 1.f - delta_seconds / key_lights_off_seconds;
-            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, alpha);
+            (*mesh)["u_v1_transparency"] = alpha;
             ++it;
          }
          else
          {
-            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+            (*mesh)["u_v1_transparency"] = 1.f;
             mesh->visible = false;
             it = highlight_vect.erase(it);
+         }
+      }
+
+      if (pressed_key->visible && pressed_key->is_fading(crt_time))
+      {
+         float delta_seconds = (crt_time - pressed_key->light_turnoff_start) / 1000.f - pressed_key_lights_hold_seconds;
+         float alpha = 1.f - delta_seconds / pressed_key_lights_off_seconds;
+         pressed_key->set_fade_gradient(alpha);
+
+         if (alpha <= 0.f)
+         {
+            pressed_key->visible = false;
          }
       }
    }
@@ -440,7 +452,7 @@ void mws_vkb_impl::done()
    while (it != highlight_vect.end())
    {
       mws_sp<gfx_vxo> mesh = vk->vgeom->cell_borders->get_cell_borders_mesh_at(it->key_idx);
-      (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+      (*mesh)["u_v1_transparency"] = 1.f;
       mesh->visible = false;
       ++it;
    }
@@ -956,35 +968,21 @@ void mws_vkb_impl::build_keys_tex()
    g->set_text_blending(MV_ALPHA);
    set_key_transparency(0.f);
 
+   if(!pressed_key)
    {
-      mws_sp<gfx_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(0);
-      pressed_key_border = mws_vrn_cell_vxo::nwi();
-      uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
-      uint32 ix_count = cell_border->get_ix_buffer().size();
-      gfx_vxo& rvxo = *pressed_key_border;
+      pressed_key = std::make_shared<mws_vkb_pressed_key>();
+      pressed_key->init(cell_border_tex);
+      attach(pressed_key);
+   }
+}
 
-      rvxo.set_size(vx_count, ix_count);
-      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
-      ks_indices_data = cell_border->get_ix_buffer();
-      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
-      ks_vertices_data = cell_border->get_vx_buffer();
-      rvxo.update_data();
+void mws_vkb_impl::show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx)
+{
+   key_types key_id = get_mod_key_at(key_mod_types::mod_none, i_key_idx);
 
-      rvxo.camera_id_list = { "mws_cam" };
-      rvxo.name = "mws-vkb-pressed-key";
-      rvxo.visible = false;
-      rvxo[MP_SHADER_NAME] = vkb_cell_borders_sh;
-      rvxo["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
-      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = cell_border_tex;
-      rvxo[MP_DEPTH_TEST] = false;
-      rvxo[MP_DEPTH_WRITE] = false;
-      rvxo[MP_CULL_FRONT] = false;
-      rvxo[MP_CULL_BACK] = false;
-      rvxo[MP_BLENDING] = MV_ADD;
-      rvxo.position = glm::vec3(0);
-      // pressed_key_border must be drawn on top of the keyboard
-      rvxo.position = glm::vec3(0.f, 0.f, 1.f);
-      attach(pressed_key_border);
+   if (!is_mod_key(key_id) && !i_ta->is_action_key(key_id))
+   {
+      pressed_key->show_pressed_key(i_ta, i_key_idx, vk, keys_tex[(uint32)key_mod].get_tex());
    }
 }
 
@@ -1079,7 +1077,224 @@ void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
 
    get_mod()->key_ctrl_inst->clear_keys();
    prev_ptr_evt = nullptr;
+
+   if (pressed_key)
+   {
+      pressed_key->visible = false;
+   }
 }
+
+mws_vkb_impl::mws_vkb_pressed_key::mws_vkb_pressed_key() : gfx_node(nullptr) {}
+
+void mws_vkb_impl::mws_vkb_pressed_key::init(mws_sp<gfx_tex> i_cell_border_tex)
+{
+   {
+      arrow = std::make_shared<gfx_vxo>(vx_info("a_v3_position, a_v2_tex_coord"));
+      gfx_vxo& rvxo = *arrow;
+
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "mws-vkb-pressed-key-arrow";
+      rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+      rvxo["u_v4_color"] = arrow_color;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ALPHA;
+      // arrow must be drawn on top of the keyboard
+      rvxo.position = glm::vec3(0.f, 0.f, 1.96f);
+   }
+   {
+      label_bg = std::make_shared<gfx_vxo>(vx_info("a_v3_position, a_v2_tex_coord"));
+      gfx_vxo& rvxo = *label_bg;
+
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "mws-vkb-pressed-key-label-bg";
+      rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+      rvxo["u_v4_color"] = label_bg_color;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ALPHA;
+      // label_bg must be drawn on top of the keyboard
+      rvxo.position = glm::vec3(0.f, 0.f, 1.97f);
+   }
+   {
+      label = std::make_shared<gfx_vxo>(vx_info("a_v3_position, a_v2_tex_coord"));
+      gfx_vxo& rvxo = *label;
+
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "mws-vkb-pressed-key-label";
+      rvxo[MP_SHADER_NAME] = "mws-vkb-hsv-shift";
+      rvxo["u_v1_hue_val"] = 0.38f;
+      //rvxo["u_v1_id"] = 1.f;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ADD_COLOR;
+      // label must be drawn on top of the keyboard
+      rvxo.position = glm::vec3(0.f, 0.f, 1.99f);
+   }
+   {
+      border = mws_vrn_cell_vxo::nwi();
+      gfx_vxo& rvxo = *border;
+
+      rvxo.camera_id_list = { "mws_cam" };
+      rvxo.name = "mws-vkb-pressed-key-border";
+      rvxo[MP_SHADER_NAME] = "mws-vkb-hsv-shift";
+      rvxo["u_v1_hue_val"] = 0.85f;
+      //rvxo["u_v1_id"] = 2.f;
+      rvxo["u_s2d_tex"][MP_TEXTURE_INST] = i_cell_border_tex;
+      rvxo[MP_DEPTH_TEST] = false;
+      rvxo[MP_DEPTH_WRITE] = false;
+      rvxo[MP_CULL_FRONT] = false;
+      rvxo[MP_CULL_BACK] = false;
+      rvxo[MP_BLENDING] = MV_ADD_COLOR;
+      // border must be drawn on top of the keyboard
+      rvxo.position = glm::vec3(0.f, 0.f, 1.98f);
+   }
+   {
+      attach(arrow);
+      attach(label_bg);
+      attach(label);
+      attach(border);
+      visible = false;
+   }
+}
+
+void mws_vkb_impl::mws_vkb_pressed_key::show_pressed_key
+(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx, mws_sp<mws_vrn_main> i_vk, mws_sp<gfx_tex> i_keys_tex)
+{
+   glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   mws_sp<mws_vrn_cell_vxo> cell_border = i_vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_key_idx);
+   glm::vec4 bb = cell_border->bounding_box;
+   glm::vec2 cell_dim(bb.z - bb.x, bb.w - bb.y);
+   mws_rect cursor_rect = i_ta->get_cursor_rect(mws_text_area::e_middle_vertical_cursor);
+   glm::vec2 cell_pos = glm::vec2(cursor_rect.x, cursor_rect.y) - glm::vec2(bb.x, bb.y);
+   glm::vec2 cursor_arrow_base = glm::vec2(cursor_rect.x, cursor_rect.y);
+   glm::vec2 cell_offset(std::min(scr_dim.x, scr_dim.y) * 0.05f);
+   glm::vec2 quadrant(1.f);
+   {
+      const glm::vec2& kernel_pos = cell_border->kernel_pos;
+      uint32 triangle_count = cell_border->nexus_pos_vect.size();
+      uint32 vx_count = triangle_count + 1;
+      uint32 ix_count = triangle_count * 3;
+      gfx_vxo& r_label = *label;
+      gfx_vxo& r_label_bg = *label_bg;
+      r_label.set_size(vx_count, ix_count);
+      r_label_bg.set_size(vx_count, ix_count);
+      std::vector<gfx_indices_type>& ix_label = r_label.get_ix_buffer();
+      std::vector<gfx_indices_type>& ix_label_bg = r_label_bg.get_ix_buffer();
+      std::vector<uint8>& vx_label = r_label.get_vx_buffer();
+      std::vector<uint8>& vx_label_bg = r_label_bg.get_vx_buffer();
+      mws_vrn_cell_borders::vx_fmt_3f_2f* vx_label_data = reinterpret_cast<mws_vrn_cell_borders::vx_fmt_3f_2f*>(vx_label.data());
+      mws_vrn_cell_borders::vx_fmt_3f_2f* vx_label_bg_data = reinterpret_cast<mws_vrn_cell_borders::vx_fmt_3f_2f*>(vx_label_bg.data());
+      vx_label_bg_data[0] = vx_label_data[0] = { glm::vec3(kernel_pos, 0.f), glm::vec2(kernel_pos.x, scr_dim.y - kernel_pos.y) / scr_dim };
+
+      for (uint32 k = 0, idx = 0; k < triangle_count; k++)
+      {
+         const glm::vec2& pos = cell_border->nexus_pos_vect[k];
+         vx_label_bg_data[k + 1] = vx_label_data[k + 1] = { glm::vec3(pos, 0.f), glm::vec2(pos.x, scr_dim.y - pos.y) / scr_dim };
+         ix_label_bg[idx] = ix_label[idx] = 0;
+         idx++;
+         ix_label_bg[idx] = ix_label[idx] = (k + 2 > triangle_count) ? 1 : k + 2;
+         idx++;
+         ix_label_bg[idx] = ix_label[idx] = k + 1;
+         idx++;
+      }
+
+      r_label.update_data();
+      r_label_bg.update_data();
+      r_label["u_s2d_tex"][MP_TEXTURE_INST] = i_keys_tex;
+   }
+   {
+      uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
+      uint32 ix_count = cell_border->get_ix_buffer().size();
+      gfx_vxo& rvxo = *border;
+      rvxo.set_size(vx_count, ix_count);
+      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
+      ks_indices_data = cell_border->get_ix_buffer();
+      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
+      ks_vertices_data = cell_border->get_vx_buffer();
+      rvxo.update_data();
+   }
+
+   if (cursor_rect.x >= scr_dim.x / 2.f)
+   {
+      quadrant.x = -1.f;
+      cell_pos.x -= cell_dim.x;
+   }
+   if (cursor_rect.y >= scr_dim.y / 2.f)
+   {
+      quadrant.y = -1.f;
+      cell_pos.y -= cell_dim.y;
+   }
+   else
+   {
+      cell_pos.y += cursor_rect.h;
+      cursor_arrow_base.y += cursor_rect.h;
+   }
+
+   cell_pos += quadrant * cell_offset;
+
+   {
+      uint32 vx_count = 3;
+      uint32 ix_count = 3;
+      gfx_vxo& rvxo = *arrow;
+      rvxo.set_size(vx_count, ix_count);
+      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
+      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
+      mws_vrn_cell_borders::vx_fmt_3f_2f* vx_data = reinterpret_cast<mws_vrn_cell_borders::vx_fmt_3f_2f*>(ks_vertices_data.data());
+      const std::vector<glm::vec2>& nexus_vect = cell_border->nexus_pos_vect;
+      uint32 nexus_count = nexus_vect.size();
+      std::vector<std::pair<uint32, float>> nexus_idx_dist_sq(nexus_count);
+
+      for (uint32 k = 0; k < nexus_count; k++)
+      {
+         glm::vec2 nexus = nexus_vect[k] + cell_pos;
+         nexus_idx_dist_sq[k] = { k, glm::distance2(cursor_arrow_base, nexus) };
+      }
+
+      static auto sort_cmp = [](const std::pair<uint32, float>& i_d0, const std::pair<uint32, float>& i_d1)
+      {
+         return (i_d0.second < i_d1.second);
+      };
+
+      std::sort(nexus_idx_dist_sq.begin(), nexus_idx_dist_sq.end(), sort_cmp);
+
+      vx_data[0] = { glm::vec3(cursor_arrow_base - cell_pos, 0.f), glm::vec2(0.f) };
+      vx_data[1] = { glm::vec3(nexus_vect[nexus_idx_dist_sq[0].first], 0.f), glm::vec2(0.f) };
+      vx_data[2] = { glm::vec3(nexus_vect[nexus_idx_dist_sq[1].first], 0.f), glm::vec2(0.f) };
+      ks_indices_data = { 0, 2, 1 };
+      rvxo.update_data();
+   }
+
+   visible = true;
+   position = glm::vec3(cell_pos, 1.f);
+   start_light_turnoff();
+   set_fade_gradient(1.f);
+}
+
+void mws_vkb_impl::mws_vkb_pressed_key::start_light_turnoff()
+{
+   light_turnoff_start = pfm::time::get_time_millis();
+}
+
+bool mws_vkb_impl::mws_vkb_pressed_key::is_fading(uint32 i_crt_time)
+{
+   return (i_crt_time - light_turnoff_start) / 1000.f > pressed_key_lights_hold_seconds;
+}
+
+void mws_vkb_impl::mws_vkb_pressed_key::set_fade_gradient(float i_gradient)
+{
+   (*arrow)["u_v4_color"] = arrow_color * i_gradient;
+   (*label)["u_v1_transparency"] = i_gradient;
+   (*label_bg)["u_v4_color"] = label_bg_color * i_gradient;
+   (*border)["u_v1_transparency"] = i_gradient;
+}
+
 
 void mws_vkb_impl::setup_font_dimensions()
 {
@@ -1099,53 +1314,49 @@ void mws_vkb_impl::init_shaders()
    vkb_keys_fonts_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_fonts_sh, true);
    if (!vkb_keys_fonts_shader)
    {
-      auto vsh = std::make_shared<std::string>(
-         R"(
-         //@es #version 300 es
-         //@dt #version 330 core
+      auto vsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
 
-         layout (location = 0) in vec3 a_v3_position;
-         layout (location = 1) in vec2 a_v2_tex_coord;
+      layout (location = 0) in vec3 a_v3_position;
+      layout (location = 1) in vec2 a_v2_tex_coord;
 
-         uniform mat4 u_m4_model_view_proj;
+      uniform mat4 u_m4_model_view_proj;
 
-         smooth out vec2 v_v2_tex_coord;
+      smooth out vec2 v_v2_tex_coord;
 
-         void main()
-         {
-	         v_v2_tex_coord = a_v2_tex_coord;
-	         vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      void main()
+      {
+	      v_v2_tex_coord = a_v2_tex_coord;
+	      vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
 	
-	         gl_Position = v4_position;
-         }
-         )"
-         );
+	      gl_Position = v4_position;
+      }
+      )");
 
-      auto fsh = std::make_shared<std::string>(
-         R"(
-         //@es #version 300 es
-         //@dt #version 330 core
+      auto fsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
 
-         #ifdef GL_ES
-	         precision lowp float;
-         #endif
+      #ifdef GL_ES
+	      precision lowp float;
+      #endif
 
-         layout(location = 0) out vec4 v4_frag_color;
+      layout(location = 0) out vec4 v4_frag_color;
 
-         uniform sampler2D u_s2d_tex;
-         uniform float u_v1_transparency;
+      uniform sampler2D u_s2d_tex;
+      uniform float u_v1_transparency;
 
-         smooth in vec2 v_v2_tex_coord;
+      smooth in vec2 v_v2_tex_coord;
 
-         void main()
-         {
-	         vec3 v3_color = texture(u_s2d_tex, v_v2_tex_coord).rgb;
-	         vec4 v4_color = vec4(v3_color, 1.) * u_v1_transparency;
+      void main()
+      {
+	      vec3 v3_color = texture(u_s2d_tex, v_v2_tex_coord).rgb;
+	      vec4 v4_color = vec4(v3_color, 1.) * u_v1_transparency;
 	
-	         v4_frag_color = v4_color;
-         }
-         )"
-         );
+	      v4_frag_color = v4_color;
+      }
+      )");
 
       vkb_keys_fonts_shader = gfx::i()->shader.new_program_from_src(vkb_keys_fonts_sh, vsh, fsh);
    }
@@ -1154,56 +1365,123 @@ void mws_vkb_impl::init_shaders()
    vkb_keys_outline_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_outline_sh, true);
    if (!vkb_keys_outline_shader)
    {
-      auto vsh = std::make_shared<std::string>(
-         R"(
-         //@es #version 300 es
-         //@dt #version 330 core
+      auto vsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
 
-         layout (location = 0) in vec3 a_v3_position;
-         layout (location = 1) in vec2 a_v2_tex_coord;
+      layout (location = 0) in vec3 a_v3_position;
+      layout (location = 1) in vec2 a_v2_tex_coord;
 
-         uniform mat4 u_m4_model_view_proj;
+      uniform mat4 u_m4_model_view_proj;
 
-         smooth out vec2 v_v2_tex_coord;
+      smooth out vec2 v_v2_tex_coord;
 
-         void main()
-         {
-	         v_v2_tex_coord = a_v2_tex_coord;
-	         vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+      void main()
+      {
+	      v_v2_tex_coord = a_v2_tex_coord;
+	      vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
 	
-	         gl_Position = v4_position;
-         }
-         )"
-         );
+	      gl_Position = v4_position;
+      }
+      )");
 
-      auto fsh = std::make_shared<std::string>(
-         R"(
-         //@es #version 300 es
-         //@dt #version 330 core
+      auto fsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
 
-         #ifdef GL_ES
-	         precision lowp float;
-         #endif
+      #ifdef GL_ES
+	      precision lowp float;
+      #endif
 
-         layout(location = 0) out vec4 v4_frag_color;
+      layout(location = 0) out vec4 v4_frag_color;
 
-         uniform sampler2D u_s2d_tex;
-         uniform float u_v1_outline_transparency;
-         uniform float u_v1_transparency;
+      uniform sampler2D u_s2d_tex;
+      uniform float u_v1_outline_transparency;
+      uniform float u_v1_transparency;
 
-         smooth in vec2 v_v2_tex_coord;
+      smooth in vec2 v_v2_tex_coord;
 
-         void main()
-         {
-	         float v1_tex_alpha = texture(u_s2d_tex, v_v2_tex_coord).a;
-	         float v1_alpha_val = v1_tex_alpha * u_v1_outline_transparency * u_v1_transparency;
+      void main()
+      {
+	      float v1_tex_alpha = texture(u_s2d_tex, v_v2_tex_coord).a;
+	      float v1_alpha_val = v1_tex_alpha * u_v1_outline_transparency * u_v1_transparency;
 	
-	         v4_frag_color = vec4(vec3(0.), v1_alpha_val);
-         }
-         )"
-         );
+	      v4_frag_color = vec4(vec3(0.), v1_alpha_val);
+      }
+      )");
 
       vkb_keys_outline_shader = gfx::i()->shader.new_program_from_src(vkb_keys_outline_sh, vsh, fsh);
+   }
+   // hsv shift
+   vkb_hsv_shift_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_hsv_shift_sh, true);
+   if (!vkb_hsv_shift_shader)
+   {
+      auto vsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
+
+      layout (location = 0) in vec3 a_v3_position;
+      layout (location = 1) in vec2 a_v2_tex_coord;
+
+      uniform mat4 u_m4_model_view_proj;
+
+      smooth out vec2 v_v2_tex_coord;
+
+      void main()
+      {
+	      v_v2_tex_coord = a_v2_tex_coord;
+	      vec4 v4_position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
+	
+	      gl_Position = v4_position;
+      }
+      )");
+
+      auto fsh = std::make_shared<std::string>(R"(
+      //@es #version 300 es
+      //@dt #version 330 core
+
+      #ifdef GL_ES
+	      precision lowp float;
+      #endif
+
+      layout(location = 0) out vec4 v4_frag_color;
+
+      uniform float u_v1_hue_val;
+      uniform float u_v1_transparency;
+      uniform sampler2D u_s2d_tex;
+
+      smooth in vec2 v_v2_tex_coord;
+
+      vec3 rgb2hsv(vec3 c)
+      {
+            vec4 k = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+            vec4 p = mix(vec4(c.bg, k.wz), vec4(c.gb, k.xy), step(c.b, c.g));
+            vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+            float d = q.x - min(q.w, q.y);
+            float e = 1.0e-10;
+            return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+      }
+
+      vec3 hsv2rgb(vec3 c)
+      {
+            vec4 k = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+            vec3 p = abs(fract(c.xxx + k.xyz) * 6.0 - k.www);
+            return c.z * mix(k.xxx, clamp(p - k.xxx, 0.0, 1.0), c.y);
+      }
+
+      void main()
+      {
+	      vec3 v3_diff_color = texture(u_s2d_tex, v_v2_tex_coord).rgb;
+	      vec3 v3_hsv = rgb2hsv(v3_diff_color);
+	      v3_hsv.r = u_v1_hue_val;
+	      vec3 v3_rgb = hsv2rgb(v3_hsv);
+	
+	      v4_frag_color = vec4(v3_rgb, 1.) * u_v1_transparency;
+      }
+      )");
+
+      vkb_hsv_shift_shader = gfx::i()->shader.new_program_from_src(vkb_hsv_shift_sh, vsh, fsh);
    }
 }
 
@@ -1236,48 +1514,6 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_f
          i_g->drawText(key, pos.x, pos.y, font);
       }
    }
-}
-
-void mws_vkb_impl::show_pressed_key(mws_sp<mws_text_area> i_ta, uint32 i_kernel_idx)
-{
-   glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
-   mws_sp<mws_vrn_cell_vxo> cell_border = vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_kernel_idx);
-   glm::vec4 bb = cell_border->bounding_box;
-   glm::vec2 cell_dim(bb.z - bb.x, bb.w - bb.y);
-   mws_rect cursor_rect = i_ta->get_cursor_rect(mws_text_area::e_middle_vertical_cursor);
-   glm::vec2 cell_pos = glm::vec2(cursor_rect.x, cursor_rect.y) - glm::vec2(bb.x, bb.y);
-   glm::vec2 cell_offset(std::min(scr_dim.x, scr_dim.y) * 0.05f);
-   glm::vec2 quadrant(1.f);
-   uint32 vx_count = cell_border->get_vx_buffer().size() / sizeof(mws_vrn_cell_borders::vx_fmt_3f_2f);
-   uint32 ix_count = cell_border->get_ix_buffer().size();
-   mws_vrn_cell_vxo& rvxo = *pressed_key_border;
-   {
-      rvxo.set_size(vx_count, ix_count);
-      std::vector<gfx_indices_type>& ks_indices_data = rvxo.get_ix_buffer();
-      ks_indices_data = cell_border->get_ix_buffer();
-      std::vector<uint8>& ks_vertices_data = rvxo.get_vx_buffer();
-      ks_vertices_data = cell_border->get_vx_buffer();
-      rvxo.update_data();
-   }
-
-   if (cursor_rect.x >= scr_dim.x / 2.f)
-   {
-      quadrant.x = -1.f;
-      cell_pos.x -= cell_dim.x;
-   }
-   if (cursor_rect.y >= scr_dim.y / 2.f)
-   {
-      quadrant.y = -1.f;
-      cell_pos.y -= cell_dim.y;
-   }
-   else
-   {
-      cell_pos.y += cursor_rect.h;
-   }
-   
-   cell_pos += quadrant * cell_offset;
-   pressed_key_border->visible = true;
-   pressed_key_border->position = glm::vec3(cell_pos, 1.f);
 }
 
 void mws_vkb_impl::set_key_vect_size(uint32 i_size)
@@ -1334,7 +1570,11 @@ bool mws_vkb_impl::touch_began(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
          {
             auto& kc = get_mod()->key_ctrl_inst;
             kc->key_pressed(key_types(pos_idx));
-            //show_pressed_key(i_ta, pos_idx);
+
+            if (i_ta)
+            {
+               pressed_key_ker_idx = pos_idx;
+            }
          }
 
          if (mws_dbg::enabled(mws_dbg::app_touch))
@@ -1433,6 +1673,11 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
                {
                   auto& kc = get_mod()->key_ctrl_inst;
                   kc->key_pressed(key_types(pos_idx));
+
+                  if (i_ta)
+                  {
+                     pressed_key_ker_idx = pos_idx;
+                  }
                }
 
                if (key_st.key_id == VKB_HIDE_KB)
@@ -1616,7 +1861,7 @@ void mws_vkb_impl::highlight_key_at(int i_idx, bool i_light_on)
       {
          if (it->key_idx == i_idx)
          {
-            (*mesh)["u_v4_color"] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+            (*mesh)["u_v1_transparency"] = 1.f;
             highlight_vect.erase(it);
             break;
          }
@@ -1781,6 +2026,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
                mws_sp<gfx_tex> tex = keys_tex[(uint32)key_mod].get_tex();
                (*keys_bg_outline_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
                (*keys_quad)["u_s2d_tex"][MP_TEXTURE_INST] = tex;
+               pressed_key->visible = false;
 
                return true;
             }
@@ -1975,6 +2221,20 @@ void mws_vkb::setup()
    mws_virtual_keyboard::setup();
    position = glm::vec3(position().x, position().y, 1.f);
    on_resize();
+}
+
+void mws_vkb::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx)
+{
+   // cursor pos for the pressed key is available only in the next frame after pressing the key in vkb
+   // to avoid flickering, pressed key's position needs to be updated in gfx_scene::update()
+   // it's too late to do it in mws::update_state(), as it runs after gfx_scene::update(), so we do it here
+   if (active_vkb && active_vkb->pressed_key_ker_idx >= 0)
+   {
+      active_vkb->show_pressed_key(ta, active_vkb->pressed_key_ker_idx);
+      active_vkb->pressed_key_ker_idx = -1;
+   }
+
+   gfx_node::update_recursive(i_global_tf_mx, i_update_global_mx);
 }
 
 void mws_vkb::done()

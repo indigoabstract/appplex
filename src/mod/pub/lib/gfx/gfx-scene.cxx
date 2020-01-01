@@ -225,7 +225,10 @@ void gfx_node::update_recursive(const glm::mat4 & i_global_tf_mx, bool i_update_
 
    for (auto c : children)
    {
-      c->update_recursive(global_tf_mx, i_update_global_mx);
+      if (c->visible)
+      {
+         c->update_recursive(global_tf_mx, i_update_global_mx);
+      }
    }
 }
 

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "pfm-def.h"
 #include <string>
 #include <vector>
-#include "pfm-def.h"
+#include <unordered_map>
 
 class mws_cm;
 class mws_in;
@@ -98,11 +99,17 @@ protected:
 class gfx
 {
 public:
-   static const inline std::string black_sh_id = "black-shader";
-   static const inline std::string wireframe_sh_id = "wireframe-shader";
-   static const inline std::string basic_tex_sh_id = "basic-tex-shader";
-   static const inline std::string c_o_sh_id = "c-o-shader";
-   static const inline std::string mws_sh_id = "mws-shader";
+   static const inline std::string black_sh_id = "mws-black-shader";
+   static const inline std::string wireframe_sh_id = "mws-wireframe-shader";
+   static const inline std::string basic_tex_sh_id = "mws-basic-tex-shader";
+   static const inline std::string sh_id_texture_transparency = "mws-texture-transparency-shader";
+   static const inline std::string c_o_sh_id = "mws-c-o-shader";
+   static const inline std::string mws_sh_id = "mws-mws-shader";
+   // hashtable with names for standard shaders
+   static const inline std::vector<std::string> std_shader_list =
+   {
+      black_sh_id, wireframe_sh_id, basic_tex_sh_id, sh_id_texture_transparency, c_o_sh_id, mws_sh_id
+   };
 
    static mws_sp<gfx> nwi();
    static mws_sp<gfx> i() { return main_instance; }
@@ -205,10 +212,12 @@ private:
    friend class gfx_shader;
    friend class gfx_tex;
    friend class mws_mod_ctrl;
+   struct shader_src { mws_sp<std::string> vsh; mws_sp<std::string> fsh; };
 
    static void global_init();
    static void on_destroy();
    static void on_resize(int i_width, int i_height);
+   static shader_src get_std_shader_src(const std::string& i_shader_name);
    void init(mws_sp<gfx> i_new_inst);
    void get_render_target_pixels_impl(mws_sp<gfx_rt> irt, void* ivect);
    void remove_gfx_obj(const gfx_obj* iobj);
@@ -219,11 +228,7 @@ private:
    mws_sp<gfx_shader> active_shader;
    mws_sp<gfx_rt> active_rt;
    mws_sp<gfx_state> gfx_state_inst;
-   mws_sp<gfx_shader> black_shader;
-   mws_sp<gfx_shader> wireframe_shader;
-   mws_sp<gfx_shader> basic_tex_shader;
-   mws_sp<gfx_shader> mws_shader;
-   mws_sp<gfx_shader> c_o_shader;
+   std::unordered_map<std::string, mws_sp<gfx_shader>> name_shader_ht;
    std::vector<mws_wp<gfx_rt> > rt_list;
    std::vector<mws_wp<gfx_shader> > shader_list;
    std::vector<mws_wp<gfx_tex> > tex_list;
