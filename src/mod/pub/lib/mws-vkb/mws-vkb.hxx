@@ -5,6 +5,7 @@
 #include "gfx-pbo.hxx"
 
 
+class mws_draw_text;
 class mws_font;
 class mws_vrn_main;
 class text_vxo;
@@ -88,40 +89,40 @@ public:
    virtual mws_sp<mws_ptr_evt> on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i_ta);
    virtual void on_update_state();
    virtual void on_resize(uint32 i_width, uint32 i_height);
-   virtual vkb_file_info get_closest_match(uint32 i_width, uint32 i_height);
+   virtual vkb_file_info get_closest_vkb_match(uint32 i_width, uint32 i_height);
    virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt);
    virtual void start_anim();
    virtual void done();
    // returns keyboard dimensions
-   glm::ivec2 get_dimensions() const;
-   std::string get_key_name(key_types i_key_id) const;
-   key_types get_key_type(const std::string& i_key_name) const;
+   virtual glm::ivec2 get_dimensions() const;
+   virtual std::string get_key_name(key_types i_key_id) const;
+   virtual key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
-   std::vector<key_types>& get_key_vect();
-   uint32 get_key_vect_size();
+   virtual std::vector<key_types>& get_key_vect();
+   virtual uint32 get_key_vect_size();
    // returns the key id at position i_idx
-   key_types get_key_at(int i_idx);
+   virtual key_types get_key_at(int i_idx);
    // returns the key id at position 'i_idx' in mod 'i_key_mod'
-   key_types get_mod_key_at(key_mod_types i_key_mod, int i_idx);
-   void next_page();
-   void prev_page();
-   void set_on_top();
-   std::vector<mws_sp<gfx_tex>> get_tex_list();
-   void build_cell_border_tex();
-   void build_keys_tex();
-   void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx);
-   mws_sp<mws_font> get_key_font() const { return letter_font; }
-   bool is_mod_key(key_types i_key_id);
+   virtual key_types get_mod_key_at(key_mod_types i_key_mod, int i_idx);
+   virtual void next_page();
+   virtual void prev_page();
+   virtual void set_on_top();
+   virtual std::vector<mws_sp<gfx_tex>> get_tex_list();
+   virtual void build_cell_border_tex();
+   virtual void build_keys_tex();
+   virtual void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx);
+   virtual mws_sp<mws_font> get_key_font() const { return letter_font; }
+   virtual bool is_mod_key(key_types i_key_id);
    // check if i_mod_key is pressed or locked
    enum class mod_key_types { alt = VKB_ALT, hide_vkb = VKB_HIDE_KB, shift = VKB_SHIFT, };
    enum class base_key_state_types { key_free, key_held, key_locked, };
    // returns true if i_mod_key is either held or locked. you can use i_state to find out the actual state of i_mod_key
-   bool is_mod_key_held(mod_key_types i_mod_key, base_key_state_types* i_state = nullptr, int* i_key_idx = nullptr) const;
-   void set_mod_key_lock(mod_key_types i_mod_key, bool i_set_lock = true);
-   void clear_mod_key_locks();
+   virtual bool is_mod_key_held(mod_key_types i_mod_key, base_key_state_types* i_state = nullptr, int* i_key_idx = nullptr) const;
+   virtual void set_mod_key_lock(mod_key_types i_mod_key, bool i_set_lock = true);
+   virtual void clear_mod_key_locks();
    // release all held and locked keys (optional)
-   void release_all_keys(bool i_release_locked_keys = true);
+   virtual void release_all_keys(bool i_release_locked_keys = true);
 
    int pressed_key_ker_idx = -1;
    mws_sp<mws_vkb_file_store> file_store;
@@ -129,6 +130,16 @@ public:
    std::string loaded_filename;
 
 protected:
+   class res_specific_params
+   {
+   public:
+      // keyboard resolution, in pixels (it's the same for both landscape or portrait keyboards, just put the largest value)
+      uint32 resolution_px = 0;
+      // weight factors for kawase bloom filter on the keys
+      std::vector<float> key_weight_fact;
+   };
+
+
    class mws_vkb_pressed_key : public gfx_node
    {
    public:
@@ -148,25 +159,27 @@ protected:
       uint32 light_turnoff_start = 0;
    };
 
-   void setup_font_dimensions();
-   void init_shaders();
-   void set_key_transparency(float i_alpha);
-   void draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
-   void set_key_vect_size(uint32 i_size);
-   void set_key_at(int i_idx, key_types i_key_id);
-   void erase_key_at(int i_idx);
-   void push_back_key(key_types i_key_id);
+
+   virtual res_specific_params get_closest_resolution_match(uint32 i_resolution_px);
+   virtual void setup_font_dimensions();
+   virtual void init_shaders();
+   virtual void set_key_transparency(float i_alpha);
+   virtual void draw_keys(mws_sp<mws_draw_text> i_dt, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
+   virtual void set_key_vect_size(uint32 i_size);
+   virtual void set_key_at(int i_idx, key_types i_key_id);
+   virtual void erase_key_at(int i_idx);
+   virtual void push_back_key(key_types i_key_id);
    virtual bool touch_began(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    virtual bool touch_moved(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    virtual bool touch_ended(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    virtual bool touch_cancelled(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
-   void highlight_key_at(int i_idx, bool i_light_on = true);
-   void fade_key_at(int i_idx);
+   virtual void highlight_key_at(int i_idx, bool i_light_on = true);
+   virtual void fade_key_at(int i_idx);
    // set the state of the keys. if return value is true, the iterators are invalidated and need to be aborted
    // returns true when keyboard has been hidden (and the key state cleared), false otherwise
-   bool set_key_state(int i_key_idx, base_key_state_types i_state);
+   virtual bool set_key_state(int i_key_idx, base_key_state_types i_state);
    // call this after modifying / inserting / deleting a base key (a mod_node key)
-   void rebuild_key_state();
+   virtual void rebuild_key_state();
 
    bool build_textures = true;
    uint32 obj_type_mask = 0;
@@ -205,6 +218,7 @@ protected:
    mws_sp<gfx_shader> vkb_keys_fonts_shader;
    mws_sp<gfx_shader> vkb_keys_outline_shader;
    mws_sp<gfx_shader> vkb_hsv_shift_shader;
+   inline static std::vector<res_specific_params> resolution_params;
 };
 
 

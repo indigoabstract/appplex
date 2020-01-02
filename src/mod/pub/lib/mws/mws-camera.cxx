@@ -135,6 +135,15 @@ mws_sp<mws_camera> mws_camera::nwi(mws_sp<gfx> i_gi)
    return inst;
 }
 
+void mws_camera::draw_text(const std::string& i_text, float i_x, float i_y, const mws_sp<mws_font> i_font)
+{
+   if (enabled)
+   {
+      const mws_sp<mws_font> font = (i_font) ? i_font : p->get_font();
+      p->d_text.push_data(draw_ops, i_text, i_x, i_y, font);
+   }
+}
+
 void mws_camera::drawImage(mws_sp<gfx_tex> img, float x, float y, float width, float height)
 {
    draw_image(img, x, y, width, height);
@@ -173,11 +182,7 @@ void mws_camera::set_font(mws_sp<mws_font> i_font)
 
 void mws_camera::drawText(const std::string& text, float x, float y, const mws_sp<mws_font> ifnt)
 {
-   if (enabled)
-   {
-      const mws_sp<mws_font> fnt = (ifnt) ? ifnt : p->get_font();
-      p->d_text.push_data(draw_ops, text, x, y, fnt);
-   }
+   draw_text(text, x, y, ifnt);
 }
 
 void mws_camera::set_color(const gfx_color& i_color)

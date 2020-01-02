@@ -86,6 +86,27 @@ mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_f
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
 {
    obj_type_mask = i_obj_type_mask;
+
+   if (resolution_params.empty())
+   {
+      resolution_params =
+      {
+         // sd
+         { 720, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, } },
+         // custom
+         { 1040, { 0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // hd
+         { 1280, { 0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // full hd
+         { 1920, { 0.5f, 0.5f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // wqhd
+         { 2560, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // note 9 fullres
+         { 2960, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // 4k
+         { 4096, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+      };
+   }
 }
 
 vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
@@ -293,6 +314,7 @@ void mws_vkb_impl::on_update_state()
    }
 
    // key lights
+   if(build_textures)
    {
       uint32 crt_time = pfm::time::get_time_millis();
 
@@ -335,7 +357,7 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
 
    if (vkb_dim != scr_dim)
    {
-      vkb_file_info vkb_fi = get_closest_match(i_width, i_height);
+      vkb_file_info vkb_fi = get_closest_vkb_match(i_width, i_height);
       mws_sp<pfm_file> file = vkb_fi.file;
       std::string new_filename = file->get_file_name();
       vkb_dim = scr_dim;
@@ -357,7 +379,7 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
    }
 }
 
-vkb_file_info mws_vkb_impl::get_closest_match(uint32 i_width, uint32 i_height)
+vkb_file_info mws_vkb_impl::get_closest_vkb_match(uint32 i_width, uint32 i_height)
 {
    mws_assert(file_store != nullptr);
    float screen_aspect_ratio = float(i_width) / i_height;
@@ -733,6 +755,9 @@ void mws_vkb_impl::build_cell_border_tex()
 
 void mws_vkb_impl::build_keys_tex()
 {
+   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   res_specific_params res_params = get_closest_resolution_match(glm::max(scr_dim.x, scr_dim.y));
+
    if (key_border_quad)
    {
       key_border_quad->detach();
@@ -748,7 +773,6 @@ void mws_vkb_impl::build_keys_tex()
    setup_font_dimensions();
    keys_tex.resize((uint32)key_mod_types::count);
    uint32 key_map_size = keys_tex.size();
-   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
    mws_sp<mws_camera> g = get_mod()->mws_cam;
    glm::vec2 dim = letter_font->get_text_dim("M");
    std::string vkb_type = (diag_original_dim.x > diag_original_dim.y) ? "landscape" : "portrait";
@@ -921,10 +945,7 @@ void mws_vkb_impl::build_keys_tex()
       for (uint32 k = 0; k < key_map_size; k++)
       {
          mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(keys_tex[k].get_tex());
-         std::vector<float> weight_fact =
-         {
-            0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f
-         };
+         const std::vector<float>& weight_fact = res_params.key_weight_fact;
          mws_sp<mws_font> letter_font_bg;
          mws_sp<mws_font> word_font_bg;
 
@@ -1083,6 +1104,7 @@ void mws_vkb_impl::release_all_keys(bool i_release_locked_keys)
       pressed_key->visible = false;
    }
 }
+
 
 mws_vkb_impl::mws_vkb_pressed_key::mws_vkb_pressed_key() : gfx_node(nullptr) {}
 
@@ -1296,6 +1318,55 @@ void mws_vkb_impl::mws_vkb_pressed_key::set_fade_gradient(float i_gradient)
 }
 
 
+mws_vkb_impl::res_specific_params mws_vkb_impl::get_closest_resolution_match(uint32 i_resolution_px)
+{
+   if (i_resolution_px <= resolution_params.front().resolution_px)
+   {
+      return resolution_params.front();
+   }
+   else if (i_resolution_px >= resolution_params.back().resolution_px)
+   {
+      return resolution_params.back();
+   }
+
+   auto cmp_resolution = [](const res_specific_params& i_a, const res_specific_params& i_b) { return i_a.resolution_px < i_b.resolution_px; };
+   auto mix_params = [](const res_specific_params& i_lower, const res_specific_params& i_upper, uint32 i_resolution_px)
+   {
+      res_specific_params params;
+      const uint32 max_weight_size = glm::max(i_lower.key_weight_fact.size(), i_upper.key_weight_fact.size());
+      float lerpf = float(i_resolution_px - i_lower.resolution_px) / float(i_upper.resolution_px - i_lower.resolution_px);
+      std::vector<float> lower(max_weight_size, 0.f);
+      std::vector<float> upper(max_weight_size, 0.f);
+
+      std::copy(i_lower.key_weight_fact.begin(), i_lower.key_weight_fact.end(), lower.begin());
+      std::copy(i_upper.key_weight_fact.begin(), i_upper.key_weight_fact.end(), upper.begin());
+      params.resolution_px = (uint32)glm::mix(i_lower.resolution_px, i_upper.resolution_px, lerpf);
+      params.key_weight_fact.resize(max_weight_size);
+
+      for (uint32 k = 0; k < max_weight_size; k++)
+      {
+         params.key_weight_fact[k] = glm::mix(lower[k], upper[k], lerpf);
+      }
+
+      return params;
+   };
+
+   res_specific_params t_params = { i_resolution_px, {} };
+   auto const it = std::lower_bound(resolution_params.begin(), resolution_params.end(), t_params, cmp_resolution);
+
+   // exact match
+   if (i_resolution_px == it->resolution_px)
+   {
+      return *it;
+   }
+   // not an exact match. interpolate
+   else
+   {
+      auto const it_lower = it - 1;
+      return mix_params(*it_lower, *it, i_resolution_px);
+   }
+}
+
 void mws_vkb_impl::setup_font_dimensions()
 {
    uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
@@ -1492,7 +1563,7 @@ void mws_vkb_impl::set_key_transparency(float i_alpha)
    (*keys_quad)["u_v1_transparency"] = i_alpha;
 }
 
-void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font,
+void mws_vkb_impl::draw_keys(mws_sp<mws_draw_text> i_dt, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font,
    key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect)
 {
    uint32 size = get_key_vect_size();
@@ -1511,7 +1582,7 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_camera> i_g, mws_sp<mws_font> i_letter_f
          glm::vec2 pos(kp.position.x, kp.position.y);
          pos -= text_dim / 2.f;
 
-         i_g->drawText(key, pos.x, pos.y, font);
+         i_dt->draw_text(key, pos.x, pos.y, font);
       }
    }
 }
@@ -2357,6 +2428,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb()
          active_vkb->visible = false;
          active_vkb = vkb_landscape;
          active_vkb->visible = true;
+         active_vkb->start_anim();
       }
    }
    else
@@ -2368,6 +2440,7 @@ mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb()
          active_vkb->visible = false;
          active_vkb = vkb_portrait;
          active_vkb->visible = true;
+         active_vkb->start_anim();
       }
    }
 

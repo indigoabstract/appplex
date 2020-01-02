@@ -313,6 +313,11 @@ mws_sp<text_vxo> text_vxo::nwi()
    return inst;
 }
 
+void text_vxo::draw_text(const std::string& i_text, float i_x, float i_y, const mws_sp<mws_font> i_font)
+{
+   add_text(i_text, glm::vec2(i_x, i_y), i_font);
+}
+
 void text_vxo::clear_text()
 {
    p->clear_text();

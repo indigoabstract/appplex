@@ -61,3 +61,12 @@ private:
    mws_wp<font_cache> fnt_cache;
    mws_sp<mws_font_impl> p;
 };
+
+
+// inherit from this to signal that a class can draw text..(lol!)
+class mws_draw_text
+{
+public:
+   virtual ~mws_draw_text() {}
+   virtual void draw_text(const std::string& i_text, float i_x, float i_y, const mws_sp<mws_font> i_font = nullptr) = 0;
+};
