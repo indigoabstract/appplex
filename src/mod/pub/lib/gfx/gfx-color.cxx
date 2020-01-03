@@ -56,6 +56,11 @@ gfx_color gfx_color::from_rgba(uint32 i_rgba)
    return gfx_color((i_rgba >> 24) & 0x000000ff, (i_rgba >> 16) & 0x000000ff, (i_rgba >> 8) & 0x000000ff, (i_rgba >> 0) & 0x000000ff);
 }
 
+gfx_color gfx_color::from_vec4(const glm::vec4& i_vec4)
+{
+   return from_float(i_vec4.r, i_vec4.g, i_vec4.b, i_vec4.a);
+}
+
 gfx_color gfx_color::from_float(float i_r, float i_g, float i_b, float i_a)
 {
    int r = int(i_r * 255.0f);

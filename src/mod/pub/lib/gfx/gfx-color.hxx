@@ -32,6 +32,7 @@ public:
    static gfx_color from_abgr(uint32 i_abgr);
    static gfx_color from_argb(uint32 i_argb);
    static gfx_color from_rgba(uint32 i_rgba);
+   static gfx_color from_vec4(const glm::vec4& i_vec4);
    static gfx_color from_float(float i_r, float i_g, float i_b, float i_a = 1.f);
 
    void to_float(float& i_r, float& i_g, float& i_b, float& i_a);

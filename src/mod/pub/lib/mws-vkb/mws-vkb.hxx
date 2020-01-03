@@ -197,7 +197,7 @@ protected:
    std::vector<base_key_state> base_key_st;
    mws_sp<mws_ptr_evt> prev_ptr_evt;
    std::unordered_map<int, key_types> mod_keys_st;
-   const float fade_duration_in_seconds = 0.65f;
+   const float fade_duration_in_seconds = 0.85f;
    basic_time_slider<float> fade_slider;
    enum class fade_types { e_none, e_hide_vkb, e_show_vkb };
    fade_types fade_type = fade_types::e_none;
@@ -211,7 +211,6 @@ protected:
    mws_sp<gfx_quad_2d> keys_quad;
    mws_sp<mws_vkb_pressed_key> pressed_key;
    uintptr_t pressed_vkb_hide_finger_id = -1;
-   uint32 pressed_vkb_hide_idx = -1;
    inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
    inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
    inline static const std::string vkb_hsv_shift_sh = "mws-vkb-hsv-shift";

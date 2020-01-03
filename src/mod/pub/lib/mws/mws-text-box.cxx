@@ -28,7 +28,7 @@ void mws_text_box::setup()
 {
    mws_page_item::setup();
    font = font_db::inst()->get_global_font();
-   font->set_color(gfx_color::colors::white);
+   //font->set_color(gfx_color::colors::white);
    left_char_rect = std::make_shared<mws_rect>();
    right_char_rect = std::make_shared<mws_rect>();
    {

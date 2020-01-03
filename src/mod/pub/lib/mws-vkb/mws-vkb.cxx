@@ -98,13 +98,15 @@ mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
          // hd
          { 1280, { 0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
          // full hd
-         { 1920, { 0.5f, 0.5f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         { 1920, { 0.45f, 0.35f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.5f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         // 2094
+         { 2094, { 0.55f, 0.25f, 0.125f, 0.125f, 0.25f, 0.25f, 0.25f, 0.5f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f  } },
          // wqhd
-         { 2560, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         { 2560, { 0.45f, 0.35f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.5f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
          // note 9 fullres
-         { 2960, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         { 2960, { 0.25f, 0.125f, 0.125f, 0.25f, 0.25f, 0.25f, 0.25f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
          // 4k
-         { 4096, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         { 4096, { 0.25f, 0.125f, 0.125f, 0.25f, 0.25f, 0.25f, 0.25f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
       };
    }
 }
@@ -204,11 +206,10 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
 
             // if the indices differ, it means the finger moved outside the hide button,
             // so release the button and show the keyboard
-            if (ret.idx != pressed_vkb_hide_idx)
+            if (ret.idx != hide_vkb_idx)
             {
-               set_key_state(pressed_vkb_hide_idx, base_key_state_types::key_free);
+               set_key_state(hide_vkb_idx, base_key_state_types::key_free);
                pressed_vkb_hide_finger_id = -1;
-               pressed_vkb_hide_idx = -1;
                forward_touch = false;
             }
          }
@@ -230,8 +231,11 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
 
             if (ret.idx == hide_vkb_idx)
             {
-               pe->points[pe->touch_count] = pt;
-               pe->touch_count++;
+               if (pt.is_changed)
+               {
+                  pe->points[pe->touch_count] = pt;
+                  pe->touch_count++;
+               }
             }
             else
             {
@@ -284,7 +288,7 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
          auto idx_0 = vk->get_kernel_idx_at(press_0.x, press_0.y);
          key_types active_key = get_key_at(idx_0.idx);
 
-         if (is_mod_key(active_key))
+         if ((!vkb_hidden && is_mod_key(active_key)) || (vkb_hidden && (idx_0.idx == hide_vkb_idx)))
          {
             const base_key_state& st = base_key_st[idx_0.idx];
             base_key_state_types new_state = (st.state == base_key_state_types::key_free) ? base_key_state_types::key_locked : base_key_state_types::key_free;
@@ -779,7 +783,7 @@ void mws_vkb_impl::build_keys_tex()
 
    // key border
    {
-      key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s-%d-%d", vkb_type.c_str()), scr_dim.x, scr_dim.y);
+      key_border_tex.init(mws_to_str_fmt("mws-vkb-keys-border-tex-%s-%d-%d", vkb_type.c_str(), scr_dim.x, scr_dim.y), scr_dim.x, scr_dim.y);
       key_border_quad = gfx_quad_2d::nwi();
 
       auto& rvxo = *key_border_quad;
@@ -1348,6 +1352,7 @@ mws_vkb_impl::res_specific_params mws_vkb_impl::get_closest_resolution_match(uin
          params.key_weight_fact[k] = glm::mix(lower[k], upper[k], lerpf);
       }
 
+      //mws_println("res_specific_params[ res %d lerpf %f [ %d, %d ] ]", params.resolution_px, lerpf, i_lower.resolution_px, i_upper.resolution_px);
       return params;
    };
 
@@ -1656,7 +1661,6 @@ bool mws_vkb_impl::touch_began(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
          if (key_st.key_id == VKB_HIDE_KB)
          {
             pressed_vkb_hide_finger_id = pt.identifier;
-            pressed_vkb_hide_idx = pos_idx;
          }
 
          key_st.pressed_count++;
@@ -1754,7 +1758,6 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
                if (key_st.key_id == VKB_HIDE_KB)
                {
                   pressed_vkb_hide_finger_id = pt.identifier;
-                  pressed_vkb_hide_idx = pos_idx;
                }
 
                key_st.pressed_count++;
