@@ -40,11 +40,12 @@ protected:
    mws_sp<gfx_camera> ortho_cam;
    mws_sp<gfx_tex> input_tex;
    mws_sp<gfx_quad_2d> input_quad;
-   mws_sp<gfx_tex> output_tex;
+   mws_sp<gfx_tex> blurred_tex;
+   mws_sp<gfx_tex> bloomed_tex;
    std::array<mws_gfx_ppb, 2> ping_pong_vect;
    mws_sp<gfx_shader> kawase_blur_shader;
    static const inline std::string kawase_blur_sh_id = "kawase-blur";
-   mws_gfx_ppb accumulation_buff;
+   std::array<mws_gfx_ppb, 2> accumulation_buff;
    mws_sp<gfx_shader> accumulation_shader;
    static const inline std::string accumulation_sh_id = "accumulation";
    static inline uint32 tex_count = 0;

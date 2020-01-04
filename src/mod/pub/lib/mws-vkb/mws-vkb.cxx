@@ -94,7 +94,7 @@ mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
          // sd
          { 720, { 0.9505f, 0.95925f, 0.9025f, 0.9025f, 1.f, 1.f, 1.f, 1.f, } },
          // custom
-         { 1040, { 0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
+         { 1040, { 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
          // hd
          { 1280, { 0.505f, 0.5925f, 0.025f, 0.025f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f } },
          // full hd
@@ -929,9 +929,9 @@ void mws_vkb_impl::build_keys_tex()
    {
       mws_sp<mws_font> letter_font_bg = mws_font::nwi(letter_font);
       mws_sp<mws_font> word_font_bg = mws_font::nwi(word_font);
-      uint32 argb = 0xff107fff;
-      letter_font_bg->set_color(gfx_color::from_argb(argb));
-      word_font_bg->set_color(gfx_color::from_argb(argb));
+      gfx_color argb(16, 95, 223, 255);
+      letter_font_bg->set_color(argb);
+      word_font_bg->set_color(argb);
 
       // draw keys
       for (uint32 k = 0; k < key_map_size; k++)

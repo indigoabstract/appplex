@@ -18,9 +18,9 @@ mws_sp<mws_kawase_bloom> mws_kawase_bloom::nwi(mws_sp<gfx_tex> i_input_tex)
    return inst;
 }
 
-mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return output_tex; }
+mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return blurred_tex; }
 
-mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return accumulation_buff.get_tex(); }
+mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return bloomed_tex; }
 
 void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, float i_weight_fact)
 {
@@ -83,6 +83,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       gfx_tex_params prm;
 
       prm.set_rt_params();
+      //prm.set_format_id("RGBA32F");
       kawase_blur_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(kawase_blur_sh_id);
 
       for (uint32 k = 0; k < 2; k++)
@@ -99,14 +100,14 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       }
 
       // accumulation buffer
+      for (uint32 k = 0; k < 2; k++)
       {
-         mws_gfx_ppb& rt = accumulation_buff;
+         mws_gfx_ppb& rt = accumulation_buff[k];
 
          accumulation_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(accumulation_sh_id);
          rt.init(mws_to_str_fmt("mws-kawase-bloom-tex-%d", tex_count), input_tex->get_width(), input_tex->get_height(), &prm);
          auto& rvxo = *rt.get_quad();
 
-         rvxo[MP_BLENDING] = MV_ADD_COLOR;
          rvxo[MP_SHADER_NAME] = accumulation_sh_id;
          rvxo.set_v_flip(true);
          gfx::i()->rt.set_current_render_target(rt.get_rt());
@@ -155,6 +156,14 @@ void mws_kawase_bloom::update()
       rvxo["u_s2d_tex"][MP_TEXTURE_INST] = ping_pong_vect[0].get_tex();
    }
    {
+      auto& rvxo = *accumulation_buff[0].get_quad();
+      rvxo["u_s2d_tex_1"][MP_TEXTURE_INST] = accumulation_buff[1].get_tex();
+   }
+   {
+      auto& rvxo = *accumulation_buff[1].get_quad();
+      rvxo["u_s2d_tex_1"][MP_TEXTURE_INST] = accumulation_buff[0].get_tex();
+   }
+   {
       mws_sp<gfx_rt> rt = ping_pong_vect[1].get_rt();
       // put the input texture in input_tex ping_pong_vect[1].tex, to be used by ping_pong_vect[0]
       gfx::i()->rt.set_current_render_target(rt);
@@ -164,18 +173,21 @@ void mws_kawase_bloom::update()
 
    for (uint32 k = 0; k < iteration_count; k++)
    {
+      uint32 idx = k % 2;
       float sample_factor = sample_offset_start_val + k;
-      mws_gfx_ppb& rt = ping_pong_vect[k % 2];
+      mws_gfx_ppb& rt = ping_pong_vect[idx];
+      mws_gfx_ppb& rt_acc = accumulation_buff[idx];
 
       gfx::i()->rt.set_current_render_target(rt.get_rt());
       (*rt.get_quad())["u_v2_offset"] = glm::vec2(sample_factor / rt.get_tex()->get_width(), sample_factor / rt.get_tex()->get_height());
       rt.get_quad()->draw_out_of_sync(ortho_cam);
-      output_tex = rt.get_tex();
-      gfx::i()->rt.set_current_render_target(accumulation_buff.get_rt());
+      blurred_tex = rt.get_tex();
+      gfx::i()->rt.set_current_render_target(rt_acc.get_rt());
       // set weight fact
-      (*accumulation_buff.get_quad())["u_v1_weight_fact"] = weight_fact_vect[k];
-      (*accumulation_buff.get_quad())["u_s2d_tex"][MP_TEXTURE_INST] = output_tex;
-      accumulation_buff.get_quad()->draw_out_of_sync(ortho_cam);
+      (*rt_acc.get_quad())["u_v1_weight_fact"] = weight_fact_vect[k];
+      (*rt_acc.get_quad())["u_s2d_tex_0"][MP_TEXTURE_INST] = blurred_tex;
+      rt_acc.get_quad()->draw_out_of_sync(ortho_cam);
+      bloomed_tex = rt_acc.get_tex();
       gfx::i()->rt.set_current_render_target();
    }
 }
@@ -302,17 +314,19 @@ void mws_kawase_bloom::init_shaders()
 
       layout(location = 0) out vec4 v4_frag_color;
 
-      uniform sampler2D u_s2d_tex;
+      uniform sampler2D u_s2d_tex_0;
+      uniform sampler2D u_s2d_tex_1;
       uniform float u_v1_weight_fact;
 
       smooth in vec2 v_v2_tex_coord;
 
       void main()
       {
-          vec4 v4_col = texture(u_s2d_tex, v_v2_tex_coord).rgba;
-          vec3 v3_col = v4_col.rgb * u_v1_weight_fact;
+          vec4 v4_col_0 = texture(u_s2d_tex_0, v_v2_tex_coord).rgba;
+          vec4 v4_col_1 = texture(u_s2d_tex_1, v_v2_tex_coord).rgba;
+          vec3 v3_col = v4_col_0.rgb * u_v1_weight_fact + v4_col_1.rgb;
 
-          v4_frag_color = vec4(v3_col, v4_col.a);
+          v4_frag_color = vec4(v3_col, v4_col_0.a);
       }
       )"
       ));
