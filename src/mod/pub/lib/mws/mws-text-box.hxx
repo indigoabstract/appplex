@@ -137,55 +137,10 @@ protected:
 };
 
 
-class mws_text_area_model_ro : public mws_text_area_model
-{
-public:
-   mws_text_area_model_ro();
-   // common
-   virtual bool get_word_wrap() override;
-   virtual void set_word_wrap(bool i_word_wrap) override;
-   virtual uint32 get_line_count() override;
-   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) override;
-   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) override;
-   virtual const std::string& get_text() override;
-   virtual void set_text(const std::string& i_text) override;
-   virtual void set_text(const char* i_text, uint32 i_length) override;
-   virtual void set_size(uint32 i_width, uint32 i_height) override;
-   virtual void set_font(mws_sp<mws_font> i_font) override;
-   virtual int get_char_at_pixel(float i_x, float i_y) override;
-
-   // viewer only
-   virtual void push_back(const char* i_text, uint32 i_length) override;
-   virtual void push_front(const char* i_text, uint32 i_length) override;
-
-   // editor only
-   virtual void insert_at_cursor(const std::string& i_text) override { mws_throw mws_exception("n/a"); }
-   virtual void delete_at_cursor(int32 i_count) override { mws_throw mws_exception("n/a"); }
-   virtual uint32 get_cursor_pos() override { mws_throw mws_exception("n/a"); }
-   virtual void set_cursor_pos(uint32 i_cursor_pos) override { mws_throw mws_exception("n/a"); }
-   virtual glm::uvec2 get_cursor_coord() override { mws_throw mws_exception("n/a"); }
-   virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) override { mws_throw mws_exception("n/a"); }
-   virtual void advance_cursor(dir_types i_direction) override { mws_throw mws_exception("n/a"); }
-
-protected:
-   void update_back_added_line_offsets(const std::string& i_new_text);
-   void update_front_added_line_offsets(const std::string& i_new_text);
-   void update_line_offsets();
-
-   std::string text;
-   bool word_wrap = false;
-   std::vector<uint32> line_offsets;
-   int width = 0;
-   int height = 0;
-   mws_sp<mws_font> font;
-};
-
-
 class mws_text_area_model_rw : public mws_text_area_model
 {
 public:
    mws_text_area_model_rw();
-   // common
    virtual bool get_word_wrap() override;
    virtual void set_word_wrap(bool i_word_wrap) override;
    virtual uint32 get_line_count() override;
@@ -197,12 +152,8 @@ public:
    virtual void set_size(uint32 i_width, uint32 i_height) override;
    virtual void set_font(mws_sp<mws_font> i_font) override;
    virtual int get_char_at_pixel(float i_x, float i_y) override;
-
-   // viewer only
-   virtual void push_back(const char* i_text, uint32 i_length) override { mws_throw mws_exception("n/a"); }
-   virtual void push_front(const char* i_text, uint32 i_length) override { mws_throw mws_exception("n/a"); }
-
-   // editor only
+   virtual void push_back(const char* i_text, uint32 i_length) override;
+   virtual void push_front(const char* i_text, uint32 i_length) override;
    virtual void insert_at_cursor(const std::string& i_text) override;
    virtual void delete_at_cursor(int32 i_count) override;
    virtual uint32 get_cursor_pos() override;
@@ -219,4 +170,25 @@ protected:
    glm::uvec2 cursor_grid_pos = glm::uvec2(0);
    bool word_wrap = false;
    mws_sp<mws_font> font;
+};
+
+
+class mws_text_area_model_ro : public mws_text_area_model_rw
+{
+public:
+   mws_text_area_model_ro();
+   virtual uint32 get_line_count() override;
+   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) override;
+   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) override;
+   //virtual void set_text(const std::string& i_text) override;
+   //virtual void set_text(const char* i_text, uint32 i_length) override;
+   virtual void push_back(const char* i_text, uint32 i_length) override;
+   virtual void push_front(const char* i_text, uint32 i_length) override;
+
+protected:
+   void update_back_added_line_offsets(const std::string& i_new_text);
+   void update_front_added_line_offsets(const std::string& i_new_text);
+   void update_line_offsets();
+
+   std::vector<uint32> line_offsets;
 };
