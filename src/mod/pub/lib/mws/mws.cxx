@@ -113,8 +113,6 @@ void mws::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gf
 
 void mws::attach(mws_sp<gfx_node> i_node)
 {
-   gfx_node::attach(i_node);
-
    if (i_node->get_type() == gfx_obj::e_mws)
    {
       auto mws_ref = mws_dynamic_pointer_cast<mws>(i_node);
@@ -127,6 +125,7 @@ void mws::attach(mws_sp<gfx_node> i_node)
    }
 
    i_node->position = i_node->position + glm::vec3(0.f, 0.f, 0.0001f);
+   gfx_node::attach(i_node);
 }
 
 void mws::list_mws_children(std::vector<mws_sp<mws> >& i_mws_subobj_list)
