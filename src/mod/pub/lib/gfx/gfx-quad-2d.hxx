@@ -56,7 +56,7 @@ public:
       return inst;
    }
 
-   gfx_2d_sprite(mws_sp<gfx> gfx_inst) : gfx_quad_2d(gfx_inst)
+   gfx_2d_sprite(mws_sp<gfx> i_gfx_inst) : gfx_quad_2d(i_gfx_inst)
    {
       sx_factor = sy_factor = 1.f;
       anchor_type = e_center;

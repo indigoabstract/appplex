@@ -133,9 +133,9 @@ void gfx_vxo::update_data()
    }
 }
 
-gfx_material_entry& gfx_vxo::operator[](const std::string iname)
+gfx_material_entry& gfx_vxo::operator[](const std::string i_name)
 {
-   return (*get_material())[iname];
+   return (*get_material())[i_name];
 }
 
 mws_sp<gfx_material> gfx_vxo::get_material()

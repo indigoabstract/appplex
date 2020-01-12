@@ -9,19 +9,19 @@
 #include "pfm.hxx"
 
 
-std::string append_if_missing_ext(std::string ishader_name, std::string iext)
+std::string append_if_missing_ext(std::string i_shader_name, std::string i_ext)
 {
-   if (ishader_name.find('.') != std::string::npos)
+   if (i_shader_name.find('.') != std::string::npos)
    {
-      return ishader_name;
+      return i_shader_name;
    }
 
-   return ishader_name + iext;
+   return i_shader_name + i_ext;
 }
 
-gfx_input::e_data_type gfx_input::from_gl_data_type(gfx_enum gl_data_type)
+gfx_input::e_data_type gfx_input::from_gl_data_type(gfx_enum i_gl_data_type)
 {
-   switch (gl_data_type)
+   switch (i_gl_data_type)
    {
    case GL_FLOAT: return vec1;
    case GL_FLOAT_VEC2: return vec2;
@@ -77,7 +77,7 @@ public:
       g = i_gi;
    }
 
-   void load(const mws_sp<std::string> ivs_shader_src = nullptr, const mws_sp<std::string> ifs_shader_src = nullptr)
+   void load(const mws_sp<std::string> i_vs_shader_src = nullptr, const mws_sp<std::string> i_fs_shader_src = nullptr)
    {
       if (vsh_file_name.length() > 0 && fsh_file_name.length() > 0)
       {
@@ -85,11 +85,11 @@ public:
       }
       else
       {
-         create_program(ivs_shader_src, ifs_shader_src, "");
+         create_program(i_vs_shader_src, i_fs_shader_src, "");
       }
    }
 
-   mws_sp<std::string> add_platform_code(const mws_sp<std::string> ishader_src)
+   mws_sp<std::string> add_platform_code(const mws_sp<std::string> i_shader_src)
    {
       std::string tag;
       std::string version;
@@ -126,38 +126,38 @@ public:
          break;
       }
 
-      int idx = ishader_src->find(tag);
+      int idx = i_shader_src->find(tag);
 
       if (idx != std::string::npos)
       {
          int idx_start = idx + tag.length();
-         int idx_end = ishader_src->find('\n', idx_start);
-         version = ishader_src->substr(idx_start, idx_end - idx_start);
+         int idx_end = i_shader_src->find('\n', idx_start);
+         version = i_shader_src->substr(idx_start, idx_end - idx_start);
          version = trim(version);
       }
 
-      //*ishader_src = version + "\n" + def_platform + "\n" + *ishader_src;
+      //*i_shader_src = version + "\n" + def_platform + "\n" + *i_shader_src;
 
       if (!version.empty())
       {
-         *ishader_src = version + "\n" + *ishader_src;
+         *i_shader_src = version + "\n" + *i_shader_src;
       }
 
-      return ishader_src;
+      return i_shader_src;
    }
 
-   void create_program(const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src, const std::string& i_shader_id)
+   void create_program(const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src, const std::string& i_shader_id)
    {
       mws_try
       {
          int linked = 0;
-         mws_sp<std::string> vs_shader_src = ivs_shader_src;
-         mws_sp<std::string> fs_shader_src = ifs_shader_src;
+         mws_sp<std::string> vs_shader_src = i_vs_shader_src;
+         mws_sp<std::string> fs_shader_src = i_fs_shader_src;
 
          if (listener)
          {
-            vs_shader_src = listener->on_before_submit_vsh_source(parent.lock(), ivs_shader_src);
-            fs_shader_src = listener->on_before_submit_fsh_source(parent.lock(), ifs_shader_src);
+            vs_shader_src = listener->on_before_submit_vsh_source(parent.lock(), i_vs_shader_src);
+            fs_shader_src = listener->on_before_submit_fsh_source(parent.lock(), i_fs_shader_src);
          }
 
          vs_shader_src = add_platform_code(vs_shader_src);
@@ -234,7 +234,7 @@ public:
       }
    }
 
-   int compile_shader(int ishader_type, const mws_sp<std::string> ishader_src)
+   int compile_shader(int ishader_type, const mws_sp<std::string> i_shader_src)
    {
       int shader = 0;
       int compiled;
@@ -243,8 +243,8 @@ public:
       //mws_assert("Error creating " + shader_desc + " : " + shader_path, shader != 0);
       throw_if_false(shader != 0, "Error creating shader: " + shader_id);
 
-      int length = ishader_src->length();
-      const char* shader_src_vect[1] = { ishader_src->c_str() };
+      int length = i_shader_src->length();
+      const char* shader_src_vect[1] = { i_shader_src->c_str() };
 
       glShaderSource(shader, 1, shader_src_vect, &length);
       glCompileShader(shader);
@@ -485,25 +485,25 @@ gfx_shader::~gfx_shader()
    release();
 }
 
-mws_sp<gfx_shader> gfx_shader::nwi(const std::string& iprg_name, const std::string& ishader_name,
-   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> gfx_inst)
+mws_sp<gfx_shader> gfx_shader::nwi(const std::string& i_prg_name, const std::string& i_shader_name,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> i_gfx_inst)
 {
-   return nwi(iprg_name, ishader_name, ishader_name, i_listener, i_suppress_nex_msg, gfx_inst);
+   return nwi(i_prg_name, i_shader_name, i_shader_name, i_listener, i_suppress_nex_msg, i_gfx_inst);
 }
 
 mws_sp<gfx_shader> gfx_shader::nwi
 (
-   const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name,
-   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> gfx_inst
+   const std::string& i_prg_name, const std::string& i_vertex_shader_name, const std::string& i_fragment_shader_name,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> i_gfx_inst
 )
 {
-   mws_sp<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
+   mws_sp<gfx_shader> inst(new gfx_shader(i_prg_name, i_gfx_inst));
    mws_sp<gfx_shader_impl> p = inst->p;
 
-   p->vsh_name = ivertex_shader_name;
-   p->vsh_file_name = ivertex_shader_name;
-   p->fsh_name = ifragment_shader_name;
-   p->fsh_file_name = ifragment_shader_name;
+   p->vsh_name = i_vertex_shader_name;
+   p->vsh_file_name = i_vertex_shader_name;
+   p->fsh_name = i_fragment_shader_name;
+   p->fsh_file_name = i_fragment_shader_name;
    inst->set_listener(i_listener);
    p->suppress_nex_msg = i_suppress_nex_msg;
    p->load();
@@ -513,16 +513,16 @@ mws_sp<gfx_shader> gfx_shader::nwi
 
 mws_sp<gfx_shader> gfx_shader::new_inst_inline
 (
-   const std::string& iprg_name, const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src,
-   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> gfx_inst
+   const std::string& i_prg_name, const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src,
+   mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> i_gfx_inst
 )
 {
-   mws_sp<gfx_shader> inst(new gfx_shader(iprg_name, gfx_inst));
+   mws_sp<gfx_shader> inst(new gfx_shader(i_prg_name, i_gfx_inst));
    mws_sp<gfx_shader_impl> p = inst->p;
 
    inst->set_listener(i_listener);
    p->suppress_nex_msg = i_suppress_nex_msg;
-   p->load(ivs_shader_src, ifs_shader_src);
+   p->load(i_vs_shader_src, i_fs_shader_src);
 
    return inst;
 }
@@ -758,9 +758,9 @@ void gfx_shader::update_uniform(std::string i_uni_name, const mws_any* i_val)
    update_uniform(input, i_val);
 }
 
-mws_sp<gfx_input> gfx_shader::get_param(std::string ikey)
+mws_sp<gfx_input> gfx_shader::get_param(std::string i_key)
 {
-   auto input = p->input_list.find(ikey);
+   auto input = p->input_list.find(i_key);
 
    if (input != p->input_list.end())
    {
@@ -770,28 +770,28 @@ mws_sp<gfx_input> gfx_shader::get_param(std::string ikey)
    return mws_sp<gfx_input>();
 }
 
-mws_sp<gfx_input> gfx_shader::remove_param(std::string ikey)
+mws_sp<gfx_input> gfx_shader::remove_param(std::string i_key)
 {
-   mws_sp<gfx_input> input = get_param(ikey);
+   mws_sp<gfx_input> input = get_param(i_key);
 
    if (input)
    {
-      p->input_list.erase(ikey);
+      p->input_list.erase(i_key);
    }
 
    return input;
 }
 
-gfx_int gfx_shader::get_param_location(std::string ikey)
+gfx_int gfx_shader::get_param_location(std::string i_key)
 {
    if (!p->is_validated)
       // redirect to black shader
    {
       auto bs = gi()->shader.get_program_by_name(gfx::black_sh_id);
-      return bs->get_param_location(ikey);
+      return bs->get_param_location(i_key);
    }
 
-   mws_sp<gfx_input> input = get_param(ikey);
+   mws_sp<gfx_input> input = get_param(i_key);
 
    if (input)
    {
@@ -801,9 +801,9 @@ gfx_int gfx_shader::get_param_location(std::string ikey)
    return -1;
 }
 
-bool gfx_shader::contains_param(std::string iparam_name)
+bool gfx_shader::contains_param(std::string i_param_name)
 {
-   return p->input_list.find(iparam_name) != p->input_list.end();
+   return p->input_list.find(i_param_name) != p->input_list.end();
 }
 
 void gfx_shader::reload()
@@ -824,10 +824,10 @@ void gfx_shader::set_listener(mws_sp<gfx_shader_listener> i_listener)
    p->listener = i_listener;
 }
 
-gfx_shader::gfx_shader(const std::string& iprg_name, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
+gfx_shader::gfx_shader(const std::string& i_prg_name, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    p = mws_sp<gfx_shader_impl>(new gfx_shader_impl(i_gi));
-   p->program_name = iprg_name;
+   p->program_name = i_prg_name;
    p->is_activated = false;
    p->is_validated = false;
 }

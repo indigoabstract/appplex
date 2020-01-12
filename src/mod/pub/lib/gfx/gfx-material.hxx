@@ -79,7 +79,7 @@ class gfx_material_entry : public std::enable_shared_from_this < gfx_material_en
 public:
    virtual ~gfx_material_entry();
    mws_sp<gfx_material_entry> get_inst();
-   gfx_material_entry& operator[] (const std::string iname);
+   gfx_material_entry& operator[] (const std::string i_name);
 
    gfx_material_entry& operator=(const int ivalue);
    gfx_material_entry& operator=(const float ivalue);
@@ -105,8 +105,8 @@ public:
 
 protected:
    friend class gfx_material;
-   static mws_sp<gfx_material_entry> nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
-   gfx_material_entry(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
+   static mws_sp<gfx_material_entry> nwi(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
+   gfx_material_entry(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent);
 
    mws_wp<gfx_material> root;
    mws_wp<gfx_material_entry> parent;
@@ -134,7 +134,7 @@ public:
    virtual ~gfx_material() {}
    static mws_sp<gfx_material> nwi(mws_sp<gfx> i_gi = nullptr);
    mws_sp<gfx_material> get_inst();
-   gfx_material_entry& operator[] (const std::string iname);
+   gfx_material_entry& operator[] (const std::string i_name);
    mws_sp<gfx_shader> get_shader();
    void set_mesh(mws_sp<gfx_vxo> imesh);
    void clear_entries();
@@ -143,7 +143,7 @@ public:
    mws_wp<gfx_vxo> mesh;
    std::unordered_map<std::string, mws_sp<gfx_material_entry> > std_params;
    std::unordered_map<std::string, mws_sp<gfx_material_entry> > other_params;
-   static bool is_std_param(const std::string& iparam_name);
+   static bool is_std_param(const std::string& i_param_name);
 
 private:
    friend class gfx;

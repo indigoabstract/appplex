@@ -1148,7 +1148,7 @@ mws_sp<mws_mod> mws_mod_list::mod_at(int i_index)
    return ulist[i_index];
 }
 
-mws_sp<mws_mod> mws_mod_list::mod_by_name(string iname)
+mws_sp<mws_mod> mws_mod_list::mod_by_name(string i_name)
 {
    int size = ulist.size();
 
@@ -1156,7 +1156,7 @@ mws_sp<mws_mod> mws_mod_list::mod_by_name(string iname)
    {
       mws_sp<mws_mod> u = ulist[i];
 
-      if (u->get_name().compare(iname) == 0)
+      if (u->get_name().compare(i_name) == 0)
       {
          return u;
       }

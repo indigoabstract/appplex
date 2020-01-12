@@ -18,9 +18,9 @@ static gfx_uint blending_list[] = { gfx_material::e_none, gfx_material::e_alpha,
 static int blending_list_length = sizeof(blending_list) / sizeof(gfx_uint);
 
 
-mws_sp<gfx_material_entry> gfx_material_entry::nwi(std::string iname, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent)
+mws_sp<gfx_material_entry> gfx_material_entry::nwi(std::string i_name, mws_sp<gfx_material> imaterial_inst, mws_sp<gfx_material_entry> i_parent)
 {
-   return mws_sp<gfx_material_entry>(new gfx_material_entry(iname, imaterial_inst, i_parent));
+   return mws_sp<gfx_material_entry>(new gfx_material_entry(i_name, imaterial_inst, i_parent));
 }
 
 mws_sp<gfx_material_entry> gfx_material_entry::get_inst()
@@ -89,14 +89,14 @@ gfx_material_entry::~gfx_material_entry()
    value.clear();
 }
 
-gfx_material_entry& gfx_material_entry::operator[] (const std::string iname)
+gfx_material_entry& gfx_material_entry::operator[] (const std::string i_name)
 {
-   if (!entries[iname])
+   if (!entries[i_name])
    {
-      entries[iname] = nwi(iname, get_material(), get_inst());
+      entries[i_name] = nwi(i_name, get_material(), get_inst());
    }
 
-   return *entries[iname];
+   return *entries[i_name];
 }
 
 gfx_material_entry& gfx_material_entry::operator=(const int ivalue)
@@ -391,16 +391,16 @@ mws_sp<gfx_material> gfx_material::get_inst()
    return shared_from_this();
 }
 
-gfx_material_entry& gfx_material::operator[] (const std::string iname)
+gfx_material_entry& gfx_material::operator[] (const std::string i_name)
 {
-   if (is_std_param(iname))
+   if (is_std_param(i_name))
       // if it's a standard parameter
    {
-      mws_sp<gfx_material_entry> me = std_params[iname];
+      mws_sp<gfx_material_entry> me = std_params[i_name];
 
       if (!me)
       {
-         me = std_params[iname] = gfx_material_entry::nwi(iname, get_inst(), nullptr);
+         me = std_params[i_name] = gfx_material_entry::nwi(i_name, get_inst(), nullptr);
       }
 
       return *me;
@@ -412,12 +412,12 @@ gfx_material_entry& gfx_material::operator[] (const std::string iname)
       load_shader();
    }
 
-   if (!other_params[iname])
+   if (!other_params[i_name])
    {
-      other_params[iname] = gfx_material_entry::nwi(iname, get_inst(), nullptr);
+      other_params[i_name] = gfx_material_entry::nwi(i_name, get_inst(), nullptr);
    }
 
-   return *other_params[iname];
+   return *other_params[i_name];
 }
 
 mws_sp<gfx_shader> gfx_material::get_shader()
@@ -451,9 +451,9 @@ void gfx_material::debug_print()
    mws_print("\n]");
 }
 
-bool gfx_material::is_std_param(const std::string& iparam_name)
+bool gfx_material::is_std_param(const std::string& i_param_name)
 {
-   return static_std_param.find(iparam_name) != static_std_param.end();
+   return static_std_param.find(i_param_name) != static_std_param.end();
 }
 
 mws_sp<gfx_shader> gfx_material::load_shader()

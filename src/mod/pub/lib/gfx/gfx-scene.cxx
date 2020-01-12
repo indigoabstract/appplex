@@ -151,9 +151,9 @@ bool gfx_node::contains(const mws_sp<gfx_node> inode)
    return false;
 }
 
-mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & iname)
+mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & i_name)
 {
-   if (iname == get_mws_sp()->name())
+   if (i_name == get_mws_sp()->name())
    {
       return get_mws_sp();
    }
@@ -162,7 +162,7 @@ mws_sp<gfx_node> gfx_node::find_node_by_name(const std::string & iname)
 
    for (; it != children.end(); ++it)
    {
-      mws_sp<gfx_node> node = (*it)->find_node_by_name(iname);
+      mws_sp<gfx_node> node = (*it)->find_node_by_name(i_name);
 
       if (node)
       {

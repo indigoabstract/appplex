@@ -155,21 +155,21 @@ public:
       bool reload_shader_on_modify();
       mws_sp<gfx_shader> new_program_from_src
       (
-         const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src,
+         const std::string& i_prg_name, mws_sp<std::string> i_vs_shader_src, mws_sp<std::string> i_fs_shader_src,
          mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
-      mws_sp<gfx_shader> new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false);
+      mws_sp<gfx_shader> new_program(const std::string& i_shader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false);
       mws_sp<gfx_shader> new_program
       (
-         const std::string& iprg_name, const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
+         const std::string& i_prg_name, const std::string& i_shader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
       mws_sp<gfx_shader> new_program
       (
-         const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
+         const std::string& i_prg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
          mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
       mws_sp<gfx_shader> get_program_by_shader_id(std::string ishader_id);
-      mws_sp<gfx_shader> get_program_by_name(std::string iprg_name);
+      mws_sp<gfx_shader> get_program_by_name(std::string i_prg_name);
       // check for a shader named i_shader_root_name, return it if not null, otherwise,
       // check if i_shader_root_name.vsh and i_shader_root_name.fsh exist, then load them in a new shader, otherwise give up and return nullptr
       // useful for loading shaders from disk and/or code
@@ -199,7 +199,7 @@ public:
       mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32 i_size);
       mws_sp<gfx_tex> get_texture_by_name(std::string i_filename);
       // returns an existing texture by that name, or creates an new one if it doesn't exist yet
-      mws_sp<gfx_tex> load_tex(std::string iname);
+      mws_sp<gfx_tex> load_tex(std::string i_name);
 
    private:
       friend class gfx;

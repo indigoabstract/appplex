@@ -65,7 +65,7 @@ public:
    virtual void on_attach();
    virtual void on_detach();
    bool contains(const mws_sp<gfx_node> inode);
-   mws_sp<gfx_node> find_node_by_name(const std::string& iname);
+   mws_sp<gfx_node> find_node_by_name(const std::string& i_name);
    // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
    virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx);
 

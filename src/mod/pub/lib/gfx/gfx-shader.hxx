@@ -80,13 +80,13 @@ public:
       location = -1;
    }
 
-   gfx_input(const std::string& iname, e_input_type iinput_type, e_data_type idata_type, gfx_int iarray_size, gfx_int ilocation)
+   gfx_input(const std::string& i_name, e_input_type i_input_type, e_data_type i_data_type, gfx_int i_array_size, gfx_int i_location)
    {
-      name = iname;
-      input_type = iinput_type;
-      data_type = idata_type;
-      array_size = iarray_size;
-      location = ilocation;
+      name = i_name;
+      input_type = i_input_type;
+      data_type = i_data_type;
+      array_size = i_array_size;
+      location = i_location;
    }
 
    const std::string& get_name()const
@@ -114,7 +114,7 @@ public:
       return location;
    }
 
-   static e_data_type from_gl_data_type(gfx_enum gl_data_type);
+   static e_data_type from_gl_data_type(gfx_enum i_gl_data_type);
 
 protected:
    std::string name;
@@ -129,9 +129,9 @@ class gfx_shader_listener
 {
 public:
    virtual const mws_sp<std::string> on_before_submit_vsh_source
-   (mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src) = 0;
+   (mws_sp<gfx_shader> i_gp, const mws_sp<std::string> i_shader_src) = 0;
    virtual const mws_sp<std::string> on_before_submit_fsh_source
-   (mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src) = 0;
+   (mws_sp<gfx_shader> i_gp, const mws_sp<std::string> i_shader_src) = 0;
 };
 
 
@@ -141,21 +141,21 @@ public:
    ~gfx_shader();
    static mws_sp<gfx_shader> nwi
    (
-      const std::string& iprg_name, const std::string& ishader_name,
+      const std::string& i_prg_name, const std::string& i_shader_name,
       mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
    static mws_sp<gfx_shader> nwi
    (
-      const std::string& iprg_name, const std::string& ivertex_shader_name, const std::string& ifragment_shader_name,
+      const std::string& i_prg_name, const std::string& i_vertex_shader_name, const std::string& i_fragment_shader_name,
       mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
    static mws_sp<gfx_shader> new_inst_inline
    (
-      const std::string& iprg_name, const mws_sp<std::string> ivs_shader_src, const mws_sp<std::string> ifs_shader_src,
+      const std::string& i_prg_name, const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src,
       mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
 
-   static std::string create_shader_id(std::string ivertex_shader_name, std::string ifragment_shader_name);
+   static std::string create_shader_id(std::string i_vertex_shader_name, std::string i_fragment_shader_name);
    virtual gfx_obj::e_gfx_obj_type get_type()const;
    virtual bool is_valid()const;
    mws_sp<gfx_shader> get_inst();
@@ -170,10 +170,10 @@ public:
    // SLOWEST method for updating uniforms!
    void update_uniform(std::string i_uni_name, const void* i_val);
    void update_uniform(std::string i_uni_name, const mws_any* i_val);
-   mws_sp<gfx_input> get_param(std::string ikey);
-   mws_sp<gfx_input> remove_param(std::string ikey);
-   gfx_int get_param_location(std::string ikey);
-   bool contains_param(std::string iparam_name);
+   mws_sp<gfx_input> get_param(std::string i_key);
+   mws_sp<gfx_input> remove_param(std::string i_key);
+   gfx_int get_param_location(std::string i_key);
+   bool contains_param(std::string i_param_name);
    void reload();
    void reload_on_modifications();
    void set_listener(mws_sp<gfx_shader_listener> i_listener);
@@ -181,7 +181,7 @@ public:
 private:
    friend class gfx;
 
-   gfx_shader(const std::string& iprg_name, mws_sp<gfx> i_gi = nullptr);
+   gfx_shader(const std::string& i_prg_name, mws_sp<gfx> i_gi = nullptr);
    void release();
    bool make_current();
    void update_uniform(mws_sp<gfx_input> i_input, const mws_any* i_val);

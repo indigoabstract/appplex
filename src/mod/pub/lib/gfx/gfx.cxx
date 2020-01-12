@@ -380,15 +380,15 @@ bool gfx::ic_shader::reload_shader_on_modify()
 
 mws_sp<gfx_shader> gfx::ic_shader::new_program_from_src
 (
-   const std::string& iprg_name, mws_sp<std::string> ivs_shader_src, mws_sp<std::string> ifs_shader_src,
+   const std::string& i_prg_name, mws_sp<std::string> i_vs_shader_src, mws_sp<std::string> i_fs_shader_src,
    mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg
 )
 {
-   mws_sp<gfx_shader> prg = get_program_by_name(iprg_name);
+   mws_sp<gfx_shader> prg = get_program_by_name(i_prg_name);
 
    if (!prg)
    {
-      prg = gfx_shader::new_inst_inline(iprg_name, ivs_shader_src, ifs_shader_src, i_listener, i_suppress_nex_msg, gi());
+      prg = gfx_shader::new_inst_inline(i_prg_name, i_vs_shader_src, i_fs_shader_src, i_listener, i_suppress_nex_msg, gi());
 
       if (prg->is_valid())
       {
@@ -403,22 +403,22 @@ mws_sp<gfx_shader> gfx::ic_shader::new_program_from_src
    return prg;
 }
 
-mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& ishader_name, mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg)
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& i_shader_name, mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg)
 {
-   std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
+   std::string shader_id = gfx_shader::create_shader_id(i_shader_name, i_shader_name);
 
-   return new_program(shader_id, ishader_name, i_listener, i_suppress_nex_msg);
+   return new_program(shader_id, i_shader_name, i_listener, i_suppress_nex_msg);
 }
 
-mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, const std::string& ishader_name,
+mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& i_prg_name, const std::string& i_shader_name,
    mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg)
 {
-   std::string shader_id = gfx_shader::create_shader_id(ishader_name, ishader_name);
+   std::string shader_id = gfx_shader::create_shader_id(i_shader_name, i_shader_name);
    mws_sp<gfx_shader> prg = get_program_by_shader_id(shader_id);
 
    if (!prg)
    {
-      prg = gfx_shader::nwi(iprg_name, ishader_name, i_listener, i_suppress_nex_msg, gi());
+      prg = gfx_shader::nwi(i_prg_name, i_shader_name, i_listener, i_suppress_nex_msg, gi());
 
       if (prg->is_valid())
       {
@@ -435,7 +435,7 @@ mws_sp<gfx_shader> gfx::ic_shader::new_program(const std::string& iprg_name, con
 
 mws_sp<gfx_shader> gfx::ic_shader::new_program
 (
-   const std::string& iprg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
+   const std::string& i_prg_name, const std::string& ivertex_shader, const std::string& ifragment_shader,
    mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg
 )
 {
@@ -444,7 +444,7 @@ mws_sp<gfx_shader> gfx::ic_shader::new_program
 
    if (!prg)
    {
-      prg = gfx_shader::nwi(iprg_name, ivertex_shader, ifragment_shader, i_listener, i_suppress_nex_msg, gi());
+      prg = gfx_shader::nwi(i_prg_name, ivertex_shader, ifragment_shader, i_listener, i_suppress_nex_msg, gi());
 
       if (prg->is_valid())
       {
@@ -477,12 +477,12 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_shader_id(std::string ishader_
    return glp;
 }
 
-mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
+mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string i_prg_name)
 {
    mws_sp<gfx_shader> glp;
    // check if the shader is a standard shader
    auto& ref_ht = gi()->name_shader_ht;
-   auto it = ref_ht.find(iprg_name);
+   auto it = ref_ht.find(i_prg_name);
 
    // standard shader
    if (it != ref_ht.end())
@@ -497,12 +497,12 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
       // needs to be loaded
       else
       {
-         shader_src src = get_std_shader_src(iprg_name);
+         shader_src src = get_std_shader_src(i_prg_name);
          mws_assert(src.vsh && src.fsh);
-         shader = gfx_shader::new_inst_inline(iprg_name, src.vsh, src.fsh, nullptr, true, gi());
+         shader = gfx_shader::new_inst_inline(i_prg_name, src.vsh, src.fsh, nullptr, true, gi());
          mws_assert(shader->is_valid());
          gi()->shader_list.push_back(shader);
-         ref_ht[iprg_name] = shader;
+         ref_ht[i_prg_name] = shader;
          glp = shader;
       }
    }
@@ -513,7 +513,7 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string iprg_name)
       {
          mws_sp<gfx_shader> prg = it->lock();
 
-         if (prg->get_program_name() == iprg_name)
+         if (prg->get_program_name() == i_prg_name)
          {
             glp = prg;
             break;
@@ -660,7 +660,7 @@ mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 i_size)
    return tex_cube_map;
 }
 
-mws_sp<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
+mws_sp<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string i_name)
 {
    mws_sp<gfx_tex> tex;
 
@@ -668,7 +668,7 @@ mws_sp<gfx_tex> gfx::ic_tex::get_texture_by_name(std::string iname)
    {
       mws_sp<gfx_tex> t = it->lock();
 
-      if (t->get_name() == iname)
+      if (t->get_name() == i_name)
       {
          tex = t;
          break;

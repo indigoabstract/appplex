@@ -279,7 +279,7 @@ public:
    virtual mws_sp<mws_receiver> destination();
 
 protected:
-   mws_dp(const std::string& iname);
+   mws_dp(const std::string& i_name);
    virtual void set_name(const std::string& i_name);
 
 private:

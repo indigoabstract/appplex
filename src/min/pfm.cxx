@@ -327,17 +327,17 @@ namespace pfm_impl
       return false;
    }
 
-   std::string get_concat_path(std::string iroot_path, ::string iname)
+   std::string get_concat_path(std::string iroot_path, ::string i_name)
    {
       std::string p = iroot_path;
 
-      if (iname[0] == '/' || (pfm::get_platform_id() == platform_android))
+      if (i_name[0] == '/' || (pfm::get_platform_id() == platform_android))
       {
-         p += iname;
+         p += i_name;
       }
       else
       {
-         p = p + "/" + iname;
+         p = p + "/" + i_name;
       }
 
       return p;
@@ -1285,9 +1285,9 @@ std::string pfm::filesystem::get_writable_path(std::string i_name)
    return p;
 }
 
-std::string pfm::filesystem::get_path(std::string iname)
+std::string pfm::filesystem::get_path(std::string i_name)
 {
-   auto f = pfm_file::get_inst(iname);
+   auto f = pfm_file::get_inst(i_name);
 
    if (f)
    {
