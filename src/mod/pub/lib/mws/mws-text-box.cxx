@@ -213,7 +213,7 @@ void mws_text_box::scroll_to_end(dir_types i_direction)
       float font_height = font->get_height();
       float total_height = tx_src_line_count * font_height;
 
-      scroll_text(glm::vec2(-total_height, total_height));
+      scroll_text(glm::vec2(total_height, -total_height));
    }
 }
 
@@ -231,6 +231,7 @@ void mws_text_box::set_position(const glm::vec2& i_pos)
 void mws_text_box::set_dimension(const glm::vec2& i_dim)
 {
    mws_r = mws_rect(mws_r.x, mws_r.y, i_dim.x, i_dim.y);
+   ks.reset();
    update_text_view();
 
    if (mws_dbg::enabled(mws_dbg::pfm_mws))
@@ -577,7 +578,7 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
             tx_offset.y = tx_offset.y - lines_scrolled * font_height;
          }
 
-         clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines);
+         clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
          sync_view();
       }
    }
@@ -629,7 +630,7 @@ void mws_text_box::text_view::sync_view_to_cursor_pos()
       set_lines_from_the_top_count(global_cursor_pos.y - max_actual_lines);
    }
 
-   clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines);
+   clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
    sync_view();
    sync_position();
 }
@@ -839,6 +840,11 @@ void mws_text_box::text_view::set_lines_from_the_top_count(int32 i_lines_from_th
 
 void mws_text_box::text_view::clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim)
 {
+   if (i_sup_lim < 0)
+   {
+      i_sup_lim = 0;
+   }
+
    if (get_lines_from_the_top_count() < i_inf_lim)
    {
       set_lines_from_the_top_count(i_inf_lim);
@@ -895,7 +901,7 @@ void mws_text_box::update_text_view()
 {
    if (view)
    {
-      glm::vec4 scissor_rect = glm::vec4(glm::vec2(mws_r.x, mws_r.y - 1.f), glm::vec2(mws_r.w, mws_r.h + 1));
+      glm::vec4 scissor_rect = glm::vec4(glm::vec2(mws_r.x, mws_r.y), glm::vec2(mws_r.w, mws_r.h));
 
       view->tx_src = tx_src;
       view->font = font;
@@ -1162,146 +1168,11 @@ void mws_text_field::format_text(std::string& i_text)
 }
 
 
-mws_text_area_model_ro::mws_text_area_model_ro()
-{
-   update_line_offsets();
-}
-
-bool mws_text_area_model_ro::get_word_wrap() { return word_wrap; }
-
-void mws_text_area_model_ro::set_word_wrap(bool i_word_wrap) { word_wrap = i_word_wrap; }
-
-uint32 mws_text_area_model_ro::get_line_count() { return line_offsets.size() - 1; }
-
-std::string mws_text_area_model_ro::get_line_at(uint32 i_idx, bool i_keep_line_break)
-{
-   int start_idx = line_offsets[i_idx];
-   int len = line_offsets[i_idx + 1] - start_idx;
-
-   if (!i_keep_line_break)
-   {
-      // if not empty line, discard the new line character at the end
-      if (len > 0)
-      {
-         len--;
-      }
-   }
-
-   std::string line = text.substr(start_idx, len);
-
-   return line;
-}
-
-std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break)
-{
-   std::vector<std::string> lines;
-
-   for (uint32 k = 0; k < i_line_count; k++)
-   {
-      lines.push_back(get_line_at(i_idx + k, i_keep_line_break));
-   }
-
-   return lines;
-}
-
-const std::string& mws_text_area_model_ro::get_text()
-{
-   return text;
-}
-
-void mws_text_area_model_ro::push_back(const char* i_text, uint32 i_length)
-{
-   std::string new_text(i_text, i_length);
-   text += new_text;
-   update_back_added_line_offsets(new_text);
-}
-
-void mws_text_area_model_ro::push_front(const char* i_text, uint32 i_length)
-{
-   std::string new_text(i_text, i_length);
-   text = new_text + text;
-   update_front_added_line_offsets(new_text);
-}
-
-void mws_text_area_model_ro::set_text(const std::string& i_text)
-{
-   set_text(i_text.c_str(), i_text.length());
-}
-
-void mws_text_area_model_ro::set_text(const char* i_text, uint32 i_length)
-{
-   text = std::string(i_text, i_length);
-   update_line_offsets();
-}
-
-void mws_text_area_model_ro::set_size(uint32 i_width, uint32 i_height) {}
-
-void mws_text_area_model_ro::set_font(mws_sp<mws_font> i_font) {}
-
-int mws_text_area_model_ro::get_char_at_pixel(float i_x, float i_y) { return 0; }
-
-void mws_text_area_model_ro::update_back_added_line_offsets(const std::string& i_new_text)
-{
-   int len = i_new_text.length();
-   int last_offset = line_offsets.back();
-   line_offsets.pop_back();
-
-   for (int k = 0; k < len; k++)
-   {
-      if (i_new_text[k] == '\n')
-      {
-         int offset = last_offset + k + 1;
-         line_offsets.push_back(offset);
-      }
-   }
-
-   line_offsets.push_back(text.length());
-}
-
-void mws_text_area_model_ro::update_front_added_line_offsets(const std::string& i_new_text)
-{
-   std::vector<uint32> lo;
-   int len = i_new_text.length();
-   int idx = 1;
-
-   for (uint32 k = 1; k < line_offsets.size(); k++)
-   {
-      line_offsets[k] += len;
-   }
-
-   for (int k = 0; k < len; k++)
-   {
-      if (i_new_text[k] == '\n')
-      {
-         line_offsets.insert(line_offsets.begin() + idx, k + 1);
-         idx++;
-      }
-   }
-
-   //update_line_offsets();
-}
-
-void mws_text_area_model_ro::update_line_offsets()
-{
-   int len = text.length();
-   line_offsets.clear();
-   line_offsets.push_back(0);
-
-   for (int k = 0; k < len; k++)
-   {
-      if (text[k] == '\n')
-      {
-         line_offsets.push_back(k + 1);
-      }
-   }
-
-   line_offsets.push_back(len);
-}
-
-
 mws_text_area_model_rw::mws_text_area_model_rw() {}
+
 bool mws_text_area_model_rw::get_word_wrap() { return false; }
-void mws_text_area_model_rw::set_word_wrap(bool i_word_wrap) {}
+
+void mws_text_area_model_rw::set_word_wrap(bool i_word_wrap) { word_wrap = i_word_wrap; }
 
 uint32 mws_text_area_model_rw::get_line_count()
 {
@@ -1392,6 +1263,18 @@ void mws_text_area_model_rw::set_size(uint32 i_width, uint32 i_height) {}
 void mws_text_area_model_rw::set_font(mws_sp<mws_font> i_font) {}
 
 int mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
+
+void mws_text_area_model_rw::push_back(const char* i_text, uint32 i_length)
+{
+   set_cursor_pos(text.length());
+   insert_at_cursor(std::string(i_text, i_length));
+}
+
+void mws_text_area_model_rw::push_front(const char* i_text, uint32 i_length)
+{
+   set_cursor_pos(0);
+   insert_at_cursor(std::string(i_text, i_length));
+}
 
 void mws_text_area_model_rw::insert_at_cursor(const std::string& i_text)
 {
@@ -1532,6 +1415,137 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
       break;
    }
    }
+}
+
+
+mws_text_area_model_ro::mws_text_area_model_ro()
+{
+   //update_line_offsets();
+}
+
+uint32 mws_text_area_model_ro::get_line_count() { return mws_text_area_model_rw::get_line_count(); /*return line_offsets.size() - 1;*/ }
+
+std::string mws_text_area_model_ro::get_line_at(uint32 i_idx, bool i_keep_line_break)
+{
+   return mws_text_area_model_rw::get_line_at(i_idx, i_keep_line_break);
+   //int start_idx = line_offsets[i_idx];
+   //int len = line_offsets[i_idx + 1] - start_idx;
+
+   //if (!i_keep_line_break)
+   //{
+   //   // if not empty line, discard the new line character at the end
+   //   if (len > 0)
+   //   {
+   //      len--;
+   //   }
+   //}
+
+   //std::string line = text.substr(start_idx, len);
+
+   //return line;
+}
+
+std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break)
+{
+   return mws_text_area_model_rw::get_lines_at(i_idx, i_line_count, i_keep_line_break);
+   //std::vector<std::string> lines;
+
+   //if (i_idx > 0)
+   //{
+   //   i_idx--;
+   //}
+
+   //for (uint32 k = 0; k < i_line_count; k++)
+   //{
+   //   lines.push_back(get_line_at(i_idx + k, i_keep_line_break));
+   //}
+
+   //return lines;
+}
+
+void mws_text_area_model_ro::push_back(const char* i_text, uint32 i_length)
+{
+   mws_text_area_model_rw::push_back(i_text, i_length);
+   //std::string new_text(i_text, i_length);
+   //text += new_text;
+   //update_back_added_line_offsets(new_text);
+}
+
+void mws_text_area_model_ro::push_front(const char* i_text, uint32 i_length)
+{
+   mws_text_area_model_rw::push_front(i_text, i_length);
+   //std::string new_text(i_text, i_length);
+   //text = new_text + text;
+   //update_front_added_line_offsets(new_text);
+}
+
+//void mws_text_area_model_ro::set_text(const std::string& i_text)
+//{
+//   set_text(i_text.c_str(), i_text.length());
+//}
+//
+//void mws_text_area_model_ro::set_text(const char* i_text, uint32 i_length)
+//{
+//   text = std::string(i_text, i_length);
+//   update_line_offsets();
+//}
+
+void mws_text_area_model_ro::update_back_added_line_offsets(const std::string& i_new_text)
+{
+   int len = i_new_text.length();
+   int last_offset = line_offsets.back();
+   line_offsets.pop_back();
+
+   for (int k = 0; k < len; k++)
+   {
+      if (i_new_text[k] == '\n')
+      {
+         int offset = last_offset + k + 1;
+         line_offsets.push_back(offset);
+      }
+   }
+
+   line_offsets.push_back(text.length());
+}
+
+void mws_text_area_model_ro::update_front_added_line_offsets(const std::string& i_new_text)
+{
+   std::vector<uint32> lo;
+   int len = i_new_text.length();
+   int idx = 1;
+
+   for (uint32 k = 1; k < line_offsets.size(); k++)
+   {
+      line_offsets[k] += len;
+   }
+
+   for (int k = 0; k < len; k++)
+   {
+      if (i_new_text[k] == '\n')
+      {
+         line_offsets.insert(line_offsets.begin() + idx, k + 1);
+         idx++;
+      }
+   }
+
+   //update_line_offsets();
+}
+
+void mws_text_area_model_ro::update_line_offsets()
+{
+   int len = text.length();
+   line_offsets.clear();
+   line_offsets.push_back(0);
+
+   for (int k = 0; k < len; k++)
+   {
+      if (text[k] == '\n')
+      {
+         line_offsets.push_back(k + 1);
+      }
+   }
+
+   line_offsets.push_back(len);
 }
 
 #endif
