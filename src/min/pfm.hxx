@@ -72,9 +72,12 @@ public:
    // touch events
    static inline const uint64 pfm_touch = 1 << 0;
    static inline const uint64 app_touch = 1 << 1;
+   // mws/ui events
+   static inline const uint64 pfm_mws = 1 << 1;
+   static inline const uint64 app_mws = 1 << 2;
    // net events
-   static inline const uint64 pfm_net = 1 << 2;
-   static inline const uint64 app_net = 1 << 3;
+   static inline const uint64 pfm_net = 1 << 3;
+   static inline const uint64 app_net = 1 << 4;
    // last standard flag. flag values greater than this are considered custom flag values
    static inline const uint64 last_std_flag = app_net;
 

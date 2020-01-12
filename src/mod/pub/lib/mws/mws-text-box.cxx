@@ -85,6 +85,7 @@ void mws_text_box::setup()
       //   gfx_cursor->attach(gfx_cursor_right);
       //}
    }
+   if (mws_dbg::enabled(mws_dbg::pfm_mws))
    {
       debug_bg = gfx_quad_2d::nwi();
       auto& rvxo = *debug_bg;
@@ -218,14 +219,22 @@ void mws_text_box::set_position(const glm::vec2& i_pos)
 {
    mws_r = mws_rect(i_pos.x, i_pos.y, mws_r.w, mws_r.h);
    update_text_view();
-   debug_bg->set_translation(i_pos);
+
+   if (mws_dbg::enabled(mws_dbg::pfm_mws))
+   {
+      debug_bg->set_translation(i_pos);
+   }
 }
 
 void mws_text_box::set_dimension(const glm::vec2& i_dim)
 {
    mws_r = mws_rect(mws_r.x, mws_r.y, i_dim.x, i_dim.y);
    update_text_view();
-   debug_bg->set_scale(i_dim);
+
+   if (mws_dbg::enabled(mws_dbg::pfm_mws))
+   {
+      debug_bg->set_scale(i_dim);
+   }
 }
 
 void mws_text_box::set_font(mws_sp<mws_font> i_font)
@@ -386,7 +395,7 @@ void mws_text_box::text_view::setup()
 {
    tx_vxo = text_vxo::nwi();
    tx_vxo->camera_id_list = { "mws_cam" };
-   //(*tx_vxo)[MP_SCISSOR_ENABLED] = true;
+   (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
    attach(tx_vxo);
    left_char_rect = std::make_shared<mws_rect>();
    right_char_rect = std::make_shared<mws_rect>();
@@ -403,7 +412,11 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
    cursor_grid_pos.y = uint32((i_pos.y + text_row_remainder) / font->get_height());
    cursor_grid_pos.x = 0;
-   mws_println("select_char_at:cursor_grid_pos [ %d, %d ]", cursor_grid_pos.x, cursor_grid_pos.y);
+
+   if (mws_dbg::enabled(mws_dbg::pfm_mws))
+   {
+      mws_println("select_char_at:cursor_grid_pos [ %d, %d ]", cursor_grid_pos.x, cursor_grid_pos.y);
+   }
 
    *left_char_rect = *right_char_rect = mws_rect();
    left_char_rect->h = right_char_rect->h = font->get_height();
@@ -411,16 +424,16 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
    if (cursor_grid_pos.y >= (int32)tx_lines.size())
    {
       cursor_grid_pos.y = std::max(0, int(tx_lines.size() - 1));
-      mws_println("select_char_at1 cursor_grid_pos.y [ %d ]", cursor_grid_pos.y);
+      //mws_println("select_char_at1 cursor_grid_pos.y [ %d ]", cursor_grid_pos.y);
       cursor_grid_pos.x = tx_lines[cursor_grid_pos.y].size();
-      {
-         uint32 line_index = get_top_line_idx() + cursor_grid_pos.y;
-         uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
-         glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
-         tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
-         glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
-         mws_println("c0 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
-      }
+      uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
+      uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
+      glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
+      tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
+      //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
+      //mws_println("c0 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]",
+      //   line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
+
       return;
    }
 
@@ -432,12 +445,13 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
       if (get_text_box()->is_editable())
       {
-         uint32 line_index = get_top_line_idx() + cursor_grid_pos.y;
+         uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
          uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
          glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
          tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
-         glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
-         mws_println("c1 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
+         //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
+         //mws_println("c1 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]",
+         //   line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
       }
 
       return;
@@ -498,12 +512,13 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
    if (get_text_box()->is_editable())
    {
-      uint32 line_index = get_top_line_idx() + cursor_grid_pos.y;
+      uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
       uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
       glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
       tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
-      glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
-      mws_println("c2 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]", line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
+      //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
+      //mws_println("c2 [line %d, pos %d] old-coord[%d, %d] new-coord[%d, %d]",
+      //   line_index, cursor_pos, cursor_coord.x, cursor_coord.y, new_cursor_coord.x, new_cursor_coord.y);
    }
 }
 
@@ -511,26 +526,37 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
 {
    uint32 tx_src_line_count = tx_src->get_line_count();
    uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
+   float font_height = font->get_height();
+   bool changed_sign = false;
 
    tx_offset -= i_offset;
    tx_offset.x = glm::max(0.f, tx_offset.x);
 
+   if (tx_offset.y < 0.f)
+   {
+      float fact = glm::ceil(glm::abs(tx_offset.y / font_height));
+
+      tx_offset.y += fact * font_height;
+      changed_sign = true;
+      set_lines_from_the_top_count(get_lines_from_the_top_count() - (int32)fact);
+   }
+
    // disable scrolling upwards when at the page top
-   if ((i_offset.y > 0.f) && (top_line_idx <= 0))
+   if ((i_offset.y > 0.f) && (get_lines_from_the_top_count() < 0))
    {
       tx_offset.y = 0.f;
    }
    // disable scrolling downwards when at the page bottom
-   else if ((i_offset.y < 0.f) && ((uint32)top_line_idx >= tx_src_line_count - max_actual_lines - 1))
+   else if ((i_offset.y < 0.f) && (get_lines_from_the_top_count() >= int32(tx_src_line_count - max_actual_lines - 1)))
    {
       tx_offset.y = 0.f;
    }
 
    // normal vertical scrolling
-   if (tx_offset.y != 0.f)
+   if (tx_offset.y != 0.f || changed_sign)
    {
-      float font_height = font->get_height();
       float lines = tx_offset.y / font_height;
+      mws_assert(lines >= 0.f);
 
       if (i_snap_to_grid)
       {
@@ -538,36 +564,23 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
          tx_offset.y = 0.f;
       }
 
-      float lines_abs = glm::abs(lines);
-      float lines_scrolled = glm::floor(lines_abs);
+      float lines_scrolled = glm::floor(lines);
 
-      if ((lines_abs > 1.f) && (lines_scrolled != 0.f))
+      if (((lines > 1.f) && (lines_scrolled != 0.f)) || changed_sign)
       {
-         float sign = glm::sign(lines);
-         top_line_idx += int32(sign * lines_scrolled);
+         set_lines_from_the_top_count(get_lines_from_the_top_count() + int32(lines_scrolled));
 
          if (tx_offset.y != 0.f)
          {
-            tx_offset.y = tx_offset.y - sign * lines_scrolled * font_height;
+            tx_offset.y = tx_offset.y - lines_scrolled * font_height;
          }
 
-         if (top_line_idx < 0)
-         {
-            top_line_idx = 0;
-         }
-         else if ((uint32)top_line_idx >= tx_src_line_count - max_actual_lines)
-         {
-            top_line_idx = tx_src_line_count - max_actual_lines - 1;
-         }
-
+         clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
          sync_view();
       }
    }
 
-   float delta_w = glm::max(0.f, max_line_width - mws_r.w);
-   tx_offset.x = glm::min(delta_w, tx_offset.x);
-   tx_vxo->position = glm::vec3(glm::vec2(mws_r.x, mws_r.y) - tx_offset, 0.f);
-   //mws_println("scroll_text [ %d, %f, %f ]", top_line_idx, tx_offset.x, tx_offset.y);
+   sync_position();
 }
 
 void mws_text_box::text_view::sync_view()
@@ -575,8 +588,9 @@ void mws_text_box::text_view::sync_view()
    uint32 tx_src_line_count = tx_src->get_line_count();
    uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
    float font_height = font->get_height();
-
-   tx_lines = tx_src->get_lines_at(get_top_line_idx(), max_actual_lines + extra_lines_count);
+   uint32 src_line_count = tx_src->get_line_count();
+   uint32 actual_line_count = glm::min(max_actual_lines + extra_lines_count, src_line_count);
+   tx_lines = tx_src->get_lines_at(get_lines_from_the_top_count(), actual_line_count);
    uint32 line_count = tx_lines.size();
    max_line_width = 0.f;
    tx_vxo->clear_text();
@@ -589,8 +603,12 @@ void mws_text_box::text_view::sync_view()
    }
 
    glm::uvec2 global_cursor_pos = tx_src->get_cursor_coord();
-   cursor_grid_pos = glm::uvec2(global_cursor_pos.x, global_cursor_pos.y - get_top_line_idx());
-   //mws_println("scroll_text::cursor_grid_pos [ %d, %d %d %d ]", cursor_grid_pos.x, cursor_grid_pos.y, global_cursor_pos.y, get_top_line_idx());
+   cursor_grid_pos = glm::uvec2(global_cursor_pos.x, global_cursor_pos.y - get_lines_from_the_top_count());
+
+   if (mws_dbg::enabled(mws_dbg::pfm_mws))
+   {
+      mws_println("scroll_text::cursor_grid_pos [ %d, %d %d %d ]", cursor_grid_pos.x, cursor_grid_pos.y, global_cursor_pos.y, get_lines_from_the_top_count());
+   }
 }
 
 void mws_text_box::text_view::sync_view_to_cursor_pos()
@@ -601,20 +619,20 @@ void mws_text_box::text_view::sync_view_to_cursor_pos()
 
    if (cursor_grid_pos.y < 0 || cursor_grid_pos.y >(int32)max_actual_lines)
    {
-      top_line_idx = global_cursor_pos.y;
+      set_lines_from_the_top_count(global_cursor_pos.y);
       tx_offset = glm::vec2(0.f);
    }
 
-   if (top_line_idx < 0)
-   {
-      top_line_idx = 0;
-   }
-   else if ((uint32)top_line_idx >= tx_src_line_count - max_actual_lines)
-   {
-      top_line_idx = tx_src_line_count - max_actual_lines - 1;
-   }
-
+   clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
    sync_view();
+   sync_position();
+}
+
+void mws_text_box::text_view::sync_position()
+{
+   float delta_w = glm::max(0.f, max_line_width - mws_r.w);
+
+   tx_offset.x = glm::min(delta_w, tx_offset.x);
    tx_vxo->position = glm::vec3(glm::vec2(mws_r.x, mws_r.y) - tx_offset, 0.f);
 }
 
@@ -803,9 +821,31 @@ mws_rect mws_text_box::text_view::get_cursor_rect(cursor_types i_cursor_type)
    return cursor;
 }
 
-uint32 mws_text_box::text_view::get_top_line_idx()
+int32 mws_text_box::text_view::get_lines_from_the_top_count()
 {
-   return top_line_idx;
+   return lines_from_the_top_count;
+}
+
+void mws_text_box::text_view::set_lines_from_the_top_count(int32 i_lines_from_the_top_count)
+{
+   lines_from_the_top_count = i_lines_from_the_top_count;
+}
+
+void mws_text_box::text_view::clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim)
+{
+   if (get_lines_from_the_top_count() < i_inf_lim)
+   {
+      set_lines_from_the_top_count(i_inf_lim);
+   }
+   else if (get_lines_from_the_top_count() > i_sup_lim)
+   {
+      set_lines_from_the_top_count(i_sup_lim);
+   }
+}
+
+mws_text_box::mws_text_box()
+{
+   //if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::pfm_mws); }
 }
 
 void mws_text_box::on_attach()
@@ -857,7 +897,12 @@ void mws_text_box::update_text_view()
       (*view->tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(glm::vec2(mws_r.x, mws_r.y - 1.f), glm::vec2(mws_r.w, mws_r.h + 1));
       view->sync_view_to_cursor_pos();
       update_cursor();
-      mws_println("view->max_lines_allowed_by_height [ %d ] rect[ %f, %f, %f, %f]", view->max_lines_allowed_by_height, mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+
+      if (mws_dbg::enabled(mws_dbg::pfm_mws))
+      {
+         mws_println("view->max_lines_allowed_by_height [ %d ] rect[ %f, %f, %f, %f]",
+            view->max_lines_allowed_by_height, mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+      }
    }
 }
 
@@ -1366,7 +1411,6 @@ void mws_text_area_model_rw::delete_at_cursor(int32 i_count)
          set_cursor_pos(start_idx);
       }
    }
-   //mws_println(text.c_str());
 }
 
 uint32 mws_text_area_model_rw::get_cursor_pos()
@@ -1391,7 +1435,6 @@ void mws_text_area_model_rw::set_cursor_pos(uint32 i_cursor_pos)
             cursor_grid_pos.y++;
          }
       }
-      //mws_println("get_cursor_pos() %d", get_cursor_pos());
    }
 }
 

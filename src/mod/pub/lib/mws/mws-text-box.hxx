@@ -63,11 +63,14 @@ protected:
       virtual void scroll_text(const glm::vec2& i_offset, bool i_snap_to_grid = false);
       virtual void sync_view();
       virtual void sync_view_to_cursor_pos();
+      virtual void sync_position();
       virtual float get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const;
       virtual void update_cursor();
       virtual mws_sp<mws_text_box> get_text_box() { return static_pointer_cast<mws_text_box>(get_parent()); }
       virtual mws_rect get_cursor_rect(cursor_types i_cursor_type);
-      virtual uint32 get_top_line_idx();
+      virtual int32 get_lines_from_the_top_count();
+      virtual void set_lines_from_the_top_count(int32 i_lines_from_the_top_count);
+      virtual void clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim);
 
       mws_sp<mws_text_area_model> tx_src;
       mws_sp<text_vxo> tx_vxo;
@@ -80,8 +83,8 @@ protected:
       glm::vec2 tx_offset;
       // number of lines visible on screen
       uint32 max_lines_allowed_by_height = 0;
-      // points to the first line of the text grid and it's an index into the lines of tx_src
-      int32 top_line_idx = 0;
+      // the distance from the first line of tx_src to the first line of the text grid
+      int32 lines_from_the_top_count = 0;
       // maximum width of the lines in the text grid
       float max_line_width = 0.f;
 
@@ -94,7 +97,7 @@ protected:
    };
 
 
-   mws_text_box() {}
+   mws_text_box();
    virtual void on_attach() override;
    virtual void sync_view();
    virtual void sync_view_to_cursor_pos();
