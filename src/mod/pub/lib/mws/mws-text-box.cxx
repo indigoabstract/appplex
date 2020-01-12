@@ -42,6 +42,7 @@ void mws_text_box::setup()
          rvxo[MP_DEPTH_TEST] = true;
          rvxo[MP_DEPTH_WRITE] = true;
          rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+         rvxo[MP_SCISSOR_ENABLED] = true;
          rvxo["u_v4_color"] = gfx_color::colors::blue.to_vec4();
          rvxo.set_dimensions(1, 1);
          gfx_cursor->attach(gfx_cursor_bg);
@@ -55,6 +56,7 @@ void mws_text_box::setup()
          rvxo[MP_DEPTH_TEST] = false;
          rvxo[MP_DEPTH_WRITE] = false;
          //rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+         rvxo[MP_SCISSOR_ENABLED] = true;
          rvxo["u_v4_color"] = gfx_color::colors::red.to_vec4();
          rvxo.set_dimensions(1, 1);
          rvxo.position += glm::vec3(0.f, 0.f, -0.1f);
@@ -575,7 +577,7 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
             tx_offset.y = tx_offset.y - lines_scrolled * font_height;
          }
 
-         clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
+         clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines);
          sync_view();
       }
    }
@@ -617,13 +619,17 @@ void mws_text_box::text_view::sync_view_to_cursor_pos()
    uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
    glm::uvec2 global_cursor_pos = tx_src->get_cursor_coord();
 
-   if (cursor_grid_pos.y < 0 || cursor_grid_pos.y >(int32)max_actual_lines)
+   if ((int32)global_cursor_pos.y < get_lines_from_the_top_count())
    {
       set_lines_from_the_top_count(global_cursor_pos.y);
       tx_offset = glm::vec2(0.f);
    }
+   else if ((int32)global_cursor_pos.y > (get_lines_from_the_top_count() + max_actual_lines))
+   {
+      set_lines_from_the_top_count(global_cursor_pos.y - max_actual_lines);
+   }
 
-   clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines - 1);
+   clamp_lines_from_the_top_count(0, tx_src_line_count - max_actual_lines);
    sync_view();
    sync_position();
 }
@@ -889,12 +895,16 @@ void mws_text_box::update_text_view()
 {
    if (view)
    {
+      glm::vec4 scissor_rect = glm::vec4(glm::vec2(mws_r.x, mws_r.y - 1.f), glm::vec2(mws_r.w, mws_r.h + 1));
+
       view->tx_src = tx_src;
       view->font = font;
       view->position = position;
       view->set_rect(mws_r);
       view->max_lines_allowed_by_height = int(mws_r.h / font->get_height());
-      (*view->tx_vxo)[MP_SCISSOR_AREA] = glm::vec4(glm::vec2(mws_r.x, mws_r.y - 1.f), glm::vec2(mws_r.w, mws_r.h + 1));
+      (*gfx_cursor_bg)[MP_SCISSOR_AREA] = scissor_rect;
+      (*gfx_cursor_middle)[MP_SCISSOR_AREA] = scissor_rect;
+      (*view->tx_vxo)[MP_SCISSOR_AREA] = scissor_rect;
       view->sync_view_to_cursor_pos();
       update_cursor();
 
@@ -1011,74 +1021,69 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
             off = 21.175f;
          }
 
-         switch (key)
+         if (editable)
          {
-         case KEY_LEFT:
-         {
-            if (editable)tx_src->advance_cursor(dir_types::DIR_LEFT);
-            scroll_text(glm::vec2(off, 0));
-            break;
-         }
-
-         case KEY_UP:
-         {
-            if (editable)tx_src->advance_cursor(dir_types::DIR_UP);
-            scroll_text(glm::vec2(0, off));
-            break;
-         }
-
-         case KEY_RIGHT:
-         {
-            if (editable)tx_src->advance_cursor(dir_types::DIR_RIGHT);
-            scroll_text(glm::vec2(-off, 0));
-            break;
-         }
-
-         case KEY_DOWN:
-         {
-            if (editable)tx_src->advance_cursor(dir_types::DIR_DOWN);
-            scroll_text(glm::vec2(0, -off));
-            break;
-         }
-
-         case KEY_DELETE:
-         {
-            if (editable)
+            switch (key)
             {
+            case KEY_LEFT:
+               tx_src->advance_cursor(dir_types::DIR_LEFT);   scroll_text(glm::vec2(off, 0));
+               break;
+
+            case KEY_UP:
+               tx_src->advance_cursor(dir_types::DIR_UP);     scroll_text(glm::vec2(0, off));
+               break;
+
+            case KEY_RIGHT:
+               tx_src->advance_cursor(dir_types::DIR_RIGHT); scroll_text(glm::vec2(-off, 0));
+               break;
+
+            case KEY_DOWN:
+               tx_src->advance_cursor(dir_types::DIR_DOWN);  scroll_text(glm::vec2(0, -off));
+               break;
+
+            case KEY_DELETE:
                delete_at_cursor(1);
-            }
-            break;
-         }
+               break;
 
-         case KEY_BACKSPACE:
-         {
-            if (editable)
-            {
+            case KEY_BACKSPACE:
                delete_at_cursor(-1);
-            }
-            break;
-         }
+               break;
 
-         case KEY_TAB:
-         {
-            if (editable)
-            {
+            case KEY_TAB:
                insert_at_cursor("   ");
-            }
-            break;
-         }
+               break;
 
-         case KEY_ENTER:
-         {
-            if (editable)
-            {
+            case KEY_ENTER:
                insert_at_cursor("\n");
-            }
-            break;
-         }
+               break;
 
-         default:
-            is_processed = false;
+            default:
+               is_processed = false;
+            }
+         }
+         else
+         {
+            switch (key)
+            {
+            case KEY_LEFT:
+               scroll_text(glm::vec2(off, 0));
+               break;
+
+            case KEY_UP:
+               scroll_text(glm::vec2(0, off));
+               break;
+
+            case KEY_RIGHT:
+               scroll_text(glm::vec2(-off, 0));
+               break;
+
+            case KEY_DOWN:
+               scroll_text(glm::vec2(0, -off));
+               break;
+
+            default:
+               is_processed = false;
+            }
          }
 
          if (is_processed)
