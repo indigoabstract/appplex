@@ -31,8 +31,8 @@ public:
    virtual void delete_at_cursor(int32 i_count);
    virtual void scroll_text(const glm::vec2& i_off, bool i_snap_to_grid = false);
    virtual void scroll_to_end(dir_types i_direction);
-   virtual void set_position(const glm::vec2& i_pos);
-   virtual void set_dimension(const glm::vec2& i_dim);
+   virtual void set_position(const glm::vec2& i_position) override;
+   virtual void set_size(const glm::vec2& i_size) override;
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual void select_char_at(const glm::vec2& i_pos);
    virtual void update_state();

@@ -228,26 +228,26 @@ void mws_text_box::scroll_to_end(dir_types i_direction)
    }
 }
 
-void mws_text_box::set_position(const glm::vec2& i_pos)
+void mws_text_box::set_position(const glm::vec2& i_position)
 {
-   mws_r = mws_rect(i_pos.x, i_pos.y, mws_r.w, mws_r.h);
+   mws_text_area::set_position(i_position);
    update_text_view();
 
    if (mws_dbg::enabled(mws_dbg::pfm_mws))
    {
-      debug_bg->set_translation(i_pos);
+      debug_bg->set_translation(i_position);
    }
 }
 
-void mws_text_box::set_dimension(const glm::vec2& i_dim)
+void mws_text_box::set_size(const glm::vec2& i_size)
 {
-   mws_r = mws_rect(mws_r.x, mws_r.y, i_dim.x, i_dim.y);
+   mws_text_area::set_size(i_size);
    ks.reset();
    update_text_view();
 
    if (mws_dbg::enabled(mws_dbg::pfm_mws))
    {
-      debug_bg->set_scale(i_dim);
+      debug_bg->set_scale(i_size);
    }
 }
 

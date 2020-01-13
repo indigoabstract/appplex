@@ -74,11 +74,11 @@ float mws_px::get_px_per_cm(dpi_types i_dpi_type)
 {
    switch (i_dpi_type)
    {
-   case dpi_types::average:
+   case dpi_types::e_average:
       return pfm_main::gi()->get_avg_screen_dpcm();
-   case dpi_types::horizontal:
+   case dpi_types::e_horizontal:
       return pfm_main::gi()->get_screen_dpcm().first;
-   case dpi_types::vertical:
+   case dpi_types::e_vertical:
       return pfm_main::gi()->get_screen_dpcm().second;
    }
 
@@ -88,11 +88,11 @@ float mws_px::get_px_per_in(dpi_types i_dpi_type)
 {
    switch (i_dpi_type)
    {
-   case dpi_types::average:
+   case dpi_types::e_average:
       return pfm_main::gi()->get_avg_screen_dpi();
-   case dpi_types::horizontal:
+   case dpi_types::e_horizontal:
       return pfm_main::gi()->get_screen_dpi().first;
-   case dpi_types::vertical:
+   case dpi_types::e_vertical:
       return pfm_main::gi()->get_screen_dpi().second;
    }
 

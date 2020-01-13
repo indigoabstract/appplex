@@ -67,8 +67,8 @@ namespace mod_kawase_bloom_ns
          }
 
          uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
-         mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
-         mws_px word_font_height(vkb_size / 5.f / 4.f, mws_dim::vertical);
+         mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
+         mws_px word_font_height(vkb_size / 5.f / 4.f, mws_dim::e_vertical);
          mws_sp<mws_font> fnt = ortho_cam->get_font();
          //mws_px fnt_big_px(60, mws_px::vertical);
          mws_px fnt_big_px = letter_font_height;

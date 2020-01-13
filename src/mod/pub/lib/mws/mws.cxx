@@ -183,13 +183,55 @@ mws_sp<mws> mws::contains_id(const std::string& i_id)
    {
       return get_instance();
    }
+   else
+   {
+      for (auto& c : children)
+      {
+         if (c->get_type() == gfx_obj::e_mws)
+         {
+            auto w = mws_dynamic_pointer_cast<mws>(c);
 
-   return nullptr;
+            if (w->id == id)
+            {
+               return w;
+            }
+
+            auto w2 = w->contains_id(i_id);
+
+            if (w2)
+            {
+               return w2;
+            }
+         }
+      }
+
+      return nullptr;
+   }
 }
 
 bool mws::contains_mws(const mws_sp<mws> i_mws)
 {
-   return i_mws == get_instance();
+   if (i_mws == get_instance())
+   {
+      return true;
+   }
+   else
+   {
+      for (auto& c : children)
+      {
+         if (c->get_type() == gfx_obj::e_mws)
+         {
+            auto w = mws_dynamic_pointer_cast<mws>(c);
+
+            if (w == i_mws || w->contains_mws(i_mws))
+            {
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
 }
 
 mws_sp<mws> mws::get_mws_parent() const
@@ -267,6 +309,16 @@ void mws::update_view(mws_sp<mws_camera> g)
          }
       }
    }
+}
+
+const mws_size& mws::get_best_size() const
+{
+   return best_size;
+}
+
+void mws::set_best_size(const mws_size& i_size)
+{
+   best_size = i_size;
 }
 
 mws_rect mws::get_pos()
@@ -411,8 +463,8 @@ void mws_page_tab::receive(mws_sp<mws_dp> i_dp)
    {
       vkb->receive(i_dp);
    }
-   
-   if(!i_dp->is_processed())
+
+   if (!i_dp->is_processed())
    {
       if (receive_handler)
       {
@@ -1011,13 +1063,20 @@ void mws_page::on_resize()
 
 void mws_page_item::set_rect(const mws_rect& i_rect)
 {
-   mws_r = i_rect;
+   set_position(glm::vec2(i_rect.x, i_rect.y));
+   set_size(glm::vec2(i_rect.w, i_rect.h));
 }
 
-void mws_page_item::set_size(float i_width, float i_height)
+void mws_page_item::set_position(const glm::vec2& i_position)
 {
-   mws_r.w = i_width;
-   mws_r.h = i_height;
+   mws_r.x = i_position.x;
+   mws_r.y = i_position.y;
+}
+
+void mws_page_item::set_size(const glm::vec2& i_size)
+{
+   mws_r.w = i_size.x;
+   mws_r.h = i_size.y;
 }
 
 mws_sp<mws_page> mws_page_item::get_page()

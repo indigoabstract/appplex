@@ -27,16 +27,16 @@ public:
    // specifies whether to take the horizontal, vertical or average dpi when converting a physical dimension to pixels
    enum dpi_types
    {
-      average,
-      horizontal,
-      vertical,
+      e_average,
+      e_horizontal,
+      e_vertical,
    };
 
    virtual float val() const { return size; }
    virtual mws_cm to_cm() const = 0;
    virtual mws_in to_in() const = 0;
    virtual mws_pt to_pt() const = 0;
-   virtual mws_px to_px(dpi_types i_dpi_type = average) const = 0;
+   virtual mws_px to_px(dpi_types i_dpi_type = e_average) const = 0;
 
 protected:
    mws_dim() {}
@@ -52,7 +52,7 @@ public:
    virtual mws_cm to_cm() const override;
    virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = e_average) const override;
 };
 
 
@@ -63,7 +63,7 @@ public:
    virtual mws_cm to_cm() const override;
    virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = e_average) const override;
 };
 
 
@@ -74,25 +74,25 @@ public:
    virtual mws_cm to_cm() const override;
    virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = e_average) const override;
 };
 
 
 class mws_px : public mws_dim
 {
 public:
-   mws_px(float i_size = 0.f, dpi_types i_dpi_type = average) : dpi_type(i_dpi_type) { size = i_size; }
+   mws_px(float i_size = 0.f, dpi_types i_dpi_type = e_average) : dpi_type(i_dpi_type) { size = i_size; }
    uint32 int_val() const;
    virtual mws_cm to_cm() const override;
    virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
-   virtual mws_px to_px(dpi_types i_dpi_type = average) const override;
+   virtual mws_px to_px(dpi_types i_dpi_type = e_average) const override;
 
-   static float get_px_per_cm(dpi_types i_dpi_type = average);
-   static float get_px_per_in(dpi_types i_dpi_type = average);
+   static float get_px_per_cm(dpi_types i_dpi_type = e_average);
+   static float get_px_per_in(dpi_types i_dpi_type = e_average);
 
 protected:
-   dpi_types dpi_type = average;
+   dpi_types dpi_type = e_average;
 };
 
 

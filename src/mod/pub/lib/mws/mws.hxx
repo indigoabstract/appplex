@@ -4,11 +4,12 @@
 #include "pfm.hxx"
 #include "util/util.hxx"
 #include "input/input-ctrl.hxx"
+#include "gfx.hxx"
 #include "gfx-scene.hxx"
 #include <glm/fwd.hpp>
 #include <string>
+#include <variant>
 #include <vector>
-
 
 class mws_mod_ctrl;
 class linear_transition;
@@ -33,6 +34,40 @@ struct vkb_file_info;
 
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
+
+// contains a relative(to parent) dimension
+class mws_rel_dim
+{
+public:
+   mws_rel_dim(float i_size = 0.f) { size = i_size; }
+   float get_ratio() const { return size; }
+
+protected:
+   float size = 0.f;
+};
+
+
+using mws_size_elem = std::variant<std::monostate, mws_px, mws_rel_dim>;
+class mws_size
+{
+public:
+   static mws_size nwi_px(float i_width_px, float i_height_px)
+   {
+      return mws_size(mws_size_elem(mws_px(i_width_px, mws_dim::e_horizontal)), mws_size_elem(mws_px(i_height_px, mws_dim::e_vertical)));
+   };
+   mws_size() {}
+   mws_size(const mws_size_elem& i_width, const mws_size_elem& i_height) : width(i_width), height(i_height) {}
+
+   mws_size_elem get_width() const { return width; }
+   void set_width(const mws_size_elem& i_width) { width = i_width; }
+   mws_size_elem get_height() const { return height; }
+   void set_height(const mws_size_elem& i_height) { height = i_height; }
+
+protected:
+   mws_size_elem width;
+   mws_size_elem height;
+};
+
 
 class mws_rect
 {
@@ -100,7 +135,9 @@ public:
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state();
    virtual void update_view(mws_sp<mws_camera> g);
-   mws_rect get_pos();
+   virtual const mws_size& get_best_size() const;
+   virtual void set_best_size(const mws_size& i_size);
+   virtual mws_rect get_pos();
    virtual float get_z();
    virtual void set_z(float i_z_position);
 
@@ -115,6 +152,7 @@ protected:
    mws_rect mws_r;
    mws_wp<mws_page_tab> mwsroot;
    mws_wp<mws_camera> mws_cam;
+   mws_size best_size;
 
 private:
    virtual mws_sp<mws_sender> sender_inst();
@@ -266,7 +304,8 @@ public:
    virtual ~mws_page_item() {}
 
    virtual void set_rect(const mws_rect& i_rect);
-   virtual void set_size(float i_width, float i_height);
+   virtual void set_position(const glm::vec2& i_position);
+   virtual void set_size(const glm::vec2& i_size);
    mws_sp<mws_page> get_page();
    virtual bool has_focus();
    virtual void set_focus(bool i_set_focus = true);

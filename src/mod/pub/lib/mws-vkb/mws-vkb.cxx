@@ -1375,8 +1375,8 @@ mws_vkb_impl::res_specific_params mws_vkb_impl::get_closest_resolution_match(uin
 void mws_vkb_impl::setup_font_dimensions()
 {
    uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
-   mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::vertical);
-   mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::vertical);
+   mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
+   mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::e_vertical);
    mws_sp<mws_font> font = font_db::inst()->get_global_font();
    mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height);
    mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height);
@@ -2402,7 +2402,7 @@ std::function<void()> mws_vkb::get_waiting_msg_op()
             glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
             float vert_size = std::min(scr_dim.x, scr_dim.y);
             mws_sp<mws_font> global_font = font_db::inst()->get_global_font();
-            mws_px font_height(vert_size / 20.f, mws_dim::vertical);
+            mws_px font_height(vert_size / 20.f, mws_dim::e_vertical);
             mws_sp<mws_font> font = mws_font::nwi(global_font, font_height);
             font->set_color(gfx_color::colors::white);
             glm::vec2 text_dim = font->get_text_dim(text);
