@@ -8,8 +8,8 @@
 #include "mws/mws-com.hxx"
 #include "input/transitions.hxx"
 #include "min.hxx"
-#include "cmd/start-process.hxx"
-#include "cmd/long-operation.hxx"
+#include "demo/cmd/start-process.hxx"
+#include "demo/cmd/long-operation.hxx"
 #include <boost/date_time.hpp>
 
 using boost::posix_time::ptime;

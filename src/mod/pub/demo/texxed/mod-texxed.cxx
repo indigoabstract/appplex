@@ -33,7 +33,7 @@ namespace mod_texxed_ns
 
 			ta = mws_text_box::nwi();
 			ta->set_position(glm::vec2(50, 70));
-			ta->set_dimension(glm::vec2(w - 80, h - 130));
+			ta->set_size(glm::vec2(w - 80, h - 130));
 			ta->set_text(*tx_res);
          ta->push_back_text("nl 1\n");
          ta->push_back_text("nl 2\n");
@@ -52,7 +52,7 @@ namespace mod_texxed_ns
          attach(b);
          b->set_rect(mws_rect(10, h - 50.f, 50, 20));
          b->set_text("btn");
-         b->set_bg_color(gfx_color(0xff8200b4));
+         b->set_bg_color(gfx_color::from_argb(0xff8200b4));
       }
 
 		virtual void receive(mws_sp<mws_dp> idp)

@@ -143,8 +143,6 @@ namespace mod_test_main_page
 	class main_page : public mws_page
 	{
 	public:
-		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -173,14 +171,14 @@ namespace mod_test_main_page
 			int lineIdx = 0;
 
 			//g->clearScreen();
-			g->setColor(0xff9f007f);
+			g->set_color(gfx_color::from_argb(0xff9f007f));
 
 			for (int k = 0; k < visibleLines; k++)
 			{
 				g->fillRect((get_mod()->get_width() - linew) / 2, k * lineHeight, linew, lineh);
 			}
 
-			g->setColor(0xffff0000);
+			g->set_color(gfx_color::from_argb(0xffff0000));
 			g->drawLine(50, 50, 250, 350);
 			//g->fillAlphaRect(122, 233, 255, 122, 0x7fff00ff);
 			//g->drawImage(img, 144, 33);
@@ -194,7 +192,7 @@ namespace mod_test_main_page
 
 void mod_test::init_mws()
 {
-   mws_root->new_page<mod_test_main_page::mainpage>();
+   mws_root->new_page<mod_test_main_page::main_page>();
 	mws_cam->clear_color = true;
 }
 

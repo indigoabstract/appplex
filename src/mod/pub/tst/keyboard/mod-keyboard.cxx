@@ -34,7 +34,7 @@ namespace mod_keyboard_ns
 
             text_field = mws_text_field::nwi();
             text_field->set_position(glm::vec2(10, 10));
-            text_field->set_dimension(glm::vec2(10, 10));
+            text_field->set_size(glm::vec2(10, 10));
             text_field->set_editable(true);
             attach(text_field);
 
@@ -70,7 +70,7 @@ namespace mod_keyboard_ns
 
             if (!pfm::has_touchscreen())
             {
-               text_field->select();
+               text_field->set_focus();
             }
          }
       }
@@ -163,7 +163,7 @@ namespace mod_keyboard_ns
 
          float tf_height = 50.f;
          text_field->set_position(glm::vec2(20, height - 2 * tf_height + 20 * 2));
-         text_field->set_dimension(glm::vec2(width - 20 * 2.f, tf_height));
+         text_field->set_size(glm::vec2(width - 20 * 2.f, tf_height));
       }
 
       mws_sp<mws_text_field> text_field;

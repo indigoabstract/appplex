@@ -134,38 +134,38 @@ void mod_test_grid::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
-		if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+		if(idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 		{
-			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
-			if(ts->get_type() == touch_sym_evt::TS_PRESS_AND_DRAG)
-			{
-				float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
-				float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
-				float dx_rad = glm::radians(dx / 2);
-				float dy_rad = glm::radians(dy / 2);
+			//if(ts->type == touch_sym_evt::TS_PRESS_AND_DRAG)
+			//{
+			//	float dx = ts->points[0].x - ts->prev_state.te->points[0].x;
+			//	float dy = ts->points[0].y - ts->prev_state.te->points[0].y;
+			//	float dx_rad = glm::radians(dx / 2);
+			//	float dy_rad = glm::radians(dy / 2);
 
-				glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
-				glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
-				p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
+			//	glm::vec3 right_dir = glm::cross(p->look_at_dir, p->up_dir);
+			//	glm::quat rot_around_right_dir = glm::angleAxis(dy_rad, right_dir);
+			//	p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_right_dir);
+			//	p->up_dir = glm::normalize(glm::cross(right_dir, p->look_at_dir));
 
-				glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
-				p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
-				ts->process();
-			}
-			else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
-			{
-				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
+			//	glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, p->up_dir);
+			//	p->look_at_dir = glm::normalize(p->look_at_dir * rot_around_up_dir);
+			//	process(ts);
+			//}
+			//else if(ts->get_type() == touch_sym_evt::TS_MOUSE_WHEEL)
+			//{
+			//	mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
 
-				p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
-			}
+			//	p->persp_cam->position += p->look_at_dir * 150.f * float(mw->wheel_delta);
+			//}
 		}
-		else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+		else if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 		{
-			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if(ke->get_type() != key_evt::KE_RELEASED)
+			if(ke->get_type() != mws_key_evt::KE_RELEASED)
 			{
 				bool do_action = true;
 
@@ -213,7 +213,7 @@ void mod_test_grid::receive(mws_sp<mws_dp> idp)
 					do_action = false;
 				}
 
-				if(!do_action && ke->get_type() != key_evt::KE_REPEATED)
+				if(!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
 				{
 					do_action = true;
 
@@ -230,7 +230,7 @@ void mod_test_grid::receive(mws_sp<mws_dp> idp)
 
 				if(do_action)
 				{
-					ke->process();
+					process(ke);
 				}
 			}
 		}

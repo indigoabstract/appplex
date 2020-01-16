@@ -264,7 +264,7 @@ void gfx_vpc_kubic_sphere::set_dimensions(float iradius, int isegments)
       {{right_face, {start_point, end_point}, {end_point, end_point}}, {back_face, {start_point, end_point}, {start_point, start_point}}},
       {{back_face, {end_point, end_point}, {start_point, end_point}}, {bottom_face, {end_point, end_point}, {end_point, start_point}}},
    };
-   vx_color_coord_4b face_colors[6] =
+   gfx_color face_colors[6] =
    {
       {255, 000, 000, 255},
       {000, 255, 000, 255},

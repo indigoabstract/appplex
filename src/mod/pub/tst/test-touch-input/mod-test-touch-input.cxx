@@ -165,6 +165,8 @@ namespace mod_test_touch_input_ns
 
       virtual void receive(mws_sp<mws_dp> idp)
       {
+         auto mod = get_mod();
+
          if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
          {
             mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
@@ -232,7 +234,7 @@ namespace mod_test_touch_input_ns
                }
 
                set_obj_scaling(scale);
-               ts->process();
+               mod->process(ts);
                break;
             }
             }
@@ -263,7 +265,7 @@ namespace mod_test_touch_input_ns
 
                if (do_action)
                {
-                  ke->process();
+                  mod->process(ke);
                }
             }
          }

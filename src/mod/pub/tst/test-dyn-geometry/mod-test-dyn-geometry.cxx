@@ -21,7 +21,7 @@
 #include "control-curve.hxx"
 #include "natural-cubic-spline.hxx"
 #include "curve-mesh.hxx"
-#include "utils/free-camera.hxx"
+#include "util/free-camera.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>
 
@@ -426,7 +426,7 @@ public:
 	std::vector<mws_sp<mws_select_button> > button_list;
 	bool recalc_points;
 	mws_sp<curve_mesh> cm;
-	std::vector<pointer_evt::touch_point> point_list;
+	std::vector<mws_ptr_evt::touch_point> point_list;
 	mws_sp<gfx_camera> persp_cam;
 	mws_sp<mws_camera> ortho_cam;
 	mws_sp<std::vector<glm::vec2> > poly;
@@ -553,58 +553,56 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 {
 	if (!idp->is_processed())
 	{
-		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 		{
-			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
 			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
-			switch (ts->get_type())
+			switch (ts->type)
 			{
-			case touch_sym_evt::TS_PRESS_AND_DRAG:
-			{
-				p->point_list.push_back(ts->points[0]);
-				p->recalc_points = true;
-				ts->process();
-				//mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
+			//case mws_ptr_evt::TS_PRESS_AND_DRAG:
+			//{
+			//	p->point_list.push_back(ts->points[0]);
+			//	p->recalc_points = true;
+			//	ts->process();
+			//	//mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
 
+			//	break;
+			//}
+
+			case mws_ptr_evt::mouse_wheel:
+			{
 				break;
 			}
 
-			case touch_sym_evt::TS_MOUSE_WHEEL:
-			{
-				mws_sp<mouse_wheel_evt> mw = static_pointer_cast<mouse_wheel_evt>(ts);
-
-				break;
-			}
-
-			case touch_sym_evt::TS_PRESSED:
+			case mws_ptr_evt::touch_began:
 			{
 				p->point_list.clear();
 				p->point_list.push_back(ts->points[0]);
 				p->recalc_points = true;
-				ts->process();
+				process(ts);
 
 				break;
 			}
 
-			case touch_sym_evt::TS_RELEASED:
+			case mws_ptr_evt::touch_ended:
 			{
 				control_curve_ns::Point pt(ts->points[0].x, ts->points[0].y);
 
 				p->point_list.clear();
 				p->recalc_points = false;
 				p->process_input(pt);
-				ts->process();
+				process(ts);
 
 				break;
 			}
 			}
 		}
-		else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+		else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 		{
-			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if (ke->get_type() != key_evt::KE_RELEASED)
+			if (ke->get_type() != mws_key_evt::KE_RELEASED)
 			{
 				bool do_action = true;
 
@@ -619,7 +617,7 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 					do_action = false;
 				}
 
-				if (!do_action && ke->get_type() != key_evt::KE_REPEATED)
+				if (!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
 				{
 					do_action = true;
 
@@ -627,13 +625,13 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 					{
 					case KEY_R:
 					{
-						float ctrX = 600;
-						float ctrY = 310;
-						float aveRadius = 250;
+						float ctr_x = 600;
+						float ctr_y = 310;
+						float avg_radius = 250;
 						float irregularity = 1.0;
 						float spikeyness = 0.1;
-						int numVerts = 57;
-						p->poly = generatePolygon(ctrX, ctrY, aveRadius, irregularity, spikeyness, numVerts);
+						int num_verts = 57;
+						p->poly = generatePolygon(ctr_x, ctr_y, avg_radius, irregularity, spikeyness, num_verts);
 						break;
 					}
 
@@ -644,7 +642,7 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 
 				if (do_action)
 				{
-					ke->process();
+					process(ke);
 				}
 			}
 		}

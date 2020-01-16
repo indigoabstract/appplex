@@ -39,7 +39,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
-	include_directories("${CMAKE_CURRENT_LIST_DIR}src/mod/pub/lib/ffmpeg")
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/ffmpeg")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	

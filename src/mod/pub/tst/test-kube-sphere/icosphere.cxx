@@ -56,7 +56,7 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 	std::vector<gfx_indices_type> ind_data_new;
 	std::unordered_map<uint64, uint32> vertex_map;
 	gfx_color& c = face_color;
-	vx_color_coord_4b clr = {c.r, c.g, c.b, c.a};
+	gfx_color clr = {c.r, c.g, c.b, c.a};
 
 	subdiv_count = isubdiv_count;
 

@@ -22,7 +22,7 @@
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
 #include "gfx-vxo-ext.hxx"
-#include "utils/free-camera.hxx"
+#include "util/free-camera.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>
 #include <string>
@@ -520,6 +520,7 @@ public:
 
 	virtual void receive(mws_sp<mws_dp> idp)
 	{
+		auto mod = get_mod();
 		mws_page::update_input_sub_mws(idp);
 
 		if (idp->is_processed())
@@ -527,47 +528,47 @@ public:
 			return;
 		}
 
-		if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 		{
-			mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 			int tsh = 5;
 
 			switch (ts->type)
 			{
-			case pointer_evt::touch_began:
+			case mws_ptr_evt::touch_began:
 			{
 				pressed_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
-				ts->process();
+				mod->process(ts);
 				break;
 			}
 
-			case pointer_evt::touch_ended:
+			case mws_ptr_evt::touch_ended:
 			{
 				mws_sp<mod_gl_frag_shader_demo> u = static_pointer_cast<mod_gl_frag_shader_demo>(get_mod());
 				glm::vec2 screen_size((float)u->get_width(), (float)u->get_height());
 
 				pressed_pos = glm::vec2(0.f, screen_size.y);
-				ts->process();
+				mod->process(ts);
 				break;
 			}
 
-			case pointer_evt::touch_moved:
+			case mws_ptr_evt::touch_moved:
 			{
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
-				int k = std::max(std::min(x, pfm::screen::get_width() - tsh), tsh);
-				int l = std::max(std::min(y, pfm::screen::get_height() - tsh), tsh);
+				int k = glm::max(glm::min(x, (int)pfm::screen::get_width() - tsh), tsh);
+				int l = glm::max(glm::min(y, (int)pfm::screen::get_height() - tsh), tsh);
 				pointer_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
-				ts->process();
+				mod->process(ts);
 				break;
 			}
 			}
 		}
-		else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+		else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 		{
-			mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if (ke->get_type() == key_evt::KE_PRESSED)
+			if (ke->get_type() == mws_key_evt::KE_PRESSED)
 			{
 				bool do_action = true;
 
@@ -603,7 +604,7 @@ public:
 
 				if (do_action)
 				{
-					ke->process();
+					mod->process(ke);
 				}
 			}
 		}

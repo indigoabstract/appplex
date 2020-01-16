@@ -22,12 +22,12 @@ void stroke(int s)
 
 void fill(mws_sp<mws_camera> g, int f)
 {
-	g->setColor(f, f, f, 255);
+	g->set_color(gfx_color(f, f, f, 255));
 };
 
-void fill(mws_sp<mws_camera> g, float x, float y, float z)
+void fill(mws_sp<mws_camera> g, int x, int y, int z)
 {
-	g->setColor(x, y, z, 255);
+	g->set_color(gfx_color(x, y, z, 255));
 }
 
 void line(mws_sp<mws_camera> g, float x1, float y1, float x2, float y2)
@@ -199,7 +199,7 @@ void kscroll2::setup(int width, int height) {
 }
 
 void kscroll2::draw(mws_sp<mws_camera> g) {
-	point2d p = scroller.update();
+	glm::vec2 p = scroller.update();
 	lpos = constrain(lpos - p.x, lopx, hipx - W);
 
 	for (int i = 0; i < test; i++)

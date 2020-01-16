@@ -3,8 +3,16 @@
 default
 [
 	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
-	@@start[ mod[ reliquus ], exclusive [ false ], launch-mod [ true ], ],
-	start[ mod-list[ demo-fx ], exclusive [ true ], launch-mod [ true ], ],
+	@@example-start
+	[
+		mod[ reliquus ], exclusive [ false ], launch-mod [ true ],
+		excluded-mod-list[ cmd, exercise, kappaxx ],
+	],
+	start
+	[
+		mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ],
+		excluded-mod-list[ cmd, exercise, kappaxx ],
+	],
 ],
 
 mod

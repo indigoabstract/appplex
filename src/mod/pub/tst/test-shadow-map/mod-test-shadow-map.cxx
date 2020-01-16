@@ -5,6 +5,7 @@
 #ifdef MOD_TEST_SHADOW_MAP
 
 #include "gfx.hxx"
+#include "gfx-ext/gfx-surface.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-shader.hxx"

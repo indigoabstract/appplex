@@ -364,7 +364,7 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 
 				if(do_action)
 				{
-					ke->process();
+					process(ke);
 				}
 			}
 		}

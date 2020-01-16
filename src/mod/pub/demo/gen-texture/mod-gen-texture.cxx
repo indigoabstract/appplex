@@ -79,8 +79,6 @@ namespace mod_gen_texture_rtt_screen
 	class page_rtt_screen : public mws_page
 	{
 	public:
-		page_rtt_screen(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -130,8 +128,6 @@ namespace mod_gen_texture_rtt_fbo
 	class page_rtt_fbo : public mws_page
 	{
 	public:
-		page_rtt_fbo(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -182,8 +178,6 @@ namespace mod_gen_texture_mainpage
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();

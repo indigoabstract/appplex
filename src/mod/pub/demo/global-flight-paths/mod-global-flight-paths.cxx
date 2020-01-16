@@ -993,6 +993,7 @@ namespace global_flight_paths_ns
          {
             if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
             {
+               auto mod = get_mod();
                mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
                if (ke->is_pressed())
@@ -1021,7 +1022,7 @@ namespace global_flight_paths_ns
 
                   if (do_action)
                   {
-                     ke->process();
+                     mod->process(ke);
                   }
                }
             }

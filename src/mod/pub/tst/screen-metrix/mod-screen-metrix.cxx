@@ -76,8 +76,8 @@ namespace mod_screen_metrix_ns
          std::string screen_res_height = mws_to_str_fmt("screen res height [ %d ] px", pfm_main::gi()->get_screen_res_px().second);
          std::string screen_avg_dpi = mws_to_str_fmt("screen average dpi [ %f ] px", pfm_main::gi()->get_avg_screen_dpi());
          std::string screen_avg_dpcm = mws_to_str_fmt("screen average dpcm [ %f ] px", pfm_main::gi()->get_avg_screen_dpcm());
-         std::string screen_h_dpcm = mws_to_str_fmt("screen horizontal dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().first);
-         std::string screen_v_dpcm = mws_to_str_fmt("screen vertical dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().second);
+         std::string screen_h_dpcm = mws_to_str_fmt("screen e_horizontal dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().first);
+         std::string screen_v_dpcm = mws_to_str_fmt("screen e_vertical dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().second);
          float row_height = font_height;
          float y_off = vert_off;// - row_height;
 
@@ -98,8 +98,8 @@ namespace mod_screen_metrix_ns
 
       virtual void on_resize() override
       {
-         glm::vec2 size(width.to_px(mws_dim::horizontal).val(), height.to_px(mws_dim::vertical).val());
-         glm::vec2 tl_margin(tl_margin_x.to_px(mws_dim::horizontal).val(), tl_margin_y.to_px(mws_dim::vertical).val());
+         glm::vec2 size(width.to_px(mws_dim::e_horizontal).val(), height.to_px(mws_dim::e_vertical).val());
+         glm::vec2 tl_margin(tl_margin_x.to_px(mws_dim::e_horizontal).val(), tl_margin_y.to_px(mws_dim::e_vertical).val());
 
          test_obj->set_scale(glm::vec2(size));
          test_obj->set_translation(tl_margin.x, tl_margin.y);

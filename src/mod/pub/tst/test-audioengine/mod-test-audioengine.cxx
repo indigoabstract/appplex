@@ -25,8 +25,6 @@ namespace mod_test_audioengine_ns
 	class main_page : public mws_page
 	{
 	public:
-		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -56,7 +54,7 @@ namespace mod_test_audioengine_ns
 
 void mod_test_audioengine::init_mws()
 {
-   mws_root->new_page<mod_test_audioengine_ns::mainpage>();
+   mws_root->new_page<mod_test_audioengine_ns::main_page>();
 	mws_cam->clear_color = true;
 }
 

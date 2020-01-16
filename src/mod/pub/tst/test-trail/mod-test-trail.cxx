@@ -844,7 +844,7 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
 
             if (do_action)
             {
-               ke->process();
+               process(ke);
             }
          }
       }

@@ -30,8 +30,6 @@ namespace mod_abstract_racing_main_page
 	class mainpage : public mws_page
 	{
 	public:
-		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -52,11 +50,12 @@ namespace mod_abstract_racing_main_page
 
 		virtual void receive(mws_sp<mws_dp> idp)
 		{
-			if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+			if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 			{
-				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+				auto mod = get_mod();
+				mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-				if(ke->get_type() != key_evt::KE_RELEASED)
+				if(ke->get_type() != mws_key_evt::KE_RELEASED)
 				{
 					bool do_action = true;
 
@@ -68,7 +67,7 @@ namespace mod_abstract_racing_main_page
 
 					if(do_action)
 					{
-						ke->process();
+						mod->process(ke);
 					}
 				}
 			}

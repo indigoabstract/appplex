@@ -4,7 +4,7 @@
 
 #ifdef MOD_TEST_VIDEO_RECORDING
 
-#include "tests/test-ffmpeg/ffmpeg/venc-ffmpeg.hxx"
+#include "tst/test-ffmpeg/ffmpeg/venc-ffmpeg.hxx"
 #include "input/input-ctrl.hxx"
 #include "gfx-inc.hxx"
 #include "gfx-vxo-ext.hxx"
@@ -30,6 +30,8 @@ namespace test_video_recording
    class im : public app_impl
    {
    public:
+      im(mws_sp<mws_mod> i_mod) : mod_ref(i_mod) {}
+
       void load()
       {
          video_scale = 1.f;
@@ -330,13 +332,14 @@ namespace test_video_recording
 
       void receive(mws_sp<mws_dp> idp)
       {
-         if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+         auto mod = mod_ref.lock();
+         if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
          {
-            mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+            mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
          }
-         else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+         else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
          {
-            mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+            mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
             if (ke->is_pressed())
             {
@@ -354,7 +357,7 @@ namespace test_video_recording
 
                if (do_action)
                {
-                  ke->process();
+                  mod->process(ke);
                }
             }
          }
@@ -370,7 +373,7 @@ namespace test_video_recording
          else
          {
             venc->set_video_path(video_path);
-            venc->start_encoding(gfx::i(), video_params, mws_vid_enc_method::e_enc_m0);
+            venc->start_encoding(video_params, mws_vid_enc_method::e_enc_m0);
             mws_print("start_encoding\n");
          }
       }
@@ -407,13 +410,14 @@ namespace test_video_recording
 
       int frame_idx = 0;
       float video_scale = 1.f;
+      mws_wp<mws_mod> mod_ref;
    };
 }
 using namespace test_video_recording;
 
 void mod_test_video_recording::load()
 {
-   p = std::make_unique<im>();
+   p = std::make_unique<im>(get_smtp_instance());
    im& i = i_m<im>();
    gfx_color cc;
 

@@ -4,7 +4,7 @@
 #ifdef MOD_TEST_SND_GENERATORS
 
 #include "mod-test-snd-generators.hxx"
-#include "snd.hxx"
+#include "snd/snd.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-font.hxx"
 #include "mws/mws-com.hxx"
@@ -224,18 +224,18 @@ namespace mod_test_snd_generators_ns
 	};
 	int generatorId = 0;
 
-	gfx_color red(0xff0000);
-	gfx_color orange(0xff8000);
-	gfx_color yellow(0xffff00);
-	gfx_color green(0x008000);
-	gfx_color blue(0x0000ff);
-	gfx_color indigo(0x4b0082);
-	gfx_color violet(0x9400d3);
-	gfx_color light_steel_blue(0xB0C4DE);
-	gfx_color salmon(0xfa8072);
-	gfx_color tan(0xd2b48c);
-	gfx_color brown(0xa0522d);
-	gfx_color light_green(0x7fff00);
+	gfx_color red(gfx_color::from_argb(0xffff0000));
+	gfx_color orange(gfx_color::from_argb(0xffff8000));
+	gfx_color yellow(gfx_color::from_argb(0xffffff00));
+	gfx_color green(gfx_color::from_argb(0xff008000));
+	gfx_color blue(gfx_color::from_argb(0xff0000ff));
+	gfx_color indigo(gfx_color::from_argb(0xff4b0082));
+	gfx_color violet(gfx_color::from_argb(0xff9400d3));
+	gfx_color light_steel_blue(gfx_color::from_argb(0xffB0C4DE));
+	gfx_color salmon(gfx_color::from_argb(0xfffa8072));
+	gfx_color tan(gfx_color::from_argb(0xffd2b48c));
+	gfx_color brown(gfx_color::from_argb(0xffa0522d));
+	gfx_color light_green(gfx_color::from_argb(0xff7fff00));
 
 	class colored_note
 	{
@@ -353,8 +353,6 @@ namespace mod_test_snd_generators_ns
 	public:
 		std::vector<std::vector<colored_note> > note_tab;
 
-		main_page(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			mws_page::init();
@@ -433,28 +431,14 @@ namespace mod_test_snd_generators_ns
 				return;
 			}
 
-			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 			{
-				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
-
-				int x = ts->points[0].x;
-				int y = ts->points[0].y;
-
-				switch (ts->get_type())
-				{
-				case touch_sym_evt::TS_PRESSED:
-					break;
-
-				case touch_sym_evt::TS_RELEASED:
-					break;
-
-				}
 			}
-			else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+			else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 			{
-				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-				if (ke->get_type() == key_evt::KE_PRESSED)
+				if (ke->get_type() == mws_key_evt::KE_PRESSED)
 				{
 					switch (ke->get_key())
 					{
@@ -463,7 +447,7 @@ namespace mod_test_snd_generators_ns
 						if (last_played_note)
 						{
 							show_note = trs("last played: {0} {1}", last_played_note->get_full_name(), last_played_note->get_pitch());
-							trx(show_note);
+							trx(show_note.c_str());
 						}
 						else
 						{
@@ -534,7 +518,7 @@ namespace mod_test_snd_generators_ns
 
 			g->drawText(notes, 10, 50);
 
-			g->setColor(0x808080);
+			g->set_color(gfx_color::from_argb(0x808080));
 			g->drawLine(60, 0, 60, get_mod()->get_height());
 			g->drawLine(780, 0, 780, get_mod()->get_height());
 
@@ -552,11 +536,11 @@ namespace mod_test_snd_generators_ns
 					if (last_played_note && last_played_note->equal_to(crt_note))
 					{
 						gfx_color c2(0xff, 0xff, 0xff);
-						g->setColor(c2.r, c2.g, c2.b);
+						g->set_color(c2);
 						g->fillRect(10 + j * 60 - 10, 200 + k * 60 - 10, 40 + 20, 20 + 20);
 					}
 
-					g->setColor(c.r, c.g, c.b);
+					g->set_color(c);
 					g->fillRect(10 + j * 60, 200 + k * 60, 40, 20);
 					std::string note_name = (j == 0) ? crt_note->get_full_name() : crt_note->get_name();
 					g->drawText(note_name, 10 + j * 60, 200 + k * 60, note_font);

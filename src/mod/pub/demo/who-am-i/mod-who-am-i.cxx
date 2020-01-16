@@ -44,15 +44,24 @@ namespace mod_who_am_i_ns
    public:
       virtual void init() override
       {
-         mws_sp<pfm_file> font_file = pfm_file::get_inst("00-consolas.ttf");
+         mws_sp<pfm_file> font_file = pfm_file::get_inst("consolas.ttf");
 
          if (font_file->exists())
          {
-            font_db::inst()->store_font_height(font_file->get_file_name(), mws_pt(12), mws_px(12), mws_pt(120), mws_px(121));
-            font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.2f));
-            //font_db::inst()->set_global_font(font);
-         }
+            std::pair<float, float> metrix[] =
+            {
+               {0.000000f, 2.f}, {0.002291f, 4.f}, {0.004582f, 6.f}, {0.005727f, 8.f}, {0.008018f, 10.f}, {0.011455f, 12.f}, {0.012600f, 14.f},
+            {0.016037f, 16.f}, {0.017182f, 18.f}, {0.020619f, 20.f}, {0.032073f, 30.f}, {0.043528f, 40.f}, {0.054983f, 50.f}, {0.066438f, 60.f},
+            {0.077892f, 70.f}, {0.089347f, 80.f}, {0.100802f, 90.f}, {0.112257f, 100.f}, {0.229095f, 200.f}, {0.343643f, 300.f}, {0.459336f, 400.f},
+            {0.573883f, 500.f}, {0.689576f, 600.f}, {0.802978f, 700.f}, {0.915235f, 800.f}, {0.957617f, 900.f}, {1.000000f, 1000.f}
+            };
+            uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
+            font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+            mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.2f));
+            font->set_color(gfx_color::colors::white);
+            font_db::inst()->set_global_font(font);
+         }
          {
             letter_font = mws_font::nwi(font, mws_px(590));
             letter_font->set_color(gfx_color::colors::white);

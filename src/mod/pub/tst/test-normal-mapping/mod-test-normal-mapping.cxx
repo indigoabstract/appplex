@@ -18,7 +18,7 @@
 #include "gfx-vxo-ext.hxx"
 #include "res-ld/res-ld.hxx"
 #include "rng/rng.hxx"
-#include "utils/free-camera.hxx"
+#include "util/free-camera.hxx"
 #include <glm/inc.hpp>
 #include <map>
 
@@ -923,7 +923,7 @@ namespace ns_mod_test_normal_mapping
 			}
 		}
 
-		bool process_input(pointer_evt::touch_point& ipoint)
+		bool process_input(mws_ptr_evt::touch_point& ipoint)
 		{
 			int width = get_mod()->get_width();
 			int height = get_mod()->get_height();
@@ -1237,7 +1237,7 @@ void mod_test_normal_mapping::load()
 			std::string fname = *its;
 			auto it2 = file_list->begin();
 			std::string root = fname.substr(0, fname.length() - 5);
-			trx(fname);
+			trx(fname.c_str());
 
 			for (; it2 != file_list->end(); it2++)
 			{
@@ -1251,7 +1251,7 @@ void mod_test_normal_mapping::load()
 					//std::string diff_fname_last = diff_fname.substr(idx, diff_fname.length() - idx);
 					diff_file_list.push_back(diff_fname);
 					//merge_diffuse_specular(diff_file, specular_file);
-					trx("\t" + diff_fname);
+					trx(("\t" + diff_fname).c_str());
 				}
 			}
 		}
@@ -1351,26 +1351,26 @@ bool mod_test_normal_mapping::update()
 
 void mod_test_normal_mapping::receive(mws_sp<mws_dp> idp)
 {
-	if(idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+	if(idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 	{
-		mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
+		mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
-		switch(ts->get_type())
+		switch(ts->type)
 		{
-		case touch_sym_evt::TS_RELEASED:
+		case mws_ptr_evt::touch_ended:
 			{
 				p->process_input(ts->points[0]);
-				ts->process();
+				process(ts);
 
 				break;
 			}
 		}
 	}
-	else if(idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+	else if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 	{
-		mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+		mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-		if(ke->get_type() != key_evt::KE_RELEASED)
+		if(ke->get_type() != mws_key_evt::KE_RELEASED)
 		{
 			bool do_action = true;
 
@@ -1452,7 +1452,7 @@ void mod_test_normal_mapping::receive(mws_sp<mws_dp> idp)
 
 			if(do_action)
 			{
-				ke->process();
+				process(ke);
 			}
 		}
 	}

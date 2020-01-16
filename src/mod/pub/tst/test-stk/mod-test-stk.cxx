@@ -6,7 +6,7 @@
 
 #include "mws/mws-camera.hxx"
 #include "mws/mws.hxx"
-#include "snd.hxx"
+#include "snd/snd.hxx"
 #include "rng/rng.hxx"
 #include <glm/inc.hpp>
 #include <stk/Guitar.h>
@@ -239,11 +239,9 @@ void mod_test_stk::init()
 
 void mod_test_stk::init_mws()
 {
-	class mainpage : public mws_page
+	class main_page : public mws_page
 	{
 	public:
-		mainpage(mws_sp<mws_page_tab> iparent) : mws_page(iparent){}
-
 		virtual void init()
 		{
 			FMOD_RESULT result;
@@ -296,28 +294,14 @@ void mod_test_stk::init_mws()
 				return;
 			}
 
-			if (idp->is_type(pointer_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 			{
-				mws_sp<pointer_evt> ts = pointer_evt::as_pointer_evt(idp);
-
-				int x = ts->points[0].x;
-				int y = ts->points[0].y;
-
-				switch (ts->get_type())
-				{
-				case touch_sym_evt::TS_PRESSED:
-					break;
-
-				case touch_sym_evt::TS_RELEASED:
-					break;
-
-				}
 			}
-			else if (idp->is_type(key_evt::KEYEVT_EVT_TYPE))
+			else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
 			{
-				mws_sp<key_evt> ke = key_evt::as_key_evt(idp);
+				mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-				if (ke->get_type() == key_evt::KE_PRESSED)
+				if (ke->get_type() == mws_key_evt::KE_PRESSED)
 				{
 					switch (ke->get_key())
 					{
@@ -326,7 +310,7 @@ void mod_test_stk::init_mws()
 						if (last_played_note)
 						{
 							show_note = trs("last played: {0} {1}", last_played_note->get_full_name(), last_played_note->get_pitch());
-							trx(show_note);
+							trx(show_note.c_str());
 						}
 						else
 						{
