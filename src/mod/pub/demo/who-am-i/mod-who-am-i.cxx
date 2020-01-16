@@ -58,7 +58,7 @@ namespace mod_who_am_i_ns
             uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
             font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
-            mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.2f));
+            font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.35f));
             font->set_color(gfx_color::colors::white);
             font_db::inst()->set_global_font(font);
          }

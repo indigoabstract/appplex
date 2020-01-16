@@ -191,7 +191,7 @@ mws_sp<mws> mws::contains_id(const std::string& i_id)
          {
             auto w = mws_dynamic_pointer_cast<mws>(c);
 
-            if (w->id == id)
+            if (w->id == i_id)
             {
                return w;
             }

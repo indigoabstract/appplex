@@ -26,8 +26,8 @@ mod
 	reliquus[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, noise, png, res-ld, util, vector-fonts ] ],
 	orbital-deathmatch[ enabled[ false ], ],
 	shipwrecked[ enabled[ false ], ],
-	vorfract[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
-	musix[ uses[ boost, gfx, fmod, stk ], platf[ windows, ios, android, emscripten ], ],
+	vorfract[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
+	musix[ uses[ gfx, fonts, fmod, fmt, freetype, freetype-gl, input, mws, res-ld, snd, vector-fonts, stk ], platf[ windows, ios, android, emscripten ], ],
 	omnirecall
 	[
 		uses
