@@ -13,6 +13,7 @@ class voronoi_2d_diag_impl : public mws_vrn_diag
 public:
    virtual void init_data(mws_sp<mws_vrn_data> i_vdata, std::vector<float>& vx, std::vector<float>& vy) override
    {
+      jcv_clipper* clipper = nullptr;
       vrn_data = i_vdata;
       clip_dim = { jcv_point {0.f, 0.f}, jcv_point{ (float)i_vdata->info.diag_width, (float)i_vdata->info.diag_height } };
       full_clear();
@@ -24,7 +25,7 @@ public:
       }
 
       memset(&diagram, 0, sizeof(jcv_diagram));
-      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, &diagram);
+      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, clipper, &diagram);
    }
 
    virtual const mws_sp<mws_vrn_data> get_data() const override
@@ -105,33 +106,37 @@ public:
 
    virtual void move_kernel_to(uint32 i_idx, float i_x, float i_y) override
    {
+      jcv_clipper* clipper = nullptr;
       auto& kp = kernels_list[i_idx];
 
       partial_clear();
       kp.x = i_x;
       kp.y = i_y;
       memset(&diagram, 0, sizeof(jcv_diagram));
-      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, &diagram);
+      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, clipper, &diagram);
       update_data();
    }
 
    virtual void insert_kernel_at(float i_x, float i_y) override
    {
-      partial_clear();
-
+      jcv_clipper* clipper = nullptr;
       jcv_point np{ i_x, i_y };
+
+      partial_clear();
       kernels_list.push_back(np);
       memset(&diagram, 0, sizeof(jcv_diagram));
-      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, &diagram);
+      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, clipper, &diagram);
       update_data();
    }
 
    virtual void remove_kernel(uint32 i_idx) override
    {
+      jcv_clipper* clipper = nullptr;
+
       partial_clear();
       kernels_list.erase(kernels_list.begin() + i_idx);
       memset(&diagram, 0, sizeof(jcv_diagram));
-      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, &diagram);
+      jcv_diagram_generate(kernels_list.size(), kernels_list.data(), &clip_dim, clipper, &diagram);
       update_data();
    }
 
