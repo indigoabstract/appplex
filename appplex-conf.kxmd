@@ -2,7 +2,7 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows, android ], build-type[ debug ],
 	@@example-start
 	[
 		mod[ reliquus ], exclusive [ false ], launch-mod [ true ],
@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ voronoi-keyboard ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -47,7 +47,10 @@ mod
 		]
 	],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
-	mws-lisp[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ] ],
+	mws-lisp
+	[
+		uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
+	],
 	demo-fx[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ] ],
 	robobo1221-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 

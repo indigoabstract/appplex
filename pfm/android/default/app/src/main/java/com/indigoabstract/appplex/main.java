@@ -17,6 +17,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -286,12 +287,35 @@ public class main extends Activity
         }
 	}
 
+    private void hide_system_ui()
+    {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decor_view = getWindow().getDecorView();
+        int flags = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                // Set the content to appear under the system bars so that the
+                // content doesn't resize when the system bars hide and show.
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                // Hide the nav bar and status bar
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decor_view.setSystemUiVisibility(flags);
+    }
+
 	@Override
-	public void onWindowFocusChanged(boolean hasFocus)
+	public void onWindowFocusChanged(boolean i_has_focus)
 	{
-		Log.i("activity_life_cycle", "main.onWindowFocusChanged. hasFocus: " + hasFocus);
-		super.onWindowFocusChanged(hasFocus);
-	}
+		Log.i("activity_life_cycle", "main.onWindowFocusChanged. hasFocus: " + i_has_focus);
+		super.onWindowFocusChanged(i_has_focus);
+
+        if (i_has_focus)
+        {
+            hide_system_ui();
+        }
+    }
 
 	@Override
 	public void onBackPressed()

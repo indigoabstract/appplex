@@ -118,8 +118,13 @@ mws_sp<mws_vkb_file_store> mws_vkb::get_file_store() const { return nullptr; }
 void mws_vkb::set_file_store(mws_sp<mws_vkb_file_store>) {}
 std::vector<mws_sp<gfx_tex>> mws_vkb::get_tex_list() { return std::vector<mws_sp<gfx_tex>>(); }
 void mws_vkb::done() {}
+void mws_vkb::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx) {}
+void mws_vkb::load(bool i_blocking_load) {}
+bool mws_vkb::upcoming_loading_wait() { return false; }
+std::function<void()> mws_vkb::get_waiting_msg_op() { return nullptr; }
 mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb() { return nullptr; }
 mws_sp<mws_vkb_impl> mws_vkb::nwi_vkb() { return nullptr; }
+void mws_vkb::nwi_inex() {}
 #endif
 
 #if !MOD_OMNIRECALL
