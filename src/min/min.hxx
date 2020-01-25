@@ -72,6 +72,8 @@ struct mws_str
    static std::string rtrim(const std::string& is);
    // trim from both ends
    static std::string trim(const std::string& is);
+   // strips enclosing (front and back) quotes and double quotes
+   static std::string strip_enclosing_quotes(const std::string& i_text);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
    template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function)
    {

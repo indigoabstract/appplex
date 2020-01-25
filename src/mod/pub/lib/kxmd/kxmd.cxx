@@ -32,25 +32,6 @@ namespace ns_kxmd
    }
 
 
-   std::string strip_quotes(const std::string& i_text)
-   {
-      const char single_quote = '\'';
-      const char double_quote = '"';
-
-      if (i_text.length() >= 2)
-      {
-         if ((i_text.front() == single_quote && i_text.back() == single_quote) || (i_text.front() == double_quote && i_text.back() == double_quote))
-         {
-            std::string result = i_text.substr(1, i_text.length() - 2);
-
-            return result;
-         }
-      }
-
-      return i_text;
-   }
-
-
    class kxmd_impl
    {
    public:
@@ -180,7 +161,7 @@ namespace ns_kxmd
          }
       }
 
-      static kv_ref elem_at_idx(const kv_ref * i_ref, uint32 i_idx)
+      static kv_ref elem_at_idx(const kv_ref* i_ref, uint32 i_idx)
       {
          mws_sp<kxmd> db;
          mws_sp<kxmd_kv> kv;
@@ -194,7 +175,7 @@ namespace ns_kxmd
          return kv_ref();
       }
 
-      static kv_ref elem_at_path(const kv_ref * i_ref, const std::string & i_path)
+      static kv_ref elem_at_path(const kv_ref* i_ref, const std::string& i_path)
       {
          mws_sp<kxmd> db;
          mws_sp<kxmd_kv> kv;
@@ -212,7 +193,7 @@ namespace ns_kxmd
          return kv_ref();
       }
 
-      static std::string val_at(const kv_ref * i_ref, const std::string & i_path, const std::string & i_default_val)
+      static std::string val_at(const kv_ref* i_ref, const std::string& i_path, const std::string& i_default_val)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -232,7 +213,7 @@ namespace ns_kxmd
 
             if (!kv->val.empty())
             {
-               return strip_quotes(kv->val[0]->key);
+               return mws_str::strip_enclosing_quotes(kv->val[0]->key);
             }
 
             return i_default_val;
@@ -241,7 +222,7 @@ namespace ns_kxmd
          return "";
       }
 
-      static std::vector<std::string> val_seq_at(const kv_ref * i_ref, const std::string & i_path, const std::vector<std::string> & i_default_val)
+      static std::vector<std::string> val_seq_at(const kv_ref* i_ref, const std::string& i_path, const std::vector<std::string>& i_default_val)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -264,7 +245,7 @@ namespace ns_kxmd
             {
                for (auto& kv2 : kv->val)
                {
-                  val_vect.push_back(strip_quotes(kv2->key));
+                  val_vect.push_back(mws_str::strip_enclosing_quotes(kv2->key));
                }
 
                return val_vect;
@@ -276,7 +257,7 @@ namespace ns_kxmd
          return std::vector<std::string>();
       }
 
-      static bool path_exists(const kv_ref * i_ref, const std::string & i_path)
+      static bool path_exists(const kv_ref* i_ref, const std::string& i_path)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -300,7 +281,7 @@ namespace ns_kxmd
          return false;
       }
 
-      static void set_key(const kv_ref * i_ref, const std::string & i_key)
+      static void set_key(const kv_ref* i_ref, const std::string& i_key)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -310,7 +291,7 @@ namespace ns_kxmd
          }
       }
 
-      static kv_ref push_back(const kv_ref * i_ref, const std::string & i_key)
+      static kv_ref push_back(const kv_ref* i_ref, const std::string& i_key)
       {
          mws_sp<kxmd> db;
          mws_sp<kxmd_kv> kv;
@@ -328,7 +309,7 @@ namespace ns_kxmd
          return kv_ref();
       }
 
-      static void push_back(const kv_ref * i_ref, const std::vector<std::string> & i_list)
+      static void push_back(const kv_ref* i_ref, const std::vector<std::string>& i_list)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -344,7 +325,7 @@ namespace ns_kxmd
          }
       }
 
-      static kv_ref find_by_key(const kv_ref * i_ref, const std::string & i_name, bool i_recursive)
+      static kv_ref find_by_key(const kv_ref* i_ref, const std::string& i_name, bool i_recursive)
       {
          mws_sp<kxmd> db;
          mws_sp<kxmd_kv> kv;
@@ -362,7 +343,7 @@ namespace ns_kxmd
          return kv_ref();
       }
 
-      static std::string to_str_inc_self(const kv_ref * i_ref)
+      static std::string to_str_inc_self(const kv_ref* i_ref)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -374,7 +355,7 @@ namespace ns_kxmd
          return "";
       }
 
-      static std::string to_str(const kv_ref * i_ref)
+      static std::string to_str(const kv_ref* i_ref)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -406,11 +387,11 @@ namespace ns_kxmd
 
       // implementation
 
-      static bool is_leaf_impl(const mws_sp<kxmd_kv> & i_kv) { return i_kv->val.empty() && !i_kv->key.empty(); }
+      static bool is_leaf_impl(const mws_sp<kxmd_kv>& i_kv) { return i_kv->val.empty() && !i_kv->key.empty(); }
 
-      static bool is_node_impl(const mws_sp<kxmd_kv> & i_kv) { return !i_kv->val.empty(); }
+      static bool is_node_impl(const mws_sp<kxmd_kv>& i_kv) { return !i_kv->val.empty(); }
 
-      static mws_sp<kxmd_kv> elem_at_path_impl(mws_sp<kxmd_kv> i_kv, const std::string & i_path)
+      static mws_sp<kxmd_kv> elem_at_path_impl(mws_sp<kxmd_kv> i_kv, const std::string& i_path)
       {
          std::vector<std::string> tokens = mws_str::str_split(i_path, ".");
 
@@ -427,7 +408,7 @@ namespace ns_kxmd
          return i_kv;
       }
 
-      static mws_sp<kxmd_kv> find_by_key_impl(const mws_sp<kxmd_kv> i_kv, const std::string & i_name, bool i_recursive)
+      static mws_sp<kxmd_kv> find_by_key_impl(const mws_sp<kxmd_kv> i_kv, const std::string& i_name, bool i_recursive)
       {
          for (auto& kv : i_kv->val)
          {
@@ -558,7 +539,7 @@ namespace ns_kxmd
       kxmd_impl::erase(this, i_idx);
    }
 
-   bool kv_ref::operator==(const kv_ref & i_ref) const
+   bool kv_ref::operator==(const kv_ref& i_ref) const
    {
       return i_ref.db.lock() == db.lock() && i_ref.kv.lock() == kv.lock();
    }
@@ -568,42 +549,42 @@ namespace ns_kxmd
       return kxmd_impl::elem_at_idx(this, i_idx);
    }
 
-   kv_ref kv_ref::operator[](const std::string & i_path) const
+   kv_ref kv_ref::operator[](const std::string& i_path) const
    {
       return kxmd_impl::elem_at_path(this, i_path);;
    }
 
-   std::string kv_ref::val_at(const std::string & i_path, const std::string & i_default_val) const
+   std::string kv_ref::val_at(const std::string& i_path, const std::string& i_default_val) const
    {
       return kxmd_impl::val_at(this, i_path, i_default_val);
    }
 
-   std::vector<std::string> kv_ref::val_seq_at(const std::string & i_path, const std::vector<std::string> & i_default_val) const
+   std::vector<std::string> kv_ref::val_seq_at(const std::string& i_path, const std::vector<std::string>& i_default_val) const
    {
       return kxmd_impl::val_seq_at(this, i_path, i_default_val);
    }
 
-   bool kv_ref::path_exists(const std::string & i_path) const
+   bool kv_ref::path_exists(const std::string& i_path) const
    {
       return kxmd_impl::path_exists(this, i_path);
    }
 
-   void kv_ref::set_key(const std::string & i_key) const
+   void kv_ref::set_key(const std::string& i_key) const
    {
       kxmd_impl::set_key(this, i_key);
    }
 
-   kv_ref kv_ref::push_back(const std::string & i_key) const
+   kv_ref kv_ref::push_back(const std::string& i_key) const
    {
       return kxmd_impl::push_back(this, i_key);
    }
 
-   void kv_ref::push_back(const std::vector<std::string> & i_list) const
+   void kv_ref::push_back(const std::vector<std::string>& i_list) const
    {
       return kxmd_impl::push_back(this, i_list);
    }
 
-   kv_ref kv_ref::find_by_key(const std::string & i_key, bool i_recursive) const
+   kv_ref kv_ref::find_by_key(const std::string& i_key, bool i_recursive) const
    {
       return kxmd_impl::find_by_key(this, i_key, i_recursive);
    }
@@ -627,7 +608,7 @@ namespace ns_kxmd
       return nwi(*str);
    }
 
-   mws_sp<kxmd> kxmd::nwi(const std::string & i_kxmd_data)
+   mws_sp<kxmd> kxmd::nwi(const std::string& i_kxmd_data)
    {
       mws_sp<kxmd> db(new kxmd());
       mws_sp<kxmd_kv> main;;
@@ -647,9 +628,15 @@ namespace ns_kxmd
       return db;
    }
 
-   mws_sp<kxmd> kxmd::nwi_from_file(const std::string & i_filename)
+   mws_sp<kxmd> kxmd::nwi_from_file(const std::string& i_filename)
    {
-      auto str = pfm::filesystem::load_res_as_string(i_filename);
+      mws_sp<pfm_file> file = pfm_file::get_inst(i_filename);
+      return kxmd::nwi_from_file(file);
+   }
+
+   mws_sp<kxmd> kxmd::nwi_from_file(mws_sp<pfm_file> i_file)
+   {
+      auto str = pfm::filesystem::load_res_as_string(i_file);
       mws_sp<kxmd> db;
 
       if (str)
@@ -1174,7 +1161,8 @@ namespace ns_kxmd
 
          if (!token_found)
          {
-            mws_throw mws_exception("unterminated text quote");
+            std::string str(ss->src->c_str() + start_idx - 10, 20);
+            mws_throw mws_exception(mws_to_str_fmt("unterminated text quote at [ %s ]", str.c_str()));
          }
 
          return nullptr;
@@ -1678,6 +1666,8 @@ namespace ns_kxmd
          };
 
          mws_sp<kxmd_block> ke = kxmd_block::nwi();
+         // temporary buffer for parsing elements
+         std::vector<mws_sp<kxs_elem>> ke_val;
 
          while (!ss->is_end_of_line())
          {
@@ -1688,10 +1678,13 @@ namespace ns_kxmd
                mws_sp<kxmd_scn> scn = kxmd_scn_factory::nwi(et, ss);
                mws_sp<kxs_elem> kxt = scn->scan();
 
-               if (kxt && kxt->key == "vorbis")
-               {
-                  int x = 3;
-               }
+               //if (kxt)
+               //{
+               //   if (kxt->key == "endl")
+               //   {
+               //      int x = 3;
+               //   }
+               //}
 
                if (scn->token_found)
                {
@@ -1700,22 +1693,32 @@ namespace ns_kxmd
                   // discard comments
                   if (kxt->get_type() != kxmd_elem_type::kxe_ignore_block)
                   {
-                     // find out if this block has a name
-                     if (kxt->is_node() && ke->val.size() >= 1)
+                     // store commas in a temporary buffer
+                     if (kxt->get_type() == kxmd_elem_type::kxe_comma)
                      {
-                        mws_sp<kxmd_block> kb = static_pointer_cast<kxmd_block>(kxt);
-
-                        if (kxmd_impl::is_leaf_impl(ke->val.back()))
-                        {
-                           kb->key = ke->val.back()->key;
-                           ke->val.pop_back();
-                        }
+                        ke_val.push_back(kxt);
                      }
-
-                     // discard everything except nodes and leaves
-                     if (kxt->is_leaf() || kxt->is_node())
+                     else
                      {
-                        ke->val.push_back(kxt);
+                        // find out if this block has a name
+                        if (kxt->is_node() && ke->val.size() >= 1)
+                        {
+                           mws_sp<kxmd_block> kb = static_pointer_cast<kxmd_block>(kxt);
+
+                           // check for last elem being a comma. move on if it is
+                           if (kxmd_impl::is_leaf_impl(ke->val.back()) && (ke_val.back()->get_type() != kxmd_elem_type::kxe_comma))
+                           {
+                              kb->key = ke->val.back()->key;
+                              ke->val.pop_back();
+                           }
+                        }
+
+                        // discard everything except nodes and leaves
+                        if (kxt->is_leaf() || kxt->is_node())
+                        {
+                           ke->val.push_back(kxt);
+                           ke_val.push_back(kxt);
+                        }
                      }
                   }
                }

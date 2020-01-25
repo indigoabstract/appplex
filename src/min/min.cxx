@@ -56,7 +56,7 @@ std::string mws_util::path::get_directory_from_path(const std::string& file_path
    return std::string(file_path.begin(), file_path.begin() + (size_t)pos);
 }
 
-std::string mws_util::path::get_filename_from_path(const std::string & file_path)
+std::string mws_util::path::get_filename_from_path(const std::string& file_path)
 {
    auto pos_0 = file_path.find_last_of('\\');
    auto pos_1 = file_path.find_last_of('/');
@@ -84,7 +84,7 @@ std::string mws_util::path::get_filename_from_path(const std::string & file_path
    return std::string(file_path.begin() + idx, file_path.end());
 }
 
-std::string mws_util::path::get_filename_without_extension(const std::string & file_path)
+std::string mws_util::path::get_filename_without_extension(const std::string& file_path)
 {
    auto filename = get_filename_from_path(file_path);
    auto last_index = filename.find_last_of('.');
@@ -150,8 +150,8 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
 
    do
    {
-      c1 = (char)* s1++;
-      c2 = (char)* s2++;
+      c1 = (char)*s1++;
+      c2 = (char)*s2++;
       cmp_res = comp_ch(c1, c2);
 
       if (c1 == '\0')
@@ -159,13 +159,12 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
          return cmp_res;
       }
 
-   }
-   while (cmp_res == 0);
+   } while (cmp_res == 0);
 
    return cmp_res;
 }
 
-bool mws_str::starts_with(const std::string & istr, const std::string & ifind)
+bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -186,7 +185,7 @@ bool mws_str::starts_with(const std::string & istr, const std::string & ifind)
    return true;
 }
 
-bool mws_str::ends_with(const std::string & istr, const std::string & ifind)
+bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -207,26 +206,44 @@ bool mws_str::ends_with(const std::string & istr, const std::string & ifind)
    return true;
 }
 
-std::string mws_str::ltrim(const std::string & is)
+std::string mws_str::ltrim(const std::string& is)
 {
    std::string s(is);
    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
    return s;
 }
 
-std::string mws_str::rtrim(const std::string & is)
+std::string mws_str::rtrim(const std::string& is)
 {
    std::string s(is);
    s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
    return s;
 }
 
-std::string mws_str::trim(const std::string & is)
+std::string mws_str::trim(const std::string& is)
 {
    return ltrim(rtrim(is));
 }
 
-std::string mws_str::replace_string(std::string subject, const std::string & search, const std::string & replace)
+std::string mws_str::strip_enclosing_quotes(const std::string& i_text)
+{
+   const char single_quote = '\'';
+   const char double_quote = '"';
+
+   if (i_text.length() >= 2)
+   {
+      if ((i_text.front() == single_quote && i_text.back() == single_quote) || (i_text.front() == double_quote && i_text.back() == double_quote))
+      {
+         std::string result = i_text.substr(1, i_text.length() - 2);
+
+         return result;
+      }
+   }
+
+   return i_text;
+}
+
+std::string mws_str::replace_string(std::string subject, const std::string& search, const std::string& replace)
 {
    size_t pos = 0;
 
@@ -259,7 +276,7 @@ std::string mws_str::escape_char(char character)
    return it->second;
 }
 
-std::string mws_str::escape_string(const std::string & str)
+std::string mws_str::escape_string(const std::string& str)
 {
    std::stringstream stream;
 
@@ -268,22 +285,22 @@ std::string mws_str::escape_string(const std::string & str)
    return stream.str();
 }
 
-std::vector<std::string> mws_str::escape_strings(const std::vector<std::string> & delimiters)
+std::vector<std::string> mws_str::escape_strings(const std::vector<std::string>& delimiters)
 {
    return map<std::string>(delimiters, escape_string);
 }
 
-std::string mws_str::str_join(const std::vector<std::string> & tokens, const std::string & delimiter)
+std::string mws_str::str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
 {
    std::stringstream stream;
 
    stream << tokens.front();
-   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string & elem) { stream << delimiter << elem; });
+   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string& elem) { stream << delimiter << elem; });
 
    return stream.str();
 }
 
-std::vector<std::string> mws_str::str_split(const std::string & str, const std::vector<std::string> & delimiters)
+std::vector<std::string> mws_str::str_split(const std::string& str, const std::vector<std::string>& delimiters)
 {
    std::regex rgx(str_join(escape_strings(delimiters), "|"));
 
@@ -292,7 +309,7 @@ std::vector<std::string> mws_str::str_split(const std::string & str, const std::
    return{ first, last };
 }
 
-std::vector<std::string> mws_str::str_split(const std::string & str, const std::string & delimiter)
+std::vector<std::string> mws_str::str_split(const std::string& str, const std::string& delimiter)
 {
    std::vector<std::string> delimiters = { delimiter };
 
@@ -300,7 +317,7 @@ std::vector<std::string> mws_str::str_split(const std::string & str, const std::
 }
 
 
-mws_dp::mws_dp(const std::string & i_name)
+mws_dp::mws_dp(const std::string& i_name)
 {
    set_name(i_name);
 }
@@ -315,7 +332,7 @@ const std::string& mws_dp::get_name()
    return name;
 }
 
-bool mws_dp::is_type(const std::string & i_type)
+bool mws_dp::is_type(const std::string& i_type)
 {
    return mws_str::starts_with(get_name(), i_type);
 }
@@ -348,7 +365,7 @@ mws_sp<mws_receiver> mws_dp::destination()
    return dst.lock();
 }
 
-void mws_dp::set_name(const std::string & i_name)
+void mws_dp::set_name(const std::string& i_name)
 {
    name = i_name;
 }
@@ -422,7 +439,7 @@ void mws_broadcaster::broadcast(mws_sp<mws_sender> i_src, mws_sp<mws_dp> i_dp)
 }
 
 
-bool ends_with(const std::string & istr, const std::string & ifind)
+bool ends_with(const std::string& istr, const std::string& ifind)
 {
    int size = istr.length();
    int size_find = ifind.length();
@@ -444,7 +461,7 @@ bool ends_with(const std::string & istr, const std::string & ifind)
 }
 
 
-std::string replace_string(std::string subject, const std::string & search, const std::string & replace)
+std::string replace_string(std::string subject, const std::string& search, const std::string& replace)
 {
    size_t pos = 0;
 
@@ -457,7 +474,7 @@ std::string replace_string(std::string subject, const std::string & search, cons
    return subject;
 }
 
-template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1> & original, unary_operation mapping_function)
+template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1>& original, unary_operation mapping_function)
 {
    std::vector<T2> mapped;
 
@@ -486,7 +503,7 @@ std::string escape_char(char character)
    return it->second;
 }
 
-std::string escape_string(const std::string & str)
+std::string escape_string(const std::string& str)
 {
    std::stringstream stream;
 
@@ -495,22 +512,22 @@ std::string escape_string(const std::string & str)
    return stream.str();
 }
 
-std::vector<std::string> escape_strings(const std::vector<std::string> & delimiters)
+std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters)
 {
    return map<std::string>(delimiters, escape_string);
 }
 
-std::string str_join(const std::vector<std::string> & tokens, const std::string & delimiter)
+std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
 {
    std::stringstream stream;
 
    stream << tokens.front();
-   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string & elem) { stream << delimiter << elem; });
+   std::for_each(begin(tokens) + 1, end(tokens), [&](const std::string& elem) { stream << delimiter << elem; });
 
    return stream.str();
 }
 
-std::vector<std::string> str_split(const std::string & str, const std::vector<std::string> & delimiters)
+std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters)
 {
    std::regex rgx(str_join(escape_strings(delimiters), "|"));
 
@@ -519,7 +536,7 @@ std::vector<std::string> str_split(const std::string & str, const std::vector<st
    return{ first, last };
 }
 
-std::vector<std::string> str_split(const std::string & str, const std::string & delimiter)
+std::vector<std::string> str_split(const std::string& str, const std::string& delimiter)
 {
    std::vector<std::string> delimiters = { delimiter };
 

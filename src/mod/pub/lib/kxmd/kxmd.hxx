@@ -6,6 +6,9 @@
 #include <vector>
 
 
+class pfm_file;
+
+
 namespace ns_kxmd
 {
    class kxmd;
@@ -74,7 +77,8 @@ namespace ns_kxmd
    public:
       static mws_sp<kxmd> nwi(const char* i_kxmd_data, uint32 i_size);
       static mws_sp<kxmd> nwi(const std::string& i_kxmd_data = "");
-      static mws_sp<kxmd> nwi_from_file(const std::string& i_filename = "");
+      static mws_sp<kxmd> nwi_from_file(const std::string& i_filename);
+      static mws_sp<kxmd> nwi_from_file(mws_sp<pfm_file> i_file);
       ~kxmd();
       kv_ref main() const;
       uint32 get_version() const;
