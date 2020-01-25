@@ -33,10 +33,10 @@ struct vertex_t
 class text_vxo_impl
 {
 public:
-   text_vxo_impl(mws_sp<text_vxo> inst)
+   text_vxo_impl(mws_sp<text_vxo> i_inst)
    {
       mIs3D = false;
-      text_vxo& ti = *inst;
+      text_vxo& ti = *i_inst;
       ti[MP_SHADER_NAME] = "text-shader";
       ti[MP_BLENDING] = MV_ALPHA;
       ti[MP_CULL_BACK] = true;
@@ -61,24 +61,24 @@ public:
       vertex_buffer_clear(vbuffer);
    }
 
-   void add_text(const std::string& i_text, const glm::vec2& i_pos, const mws_sp<mws_font> i_font)
+   glm::vec4 add_text(const std::string& i_text, const glm::vec2& i_pos, const mws_sp<mws_font> i_font)
    {
       glm::vec2 pen(i_pos.x, i_pos.y + i_font->get_ascender());
       auto& glyphs = font_db::inst()->get_glyph_vect(i_font->get_inst(), i_text);
 
-      add_text_2d_impl(vbuffer, glyphs, i_text, pen, (float)gfx::i()->rt.get_render_target_height(), i_font);
+      return add_text_2d_impl(vbuffer, glyphs, i_text, pen, (float)gfx::i()->rt.get_render_target_height(), i_font);
       //std::string text = wstring2string(i_text);
       //add_text_2d(text, pen, i_font);
    }
 
-   void draw_in_sync(mws_sp<text_vxo> inst, mws_sp<gfx_camera> i_camera, const glm::vec3& i_pos)
+   void draw_in_sync(mws_sp<text_vxo> i_inst, mws_sp<gfx_camera> i_camera, const glm::vec3& i_pos)
    {
       if (vbuffer->vertices->size == 0)
       {
          return;
       }
 
-      gfx_material& mat = *inst->get_material();
+      gfx_material& mat = *i_inst->get_material();
       mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
 
       if (atlas && atlas->is_valid())
@@ -87,8 +87,8 @@ public:
          mws_sp<gfx_shader> shader = mat.get_shader();
 
          mat["texture"][MP_TEXTURE_INST] = atlas;
-         inst->push_material_params(inst->get_material());
-         i_camera->update_glp_params(inst, shader);
+         i_inst->push_material_params(i_inst->get_material());
+         i_camera->update_glp_params(i_inst, shader);
 
          //model[3][0] = i_pos.x;
          //model[3][1] = -i_pos.y;
@@ -105,7 +105,7 @@ public:
             model[3][1] = glm::round(-i_pos.y);// gi()->rt.get_render_target_height() - mPosition.y;// -mFontHeight;
          }
 
-         if (rt_width != inst->gi()->rt.get_render_target_width() || rt_height != inst->gi()->rt.get_render_target_height())
+         if (rt_width != i_inst->gi()->rt.get_render_target_width() || rt_height != i_inst->gi()->rt.get_render_target_height())
          {
             update_projection_mx();
          }
@@ -120,9 +120,9 @@ public:
       }
    }
 
-   void add_text_2d(const std::string& Text, const glm::vec2& Pos, const mws_sp<mws_font> Fnt)
+   void add_text_2d(const std::string& i_text, const glm::vec2& i_position, const mws_sp<mws_font> i_font)
    {
-      auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
+      auto& glyphs = font_db::inst()->get_glyph_vect(i_font->get_inst(), i_text);
 
       if (mIs3D)
       {
@@ -130,14 +130,14 @@ public:
          mIs3D = false;
       }
 
-      mPosition = glm::vec3(Pos, 0);
-      mFontHeight = Fnt->get_height();
-      AddTextImpl(vbuffer, glyphs, Text, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), Fnt, 1.f);
+      mPosition = glm::vec3(i_position, 0);
+      mFontHeight = i_font->get_height();
+      AddTextImpl(vbuffer, glyphs, i_text, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), i_font, 1.f);
    }
 
-   void add_text_3d(const std::string& Text, const glm::vec3& position, const glm::vec3& HDir, const glm::vec3& VDir, mws_sp<mws_font> Fnt)
+   void add_text_3d(const std::string& i_text, const glm::vec3& i_position, const glm::vec3& i_hdir, const glm::vec3& i_vdir, mws_sp<mws_font> i_font)
    {
-      auto& glyphs = font_db::inst()->get_glyph_vect(Fnt->get_inst(), Text);
+      auto& glyphs = font_db::inst()->get_glyph_vect(i_font->get_inst(), i_text);
       glm::vec2 pen(0.f);
 
       if (!mIs3D)
@@ -146,29 +146,29 @@ public:
          mIs3D = true;
       }
 
-      mPosition = position;
-      mFontHeight = Fnt->get_height();
-      AddTextImpl(vbuffer, glyphs, Text, HDir, VDir, Fnt, 0.05f);
+      mPosition = i_position;
+      mFontHeight = i_font->get_height();
+      AddTextImpl(vbuffer, glyphs, i_text, i_hdir, i_vdir, i_font, 0.05f);
    }
 
-   void AddTextImpl(vertex_buffer_t* Buffer, const std::vector<font_glyph>& Glyphs, const std::string& Text,
-      const glm::vec3& HDir, const glm::vec3& VDir, const mws_sp<mws_font> Fnt, float Scale)
+   void AddTextImpl(vertex_buffer_t* i_buffer, const std::vector<font_glyph>& i_glyphs, const std::string& i_text,
+      const glm::vec3& i_hdir, const glm::vec3& i_vdir, const mws_sp<mws_font> i_font, float i_scale)
    {
       //auto crt_ctx = GraphicsContext::GetCurrentGraphicsContext();
       //UpdateParams(crt_ctx->GetWidth(), crt_ctx->GetHeight());
 
-      int len = glm::min(Text.length(), Glyphs.size());
-      glm::vec4 c = Fnt->get_color().to_vec4();
+      int len = glm::min(i_text.length(), i_glyphs.size());
+      glm::vec4 c = i_font->get_color().to_vec4();
       float r = c.r, g = c.g, b = c.b, a = c.a;
       glm::vec2 pen(0.f);
 
       for (int i = 0; i < len; ++i)
       {
-         font_glyph glyph = Glyphs[i];
+         font_glyph glyph = i_glyphs[i];
 
          if (glyph.is_valid())
          {
-            char ch = Text[i];
+            char ch = i_text[i];
 
             // ignore carriage returns
             if (ch < ' ')
@@ -176,11 +176,11 @@ public:
                if (ch == '\n')
                {
                   pen.x = 0.f;
-                  pen.y -= Fnt->get_height();
+                  pen.y -= i_font->get_height();
                }
                else if (ch == '\t')
                {
-                  pen.x += 2 * Fnt->get_height();
+                  pen.x += 2 * i_font->get_height();
                }
             }
             // normal character
@@ -190,14 +190,14 @@ public:
 
                if (i > 0)
                {
-                  kerning = glyph.get_kerning(Text[i - 1]);
+                  kerning = glyph.get_kerning(i_text[i - 1]);
                }
 
                pen.x += kerning;
-               glm::vec3 x0 = HDir * float(pen.x + glyph.get_offset_x()) * Scale;
-               glm::vec3 y0 = VDir * float(pen.y + glyph.get_offset_y()) * Scale;
-               glm::vec3 x1 = HDir * float(pen.x + glyph.get_offset_x() + glyph.get_width()) * Scale;
-               glm::vec3 y1 = VDir * float(pen.y + glyph.get_offset_y() - glyph.get_height()) * Scale;
+               glm::vec3 x0 = i_hdir * float(pen.x + glyph.get_offset_x()) * i_scale;
+               glm::vec3 y0 = i_vdir * float(pen.y + glyph.get_offset_y()) * i_scale;
+               glm::vec3 x1 = i_hdir * float(pen.x + glyph.get_offset_x() + glyph.get_width()) * i_scale;
+               glm::vec3 y1 = i_vdir * float(pen.y + glyph.get_offset_y() - glyph.get_height()) * i_scale;
                float s0 = glyph.get_s0();
                float t0 = glyph.get_t0();
                float s1 = glyph.get_s1();
@@ -212,20 +212,21 @@ public:
                   { (x1 + y0).x, (x1 + y0).y, (x1 + y0).z, s1, t0, r, g, b, a }
                };
 
-               vertex_buffer_push_back(Buffer, vertices, 4, indices, 6);
+               vertex_buffer_push_back(i_buffer, vertices, 4, indices, 6);
                pen.x += glyph.get_advance_x();
             }
          }
       }
    }
 
-   void add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::string& text,
-      const glm::vec2& ipen, float irt_height, const mws_sp<mws_font> i_font)
+   glm::vec4 add_text_2d_impl(vertex_buffer_t* buffer, const std::vector<font_glyph>& glyphs, const std::string& text,
+      const glm::vec2& i_pen, float i_rt_height, const mws_sp<mws_font> i_font)
    {
+      glm::vec4 ret_val(i_pen, i_pen);
       int len = glm::min(text.length(), glyphs.size());
       glm::vec4 c = i_font->get_color().to_vec4();
       float r = c.r, g = c.g, b = c.b, a = c.a;
-      glm::vec2 pen = ipen;
+      glm::vec2 pen = i_pen;
 
       for (int i = 0; i < len; ++i)
       {
@@ -240,13 +241,15 @@ public:
             {
                if (ch == '\n')
                {
-                  pen.x = ipen.x;
+                  pen.x = i_pen.x;
                   pen.y += i_font->get_height();
                }
                else if (ch == '\t')
                {
                   pen.x += 2 * i_font->get_height();
                }
+
+               ret_val.z = glm::max(ret_val.z, pen.x);
             }
             // normal character
             else
@@ -258,7 +261,7 @@ public:
                }
                pen.x += kerning;
                float x0 = (float)(pen.x + glyph.get_offset_x());
-               float y0 = (float)(irt_height - pen.y + glyph.get_offset_y());
+               float y0 = (float)(i_rt_height - pen.y + glyph.get_offset_y());
                float x1 = float((int)(x0 + glyph.get_width())); x0 = float((int)x0);
                float y1 = float((int)(y0 - glyph.get_height())); y0 = float((int)y0);
                float s0 = glyph.get_s0();
@@ -279,6 +282,11 @@ public:
             }
          }
       }
+
+      ret_val.z = glm::max(ret_val.z, pen.x);
+      ret_val.w = pen.y;
+
+      return ret_val;
    }
 
    void update_projection_mx()
@@ -323,9 +331,9 @@ void text_vxo::clear_text()
    p->clear_text();
 }
 
-void text_vxo::add_text(const std::string& i_text, const glm::vec2& i_pos, const mws_sp<mws_font> i_font)
+glm::vec4 text_vxo::add_text(const std::string& i_text, const glm::vec2& i_pos, const mws_sp<mws_font> i_font)
 {
-   p->add_text(i_text, i_pos, i_font);
+   return p->add_text(i_text, i_pos, i_font);
 }
 
 void text_vxo::draw_in_sync(mws_sp<gfx_camera> i_camera)

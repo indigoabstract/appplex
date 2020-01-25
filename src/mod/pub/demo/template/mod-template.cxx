@@ -17,7 +17,7 @@ void mod_template::init()
 }
 
 
-namespace mod_template_ns
+namespace
 {
    class main_page : public mws_page
    {
@@ -51,7 +51,7 @@ namespace mod_template_ns
 
 void mod_template::init_mws()
 {
-   mws_root->new_page<mod_template_ns::main_page>();
+   mws_root->new_page<main_page>();
    mws_cam->clear_color = true;
 }
 

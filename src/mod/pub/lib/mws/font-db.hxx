@@ -105,7 +105,7 @@ public:
    static mws_sp<font_db> inst();
    void clear_db();
    void resize_db(uint32 i_pow_of_two);
-   mws_sp<mws_font> get_global_font() const;
+   const mws_sp<mws_font> get_global_font() const;
    void set_global_font(const std::string& i_font_name, float i_size = 0.f);
    void set_global_font(mws_sp<mws_font> i_font);
    mws_sp<std::string> get_db_font_name(const std::string& i_font_name);

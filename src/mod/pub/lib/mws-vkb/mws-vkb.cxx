@@ -798,7 +798,7 @@ void mws_vkb_impl::build_keys_tex()
       rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
       rvxo.set_v_flip(true);
       // key_border_quad must be drawn before keys_quad
-      rvxo.set_z(0.97f);
+      rvxo.set_z(0.98f);
       attach(key_border_quad);
 
       {
@@ -863,7 +863,7 @@ void mws_vkb_impl::build_keys_tex()
          rvxo.set_scale((float)scr_dim.x, (float)scr_dim.y);
          rvxo.set_v_flip(true);
          // keys_quad must be drawn after (on top of) key_border_quad
-         rvxo.set_z(0.98f);
+         rvxo.set_z(0.97f);
          attach(keys_bg_outline_quad);
       }
       {
@@ -912,7 +912,7 @@ void mws_vkb_impl::build_keys_tex()
       for (uint32 k = 0; k < key_map_size; k++)
       {
          gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
-         gfx_rt::clear_buffers();
+         gfx_rt::clear_buffers(true, true, true, gfx_color::from_float(0.f, 0.f, 0.f, 0.35f));
          draw_keys(g, letter_font_bg_outline, word_font_bg_outline, mod_vect[k], kp_vect);
          g->update_camera_state();
       }

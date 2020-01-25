@@ -148,26 +148,26 @@ public:
 
          if (modules.find(mod_name_val) != modules.end())
          {
-            vector<unicodestring> argsCopy = args;
+            vector<unicodestring> args_copy = args;
             unicodestring umodule = string2unicodestring(MODULE);
             unicodestring moduleEq = utrs(untr("{}="), umodule);
 
-            for (int k = 0; k < argsCopy.size(); k++)
+            for (int k = 0; k < args_copy.size(); k++)
                // remove module and module-name from the argument list
             {
-               if (argsCopy[k].find(umodule) != unicodestring::npos)
+               if (args_copy[k].find(umodule) != unicodestring::npos)
                {
-                  vector<unicodestring>::iterator position = argsCopy.begin() + k;
+                  vector<unicodestring>::iterator position = args_copy.begin() + k;
 
-                  if (argsCopy[k].find(moduleEq) != unicodestring::npos)
+                  if (args_copy[k].find(moduleEq) != unicodestring::npos)
                      // in the form of --module=module-name
                   {
-                     argsCopy.erase(position);
+                     args_copy.erase(position);
                   }
                   else
                      // in the form of --module module-name
                   {
-                     argsCopy.erase(position, position + 2);
+                     args_copy.erase(position, position + 2);
                   }
 
                   break;
@@ -177,13 +177,14 @@ public:
             unicodestring squote = untr("'");
             unicodestring dquote = untr("\"");
 
-            for (int k = 0; k < argsCopy.size(); k++)
-               // replace all single quotes with double quotes
+            // replace all single quotes with double quotes
+            for (int k = 0; k < args_copy.size(); k++)
             {
-               boost::algorithm::replace_all(argsCopy[k], squote, dquote);
+			  unicodestring& s = args_copy[k];
+			  mws_str::replace_all(s, squote, dquote);
             }
 
-            return modules[mod_name_val]->run(argsCopy);
+            return modules[mod_name_val]->run(args_copy);
          }
          else
          {

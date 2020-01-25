@@ -505,7 +505,7 @@ void font_db::resize_db(uint32 i_pow_of_two)
    p->reload_atlas = true;
 }
 
-mws_sp<mws_font> font_db::get_global_font() const
+const mws_sp<mws_font> font_db::get_global_font() const
 {
    return p->get_global_font();
 }
