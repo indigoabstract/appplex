@@ -73,7 +73,7 @@ namespace mod_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, -50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq["u_s2d_tex"] = "logo-0.png";
          }
 
@@ -84,7 +84,7 @@ namespace mod_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn);
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq["u_s2d_tex"] = "logo-1.png";
          }
 
@@ -95,7 +95,7 @@ namespace mod_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, 50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq["u_s2d_tex"] = "logo-2.png";
          }
 
@@ -106,7 +106,7 @@ namespace mod_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(-50, 50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq["u_s2d_tex"] = "logo-3.png";
          }
 
@@ -117,7 +117,7 @@ namespace mod_test_touch_input_ns
             mq.set_dimensions(1, 1);
             mq.set_translation(cn + glm::vec2(50, -50));
             mq[MP_DEPTH_TEST] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq["u_s2d_tex"] = "logo-4.png";
          }
 
@@ -138,7 +138,7 @@ namespace mod_test_touch_input_ns
             mq.set_translation(50, 50);
             mq[MP_DEPTH_TEST] = true;
             mq[MP_DEPTH_WRITE] = true;
-            mq[MP_SHADER_NAME] = "basic-tex-shader";
+            mq[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             mq.camera_id_list.clear();
             mq.camera_id_list.push_back(get_mod()->mws_cam->camera_id());
             mq.set_v_flip(true);
@@ -341,7 +341,7 @@ namespace mod_test_touch_input_ns
                (*m)[MP_BLENDING] = MV_NONE;
                (*m)["u_v1_z_pos"] = z_pos;
                m->draw_out_of_sync(g);
-               (*m)[MP_SHADER_NAME] = "basic-tex-shader";
+               (*m)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
                (*m)[MP_DEPTH_TEST] = true;
                (*m)[MP_BLENDING] = MV_ALPHA;
             }

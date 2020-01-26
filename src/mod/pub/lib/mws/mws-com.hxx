@@ -100,6 +100,7 @@ public:
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual bool is_hit(float x, float y);
    virtual void update_state() override;
+   virtual const std::string& get_text() const;
    virtual void set_text(std::string i_text);
    virtual void set_text_visible(bool i_visible) { text_visible = i_visible; }
    virtual const gfx_color& get_bg_color() const;

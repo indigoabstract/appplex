@@ -85,7 +85,7 @@ namespace ns_mod_test_normal_mapping
 				is_init = true;
 				mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_mws_sp());
 
-				inst[MP_SHADER_NAME] = "basic-tex-shader";
+				inst[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
 				inst[MP_BLENDING] = MV_ALPHA;
 				inst["u_s2d_tex"] = tex_name;
 			}

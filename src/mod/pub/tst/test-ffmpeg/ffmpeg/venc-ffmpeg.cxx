@@ -1115,7 +1115,7 @@ void mws_ffmpeg_reencoder_impl::start_encoding(const mws_video_params& i_prm)
             rt_video_frame = gi->tex.nwi_external("vid-frame" + gfx_tex::gen_id(), 0, "RGBA8");
             msh.set_dimensions(1.f, 1.f);
             msh.set_scale((float)width, (float)height);
-            msh[MP_SHADER_NAME] = "basic-tex-shader";
+            msh[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             msh["u_s2d_tex"][MP_TEXTURE_INST] = rt_video_frame;
             msh[MP_CULL_BACK] = false;
          }

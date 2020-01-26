@@ -394,6 +394,11 @@ void mws_button::update_state()
    }
 }
 
+const std::string& mws_button::get_text() const
+{
+   return text;
+}
+
 void mws_button::set_text(string i_text)
 {
    text = i_text;

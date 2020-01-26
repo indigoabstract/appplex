@@ -85,7 +85,7 @@ void mod_test_gl::load()
       qm.set_scale(512, 256);
       qm.set_translation(40, 80.f);
       qm[MP_BLENDING] = MV_ALPHA;
-      qm[MP_SHADER_NAME] = "basic-tex-shader";
+      qm[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
       qm["u_s2d_tex"] = rt_tex->get_name();
    }
 

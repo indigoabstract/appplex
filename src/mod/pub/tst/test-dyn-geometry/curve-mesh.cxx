@@ -342,7 +342,7 @@ void curve_mesh::draw_using_va(mws_sp<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
+		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name(gfx::wireframe_sh_id);
 
 		gfx::i()->shader.set_current_program(p);
 
@@ -443,7 +443,7 @@ void curve_mesh::draw_using_vbo(mws_sp<gfx_camera> icamera)
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
-		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name("wireframe-shader");
+		mws_sp<gfx_shader> p = gfx::i()->shader.get_program_by_name(gfx::wireframe_sh_id);
 
 		gfx::i()->shader.set_current_program(p);
 

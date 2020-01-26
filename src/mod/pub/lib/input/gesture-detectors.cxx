@@ -903,31 +903,31 @@ bool swipe_detector::detect_helper(mws_sp<mws_ptr_evt> evt)
 bool swipe_detector::was_started_from_edge() const
 {
    bool started_from_edge = false;
-   float dist = (float)std::max(pfm::screen::get_width(), pfm::screen::get_height());
-   float threshold = 5.f;
+   float dist = 0.f;
+   float horiz_threshold = pfm::screen::get_width() * 0.02f;
+   float vert_threshold = pfm::screen::get_height() * 0.02f;
 
    switch (swipe_direction)
    {
    case swipe_types::left:
-      dist = press_pos.x;
+      dist = pfm::screen::get_width() - press_pos.x;
+      started_from_edge = (dist < horiz_threshold);
       break;
 
    case swipe_types::right:
-      dist = pfm::screen::get_width() - press_pos.x;
+      dist = press_pos.x;
+      started_from_edge = (dist < horiz_threshold);
       break;
 
    case swipe_types::up:
       dist = press_pos.y;
+      started_from_edge = (dist < vert_threshold);
       break;
 
    case swipe_types::down:
       dist = pfm::screen::get_height() - press_pos.y;
+      started_from_edge = (dist < vert_threshold);
       break;
-   }
-
-   if (dist < threshold)
-   {
-      started_from_edge = true;
    }
 
    return started_from_edge;

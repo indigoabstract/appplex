@@ -208,7 +208,7 @@ public:
 			is_init = true;
 			mws_select_button& inst = *static_pointer_cast<mws_select_button>(get_mws_sp());
 
-			inst[MP_SHADER_NAME] = "basic-tex-shader";
+			inst[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
 			inst[MP_BLENDING] = MV_ALPHA;
 			//inst["u_v4_color"] = ia_color::colors::dodger_blue.to_vec4();
 			inst["u_s2d_tex"] = state_list[state_id];
@@ -483,20 +483,20 @@ void mod_test_dyn_geometry::load()
 	curve_mesh& r_cm = *p->cm;
 	r_cm.camera_id_list.clear();
 	r_cm.camera_id_list.push_back(p->ortho_cam->camera_id());
-	r_cm[MP_SHADER_NAME] = "c-o-shader";
+	r_cm[MP_SHADER_NAME] = gfx::c_o_sh_id;
 	r_cm[MP_CULL_BACK] = false;
 	r_cm[MP_CULL_FRONT] = false;
 	r_cm["u_v4_color"] = glm::vec4(0.99, 1, 0.15, 1.f);
 	r_cm[MP_WIREFRAME_MODE] = MV_WF_NONE;
 
-	p->texture_display = gfx::i()->shader.get_program_by_name("basic-tex-shader");
+	p->texture_display = gfx::i()->shader.get_program_by_name(gfx::basic_tex_sh_id);
 	p->q2d = mws_sp<gfx_plane>(new gfx_plane());
 	gfx_plane& rq2d = *p->q2d;
 	rq2d.set_dimensions(2, 2);
 	rq2d[MP_CULL_BACK] = false;
 	rq2d[MP_DEPTH_TEST] = false;
 	rq2d[MP_BLENDING] = MV_ALPHA;
-	rq2d[MP_SHADER_NAME] = "basic-tex-shader";
+	rq2d[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
 	rq2d.position = glm::vec3(850.f, 350.f, 0.f);
 	rq2d.scaling = glm::vec3(256, 256, 1.f);
 

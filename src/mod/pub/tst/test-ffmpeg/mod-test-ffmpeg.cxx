@@ -62,14 +62,14 @@ void mod_test_ffmpeg::load()
 	q_tex[MP_CULL_FRONT] = false;
 	q_tex[MP_DEPTH_TEST] = false;
 	q_tex.set_dimensions(1, 1);
-	q_tex[MP_SHADER_NAME] = "basic-tex-shader";
+	q_tex[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
    q2d_tex->set_translation(50.f, 50.f);
 
 	q_rt_tex[MP_CULL_BACK] = false;
 	q_rt_tex[MP_CULL_FRONT] = false;
 	q_rt_tex[MP_DEPTH_TEST] = false;
 	q_rt_tex.set_dimensions(1, 1);
-	q_rt_tex[MP_SHADER_NAME] = "basic-tex-shader";
+	q_rt_tex[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
 
    {
       class vdec_ffmpeg_listener_impl : public mws_vdec_listener

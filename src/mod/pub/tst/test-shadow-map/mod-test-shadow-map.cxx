@@ -117,7 +117,7 @@ void mod_test_shadow_map::load()
 	gfx::i()->rt.set_current_render_target(mws_sp<gfx_rt>());
 
 	p->u_v3_light_dir = -glm::vec3(-1.f, 1.f, 1.f);
-	//std::string shader_name = "basic-tex-shader";
+	//std::string shader_name = gfx::basic_tex_sh_id;
 	std::string shader_name = "l_d_o";
 
 	p->quad_mesh = mws_sp<gfx_plane>(new gfx_plane());

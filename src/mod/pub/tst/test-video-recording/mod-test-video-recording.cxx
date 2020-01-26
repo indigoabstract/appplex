@@ -84,7 +84,7 @@ namespace test_video_recording
             qm.set_dimensions(1, 1);
             qm.scaling = glm::vec3(sx, sy, sz);
             qm.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-            qm[MP_SHADER_NAME] = "basic-tex-shader";
+            qm[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
             qm[MP_BLENDING] = MV_ALPHA;
             qm["u_s2d_tex"] = rt_tex->get_name();
          }
@@ -109,7 +109,7 @@ namespace test_video_recording
                msh.set_dimensions(1, 1);
                msh.scaling = glm::vec3(sx, sy, sz);
                msh.position = glm::vec3(sx / 2 + tx, sy / 2 + ty, tz);
-               msh[MP_SHADER_NAME] = "basic-tex-shader";
+               msh[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
                msh["u_s2d_tex"] = scr_mirror_tex->get_name();
                msh.set_v_flip(true);
             }
@@ -122,7 +122,7 @@ namespace test_video_recording
                msh.set_dimensions(1, 1);
                msh.scaling = glm::vec3(sx2, sy2, sz2);
                msh.position = glm::vec3(sx2 / 2 + tx2, sy2 / 2 + ty2, tz2);
-               msh[MP_SHADER_NAME] = "c-o-shader";
+               msh[MP_SHADER_NAME] = gfx::c_o_sh_id;
                msh["u_v4_color"] = gfx_color::colors::black.to_vec4();
             }
          }
