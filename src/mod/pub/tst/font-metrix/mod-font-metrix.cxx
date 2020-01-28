@@ -7,8 +7,8 @@
 #include "gfx-rt.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 #include <vector>
 
 
@@ -190,7 +190,7 @@ namespace mod_font_metrix_ns
                mws_println(" };");
 
                mws_nl();
-               mws_print("*copy this data* into font_db:\npixel-heights[ %d, %d ], font-sizes[ %d, %d ], pixel-height/font-size =\n{ ",
+               mws_print("*copy this data* into mws_font_db:\npixel-heights[ %d, %d ], font-sizes[ %d, %d ], pixel-height/font-size =\n{ ",
                   smallest_height, largest_height, start.font_size, end.font_size);
 
                for (uint32 k = 0; k < height_size_mixer.size(); k++)
@@ -211,7 +211,7 @@ namespace mod_font_metrix_ns
          if (!finished)
          {
             i_g->update_camera_state();
-            font_db::inst()->clear_db();
+            mws_font_db::inst()->clear_db();
          }
       }
 

@@ -10,7 +10,7 @@ class font_glyph;
 class mws_font;
 class mws_camera;
 class mws_text_area_model;
-class text_vxo;
+class mws_text_vxo;
 class gfx_quad_2d;
 
 
@@ -73,7 +73,7 @@ protected:
       virtual void clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim);
 
       mws_sp<mws_text_area_model> tx_src;
-      mws_sp<text_vxo> tx_vxo;
+      mws_sp<mws_text_vxo> tx_vxo;
       mws_sp<mws_font> font;
       // text grid, contains a view of tx_src, only as much text as it fits on the screen
       std::vector<std::string> tx_lines;

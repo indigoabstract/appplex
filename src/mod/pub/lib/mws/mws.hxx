@@ -28,7 +28,7 @@ class mws_camera;
 class mws_text_area;
 class mws_virtual_keyboard;
 class gfx_vxo;
-class text_vxo;
+class mws_text_vxo;
 struct vkb_file_info;
 
 
@@ -222,7 +222,7 @@ public:
    mws_sp<mws_page_tab> get_mws_page_tab_instance();
    virtual mws_sp<mws_mod> get_mod();
    bool is_empty();
-   mws_sp<text_vxo> get_text_vxo() const;
+   mws_sp<mws_text_vxo> get_text_vxo() const;
 
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state() override;
@@ -254,7 +254,7 @@ private:
 
    mws_sp<mws_virtual_keyboard> vkb;
    mws_sp<mws_vkb_file_store> vkb_store;
-   mws_sp<text_vxo> tab_text_vxo;
+   mws_sp<mws_text_vxo> tab_text_vxo;
    mws_wp<mws_mod> u;
    mws_sp<mws_page_nav> page_nav;
 };

@@ -8,7 +8,7 @@
 class mws_draw_text;
 class mws_font;
 class mws_vrn_main;
-class text_vxo;
+class mws_text_vxo;
 class gfx_tex;
 class mws_vrn_kernel_pt_vect;
 

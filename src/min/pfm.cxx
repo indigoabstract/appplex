@@ -1007,7 +1007,7 @@ void pfm_path::make_standard_path()
       }
    }
 }
-void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const
+void pfm_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const
 {
    if (i_recursive)
    {
@@ -1018,7 +1018,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
          mws_sp<pfm_file> file = it->second;
          std::string rdir = file->get_root_directory();
 
-         if (mws_str::starts_with(rdir, ibase_dir))
+         if (mws_str::starts_with(rdir, i_base_dir))
          {
             i_file_list->push_back(file);
          }
@@ -1032,7 +1032,7 @@ void pfm_path::list_directory_impl(std::string ibase_dir, mws_sp<std::vector<mws
       {
          mws_sp<pfm_file> file = it->second;
 
-         if (file->get_root_directory() == ibase_dir)
+         if (file->get_root_directory() == i_base_dir)
          {
             i_file_list->push_back(file);
          }

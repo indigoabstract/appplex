@@ -6,7 +6,7 @@
 #include "mod-test-snd-generators.hxx"
 #include "snd/snd.hxx"
 #include "mws/mws-camera.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font.hxx"
 #include "mws/mws-com.hxx"
 #include "gfx-color.hxx"
 #include "rng/rng.hxx"

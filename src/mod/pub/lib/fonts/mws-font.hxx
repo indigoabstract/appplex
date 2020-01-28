@@ -6,8 +6,8 @@
 
 class gfx_color;
 class mws_font_impl;
-class font_cache;
-class font_db_impl;
+class mws_font_cache;
+class mws_font_db_impl;
 class mws_dim;
 
 
@@ -54,11 +54,11 @@ public:
    const mws_font_markup& get_markup() const;
 
 private:
-   friend class font_db_impl;
+   friend class mws_font_db_impl;
    mws_font();
 
    // cache font data for quick access
-   mws_wp<font_cache> fnt_cache;
+   mws_wp<mws_font_cache> fnt_cache;
    mws_sp<mws_font_impl> p;
 };
 

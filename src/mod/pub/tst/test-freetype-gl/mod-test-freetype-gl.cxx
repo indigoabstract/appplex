@@ -6,8 +6,8 @@
 
 #include "input/input-ctrl.hxx"
 #include "mws/mws-camera.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
@@ -70,7 +70,7 @@ void mod_test_freetype_gl::load()
 
 bool mod_test_freetype_gl::update()
 {
-	mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
+	mws_sp<gfx_tex> atlas = mws_font_db::inst()->get_texture_atlas();
 
 	if (atlas && atlas->is_valid())
 	{

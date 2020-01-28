@@ -5,8 +5,8 @@
 #include "gfx-pbo.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-rt.hxx"
-#include "mws/font-db.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
+#include "fonts/mws-font.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 
@@ -57,10 +57,10 @@ namespace mod_who_am_i_ns
             };
             uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-            font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+            mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
             font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.35f));
             font->set_color(gfx_color::colors::white);
-            font_db::inst()->set_global_font(font);
+            mws_font_db::inst()->set_global_font(font);
          }
          {
             letter_font = mws_font::nwi(font, mws_px(590));

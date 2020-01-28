@@ -5,9 +5,9 @@
 #include "mws-mod.hxx"
 #include "mws-camera.hxx"
 #include "mws-com.hxx"
-#include "mws-font.hxx"
-#include "font-db.hxx"
-#include "text-vxo.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
+#include "fonts/mws-text-vxo.hxx"
 #include "gfx-quad-2d.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 #include "min.hxx"
@@ -27,7 +27,7 @@ mws_sp<mws_text_box> mws_text_box::nwi()
 void mws_text_box::setup()
 {
    mws_page_item::setup();
-   font = font_db::inst()->get_global_font();
+   font = mws_font_db::inst()->get_global_font();
    //font->set_color(gfx_color::colors::white);
    {
       gfx_cursor = std::make_shared<gfx_node>(nullptr);
@@ -407,7 +407,7 @@ void mws_text_box::update_gfx_cursor()
 
 void mws_text_box::text_view::setup()
 {
-   tx_vxo = text_vxo::nwi();
+   tx_vxo = mws_text_vxo::nwi();
    tx_vxo->camera_id_list = { "mws_cam" };
    (*tx_vxo)[MP_SCISSOR_ENABLED] = true;
    attach(tx_vxo);
@@ -471,7 +471,7 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
       return;
    }
 
-   auto& glyphs = font_db::inst()->get_glyph_vect(font->get_inst(), text);
+   auto& glyphs = mws_font_db::inst()->get_glyph_vect(font->get_inst(), text);
    float x_off = -tx_offset.x;
    uint32 text_length = (text.back() != '\n') ? text.length() : text.length() - 1;
    uint32 k = 0;
@@ -686,7 +686,7 @@ void mws_text_box::text_view::update_cursor()
    // if we have at least one char on this line( even if it's a single '\n' )
    if (!text.empty())
    {
-      auto& glyphs = font_db::inst()->get_glyph_vect(font->get_inst(), text);
+      auto& glyphs = mws_font_db::inst()->get_glyph_vect(font->get_inst(), text);
       bool is_new_line_terminated = (text.back() == '\n');
       uint32 text_length = (is_new_line_terminated) ? text.length() - 1 : text.length();
       float x_off = -tx_offset.x;

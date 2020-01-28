@@ -9,14 +9,14 @@
 #include "mws/mws.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
+#include "fonts/mws-font.hxx"
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"
-#include "mws/font-db.hxx"
 #include "mod-list.hxx"
 #include <algorithm>
 #include <cstdio>
@@ -874,7 +874,7 @@ void mws_mod::config_font_db_size()
 #if MOD_VECTOR_FONTS
 
    uint32 pow_of_two = get_preferences()->get_font_db_pow_of_two_size();
-   font_db::nwi_inex(pow_of_two);
+   mws_font_db::nwi_inex(pow_of_two);
 
 #endif
 }
@@ -1030,7 +1030,7 @@ void mws_mod::run_step()
 {
 #if MOD_VECTOR_FONTS
 
-   font_db::inst()->on_frame_start();
+   mws_font_db::inst()->on_frame_start();
 
 #endif
 

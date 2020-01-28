@@ -5,7 +5,7 @@
 #ifdef MOD_TEST_DYN_GEOMETRY
 
 #include "input/input-ctrl.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
 #include "gfx-camera.hxx"
@@ -524,7 +524,7 @@ bool mod_test_dyn_geometry::update()
 		p->calc_points();
 	}
 
-	mws_sp<gfx_tex> atlas = font_db::inst()->get_texture_atlas();
+	mws_sp<gfx_tex> atlas = mws_font_db::inst()->get_texture_atlas();
 
 	if (atlas && atlas->is_valid())
 	{

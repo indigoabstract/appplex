@@ -5,8 +5,8 @@
 #include "gfx-quad-2d.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 
 
 mod_screen_metrix::mod_screen_metrix() : mws_mod(mws_stringify(MOD_SCREEN_METRIX)) {}
@@ -130,9 +130,9 @@ void mod_screen_metrix::init_mws()
       };
       uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-      font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+      mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
       mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.24f));
-      font_db::inst()->set_global_font(font);
+      mws_font_db::inst()->set_global_font(font);
    }
 
    mws_root->new_page<mod_screen_metrix_ns::main_page>();

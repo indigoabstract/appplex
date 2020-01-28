@@ -5,9 +5,9 @@
 #include "vrn/vrn-visual.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "mws/mws-camera.hxx"
-#include "mws/text-vxo.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-text-vxo.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 #include "kawase-bloom/kawase-bloom.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-rt.hxx"
@@ -921,7 +921,7 @@ void mws_vkb_impl::build_keys_tex()
    }
 
    // disable writing to alpha channel
-   mws_sp<text_vxo> cam_txt_vxo = g->get_text_vxo();
+   mws_sp<mws_text_vxo> cam_txt_vxo = g->get_text_vxo();
    (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, false);
    g->set_text_blending(MV_ADD);
 
@@ -1377,7 +1377,7 @@ void mws_vkb_impl::setup_font_dimensions()
    uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
    mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
    mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::e_vertical);
-   mws_sp<mws_font> font = font_db::inst()->get_global_font();
+   mws_sp<mws_font> font = mws_font_db::inst()->get_global_font();
    mws_sp<mws_font> letter_font = mws_font::nwi(font, letter_font_height);
    mws_sp<mws_font> word_font = mws_font::nwi(font, word_font_height);
 
@@ -2401,7 +2401,7 @@ std::function<void()> mws_vkb::get_waiting_msg_op()
             std::string text = "Loading keyboard\nPlease wait...";
             glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
             float vert_size = std::min(scr_dim.x, scr_dim.y);
-            mws_sp<mws_font> global_font = font_db::inst()->get_global_font();
+            mws_sp<mws_font> global_font = mws_font_db::inst()->get_global_font();
             mws_px font_height(vert_size / 20.f, mws_dim::e_vertical);
             mws_sp<mws_font> font = mws_font::nwi(global_font, font_height);
             font->set_color(gfx_color::colors::white);

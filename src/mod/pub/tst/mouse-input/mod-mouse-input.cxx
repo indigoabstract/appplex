@@ -5,7 +5,7 @@
 #include "input/gesture-detectors.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font.hxx"
 #include "gfx.hxx"
 #include "gfx-vxo.hxx"
 #include "gfx-vxo-ext.hxx"

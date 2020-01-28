@@ -1,8 +1,8 @@
 #include "stdafx.hxx"
 
 #include "mws-font.hxx"
-#include "mws.hxx"
-#include "font-db.hxx"
+#include "mws/mws.hxx"
+#include "mws-font-db.hxx"
 #include "gfx-color.hxx"
 #include "min.hxx"
 #include "gfx.hxx"
@@ -18,7 +18,7 @@ public:
       mws_font_ref = i_font;
       color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::white));
       ppath = pfm_path::get_inst(i_font_path);
-      font_name = font_db::inst()->get_db_font_name(ppath->get_file_name());
+      font_name = mws_font_db::inst()->get_db_font_name(ppath->get_file_name());
       font_path = ppath->get_full_path();
 
       if (i_markup)
@@ -62,7 +62,7 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, 
 
    if (path.empty())
    {
-      path = font_db::inst()->get_global_font()->get_full_path();
+      path = mws_font_db::inst()->get_global_font()->get_full_path();
    }
 
    return nwi(path, i_height, i_markup);
@@ -71,7 +71,7 @@ mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, 
 mws_sp<mws_font> mws_font::nwi(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
    mws_assert(i_height.to_pt().val() > 1.f);
-   return font_db::inst()->load_font_by_metrix(i_font_path, i_height, i_markup);
+   return mws_font_db::inst()->load_font_by_metrix(i_font_path, i_height, i_markup);
 }
 
 mws_sp<mws_font> mws_font::get_inst()
@@ -111,22 +111,22 @@ float mws_font::get_size()const
 
 float mws_font::get_ascender()
 {
-   return font_db::inst()->get_ascender(get_inst());
+   return mws_font_db::inst()->get_ascender(get_inst());
 }
 
 float mws_font::get_descender()
 {
-   return font_db::inst()->get_descender(get_inst());
+   return mws_font_db::inst()->get_descender(get_inst());
 }
 
 float mws_font::get_height()
 {
-   return font_db::inst()->get_height(get_inst());
+   return mws_font_db::inst()->get_height(get_inst());
 }
 
 glm::vec2 mws_font::get_text_dim(const std::string& i_text)
 {
-   return font_db::inst()->get_text_dim(get_inst(), i_text);
+   return mws_font_db::inst()->get_text_dim(get_inst(), i_text);
 }
 
 float mws_font::get_text_width(const std::string& i_text)

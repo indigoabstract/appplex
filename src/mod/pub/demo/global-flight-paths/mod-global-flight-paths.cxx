@@ -6,7 +6,7 @@
 
 #include "mws/mws-com.hxx"
 #include "mws/mws-camera.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font.hxx"
 #include "input/input-ctrl.hxx"
 #include "cpp-property.hxx"
 #include "gfx-inc.hxx"

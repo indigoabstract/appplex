@@ -3,7 +3,7 @@
 #include "mod-kinetic-scrolling.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws.hxx"
-#include "mws/mws-font.hxx"
+#include "fonts/mws-font.hxx"
 #include "util/util.hxx"
 #include "rng/rng.hxx"
 #include <string>

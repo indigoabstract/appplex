@@ -6,9 +6,8 @@
 
 #include "mws-camera.hxx"
 #include "gfx.hxx"
-#include "mws-font.hxx"
-#include "font-db.hxx"
-#include "text-vxo.hxx"
+#include "fonts/mws-font-db.hxx"
+#include "fonts/mws-text-vxo.hxx"
 
 
 namespace ns_mws_camera
@@ -20,7 +19,7 @@ namespace ns_mws_camera
 
       draw_text_op()
       {
-         tx_vxo = text_vxo::nwi();
+         tx_vxo = mws_text_vxo::nwi();
       }
 
       void push_data(mws_sp<rw_sequence> seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
@@ -80,7 +79,7 @@ namespace ns_mws_camera
          (*tx_vxo)[MP_BLENDING] = i_blend_type;
       }
 
-      mws_sp<text_vxo> tx_vxo;
+      mws_sp<mws_text_vxo> tx_vxo;
       std::string tx;
       float x;
       float y;
@@ -112,7 +111,7 @@ public:
 
    mws_sp<mws_font> get_font()const
    {
-      return (font) ? font : font_db::inst()->get_global_font();
+      return (font) ? font : mws_font_db::inst()->get_global_font();
    }
 
    void set_font(mws_sp<mws_font> i_font)
@@ -228,7 +227,7 @@ void mws_camera::load(mws_sp<gfx_camera> inst)
    rendering_priority = 0xffff;
 }
 
-mws_sp<text_vxo> mws_camera::get_text_vxo()
+mws_sp<mws_text_vxo> mws_camera::get_text_vxo()
 {
    return p->d_text.tx_vxo;
 }

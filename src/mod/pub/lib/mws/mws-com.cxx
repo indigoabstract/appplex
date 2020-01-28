@@ -1,9 +1,9 @@
 #include "stdafx.hxx"
 
 #include "mws-com.hxx"
-#include "text-vxo.hxx"
+#include "fonts/mws-text-vxo.hxx"
+#include "fonts/mws-font.hxx"
 #include "mws-camera.hxx"
-#include "mws-font.hxx"
 #include "mws-mod.hxx"
 #include "util/util.hxx"
 #include "input/transitions.hxx"

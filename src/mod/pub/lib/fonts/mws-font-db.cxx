@@ -4,8 +4,7 @@
 
 #if defined MOD_FONTS
 
-#include "font-db.hxx"
-#include "mws.hxx"
+#include "mws-font-db.hxx"
 #include "mws-font.hxx"
 #include "min.hxx"
 #include <glm/inc.hpp>
@@ -107,7 +106,7 @@ font_glyph::font_glyph(texture_glyph_t* i_glyph)
 }
 
 
-class font_cache
+class mws_font_cache
 {
 public:
    const int inf_lim = 32;
@@ -115,7 +114,7 @@ public:
    std::string font_file_name;
    float font_size = 0.f;
 
-   font_cache(std::string i_font_file_name, float i_font_size, texture_font_t* itex_font, mws_sp<std::vector<uint8> > i_font_mem_data)
+   mws_font_cache(std::string i_font_file_name, float i_font_size, texture_font_t* itex_font, mws_sp<std::vector<uint8> > i_font_mem_data)
    {
       mws_assert(!i_font_file_name.empty());
       font_file_name = i_font_file_name;
@@ -125,7 +124,7 @@ public:
       glyph_vect.resize(sup_lim - inf_lim + 1);
    }
 
-   ~font_cache()
+   ~mws_font_cache()
    {
       if (tex_font)
       {
@@ -173,10 +172,10 @@ private:
 };
 
 
-class font_db_impl
+class mws_font_db_impl
 {
 public:
-   font_db_impl(uint32 i_pow_of_two) : pow_of_two(i_pow_of_two)
+   mws_font_db_impl(uint32 i_pow_of_two) : pow_of_two(i_pow_of_two)
    {
       // text shader
       const std::string text_shader_name = "text-shader";
@@ -302,9 +301,9 @@ public:
       return fn;
    }
 
-   mws_sp<font_cache> get_font_cache(mws_sp<mws_font> i_font)
+   mws_sp<mws_font_cache> get_font_cache(mws_sp<mws_font> i_font)
    {
-      mws_sp<font_cache> fnt_cache = i_font->fnt_cache.lock();
+      mws_sp<mws_font_cache> fnt_cache = i_font->fnt_cache.lock();
       const std::string& font_file_name_0 = i_font->get_file_name();
 
       // fonts having empty font_file_name are global fonts. if the global font has changed, then invalidate the font cache
@@ -330,7 +329,7 @@ public:
 
             if (!res)
             {
-               if (font_file_name == font_db::default_font_name)
+               if (font_file_name == mws_font_db::default_font_name)
                {
                   res = std::make_shared<std::vector<uint8>>(mws_def_font_data, mws_def_font_data + mws_def_font_data_size);
                }
@@ -349,7 +348,7 @@ public:
             }
 
             texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, begin_ptr(*res), res->size());
-            fnt_cache = std::make_shared<font_cache>(font_file_name, font_size, tex_font, res);
+            fnt_cache = std::make_shared<mws_font_cache>(font_file_name, font_size, tex_font, res);
 
             if (!tex_font)
             {
@@ -383,7 +382,7 @@ public:
 
    const std::vector<font_glyph>& get_glyph_vect(mws_sp<mws_font> i_font, const std::string& i_text)
    {
-      mws_sp<font_cache> fnt_cache = get_font_cache(i_font);
+      mws_sp<mws_font_cache> fnt_cache = get_font_cache(i_font);
       glyph_vect.clear();
       marked_for_loading.clear();
 
@@ -463,7 +462,7 @@ public:
    mws_sp<gfx_shader> text_shader;
    mws_sp<gfx_tex> glyph_atlas;
    std::vector<font_glyph> glyph_vect;
-   std::unordered_map<std::string, mws_sp<font_cache>> font_size_ht;
+   std::unordered_map<std::string, mws_sp<mws_font_cache>> font_size_ht;
    std::unordered_map<std::string, font_info> font_name_ht;
    // hold weak ref to font data so the same font with different sizes can use the same font data.
    // this way, when all sizes/instances of particular font are deleted, the common font data is also deleted.
@@ -476,25 +475,25 @@ public:
 };
 
 
-mws_sp<font_db> font_db::nwi_inex(uint32 i_pow_of_two_db_size)
+mws_sp<mws_font_db> mws_font_db::nwi_inex(uint32 i_pow_of_two_db_size)
 {
    mws_assert(!instance);
-   instance = mws_sp<font_db>(new font_db(i_pow_of_two_db_size));
-   instance->p->global_font = mws_font::nwi(font_db::default_font_name, mws_cm(0.4f));
+   instance = mws_sp<mws_font_db>(new mws_font_db(i_pow_of_two_db_size));
+   instance->p->global_font = mws_font::nwi(mws_font_db::default_font_name, mws_cm(0.4f));
    return instance;
 }
 
-mws_sp<font_db> font_db::inst()
+mws_sp<mws_font_db> mws_font_db::inst()
 {
    return instance;
 }
 
-void font_db::clear_db()
+void mws_font_db::clear_db()
 {
    p->reload_atlas = true;
 }
 
-void font_db::resize_db(uint32 i_pow_of_two)
+void mws_font_db::resize_db(uint32 i_pow_of_two)
 {
    if (i_pow_of_two < 6 || i_pow_of_two > 13)
    {
@@ -505,41 +504,41 @@ void font_db::resize_db(uint32 i_pow_of_two)
    p->reload_atlas = true;
 }
 
-const mws_sp<mws_font> font_db::get_global_font() const
+const mws_sp<mws_font> mws_font_db::get_global_font() const
 {
    return p->get_global_font();
 }
 
-void font_db::set_global_font(const std::string& i_font_name, float i_size)
+void mws_font_db::set_global_font(const std::string& i_font_name, float i_size)
 {
    float size = (i_size > 0.f) ? i_size : 40.f;
    auto font = mws_font::nwi(size, i_font_name);
    set_global_font(font);
 }
 
-void font_db::set_global_font(mws_sp<mws_font> i_font)
+void mws_font_db::set_global_font(mws_sp<mws_font> i_font)
 {
    p->set_global_font(i_font);
 }
 
-mws_sp<std::string> font_db::get_db_font_name(const std::string& i_font_name)
+mws_sp<std::string> mws_font_db::get_db_font_name(const std::string& i_font_name)
 {
    return p->get_db_font_name(i_font_name);
 }
 
-const std::vector<font_glyph>& font_db::get_glyph_vect(mws_sp<mws_font> i_font, const std::string& i_text)
+const std::vector<font_glyph>& mws_font_db::get_glyph_vect(mws_sp<mws_font> i_font, const std::string& i_text)
 {
    return p->get_glyph_vect(i_font, i_text);
 }
 
-mws_sp<gfx_tex> font_db::get_texture_atlas()
+mws_sp<gfx_tex> mws_font_db::get_texture_atlas()
 {
    return p->glyph_atlas;
 }
 
-float font_db::get_ascender(mws_sp<mws_font> i_font)
+float mws_font_db::get_ascender(mws_sp<mws_font> i_font)
 {
-   mws_sp<font_cache> fnt_cache = p->get_font_cache(i_font);
+   mws_sp<mws_font_cache> fnt_cache = p->get_font_cache(i_font);
 
    if (fnt_cache)
    {
@@ -549,9 +548,9 @@ float font_db::get_ascender(mws_sp<mws_font> i_font)
    return 0;
 }
 
-float font_db::get_descender(mws_sp<mws_font> i_font)
+float mws_font_db::get_descender(mws_sp<mws_font> i_font)
 {
-   mws_sp<font_cache> fnt_cache = p->get_font_cache(i_font);
+   mws_sp<mws_font_cache> fnt_cache = p->get_font_cache(i_font);
 
    if (fnt_cache)
    {
@@ -561,9 +560,9 @@ float font_db::get_descender(mws_sp<mws_font> i_font)
    return 0;
 }
 
-float font_db::get_height(mws_sp<mws_font> i_font)
+float mws_font_db::get_height(mws_sp<mws_font> i_font)
 {
-   mws_sp<font_cache> fnt_cache = p->get_font_cache(i_font);
+   mws_sp<mws_font_cache> fnt_cache = p->get_font_cache(i_font);
 
    if (fnt_cache)
    {
@@ -573,7 +572,7 @@ float font_db::get_height(mws_sp<mws_font> i_font)
    return 0;
 }
 
-glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text)
+glm::vec2 mws_font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text)
 {
    auto glyphs = p->get_glyph_vect(i_font, i_text);
    int len = glm::min(i_text.length(), glyphs.size());
@@ -629,15 +628,15 @@ glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_te
    return pen;
 }
 
-void font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
+void mws_font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
    const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count)
 {
    std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
    auto& ht = p->font_name_ht;
    auto it = ht.find(font_name);
-   font_db_impl::font_info tmp_fi;
-   font_db_impl::font_info& fi = (it != ht.end()) ? it->second : tmp_fi;
-   std::vector<font_db_impl::font_info::px_to_pt_mixer::pos_val> val_vect(i_data_elem_count);
+   mws_font_db_impl::font_info tmp_fi;
+   mws_font_db_impl::font_info& fi = (it != ht.end()) ? it->second : tmp_fi;
+   std::vector<mws_font_db_impl::font_info::px_to_pt_mixer::pos_val> val_vect(i_data_elem_count);
    std::pair<float, float>* dest = (std::pair<float, float>*)val_vect.data();
 
    fi.min_height_pt = i_min_height_pt;
@@ -654,7 +653,7 @@ void font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_
    }
 }
 
-mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
+mws_sp<mws_font> mws_font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
    std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
    auto& ht = p->font_name_ht;
@@ -662,7 +661,7 @@ mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, co
 
    if (it != ht.end())
    {
-      font_db_impl::font_info& fi = it->second;
+      mws_font_db_impl::font_info& fi = it->second;
 
       if (fi.min_height_pt.val() > 0.f && fi.min_height_px.int_val() > 0 && fi.max_height_pt.val() > 0.f && fi.max_height_px.int_val() > 0)
       {
@@ -688,14 +687,14 @@ mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, co
    return mws_font::nwi(i_height.to_pt().val(), i_font_path, i_markup);
 }
 
-font_db::font_db(uint32 i_pow_of_two)
+mws_font_db::mws_font_db(uint32 i_pow_of_two)
 {
-   p = mws_sp<font_db_impl>(new font_db_impl(i_pow_of_two));
-   store_font_metrix(font_db::default_font_name, mws_pt(min_height_pt), mws_px(min_height_px),
+   p = mws_sp<mws_font_db_impl>(new mws_font_db_impl(i_pow_of_two));
+   store_font_metrix(mws_font_db::default_font_name, mws_pt(min_height_pt), mws_px(min_height_px),
       mws_pt(max_height_pt), mws_px(max_height_px), mws_def_font_data_metrix, mws_def_font_data_metrix_size);
 }
 
-void font_db::on_frame_start()
+void mws_font_db::on_frame_start()
 {
    if (p->reload_atlas)
    {
@@ -705,64 +704,64 @@ void font_db::on_frame_start()
 
 #elif defined MOD_BITMAP_FONTS
 
-font_db::font_db(uint32 i_pow_of_two)
+mws_font_db::mws_font_db(uint32 i_pow_of_two)
 {
 }
 
-mws_sp<font_db> font_db::inst()
+mws_sp<mws_font_db> mws_font_db::inst()
 {
    if (!instance)
    {
-      instance = mws_sp<font_db>(new font_db());
+      instance = mws_sp<mws_font_db>(new mws_font_db());
    }
 
    return instance;
 }
 
-mws_sp<mws_font> font_db::get_global_font() const
+mws_sp<mws_font> mws_font_db::get_global_font() const
 {
    return nullptr;
 }
 
-void font_db::on_frame_start()
+void mws_font_db::on_frame_start()
 {
 }
 
-mws_sp<std::string> font_db::get_db_font_name(const std::string& i_font_name)
+mws_sp<std::string> mws_font_db::get_db_font_name(const std::string& i_font_name)
 {
    mws_sp<std::string> font_path(new std::string("n/a"));
 
    return font_path;
 }
 
-float font_db::get_ascender(mws_sp<mws_font> i_font)
+float mws_font_db::get_ascender(mws_sp<mws_font> i_font)
 {
    return 0;
 }
 
-float font_db::get_descender(mws_sp<mws_font> i_font)
+float mws_font_db::get_descender(mws_sp<mws_font> i_font)
 {
    return 0;
 }
 
-float font_db::get_height(mws_sp<mws_font> i_font)
+float mws_font_db::get_height(mws_sp<mws_font> i_font)
 {
    return 20;
 }
 
-glm::vec2 font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text)
+glm::vec2 mws_font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text)
 {
    return glm::vec2(i_text.length() * get_height(i_font) / 2, get_height(i_font));
 }
 
-void font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
+void mws_font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
    const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count) {}
-mws_sp<mws_font> font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height) { return nullptr; }
+mws_sp<mws_font> mws_font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height) { return nullptr; }
 
 #endif
 
 
-const std::string font_db::default_font_name = "mws-def-font";
-mws_sp<font_db> font_db::instance;
+const std::string mws_font_db::default_font_name = "mws-def-font";
+mws_sp<mws_font_db> mws_font_db::instance;
 
 #endif

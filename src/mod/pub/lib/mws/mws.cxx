@@ -5,8 +5,8 @@
 #include "mws.hxx"
 #include "mws-com.hxx"
 #include "mws-camera.hxx"
-#include "mws-font.hxx"
-#include "text-vxo.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-text-vxo.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-vxo.hxx"
@@ -452,7 +452,7 @@ bool mws_page_tab::is_empty()
    return page_tab.empty();
 }
 
-mws_sp<text_vxo> mws_page_tab::get_text_vxo() const
+mws_sp<mws_text_vxo> mws_page_tab::get_text_vxo() const
 {
    return tab_text_vxo;
 }
@@ -588,7 +588,7 @@ void mws_page_tab::new_instance_helper()
 
 #if defined MOD_VECTOR_FONTS
    {
-      auto tab_text_vxo = text_vxo::nwi();
+      auto tab_text_vxo = mws_text_vxo::nwi();
 
       mws_root->tab_text_vxo = tab_text_vxo;
       mws_root->attach(tab_text_vxo);

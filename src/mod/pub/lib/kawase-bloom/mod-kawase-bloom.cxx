@@ -4,8 +4,8 @@
 #include "kawase-bloom.hxx"
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-rt.hxx"
@@ -44,9 +44,9 @@ namespace mod_kawase_bloom_ns
                };
                uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-               font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+               mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
                mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.2f));
-               font_db::inst()->set_global_font(font);
+               mws_font_db::inst()->set_global_font(font);
             }
             else
             {

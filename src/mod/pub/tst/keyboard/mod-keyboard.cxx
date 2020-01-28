@@ -4,8 +4,8 @@
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "mws/mws-text-box.hxx"
-#include "mws/mws-font.hxx"
-#include "mws/font-db.hxx"
+#include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 
 
 mod_keyboard::mod_keyboard() : mws_mod(mws_stringify(MOD_KEYBOARD)) {}

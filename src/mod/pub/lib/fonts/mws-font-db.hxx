@@ -12,7 +12,7 @@ namespace ftgl
 }
 class mws_mod;
 class gfx_tex;
-class font_db_impl;
+class mws_font_db_impl;
 class mws_dim;
 class mws_pt;
 class mws_px;
@@ -89,7 +89,7 @@ public:
    float get_outline_thickness()const;
 
 private:
-   friend class font_db_impl;
+   friend class mws_font_db_impl;
 
    font_glyph(ftgl::texture_glyph_t* i_glyph);
 
@@ -97,12 +97,12 @@ private:
 };
 
 
-class font_db
+class mws_font_db
 {
 public:
    static const std::string default_font_name;
-   static mws_sp<font_db> nwi_inex(uint32 i_pow_of_two_db_size);
-   static mws_sp<font_db> inst();
+   static mws_sp<mws_font_db> nwi_inex(uint32 i_pow_of_two_db_size);
+   static mws_sp<mws_font_db> inst();
    void clear_db();
    void resize_db(uint32 i_pow_of_two);
    const mws_sp<mws_font> get_global_font() const;
@@ -121,9 +121,9 @@ public:
 
 private:
    friend class mws_mod;
-   font_db(uint32 i_pow_of_two);
+   mws_font_db(uint32 i_pow_of_two);
    void on_frame_start();
 
-   static mws_sp<font_db> instance;
-   mws_sp<font_db_impl> p;
+   static mws_sp<mws_font_db> instance;
+   mws_sp<mws_font_db_impl> p;
 };
