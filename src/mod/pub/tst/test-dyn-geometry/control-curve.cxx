@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "control-curve.hxx"
 
 
@@ -92,5 +89,3 @@ std::string ControlCurve::toString()
 	//}
 	return std::string();
 }
-
-#endif

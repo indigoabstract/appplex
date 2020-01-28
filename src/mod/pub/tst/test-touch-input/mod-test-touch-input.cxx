@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST_TOUCH_INPUT
 
 #include "mod-test-touch-input.hxx"
 #include "input/gesture-detectors.hxx"
@@ -564,5 +561,3 @@ void mod_test_touch_input::init_mws()
    mws_cam->clear_depth = true;
    mws_cam->clear_color_value = gfx_color::colors::indigo;
 }
-
-#endif

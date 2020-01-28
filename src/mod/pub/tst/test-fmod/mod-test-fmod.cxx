@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-fmod.hxx"
-
-#ifdef MOD_TEST_FMOD
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws.hxx"
 #include "snd.hxx"
@@ -428,5 +425,3 @@ void mod_test_fmod::init_mws()
    mws_root->new_page<mainpage>();
 	mws_cam->clear_color = true;
 }
-
-#endif

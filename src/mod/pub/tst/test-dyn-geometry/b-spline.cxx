@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "b-spline.hxx"
 #include <glm/inc.hpp>
 
@@ -59,6 +56,4 @@ void Bspline::paint()
 	//}
 	//g.drawPolyline(pol.xpoints, pol.ypoints, pol.npoints);
 }
-
-#endif
 

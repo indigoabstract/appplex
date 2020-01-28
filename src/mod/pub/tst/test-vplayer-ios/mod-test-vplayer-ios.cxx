@@ -2,7 +2,6 @@
 
 #include "mod-test-vplayer-ios.hxx"
 
-#ifdef MOD_TEST_VPLAYER_IOS
 
 using std::string;
 
@@ -26,5 +25,3 @@ bool mod_test_vplayer_ios::update()
 {
 	return true;
 }
-
-#endif

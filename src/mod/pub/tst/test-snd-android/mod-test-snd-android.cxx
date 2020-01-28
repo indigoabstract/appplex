@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-snd-android.hxx"
-
-#ifdef MOD_TEST_SND_ANDROID
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "snd/snd.hxx"
@@ -128,5 +125,3 @@ void mod_test_snd_android::init_mws()
 void mod_test_snd_android::load()
 {
 }
-
-#endif

@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-grid.hxx"
-
-#ifdef MOD_TEST_GRID
-
 #include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
@@ -236,5 +233,3 @@ void mod_test_grid::receive(mws_sp<mws_dp> idp)
 		}
 	}
 }
-
-#endif

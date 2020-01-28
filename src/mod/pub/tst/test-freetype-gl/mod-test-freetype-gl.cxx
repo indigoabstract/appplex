@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-freetype-gl.hxx"
-
-#ifdef MOD_TEST_FREETYPE_GL
-
 #include "input/input-ctrl.hxx"
 #include "mws/mws-camera.hxx"
 #include "fonts/mws-font.hxx"
@@ -117,5 +114,3 @@ bool mod_test_freetype_gl::update()
 void mod_test_freetype_gl::receive(mws_sp<mws_dp> idp)
 {
 }
-
-#endif

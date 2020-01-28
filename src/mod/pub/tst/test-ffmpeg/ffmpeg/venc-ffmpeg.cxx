@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_FFMPEG
-
 #include "venc-ffmpeg.hxx"
 #include "vdec-ffmpeg.hxx"
 #include "pfm.hxx"
@@ -1213,5 +1209,3 @@ void mws_ffmpeg_reencoder::set_reencode_listener(mws_sp<mws_vreencoder_listener>
 {
    p->rencode_frame_listener = i_listener;
 }
-
-#endif

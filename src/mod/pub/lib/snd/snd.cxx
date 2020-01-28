@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_SND
 
 #include "snd.hxx"
 #include "pfm.hxx"
@@ -207,5 +204,3 @@ int musical_note::tones_between(mws_sp<musical_note> inote)
 
 	return delta;
 }
-
-#endif

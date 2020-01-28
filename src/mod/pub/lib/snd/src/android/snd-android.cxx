@@ -2,7 +2,6 @@
 #include "appplex-conf.hxx"
 
 #if defined PLATFORM_ANDROID
-#if defined MOD_SND
 
 #include "snd.hxx"
 #include "pfm.hxx"
@@ -246,5 +245,4 @@ void android_main::snd_close()
 {
 }
 
-#endif // MOD_SND
 #endif // PLATFORM_ANDROID

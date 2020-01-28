@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "catmull-rom-spline.hxx"
 
 
@@ -26,6 +23,3 @@ float CatmullRom::b(int i, float t)
 
 	return 0; //we only get here if an invalid i is specified
 }
-
-#endif
-

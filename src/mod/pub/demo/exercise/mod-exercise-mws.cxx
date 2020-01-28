@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-exercise.hxx"
-
-#ifdef MOD_EXERCISE
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "input/transitions.hxx"
@@ -780,5 +777,3 @@ void mod_exercise::init_mws()
 	mws_page::new_shared_instance(new ex3page(mws_root));
 	mws_page::new_shared_instance(new astropage(mws_root));
 }
-
-#endif

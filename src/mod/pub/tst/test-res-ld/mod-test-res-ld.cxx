@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-res-ld.hxx"
-
-#ifdef MOD_TEST_RES_LD
-
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-color.hxx"
@@ -72,5 +69,3 @@ void mod_test_res_ld::update_view(int update_count)
 
 	mws_mod::update_view(update_count);
 }
-
-#endif

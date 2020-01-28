@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST_SND_GENERATORS
 
 #include "mod-test-snd-generators.hxx"
 #include "snd/snd.hxx"
@@ -585,5 +582,3 @@ void mod_test_snd_generators::init_mws()
 void mod_test_snd_generators::load()
 {
 }
-
-#endif // MOD_TEST_SND_GENERATORS

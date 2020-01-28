@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_GL_FRAG_SHADER_DEMO
 
 #include "mod-gl-frag-shader-demo.hxx"
 #include "mws/mws-camera.hxx"
@@ -803,5 +800,3 @@ void mod_gl_frag_shader_demo::load()
 	p->load(static_pointer_cast<mod_gl_frag_shader_demo>(get_smtp_instance()));
 	page->on_load();
 }
-
-#endif

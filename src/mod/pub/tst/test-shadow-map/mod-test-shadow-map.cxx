@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-shadow-map.hxx"
-
-#ifdef MOD_TEST_SHADOW_MAP
-
 #include "gfx.hxx"
 #include "gfx-ext/gfx-surface.hxx"
 #include "gfx-rt.hxx"
@@ -256,5 +253,3 @@ bool mod_test_shadow_map::update()
 
 	return mws_mod::update();
 }
-
-#endif

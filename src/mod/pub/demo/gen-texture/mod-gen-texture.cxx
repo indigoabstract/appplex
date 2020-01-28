@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-gen-texture.hxx"
-
-#ifdef MOD_GEN_TEXTURE
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "gfx-tex.hxx"
@@ -238,5 +235,3 @@ void mod_gen_texture::init_mws()
 void mod_gen_texture::load()
 {
 }
-
-#endif

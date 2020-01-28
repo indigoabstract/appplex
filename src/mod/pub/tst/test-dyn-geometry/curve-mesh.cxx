@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "curve-mesh.hxx"
 #include "natural-cubic-spline.hxx"
 #include "gfx.hxx"
@@ -478,5 +475,3 @@ void curve_mesh::draw_unsynchronized(mws_sp<gfx_camera> icamera)
 {
 	draw_using_va(icamera);
 }
-
-#endif

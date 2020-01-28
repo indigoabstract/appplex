@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "input/input-ctrl.hxx"
 #include "fonts/mws-font-db.hxx"
 #include "gfx.hxx"
@@ -648,5 +645,3 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 		}
 	}
 }
-
-#endif

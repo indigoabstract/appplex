@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-gl.hxx"
-
-#ifdef MOD_TEST_GL
-
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
 #include "gfx-color.hxx"
@@ -101,5 +98,3 @@ void mod_test_gl::update_view(int update_count)
 
 	mws_mod::update_view(update_count);
 }
-
-#endif

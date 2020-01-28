@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_ABSTRACT_RACING
-
 #include "spline.hxx"
 #include <vector>
 
@@ -89,5 +85,3 @@ spline** spline::calculateNaturalCubic(int n, float x[])
 
 	return C;
 }
-
-#endif

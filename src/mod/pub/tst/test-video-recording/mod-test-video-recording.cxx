@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-video-recording.hxx"
-
-#ifdef MOD_TEST_VIDEO_RECORDING
-
 #include "tst/test-ffmpeg/ffmpeg/venc-ffmpeg.hxx"
 #include "input/input-ctrl.hxx"
 #include "gfx-inc.hxx"
@@ -452,5 +449,3 @@ void mod_test_video_recording::receive(mws_sp<mws_dp> idp)
       i.receive(idp);
    }
 }
-
-#endif

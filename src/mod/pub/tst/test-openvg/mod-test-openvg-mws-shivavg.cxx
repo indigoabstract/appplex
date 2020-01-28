@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-openvg.hxx"
-
-#ifdef MOD_TEST_OPENVG
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "ovg-obj.hxx"
@@ -2815,5 +2812,3 @@ void mod_test_openvg::init_shivavg()
 void mod_test_openvg::destroy_shivavg()
 {
 }
-
-#endif

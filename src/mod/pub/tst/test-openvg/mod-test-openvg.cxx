@@ -2,8 +2,6 @@
 
 #include "mod-test-openvg.hxx"
 
-#ifdef MOD_TEST_OPENVG
-
 
 mod_test_openvg::mod_test_openvg() : mws_mod(mws_stringify(MOD_TEST_OPENVG)) {}
 
@@ -33,5 +31,3 @@ void mod_test_openvg::init_mws()
 void mod_test_openvg::load()
 {
 }
-
-#endif

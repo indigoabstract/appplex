@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST_GL_UNIFORM_BLOCKS
 
 #include "mod-test-gl-uniform-blocks.hxx"
 #include "pfm-gl.h"
@@ -283,5 +280,3 @@ void mod_test_gl_uniform_blocks::update_view(int update_count)
 
    test.draw_ubo();
 }
-
-#endif

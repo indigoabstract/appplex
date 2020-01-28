@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-exercise.hxx"
-
-#ifdef MOD_EXERCISE
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "input/transitions.hxx"
@@ -155,5 +152,3 @@ void mod_exercise::unload()
 
 	trx("elapse2 {}", el2.total_milliseconds());
 }
-
-#endif

@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_ABSTRACT_RACING
-
 #include "track.hxx"
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
@@ -258,5 +254,3 @@ void track::drawTrack(mws_sp<gfx_camera> r)
 	//r->vx.set_vertex_data(begin_ptr(right_wall_vertices), &vxfmt_v3fc4bn3t2f::vxi);
  //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), begin_ptr(road_indices));
 }
-
-#endif

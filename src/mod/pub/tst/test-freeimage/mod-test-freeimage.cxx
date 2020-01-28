@@ -1,11 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-freeimage.hxx"
-
-#ifdef MOD_TEST_FREEIMAGE
-
-#pragma comment (lib, "freeimage.lib")
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "ovg-obj.hxx"
@@ -14,6 +9,8 @@
 #include <freeimage/freeimage.h>
 #include <openvg.h>
 #include <filesystem.hpp>
+
+#pragma comment (lib, "freeimage.lib")
 
 namespace bfs = ::boost::filesystem;
 using std::string;
@@ -371,5 +368,3 @@ void mod_test_freeimage::init_mws()
 void mod_test_freeimage::load()
 {
 }
-
-#endif

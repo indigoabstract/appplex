@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_KEMX
-
 #include "node-info.hxx"
 #include "pfm.hxx"
 
@@ -215,5 +211,3 @@ void node_info::printList(vector<mws_sp<node_info> >& list, int ilevel)
 		}
 	}
 }
-
-#endif

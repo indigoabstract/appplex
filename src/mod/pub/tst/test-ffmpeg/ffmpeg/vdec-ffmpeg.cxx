@@ -1,9 +1,5 @@
 #include "stdafx.hxx"
 
-#include "appplex-conf.hxx"
-
-#ifdef MOD_FFMPEG
-
 #include "vdec-ffmpeg.hxx"
 #include "venc-ffmpeg.hxx"
 #include "gfx.hxx"
@@ -688,5 +684,3 @@ void vdec_ffmpeg::set_listener(mws_sp<mws_vdec_listener> listener)
 {
    impl->set_listener(listener);
 }
-
-#endif

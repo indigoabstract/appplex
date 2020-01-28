@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_VID
 
 #include "mod-vid.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_vid> mod_vid::nwi()
 void mod_vid::init() {}
 void mod_vid::init_mws() {}
 void mod_vid::load() {}
-
-#endif

@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-mws.hxx"
-
-#ifdef MOD_TEST_MWS
-
 #include "mws/mws-ext.hxx"
 #include "mws/mws-camera.hxx"
 
@@ -79,5 +76,3 @@ void mod_test_mws::init_mws()
 
 	mws_cam->clear_color = true;
 }
-
-#endif

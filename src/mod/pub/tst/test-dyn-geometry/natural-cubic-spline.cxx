@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-dyn-geometry.hxx"
-
-#ifdef MOD_TEST_DYN_GEOMETRY
-
 #include "natural-cubic-spline.hxx"
 
 
@@ -167,5 +164,3 @@ void NatCubic::paint()
 	//	g.drawPolyline(p.xpoints, p.ypoints, p.npoints);
 	//}
 }
-
-#endif

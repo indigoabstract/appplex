@@ -2,7 +2,6 @@
 
 #include "mod-test-vplayer-android.hxx"
 
-#ifdef MOD_TEST_VPLAYER_ANDROID
 
 using std::string;
 
@@ -26,5 +25,3 @@ bool mod_test_vplayer_android::update()
 {
 	return true;
 }
-
-#endif

@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-trail.hxx"
-
-#ifdef MOD_TEST_TRAIL
-
 #include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
@@ -850,5 +847,3 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
       }
    }
 }
-
-#endif

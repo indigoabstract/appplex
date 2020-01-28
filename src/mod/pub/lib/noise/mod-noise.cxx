@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_NOISE
 
 #include "mod-noise.hxx"
 
@@ -16,5 +13,3 @@ mws_sp<mod_noise> mod_noise::nwi()
 void mod_noise::init() {}
 void mod_noise::init_mws() {}
 void mod_noise::load() {}
-
-#endif

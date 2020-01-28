@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST_GL_OUTLINES
 
 #include "mod-test-gl-outlines.hxx"
 #include "pfm-gl.h"
@@ -279,5 +276,3 @@ void mod_test_gl_outlines::update_view(int update_count)
 
    test.draw_ubo();
 }
-
-#endif

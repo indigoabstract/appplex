@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-audioengine.hxx"
-
-#ifdef MOD_TEST_AUDIOENGINE
-
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 
@@ -61,5 +58,3 @@ void mod_test_audioengine::init_mws()
 void mod_test_audioengine::load()
 {
 }
-
-#endif

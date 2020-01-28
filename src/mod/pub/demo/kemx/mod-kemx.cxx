@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-kemx.hxx"
-
-#ifdef MOD_KEMX
-
 #include "mws/mws-com.hxx"
 #include "mws/mws-camera.hxx"
 #include "data-sequence.hxx"
@@ -178,5 +175,3 @@ void mod_kemx::create_mws_tree_model(const vector<mws_sp<node_info> >& list, mws
       }
    }
 }
-
-#endif

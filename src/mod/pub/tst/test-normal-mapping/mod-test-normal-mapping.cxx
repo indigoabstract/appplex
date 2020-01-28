@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-normal-mapping.hxx"
-
-#ifdef MOD_TEST_NORMAL_MAPPING
-
 #include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
@@ -1464,5 +1461,3 @@ void mod_test_normal_mapping::receive(mws_sp<mws_dp> idp)
       mws_mod::receive(idp);
    }
 }
-
-#endif

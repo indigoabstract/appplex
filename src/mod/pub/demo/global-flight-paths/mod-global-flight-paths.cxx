@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-global-flight-paths.hxx"
-
-#ifdef MOD_GLOBAL_FLIGHT_PATHS
-
 #include "mws/mws-com.hxx"
 #include "mws/mws-camera.hxx"
 #include "fonts/mws-font.hxx"
@@ -1077,5 +1074,3 @@ void mod_global_flight_paths::init_mws()
 {
    auto page = mws_root->new_page<main_page>();
 }
-
-#endif

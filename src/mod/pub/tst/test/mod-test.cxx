@@ -1,7 +1,4 @@
 #include "stdafx.hxx"
-#include "appplex-conf.hxx"
-
-#ifdef MOD_TEST
 
 #include "mod-test.hxx"
 #include "mws/mws-camera.hxx"
@@ -199,5 +196,3 @@ void mod_test::init_mws()
 void mod_test::load()
 {
 }
-
-#endif

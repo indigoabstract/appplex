@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-openvg.hxx"
-
-#ifdef MOD_TEST_OPENVG
-
 //#define ENABLE_MONKVG
 #ifdef ENABLE_MONKVG
 
@@ -268,5 +265,3 @@ void mod_test_openvg::destroy_monkvg()
 	vgDestroyContextSH();
 #endif
 }
-
-#endif

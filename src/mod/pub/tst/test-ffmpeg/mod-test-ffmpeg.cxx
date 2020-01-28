@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-test-ffmpeg.hxx"
-
-#ifdef MOD_TEST_FFMPEG
-
 #include "mws-mod-ctrl.hxx"
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
@@ -203,5 +200,3 @@ void mod_test_ffmpeg::receive(mws_sp<mws_dp> idp)
 		}
 	}
 }
-
-#endif

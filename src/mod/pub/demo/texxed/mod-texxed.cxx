@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-texxed.hxx"
-
-#ifdef MOD_TEXXED
-
 #include "mws/mws-text-box.hxx"
 #include "mws/mws-camera.hxx"
 
@@ -111,5 +108,3 @@ void mod_texxed::init_mws()
 void mod_texxed::load()
 {
 }
-
-#endif

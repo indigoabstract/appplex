@@ -1,9 +1,6 @@
 #include "stdafx.hxx"
 
 #include "mod-abstract-racing.hxx"
-
-#ifdef MOD_ABSTRACT_RACING
-
 #include "mws/mws-camera.hxx"
 #include "gfx-state.hxx"
 #include "gfx-vxo-ext.hxx"
@@ -232,5 +229,3 @@ void mod_abstract_racing::load()
 	//};
 	//renderer::get_instance()->st.set_state(pl1);
 }
-
-#endif
