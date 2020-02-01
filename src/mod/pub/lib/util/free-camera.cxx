@@ -30,6 +30,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
       return;
    }
 
+   mws_sp<mws_mod> mod = u.lock();
    bool ctrl_held = u.lock()->key_ctrl_inst->key_is_held(KEY_CONTROL);
 
    if (ctrl_held)
@@ -44,7 +45,6 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
    if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-
       bool dragging_detected = dragging_det.detect_helper(ts);
 
       if (dragging_detected)
@@ -62,7 +62,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
             glm::quat rot_around_up_dir = glm::angleAxis(dx_rad, up_dir);
             look_at_dir = glm::normalize(look_at_dir * rot_around_up_dir);
-            ts->process(nullptr);
+            ts->process(mod);
          }
          // translation movement.
          else
@@ -92,7 +92,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
             clamp_angles();
             //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
             mov_type = e_roll_view_axis;
-            ts->process(nullptr);
+            ts->process(mod);
          }
       }
 
@@ -104,20 +104,20 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
          case mws_ptr_evt::touch_began:
          {
             ks->grab(ts->points[0].x, ts->points[0].y);
-            ts->process(nullptr);
+            ts->process(mod);
             break;
          }
 
          case mws_ptr_evt::touch_ended:
          {
-            ts->process(nullptr);
+            ts->process(mod);
             break;
          }
 
          case mws_ptr_evt::mouse_wheel:
          {
             persp_cam->position += look_at_dir * mw_speed_factor * ts->mouse_wheel_delta;
-            ts->process(nullptr);
+            ts->process(mod);
             break;
          }
          }
@@ -198,7 +198,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
          if (do_action)
          {
-            ke->process(nullptr);
+            ke->process(mod);
          }
       }
    }

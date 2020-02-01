@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ storage-dir-tst ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ voronoi-keyboard ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -115,8 +115,8 @@ mod
 	texxed[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ], ],
 	exercise[ ],
 	gen-texture[ ],
-	global-flight-paths[ uses[ bitmap-fonts, gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
-	layered-car-paint[ uses[ gfx ], platf[ windows, emscripten ], ],
+	global-flight-paths[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ] ],
+	layered-car-paint[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, tiny-obj-loader, util, vector-fonts ], ],
 	who-am-i[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, res-ld, util, vector-fonts ] ],
 
 	@@[ tst ],

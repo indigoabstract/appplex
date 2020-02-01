@@ -655,6 +655,43 @@ mws_sp<gfx_camera> gfx_camera::nwi(mws_sp<gfx> i_gi)
    return inst;
 }
 
+mws_sp<gfx_camera> gfx_camera::nwi_orthographic
+(
+   mws_sp<gfx> i_gi, const std::string& i_camera_id, float i_near_clip_distance,
+   float i_far_clip_distance, bool i_clear_color, gfx_color i_clear_color_value
+)
+{
+   mws_sp<gfx_camera> inst(new gfx_camera(i_gi));
+
+   inst->load(inst);
+   inst->camera_id = i_camera_id;
+   inst->near_clip_distance = i_near_clip_distance;
+   inst->far_clip_distance = i_far_clip_distance;
+   inst->clear_color = i_clear_color;
+   inst->clear_color_value = i_clear_color_value;
+
+   return inst;
+}
+
+mws_sp<gfx_camera> gfx_camera::nwi_perspective
+(
+   mws_sp<gfx> i_gi, const std::string& i_camera_id, float i_near_clip_distance, float i_far_clip_distance,
+   float i_fov_y_deg, bool i_clear_color, gfx_color i_clear_color_value
+)
+{
+   mws_sp<gfx_camera> inst(new gfx_camera(i_gi));
+
+   inst->load(inst);
+   inst->camera_id = i_camera_id;
+   inst->near_clip_distance = i_near_clip_distance;
+   inst->far_clip_distance = i_far_clip_distance;
+   inst->fov_y_deg = i_fov_y_deg;
+   inst->clear_color = i_clear_color;
+   inst->clear_color_value = i_clear_color_value;
+
+   return inst;
+}
+
 gfx_obj::e_gfx_obj_type gfx_camera::get_type()const
 {
    return e_cam;

@@ -153,3 +153,12 @@ mws_sp<raw_img_data> res_ld::load_image(std::string i_filename) { return nullptr
 void snd::init() { err_na(); }
 void snd::update() { err_na(); }
 #endif
+
+#if !MOD_TINY_OBJ_LOADER
+#include "tiny-obj-loader/tiny_obj_loader.hxx"
+namespace tinyobj
+{
+   std::string LoadObj(std::vector<shape_t>& shapes, std::istream& inStream, MaterialReader& readMatFn) { return ""; }
+   std::string LoadMtl(std::map<std::string, material_t>& material_map, std::istream& inStream) { return ""; }
+}
+#endif

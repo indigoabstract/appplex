@@ -1,5 +1,5 @@
 #ifdef GL_ES
-	precision lowp float;
+	precision highp float;
 #endif
 
 const float av = 0.0;

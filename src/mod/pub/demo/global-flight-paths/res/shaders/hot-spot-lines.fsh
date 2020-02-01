@@ -1,5 +1,5 @@
 #ifdef GL_ES
-	precision lowp float;
+	precision highp float;
 #endif
 
 uniform sampler2D u_s2d_tex;

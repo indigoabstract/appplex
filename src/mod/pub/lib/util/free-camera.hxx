@@ -4,6 +4,7 @@
 #include <glm/inc.hpp>
 #include "input/gesture-detectors.hxx"
 
+
 class gfx_camera;
 class mws_mod;
 class kinetic_scrolling;

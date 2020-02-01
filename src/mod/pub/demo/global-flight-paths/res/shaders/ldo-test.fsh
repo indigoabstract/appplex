@@ -1,5 +1,5 @@
 #ifdef GL_ES
-	precision lowp float;
+	precision highp float;
 #endif
 
 const float u_f_shininess = 295.0;

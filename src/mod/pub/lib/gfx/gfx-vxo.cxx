@@ -1,6 +1,8 @@
 #include "stdafx.hxx"
 
 #include "gfx-vxo.hxx"
+#include "gfx-vxo-ext.hxx"
+#include "mod-list.hxx"
 #include "pfm-gl.h"
 #include "gfx.hxx"
 #include "gfx-util.hxx"
@@ -369,148 +371,152 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
       if (name_changed && mesh_name.length() > 0)
       {
-#if defined MOD_TINY_OBJ_LOADER
-
-         name_changed = false;
-         mws_sp<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_mws_sp());
-
-         if (obj_mesh && !obj_mesh->is_loaded)
+         if (mod_tiny_obj_loader_on)
          {
-            std::vector<tinyobj::shape_t> shapes;
-            mws_sp<pfm_file> f = pfm_file::get_inst(mesh_name);
-            std::string path = f->get_full_path();
+            name_changed = false;
+            mws_sp<gfx_obj_vxo> obj_mesh = static_pointer_cast<gfx_obj_vxo>(get_mws_sp());
 
-            mws_print("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
-
-            struct membuf : std::streambuf
+            if (obj_mesh && !obj_mesh->is_loaded)
             {
-               membuf(uint8* begin, uint8* end)
+               std::vector<tinyobj::shape_t> shapes;
+               mws_sp<pfm_file> f = pfm_file::get_inst(mesh_name);
+               std::string path = f->get_full_path();
+
+               mws_print("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
+
+               struct membuf : std::streambuf
                {
-                  this->setg((char*)begin, (char*)begin, (char*)end);
-               }
-            };
+                  membuf(uint8* begin, uint8* end)
+                  {
+                     this->setg((char*)begin, (char*)begin, (char*)end);
+                  }
+               };
 
-            class MaterialMemReader : public tinyobj::MaterialReader
-            {
-            public:
-               MaterialMemReader(const std::string& mtl_basepath)
+               class material_mem_reader : public tinyobj::MaterialReader
                {
-                  if (ends_with(mtl_basepath, ".obj"))
+               public:
+                  material_mem_reader(const std::string& mtl_basepath)
                   {
-                     name = mtl_basepath.substr(0, mtl_basepath.length() - 4) + ".mtl";
-                  }
-                  else
-                  {
-                     name = mtl_basepath;
-                  }
-               }
-               virtual ~MaterialMemReader() {}
-               std::string operator()(const std::string& matId, std::map<std::string, tinyobj::material_t>& matMap)
-               {
-                  std::string filepath;
-
-                  if (!name.empty()) {
-                     filepath = std::string(name) + matId;
-                  }
-                  else {
-                     filepath = matId;
-                  }
-
-                  mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
-                  membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
-                  std::istream matIStream(&sbuf);
-                  //std::ifstream matIStream(filepath.c_str());
-                  return LoadMtl(matMap, matIStream);
-               }
-
-            private:
-               std::string name;
-            };
-
-            mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
-            membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
-            std::istream in(&sbuf);
-            //std::string err = tinyobj::LoadObj(shapes, f->get_full_path().c_str(), f->get_root_directory().c_str());
-            MaterialMemReader mr(mesh_name);
-            std::string err = tinyobj::LoadObj(shapes, in, mr);
-
-            if (err.empty())
-            {
-               mws_print("... ");
-               //vx_info vxi("a_v3_position, a_v3_normal, a_v2_tex_coord");
-
-               for (size_t i = 0; i < 1/*shapes.size()*/; i++)
-               {
-                  //mws_sp<gl_mesh> mesh(new gl_mesh(vxi));
-                  std::vector<vx_fmt_p3f_n3f_t2f> ks_vertices_data;
-                  std::vector<gfx_indices_type> ks_indices_data;
-
-                  if (shapes[i].mesh.positions.size() != shapes[i].mesh.normals.size() || shapes[i].mesh.positions.size() / 3 != shapes[i].mesh.texcoords.size() / 2)
-                  {
-                     mws_print("xxx");
-                  }
-                  //mws_print("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
-                  //mws_print("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
-                  //assert((shapes[i].mesh.indices.size() % 3) == 0);
-
-                  for (size_t f = 0; f < shapes[i].mesh.indices.size(); f++)
-                  {
-                     ks_indices_data.push_back((gfx_indices_type)shapes[i].mesh.indices[f]);
-                     //mws_print("  idx[%ld] = %d\n", f, shapes[i].mesh.indices[f]);
-                  }
-
-                  //mws_print("shape[%ld].vertices: %ld\n", i, shapes[i].mesh.positions.size());
-                  //assert((shapes[i].mesh.positions.size() % 3) == 0);
-                  int size = shapes[i].mesh.positions.size() / 3;
-
-                  for (int v = 0; v < size; v++)
-                  {
-                     //mws_print("  v[%ld] = (%f, %f, %f)\n", v,
-                     //	shapes[i].mesh.positions[3*v+0],
-                     //	shapes[i].mesh.positions[3*v+1],
-                     //	shapes[i].mesh.positions[3*v+2]);
-
-                     vx_fmt_p3f_n3f_t2f vx;
-                     vx.pos.x = shapes[i].mesh.positions[3 * v + 0];
-                     vx.pos.y = shapes[i].mesh.positions[3 * v + 1];
-                     vx.pos.z = shapes[i].mesh.positions[3 * v + 2];
-                     vx.nrm.nx = shapes[i].mesh.normals[3 * v + 0];
-                     vx.nrm.ny = shapes[i].mesh.normals[3 * v + 1];
-                     vx.nrm.nz = shapes[i].mesh.normals[3 * v + 2];
-
-                     if (!shapes[i].mesh.texcoords.empty())
+                     if (ends_with(mtl_basepath, ".obj"))
                      {
-                        vx.tex.u = shapes[i].mesh.texcoords[2 * v + 0];
-                        vx.tex.v = 1.f - shapes[i].mesh.texcoords[2 * v + 1];
+                        name = mtl_basepath.substr(0, mtl_basepath.length() - 4) + ".mtl";
                      }
                      else
                      {
-                        vx.tex.u = 0;
-                        vx.tex.v = 0;
+                        name = mtl_basepath;
                      }
-
-                     ks_vertices_data.push_back(vx);
                   }
 
-                  int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
-                  int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-                  gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, obj_mesh);
-                  //obj_mesh->mesh_list.push_back(mesh);
-                  mws_print("done\n");
-                  obj_mesh->is_loaded = true;
+                  virtual ~material_mem_reader() {}
+
+                  std::string operator()(const std::string& matId, std::map<std::string, tinyobj::material_t>& matMap)
+                  {
+                     std::string filepath;
+
+                     if (!name.empty())
+                     {
+                        filepath = std::string(name) + matId;
+                     }
+                     else
+                     {
+                        filepath = matId;
+                     }
+
+                     mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
+                     membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
+                     std::istream matIStream(&sbuf);
+                     //std::ifstream matIStream(filepath.c_str());
+                     return LoadMtl(matMap, matIStream);
+                  }
+
+               private:
+                  std::string name;
+               };
+
+               mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
+               membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
+               std::istream in(&sbuf);
+               //std::string err = tinyobj::LoadObj(shapes, f->get_full_path().c_str(), f->get_root_directory().c_str());
+               material_mem_reader mr(mesh_name);
+               std::string err = tinyobj::LoadObj(shapes, in, mr);
+
+               if (err.empty())
+               {
+                  mws_print("... ");
+                  //vx_info vxi("a_v3_position, a_v3_normal, a_v2_tex_coord");
+
+                  for (size_t i = 0; i < 1/*shapes.size()*/; i++)
+                  {
+                     //mws_sp<gl_mesh> mesh(new gl_mesh(vxi));
+                     std::vector<vx_fmt_p3f_n3f_t2f> ks_vertices_data;
+                     std::vector<gfx_indices_type> ks_indices_data;
+
+                     if (shapes[i].mesh.positions.size() != shapes[i].mesh.normals.size() || shapes[i].mesh.positions.size() / 3 != shapes[i].mesh.texcoords.size() / 2)
+                     {
+                        mws_print("xxx");
+                     }
+                     //mws_print("shape[%ld].vxo_name = %s\n", i, shapes[i].vxo_name.c_str());
+                     //mws_print("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
+                     //assert((shapes[i].mesh.indices.size() % 3) == 0);
+
+                     for (size_t f = 0; f < shapes[i].mesh.indices.size(); f++)
+                     {
+                        ks_indices_data.push_back((gfx_indices_type)shapes[i].mesh.indices[f]);
+                        //mws_print("  idx[%ld] = %d\n", f, shapes[i].mesh.indices[f]);
+                     }
+
+                     //mws_print("shape[%ld].vertices: %ld\n", i, shapes[i].mesh.positions.size());
+                     //assert((shapes[i].mesh.positions.size() % 3) == 0);
+                     int size = shapes[i].mesh.positions.size() / 3;
+
+                     for (int v = 0; v < size; v++)
+                     {
+                        //mws_print("  v[%ld] = (%f, %f, %f)\n", v,
+                        //	shapes[i].mesh.positions[3*v+0],
+                        //	shapes[i].mesh.positions[3*v+1],
+                        //	shapes[i].mesh.positions[3*v+2]);
+
+                        vx_fmt_p3f_n3f_t2f vx;
+                        vx.pos.x = shapes[i].mesh.positions[3 * v + 0];
+                        vx.pos.y = shapes[i].mesh.positions[3 * v + 1];
+                        vx.pos.z = shapes[i].mesh.positions[3 * v + 2];
+                        vx.nrm.x = shapes[i].mesh.normals[3 * v + 0];
+                        vx.nrm.y = shapes[i].mesh.normals[3 * v + 1];
+                        vx.nrm.z = shapes[i].mesh.normals[3 * v + 2];
+
+                        if (!shapes[i].mesh.texcoords.empty())
+                        {
+                           vx.tex.s = shapes[i].mesh.texcoords[2 * v + 0];
+                           vx.tex.t = 1.f - shapes[i].mesh.texcoords[2 * v + 1];
+                        }
+                        else
+                        {
+                           vx.tex.s = 0;
+                           vx.tex.t = 0;
+                        }
+
+                        ks_vertices_data.push_back(vx);
+                     }
+
+                     int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
+                     int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
+                     gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, obj_mesh);
+                     //obj_mesh->mesh_list.push_back(mesh);
+                     mws_print("done\n");
+                     obj_mesh->is_loaded = true;
+                  }
+               }
+               else
+               {
+                  mws_print("error loading %s. error msg: %s", f->get_full_path().c_str(), err.c_str());
                }
             }
-            else
-            {
-               mws_print("error loading %s. error msg: %s", f->get_full_path().c_str(), err.c_str());
-            }
+
          }
-
-#else
-
-         mws_print("error: MOD_TINY_OBJ_LOADER is not enabled\n");
-
-#endif
+         else
+         {
+            mws_print("error: MOD_TINY_OBJ_LOADER is not enabled\n");
+         }
       }
 
       int texture_unit_idx = 0;
@@ -1036,5 +1042,4 @@ void gfx_vxo::compute_tangent_basis()
       tangent_basis->tg = tangents[i];
       tangent_basis->bitg = bitangents[i];
    }
-   int x = 3;
 }

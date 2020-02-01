@@ -279,6 +279,7 @@ extern "C"
 
 
 #define mws_stringify(s) #s
+#define mws_println_all_builds(i_format, ...) mws_print_impl(i_format, ##__VA_ARGS__); mws_nl_impl()
 
 #if !defined NDEBUG || defined _DEBUG
 

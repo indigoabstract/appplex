@@ -159,6 +159,16 @@ public:
    };
 
    static mws_sp<gfx_camera> nwi(mws_sp<gfx> i_gi = nullptr);
+   static mws_sp<gfx_camera> nwi_orthographic
+   (
+      mws_sp<gfx> i_gi = nullptr, const std::string& i_camera_id = "", float i_near_clip_distance = -100.f,
+      float i_far_clip_distance = 100.f, bool i_clear_color = true, gfx_color i_clear_color_value = gfx_color::colors::black
+   );
+   static mws_sp<gfx_camera> nwi_perspective
+   (
+      mws_sp<gfx> i_gi = nullptr, const std::string& i_camera_id = "", float i_near_clip_distance = -100.f, float i_far_clip_distance = 100.f,
+      float i_fov_y_deg = 60.f, bool i_clear_color = true, gfx_color i_clear_color_value = gfx_color::colors::black
+   );
    virtual e_gfx_obj_type get_type()const override;
    void clear_buffers();
    void update_glp_params(mws_sp<gfx_vxo> imesh, mws_sp<gfx_shader> glp);
