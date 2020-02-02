@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 
-#ifdef MOD_TEST_DYN_GEOMETRY
+#ifdef MOD_DYN_GEOMETRY
 
 #include "pfm.hxx"
 #include <string>
@@ -41,7 +41,7 @@ namespace control_curve_ns
 
 		void addPoint(float x, float y)
 		{
-			if (xpoints.size() <= npoints)
+			if (xpoints.size() <= (uint32)npoints)
 			{
 				int new_size = npoints + 1;
 

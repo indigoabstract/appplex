@@ -1,6 +1,6 @@
 #include "stdafx.hxx"
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 #include "b-spline.hxx"
 #include <glm/inc.hpp>
 

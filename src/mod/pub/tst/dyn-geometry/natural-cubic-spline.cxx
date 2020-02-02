@@ -1,6 +1,6 @@
 #include "stdafx.hxx"
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 #include "natural-cubic-spline.hxx"
 
 
@@ -13,9 +13,9 @@ void NatCubic::calcFinalPoints()
 
 	final_point_list.push_back(p0);
 
-	for (int i = 0; i < vx->size(); i++)
+	for (uint32 i = 0; i < vx->size(); i++)
 	{
-		for (int j = 1; j <= STEPS; j++)
+		for (uint32 j = 1; j <= STEPS; j++)
 		{
 			float u = j / (float) STEPS;
 			glm::vec3 p((*vx)[i]->eval(u), (*vy)[i]->eval(u), 0);

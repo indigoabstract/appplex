@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 
-#ifdef MOD_TEST_DYN_GEOMETRY
+#ifdef MOD_DYN_GEOMETRY
 
 #include "pfm.hxx"
 #include "util/util.hxx"
@@ -19,20 +19,20 @@ class curve_mesh : public gfx_vxo
 public:
 	enum curve_types
 	{
-		e_touch_points,
 		e_ncs_points,
+		e_touch_points,
 	};
 
 	enum curve_mobility_types
 	{
-		e_mobile,
 		e_fixed,
+		e_mobile,
 	};
 
 	enum geometry_update_types
 	{
-		e_vertex_arrays,
 		e_vertex_buffer_objects,
+		e_vertex_arrays,
 		e_unsynchronized,
 	};
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 
-#ifdef MOD_TEST_DYN_GEOMETRY
+#ifdef MOD_DYN_GEOMETRY
 
 #include "pfm.hxx"
 #include "control-curve.hxx"

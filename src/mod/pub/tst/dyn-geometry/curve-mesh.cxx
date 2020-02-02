@@ -1,6 +1,6 @@
 #include "stdafx.hxx"
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 #include "curve-mesh.hxx"
 #include "natural-cubic-spline.hxx"
 #include "gfx.hxx"
@@ -12,9 +12,9 @@
 curve_mesh::curve_mesh() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_coord"))
 {
 	curve = mws_sp<NatCubic>(new NatCubic());
-	curve_type = e_touch_points;
-	curve_mobility = e_mobile;
-	geometry_update_type = e_vertex_arrays;
+	curve_type = e_ncs_points;
+	curve_mobility = e_fixed;
+	geometry_update_type = e_vertex_buffer_objects;
 	drawing_mode_changed = false;
 	MIN_DIST = 75;
 }
@@ -95,7 +95,7 @@ void curve_mesh::calc_points(std::vector<mws_ptr_evt::touch_point>& ipoint_list)
 	{
 		reset();
 
-		for (int k = 0; k < sampled_point_list.size(); k++)
+		for (uint32 k = 0; k < sampled_point_list.size(); k++)
 		{
 			glm::vec3& p = sampled_point_list[k];
 

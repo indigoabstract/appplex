@@ -1,6 +1,6 @@
 #include "stdafx.hxx"
 
-#include "mod-test-dyn-geometry.hxx"
+#include "mod-dyn-geometry.hxx"
 #include "input/input-ctrl.hxx"
 #include "input/gesture-detectors.hxx"
 #include "fonts/mws-font-db.hxx"
@@ -39,14 +39,14 @@ public:
 
 	// return Phi(z) = standard Gaussian cdf using Taylor approximation
 	static float Phi(float z) {
-		if (z < -8.0) return 0.0;
-		if (z > 8.0) return 1.0;
+		if (z < -8.f) return 0.f;
+		if (z > 8.f) return 1.f;
 		float sum = 0.0, term = z;
 		for (int i = 3; sum + term != sum; i += 2) {
 			sum = sum + term;
 			term = term * z * z / i;
 		}
-		return 0.5 + sum * phi(z);
+		return 0.5f + sum * phi(z);
 	}
 
 	// return Phi(z, mu, sigma) = Gaussian cdf with mean mu and stddev sigma
@@ -56,7 +56,7 @@ public:
 
 	// Compute z such that Phi(z) = y via bisection search
 	static float PhiInverse(float y) {
-		return PhiInverse(y, .00000001, -8, 8);
+		return PhiInverse(y, .00000001f, -8, 8);
 	}
 
 	// bisection search
@@ -139,7 +139,7 @@ mws_sp<std::vector<glm::vec2> > generatePolygon(float ctrX, float ctrY, float av
 class mws_select_button : public gfx_plane
 {
 public:
-	mws_select_button(mws_sp<mod_test_dyn_geometry> i_mod, int ibutton_id, std::vector<std::string>& istate_list)
+	mws_select_button(mws_sp<mod_dyn_geometry> i_mod, int ibutton_id, std::vector<std::string>& istate_list)
 	{
 		mws_mod = i_mod;
 		button_id = ibutton_id;
@@ -149,7 +149,7 @@ public:
 		is_init = false;
 	}
 
-	mws_sp<mod_test_dyn_geometry> get_mod()
+	mws_sp<mod_dyn_geometry> get_mod()
 	{
 		return mws_mod.lock();
 	}
@@ -220,14 +220,14 @@ public:
 	float x_percent_size, y_percent_size;
 	std::vector<std::string> state_list;
 	bool is_init;
-	mws_wp<mod_test_dyn_geometry> mws_mod;
+	mws_wp<mod_dyn_geometry> mws_mod;
 };
 
 
-class mod_test_dyn_geometry_impl
+class mod_dyn_geometry_impl
 {
 public:
-	mod_test_dyn_geometry_impl(mws_sp<mod_test_dyn_geometry> i_mod)
+	mod_dyn_geometry_impl(mws_sp<mod_dyn_geometry> i_mod)
 	{
 		mws_mod = i_mod;
 		recalc_points = false;
@@ -235,38 +235,38 @@ public:
 
 		mws_sp<mws_select_button> b;
 		std::vector<std::string> state_list;
-		float y = 0.01;
-		float off = 0.14;
+		float y = 0.01f;
+		float off = 0.14f;
 
 		state_list.push_back("wireframe_off");
 		state_list.push_back("wireframe_on");
 		b = mws_sp<mws_select_button>(new mws_select_button(i_mod, 0, state_list));
-		b->set_dim(0.01, y, 0.2, 0.1);
+		b->set_dim(0.01f, y, 0.2f, 0.1f);
 		button_list.push_back(b);
 
 		state_list.clear();
-		state_list.push_back("touch_points");
 		state_list.push_back("ncs_points");
+		state_list.push_back("touch_points");
 		b = mws_sp<mws_select_button>(new mws_select_button(i_mod, 1, state_list));
 		y += off;
-		b->set_dim(0.01, y, 0.2, 0.1);
+		b->set_dim(0.01f, y, 0.2f, 0.1f);
 		button_list.push_back(b);
 
 		state_list.clear();
-		state_list.push_back("mobile");
 		state_list.push_back("fixed");
+		state_list.push_back("mobile");
 		b = mws_sp<mws_select_button>(new mws_select_button(i_mod, 2, state_list));
 		y += off;
-		b->set_dim(0.01, y, 0.2, 0.1);
+		b->set_dim(0.01f, y, 0.2f, 0.1f);
 		button_list.push_back(b);
 
 		state_list.clear();
-		state_list.push_back("vertex-arrays");
 		state_list.push_back("vertex-buffer-objects");
+		state_list.push_back("vertex-arrays");
 		state_list.push_back("unsynchronized");
 		b = mws_sp<mws_select_button>(new mws_select_button(i_mod, 3, state_list));
 		y += off;
-		b->set_dim(0.01, y, 0.2, 0.1);
+		b->set_dim(0.01f, y, 0.2f, 0.1f);
 		button_list.push_back(b);
 
 		//point_list.push_back(Point(200, 150));
@@ -277,7 +277,7 @@ public:
 		//calc_points();
 	}
 
-	mws_sp<mod_test_dyn_geometry> get_mod()
+	mws_sp<mod_dyn_geometry> get_mod()
 	{
 		return mws_mod.lock();
 	}
@@ -298,7 +298,7 @@ public:
 
 		std::vector<glm::vec3>& curve_point_list = cm->curve->final_point_list;
 
-		for (int k = 1; k < curve_point_list.size(); k++)
+		for (uint32 k = 1; k < curve_point_list.size(); k++)
 		{
 			glm::vec3& p0 = curve_point_list[k - 1];
 			glm::vec3& p1 = curve_point_list[k];
@@ -306,7 +306,7 @@ public:
 			ortho_cam->draw_line(p0, p1, gfx_color::colors::cyan.to_vec4(), 2.f);
 		}
 
-		//for (int k = 1; k < min_dist_point_list.size(); k++)
+		//for (uint32 k = 1; k < min_dist_point_list.size(); k++)
 		//{
 		//	glm::vec3& p0 = min_dist_point_list[k - 1];
 		//	glm::vec3& p1 = min_dist_point_list[k];
@@ -314,7 +314,7 @@ public:
 		//	ortho_cam->draw_line(p0, p1, ia_color::colors::cyan.to_vec4(), 2.f);
 		//}
 
-		for (int k = 0; k < min_dist_point_list.size(); k++)
+		for (uint32 k = 0; k < min_dist_point_list.size(); k++)
 		{
 			glm::vec3& p = min_dist_point_list[k];
 
@@ -327,7 +327,7 @@ public:
 		int width = get_mod()->get_width();
 		int height = get_mod()->get_height();
 
-		for (int k = 0; k < button_list.size(); k++)
+		for (uint32 k = 0; k < button_list.size(); k++)
 		{
 			mws_sp<mws_select_button> btn = button_list[k];
 
@@ -360,11 +360,11 @@ public:
 					switch (btn->state_id)
 					{
 					case 0:
-						cm->set_curve_type(curve_mesh::e_touch_points);
+						cm->set_curve_type(curve_mesh::e_ncs_points);
 						break;
 
 					case 1:
-						cm->set_curve_type(curve_mesh::e_ncs_points);
+						cm->set_curve_type(curve_mesh::e_touch_points);
 						break;
 					}
 
@@ -378,11 +378,11 @@ public:
 					switch (btn->state_id)
 					{
 					case 0:
-						cm->set_curve_mobility_type(curve_mesh::e_mobile);
+						cm->set_curve_mobility_type(curve_mesh::e_fixed);
 						break;
 
 					case 1:
-						cm->set_curve_mobility_type(curve_mesh::e_fixed);
+						cm->set_curve_mobility_type(curve_mesh::e_mobile);
 						break;
 					}
 
@@ -396,11 +396,11 @@ public:
 					switch (btn->state_id)
 					{
 					case 0:
-						cm->set_geometry_update_type(curve_mesh::e_vertex_arrays);
+						cm->set_geometry_update_type(curve_mesh::e_vertex_buffer_objects);
 						break;
 
 					case 1:
-						cm->set_geometry_update_type(curve_mesh::e_vertex_buffer_objects);
+						cm->set_geometry_update_type(curve_mesh::e_vertex_arrays);
 						break;
 
 					case 2:
@@ -429,26 +429,26 @@ public:
 	mws_sp<gfx_camera> persp_cam;
 	mws_sp<mws_camera> ortho_cam;
 	mws_sp<std::vector<glm::vec2> > poly;
-	mws_wp<mod_test_dyn_geometry> mws_mod;
+	mws_wp<mod_dyn_geometry> mws_mod;
 };
 
 
-mod_test_dyn_geometry::mod_test_dyn_geometry() : mws_mod(mws_stringify(MOD_TEST_DYN_GEOMETRY)) {}
+mod_dyn_geometry::mod_dyn_geometry() : mws_mod(mws_stringify(MOD_DYN_GEOMETRY)) {}
 
-mws_sp<mod_test_dyn_geometry> mod_test_dyn_geometry::nwi()
+mws_sp<mod_dyn_geometry> mod_dyn_geometry::nwi()
 {
-	return mws_sp<mod_test_dyn_geometry>(new mod_test_dyn_geometry());
+	return mws_sp<mod_dyn_geometry>(new mod_dyn_geometry());
 }
 
-void mod_test_dyn_geometry::init()
+void mod_dyn_geometry::init()
 {
 	//touch_ctrl_inst->add_receiver(get_smtp_instance());
 	//key_ctrl_inst->add_receiver(get_smtp_instance());
 }
 
-void mod_test_dyn_geometry::load()
+void mod_dyn_geometry::load()
 {
-	p = mws_sp<mod_test_dyn_geometry_impl>(new mod_test_dyn_geometry_impl(static_pointer_cast<mod_test_dyn_geometry>(get_smtp_instance())));
+	p = mws_sp<mod_dyn_geometry_impl>(new mod_dyn_geometry_impl(static_pointer_cast<mod_dyn_geometry>(get_smtp_instance())));
 
 	float ctrX = 600;
 	float ctrY = 310;
@@ -503,7 +503,7 @@ void mod_test_dyn_geometry::load()
 	gfx_scene_inst->attach(p->ortho_cam);
 	gfx_scene_inst->attach(p->cm);
 
-	for (int k = 0; k < p->button_list.size(); k++)
+	for (uint32 k = 0; k < p->button_list.size(); k++)
 	{
 		p->button_list[k]->camera_id_list.clear();
 		p->button_list[k]->camera_id_list.push_back(p->ortho_cam->camera_id());
@@ -515,7 +515,7 @@ void mod_test_dyn_geometry::load()
 	mws_report_gfx_errs();
 }
 
-bool mod_test_dyn_geometry::update()
+bool mod_dyn_geometry::update()
 {
 	if (p->recalc_points)
 	{
@@ -523,16 +523,16 @@ bool mod_test_dyn_geometry::update()
 		p->calc_points();
 	}
 
-	mws_sp<gfx_tex> atlas = mws_font_db::inst()->get_texture_atlas();
+	//mws_sp<gfx_tex> atlas = mws_font_db::inst()->get_texture_atlas();
 
-	if (atlas && atlas->is_valid())
-	{
-		//(*p->q2d)["u_s2d_tex"] = atlas->get_name();
-		//mws_cam->draw_mesh(p->q2d);
-	}
+	//if (atlas && atlas->is_valid())
+	//{
+	//	(*p->q2d)["u_s2d_tex"] = atlas->get_name();
+	//	mws_cam->draw_mesh(p->q2d);
+	//}
 
 	std::vector<glm::vec2>& poly = *p->poly;
-	for (int i = 0; i < poly.size() - 1; i++)
+	for (uint32 i = 0; i < poly.size() - 1; i++)
 	{
 		p->ortho_cam->draw_line(glm::vec3(poly[i], 0), glm::vec3(poly[i + 1], 0), glm::vec4(1.0), 1);
 	}
@@ -540,7 +540,7 @@ bool mod_test_dyn_geometry::update()
 
 	//p->draw_curve();
 	//p->ortho_cam->draw_line(glm::vec3(50, 50, 0), glm::vec3(150, 150, 0), glm::vec4(1.0), 1);
-	//p->ortho_cam->setColor(0xffff0000);
+	//p->ortho_cam->set_color(gfx_color::from_argb(0xffff0000));
 	//p->ortho_cam->fillRect(50, 50, 150, 200);
 
 	mws_report_gfx_errs();
@@ -548,7 +548,7 @@ bool mod_test_dyn_geometry::update()
 	return mws_mod::update();
 }
 
-void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
+void mod_dyn_geometry::receive(mws_sp<mws_dp> idp)
 {
 	if (!idp->is_processed())
 	{
@@ -618,8 +618,8 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 						float ctr_x = 600;
 						float ctr_y = 310;
 						float avg_radius = 250;
-						float irregularity = 1.0;
-						float spikeyness = 0.1;
+						float irregularity = 1.f;
+						float spikeyness = 0.1f;
 						int num_verts = 57;
 						p->poly = generatePolygon(ctr_x, ctr_y, avg_radius, irregularity, spikeyness, num_verts);
 						break;

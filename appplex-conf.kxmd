@@ -2,7 +2,7 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows,emscripten ], build-type[ debug ],
 	@@example-start
 	[
 		mod[ reliquus ], exclusive [ false ], launch-mod [ true ],
@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ reliquus ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ dyn-geometry ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -129,7 +129,7 @@ mod
 	test-kube-sphere[ uses[ bitmap-fonts, gfx, gfx-ext, fonts, input, mws, png, res-ld ], ],
 	test-shadow-map[ uses[ gfx, gfx-ext, fmt, fonts, freetype, freetype-gl, input, mws, png, res-ld, tiny-obj-loader, util, vector-fonts ], ],
 	test-grid[ ],
-	test-dyn-geometry[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, rng, util, vector-fonts ], ],
+	dyn-geometry[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, png, res-ld, rng, util, vector-fonts ], ],
 	test-freetype-gl[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
 	test-normal-mapping[ uses[ gfx, fmt, fonts, freetype, freetype-gl, input, mws, png, res-ld, tiny-obj-loader, util, vector-fonts ], ],
 	test-fmod[ enabled[ false ], uses[ boost, gfx, fmod ], ],
