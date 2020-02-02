@@ -40,7 +40,6 @@ index.txt
 /src/min/appplex-conf.hxx
 /src/min/appplex-conf.cxx
 /src/mod/prv
-/src/mod/pub/demo/layered-car-paint
 
 /src/mod/pub/demo/CMakeLists.txt
 /src/mod/pub/lib/CMakeLists.txt
