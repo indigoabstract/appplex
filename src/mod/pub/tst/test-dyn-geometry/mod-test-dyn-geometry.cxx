@@ -2,6 +2,7 @@
 
 #include "mod-test-dyn-geometry.hxx"
 #include "input/input-ctrl.hxx"
+#include "input/gesture-detectors.hxx"
 #include "fonts/mws-font-db.hxx"
 #include "gfx.hxx"
 #include "gfx-rt.hxx"
@@ -418,6 +419,7 @@ public:
 		return true;
 	}
 
+	dragging_detector dragging_det;
 	mws_sp<gfx_plane> q2d;
 	mws_sp<gfx_shader> texture_display;
 	std::vector<mws_sp<mws_select_button> > button_list;
@@ -553,32 +555,24 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 		if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
 		{
 			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
+			bool is_dragging = p->dragging_det.detect_helper(ts);
+
+			if (is_dragging)
+			{
+            p->point_list.push_back(ts->points[0]);
+            p->recalc_points = true;
+            //mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
+			}
 
 			//mws_print("tn %s\n", ts->get_type_name(ts->get_type()).c_str());
 			switch (ts->type)
 			{
-			//case mws_ptr_evt::TS_PRESS_AND_DRAG:
-			//{
-			//	p->point_list.push_back(ts->points[0]);
-			//	p->recalc_points = true;
-			//	ts->process();
-			//	//mws_print("tn %s %f %f\n", ts->get_type_name(ts->get_type()).c_str(), ts->crt_state.pos.x, ts->crt_state.pos.y);
-
-			//	break;
-			//}
-
-			case mws_ptr_evt::mouse_wheel:
-			{
-				break;
-			}
-
 			case mws_ptr_evt::touch_began:
 			{
 				p->point_list.clear();
 				p->point_list.push_back(ts->points[0]);
 				p->recalc_points = true;
 				process(ts);
-
 				break;
 			}
 
@@ -590,7 +584,6 @@ void mod_test_dyn_geometry::receive(mws_sp<mws_dp> idp)
 				p->recalc_points = false;
 				p->process_input(pt);
 				process(ts);
-
 				break;
 			}
 			}

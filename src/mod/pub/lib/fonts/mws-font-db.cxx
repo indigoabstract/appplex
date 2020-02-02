@@ -712,13 +712,13 @@ mws_sp<mws_font_db> mws_font_db::inst()
 {
    if (!instance)
    {
-      instance = mws_sp<mws_font_db>(new mws_font_db());
+      instance = mws_sp<mws_font_db>(new mws_font_db(0));
    }
 
    return instance;
 }
 
-mws_sp<mws_font> mws_font_db::get_global_font() const
+const mws_sp<mws_font> mws_font_db::get_global_font() const
 {
    return nullptr;
 }
@@ -756,7 +756,10 @@ glm::vec2 mws_font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& 
 
 void mws_font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
    const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count) {}
-mws_sp<mws_font> mws_font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height) { return nullptr; }
+mws_sp<mws_font> mws_font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
+{
+   return nullptr;
+}
 
 #endif
 

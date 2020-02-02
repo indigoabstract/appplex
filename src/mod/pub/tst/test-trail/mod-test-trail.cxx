@@ -560,7 +560,7 @@ bool mod_test_trail::update()
    trail_pos.z = glm::sin(p->trail_rot_angle_0) * p->trail_dist;
    p->trail_mesh->position = glm::vec3(0.f);
    p->trail_mesh->add_position(trail_pos);
-   p->trail_mesh->visible = false;
+   p->trail_mesh->visible = true;
 
    uint32 diff = last_update_time - p->last_update_time;
 

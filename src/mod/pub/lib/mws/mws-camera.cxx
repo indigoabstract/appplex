@@ -15,6 +15,14 @@ namespace ns_mws_camera
    class draw_text_op : public draw_op
    {
    public:
+      mws_sp<mws_text_vxo> tx_vxo;
+      std::string tx;
+      float x;
+      float y;
+      int font_idx = 0;
+      // hold refs to the fonts, so they don't get destroyed before they're used for drawing
+      std::vector<mws_sp<mws_font> > fonts;
+
 #if defined MOD_VECTOR_FONTS
 
       draw_text_op()
@@ -78,14 +86,6 @@ namespace ns_mws_camera
       {
          (*tx_vxo)[MP_BLENDING] = i_blend_type;
       }
-
-      mws_sp<mws_text_vxo> tx_vxo;
-      std::string tx;
-      float x;
-      float y;
-      int font_idx = 0;
-      // hold refs to the fonts, so they don't get destroyed before they're used for drawing
-      std::vector<mws_sp<mws_font> > fonts;
 
 #elif defined MOD_BITMAP_FONTS
 

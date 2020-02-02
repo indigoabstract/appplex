@@ -1101,11 +1101,16 @@ void mws_mod::update_view(int update_count)
 
    if (prefs->show_fps() && fps > 0 && !storage.is_recording_screen())
    {
-      float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
-      string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
-      glm::vec2 txt_dim = mws_cam->get_font()->get_text_dim(f);
+      mws_sp<mws_font> font = mws_cam->get_font();
 
-      mws_cam->drawText(f, get_width() - txt_dim.x, 0.f);
+      if (font)
+      {
+         float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
+         string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
+         glm::vec2 txt_dim = font->get_text_dim(f);
+
+         mws_cam->drawText(f, get_width() - txt_dim.x, 0.f);
+      }
    }
 
 #endif // MWS_DEBUG_BUILD
