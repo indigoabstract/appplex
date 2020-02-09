@@ -39,8 +39,8 @@ class vdec_ffmpeg : public mws_video_dec
 public:
 	vdec_ffmpeg();
 	virtual ~vdec_ffmpeg();
-   virtual std::string get_video_path() override;
-   virtual void set_video_path(std::string i_video_path) override;
+   virtual mws_path get_video_path() override;
+   virtual void set_video_path(mws_path i_video_path) override;
    virtual mws_sp<mws_media_info> get_media_info() override;
    virtual int start_decoding() override;
    virtual void stop() override;

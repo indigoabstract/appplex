@@ -112,7 +112,7 @@ void mws_text_box::setup()
    }
 }
 
-bool mws_text_box::is_action_key(key_types i_key) const
+bool mws_text_box::is_action_key(mws_key_types i_key) const
 {
    if (i_key == VKB_DONE)
    {
@@ -129,7 +129,7 @@ void mws_text_box::do_action()
       on_action();
    }
 
-   if (pfm::uses_touchscreen())
+   if (mws::input::uses_touchscreen())
    {
       set_focus(false);
    }
@@ -217,9 +217,9 @@ void mws_text_box::scroll_text(const glm::vec2& i_off, bool i_snap_to_grid)
    }
 }
 
-void mws_text_box::scroll_to_end(dir_types i_direction)
+void mws_text_box::scroll_to_end(mws_dir_types i_direction)
 {
-   if (i_direction == dir_types::DIR_DOWN_LEFT)
+   if (i_direction == mws_dir_types::mws_dir_down_left)
    {
       uint32 tx_src_line_count = tx_src->get_line_count();
       float font_height = font->get_height();
@@ -354,11 +354,11 @@ void mws_text_box::receive(mws_sp<mws_dp> i_dp)
       return;
    }
 
-   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       handle_pointer_evt(mws_ptr_evt::as_pointer_evt(i_dp));
    }
-   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::key_evt_type))
    {
       handle_key_evt(mws_key_evt::as_key_evt(i_dp));
    }
@@ -978,7 +978,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
    {
       if (is_editable())
       {
-         if (pfm::uses_touchscreen())
+         if (mws::input::uses_touchscreen())
          {
             auto inst = static_pointer_cast<mws_text_area>(get_instance());
             get_mws_root()->show_keyboard(inst);
@@ -1005,9 +1005,9 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
 
 void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
 {
-   if (i_ke->get_type() != mws_key_evt::KE_RELEASED)
+   if (i_ke->get_type() != mws_key_evt::ke_released)
    {
-      key_types key = i_ke->get_key();
+      mws_key_types key = i_ke->get_key();
 
       if (is_action_key(key))
       {
@@ -1034,7 +1034,7 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
          bool is_processed = true;
          float off = 51.175f;
 
-         if (i_ke->get_type() == mws_key_evt::KE_PRESSED)
+         if (i_ke->get_type() == mws_key_evt::ke_pressed)
          {
             off = 21.175f;
          }
@@ -1043,35 +1043,35 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
          {
             switch (key)
             {
-            case KEY_LEFT:
-               tx_src->advance_cursor(dir_types::DIR_LEFT);   scroll_text(glm::vec2(off, 0));
+            case mws_key_left:
+               tx_src->advance_cursor(mws_dir_types::mws_dir_left);   scroll_text(glm::vec2(off, 0));
                break;
 
-            case KEY_UP:
-               tx_src->advance_cursor(dir_types::DIR_UP);     scroll_text(glm::vec2(0, off));
+            case mws_key_up:
+               tx_src->advance_cursor(mws_dir_types::mws_dir_up);     scroll_text(glm::vec2(0, off));
                break;
 
-            case KEY_RIGHT:
-               tx_src->advance_cursor(dir_types::DIR_RIGHT); scroll_text(glm::vec2(-off, 0));
+            case mws_key_right:
+               tx_src->advance_cursor(mws_dir_types::mws_dir_right); scroll_text(glm::vec2(-off, 0));
                break;
 
-            case KEY_DOWN:
-               tx_src->advance_cursor(dir_types::DIR_DOWN);  scroll_text(glm::vec2(0, -off));
+            case mws_key_down:
+               tx_src->advance_cursor(mws_dir_types::mws_dir_down);  scroll_text(glm::vec2(0, -off));
                break;
 
-            case KEY_DELETE:
+            case mws_key_delete:
                delete_at_cursor(1);
                break;
 
-            case KEY_BACKSPACE:
+            case mws_key_backspace:
                delete_at_cursor(-1);
                break;
 
-            case KEY_TAB:
+            case mws_key_tab:
                insert_at_cursor("   ");
                break;
 
-            case KEY_ENTER:
+            case mws_key_enter:
                insert_at_cursor("\n");
                break;
 
@@ -1083,19 +1083,19 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
          {
             switch (key)
             {
-            case KEY_LEFT:
+            case mws_key_left:
                scroll_text(glm::vec2(off, 0));
                break;
 
-            case KEY_UP:
+            case mws_key_up:
                scroll_text(glm::vec2(0, off));
                break;
 
-            case KEY_RIGHT:
+            case mws_key_right:
                scroll_text(glm::vec2(-off, 0));
                break;
 
-            case KEY_DOWN:
+            case mws_key_down:
                scroll_text(glm::vec2(0, -off));
                break;
 
@@ -1144,7 +1144,7 @@ mws_sp<mws_text_field> mws_text_field::nwi()
    return inst;
 }
 
-bool mws_text_field::is_action_key(key_types i_key) const
+bool mws_text_field::is_action_key(mws_key_types i_key) const
 {
    if (i_key == VKB_ENTER || i_key == VKB_DONE)
    {
@@ -1370,15 +1370,15 @@ uint32 mws_text_area_model_rw::get_cursor_pos_at_line(uint32 i_line_idx)
    return -1;
 }
 
-void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
+void mws_text_area_model_rw::advance_cursor(mws_dir_types i_direction)
 {
    switch (i_direction)
    {
-   case DIR_LEFT:
+   case mws_dir_left:
       set_cursor_pos(get_cursor_pos() - 1);
       break;
 
-   case DIR_UP:
+   case mws_dir_up:
    {
       glm::uvec2 pos = get_cursor_coord();
       uint32 row_idx = pos.y;
@@ -1400,11 +1400,11 @@ void mws_text_area_model_rw::advance_cursor(dir_types i_direction)
       break;
    }
 
-   case DIR_RIGHT:
+   case mws_dir_right:
       set_cursor_pos(get_cursor_pos() + 1);
       break;
 
-   case DIR_DOWN:
+   case mws_dir_down:
    {
       glm::uvec2 pos = get_cursor_coord();
       uint32 row_idx = pos.y;

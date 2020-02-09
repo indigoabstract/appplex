@@ -8,16 +8,24 @@
 #include "snd/snd.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 #include "mod-list.hxx"
+#include <atomic>
 #include <cstdlib>
 
 
-mws_sp<mws_mod_ctrl> mws_mod_ctrl::instance;
-
-mws_mod_ctrl::mws_mod_ctrl()
+namespace
 {
-   exit_app_on_next_run = false;
-   app_started = false;
+   std::atomic_int32_t atomic_dim;
+   mws_wp<mws_mod> next_mod;
+   bool exit_app_on_next_run = false;
+   bool app_started = false;
+   bool gfx_available = true;
+   uint32 screen_width = 1280;
+   uint32 screen_height = 720;
+   mws_sp<mws_mod_ctrl> instance;
 }
+
+
+mws_mod_ctrl::mws_mod_ctrl() {}
 
 mws_sp<mws_mod_ctrl> mws_mod_ctrl::inst()
 {
@@ -27,11 +35,6 @@ mws_sp<mws_mod_ctrl> mws_mod_ctrl::inst()
    }
 
    return instance;
-}
-
-mws_sp<mws_mod> mws_mod_ctrl::get_app()
-{
-   return inst()->crt_mod.lock();
 }
 
 bool mws_mod_ctrl::back_evt()
@@ -90,9 +93,9 @@ bool mws_mod_ctrl::is_set_app_exit_on_next_run()
    return exit_app_on_next_run;
 }
 
-void mws_mod_ctrl::set_app_exit_on_next_run(bool iexit_app_on_next_run)
+void mws_mod_ctrl::set_app_exit_on_next_run(bool i_exit_app_on_next_run)
 {
-   exit_app_on_next_run = iexit_app_on_next_run;
+   exit_app_on_next_run = i_exit_app_on_next_run;
 }
 
 void mws_mod_ctrl::destroy_app()
@@ -105,26 +108,11 @@ void mws_mod_ctrl::destroy_app()
    }
 }
 
-void mws_mod_ctrl::pre_init_app()
-{
-   // trigger resource directory listing
-   pfm::get_pfm_main_inst();
-
-   if (!ul)
-   {
-      ul = mws_mod_list::nwi();
-      ul->set_name("app-mws_mod-list");
-      mws_mod_setup::next_crt_mod = crt_mod = ul;
-
-      mws_mod_setup::append_mod_list(ul);
-   }
-}
-
 void mws_mod_ctrl::init_app()
 {
    mws_sp<mws_mod> start_mod = get_app_start_mod();
 
-   if (mod_gfx_on && pfm::data.gfx_available)
+   if (mod_gfx_on && gfx_available)
    {
       gfx::global_init();
 
@@ -152,16 +140,16 @@ void mws_mod_ctrl::init_app()
    }
 }
 
-const unicodestring& mws_mod_ctrl::get_app_name()
+const unicode_string& mws_mod_ctrl::get_app_name()
 {
-   static const unicodestring name(untr("appplex"));
+   static const unicode_string name(untr("appplex"));
 
    return name;
 }
 
-const unicodestring& mws_mod_ctrl::get_app_description()
+const unicode_string& mws_mod_ctrl::get_app_description()
 {
-   static const unicodestring name(untr("appplex description"));
+   static const unicode_string name(untr("appplex description"));
 
    return name;
 }
@@ -177,10 +165,10 @@ void mws_mod_ctrl::update()
       uint32 width = (dim >> 16);
       uint32 height = (dim & 0xffff);
 
-      if (pfm::data.screen_width != width || pfm::data.screen_height != height)
+      if (screen_width != width || screen_height != height)
       {
-         pfm::data.screen_width = width;
-         pfm::data.screen_height = height;
+         screen_width = width;
+         screen_height = height;
          gfx::on_resize(width, height);
 
          if (ul && ul->is_init())
@@ -259,7 +247,7 @@ void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
    }
 }
 
-void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
+void mws_mod_ctrl::key_action(mws_key_actions i_action_type, mws_key_types i_key)
 {
    if (mod_input_on)
    {
@@ -275,10 +263,10 @@ void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
 
             if (vkb && vkb->is_visible())
             {
-               bool is_f_key = (i_key >= KEY_F1 && i_key <= KEY_F12);
+               bool is_f_key = (i_key >= mws_key_f1 && i_key <= mws_key_f12);
 
                // handle function key pressed when virtual keyboard is visible
-               if (is_f_key && i_action_type == KEY_PRESS)
+               if (is_f_key && i_action_type == mws_key_press)
                {
                   u->handle_function_key(i_key);
                }
@@ -292,11 +280,11 @@ void mws_mod_ctrl::key_action(key_actions i_action_type, key_types i_key)
          {
             switch (i_action_type)
             {
-            case KEY_PRESS:
+            case mws_key_press:
                u->key_ctrl_inst->key_pressed(i_key);
                break;
 
-            case KEY_RELEASE:
+            case mws_key_release:
                u->key_ctrl_inst->key_released(i_key);
                break;
             }
@@ -338,37 +326,16 @@ mws_sp<mws_mod> mws_mod_ctrl::get_app_start_mod()
    return ul;
 }
 
-void mws_mod_ctrl::set_gfx_available(bool iis_gfx_available)
+void mws_mod_ctrl::set_gfx_available(bool i_is_gfx_available)
 {
-   pfm::data.gfx_available = iis_gfx_available;
+   gfx_available = i_is_gfx_available;
 }
 
-void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
-{
-   if (i_mod)
-   {
-      if (!crt_mod.expired())
-      {
-         crt_mod.lock()->base_unload();
-      }
+bool mws_mod_ctrl::is_gfx_available() { return gfx_available; }
 
-      crt_mod = i_mod;
-      pfm::filesystem::load_res_file_map(i_mod);
+uint32 mws_mod_ctrl::get_screen_width() { return screen_width; }
 
-      if (!i_mod->is_init())
-      {
-         i_mod->base_init();
-         i_mod->set_init(true);
-      }
-
-      i_mod->base_load();
-   }
-   else
-   {
-      mws_signal_error("warning: tried to make current a null mws_mod");
-   }
-}
-
+uint32 mws_mod_ctrl::get_screen_height() { return screen_height; }
 
 mws_sp<mws_ptr_evt_base> mws_ptr_evt_base::nwi()
 {

@@ -60,7 +60,7 @@ public:
    {
       if (!idp->is_processed())
       {
-         if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(mws_ptr_evt::ptr_evt_type))
          {
             mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
             bool is_dragging = dragging_dt.detect_helper(ts);
@@ -117,49 +117,49 @@ public:
                process(ts);
             }
          }
-         else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         else if (idp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-            if (ke->get_type() != mws_key_evt::KE_RELEASED)
+            if (ke->get_type() != mws_key_evt::ke_released)
             {
                bool do_action = true;
 
                switch (ke->get_key())
                {
-               case KEY_Q:
+               case mws_key_q:
                {
                   persp_cam->position -= look_at_dir * 0.05f;
                   break;
                }
 
-               case KEY_E:
+               case mws_key_e:
                {
                   persp_cam->position += look_at_dir * 0.05f;
                   break;
                }
 
-               case KEY_A:
+               case mws_key_a:
                {
                   glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), look_at_dir);
                   up_dir = glm::normalize(up_dir * rot_around_look_at_dir);
                   break;
                }
 
-               case KEY_D:
+               case mws_key_d:
                {
                   glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), look_at_dir);
                   up_dir = glm::normalize(up_dir * rot_around_look_at_dir);
                   break;
                }
 
-               case KEY_Z:
+               case mws_key_z:
                {
                   speed -= 0.05f;
                   break;
                }
 
-               case KEY_C:
+               case mws_key_c:
                {
                   speed += 0.05f;
                   break;

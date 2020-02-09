@@ -21,7 +21,6 @@ using uint64 = uint64_t;
 using real32 = float;
 using real64 = double;
 
-using std::enable_shared_from_this;
 using std::static_pointer_cast;
 template <typename T> using mws_sp = std::shared_ptr<T>;
 template <typename T> using mws_wp = std::weak_ptr<T>;
@@ -67,209 +66,211 @@ typedef void gfx_void;
 typedef uint32 gfx_indices_type;
 
 
-enum gfx_type_id
+enum mws_gfx_type
 {
-   gfx_type_none,
-   gfx_type_opengl,
-   gfx_type_opengl_es,
+   mws_gfx_none,
+   mws_gfx_opengl,
+   mws_gfx_opengl_es,
 };
 
 
-enum platform_id
+enum mws_pfm_id
 {
-   platform_android,
-   platform_ios,
-   platform_emscripten,
-   platform_qt_windows_pc,
-   platform_windows_pc,
+   mws_pfm_android,
+   mws_pfm_ios,
+   mws_pfm_emscripten,
+   mws_pfm_windows_pc,
 };
 
 
-enum key_actions
+enum mws_key_actions
 {
-   KEY_PRESS,
-   KEY_RELEASE,
+   mws_key_press,
+   mws_key_release,
 };
 
 
-enum key_types
+enum mws_key_types
 {
-   KEY_INVALID,
-   KEY_LEFT,
-   KEY_UP,
-   KEY_RIGHT,
-   KEY_DOWN,
-   KEY_NUM_LOCK,
-   KEY_INSERT,
-   KEY_DELETE,
-   KEY_BACKSPACE,
-   KEY_TAB,
-   KEY_PAGE_UP,
-   KEY_PAGE_DOWN,
-   KEY_SCROLL_LOCK,
-   KEY_ENTER,
-   KEY_HOME,
-   KEY_F1,
-   KEY_F2,
-   KEY_F3,
-   KEY_F4,
-   KEY_F5,
-   KEY_F6,
-   KEY_F7,
-   KEY_F8,
-   KEY_F9,
-   KEY_F10,
-   KEY_F11,
-   KEY_F12,
-   KEY_ESCAPE,
-   KEY_SHIFT,
-   KEY_CONTROL,
-   KEY_ALT,
-   KEY_END,
+   mws_key_invalid,
+   mws_key_left,
+   mws_key_up,
+   mws_key_right,
+   mws_key_down,
+   mws_key_num_lock,
+   mws_key_insert,
+   mws_key_delete,
+   mws_key_backspace,
+   mws_key_tab,
+   mws_key_page_up,
+   mws_key_page_down,
+   mws_key_scroll_lock,
+   mws_key_enter,
+   mws_key_home,
+   mws_key_f1,
+   mws_key_f2,
+   mws_key_f3,
+   mws_key_f4,
+   mws_key_f5,
+   mws_key_f6,
+   mws_key_f7,
+   mws_key_f8,
+   mws_key_f9,
+   mws_key_f10,
+   mws_key_f11,
+   mws_key_f12,
+   mws_key_escape,
+   mws_key_shift,
+   mws_key_control,
+   mws_key_alt,
+   mws_key_end,
 
    // begin printable ascii
-   KEY_SPACE,
-   KEY_EXCLAMATION,
-   KEY_DOUBLE_QUOTE,
-   KEY_NUMBER_SIGN,
-   KEY_DOLLAR_SIGN,
-   KEY_PERCENT_SIGN,
-   KEY_AMPERSAND,
-   KEY_SINGLE_QUOTE,
-   KEY_LEFT_PARENTHESIS,
-   KEY_RIGHT_PARENTHESIS,
-   KEY_ASTERISK,
-   KEY_PLUS_SIGN,
-   KEY_COMMA,
-   KEY_MINUS_SIGN,
-   KEY_PERIOD,
-   KEY_SLASH,
-   KEY_0,
-   KEY_1,
-   KEY_2,
-   KEY_3,
-   KEY_4,
-   KEY_5,
-   KEY_6,
-   KEY_7,
-   KEY_8,
-   KEY_9,
-   KEY_COLON,
-   KEY_SEMICOLON,
-   KEY_LESS_THAN_SIGN,
-   KEY_EQUAL_SIGN,
-   KEY_GREATER_THAN_SIGN,
-   KEY_QUESTION_MARK,
-   KEY_AT_SYMBOL,
-   KEY_A_UPPER_CASE,
-   KEY_B_UPPER_CASE,
-   KEY_C_UPPER_CASE,
-   KEY_D_UPPER_CASE,
-   KEY_E_UPPER_CASE,
-   KEY_F_UPPER_CASE,
-   KEY_G_UPPER_CASE,
-   KEY_H_UPPER_CASE,
-   KEY_I_UPPER_CASE,
-   KEY_J_UPPER_CASE,
-   KEY_K_UPPER_CASE,
-   KEY_L_UPPER_CASE,
-   KEY_M_UPPER_CASE,
-   KEY_N_UPPER_CASE,
-   KEY_O_UPPER_CASE,
-   KEY_P_UPPER_CASE,
-   KEY_Q_UPPER_CASE,
-   KEY_R_UPPER_CASE,
-   KEY_S_UPPER_CASE,
-   KEY_T_UPPER_CASE,
-   KEY_U_UPPER_CASE,
-   KEY_V_UPPER_CASE,
-   KEY_W_UPPER_CASE,
-   KEY_X_UPPER_CASE,
-   KEY_Y_UPPER_CASE,
-   KEY_Z_UPPER_CASE,
-   KEY_LEFT_BRACKET,
-   KEY_BACKSLASH,
-   KEY_RIGHT_BRACKET,
-   KEY_CIRCUMFLEX,
-   KEY_UNDERSCORE,
-   KEY_GRAVE_ACCENT,
+   mws_key_space,
+   mws_key_exclamation,
+   mws_key_double_quote,
+   mws_key_number_sign,
+   mws_key_dollar_sign,
+   mws_key_percent_sign,
+   mws_key_ampersand,
+   mws_key_single_quote,
+   mws_key_left_parenthesis,
+   mws_key_right_parenthesis,
+   mws_key_asterisk,
+   mws_key_plus_sign,
+   mws_key_comma,
+   mws_key_minus_sign,
+   mws_key_period,
+   mws_key_slash,
+   mws_key_0,
+   mws_key_1,
+   mws_key_2,
+   mws_key_3,
+   mws_key_4,
+   mws_key_5,
+   mws_key_6,
+   mws_key_7,
+   mws_key_8,
+   mws_key_9,
+   mws_key_colon,
+   mws_key_semicolon,
+   mws_key_less_than_sign,
+   mws_key_equal_sign,
+   mws_key_greater_than_sign,
+   mws_key_question_mark,
+   mws_key_at_symbol,
+   mws_key_a_upper_case,
+   mws_key_b_upper_case,
+   mws_key_c_upper_case,
+   mws_key_d_upper_case,
+   mws_key_e_upper_case,
+   mws_key_f_upper_case,
+   mws_key_g_upper_case,
+   mws_key_h_upper_case,
+   mws_key_i_upper_case,
+   mws_key_j_upper_case,
+   mws_key_k_upper_case,
+   mws_key_l_upper_case,
+   mws_key_m_upper_case,
+   mws_key_n_upper_case,
+   mws_key_o_upper_case,
+   mws_key_p_upper_case,
+   mws_key_q_upper_case,
+   mws_key_r_upper_case,
+   mws_key_s_upper_case,
+   mws_key_t_upper_case,
+   mws_key_u_upper_case,
+   mws_key_v_upper_case,
+   mws_key_w_upper_case,
+   mws_key_x_upper_case,
+   mws_key_y_upper_case,
+   mws_key_z_upper_case,
+   mws_key_left_bracket,
+   mws_key_backslash,
+   mws_key_right_bracket,
+   mws_key_circumflex,
+   mws_key_underscore,
+   mws_key_grave_accent,
    // add small caps letters. simplifies handling of keys/characters
-   KEY_A,
-   KEY_B,
-   KEY_C,
-   KEY_D,
-   KEY_E,
-   KEY_F,
-   KEY_G,
-   KEY_H,
-   KEY_I,
-   KEY_J,
-   KEY_K,
-   KEY_L,
-   KEY_M,
-   KEY_N,
-   KEY_O,
-   KEY_P,
-   KEY_Q,
-   KEY_R,
-   KEY_S,
-   KEY_T,
-   KEY_U,
-   KEY_V,
-   KEY_W,
-   KEY_X,
-   KEY_Y,
-   KEY_Z,
-   KEY_LEFT_BRACE,
-   KEY_VERTICAL_BAR,
-   KEY_RIGHT_BRACE,
-   KEY_TILDE_SIGN,
+   mws_key_a,
+   mws_key_b,
+   mws_key_c,
+   mws_key_d,
+   mws_key_e,
+   mws_key_f,
+   mws_key_g,
+   mws_key_h,
+   mws_key_i,
+   mws_key_j,
+   mws_key_k,
+   mws_key_l,
+   mws_key_m,
+   mws_key_n,
+   mws_key_o,
+   mws_key_p,
+   mws_key_q,
+   mws_key_r,
+   mws_key_s,
+   mws_key_t,
+   mws_key_u,
+   mws_key_v,
+   mws_key_w,
+   mws_key_x,
+   mws_key_y,
+   mws_key_z,
+   mws_key_left_brace,
+   mws_key_vertical_bar,
+   mws_key_right_brace,
+   mws_key_tilde_sign,
    // end printable ascii
 
-   KEY_DEL,
-   KEY_NUM0,
-   KEY_NUM1,
-   KEY_NUM2,
-   KEY_NUM3,
-   KEY_NUM4,
-   KEY_NUM5,
-   KEY_NUM6,
-   KEY_NUM7,
-   KEY_NUM8,
-   KEY_NUM9,
-   KEY_NUM_MULTIPLY,
-   KEY_NUM_ADD,
-   KEY_NUM_SUBTRACT,
-   KEY_NUM_DECIMAL,
-   KEY_NUM_DIVIDE,
-   KEY_SELECT,
+   mws_key_del,
+   mws_key_num0,
+   mws_key_num1,
+   mws_key_num2,
+   mws_key_num3,
+   mws_key_num4,
+   mws_key_num5,
+   mws_key_num6,
+   mws_key_num7,
+   mws_key_num8,
+   mws_key_num9,
+   mws_key_num_multiply,
+   mws_key_num_add,
+   mws_key_num_subtract,
+   mws_key_num_decimal,
+   mws_key_num_divide,
+   mws_key_select,
 
-   KEY_COUNT,
+   mws_key_count,
 };
 
 
-enum dir_types
+enum mws_dir_types
 {
-   DIR_NONE,
-   DIR_LEFT,
-   DIR_UP_LEFT,
-   DIR_UP,
-   DIR_UP_RIGHT,
-   DIR_RIGHT,
-   DIR_DOWN_RIGHT,
-   DIR_DOWN,
-   DIR_DOWN_LEFT,
+   mws_dir_none,
+   mws_dir_left,
+   mws_dir_up_left,
+   mws_dir_up,
+   mws_dir_up_right,
+   mws_dir_right,
+   mws_dir_down_right,
+   mws_dir_down,
+   mws_dir_down_left,
 };
 
 
-#define DK_UP           KEY_W
-#define DK_DOWN         KEY_X
-#define DK_LEFT         KEY_A
-#define DK_RIGHT        KEY_D
-#define DK_DOWN_LEFT    KEY_Z
-#define DK_DOWN_RIGHT   KEY_C
-#define DK_UP_LEFT      KEY_Q
-#define DK_UP_RIGHT     KEY_E
+enum mws_alpha_dir_types
+{
+   mws_dk_up = mws_key_w,
+   mws_dk_down = mws_key_x,
+   mws_dk_left = mws_key_a,
+   mws_dk_right = mws_key_d,
+   mws_dk_down_left = mws_key_z,
+   mws_dk_down_right = mws_key_c,
+   mws_dk_up_left = mws_key_q,
+   mws_dk_up_right = mws_key_e,
+};
 
 
 #ifdef __cplusplus
@@ -315,24 +316,26 @@ extern "C"
    // unicode strings are 16-bit characters on windows, and 8-bit utf-8 characters on others
 #if defined ANDROID
 
-#define PLATFORM_ANDROID
-#define UNICODE_USING_STD_STRING
+#define MWS_PFM_ANDROID
+#define MWS_POSIX_API
+#define MWS_UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define CXX_VERSION 17
+#define MWS_CXX_VERSION 17
 
 #elif defined __APPLE__
     
+#define MWS_POSIX_API
 #include "TargetConditionals.h"
 #if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
 
     // iOS simulator
-#define PLATFORM_IOS
+#define MWS_PFM_IOS
     
 #elif TARGET_OS_IPHONE
 
     // actual iOS device
-#define PLATFORM_IOS
+#define MWS_PFM_IOS
     
 #else
 #define TARGET_OS_OSX 1
@@ -342,33 +345,27 @@ extern "C"
     
 #endif
     
-#define UNICODE_USING_STD_STRING
+#define MWS_UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define CXX_VERSION 17
+#define MWS_CXX_VERSION 17
 
 #elif defined EMSCRIPTEN
 
-#define PLATFORM_EMSCRIPTEN
-#define UNICODE_USING_STD_STRING
+#define MWS_PFM_EMSCRIPTEN
+#define MWS_UNICODE_USING_STD_STRING
 //#define MWS_USES_EXCEPTIONS
 //#define MWS_USES_RTTI
-#define CXX_VERSION 14
-
-#elif defined PLATFORM_QT_WINDOWS_PC
-
-#define UNICODE_USING_STD_WSTRING
-#define MWS_USES_EXCEPTIONS
-#define MWS_USES_RTTI
-#define CXX_VERSION 17
+#define MWS_CXX_VERSION 17
 
 #elif defined WIN32
 
-#define PLATFORM_WINDOWS_PC
-#define UNICODE_USING_STD_WSTRING
+#define MWS_PFM_WINDOWS_PC
+#define MWS_WINDOWS_API
+#define MWS_UNICODE_USING_STD_WSTRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define CXX_VERSION 17
+#define MWS_CXX_VERSION 17
 
 #else
 
@@ -407,7 +404,7 @@ extern "C"
 
 #define _USE_MATH_DEFINES
 
-#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
+#if defined MWS_PFM_WINDOWS_PC && defined MWS_DEBUG_BUILD
    //#define USE_VLD
 #endif
 
@@ -421,4 +418,19 @@ extern "C"
 
 #ifdef __cplusplus
 }
+
+#include <string>
+
+#if defined MWS_UNICODE_USING_STD_STRING
+
+using unicode_string = std::string;
+using unicode_char = char;
+
+#elif defined MWS_UNICODE_USING_STD_WSTRING
+
+using unicode_string = std::wstring;
+using unicode_char = wchar_t;
+
+#endif
+
 #endif 

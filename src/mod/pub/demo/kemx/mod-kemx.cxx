@@ -18,7 +18,7 @@ template <class T> class checker
 public:
    static bool compare_values(T v1, T v2, int idx = 0)
    {
-      mws_assert(v1 == v2, "test failed");
+      mws_assert(v1 == v2);
 
       if (v1 != v2)
       {
@@ -42,7 +42,7 @@ mws_sp<mod_kemx> mod_kemx::nwi()
 
 void mod_kemx::init()
 {
-   auto kemx = pfm::filesystem::load_res_as_string("kemx-access.txt");
+   auto kemx = mws::filesys::load_res_as_string("kemx-access.txt");
    int kemxSize = kemx->size();
    data = "[ " + *kemx + " ]";
 
@@ -71,8 +71,8 @@ void mod_kemx::init()
    dsw.write_real64(t10);
 
    const uint8* s = mds1->get_data_as_byte_array();
-   bool x = storage.store_mod_byte_array("ds-test", s, mds1->get_size());
-   mws_print("store ds-test %d\n", (int)x);
+   //bool x = storage.store_mod_byte_array("ds-test", s, mds1->get_size());
+   //mws_print("store ds-test %d\n", (int)x);
 
    mws_sp<memory_data_sequence> mds2(new memory_data_sequence(s, mds1->get_size()));
    data_sequence_reader dsr(mds2);

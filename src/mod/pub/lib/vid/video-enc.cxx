@@ -55,7 +55,7 @@ mws_sp<mws_video_reencoder> mws_video_reencoder::nwi()
    return mws_ffmpeg_reencoder::nwi();
 }
 
-#elif defined PLATFORM_IOS
+#elif defined MWS_PFM_IOS
 
 #include "ios/vid/ios-video-enc.hxx"
 

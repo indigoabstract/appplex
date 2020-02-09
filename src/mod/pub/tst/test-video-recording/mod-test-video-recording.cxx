@@ -330,11 +330,11 @@ namespace test_video_recording
       void receive(mws_sp<mws_dp> idp)
       {
          auto mod = mod_ref.lock();
-         if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(mws_ptr_evt::ptr_evt_type))
          {
             mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
          }
-         else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         else if (idp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
@@ -344,7 +344,7 @@ namespace test_video_recording
 
                switch (ke->get_key())
                {
-               case KEY_F4:
+               case mws_key_f4:
                   toggle_encoding();
                   break;
 

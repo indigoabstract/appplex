@@ -1,12 +1,12 @@
 #pragma once
 
-#include "pfm-def.h"
+#include "pfm.hxx"
 #include "min.hxx"
 #include <string>
 #include <vector>
 
 
-class pfm_file;
+class mws_file;
 
 
 namespace ns_kxmd
@@ -77,8 +77,8 @@ namespace ns_kxmd
    public:
       static mws_sp<kxmd> nwi(const char* i_kxmd_data, uint32 i_size);
       static mws_sp<kxmd> nwi(const std::string& i_kxmd_data = "");
-      static mws_sp<kxmd> nwi_from_file(const std::string& i_filename);
-      static mws_sp<kxmd> nwi_from_file(mws_sp<pfm_file> i_file);
+      static mws_sp<kxmd> nwi_from_path(const mws_path& i_path);
+      static mws_sp<kxmd> nwi_from_file(mws_sp<mws_file> i_file);
       ~kxmd();
       kv_ref main() const;
       uint32 get_version() const;

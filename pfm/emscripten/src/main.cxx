@@ -188,8 +188,6 @@ mws_sp<pfm_impl::pfm_file_impl> emst_main::new_pfm_file_impl(const std::string& 
 
 void emst_main::init()
 {
-   pfm_main::init();
-
    // screen metrix
    {
       double screen_width = EM_ASM_DOUBLE({ return window.screen.width; });
@@ -203,19 +201,8 @@ void emst_main::init()
    setup_callbacks();
    mws_mod_ctrl::inst()->pre_init_app();
    mws_mod_ctrl::inst()->set_gfx_available(true);
-   mws_mod_ctrl::inst()->init_app();
-}
-
-void emst_main::start()
-{
-   pfm_main::start();
-
-   mws_mod_ctrl::inst()->start_app();
-}
-
-void emst_main::run()
-{
-   mws_mod_ctrl::inst()->update();
+   
+   pfm_main::init();
 }
 
 key_types emst_main::translate_key(int i_pfm_key_id) const
@@ -423,7 +410,15 @@ void emst_main::write_text_v(const char* iformat, ...)const
    printf("%s", dest);
 }
 
-std::string emst_main::get_writable_path()const
+const std::string& emst_main::prv_dir() const
+{
+   return "";
+}
+const std::string& emst_main::res_dir() const
+{
+   return "";
+}
+const std::string& emst_main::tmp_dir() const
 {
    return "";
 }
@@ -479,7 +474,7 @@ bool emst_main::is_full_screen_mode()
    return true;
 }
 
-void emst_main::set_full_screen_mode(bool ienabled)
+void emst_main::set_full_screen_mode(bool i_enabled)
 {
 }
 

@@ -78,7 +78,7 @@ namespace mod_multi_touch_input_ns
 
       virtual void receive(mws_sp<mws_dp> i_dp) override
       {
-         if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+         if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
          {
             mws_sp<mws_ptr_evt> pe = mws_ptr_evt::as_pointer_evt(i_dp);
 

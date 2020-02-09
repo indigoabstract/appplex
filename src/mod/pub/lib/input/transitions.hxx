@@ -116,7 +116,7 @@ protected:
 
 class ms_transition_data;
 
-class ms_linear_transition : public linear_transition, public mws_broadcaster, public enable_shared_from_this<ms_linear_transition>
+class ms_linear_transition : public linear_transition, public mws_broadcaster, public std::enable_shared_from_this<ms_linear_transition>
 	// multi-step fixed-time transition, in milliseconds
 {
 public:

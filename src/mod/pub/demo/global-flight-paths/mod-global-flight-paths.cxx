@@ -428,7 +428,7 @@ namespace global_flight_paths_ns
       {
          int hot_spot_link_list_length = i_hot_spot_link_list.size();
 
-         last_update_time = pfm::time::get_time_millis();
+         last_update_time = mws::time::get_time_millis();
          hot_spot_link_list = i_hot_spot_link_list;
          chain_distance = 0;
          last_link_idx = 0;
@@ -512,7 +512,7 @@ namespace global_flight_paths_ns
          _nb = glm::clamp<int>(_nb, 0, hot_spot_link_list.size());
          last_link_idx = hot_spot_link_list.size() - _nb;
          current_position = cumulated_distances[hot_spot_link_list.size() - _nb];
-         last_update_time = pfm::time::get_time_millis();
+         last_update_time = mws::time::get_time_millis();
          l_makevisible = true;
       }
 
@@ -536,7 +536,7 @@ namespace global_flight_paths_ns
          link->set_visible_vertices(0, 0);
          last_link_idx = 0;
          l_makevisible = true;
-         last_update_time = pfm::time::get_time_millis();
+         last_update_time = mws::time::get_time_millis();
 
          set_visible(false);
       }
@@ -559,9 +559,9 @@ namespace global_flight_paths_ns
          {
             int hot_spot_chain_list_length = hot_spot_link_list.size();
             auto link = hot_spot_link_list[last_link_idx];
-            float delta_t = (pfm::time::get_time_millis() - last_update_time) / 1000.f;
+            float delta_t = (mws::time::get_time_millis() - last_update_time) / 1000.f;
 
-            last_update_time = pfm::time::get_time_millis();
+            last_update_time = mws::time::get_time_millis();
             current_position = current_position + ANIM_SPEED * delta_t;
 
             if (current_position > cumulated_distances[last_link_idx])
@@ -988,7 +988,7 @@ namespace global_flight_paths_ns
 
          if (!idp->is_processed())
          {
-            if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+            if (idp->is_type(mws_key_evt::key_evt_type))
             {
                auto mod = get_mod();
                mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
@@ -999,13 +999,13 @@ namespace global_flight_paths_ns
 
                   switch (ke->get_key())
                   {
-                  case KEY_R:
+                  case mws_key_r:
                   {
                      hot_spot_connex->restart_animation();
                      break;
                   }
 
-                  case KEY_N:
+                  case mws_key_n:
                   {
                      std::vector<glm::vec2> hs_list;
                      hot_spot_connex->set_hot_spots(hs_list);

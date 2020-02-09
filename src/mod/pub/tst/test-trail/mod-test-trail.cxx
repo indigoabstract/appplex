@@ -406,7 +406,7 @@ public:
 
    void load_trail_data()
    {
-      auto file = pfm_file::get_inst("trail-points-12.data");
+      auto file = mws_file::get_inst("trail-points-12.data");
 
       if (file->exists())
       {
@@ -523,7 +523,7 @@ void mod_test_trail::load()
    gfx_scene_inst->attach(p->tube_mesh);
 
    p->persp_cam->position = glm::vec3(0.f, 0.f, p->sphere_radius + 15.f);
-   p->last_update_time = pfm::time::get_time_millis();
+   p->last_update_time = mws::time::get_time_millis();
    p->load_trail_data();
 
    p->tube_mesh->position = glm::vec3(0.f);
@@ -539,7 +539,7 @@ int idx = 0;
 
 bool mod_test_trail::update()
 {
-   uint32 last_update_time = pfm::time::get_time_millis();
+   uint32 last_update_time = mws::time::get_time_millis();
 
    if (!update_started)
    {
@@ -620,7 +620,7 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
 {
    if (!idp->is_processed())
    {
-      if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+      if (idp->is_type(mws_ptr_evt::ptr_evt_type))
       {
          //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
@@ -758,49 +758,49 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
          //   }
          //}
       }
-      else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+      else if (idp->is_type(mws_key_evt::key_evt_type))
       {
          mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-         if (ke->get_type() != mws_key_evt::KE_RELEASED)
+         if (ke->get_type() != mws_key_evt::ke_released)
          {
             bool do_action = true;
 
             switch (ke->get_key())
             {
-            case KEY_Q:
+            case mws_key_q:
             {
                p->persp_cam->position -= p->look_at_dir * 100.05f;
                break;
             }
 
-            case KEY_E:
+            case mws_key_e:
             {
                p->persp_cam->position += p->look_at_dir * 100.05f;
                break;
             }
 
-            case KEY_A:
+            case mws_key_a:
             {
                glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), p->look_at_dir);
                p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
                break;
             }
 
-            case KEY_D:
+            case mws_key_d:
             {
                glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), p->look_at_dir);
                p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
                break;
             }
 
-            case KEY_Z:
+            case mws_key_z:
             {
                p->speed -= 0.05f;
                break;
             }
 
-            case KEY_C:
+            case mws_key_c:
             {
                p->speed += 0.05f;
                break;
@@ -810,28 +810,28 @@ void mod_test_trail::receive(mws_sp<mws_dp> idp)
                do_action = false;
             }
 
-            if (!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
+            if (!do_action && ke->get_type() != mws_key_evt::ke_repeated)
             {
                do_action = true;
 
                switch (ke->get_key())
                {
-               case KEY_SPACE:
-               case KEY_F1:
+               case mws_key_space:
+               case mws_key_f1:
                   //vdec->play_pause();
                   break;
 
-               case KEY_BACKSPACE:
-               case KEY_F2:
+               case mws_key_backspace:
+               case mws_key_f2:
                   //vdec->stop();
                   break;
 
-               case KEY_F6:
+               case mws_key_f6:
                   //mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
                   break;
 
-               case KEY_F11:
-                  pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+               case mws_key_f11:
+                  mws::screen::set_full_screen_mode(!mws::screen::is_full_screen_mode());
                   break;
 
                default:

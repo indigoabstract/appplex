@@ -8,14 +8,14 @@
 #include <vector>
 #include <glm/inc.hpp>
 
-class key_ctrl;
-class touchctrl;
+class mws_key_ctrl;
+class mws_touch_ctrl;
 
 
 class mws_ptr_evt : public mws_ptr_evt_base
 {
 public:
-   static const std::string TOUCHSYM_EVT_TYPE;
+   static const std::string ptr_evt_type;
 
    static mws_sp<mws_ptr_evt> nwi();
    virtual ~mws_ptr_evt() {}
@@ -49,11 +49,11 @@ protected:
 };
 
 
-class touchctrl : public enable_shared_from_this<touchctrl>, public mws_broadcaster
+class mws_touch_ctrl : public std::enable_shared_from_this<mws_touch_ctrl>, public mws_broadcaster
 {
 public:
-   static mws_sp<touchctrl> nwi();
-   mws_sp<touchctrl> get_instance();
+   static mws_sp<mws_touch_ctrl> nwi();
+   mws_sp<mws_touch_ctrl> get_instance();
 
    bool is_pointer_released();
    void update();
@@ -62,7 +62,7 @@ public:
    std::atomic<std::vector<mws_sp<mws_ptr_evt>>*> queue_ptr{ nullptr };
 
 private:
-   touchctrl();
+   mws_touch_ctrl();
 
    virtual mws_sp<mws_sender> sender_inst();
 
@@ -75,60 +75,60 @@ private:
 };
 
 
-class mws_key_evt : public enable_shared_from_this<mws_key_evt>, public mws_dp
+class mws_key_evt : public std::enable_shared_from_this<mws_key_evt>, public mws_dp
 {
 public:
    enum key_evt_types
    {
-      KE_PRESSED,
-      KE_REPEATED,
-      KE_RELEASED,
+      ke_pressed,
+      ke_repeated,
+      ke_released,
    };
 
-   static const std::string KEYEVT_EVT_TYPE;
-   static const std::string KEYEVT_PRESSED;
-   static const std::string KEYEVT_REPEATED;
-   static const std::string KEYEVT_RELEASED;
+   static const std::string key_evt_type;
+   static const std::string key_evt_pressed;
+   static const std::string key_evt_repeated;
+   static const std::string key_evt_released;
 
    static mws_sp<mws_key_evt> as_key_evt(mws_sp<mws_dp> i_dp);
-   static mws_sp<mws_key_evt> nwi(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);
+   static mws_sp<mws_key_evt> nwi(mws_wp<mws_key_ctrl> i_src, key_evt_types i_type, mws_key_types i_key);
    mws_sp<mws_key_evt> get_instance();
 
    static bool is_ascii(int i_key_id);
    static const std::string& get_type_name(key_evt_types i_key_evt);
-   mws_sp<key_ctrl> get_src();
+   mws_sp<mws_key_ctrl> get_src();
    bool is_letter() const;
    bool is_pressed() const;
    bool is_repeated() const;
    bool is_released() const;
    key_evt_types get_type()  const;
-   key_types get_key() const;
+   mws_key_types get_key() const;
    void process(mws_sp<mws_receiver> i_dst) override;
 
 private:
-   mws_key_evt(mws_wp<key_ctrl> i_src, key_evt_types i_type, key_types i_key);
+   mws_key_evt(mws_wp<mws_key_ctrl> i_src, key_evt_types i_type, mws_key_types i_key);
 
    key_evt_types type;
-   key_types key;
-   mws_wp<key_ctrl> src;
+   mws_key_types key;
+   mws_wp<mws_key_ctrl> src;
 };
 
 
-class key_ctrl : public enable_shared_from_this<key_ctrl>, public mws_broadcaster
+class mws_key_ctrl : public std::enable_shared_from_this<mws_key_ctrl>, public mws_broadcaster
 {
 public:
-   static mws_sp<key_ctrl> nwi();
-   mws_sp<key_ctrl> get_instance();
+   static mws_sp<mws_key_ctrl> nwi();
+   mws_sp<mws_key_ctrl> get_instance();
 
    void update();
-   bool key_is_held(key_types i_key);
-   void key_pressed(key_types i_key);
-   void key_released(key_types i_key);
-   // resets all keys to the default [ 0 ms, KEY_IDLE ]
+   bool key_is_held(mws_key_types i_key);
+   void key_pressed(mws_key_types i_key);
+   void key_released(mws_key_types i_key);
+   // resets all keys to the default [ 0 ms, mws_key_IDLE ]
    void clear_keys();
 
 private:
-   key_ctrl();
+   mws_key_ctrl();
 
    virtual mws_sp<mws_sender> sender_inst();
    void new_key_event(mws_sp<mws_key_evt> i_ke);

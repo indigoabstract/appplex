@@ -250,7 +250,7 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
-		if(idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+		if(idp->is_type(mws_ptr_evt::ptr_evt_type))
 		{
          mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 
@@ -285,49 +285,49 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 			//	ts->process();
 			//}
 		}
-		else if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+		else if(idp->is_type(mws_key_evt::key_evt_type))
 		{
 			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if(ke->get_type() != mws_key_evt::KE_RELEASED)
+			if(ke->get_type() != mws_key_evt::ke_released)
 			{
 				bool do_action = true;
 
 				switch(ke->get_key())
 				{
-				case KEY_Q:
+				case mws_key_q:
 					{
 						p->persp_cam->position -= p->look_at_dir * 0.05f;
 						break;
 					}
 
-				case KEY_E:
+				case mws_key_e:
 					{
 						p->persp_cam->position += p->look_at_dir * 0.05f;
 						break;
 					}
 
-				case KEY_A:
+				case mws_key_a:
 					{
 						glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), p->look_at_dir);
 						p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
 						break;
 					}
 
-				case KEY_D:
+				case mws_key_d:
 					{
 						glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), p->look_at_dir);
 						p->up_dir = glm::normalize(p->up_dir * rot_around_look_at_dir);
 						break;
 					}
 
-				case KEY_Z:
+				case mws_key_z:
 					{
 						p->speed -= 0.05f;
 						break;
 					}
 
-				case KEY_C:
+				case mws_key_c:
 					{
 						p->speed += 0.05f;
 						break;
@@ -337,23 +337,23 @@ void mod_test_kube_sphere::receive(mws_sp<mws_dp> idp)
 					do_action = false;
 				}
 
-				if(!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
+				if(!do_action && ke->get_type() != mws_key_evt::ke_repeated)
 				{
 					do_action = true;
 
 					switch(ke->get_key())
 					{
-					case KEY_SPACE:
-					case KEY_F1:
+					case mws_key_space:
+					case mws_key_f1:
 						//vdec->play_pause();
 						break;
 
-					case KEY_BACKSPACE:
-					case KEY_F2:
+					case mws_key_backspace:
+					case mws_key_f2:
 						//vdec->stop();
 						break;
 
-					case KEY_F6:
+					case mws_key_f6:
 						//mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
 						break;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm-def.h"
+#include "pfm.hxx"
 #include "min.hxx"
 #include <mutex>
 #include <memory>
@@ -11,12 +11,12 @@
 class mws_mod_ctrl;
 class mws_mod_list;
 class mws_page_tab;
-class key_ctrl;
-class touchctrl;
+class mws_key_ctrl;
+class mws_touch_ctrl;
 class updatectrl;
 class gfx_scene;
 class mws_camera;
-class pfm_file;
+class mws_file;
 class mws_list_model;
 class mws_video_params;
 
@@ -63,13 +63,6 @@ public:
    public:
       app_storage();
 
-      // file access
-      mws_sp<std::vector<uint8> > load_mod_byte_vect(std::string name);
-      //shared_array<uint8> load_mod_byte_array(std::string name, int& size);
-      bool store_mod_byte_array(std::string name, const uint8* res_ptr, int size);
-      bool store_mod_byte_vect(std::string name, const std::vector<uint8>& res_ptr);
-      mws_sp<pfm_file> random_access(std::string name);
-
       // screenshot
       void save_screenshot(std::string i_filename = "");
 
@@ -98,8 +91,8 @@ public:
    const std::string& get_external_name();
    void set_external_name(std::string i_name);
 
-   const std::string& get_proj_rel_path();
-   void set_proj_rel_path(std::string ipath);
+   const mws_path& get_proj_rel_path();
+   void set_proj_rel_path(std::string i_path);
    bool is_gfx_mod();
    mws_sp<mws_mod_preferences> get_preferences();
    // true to exit app, false to continue
@@ -110,13 +103,13 @@ public:
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
    bool i_m_is_null() const { return p.get() == nullptr; }
    virtual void process(mws_sp<mws_dp> i_dp);
-   bool handle_function_key(key_types i_key);
+   bool handle_function_key(mws_key_types i_key);
    virtual void config_font_db_size();
 
-   int game_time;
+   int game_time = 0;
    mws_sp<updatectrl> update_ctrl_inst;
-   mws_sp<touchctrl> touch_ctrl_inst;
-   mws_sp<key_ctrl> key_ctrl_inst;
+   mws_sp<mws_touch_ctrl> touch_ctrl_inst;
+   mws_sp<mws_key_ctrl> key_ctrl_inst;
    mws_sp<gfx_scene> gfx_scene_inst;
    mws_sp<mws_camera> mws_cam;
    mws_sp<mws_page_tab> mws_root;
@@ -151,9 +144,9 @@ protected:
 
    mws_up<app_impl> p;
    mws_sp<mws_mod_preferences> prefs;
-   int frame_count;
-   float fps;
-   uint32 last_frame_time;
+   int frame_count = 0;
+   float fps = 0.f;
+   uint32 last_frame_time = 0;
 
 private:
    friend class mws_mod_ctrl;
@@ -170,9 +163,9 @@ private:
    // mws_mod external/display name
    std::string external_name;
    // mws_mod path, relative to project (appplex) path
-   std::string proj_rel_path;
+   mws_path proj_rel_path;
    mws_wp<mws_mod> parent;
-   bool init_val;
+   bool init_val = false;
    std::vector<std::function<void()>> operation_list;
    std::vector<std::function<void()>> end_of_frame_op_list;
    std::mutex operation_mutex;
@@ -220,6 +213,6 @@ private:
    static mws_sp<mws_mod_list> get_mod_list();
    static void add_mod(mws_sp<mws_mod> i_mod, std::string i_mod_path, bool i_set_current = false);
 
-   static mws_wp<mws_mod_list> ul;
-   static mws_wp<mws_mod> next_crt_mod;
+   static inline mws_wp<mws_mod_list> ul;
+   static inline mws_wp<mws_mod> next_crt_mod;
 };

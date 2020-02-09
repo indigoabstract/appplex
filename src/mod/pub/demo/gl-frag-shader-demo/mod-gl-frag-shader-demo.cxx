@@ -115,24 +115,24 @@ public:
 	uint32 stop_time;
 	uint32 pause_time;
 
-	std::string get_channel_uniform_type(int ichannel_idx)
+	std::string get_channel_uniform_type(int i_channel_idx)
 	{
-		return channel_list[ichannel_idx]->get_uniform_type();
+		return channel_list[i_channel_idx]->get_uniform_type();
 	}
 
-	void set_channel_input_name(int ichannel_idx, std::string iname)
+	void set_channel_input_name(int i_channel_idx, std::string i_name)
 	{
-		auto idx = input_list.find(iname);
+		auto idx = input_list.find(i_name);
 
 		if (idx != input_list.end())
 		{
 			mws_sp<shader_channel> ichannel = idx->second;
 
-			channel_list[ichannel_idx] = ichannel;
+			channel_list[i_channel_idx] = ichannel;
 		}
 		else
 		{
-			channel_list[ichannel_idx] = shader_channel::nwi(iname, channel_list[ichannel_idx]->input_type);
+			channel_list[i_channel_idx] = shader_channel::nwi(i_name, channel_list[i_channel_idx]->input_type);
 		}
 	}
 
@@ -295,19 +295,19 @@ public:
 	{
 		std::string active_shader = "Antialiasing";
 		active_shader = "";
-		mws_sp<pfm_path> path = pfm_path::get_inst("", "fx-shaders");
-		mws_sp<std::vector<mws_sp<pfm_file> > > file_list = path->list_directory(mws_mod.lock(), true);
+		mws_path path("fx-shaders");
+		mws_sp<std::vector<mws_sp<mws_file> > > file_list = path.list_directory(true);
 		auto it = file_list->begin();
 
 		shader_state_list.clear();
 
 		for (; it != file_list->end(); it++)
 		{
-			mws_sp<pfm_file> file = *it;
+			mws_sp<mws_file> file = *it;
 			shader_state_list.push_back(mws_sp<shader_state>(new shader_state()));
 			mws_sp<shader_state> ss = shader_state_list.back();
 
-			ss->name = file->get_file_stem();
+			ss->name = file->stem();
 			ss->pause_time = ss->start_time = ss->stop_time = 0;
 		}
 
@@ -411,7 +411,7 @@ public:
 			fx_glsl = gfx::i()->shader.new_program(shader_name, "fx", shader_name, add_header_uniforms::nwi(ss));
 		}
 
-		uint32 crt_time = pfm::time::get_time_millis();
+		uint32 crt_time = mws::time::get_time_millis();
 
 		if (ss->start_time == 0)
 		{
@@ -426,7 +426,7 @@ public:
 	void reset_time()
 	{
 		mws_sp<shader_state> ss = shader_state_list[current_fx_index];
-		uint32 crt_time = pfm::time::get_time_millis();
+		uint32 crt_time = mws::time::get_time_millis();
 
 		ss->pause_time = 0;
 		ss->start_time = ss->stop_time = crt_time;
@@ -437,7 +437,7 @@ public:
 		if (is_active != iis_active)
 		{
 			mws_sp<shader_state> ss = shader_state_list[current_fx_index];
-			uint32 crt_time = pfm::time::get_time_millis();
+			uint32 crt_time = mws::time::get_time_millis();
 
 			is_active = iis_active;
 
@@ -525,7 +525,7 @@ public:
 			return;
 		}
 
-		if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(mws_ptr_evt::ptr_evt_type))
 		{
 			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 			int tsh = 5;
@@ -553,43 +553,43 @@ public:
 			{
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
-				int k = glm::max(glm::min(x, (int)pfm::screen::get_width() - tsh), tsh);
-				int l = glm::max(glm::min(y, (int)pfm::screen::get_height() - tsh), tsh);
+				int k = glm::max(glm::min(x, (int)mws::screen::get_width() - tsh), tsh);
+				int l = glm::max(glm::min(y, (int)mws::screen::get_height() - tsh), tsh);
 				pointer_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
 				mod->process(ts);
 				break;
 			}
 			}
 		}
-		else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+		else if (idp->is_type(mws_key_evt::key_evt_type))
 		{
 			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if (ke->get_type() == mws_key_evt::KE_PRESSED)
+			if (ke->get_type() == mws_key_evt::ke_pressed)
 			{
 				bool do_action = true;
 
 				switch (ke->get_key())
 				{
-				case KEY_LEFT:
+				case mws_key_left:
 				{
 					prev_fx();
 					break;
 				}
 
-				case KEY_RIGHT:
+				case mws_key_right:
 				{
 					next_fx();
 					break;
 				}
 
-				case KEY_SPACE:
+				case mws_key_space:
 				{
 					toggle_active();
 					break;
 				}
 
-				case KEY_R:
+				case mws_key_r:
 				{
 					reset();
 					break;
@@ -632,7 +632,7 @@ public:
 			glm::vec2 pressed_position = glm::vec2(pressed_pos.x, screen_size.y - pressed_pos.y) * tex_scale;
 
 			glm::vec2 dim = tex_size;
-			float time = (pfm::time::get_time_millis() - ss->start_time - ss->pause_time) / 1000.f;
+			float time = (mws::time::get_time_millis() - ss->start_time - ss->pause_time) / 1000.f;
 			//mws_print("timeee %f\n", time / 5.f);
 			glm::vec2 mouse(pointer_position / tex_size);
 

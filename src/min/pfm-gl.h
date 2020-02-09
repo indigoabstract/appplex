@@ -17,7 +17,7 @@ extern "C"
 
 // --- BEGIN PLATFORMS ---
 // --- ANDROID ---
-#if defined PLATFORM_ANDROID
+#if defined MWS_PFM_ANDROID
 
 #define MWS_USES_OPENGL_ES
 #define MWS_OPENGL_ES_VERSION MWS_OPENGL_ES_3_0
@@ -32,7 +32,7 @@ GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, G
 
 
 // --- IOS ---
-#elif defined PLATFORM_IOS
+#elif defined MWS_PFM_IOS
 
 #define MWS_USES_OPENGL_ES
 #define MWS_OPENGL_ES_VERSION MWS_OPENGL_ES_3_0
@@ -56,7 +56,7 @@ GL_API void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, GLsiz
 
 
 // --- EMSCRIPTEN ---
-#elif defined PLATFORM_EMSCRIPTEN
+#elif defined MWS_PFM_EMSCRIPTEN
 
 #define MWS_USES_OPENGL_ES
 #define MWS_OPENGL_ES_VERSION MWS_OPENGL_ES_3_0
@@ -89,7 +89,7 @@ GL_APICALL GLboolean GL_APIENTRY glUnmapBuffer(GLenum target);
 
 
 // --- WINDOWS ---
-#elif defined PLATFORM_WINDOWS_PC || defined PLATFORM_QT_WINDOWS_PC
+#elif defined MWS_PFM_WINDOWS_PC
 
 #define MWS_USES_OPENGL
    //#define MWS_USES_OPENGL_ES

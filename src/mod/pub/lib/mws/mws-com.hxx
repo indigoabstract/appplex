@@ -277,5 +277,5 @@ public:
    virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) = 0;
    // returns [ horizontal, vertical ] position of the cursor
    virtual glm::uvec2 get_cursor_coord() = 0;
-   virtual void advance_cursor(dir_types i_direction) = 0;
+   virtual void advance_cursor(mws_dir_types i_direction) = 0;
 };

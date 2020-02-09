@@ -552,7 +552,7 @@ void mod_dyn_geometry::receive(mws_sp<mws_dp> idp)
 {
 	if (!idp->is_processed())
 	{
-		if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+		if (idp->is_type(mws_ptr_evt::ptr_evt_type))
 		{
 			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 			bool is_dragging = p->dragging_det.detect_helper(ts);
@@ -588,17 +588,17 @@ void mod_dyn_geometry::receive(mws_sp<mws_dp> idp)
 			}
 			}
 		}
-		else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+		else if (idp->is_type(mws_key_evt::key_evt_type))
 		{
 			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if (ke->get_type() != mws_key_evt::KE_RELEASED)
+			if (ke->get_type() != mws_key_evt::ke_released)
 			{
 				bool do_action = true;
 
 				switch (ke->get_key())
 				{
-				case KEY_Q:
+				case mws_key_q:
 				{
 					break;
 				}
@@ -607,13 +607,13 @@ void mod_dyn_geometry::receive(mws_sp<mws_dp> idp)
 					do_action = false;
 				}
 
-				if (!do_action && ke->get_type() != mws_key_evt::KE_REPEATED)
+				if (!do_action && ke->get_type() != mws_key_evt::ke_repeated)
 				{
 					do_action = true;
 
 					switch (ke->get_key())
 					{
-					case KEY_R:
+					case mws_key_r:
 					{
 						float ctr_x = 600;
 						float ctr_y = 310;

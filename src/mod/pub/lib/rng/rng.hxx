@@ -29,7 +29,7 @@ public:
    {
       auto now_tp = std::chrono::system_clock::now();
       uint64 count = now_tp.time_since_epoch().count();
-      uint32 t = count & 0x7fffffff;// pfm::time::get_time_millis();
+      uint32 t = count & 0x7fffffff;// mws::time::get_time_millis();
       setSeed(t);
       //System.out.println("t " + t + " is " + init_seed);
    }

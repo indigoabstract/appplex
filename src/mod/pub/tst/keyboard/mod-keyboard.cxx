@@ -68,7 +68,7 @@ namespace mod_keyboard_ns
             };
             text_field->set_text(type_cmd_txt);
 
-            if (!pfm::has_touchscreen())
+            if (!mws::input::has_touchscreen())
             {
                text_field->set_focus();
             }
@@ -77,11 +77,11 @@ namespace mod_keyboard_ns
 
       virtual void receive(mws_sp<mws_dp> i_dp) override
       {
-         if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         if (i_dp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
-            if (ke->get_type() == mws_key_evt::KE_RELEASED)
+            if (ke->get_type() == mws_key_evt::ke_released)
             {
                //mws_println("key [ %d ]", ke->get_key());
             }
@@ -101,9 +101,9 @@ namespace mod_keyboard_ns
       virtual void update_view(mws_sp<mws_camera> i_g) override
       {
          mws_sp<mws_mod> mod = get_mod();
-         bool alt_held = mod->key_ctrl_inst->key_is_held(KEY_ALT);
-         bool ctrl_held = mod->key_ctrl_inst->key_is_held(KEY_CONTROL);
-         bool shift_held = mod->key_ctrl_inst->key_is_held(KEY_SHIFT);
+         bool alt_held = mod->key_ctrl_inst->key_is_held(mws_key_alt);
+         bool ctrl_held = mod->key_ctrl_inst->key_is_held(mws_key_control);
+         bool shift_held = mod->key_ctrl_inst->key_is_held(mws_key_shift);
          float x_off = 30.f;
          float y_off = 0.f;
          float y_add = 35.f;
@@ -132,9 +132,9 @@ namespace mod_keyboard_ns
          }
          y_off += y_add;
 
-         for (uint32 k = KEY_INVALID + 1; k < KEY_COUNT; k++)
+         for (uint32 k = mws_key_invalid + 1; k < mws_key_count; k++)
          {
-            key_types key = (key_types)k;
+            mws_key_types key = (mws_key_types)k;
 
             if (mod->key_ctrl_inst->key_is_held(key))
             {

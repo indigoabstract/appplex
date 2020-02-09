@@ -483,7 +483,7 @@ mws_sp<gfx_shader> gfx_material::load_shader()
          if (!shader)
          {
             shader = mesh.lock()->gi()->shader.new_program(shader_id, vsh_name, fsh_name);
-            shader_compile_time = pfm::time::get_time_millis();
+            shader_compile_time = mws::time::get_time_millis();
          }
       }
       else
@@ -494,7 +494,7 @@ mws_sp<gfx_shader> gfx_material::load_shader()
    }
    else
    {
-#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
+#if defined MWS_PFM_WINDOWS_PC && defined MWS_DEBUG_BUILD
       shader->reload_on_modifications();
 #endif
    }

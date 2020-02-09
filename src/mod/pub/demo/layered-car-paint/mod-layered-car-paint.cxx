@@ -958,7 +958,7 @@ void mod_layered_car_paint::init()
 {
 }
 
-bool merge_diffuse_specular(mws_sp<pfm_file> idiff_file, mws_sp<pfm_file> ispec_file)
+bool merge_diffuse_specular(mws_sp<mws_file> idiff_file, mws_sp<mws_file> ispec_file)
 {
    union color32
    {
@@ -983,7 +983,7 @@ bool merge_diffuse_specular(mws_sp<pfm_file> idiff_file, mws_sp<pfm_file> ispec_
 
    if (specularmap->width != width || specularmap->height != height)
    {
-      mws_print("specularmap size != diffmap size [%s, %s]", ispec_file->get_file_name().c_str(), idiff_file->get_file_name().c_str());
+      mws_print("specularmap size != diffmap size [%s, %s]", ispec_file->filename().c_str(), idiff_file->filename().c_str());
 
       return false;
    }
@@ -998,17 +998,17 @@ bool merge_diffuse_specular(mws_sp<pfm_file> idiff_file, mws_sp<pfm_file> ispec_
       rgba[k] = normal | ((specular << 24) & 0xff000000);
    }
 
-   std::string new_filename = "new_diff_" + idiff_file->get_file_name();
-   mws_sp<pfm_file> f = pfm_file::get_inst(new_filename);
-   res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
+   std::string new_filename = "new_diff_" + idiff_file->filename();
+   mws_sp<mws_file> f = mws_file::get_inst(new_filename);
+   res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
 
    return true;
 }
 
 bool merge_diffuse_specular(std::string idiff_fname, std::string ispec_fname)
 {
-   mws_sp<pfm_file> idiff_file = pfm_file::get_inst(idiff_fname);
-   mws_sp<pfm_file> ispec_file = pfm_file::get_inst(ispec_fname);
+   mws_sp<mws_file> idiff_file = mws_file::get_inst(idiff_fname);
+   mws_sp<mws_file> ispec_file = mws_file::get_inst(ispec_fname);
 
    return merge_diffuse_specular(idiff_file, ispec_file);
 }
@@ -1037,7 +1037,7 @@ void extract_alpha_channel()
       img_ptr[k].r = img_ptr[k].g = img_ptr[k].b = 255;
    }
 
-   mws_sp<pfm_file> f = pfm_file::get_inst("trail-2.png");
+   mws_sp<mws_file> f = mws_file::get_inst("trail-2.png");
    res_ld::inst()->save_image(f, img->width, img->height, img->data);
 }
 
@@ -1073,7 +1073,7 @@ void combine_lightmaps()
       img_ptr[k].b = img_day_ptr[k].a;
    }
 
-   mws_sp<pfm_file> f = pfm_file::get_inst("Track25_Lightmap2.png");
+   mws_sp<mws_file> f = mws_file::get_inst("Track25_Lightmap2.png");
    res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
 }
 
@@ -1107,7 +1107,7 @@ void combine_trail()
       img_ptr[k].r = 0;
    }
 
-   mws_sp<pfm_file> f = pfm_file::get_inst("trail-new.png");
+   mws_sp<mws_file> f = mws_file::get_inst("trail-new.png");
    res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
 }
 
@@ -1154,16 +1154,16 @@ void mod_layered_car_paint::load()
 
    if (false)
    {
-      mws_sp<pfm_path> path = pfm_path::get_inst("", "png");
-      mws_sp<std::vector<mws_sp<pfm_file> > > file_list = path->list_directory(get_smtp_instance(), true);
+      mws_path path("png");
+      mws_sp<std::vector<mws_sp<mws_file> > > file_list = path.list_directory(true);
       std::vector<std::string> spec_file_list;
       std::vector<std::string> diff_file_list;
       auto it = file_list->begin();
 
       for (; it != file_list->end(); it++)
       {
-         mws_sp<pfm_file> file = *it;
-         std::string fname = file->get_file_name();
+         mws_sp<mws_file> file = *it;
+         std::string fname = file->filename();
 
          if (ends_with(fname, "_S.png"))
          {
@@ -1192,12 +1192,12 @@ void mod_layered_car_paint::load()
 
          for (; it2 != file_list->end(); it2++)
          {
-            mws_sp<pfm_file> diff_file = *it2;
-            std::string diff_fname = diff_file->get_file_name();
+            mws_sp<mws_file> diff_file = *it2;
+            std::string diff_fname = diff_file->filename();
 
             if (mws_str::starts_with(diff_fname, root) && !ends_with(diff_fname, "_S.png") && (std::find(diff_file_list.begin(), diff_file_list.end(), diff_fname) == diff_file_list.end()))
             {
-               mws_sp<pfm_file> specular_file = pfm_file::get_inst(fname);
+               mws_sp<mws_file> specular_file = mws_file::get_inst(fname);
                //int idx = fname.length() - 6;
                //std::string diff_fname_last = diff_fname.substr(idx, diff_fname.length() - idx);
                diff_file_list.push_back(diff_fname);
@@ -1225,8 +1225,8 @@ void mod_layered_car_paint::load()
    //	//rgba[k] = 0x707abcde;
    //}
 
-   //mws_sp<pfm_file> f = pfm_file::get_inst("sparkle-normal-map.png");
-   //res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
+   //mws_sp<mws_file> f = mws_file::get_inst("sparkle-normal-map.png");
+   //res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
 
    //union color32
    //{
@@ -1253,8 +1253,8 @@ void mod_layered_car_paint::load()
    //	rgba[k] = normal | ((specular << 24) & 0xff000000);
    //}
 
-   //mws_sp<pfm_file> f = pfm_file::get_inst("earth_normal_spec_map.png");
-   //res_ld::inst()->save_image(f, width, height, (uint8*)begin_ptr(rgba));
+   //mws_sp<mws_file> f = mws_file::get_inst("earth_normal_spec_map.png");
+   //res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
 
    p = mws_sp<mod_layered_car_paint_impl>(new mod_layered_car_paint_impl(static_pointer_cast<mod_layered_car_paint>(get_smtp_instance())));
    p->init(gfx_scene_inst);
@@ -1301,7 +1301,7 @@ bool mod_layered_car_paint::update()
 
 void mod_layered_car_paint::receive(mws_sp<mws_dp> i_dp)
 {
-   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
@@ -1314,43 +1314,43 @@ void mod_layered_car_paint::receive(mws_sp<mws_dp> i_dp)
       }
       }
    }
-   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::key_evt_type))
    {
       mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
-      if (ke->get_type() != mws_key_evt::KE_RELEASED)
+      if (ke->get_type() != mws_key_evt::ke_released)
       {
          bool do_action = true;
 
          switch (ke->get_key())
          {
-         case KEY_SPACE:
+         case mws_key_space:
          {
             p->is_paused = !p->is_paused;
             break;
          }
 
-         case KEY_LEFT:
+         case mws_key_left:
          {
             p->current_car_idx = (p->current_car_idx - 1 + p->car_count) % p->car_count;
             p->set_car_idx(p->current_car_idx, gfx_scene_inst);
             break;
          }
 
-         case KEY_RIGHT:
+         case mws_key_right:
          {
             p->current_car_idx = (p->current_car_idx + 1) % p->car_count;
             p->set_car_idx(p->current_car_idx, gfx_scene_inst);
             break;
          }
 
-         case KEY_R:
+         case mws_key_r:
          {
             p->set_car_idx(p->current_car_idx, gfx_scene_inst);
             break;
          }
 
-         case KEY_T:
+         case mws_key_t:
          {
             if (p->current_car_idx == 10)
             {
@@ -1365,13 +1365,13 @@ void mod_layered_car_paint::receive(mws_sp<mws_dp> i_dp)
             break;
          }
 
-         case KEY_Y:
+         case mws_key_y:
          {
             p->draw_axis = !p->draw_axis;
             break;
          }
 
-         case KEY_W:
+         case mws_key_w:
          {
             std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
 

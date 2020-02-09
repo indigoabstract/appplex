@@ -2,10 +2,9 @@
 
 #include "min.hxx"
 #include "mws-mod-ctrl.hxx"
+#include <cstring>
 #include <regex>
 #include <sstream>
-#include <ctime>
-#include <iomanip>
 
 
 template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
@@ -30,106 +29,97 @@ template<> bool mws_to(const std::string& i_input)
 }
 
 
-std::string mws_util::path::get_directory_from_path(const std::string& file_path)
+std::wstring mws_str::to_wstr(const std::string& i_input)
 {
-   auto pos_0 = file_path.find_last_of('\\');
-   auto pos_1 = file_path.find_last_of('/');
-   int64 pos = -1;
+   size_t buffer_size = i_input.length();
+   wchar_t* buffer = new wchar_t[buffer_size];
+#pragma warning(suppress : 4996)
+   mbstowcs(buffer, i_input.c_str(), buffer_size);
+   std::wstring tmp(buffer, buffer_size);
+   delete[] buffer;
 
-   if (pos_0 == std::string::npos && pos_1 == std::string::npos)
-   {
-      return "";
-   }
-   else if (pos_0 != std::string::npos && pos_1 != std::string::npos)
-   {
-      pos = (pos_0 > pos_1) ? pos_0 : pos_1;
-   }
-   else if (pos_0 != std::string::npos)
-   {
-      pos = pos_0;
-   }
-   else if (pos_1 != std::string::npos)
-   {
-      pos = pos_1;
-   }
-
-   return std::string(file_path.begin(), file_path.begin() + (size_t)pos);
-}
-
-std::string mws_util::path::get_filename_from_path(const std::string& file_path)
-{
-   auto pos_0 = file_path.find_last_of('\\');
-   auto pos_1 = file_path.find_last_of('/');
-   int64 pos = -1;
-
-   if (pos_0 == std::string::npos && pos_1 == std::string::npos)
-   {
-      pos = -1;
-   }
-   else if (pos_0 != std::string::npos && pos_1 != std::string::npos)
-   {
-      pos = (pos_0 > pos_1) ? pos_0 : pos_1;
-   }
-   else if (pos_0 != std::string::npos)
-   {
-      pos = pos_0;
-   }
-   else if (pos_1 != std::string::npos)
-   {
-      pos = pos_1;
-   }
-
-   size_t idx = size_t(pos + 1);
-
-   return std::string(file_path.begin() + idx, file_path.end());
-}
-
-std::string mws_util::path::get_filename_without_extension(const std::string& file_path)
-{
-   auto filename = get_filename_from_path(file_path);
-   auto last_index = filename.find_last_of('.');
-
-   if (last_index == std::string::npos)
-   {
-      return filename;
-   }
-
-   std::string stem = filename.substr(0, last_index);
-
-   return stem;
-}
-std::string mws_util::time::get_current_date()
-{
-   std::time_t t = std::time(nullptr);
-   std::tm tm = *std::localtime(&t);
-   std::stringstream ss;
-
-   ss << std::put_time(&tm, "%a %b %d %H:%M:%S %Y");
-
-   auto s = ss.str();
-
-   return s;
-}
-
-std::string mws_util::time::get_duration_as_string(uint32 i_duration)
-{
-   std::string duration;
-
-   uint32 millis = i_duration % 1000;
-   uint32 seconds = i_duration / 1000;
-   uint32 minutes = seconds / 60;
-   uint32 seconds_remainder = seconds % 60;
-
-   duration += std::to_string(minutes);
-   duration += ":";
-   duration += std::to_string(seconds_remainder);
-   //duration += ":";
-   //duration += std::to_string(millis);
-
-   return duration;
+   return tmp;
 }
 
 
+std::string mws_str::to_str(const std::wstring& i_input)
+{
+   size_t buffer_size = i_input.length();
+   char* buffer = new char[buffer_size];
+#pragma warning(suppress : 4996)
+   wcstombs(buffer, i_input.c_str(), buffer_size);
+   std::string tmp(buffer, buffer_size);
+   delete[] buffer;
+
+   return tmp;
+}
+
+#if defined MWS_UNICODE_USING_STD_STRING
+
+const unicode_string& mws_str::string2unicodestring(const std::string& i_str)
+{
+   return i_str;
+}
+
+unicode_string mws_str::wstring2unicodestring(const std::wstring& i_str)
+{
+   return mws_str::to_str(i_str);
+}
+
+const std::string& mws_str::unicodestring2string(const unicode_string& i_str)
+{
+   return i_str;
+}
+
+std::wstring mws_str::unicodestring2wstring(const unicode_string& i_str)
+{
+   return mws_str::to_wstr(i_str);
+}
+
+unicode_char* mws_str::unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source)
+{
+   return strcpy(destination, source);
+}
+
+int mws_str::unicodestrlen(const unicode_char* i_str)
+{
+   return strlen(i_str);
+}
+
+#elif defined MWS_UNICODE_USING_STD_WSTRING
+
+unicode_string mws_str::string2unicodestring(const std::string& i_str)
+{
+   return mws_str::to_wstr(i_str);
+}
+
+const unicode_string& mws_str::wstring2unicodestring(const std::wstring& i_str)
+{
+   return i_str;
+}
+
+std::string mws_str::unicodestring2string(const unicode_string& i_str)
+{
+   return mws_str::to_str(i_str);
+}
+
+const std::wstring& mws_str::unicodestring2wstring(const unicode_string& i_str)
+{
+   return i_str;
+}
+
+unicode_char* mws_str::unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source)
+{
+#pragma warning(suppress : 4996)
+   return wcscpy(i_destination, i_source);
+}
+
+int mws_str::unicodestrlen(const unicode_char* i_str)
+{
+   return wcslen(i_str);
+}
+
+#endif
 
 int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
 {
@@ -206,23 +196,23 @@ bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
    return true;
 }
 
-std::string mws_str::ltrim(const std::string& is)
+std::string mws_str::ltrim(const std::string& i_str)
 {
-   std::string s(is);
+   std::string s(i_str);
    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
    return s;
 }
 
-std::string mws_str::rtrim(const std::string& is)
+std::string mws_str::rtrim(const std::string& i_str)
 {
-   std::string s(is);
+   std::string s(i_str);
    s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
    return s;
 }
 
-std::string mws_str::trim(const std::string& is)
+std::string mws_str::trim(const std::string& i_str)
 {
-   return ltrim(rtrim(is));
+   return ltrim(rtrim(i_str));
 }
 
 std::string mws_str::strip_enclosing_quotes(const std::string& i_text)

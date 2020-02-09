@@ -73,20 +73,20 @@ mws_px mws_px::to_px(dpi_types i_dpi_type) const { return mws_px(); }
 #if !MOD_INPUT
 #include "input/input-ctrl.hxx"
 #include "input/update-ctrl.hxx"
-mws_sp<key_ctrl> key_ctrl::nwi() { err_na(); return nullptr; }
-void key_ctrl::key_pressed(key_types) {}
-void key_ctrl::key_released(key_types) {}
-void key_ctrl::update() {}
-const std::string mws_key_evt::KEYEVT_EVT_TYPE;
+mws_sp<mws_key_ctrl> mws_key_ctrl::nwi() { err_na(); return nullptr; }
+void mws_key_ctrl::key_pressed(mws_key_types) {}
+void mws_key_ctrl::key_released(mws_key_types) {}
+void mws_key_ctrl::update() {}
+const std::string mws_key_evt::key_evt_type;
 mws_sp<mws_key_evt> mws_key_evt::as_key_evt(mws_sp<mws_dp>) { err_na(); return nullptr; }
-key_types mws_key_evt::get_key(void) const { err_na(); return KEY_INVALID; }
-mws_key_evt::key_evt_types mws_key_evt::get_type() const { err_na(); return mws_key_evt::KE_PRESSED; }
-const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE;
+mws_key_types mws_key_evt::get_key(void) const { err_na(); return mws_key_invalid; }
+mws_key_evt::key_evt_types mws_key_evt::get_type() const { err_na(); return mws_key_evt::ke_pressed; }
+const std::string mws_ptr_evt::ptr_evt_type;
 mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { err_na(); return nullptr; }
 mws_sp<mws_ptr_evt> mws_ptr_evt::as_pointer_evt(mws_sp<mws_dp>) { err_na(); return nullptr; }
-mws_sp<touchctrl> touchctrl::nwi() { err_na(); return nullptr; }
-void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base>) {}
-void touchctrl::update() {}
+mws_sp<mws_touch_ctrl> mws_touch_ctrl::nwi() { err_na(); return nullptr; }
+void mws_touch_ctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base>) {}
+void mws_touch_ctrl::update() {}
 mws_sp<updatectrl> updatectrl::nwi() { err_na(); return nullptr; }
 int updatectrl::getTimeStepDuration() { err_na(); return 0; }
 #endif
@@ -100,13 +100,13 @@ void mws_kawase_bloom::update() {}
 
 #if !MOD_MWS
 #include "mws/mws.hxx"
-bool mws::is_visible() const { return false; }
+bool mws_obj::is_visible() const { return false; }
 #endif
 
 #if !MOD_MWS_VKB
 #include "mws-vkb/mws-vkb.hxx"
 mws_sp<mws_vkb> mws_vkb::gi() { err_na(); return nullptr; }
-key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const { return KEY_INVALID; }
+mws_key_types mws_vkb::apply_key_modifiers(mws_key_types i_key_id) const { return mws_key_invalid; }
 void mws_vkb::receive(mws_sp<mws_dp>) {}
 void mws_vkb::update_state() {}
 void mws_vkb::setup() {}
@@ -144,7 +144,7 @@ mws_sp<mws_log> mws_log::inst;
 #include "res-ld/res-ld.hxx"
 mws_sp<res_ld> res_ld::inst() { return nullptr; }
 mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename) { return nullptr; }
-mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file) { return nullptr; }
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file) { return nullptr; }
 mws_sp<raw_img_data> res_ld::load_image(std::string i_filename) { return nullptr; }
 #endif
 

@@ -244,7 +244,7 @@ void mws_img_btn::receive(mws_sp<mws_dp> i_dp)
    {
       receive_handler(get_instance(), i_dp);
    }
-   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
@@ -347,7 +347,7 @@ void mws_button::receive(mws_sp<mws_dp> i_dp)
    {
       receive_handler(get_instance(), i_dp);
    }
-   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
@@ -511,7 +511,7 @@ void mws_slider::receive(mws_sp<mws_dp> i_dp)
    {
       receive_handler(get_instance(), i_dp);
    }
-   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       bool dragging_detected = dragging_dt.detect_helper(ts);
@@ -728,7 +728,7 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
 
       mws_r.h = listheight;
    }
-   else if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 

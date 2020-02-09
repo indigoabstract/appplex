@@ -31,7 +31,7 @@ namespace mod_kawase_bloom_ns
          // font
          {
             std::string font_name = "consolas.ttf";
-            mws_sp<pfm_file> font_file = pfm_file::get_inst(font_name);
+            mws_sp<mws_file> font_file = mws_file::get_inst(font_name);
 
             if (font_file->exists())
             {
@@ -44,8 +44,8 @@ namespace mod_kawase_bloom_ns
                };
                uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-               mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
-               mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.2f));
+               mws_font_db::inst()->store_font_metrix(font_file->filename(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+               mws_sp<mws_font> font = mws_font::nwi(font_file->filename(), mws_cm(0.2f));
                mws_font_db::inst()->set_global_font(font);
             }
             else
@@ -66,7 +66,7 @@ namespace mod_kawase_bloom_ns
             ortho_cam->clear_depth = true;
          }
 
-         uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
+         uint32 vkb_size = std::min(mws::screen::get_width(), mws::screen::get_height());
          mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
          mws_px word_font_height(vkb_size / 5.f / 4.f, mws_dim::e_vertical);
          mws_sp<mws_font> fnt = ortho_cam->get_font();

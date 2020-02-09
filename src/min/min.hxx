@@ -63,15 +63,34 @@ template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
 
 struct mws_str
 {
+   // conversions
+   static std::wstring to_wstr(const std::string& i_input);
+   static std::string to_str(const std::wstring& i_input);
+#if defined MWS_UNICODE_USING_STD_STRING
+   static const unicode_string& string2unicodestring(const std::string& i_str);
+   static unicode_string wstring2unicodestring(const std::wstring& i_str);
+   static const std::string& unicodestring2string(const unicode_string& i_str);
+   static std::wstring unicodestring2wstring(const unicode_string& i_str);
+   static unicode_char* unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source);
+   static int unicodestrlen(const unicode_char* i_str);
+#elif defined MWS_UNICODE_USING_STD_WSTRING
+   static unicode_string string2unicodestring(const std::string& i_str);
+   static const unicode_string& wstring2unicodestring(const std::wstring& i_str);
+   static std::string unicodestring2string(const unicode_string& i_str);
+   static const std::wstring& unicodestring2wstring(const unicode_string& i_str);
+   static unicode_char* unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source);
+   static int unicodestrlen(const unicode_char* i_str);
+#endif
+   // comparisons
    static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);
    static bool starts_with(const std::string& istr, const std::string& ifind);
    static bool ends_with(const std::string& istr, const std::string& ifind);
    // trim from start
-   static std::string ltrim(const std::string& is);
+   static std::string ltrim(const std::string& i_str);
    // trim from end
-   static std::string rtrim(const std::string& is);
+   static std::string rtrim(const std::string& i_str);
    // trim from both ends
-   static std::string trim(const std::string& is);
+   static std::string trim(const std::string& i_str);
    // strips enclosing (front and back) quotes and double quotes
    static std::string strip_enclosing_quotes(const std::string& i_text);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
@@ -111,45 +130,6 @@ struct mws_str
          search_idx = found_idx + i_fmt.size();
       }
    }
-};
-
-
-class mws_util
-{
-public:
-   struct math
-   {
-      template<typename number> number static gcd(number i_n0, number i_n1)
-      {
-#if CXX_VERSION >= 17
-
-         return std::gcd(i_n0, i_n1);
-
-#else
-
-         if (i_n1 == 0)
-         {
-            return i_n0;
-         }
-
-         return gcd(i_n1, i_n0 % i_n1);
-
-#endif
-      }
-   };
-
-   struct path
-   {
-      static std::string get_directory_from_path(const std::string& i_file_path);
-      static std::string get_filename_from_path(const std::string& i_file_path);
-      static std::string get_filename_without_extension(const std::string& i_file_path);
-   };
-
-   struct time
-   {
-      static std::string get_current_date();
-      static std::string get_duration_as_string(uint32 i_duration);
-   };
 };
 
 
@@ -457,14 +437,6 @@ template <typename T> T const& mws_any_cast(mws_any const& a)
    return p->value;
 }
 
-
-#define int_vect_pass(name) name, sizeof(name) / sizeof(int)
-
-
-template <class T, class TAl> inline T* begin_ptr(mws_sp<std::vector<T, TAl> > v) { return v->empty() ? 0 : &v->front(); }
-template <class T, class TAl> inline T* begin_ptr(std::vector<T, TAl>* v) { return v->empty() ? 0 : &v->front(); }
-template <class T, class TAl> inline T* begin_ptr(std::vector<T, TAl>& v) { return v.empty() ? 0 : &v.front(); }
-template <class T, class TAl> inline const T* begin_ptr(const std::vector<T, TAl>& v) { return v.empty() ? 0 : &v.front(); }
 
 template<typename T> T lerp(const T& start, const T& end, float t)
 {

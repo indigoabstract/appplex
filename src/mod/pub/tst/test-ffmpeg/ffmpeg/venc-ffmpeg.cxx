@@ -286,19 +286,19 @@ mws_vid_enc_method venc_ffmpeg::get_enc_method() const
    return enc_method;
 }
 
-std::string venc_ffmpeg::get_video_path()
+mws_path venc_ffmpeg::get_video_path()
 {
    return video_path;
 }
 
-void venc_ffmpeg::set_video_path(std::string i_video_path)
+void venc_ffmpeg::set_video_path(mws_path i_video_path)
 {
    video_path = i_video_path;
 }
 
 void venc_ffmpeg::start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method)
 {
-   if (video_path.empty())
+   if (video_path.is_empty())
    {
       mws_throw mws_exception("venc-ffmpeg [video_path is empty]");
    }
@@ -308,16 +308,16 @@ void venc_ffmpeg::start_encoding(const mws_video_params& i_prm, mws_vid_enc_meth
    enc_method = i_enc_method;
    params = std::make_shared<mws_video_params>();
    *params = i_prm;
-   mws_print("Encode video file %s\n", video_path.c_str());
+   mws_print("Encode video file %s\n", video_path.string().c_str());
    pts_idx = 0;
 
    /* allocate the output media context */
-   avformat_alloc_output_context2(&oc, NULL, NULL, video_path.c_str());
+   avformat_alloc_output_context2(&oc, NULL, NULL, video_path.string().c_str());
 
    if (!oc)
    {
       printf("Could not deduce output format from file extension: using mp4.\n");
-      avformat_alloc_output_context2(&oc, NULL, "mp4", video_path.c_str());
+      avformat_alloc_output_context2(&oc, NULL, "mp4", video_path.string().c_str());
    }
 
    if (!oc)
@@ -355,16 +355,16 @@ void venc_ffmpeg::start_encoding(const mws_video_params& i_prm, mws_vid_enc_meth
       open_audio(oc, audio_codec, &audio_st, opt);
    }
 
-   av_dump_format(oc, 0, video_path.c_str(), 1);
+   av_dump_format(oc, 0, video_path.string().c_str(), 1);
 
    /* open the output file, if needed */
    if (!(fmt->flags & AVFMT_NOFILE))
    {
-      ret = avio_open(&oc->pb, video_path.c_str(), AVIO_FLAG_WRITE);
+      ret = avio_open(&oc->pb, video_path.string().c_str(), AVIO_FLAG_WRITE);
 
       if (ret < 0)
       {
-         mws_print("Could not open '%s': %s\n", video_path.c_str(), get_av_error_string(ret).c_str());
+         mws_print("Could not open '%s': %s\n", video_path.string().c_str(), get_av_error_string(ret).c_str());
          exit(1);
       }
    }
@@ -1165,22 +1165,22 @@ mws_vid_enc_st mws_ffmpeg_reencoder::get_enc_state() const
    return p->venc->get_state();
 }
 
-std::string mws_ffmpeg_reencoder::get_src_video_path()
+mws_path mws_ffmpeg_reencoder::get_src_video_path()
 {
    return p->vdec->get_video_path();
 }
 
-void mws_ffmpeg_reencoder::set_src_video_path(std::string i_video_path)
+void mws_ffmpeg_reencoder::set_src_video_path(mws_path i_video_path)
 {
    p->vdec->set_video_path(i_video_path);
 }
 
-std::string mws_ffmpeg_reencoder::get_dst_video_path()
+mws_path mws_ffmpeg_reencoder::get_dst_video_path()
 {
    return p->venc->get_video_path();
 }
 
-void mws_ffmpeg_reencoder::set_dst_video_path(std::string i_video_path)
+void mws_ffmpeg_reencoder::set_dst_video_path(mws_path i_video_path)
 {
    p->venc->set_video_path(i_video_path);
 }

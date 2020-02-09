@@ -3,7 +3,7 @@
 #include "pfm.hxx"
 
 
-class updatectrl : public enable_shared_from_this<updatectrl>
+class updatectrl : public std::enable_shared_from_this<updatectrl>
 {
 public:
 	enum updatestatetype

@@ -42,17 +42,17 @@ namespace mod_abstract_racing_main_page
 			t.generateTrackVertices();
 			segmentIdx = t.start_point * t.interpolation_steps_count;
 			crtPos = t.segment_crd[segmentIdx];
-			last_time = pfm::time::get_time_millis();
+			last_time = mws::time::get_time_millis();
 		}
 
 		virtual void receive(mws_sp<mws_dp> idp)
 		{
-			if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+			if(idp->is_type(mws_key_evt::key_evt_type))
 			{
 				auto mod = get_mod();
 				mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-				if(ke->get_type() != mws_key_evt::KE_RELEASED)
+				if(ke->get_type() != mws_key_evt::ke_released)
 				{
 					bool do_action = true;
 
@@ -78,7 +78,7 @@ namespace mod_abstract_racing_main_page
 
 			int segmentCrossTime = 250;
 			duringSegmentCrossing = false;
-			uint32 now = pfm::time::get_time_millis();
+			uint32 now = mws::time::get_time_millis();
 			uint32 delta = now - last_time;
 
 			if(delta > segmentCrossTime)

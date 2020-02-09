@@ -94,9 +94,9 @@ void mod_test_ffmpeg::load()
       vdec_listener = std::make_shared<mws_vdec_listener>();
    }
    {
-      mws_sp<pfm_file> raf = pfm_file::get_inst("video.mp4");
+      mws_sp<mws_file> raf = mws_file::get_inst("video.mp4");
 
-      std::string fpath = raf->get_full_path();
+      std::string fpath = raf->string_path();
       vdec = mws_sp<vdec_ffmpeg>(new vdec_ffmpeg());
       // get notified when a frame is ready and then encode it
       //vdec->set_listener(vdec_listener);
@@ -112,7 +112,7 @@ void mod_test_ffmpeg::load()
 
       if (!raf->exists())
       {
-         mws_print("\nfile %s not found\n", raf->get_file_name().c_str());
+         mws_print("\nfile %s not found\n", raf->filename().c_str());
       }
    }
 }
@@ -151,40 +151,40 @@ void mod_test_ffmpeg::receive(mws_sp<mws_dp> idp)
 {
 	if(!idp->is_processed())
 	{
-		if(idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+		if(idp->is_type(mws_ptr_evt::ptr_evt_type))
 		{
 			mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 		}
-		else if(idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+		else if(idp->is_type(mws_key_evt::key_evt_type))
 		{
 			mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-			if(ke->get_type() != mws_key_evt::KE_RELEASED)
+			if(ke->get_type() != mws_key_evt::ke_released)
 			{
 				bool do_action = false;
 
-				if(ke->get_type() != mws_key_evt::KE_REPEATED)
+				if(ke->get_type() != mws_key_evt::ke_repeated)
 				{
 					do_action = true;
 
 					switch(ke->get_key())
 					{
-					case KEY_SPACE:
-					case KEY_F1:
+					case mws_key_space:
+					case mws_key_f1:
 						vdec->play_pause();
 						break;
 
-					case KEY_BACKSPACE:
-					case KEY_F2:
+					case mws_key_backspace:
+					case mws_key_f2:
 						vdec->stop();
 						break;
 
-					case KEY_F6:
+					case mws_key_f6:
 						mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
 						break;
 
-					case KEY_F11:
-						pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+					case mws_key_f11:
+						mws::screen::set_full_screen_mode(!mws::screen::is_full_screen_mode());
 						break;
 
 					default:

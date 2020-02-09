@@ -126,10 +126,10 @@ mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
    return gfx::i()->tex.nwi(i_filename);
 }
 
-mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file)
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
 {
    mws_sp<raw_img_data> rd(new raw_img_data());
-   mws_sp<std::vector<uint8> > png_data = pfm::filesystem::load_res_byte_vect(i_file);
+   mws_sp<std::vector<uint8> > png_data = mws::filesys::load_res_byte_vect(i_file);
    {
       uint32 error = 0;
       uint8* img_data = nullptr;
@@ -163,7 +163,7 @@ mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file)
       lodepng_state_cleanup(&state);
    }
 
-   mws_println("loading image[ %s ], size[ %d ]", i_file->get_file_name().c_str(), png_data->size());
+   mws_println("loading image[ %s ], size[ %d ]", i_file->filename().c_str(), png_data->size());
 
    return rd;
 }
@@ -177,12 +177,12 @@ mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
       img_name += ".png";
    }
 
-   mws_sp<pfm_file> file = pfm_file::get_inst(img_name);
+   mws_sp<mws_file> file = mws_file::get_inst(img_name);
 
    return load_image(file);
 }
 
-bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8 * i_buffer, flip_types i_flip)
+bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8 * i_buffer, flip_types i_flip)
 {
    uint8* png = nullptr;
    size_t png_size = 0;
@@ -198,7 +198,7 @@ bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint
 
    if (!error)
    {
-      lodepng_save_file(png, png_size, i_file->get_full_path().c_str());
+      lodepng_save_file(png, png_size, i_file->string_path().c_str());
    }
 
    //if there's an error, display it
@@ -214,9 +214,9 @@ bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint
 
 #else
 
-mws_sp<raw_img_data> res_ld::load_image(mws_sp<pfm_file> i_file)
+mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
 {
-   mws_print("img [%s] not loaded. MOD_PNG is disabled.\n", i_file->get_file_name().c_str());
+   mws_print("img [%s] not loaded. MOD_PNG is disabled.\n", i_file->filename().c_str());
    return std::make_shared<raw_img_data>(32, 32);
 }
 
@@ -226,9 +226,9 @@ mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
    return std::make_shared<raw_img_data>(32, 32);
 }
 
-bool res_ld::save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip)
+bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip)
 {
-   mws_print("img [%s] not saved. MOD_PNG is disabled.\n", i_file->get_file_name().c_str());
+   mws_print("img [%s] not saved. MOD_PNG is disabled.\n", i_file->filename().c_str());
    return false;
 }
 
@@ -237,7 +237,7 @@ raw_img_data::raw_img_data()
    data = nullptr;
 }
 
-#if defined PLATFORM_IOS
+#if defined MWS_PFM_IOS
 
 #include "objc-cxx-bridge.hxx"
 

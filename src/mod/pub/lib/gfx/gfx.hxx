@@ -129,18 +129,18 @@ public:
        // i_force_binding - force a rebinding to the default FB, even if it was already bound. useful for resync of opengl state with outside libs
       void set_current_render_target(mws_sp<gfx_rt> i_rdt = nullptr, bool i_force_binding = false);
 
-      template<typename T> mws_sp<std::vector<T>> get_render_target_pixels(mws_sp<gfx_rt> irt = nullptr)
+      template<typename T> mws_sp<std::vector<T>> get_render_target_pixels(mws_sp<gfx_rt> i_rt = nullptr)
       {
          mws_sp<std::vector<T> > vect(new std::vector<T>(get_render_target_width() * get_render_target_height()));
 
-         get_render_target_pixels<T>(irt, vect);
+         get_render_target_pixels<T>(i_rt, vect);
 
          return vect;
       }
 
-      template<typename T> void get_render_target_pixels(mws_sp<gfx_rt> irt, mws_sp<std::vector<T> > ivect)
+      template<typename T> void get_render_target_pixels(mws_sp<gfx_rt> i_rt, mws_sp<std::vector<T>> i_vect)
       {
-         g.lock()->get_render_target_pixels_impl(irt, begin_ptr(ivect));
+         g.lock()->get_render_target_pixels_impl(i_rt, i_vect->data());
       }
 
    private:
@@ -219,7 +219,7 @@ private:
    static void on_resize(int i_width, int i_height);
    static shader_src get_std_shader_src(const std::string& i_shader_name);
    void init(mws_sp<gfx> i_new_inst);
-   void get_render_target_pixels_impl(mws_sp<gfx_rt> irt, void* ivect);
+   void get_render_target_pixels_impl(mws_sp<gfx_rt> i_rt, void* i_vect);
    void remove_gfx_obj(const gfx_obj* iobj);
    gfx();
 

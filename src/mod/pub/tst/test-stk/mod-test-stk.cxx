@@ -241,6 +241,8 @@ void mod_test_stk::init_mws()
 	public:
 		virtual void init()
 		{
+			mws_path res_dir = mws::filesys::res_dir();
+			mws_path test_fmod_res_dir = res_dir.parent_path().parent_path() / "test-fmod/res/";
 			FMOD_RESULT result;
 			result = FMOD::System_Create(&fmodSystem);
 			fmod_error_check(result);
@@ -248,11 +250,11 @@ void mod_test_stk::init_mws()
 			result = fmodSystem->init(32, FMOD_INIT_NORMAL, 0);
 			fmod_error_check(result);
 
-			std::string path = pfm::filesystem::get_path("test-fmod/01-scent-of-nova.mp3");
-			result = fmodSystem->createStream(path.c_str(), FMOD_SOFTWARE | FMOD_LOOP_NORMAL, 0, &music);
+			mws_path path = test_fmod_res_dir / "01-scent-of-nova.mp3";
+			result = fmodSystem->createStream(path.string().c_str(), FMOD_SOFTWARE | FMOD_LOOP_NORMAL, 0, &music);
 			fmod_error_check(result);
-			std::string path2 = pfm::filesystem::get_path("test-fmod/rm_snd_ijike.wav");
-			result = fmodSystem->createSound(path2.c_str(), FMOD_SOFTWARE, 0, &actionSound);
+			mws_path path2 = test_fmod_res_dir / "rm_snd_ijike.wav";
+			result = fmodSystem->createSound(path2.string().c_str(), FMOD_SOFTWARE, 0, &actionSound);
 			fmod_error_check(result);
 			//result = fmodSystem->playSound(FMOD_CHANNEL_FREE, music, false, &musicChannel);
 			fmod_error_check(result);
@@ -291,18 +293,18 @@ void mod_test_stk::init_mws()
 				return;
 			}
 
-			if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(mws_ptr_evt::ptr_evt_type))
 			{
 			}
-			else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+			else if (idp->is_type(mws_key_evt::key_evt_type))
 			{
 				mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
-				if (ke->get_type() == mws_key_evt::KE_PRESSED)
+				if (ke->get_type() == mws_key_evt::ke_pressed)
 				{
 					switch (ke->get_key())
 					{
-					case KEY_I:
+					case mws_key_i:
 					{
 						if (last_played_note)
 						{
@@ -316,7 +318,7 @@ void mod_test_stk::init_mws()
 						break;
 					}
 
-					case KEY_G:
+					case mws_key_g:
 					{
 						int numGenerators = 4;
 						generator->stop();
@@ -326,14 +328,14 @@ void mod_test_stk::init_mws()
 						break;
 					}
 
-					case KEY_P:
+					case mws_key_p:
 					{
 						// Start playback and get the channel and a reference to the sound
 						FMOD::Channel* channel = generator->Start();
 						break;
 					}
 
-					case KEY_R:
+					case mws_key_r:
 					{
 						auto start_note = musical_note::get_note(musical_note::e_note, 2);
 						auto end_note = musical_note::get_note(musical_note::c_note, 6);
@@ -349,7 +351,7 @@ void mod_test_stk::init_mws()
 						break;
 					}
 
-					case KEY_S:
+					case mws_key_s:
 						// stop the sound
 						generator->stop();
 						break;

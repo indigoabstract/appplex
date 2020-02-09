@@ -270,7 +270,7 @@ mws_sp<gfx_uniform> gfx_util::parse_uniform(std::string iuniform)
 
 void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity)
 {
-   draw_tex(i_cam, itex, itx, ity, itex->get_width(), itex->get_height());
+   draw_tex(i_cam, itex, itx, ity, (float)itex->get_width(), (float)itex->get_height());
 }
 
 void gfx_util::draw_tex(mws_sp<gfx_camera> i_cam, mws_sp<gfx_tex> itex, float itx, float ity, float iw, float ih)

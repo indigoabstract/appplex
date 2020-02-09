@@ -168,7 +168,7 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 
 	int vdata_size = vx_data.size() * sizeof(vx_fmt_p3f_c4b_n3f_t2f);
 	int idata_size = ind_data.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_data), vdata_size, begin_ptr(ind_data), idata_size, static_pointer_cast<gfx_vxo>(get_mws_sp()));
+	gfx_vxo_util::set_mesh_data((const uint8*)vx_data.data(), vdata_size, ind_data.data(), idata_size, static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 

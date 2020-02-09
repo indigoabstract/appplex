@@ -19,7 +19,7 @@ namespace mod_texxed_ns
 			int w = get_mod()->get_width();
 			int h = get_mod()->get_height();
 
-			tx_res = pfm::filesystem::load_res_as_string("kappaxx-src.kxmd");
+			tx_res = mws::filesys::load_res_as_string("kappaxx-src.kxmd");
 
 			if (!tx_res)
 			{
@@ -59,7 +59,7 @@ namespace mod_texxed_ns
 				return;
 			}
 			
-			if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+			if (idp->is_type(mws_key_evt::key_evt_type))
 			{
 				ta->receive(idp);
 			}

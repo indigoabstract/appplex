@@ -2,7 +2,7 @@
 
 default
 [
-	uses[ gfx ], enabled[ true ], platf[ windows,emscripten ], build-type[ debug ],
+	uses[ gfx ], enabled[ true ], platf[ windows ], build-type[ debug ],
 	@@example-start
 	[
 		mod[ reliquus ], exclusive [ false ], launch-mod [ true ],
@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ dyn-geometry ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ omnirecall ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -43,7 +43,7 @@ mod
 	[
 		uses
 		[
-			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, tex-atlas, util, vector-fonts, vrn
+			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn
 		]
 	],
 	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],

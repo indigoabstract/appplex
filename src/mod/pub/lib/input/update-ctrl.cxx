@@ -24,7 +24,7 @@ int updatectrl::update()
 {
 	if(state == GAME_RUNNING)
 	{
-		unsigned long crtTime = pfm::time::get_time_millis();
+		unsigned long crtTime = mws::time::get_time_millis();
 		unsigned long delta = crtTime - (startTime + pauseTime);
 		int ttickCount = delta / updateInterval;
 
@@ -58,7 +58,7 @@ void updatectrl::paused()
 	if(state == GAME_RUNNING)
 	{
 		state = GAME_PAUSED;
-		pauseStartTime = pfm::time::get_time_millis();
+		pauseStartTime = mws::time::get_time_millis();
 		//trx("intr: gamePaused");
 	}
 }
@@ -68,7 +68,7 @@ void updatectrl::resumed()
 	if(state == GAME_PAUSED)
 	{
 		state = GAME_RUNNING;
-		pauseTime += pfm::time::get_time_millis() - pauseStartTime;
+		pauseTime += mws::time::get_time_millis() - pauseStartTime;
 		//trx("intr: gameResumed %1%") % pauseTime;
 	}
 }
@@ -96,7 +96,7 @@ int updatectrl::getTime()
 void updatectrl::resetTime()
 {
 	tickCount = 0;
-	startTime = pfm::time::get_time_millis();
+	startTime = mws::time::get_time_millis();
 	pauseTime = 0;
 	//trx("reset game time");
 }

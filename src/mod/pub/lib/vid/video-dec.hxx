@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pfm.hxx"
 #include <memory>
 #include <string>
 
@@ -53,8 +54,8 @@ public:
 
    virtual ~mws_video_dec() {}
    virtual bool is_playing() const { return get_state() == mws_vdec_state::st_playing; }
-   virtual std::string get_video_path() = 0;
-   virtual void set_video_path(std::string i_video_path) = 0;
+   virtual mws_path get_video_path() = 0;
+   virtual void set_video_path(mws_path i_video_path) = 0;
    virtual mws_sp<mws_media_info> get_media_info() = 0;
    virtual int start_decoding() = 0;
    virtual void stop() = 0;

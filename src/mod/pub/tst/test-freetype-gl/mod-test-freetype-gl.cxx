@@ -75,7 +75,7 @@ bool mod_test_freetype_gl::update()
 		mws_cam->draw_mesh(p->q2d);
 	}
 
-	uint32 crt_time = pfm::time::get_time_millis();
+	uint32 crt_time = mws::time::get_time_millis();
 
 	if (crt_time - p->last_time > 750)
 	{

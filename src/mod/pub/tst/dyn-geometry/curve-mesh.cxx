@@ -188,7 +188,7 @@ void curve_mesh::calc_geometry()
 
 	int vdata_size = vx_tab.size() * sizeof(vx_fmt_p3f_t2f);
 	int idata_size = ix_tab.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(vx_tab), vdata_size, begin_ptr(ix_tab), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+	gfx_vxo_util::set_mesh_data((const uint8*)vx_tab.data(), vdata_size, ix_tab.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 	drawing_mode_changed = true;
 }
 
@@ -328,14 +328,14 @@ void curve_mesh::draw_using_va(mws_sp<gfx_camera> icamera)
             mws_throw mws_exception("unknown value");
 			}
 
-			glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, begin_ptr(vertices_buffer) + offset);
+			glVertexAttribPointer(loc_idx, at->get_component_count(), gl_type, normalized, vxi.vertex_size, vertices_buffer.data() + offset);
 			glEnableVertexAttribArray(loc_idx);
 		}
 
 		offset += at->get_aligned_size();
 	}
 
-	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
+	glDrawElements(method, indices_buffer.size(), GL_UNSIGNED_INT, indices_buffer.data());
 
 	if(wf_mode == MV_WF_OVERLAY)
 	{
@@ -352,7 +352,7 @@ void curve_mesh::draw_using_va(mws_sp<gfx_camera> icamera)
 			icamera->update_glp_params(static_pointer_cast<gfx_vxo>(get_mws_sp()), p);
 		}
 
-		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, begin_ptr(indices_buffer));
+		glDrawElements(GL_LINE_STRIP, indices_buffer.size(), GL_UNSIGNED_INT, indices_buffer.data());
 		gfx::i()->shader.set_current_program(glp);
 	}
 
@@ -381,7 +381,7 @@ void curve_mesh::draw_using_vbo(mws_sp<gfx_camera> icamera)
 		int max_indices = (max_vertices / 2 - 1) * 2 * 3;
 
 		buffer_id_list.resize(2);
-		glGenBuffers(2, begin_ptr(buffer_id_list));
+		glGenBuffers(2, buffer_id_list.data());
 		glBindBuffer(GL_ARRAY_BUFFER, buffer_id_list[0]);
 		glBufferData(GL_ARRAY_BUFFER, vxi.vertex_size * max_vertices, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_id_list[1]);
@@ -393,8 +393,8 @@ void curve_mesh::draw_using_vbo(mws_sp<gfx_camera> icamera)
 
 	if(drawing_mode_changed)
 	{
-		glBufferData(GL_ARRAY_BUFFER, vertices_buffer.size(), begin_ptr(vertices_buffer), GL_DYNAMIC_DRAW);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * indices_buffer.size(), begin_ptr(indices_buffer), GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices_buffer.size(), vertices_buffer.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * indices_buffer.size(), indices_buffer.data(), GL_DYNAMIC_DRAW);
 	}
 
 	for(std::vector<mws_sp<vx_attribute> >::iterator it = vxi.vx_attr_vect.begin(); it != vxi.vx_attr_vect.end(); it++)

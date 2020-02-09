@@ -37,8 +37,8 @@ void track::loadTrackData(char* track_name)
 	tex = gfx::i()->tex.nwi("square.png");
 
 	std::string fn = trs("abstract-racing/{}", track_name);
-	mws_sp<std::vector<uint8> > res = pfm::filesystem::load_res_byte_vect(fn);
-	memory_data_sequence mds(begin_ptr(res), res->size());
+	mws_sp<std::vector<uint8> > res = mws::filesys::load_res_byte_vect(fn);
+	memory_data_sequence mds(res->data(), res->size());
 	data_sequence_reader_big_endian dsr(&mds);
 
 	version_number = dsr.read_int32();
@@ -244,13 +244,13 @@ void track::drawTrack(mws_sp<gfx_camera> r)
 	//};
 	//r->st.set_state(pl1);
 
-	//r->vx.set_vertex_data(begin_ptr(road_vertices), &vxfmt_v3fc4bn3t2f::vxi);
- //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), begin_ptr(road_indices));
+	//r->vx.set_vertex_data(road_vertices->data(), &vxfmt_v3fc4bn3t2f::vxi);
+ //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), road_indices->data());
 
 	//r->st.disable_state(gl::CULL_FACE);
-	//r->vx.set_vertex_data(begin_ptr(left_wall_vertices), &vxfmt_v3fc4bn3t2f::vxi);
- //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), begin_ptr(road_indices));
+	//r->vx.set_vertex_data(left_wall_vertices->data(), &vxfmt_v3fc4bn3t2f::vxi);
+ //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), road_indices->data());
 
-	//r->vx.set_vertex_data(begin_ptr(right_wall_vertices), &vxfmt_v3fc4bn3t2f::vxi);
- //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), begin_ptr(road_indices));
+	//r->vx.set_vertex_data(right_wall_vertices->data(), &vxfmt_v3fc4bn3t2f::vxi);
+ //   r->draw_elements(GLPT_TRIANGLES, road_indices.size(), road_indices->data());
 }

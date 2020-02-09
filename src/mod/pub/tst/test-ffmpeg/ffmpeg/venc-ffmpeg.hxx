@@ -71,8 +71,8 @@ public:
    virtual ~venc_ffmpeg() {}
    mws_vid_enc_st get_state() const override;
    mws_vid_enc_method get_enc_method() const override;
-   std::string get_video_path() override;
-   void set_video_path(std::string i_video_path) override;
+   mws_path get_video_path() override;
+   void set_video_path(mws_path i_video_path) override;
    void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
    void encode_frame_impl(AVFrame* i_frame);
    void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
@@ -98,7 +98,7 @@ private:
 	FILE* f;
 	AVFrame* frame;
    AVFormatContext* oc;
-	std::string video_path;
+   mws_path video_path;
 	int pts_idx;
    bool have_video, have_audio;
    bool encode_video, encode_audio;
@@ -123,10 +123,10 @@ public:
    virtual ~mws_ffmpeg_reencoder() {}
    virtual mws_vdec_state get_dec_state() const override;
    virtual mws_vid_enc_st get_enc_state() const override;
-   std::string get_src_video_path() override;
-   void set_src_video_path(std::string i_video_path) override;
-   std::string get_dst_video_path() override;
-   void set_dst_video_path(std::string i_video_path) override;
+   mws_path get_src_video_path() override;
+   void set_src_video_path(mws_path i_video_path) override;
+   mws_path get_dst_video_path() override;
+   void set_dst_video_path(mws_path i_video_path) override;
    void start_encoding(const mws_video_params& i_prm) override;
    void stop_encoding() override;
    void update() override;

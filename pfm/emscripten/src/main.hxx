@@ -10,8 +10,6 @@ public:
    static mws_sp<emst_main> get_instance();
    static mws_sp<pfm_impl::pfm_file_impl> new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir);
    virtual void init() override;
-   virtual void start() override;
-   virtual void run() override;
    virtual key_types translate_key(int i_pfm_key_id) const override;
    virtual key_types apply_key_modifiers_impl(key_types i_key_id) const override;
    // screen metrix
@@ -27,11 +25,13 @@ public:
    virtual void write_text(const wchar_t* text)const override;
    virtual void write_text_nl(const wchar_t* text)const override;
    virtual void write_text_v(const char* iformat, ...)const override;
-   virtual std::string get_writable_path()const override;
+   virtual const std::string& prv_dir() const override;
+   virtual const std::string& res_dir() const override;
+   virtual const std::string& tmp_dir() const override;
    virtual std::string get_timezone_id()const override;
    umf_list get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive);
    virtual bool is_full_screen_mode();
-   virtual void set_full_screen_mode(bool ienabled);
+   virtual void set_full_screen_mode(bool i_enabled);
 
    void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
    void on_resize(uint32 i_screen_width, uint32 i_screen_height);

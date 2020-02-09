@@ -95,33 +95,32 @@ public:
       std::string version;
       std::string def_platform;
 
-      switch (pfm::get_gfx_type_id())
+      switch (mws::get_gfx_type_id())
       {
-      case gfx_type_opengl:
+      case mws_gfx_opengl:
          tag = "//@dt";
          break;
 
-      case gfx_type_opengl_es:
+      case mws_gfx_opengl_es:
          tag = "//@es";
          break;
       }
 
-      switch (pfm::get_platform_id())
+      switch (mws::get_platform_id())
       {
-      case platform_android:
+      case mws_pfm_android:
          def_platform = "#define ANDROID";
          break;
 
-      case platform_ios:
+      case mws_pfm_ios:
          def_platform = "#define IOS";
          break;
 
-      case platform_emscripten:
+      case mws_pfm_emscripten:
          def_platform = "#define EMSCRIPTEN";
          break;
 
-      case platform_qt_windows_pc:
-      case platform_windows_pc:
+      case mws_pfm_windows_pc:
          def_platform = "#define WINDOWS";
          break;
       }
@@ -289,8 +288,8 @@ public:
       vsh_file_name = append_if_missing_ext(vsh_file_name, VS_EXT);
       fsh_file_name = append_if_missing_ext(fsh_file_name, FS_EXT);
 
-      mws_sp<pfm_file> vs_shader_file = pfm_file::get_inst(vsh_file_name);
-      mws_sp<pfm_file> fs_shader_file = pfm_file::get_inst(fsh_file_name);
+      mws_sp<mws_file> vs_shader_file = mws_file::get_inst(vsh_file_name);
+      mws_sp<mws_file> fs_shader_file = mws_file::get_inst(fsh_file_name);
 
       if (suppress_nex_msg)
       {
@@ -300,8 +299,8 @@ public:
          }
       }
 
-      const mws_sp<std::string> vs_shader_src = pfm::filesystem::load_res_as_string(vs_shader_file);
-      const mws_sp<std::string> fs_shader_src = pfm::filesystem::load_res_as_string(fs_shader_file);
+      const mws_sp<std::string> vs_shader_src = mws::filesys::load_res_as_string(vs_shader_file);
+      const mws_sp<std::string> fs_shader_src = mws::filesys::load_res_as_string(fs_shader_file);
 
       if (!vs_shader_src)
       {
@@ -315,9 +314,9 @@ public:
          return;
       }
 
-      vsh_last_write = pfm_file::get_inst(vsh_file_name)->last_write_time();
-      fsh_last_write = pfm_file::get_inst(fsh_file_name)->last_write_time();
-      last_compile_time = pfm::time::get_time_millis();
+      vsh_last_write = mws_file::get_inst(vsh_file_name)->last_write_time();
+      fsh_last_write = mws_file::get_inst(fsh_file_name)->last_write_time();
+      last_compile_time = mws::time::get_time_millis();
 
       //mws_print("vshder %s %s", vsh_file_name.c_str(), vs_shader_src.c_str());
       //mws_print("fshder %s %s", fsh_file_name.c_str(), fs_shader_src.c_str());
@@ -435,12 +434,12 @@ public:
    {
       if (fsh_name.length() > 0 && vsh_name.length() > 0)
       {
-         uint32 current_time = pfm::time::get_time_millis();
+         uint32 current_time = mws::time::get_time_millis();
 
          if (current_time - last_compile_time > 3000)
          {
-            uint64 ft = pfm_file::get_inst(fsh_file_name)->last_write_time();
-            uint64 vt = pfm_file::get_inst(vsh_file_name)->last_write_time();
+            uint64 ft = mws_file::get_inst(fsh_file_name)->last_write_time();
+            uint64 vt = mws_file::get_inst(vsh_file_name)->last_write_time();
 
             if (ft != fsh_last_write || vt != vsh_last_write)
             {

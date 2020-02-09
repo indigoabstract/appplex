@@ -282,7 +282,7 @@ void mod_kinetic_scrolling::init_mws()
 				return;
 			}
 
-			if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+			if (idp->is_type(mws_ptr_evt::ptr_evt_type))
 			{
 				mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
 

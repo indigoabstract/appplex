@@ -17,9 +17,9 @@ public:
    {
       mws_font_ref = i_font;
       color = mws_sp<gfx_color>(new gfx_color(gfx_color::colors::white));
-      ppath = pfm_path::get_inst(i_font_path);
-      font_name = mws_font_db::inst()->get_db_font_name(ppath->get_file_name());
-      font_path = ppath->get_full_path();
+      ppath = mws_path(i_font_path);
+      font_name = mws_font_db::inst()->get_db_font_name(ppath.filename());
+      font_path = ppath.string();
 
       if (i_markup)
       {
@@ -29,7 +29,7 @@ public:
    }
 
    mws_wp<mws_font> mws_font_ref;
-   mws_sp<pfm_path> ppath;
+   mws_path ppath;
    mws_sp<std::string> font_name;
    std::string font_path;
    float size = 0.f;
@@ -42,7 +42,7 @@ public:
 mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, float i_size, const mws_font_markup* i_markup)
 {
    float size = (i_size > 0.f) ? i_size : i_fnt->p->size;
-   return nwi(size, i_fnt->get_full_path(), i_markup);
+   return nwi(size, i_fnt->string_path(), i_markup);
 }
 
 mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path, const mws_font_markup* i_markup)
@@ -58,11 +58,11 @@ mws_sp<mws_font> mws_font::nwi(float i_size, const std::string& i_font_path, con
 
 mws_sp<mws_font> mws_font::nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
-   std::string path = i_fnt->get_full_path();
+   std::string path = i_fnt->string_path();
 
    if (path.empty())
    {
-      path = mws_font_db::inst()->get_global_font()->get_full_path();
+      path = mws_font_db::inst()->get_global_font()->string_path();
    }
 
    return nwi(path, i_height, i_markup);
@@ -79,29 +79,29 @@ mws_sp<mws_font> mws_font::get_inst()
    return shared_from_this();
 }
 
-const std::string& mws_font::get_file_name()const
+const std::string& mws_font::filename()const
 {
    return *p->font_name;
 }
 
-const std::string& mws_font::get_full_path()const
+const std::string& mws_font::string_path()const
 {
    return p->font_path;
 }
 
-std::string mws_font::get_font_name()const
+std::string mws_font::font_name()const
 {
-   return p->ppath->get_file_stem();
+   return p->ppath.stem();
 }
 
-std::string mws_font::get_file_extension()const
+std::string mws_font::extension()const
 {
-   return p->ppath->get_file_extension();
+   return p->ppath.extension();
 }
 
-const std::string& mws_font::get_root_directory()const
+mws_path mws_font::directory()const
 {
-   return p->ppath->get_root_directory();
+   return p->ppath.directory();
 }
 
 float mws_font::get_size()const

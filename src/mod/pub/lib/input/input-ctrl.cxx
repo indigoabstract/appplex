@@ -6,7 +6,7 @@
 #include <glm/inc.hpp>
 
 
-const std::string mws_ptr_evt::TOUCHSYM_EVT_TYPE = "ts-";
+const std::string mws_ptr_evt::ptr_evt_type = "ts-";
 
 mws_sp<mws_ptr_evt> mws_ptr_evt::nwi() { return mws_sp<mws_ptr_evt>(new mws_ptr_evt()); }
 
@@ -126,29 +126,29 @@ glm::vec2 mws_ptr_evt::get_pos(const mws_ptr_evt::touch_point& i_tp)
 }
 
 
-touchctrl::touchctrl()
+mws_touch_ctrl::mws_touch_ctrl()
 {
    //if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::pfm_touch); }
    queue_tab.resize(2);
    queue_ptr = &queue_tab[queue_idx];
 }
 
-mws_sp<touchctrl> touchctrl::nwi()
+mws_sp<mws_touch_ctrl> mws_touch_ctrl::nwi()
 {
-   return mws_sp<touchctrl>(new touchctrl());
+   return mws_sp<mws_touch_ctrl>(new mws_touch_ctrl());
 }
 
-mws_sp<touchctrl> touchctrl::get_instance()
+mws_sp<mws_touch_ctrl> mws_touch_ctrl::get_instance()
 {
    return shared_from_this();
 }
 
-bool touchctrl::is_pointer_released()
+bool mws_touch_ctrl::is_pointer_released()
 {
    return !is_pointer_down;
 }
 
-void touchctrl::update()
+void mws_touch_ctrl::update()
 {
    // set the current input queue as the queue for processing the input
    std::vector<mws_sp<mws_ptr_evt>>* input_queue_ptr = &queue_tab[queue_idx];
@@ -283,25 +283,25 @@ void touchctrl::update()
    }
 }
 
-void touchctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_te)
+void mws_touch_ctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_te)
 {
    mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
    (*queue_ptr).push_back(te);
 }
 
-mws_sp<mws_sender> touchctrl::sender_inst()
+mws_sp<mws_sender> mws_touch_ctrl::sender_inst()
 {
    return get_instance();
 }
 
 
-const std::string mws_key_evt::KEYEVT_EVT_TYPE = "ke-";
-const std::string mws_key_evt::KEYEVT_PRESSED = "ke-pressed";
-const std::string mws_key_evt::KEYEVT_REPEATED = "ke-repeated";
-const std::string mws_key_evt::KEYEVT_RELEASED = "ke-released";
+const std::string mws_key_evt::key_evt_type = "ke-";
+const std::string mws_key_evt::key_evt_pressed = "ke-pressed";
+const std::string mws_key_evt::key_evt_repeated = "ke-repeated";
+const std::string mws_key_evt::key_evt_released = "ke-released";
 
 
-mws_key_evt::mws_key_evt(mws_wp<key_ctrl> i_src, mws_key_evt::key_evt_types i_type, key_types i_key) : mws_dp(get_type_name(i_type))
+mws_key_evt::mws_key_evt(mws_wp<mws_key_ctrl> i_src, mws_key_evt::key_evt_types i_type, mws_key_types i_key) : mws_dp(get_type_name(i_type))
 {
    src = i_src;
    type = i_type;
@@ -313,7 +313,7 @@ mws_sp<mws_key_evt> mws_key_evt::as_key_evt(mws_sp<mws_dp> i_dp)
    return static_pointer_cast<mws_key_evt>(i_dp);
 }
 
-mws_sp<mws_key_evt> mws_key_evt::nwi(mws_wp<key_ctrl> i_src, mws_key_evt::key_evt_types i_type, key_types i_key)
+mws_sp<mws_key_evt> mws_key_evt::nwi(mws_wp<mws_key_ctrl> i_src, mws_key_evt::key_evt_types i_type, mws_key_types i_key)
 {
    return mws_sp<mws_key_evt>(new mws_key_evt(i_src, i_type, i_key));
 }
@@ -325,44 +325,44 @@ mws_sp<mws_key_evt> mws_key_evt::get_instance()
 
 bool mws_key_evt::is_ascii(int i_key_id)
 {
-   return i_key_id >= KEY_SPACE && i_key_id <= KEY_TILDE_SIGN;
+   return i_key_id >= mws_key_space && i_key_id <= mws_key_tilde_sign;
 }
 
 const std::string& mws_key_evt::get_type_name(key_evt_types i_key_evt)
 {
    static const std::string types[] =
    {
-      KEYEVT_PRESSED,
-      KEYEVT_REPEATED,
-      KEYEVT_RELEASED,
+      key_evt_pressed,
+      key_evt_repeated,
+      key_evt_released,
    };
 
    return types[i_key_evt];
 }
 
-mws_sp<key_ctrl> mws_key_evt::get_src()
+mws_sp<mws_key_ctrl> mws_key_evt::get_src()
 {
    return src.lock();
 }
 
 bool mws_key_evt::is_letter() const
 {
-   return (key >= KEY_A_UPPER_CASE && key <= KEY_Z_UPPER_CASE) || (key >= KEY_A && key <= KEY_Z);
+   return (key >= mws_key_a_upper_case && key <= mws_key_z_upper_case) || (key >= mws_key_a && key <= mws_key_z);
 }
 
 bool mws_key_evt::is_pressed() const
 {
-   return type == KE_PRESSED;
+   return type == ke_pressed;
 }
 
 bool mws_key_evt::is_repeated() const
 {
-   return type == KE_REPEATED;
+   return type == ke_repeated;
 }
 
 bool mws_key_evt::is_released() const
 {
-   return type == KE_RELEASED;
+   return type == ke_released;
 }
 
 mws_key_evt::key_evt_types mws_key_evt::get_type() const
@@ -370,7 +370,7 @@ mws_key_evt::key_evt_types mws_key_evt::get_type() const
    return type;
 }
 
-key_types mws_key_evt::get_key() const
+mws_key_types mws_key_evt::get_key() const
 {
    return key;
 }
@@ -381,102 +381,102 @@ void mws_key_evt::process(mws_sp<mws_receiver> i_dst)
 }
 
 
-enum key_status
+enum mws_key_status
 {
-   KEY_IDLE,
-   KEY_PRESSED,
-   KEY_FIRST_PRESSED,
-   KEY_REPEATED,
-   KEY_RELEASED,
-   KEY_RELEASED_IDLE,
+   mws_key_idle,
+   mws_key_pressed,
+   mws_key_first_pressed,
+   mws_key_repeated,
+   mws_key_released,
+   mws_key_released_idle,
 };
 
 
-// there are at most KEY_COUNT different keys that we're interested in handling
-static struct { uint32 time; key_status status; } key_list[KEY_COUNT];
-uint32 key_ctrl::time_until_first_key_repeat_ms = 600;
-uint32 key_ctrl::key_repeat_threshold_ms = 150;
-const uint32 INFINITE_KEY_REPEATS = 0xffffffff;
-uint32 key_ctrl::max_key_repeat_count = INFINITE_KEY_REPEATS;
+// there are at most mws_key_count different keys that we're interested in handling
+static struct { uint32 time; mws_key_status status; } key_list[mws_key_count];
+uint32 mws_key_ctrl::time_until_first_key_repeat_ms = 600;
+uint32 mws_key_ctrl::key_repeat_threshold_ms = 150;
+const uint32 infinite_key_repeats = 0xffffffff;
+uint32 mws_key_ctrl::max_key_repeat_count = infinite_key_repeats;
 
-key_ctrl::key_ctrl()
+mws_key_ctrl::mws_key_ctrl()
 {
    clear_keys();
 }
 
-mws_sp<key_ctrl> key_ctrl::nwi()
+mws_sp<mws_key_ctrl> mws_key_ctrl::nwi()
 {
-   return mws_sp<key_ctrl>(new key_ctrl());
+   return mws_sp<mws_key_ctrl>(new mws_key_ctrl());
 }
 
-mws_sp<key_ctrl> key_ctrl::get_instance()
+mws_sp<mws_key_ctrl> mws_key_ctrl::get_instance()
 {
    return shared_from_this();
 }
 
-void key_ctrl::update()
+void mws_key_ctrl::update()
 {
    if (events_pending)
    {
       auto inst = get_instance();
-      uint32 crt_time = pfm::time::get_time_millis();
+      uint32 crt_time = mws::time::get_time_millis();
       bool events_still_pending = false;
-      auto key_released = [&](int i_idx, key_types i_key_id)
+      auto key_released = [&](int i_idx, mws_key_types i_key_id)
       {
-         key_types key_id = pfm_main::gi()->apply_key_modifiers(i_key_id);
+         mws_key_types key_id = mws::input::apply_key_modifiers(i_key_id);
 
-         key_list[i_idx].status = KEY_RELEASED_IDLE;
-         new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_RELEASED, key_id));
+         key_list[i_idx].status = mws_key_released_idle;
+         new_key_event(mws_key_evt::nwi(inst, mws_key_evt::ke_released, key_id));
          events_still_pending = true;
       };
 
-      for (int k = KEY_INVALID + 1; k < (int)KEY_COUNT; k++)
+      for (int k = mws_key_invalid + 1; k < (int)mws_key_count; k++)
       {
-         key_types key_id_no_mods = (key_types)k;
+         mws_key_types key_id_no_mods = (mws_key_types)k;
          auto& kp = key_list[k];
 
          switch (kp.status)
          {
-         case KEY_PRESSED:
+         case mws_key_pressed:
          {
-            key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+            mws_key_types key_id = mws::input::apply_key_modifiers(key_id_no_mods);
 
-            new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_PRESSED, key_id));
-            kp.status = KEY_FIRST_PRESSED;
+            new_key_event(mws_key_evt::nwi(inst, mws_key_evt::ke_pressed, key_id));
+            kp.status = mws_key_first_pressed;
             events_still_pending = true;
             break;
          }
 
-         case KEY_FIRST_PRESSED:
+         case mws_key_first_pressed:
             if (crt_time - kp.time > time_until_first_key_repeat_ms)
             {
-               key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+               mws_key_types key_id = mws::input::apply_key_modifiers(key_id_no_mods);
 
-               new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
-               kp.status = KEY_REPEATED;
+               new_key_event(mws_key_evt::nwi(inst, mws_key_evt::ke_repeated, key_id));
+               kp.status = mws_key_repeated;
                kp.time = crt_time;
             }
 
             events_still_pending = true;
             break;
 
-         case KEY_REPEATED:
+         case mws_key_repeated:
          {
             uint32 dt = crt_time - kp.time;
 
             if (dt > key_repeat_threshold_ms)
             {
                const uint64 max_repeat_threshold_ms = (uint64)key_repeat_threshold_ms * max_key_repeat_count;
-               key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+               mws_key_types key_id = mws::input::apply_key_modifiers(key_id_no_mods);
 
                // if the key repeat is past the max number of repeats for this key, force release it
-               if (max_key_repeat_count != INFINITE_KEY_REPEATS && dt > max_repeat_threshold_ms)
+               if (max_key_repeat_count != infinite_key_repeats && dt > max_repeat_threshold_ms)
                {
                   key_released(k, key_id);
                }
                else
                {
-                  new_key_event(mws_key_evt::nwi(inst, mws_key_evt::KE_REPEATED, key_id));
+                  new_key_event(mws_key_evt::nwi(inst, mws_key_evt::ke_repeated, key_id));
                   events_still_pending = true;
                }
 
@@ -485,16 +485,16 @@ void key_ctrl::update()
             break;
          }
 
-         case KEY_RELEASED:
+         case mws_key_released:
          {
-            key_types key_id = pfm_main::gi()->apply_key_modifiers(key_id_no_mods);
+            mws_key_types key_id = mws::input::apply_key_modifiers(key_id_no_mods);
 
             key_released(k, key_id);
             break;
          }
 
-         case KEY_RELEASED_IDLE:
-            kp.status = KEY_IDLE;
+         case mws_key_released_idle:
+            kp.status = mws_key_idle;
             break;
          }
       }
@@ -503,53 +503,53 @@ void key_ctrl::update()
    }
 }
 
-bool key_ctrl::key_is_held(key_types i_key)
+bool mws_key_ctrl::key_is_held(mws_key_types i_key)
 {
-   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
+   mws_assert(i_key >= mws_key_invalid && i_key < mws_key_count);
 
-   return key_list[i_key].status != KEY_IDLE;
+   return key_list[i_key].status != mws_key_idle;
 }
 
-void key_ctrl::key_pressed(key_types i_key)
+void mws_key_ctrl::key_pressed(mws_key_types i_key)
 {
-   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
+   mws_assert(i_key >= mws_key_invalid && i_key < mws_key_count);
 
-   if (i_key > KEY_INVALID)
+   if (i_key > mws_key_invalid)
    {
       auto& kp = key_list[i_key];
       events_pending = true;
 
-      if (kp.status != KEY_FIRST_PRESSED && kp.status != KEY_REPEATED)
+      if (kp.status != mws_key_first_pressed && kp.status != mws_key_repeated)
       {
-         kp = { pfm::time::get_time_millis(), KEY_PRESSED };
+         kp = { mws::time::get_time_millis(), mws_key_pressed };
       }
    }
 }
 
-void key_ctrl::key_released(key_types i_key)
+void mws_key_ctrl::key_released(mws_key_types i_key)
 {
-   mws_assert(i_key >= KEY_INVALID && i_key < KEY_COUNT);
+   mws_assert(i_key >= mws_key_invalid && i_key < mws_key_count);
 
-   if (i_key > KEY_INVALID)
+   if (i_key > mws_key_invalid)
    {
       events_pending = true;
-      key_list[i_key].status = KEY_RELEASED;
+      key_list[i_key].status = mws_key_released;
    }
 }
 
-void key_ctrl::clear_keys()
+void mws_key_ctrl::clear_keys()
 {
    int size = sizeof(key_list);
    memset(key_list, 0, size);
    events_pending = false;
 }
 
-mws_sp<mws_sender> key_ctrl::sender_inst()
+mws_sp<mws_sender> mws_key_ctrl::sender_inst()
 {
    return get_instance();
 }
 
-void key_ctrl::new_key_event(mws_sp<mws_key_evt> i_ke)
+void mws_key_ctrl::new_key_event(mws_sp<mws_key_evt> i_ke)
 {
    broadcast(i_ke->get_src(), i_ke);
 }

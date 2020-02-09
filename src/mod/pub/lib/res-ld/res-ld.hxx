@@ -48,9 +48,9 @@ public:
    static mws_sp<res_ld> inst();
 
    mws_sp<gfx_tex> load_tex(std::string i_filename);
-   mws_sp<raw_img_data> load_image(mws_sp<pfm_file> i_file);
+   mws_sp<raw_img_data> load_image(mws_sp<mws_file> i_file);
    mws_sp<raw_img_data> load_image(std::string i_filename);
-   bool save_image(mws_sp<pfm_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip = e_no_flip);
+   bool save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip = e_no_flip);
 
 private:
    res_ld();

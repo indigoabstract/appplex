@@ -83,7 +83,7 @@ bool linear_transition::is_paused()const
 
 int linear_transition::get_elapsed_time()const
 {
-	uint32 delta = pfm::time::get_time_millis() - start_time - pause_duration;
+	uint32 delta = mws::time::get_time_millis() - start_time - pause_duration;
 
 	return delta;
 }
@@ -100,7 +100,7 @@ float linear_transition::get_position()const
 
 void linear_transition::start()
 {
-	start(pfm::time::get_time_millis());
+	start(mws::time::get_time_millis());
 }
 
 void linear_transition::stop()
@@ -116,7 +116,7 @@ void linear_transition::pause()
       mws_throw mws_exception();//trs("transition cannot be paused. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
-	pause_time = pfm::time::get_time_millis();
+	pause_time = mws::time::get_time_millis();
 	paused = true;
 }
 
@@ -127,7 +127,7 @@ void linear_transition::resume()
       mws_throw mws_exception();//trs("transition cannot be resumed. invalid state [paused %1%, finished %2%]") % paused % finished);
 	}
 
-	pause_duration += pfm::time::get_time_millis() - pause_time;
+	pause_duration += mws::time::get_time_millis() - pause_time;
 	paused = false;
 }
 
@@ -151,9 +151,9 @@ void linear_transition::update()
 
 void linear_transition::reset()
 {
-	start_time = pfm::time::get_time_millis();
-	pause_time = pfm::time::get_time_millis();
-	pause_duration = pfm::time::get_time_millis();
+	start_time = mws::time::get_time_millis();
+	pause_time = mws::time::get_time_millis();
+	pause_duration = mws::time::get_time_millis();
 	position = 0;
 	finished = true;
 	paused = false;
@@ -162,7 +162,7 @@ void linear_transition::reset()
 void linear_transition::start(uint32 offset)
 {
 	reset();
-	start_time = pfm::time::get_time_millis() - offset;
+	start_time = mws::time::get_time_millis() - offset;
 	finished = false;
 	paused = false;
 }
@@ -253,7 +253,7 @@ void ms_linear_transition::update()
 	if(tr->is_finished())
 		// current transition finished. move to the next
 	{
-		if(interval_idx < transitions.size() - 1)
+		if((uint32)interval_idx < transitions.size() - 1)
 			// next transition exists. start it and call update
 		{
 			int td = 0;

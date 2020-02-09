@@ -410,8 +410,6 @@ public:
    {
       mws_sp<gfx_camera> cam = idc->get_cam();
       look_at_dir = glm::normalize(look_at_dir);
-      glm::vec3 up;
-      glm::vec3 right;
 
       glm::vec3 bl;
       glm::vec3 tl;
@@ -596,12 +594,12 @@ public:
    void flush_commands(mws_sp<gfx_camera> icam)
    {
       mws_sp<rw_sequence> draw_ops = icam->draw_ops;
-      int size = draw_ops->get_size();
+      uint64 size = draw_ops->get_size();
 
       draw_ops->rewind();
       icam->draw_ctx->cam = icam;
 
-      int read_pos = draw_ops->get_read_position();
+      uint64 read_pos = draw_ops->get_read_position();
 
       while (read_pos < size)
       {
@@ -880,8 +878,8 @@ void gfx_camera::load(mws_sp<gfx_camera> inst)
 
 void gfx_camera::update_camera_state_impl()
 {
-   float rtw = gi()->rt.get_render_target_width();
-   float rth = gi()->rt.get_render_target_height();
+   float rtw = float(gi()->rt.get_render_target_width());
+   float rth = float(gi()->rt.get_render_target_height());
 
    if (projection_type == e_perspective_proj)
    {

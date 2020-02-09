@@ -174,7 +174,7 @@ void gfx_vpc_box::set_dimensions(float iradius, int isegments)
 
    int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
    int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8*)ks_vertices_data.data(), vdata_size, ks_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -447,5 +447,5 @@ void gfx_vpc_kubic_sphere::set_dimensions(float iradius, int isegments)
 
    int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_c4b_n3f_t2f);
    int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8*)ks_vertices_data.data(), vdata_size, ks_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }

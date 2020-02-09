@@ -16,7 +16,7 @@ class linear_transition;
 class ms_linear_transition;
 class mws_mod;
 class mws_mod;
-class mws;
+class mws_obj;
 class mws_page_tab;
 class mws_page;
 class mws_page_item;
@@ -83,7 +83,7 @@ public:
 };
 
 
-class mws_model : public enable_shared_from_this<mws_model>, public mws_node
+class mws_model : public std::enable_shared_from_this<mws_model>, public mws_node
 {
 public:
    virtual ~mws_model() {}
@@ -91,42 +91,42 @@ public:
 
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void notify_update();
-   void set_view(mws_sp<mws> iview);
-   mws_sp<mws> get_view();
+   void set_view(mws_sp<mws_obj> iview);
+   mws_sp<mws_obj> get_view();
 
 protected:
    mws_model() {}
 
    mws_sp<mws_sender> sender_inst();
 
-   mws_wp<mws> view;
+   mws_wp<mws_obj> view;
 };
 
 
-class mws : public gfx_node, public mws_node
+class mws_obj : public gfx_node, public mws_node
 {
 public:
-   static mws_sp<mws> nwi();
+   static mws_sp<mws_obj> nwi();
 
    virtual void init() {}
    virtual void on_destroy() {}
-   virtual ~mws() {}
-   mws_sp<mws> get_instance();
+   virtual ~mws_obj() {}
+   mws_sp<mws_obj> get_instance();
 
    virtual gfx_obj::e_gfx_obj_type get_type()const override;
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
    virtual void attach(mws_sp<gfx_node> i_node) override;
-   virtual void list_mws_children(std::vector<mws_sp<mws>>& i_mws_subobj_list);
+   virtual void list_mws_children(std::vector<mws_sp<mws_obj>>& i_mws_subobj_list);
    virtual void set_enabled(bool i_is_enabled);
    bool is_enabled()const;
    void set_visible(bool i_is_visible);
    bool is_visible()const;
    void set_id(std::string i_id);
    const std::string& get_id();
-   virtual mws_sp<mws> find_by_id(const std::string& i_id);
-   virtual mws_sp<mws> contains_id(const std::string& i_id);
-   virtual bool contains_mws(const mws_sp<mws> i_mws);
-   mws_sp<mws> get_mws_parent() const;
+   virtual mws_sp<mws_obj> find_by_id(const std::string& i_id);
+   virtual mws_sp<mws_obj> contains_id(const std::string& i_id);
+   virtual bool contains_mws(const mws_sp<mws_obj> i_mws);
+   mws_sp<mws_obj> get_mws_parent() const;
    mws_sp<mws_page_tab> get_mws_root() const;
    virtual mws_sp<mws_mod> get_mod() const;
 
@@ -141,10 +141,10 @@ public:
    virtual float get_z();
    virtual void set_z(float i_z_position);
 
-   std::function<void(mws_sp<mws> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
+   std::function<void(mws_sp<mws_obj> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
 
 protected:
-   mws(mws_sp<gfx> i_gi = nullptr);
+   mws_obj(mws_sp<gfx> i_gi = nullptr);
    virtual void setup() {}
 
    bool enabled = true;
@@ -172,11 +172,11 @@ public:
 };
 
 
-class mws_virtual_keyboard : public mws
+class mws_virtual_keyboard : public mws_obj
 {
 public:
    virtual ~mws_virtual_keyboard() {}
-   virtual key_types apply_key_modifiers(key_types i_key_id) const = 0;
+   virtual mws_key_types apply_key_modifiers(mws_key_types i_key_id) const = 0;
    virtual void on_resize() = 0;
    // directs the keyboard output to the target text_area
    virtual void set_target(mws_sp<mws_text_area> i_ta) = 0;
@@ -207,7 +207,7 @@ public:
 };
 
 
-class mws_page_tab : public mws
+class mws_page_tab : public mws_obj
 {
 public:
    virtual ~mws_page_tab() {}
@@ -217,8 +217,8 @@ public:
    virtual void init_subobj();
    virtual void on_destroy();
 
-   virtual mws_sp<mws> contains_id(const std::string& i_id);
-   virtual bool contains_mws(const mws_sp<mws> i_mws);
+   virtual mws_sp<mws_obj> contains_id(const std::string& i_id);
+   virtual bool contains_mws(const mws_sp<mws_obj> i_mws);
    mws_sp<mws_page_tab> get_mws_page_tab_instance();
    virtual mws_sp<mws_mod> get_mod();
    bool is_empty();
@@ -260,7 +260,7 @@ private:
 };
 
 
-class mws_page : public mws
+class mws_page : public mws_obj
 {
 public:
    virtual ~mws_page() {}
@@ -268,8 +268,8 @@ public:
    virtual void init();
    virtual void on_destroy();
 
-   virtual mws_sp<mws> contains_id(const std::string& i_id);
-   virtual bool contains_mws(const mws_sp<mws> i_mws);
+   virtual mws_sp<mws_obj> contains_id(const std::string& i_id);
+   virtual bool contains_mws(const mws_sp<mws_obj> i_mws);
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent() const;
 
@@ -282,15 +282,15 @@ public:
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual glm::vec2 get_dim() const;
-   mws_sp<mws> get_mws_at(uint32 i_idx);
-   virtual bool is_selected(mws_sp<mws> i_item);
-   virtual void set_focus(mws_sp<mws> i_item, bool i_set_focus = true);
+   mws_sp<mws_obj> get_mws_at(uint32 i_idx);
+   virtual bool is_selected(mws_sp<mws_obj> i_item);
+   virtual void set_focus(mws_sp<mws_obj> i_item, bool i_set_focus = true);
 
 protected:
    mws_page();
    virtual void on_resize();
-   std::vector<mws_sp<mws>> mws_subobj_list;
-   mws_sp<mws> selected_item;
+   std::vector<mws_sp<mws_obj>> mws_subobj_list;
+   mws_sp<mws_obj> selected_item;
 
 private:
    friend class mws_page_tab;
@@ -298,7 +298,7 @@ private:
 };
 
 
-class mws_page_item : public mws
+class mws_page_item : public mws_obj
 {
 public:
    virtual ~mws_page_item() {}
@@ -330,7 +330,7 @@ public:
 
    virtual ~mws_text_area() {}
    virtual void do_action() {}
-   virtual bool is_action_key(key_types i_key) const { return false; }
+   virtual bool is_action_key(mws_key_types i_key) const { return false; }
    virtual mws_rect get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos = true) = 0;
    virtual void set_text(const std::string& i_text) = 0;
 

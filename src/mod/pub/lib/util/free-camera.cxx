@@ -31,7 +31,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
    }
 
    mws_sp<mws_mod> mod = u.lock();
-   bool ctrl_held = u.lock()->key_ctrl_inst->key_is_held(KEY_CONTROL);
+   bool ctrl_held = u.lock()->key_ctrl_inst->key_is_held(mws_key_control);
 
    if (ctrl_held)
    {
@@ -42,7 +42,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
       mov_type = e_roll_view_axis;
    }
 
-   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+   if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       bool dragging_detected = dragging_det.detect_helper(ts);
@@ -123,7 +123,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
          }
       }
    }
-   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+   else if (i_dp->is_type(mws_key_evt::key_evt_type))
    {
       mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
@@ -133,45 +133,45 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
          switch (ke->get_key())
          {
-         case KEY_Q:
+         case mws_key_q:
          {
             persp_cam->position -= look_at_dir * mw_speed_factor * 1.5f;
             break;
          }
 
-         case KEY_E:
+         case mws_key_e:
          {
             persp_cam->position += look_at_dir * mw_speed_factor * 1.5f;
             break;
          }
 
-         case KEY_A:
+         case mws_key_a:
          {
             glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(+5.f), look_at_dir);
             up_dir = glm::normalize(up_dir * rot_around_look_at_dir);
             break;
          }
 
-         case KEY_S:
+         case mws_key_s:
          {
             speed = 0.f;
             break;
          }
 
-         case KEY_D:
+         case mws_key_d:
          {
             glm::quat rot_around_look_at_dir = glm::angleAxis(glm::radians(-5.f), look_at_dir);
             up_dir = glm::normalize(up_dir * rot_around_look_at_dir);
             break;
          }
 
-         case KEY_Z:
+         case mws_key_z:
          {
             speed -= 0.05f;
             break;
          }
 
-         case KEY_C:
+         case mws_key_c:
          {
             speed += 0.05f;
             break;
@@ -187,8 +187,8 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
          //   switch (ke->get_key())
          //   {
-         //   case KEY_SPACE:
-         //   case KEY_F1:
+         //   case mws_key_space:
+         //   case mws_key_f1:
          //      break;
 
          //   default:

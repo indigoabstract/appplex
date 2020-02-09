@@ -272,9 +272,9 @@ public:
 
    void set_global_font(mws_sp<mws_font> i_font)
    {
-      if (i_font->get_full_path().empty())
+      if (i_font->string_path().empty())
       {
-         global_font = mws_font::nwi(i_font->get_size(), global_font->get_full_path());
+         global_font = mws_font::nwi(i_font->get_size(), global_font->string_path());
       }
       else
       {
@@ -304,12 +304,12 @@ public:
    mws_sp<mws_font_cache> get_font_cache(mws_sp<mws_font> i_font)
    {
       mws_sp<mws_font_cache> fnt_cache = i_font->fnt_cache.lock();
-      const std::string& font_file_name_0 = i_font->get_file_name();
+      const std::string& font_file_name_0 = i_font->filename();
 
       // fonts having empty font_file_name are global fonts. if the global font has changed, then invalidate the font cache
       if (font_file_name_0.empty() && fnt_cache)
       {
-         if (fnt_cache->font_file_name != global_font->get_file_name())
+         if (fnt_cache->font_file_name != global_font->filename())
          {
             fnt_cache = nullptr;
          }
@@ -317,7 +317,7 @@ public:
 
       if (!fnt_cache)
       {
-         const std::string& font_file_name = (font_file_name_0.empty()) ? global_font->get_file_name() : font_file_name_0;
+         const std::string& font_file_name = (font_file_name_0.empty()) ? global_font->filename() : font_file_name_0;
          float font_size = i_font->get_size();
          const mws_font_markup* markup = (i_font->has_markup()) ? &i_font->get_markup() : nullptr;
          std::string key = get_key(font_file_name, font_size, markup);
@@ -335,7 +335,7 @@ public:
                }
                else
                {
-                  res = pfm::filesystem::load_res_byte_vect(font_file_name);
+                  res = mws::filesys::load_res_byte_vect(font_file_name);
                }
 
                if (!res)
@@ -347,7 +347,7 @@ public:
                font_data_by_path_ht[font_file_name] = res;
             }
 
-            texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, begin_ptr(*res), res->size());
+            texture_font_t* tex_font = texture_font_new_from_memory(tex_atlas, font_size, res->data(), res->size());
             fnt_cache = std::make_shared<mws_font_cache>(font_file_name, font_size, tex_font, res);
 
             if (!tex_font)
@@ -631,7 +631,7 @@ glm::vec2 mws_font_db::get_text_dim(mws_sp<mws_font> i_font, const std::string& 
 void mws_font_db::store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
    const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count)
 {
-   std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
+   std::string font_name = mws_path(i_font_path).filename();
    auto& ht = p->font_name_ht;
    auto it = ht.find(font_name);
    mws_font_db_impl::font_info tmp_fi;
@@ -655,7 +655,7 @@ void mws_font_db::store_font_metrix(const std::string& i_font_path, const mws_pt
 
 mws_sp<mws_font> mws_font_db::load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup)
 {
-   std::string font_name = mws_util::path::get_filename_from_path(i_font_path);
+   std::string font_name = mws_path(i_font_path).filename();
    auto& ht = p->font_name_ht;
    auto it = ht.find(font_name);
 

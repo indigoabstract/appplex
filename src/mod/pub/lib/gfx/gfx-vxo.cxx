@@ -22,8 +22,8 @@ namespace gfx_vxo_util
       mws_sp<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
       mws_sp<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
 
-      memcpy(begin_ptr(*vertices_data), tvertices_data, tvertices_data_size);
-      memcpy(begin_ptr(*indices_data), tindices_data, tindices_data_size);
+      memcpy(vertices_data->data(), tvertices_data, tvertices_data_size);
+      memcpy(indices_data->data(), tindices_data, tindices_data_size);
       imesh->set_data(*vertices_data, *indices_data);
    }
 }
@@ -379,10 +379,10 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
             if (obj_mesh && !obj_mesh->is_loaded)
             {
                std::vector<tinyobj::shape_t> shapes;
-               mws_sp<pfm_file> f = pfm_file::get_inst(mesh_name);
-               std::string path = f->get_full_path();
+               mws_sp<mws_file> f = mws_file::get_inst(mesh_name);
+               std::string path = f->string_path();
 
-               mws_print("loading obj file [%s], size [%ld] ...", f->get_file_name().c_str(), f->length());
+               mws_print("loading obj file [%s], size [%ld] ...", f->filename().c_str(), f->length());
 
                struct membuf : std::streambuf
                {
@@ -422,8 +422,8 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                         filepath = matId;
                      }
 
-                     mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(name);
-                     membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
+                     mws_sp<std::vector<uint8> > data = mws::filesys::load_res_byte_vect(name);
+                     membuf sbuf(data->data(), data->data() + data->size());
                      std::istream matIStream(&sbuf);
                      //std::ifstream matIStream(filepath.c_str());
                      return LoadMtl(matMap, matIStream);
@@ -433,10 +433,9 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                   std::string name;
                };
 
-               mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(mesh_name);
-               membuf sbuf(begin_ptr(data), begin_ptr(data) + data->size());
+               mws_sp<std::vector<uint8> > data = mws::filesys::load_res_byte_vect(mesh_name);
+               membuf sbuf(data->data(), data->data() + data->size());
                std::istream in(&sbuf);
-               //std::string err = tinyobj::LoadObj(shapes, f->get_full_path().c_str(), f->get_root_directory().c_str());
                material_mem_reader mr(mesh_name);
                std::string err = tinyobj::LoadObj(shapes, in, mr);
 
@@ -500,7 +499,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                      int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
                      int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-                     gfx_vxo_util::set_mesh_data((const uint8*)begin_ptr(ks_vertices_data), vdata_size, begin_ptr(ks_indices_data), idata_size, obj_mesh);
+                     gfx_vxo_util::set_mesh_data((const uint8*)ks_vertices_data.data(), vdata_size, ks_indices_data.data(), idata_size, obj_mesh);
                      //obj_mesh->mesh_list.push_back(mesh);
                      mws_print("done\n");
                      obj_mesh->is_loaded = true;
@@ -508,7 +507,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                }
                else
                {
-                  mws_print("error loading %s. error msg: %s", f->get_full_path().c_str(), err.c_str());
+                  mws_print("error loading %s. error msg: %s", f->string_path().c_str(), err.c_str());
                }
             }
 
@@ -665,9 +664,9 @@ void gfx_vxo::render_mesh_impl(mws_sp<gfx_camera> i_camera)
 
       int size = vertices_buffer.size();// / vxi.vertex_size;
       glBindBuffer(GL_ARRAY_BUFFER, array_buffer_id);
-      glBufferData(GL_ARRAY_BUFFER, size, begin_ptr(vertices_buffer), GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, size, vertices_buffer.data(), GL_STATIC_DRAW);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elem_buffer_id);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * idx_count, begin_ptr(indices_buffer), GL_STATIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gfx_indices_type) * idx_count, indices_buffer.data(), GL_STATIC_DRAW);
 
       if (!keep_geometry_data)
       {

@@ -13,7 +13,7 @@ mws_sp<mws_video_dec> mws_video_dec::nwi()
    return std::make_shared<vdec_ffmpeg>();
 }
 
-#elif defined PLATFORM_IOS
+#elif defined MWS_PFM_IOS
 
 #include "ios/vid/ios-video-dec.hxx"
 

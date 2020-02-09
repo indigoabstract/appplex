@@ -164,7 +164,7 @@ namespace mod_test_touch_input_ns
       {
          auto mod = get_mod();
 
-         if (idp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+         if (idp->is_type(mws_ptr_evt::ptr_evt_type))
          {
             mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(idp);
             bool dragging_detected = dragging_dt.detect_helper(ts);
@@ -236,7 +236,7 @@ namespace mod_test_touch_input_ns
             }
             }
          }
-         else if (idp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         else if (idp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(idp);
 
@@ -246,7 +246,7 @@ namespace mod_test_touch_input_ns
 
                switch (ke->get_key())
                {
-               case KEY_H:
+               case mws_key_h:
                {
                   if (picking_dgb_q2d)
                   {

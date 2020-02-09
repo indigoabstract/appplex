@@ -75,11 +75,11 @@ float mws_px::get_px_per_cm(dpi_types i_dpi_type)
    switch (i_dpi_type)
    {
    case dpi_types::e_average:
-      return pfm_main::gi()->get_avg_screen_dpcm();
+      return mws::screen::get_avg_dpcm();
    case dpi_types::e_horizontal:
-      return pfm_main::gi()->get_screen_dpcm().first;
+      return mws::screen::get_dpcm().first;
    case dpi_types::e_vertical:
-      return pfm_main::gi()->get_screen_dpcm().second;
+      return mws::screen::get_dpcm().second;
    }
 
    return std::numeric_limits<float>::quiet_NaN();
@@ -89,11 +89,11 @@ float mws_px::get_px_per_in(dpi_types i_dpi_type)
    switch (i_dpi_type)
    {
    case dpi_types::e_average:
-      return pfm_main::gi()->get_avg_screen_dpi();
+      return mws::screen::get_avg_dpi();
    case dpi_types::e_horizontal:
-      return pfm_main::gi()->get_screen_dpi().first;
+      return mws::screen::get_dpi().first;
    case dpi_types::e_vertical:
-      return pfm_main::gi()->get_screen_dpi().second;
+      return mws::screen::get_dpi().second;
    }
 
    return std::numeric_limits<float>::quiet_NaN();
@@ -165,7 +165,7 @@ void gfx::global_init()
       }
 
       mws_print("\n");
-}
+   }
 
 #else
 
@@ -237,7 +237,7 @@ void gfx::global_init()
 
    main_instance = mws_sp<gfx>(new gfx());
    main_instance->init(main_instance);
-   }
+}
 
 void gfx::on_destroy()
 {
@@ -303,12 +303,12 @@ mws_sp<gfx_rt> gfx::ic_rt::new_rt()
 
 int gfx::ic_rt::get_screen_width()
 {
-   return pfm::screen::get_width();
+   return mws::screen::get_width();
 }
 
 int gfx::ic_rt::get_screen_height()
 {
-   return pfm::screen::get_height();
+   return mws::screen::get_height();
 }
 
 int gfx::ic_rt::get_render_target_width()
@@ -705,9 +705,9 @@ void gfx::init(mws_sp<gfx> i_new_inst)
    }
 }
 
-void gfx::get_render_target_pixels_impl(mws_sp<gfx_rt> irt, void* ivect)
+void gfx::get_render_target_pixels_impl(mws_sp<gfx_rt> i_rt, void* i_vect)
 {
-   if (irt && rt.get_current_render_target())
+   if (i_rt && rt.get_current_render_target())
    {
       glReadBuffer(GL_COLOR_ATTACHMENT0);
    }
@@ -722,12 +722,12 @@ void gfx::get_render_target_pixels_impl(mws_sp<gfx_rt> irt, void* ivect)
       auto& prm = att->get_params();
 
       glPixelStorei(GL_PACK_ALIGNMENT, prm.get_bpp());
-      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), prm.get_format(), prm.get_type(), ivect);
+      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), prm.get_format(), prm.get_type(), i_vect);
    }
    else
    {
       glPixelStorei(GL_PACK_ALIGNMENT, 4);
-      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), GL_RGBA, GL_UNSIGNED_BYTE, ivect);
+      glReadPixels(0, 0, rt.get_render_target_width(), rt.get_render_target_height(), GL_RGBA, GL_UNSIGNED_BYTE, i_vect);
    }
 }
 

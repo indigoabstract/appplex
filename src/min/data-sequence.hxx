@@ -132,7 +132,7 @@ private:
 class file_data_sequence : public data_sequence
 {
 public:
-   file_data_sequence(mws_sp<pfm_file> i_file);
+   file_data_sequence(mws_sp<mws_file> i_file);
    virtual ~file_data_sequence() {}
    bool reached_end_of_sequence() override;
    void close();
@@ -146,7 +146,7 @@ protected:
    int write_int8(const int8* s, int elem_count, int offset);
 
 private:
-   mws_sp<pfm_file> file;
+   mws_sp<mws_file> file;
    uint64 file_size = 0;
 };
 
@@ -398,7 +398,7 @@ class rw_file_sequence : public file_data_sequence
 public:
    virtual ~rw_file_sequence() {}
 
-   static mws_sp<rw_file_sequence> nwi(mws_sp<pfm_file> i_file)
+   static mws_sp<rw_file_sequence> nwi(mws_sp<mws_file> i_file)
    {
       mws_sp<rw_file_sequence> inst(new rw_file_sequence(i_file));
       inst->r.set_data_sequence(inst);
@@ -410,7 +410,7 @@ public:
    data_sequence_writer w;
 
 private:
-   rw_file_sequence(mws_sp<pfm_file> i_file) : file_data_sequence(i_file) {}
+   rw_file_sequence(mws_sp<mws_file> i_file) : file_data_sequence(i_file) {}
 };
 
 
@@ -537,7 +537,7 @@ inline int memory_data_sequence::write_int8(const int8 * s, int elem_count, int 
 }
 
 
-inline file_data_sequence::file_data_sequence(mws_sp<pfm_file> i_file)
+inline file_data_sequence::file_data_sequence(mws_sp<mws_file> i_file)
 {
    file = i_file;
 }

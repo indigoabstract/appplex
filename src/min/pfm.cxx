@@ -13,12 +13,246 @@
 #include <cstring>
 #include <cstdarg>
 #include <cassert>
+#include <ctime>
+#include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-using std::string;
-using std::wstring;
-using std::vector;
+
+mws_sp<mws_pfm_app> mws_app_inst();
+
+// platform specific code
+#if defined MWS_PFM_ANDROID
+
+
+#include "main.hxx"
+#include <sys/stat.h>
+
+const std::string dir_separator = "/";
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_android;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl_es;
+}
+
+#include <android/log.h>
+
+// trace
+#define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
+#define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
+
+uint32 mws::time::get_time_millis()
+{
+   struct timespec ts;
+
+   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+   {
+      mws_app_inst()->write_text_nl("error");
+   }
+
+   return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
+bool mws_path::make_dir() const
+{
+   int rval = mkdir(string().c_str(), 0777);
+   return (rval == 0);
+}
+
+std::string mws_path::current_path()
+{
+   return "";
+}
+
+
+#elif defined MWS_PFM_IOS
+
+#include "main.hxx"
+#include <sys/stat.h>
+
+
+const std::string dir_separator = "/";
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_ios;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl_es;
+}
+
+uint32 mws::time::get_time_millis()
+{
+   struct timespec ts;
+
+   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+   {
+      mws_app_inst()->write_text_nl("error");
+   }
+
+   return uint32(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+}
+
+bool mws_path::make_dir() const
+{
+   int rval = mkdir(string().c_str(), 0777);
+   return (rval == 0);
+}
+
+std::string mws_path::current_path()
+{
+   return "";
+}
+
+
+#elif defined MWS_PFM_EMSCRIPTEN
+
+
+#include "main.hxx"
+
+const std::string dir_separator = "/";
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_emscripten;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl_es;
+}
+
+uint32 mws::time::get_time_millis()
+{
+   struct timespec ts;
+
+   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+   {
+      mws_app_inst()->write_text_nl("error");
+   }
+
+   return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
+bool mws_path::make_dir() const
+{
+   return false;
+}
+
+std::string mws_path::current_path()
+{
+   return "";
+}
+
+
+#elif defined MWS_PFM_WINDOWS_PC
+
+
+#include <direct.h>
+#include <filesystem>
+
+
+const std::string dir_separator = "\\";
+
+//#ifdef USE_VLD
+//#include <vld.h>
+//#endif
+//#include <new>
+
+//void* operator new(std::size_t i_size, const std::nothrow_t& nothrow_value)
+//{
+//	void* ptr = 0;
+//
+//	if (i_size > 0)
+//	{
+//		ptr = _aligned_malloc(i_size, 16);
+//
+//		mws_assert(ptr);
+//
+//		if (ptr)
+//		{
+//			memset(ptr, 0, i_size);
+//		}
+//	}
+//
+//	return ptr;
+//}
+//
+//void* operator new[](std::size_t i_size, const std::nothrow_t& nothrow_value)
+//{
+//	void* ptr = 0;
+//
+//	if (i_size > 0)
+//	{
+//		ptr = _aligned_malloc(i_size, 16);
+//
+//		mws_assert(ptr);
+//
+//		if (ptr)
+//		{
+//			memset(ptr, 0, i_size);
+//		}
+//	}
+//
+//	return ptr;
+//}
+//
+//void operator delete(void* iptr, const std::nothrow_t& nothrow_constant)
+//{
+//   _aligned_free(iptr);
+//}
+//
+//void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant)
+//{
+//   _aligned_free(iptr);
+//}
+
+namespace std { const nothrow_t nothrow = nothrow_t(); }
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_windows_pc;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl;
+}
+
+uint32 mws::time::get_time_millis()
+{
+   return GetTickCount();
+}
+
+bool mws_path::make_dir() const
+{
+   int rval = _mkdir(string().c_str());
+   return (rval == 0);
+}
+
+std::string mws_path::current_path()
+{
+   return std::filesystem::current_path().generic_string();
+}
+
+
+#endif
+
+
+
+namespace
+{
+   int arg_count = 0;
+   unicode_string app_path;
+   std::vector<unicode_string> arg_vector;
+}
 
 
 void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message)
@@ -28,7 +262,7 @@ void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_mess
    const char* msg = (i_message) ? i_message : "signal error";
    mws_print_impl("[%s] at file [%s], line [%d]\n", msg, i_file, i_line);
 
-#if defined PLATFORM_WINDOWS_PC
+#if defined MWS_PFM_WINDOWS_PC
 
    _asm int 3;
 
@@ -87,198 +321,7 @@ void mws_exception::set_msg(const char* i_msg)
 }
 
 
-// platform specific code
-#if defined PLATFORM_ANDROID
-
-
-#include "main.hxx"
-#include <sys/stat.h>
-
-#define pfm_app_inst		android_main::get_instance()
-
-const std::string dir_separator = "/";
-
-platform_id pfm::get_platform_id()
-{
-   return platform_android;
-}
-
-gfx_type_id pfm::get_gfx_type_id()
-{
-   return gfx_type_opengl_es;
-}
-
-#include <android/log.h>
-
-// trace
-#define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
-#define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
-
-uint32 pfm::time::get_time_millis()
-{
-   struct timespec ts;
-
-   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-   {
-      pfm_app_inst->write_text_nl("error");
-   }
-
-   return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-}
-
-bool pfm_path::make_dir()
-{
-   int rval = mkdir(get_full_path().c_str(), 0777);
-   return (rval == 0);
-}
-
-std::string pfm_path::get_current_path() const
-{
-   return "";
-}
-
-
-#elif defined PLATFORM_IOS
-
-#include "main.hxx"
-#include <sys/stat.h>
-
-#define pfm_app_inst        ios_main::get_instance()
-
-
-const std::string dir_separator = "/";
-
-platform_id pfm::get_platform_id()
-{
-   return platform_ios;
-}
-
-gfx_type_id pfm::get_gfx_type_id()
-{
-   return gfx_type_opengl_es;
-}
-
-uint32 pfm::time::get_time_millis()
-{
-   struct timespec ts;
-
-   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-   {
-      pfm_app_inst->write_text_nl("error");
-   }
-
-   return uint32(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-}
-
-bool pfm_path::make_dir()
-{
-   int rval = mkdir(get_full_path().c_str(), 0777);
-   return (rval == 0);
-}
-
-std::string pfm_path::get_current_path() const
-{
-   return "";
-}
-
-
-#elif defined PLATFORM_EMSCRIPTEN
-
-
-#include "main.hxx"
-
-#define pfm_app_inst emst_main::get_instance()
-
-const std::string dir_separator = "/";
-
-platform_id pfm::get_platform_id()
-{
-   return platform_emscripten;
-}
-
-gfx_type_id pfm::get_gfx_type_id()
-{
-   return gfx_type_opengl_es;
-}
-
-uint32 pfm::time::get_time_millis()
-{
-   struct timespec ts;
-
-   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-   {
-      pfm_app_inst->write_text_nl("error");
-   }
-
-   return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-}
-
-bool pfm_path::make_dir()
-{
-   return false;
-}
-
-std::string pfm_path::get_current_path() const
-{
-   return "";
-}
-
-
-#elif defined PLATFORM_WINDOWS_PC
-
-
-#include "main.hxx"
-#include <direct.h>
-#include <filesystem>
-
-#define pfm_app_inst		msvc_main::get_instance()
-
-const std::string dir_separator = "\\";
-
-//#ifdef USE_VLD
-//#include <vld.h>
-//#endif
-//#include <new>
-
-namespace std { const nothrow_t nothrow = nothrow_t(); }
-
-platform_id pfm::get_platform_id()
-{
-   return platform_windows_pc;
-}
-
-gfx_type_id pfm::get_gfx_type_id()
-{
-   return gfx_type_opengl;
-}
-
-uint32 pfm::time::get_time_millis()
-{
-   return GetTickCount();
-}
-
-bool pfm_path::make_dir()
-{
-   int rval = _mkdir(get_full_path().c_str());
-   return (rval == 0);
-}
-
-std::string pfm_path::get_current_path() const
-{
-   return std::filesystem::current_path().generic_string();
-}
-
-
-#endif
-
-
-
-int arg_count = 0;
-unicodestring app_path;
-vector<unicodestring> arg_vector;
-
-
-namespace pfm_impl
+namespace mws_impl
 {
    std::string res_files_mod_name;
    umf_list res_files_map;
@@ -299,7 +342,7 @@ namespace pfm_impl
       static_assert(sizeof(uint64) == 8);
       static_assert(sizeof(real32) == 4);
       static_assert(sizeof(real64) == 8);
-      
+
       mws_print("print type sizes\n");
       mws_print("sizeof int8 [%d]\n", sizeof(int8));
       mws_print("sizeof sint8 [%d]\n", sizeof(sint8));
@@ -320,132 +363,16 @@ namespace pfm_impl
    //true if res is in the same dir as src
    bool res_is_bundled_with_src()
    {
-#if defined PLATFORM_WINDOWS_PC && defined MWS_DEBUG_BUILD
+#if defined MWS_PFM_WINDOWS_PC && defined MWS_DEBUG_BUILD
       return true;
 #endif
 
       return false;
    }
 
-   std::string get_concat_path(std::string iroot_path, ::string i_name)
+   mws_sp<mws_file> get_res_file(const std::string& i_filename)
    {
-      std::string p = iroot_path;
-
-      if (i_name[0] == '/' || (pfm::get_platform_id() == platform_android))
-      {
-         p += i_name;
-      }
-      else
-      {
-         p = p + "/" + i_name;
-      }
-
-      return p;
-   }
-
-   const std::string& get_appplex_proj_path()
-   {
-      std::string p;
-
-      switch (pfm::get_platform_id())
-      {
-      case platform_android:
-      {
-         static std::string res_path = "";
-         return res_path;
-      }
-
-      case platform_ios:
-      {
-         static std::string res_path = "";
-         return res_path;
-      }
-
-      case platform_emscripten:
-      {
-         static std::string res_path = "";
-         return res_path;
-      }
-
-      case platform_qt_windows_pc:
-      {
-         static std::string res_path = "..";
-         return res_path;
-      }
-
-      case platform_windows_pc:
-      {
-         static std::string res_path = "../../..";
-         return res_path;
-      }
-      }
-
-      mws_throw mws_exception("undefined platform");
-   }
-
-   const std::string& get_mod_res_path(mws_sp<mws_mod> i_mod)
-   {
-      switch (pfm::get_platform_id())
-      {
-      case platform_android:
-      {
-         return i_mod->get_name();
-      }
-
-      case platform_ios:
-      {
-         return i_mod->get_name();
-      }
-
-      case platform_emscripten:
-      {
-         return i_mod->get_name();
-      }
-
-      case platform_qt_windows_pc:
-      {
-         static std::string res_path = "../src/res";
-         return res_path;
-      }
-
-      case platform_windows_pc:
-      {
-         static std::string res_path = get_appplex_proj_path() + "/" + i_mod->get_proj_rel_path() + "/res";
-
-         if (res_is_bundled_with_src())
-         {
-            return res_path;
-         }
-         else
-         {
-            static std::string res_path_release;
-
-            if (res_path_release.empty())
-            {
-               std::string rp = "res";
-               mws_sp<pfm_path> dir = pfm_path::get_inst(rp);
-
-               if (dir->exists())
-               {
-                  res_path_release = rp;
-               }
-               else
-               {
-                  res_path_release = res_path;
-               }
-            }
-
-            return res_path_release;
-         }
-      }
-      }
-
-      mws_throw mws_exception("undefined platform");
-   }
-
-   mws_sp<pfm_file> get_res_file(const std::string& i_filename)
-   {
-      mws_sp<pfm_file> file;
+      mws_sp<mws_file> file;
       auto it = res_files_map->find(i_filename);
 
       if (it != res_files_map->end())
@@ -456,7 +383,7 @@ namespace pfm_impl
       return file;
    }
 
-   void put_res_file(const std::string& i_filename, mws_sp<pfm_file> i_file)
+   void put_res_file(const std::string& i_filename, mws_sp<mws_file> i_file)
    {
       auto it = res_files_map->find(i_filename);
 
@@ -470,22 +397,23 @@ namespace pfm_impl
       (*res_files_map)[i_filename] = i_file;
    }
 
-   pfm_file_impl::pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
+   mws_file_impl::mws_file_impl(const mws_path& i_path)
    {
-      ppath.filename = i_filename;
-      ppath.aux_root_dir = i_root_dir;
-      ppath.make_standard_path();
+      ppath = i_path;
       file_pos = 0;
       file_is_open = false;
       file_is_writable = false;
    }
 
-   pfm_file_impl::~pfm_file_impl()
-   {
-   }
+   mws_file_impl::~mws_file_impl() {}
 
-   bool pfm_file_impl::exists()
+   bool mws_file_impl::exists()
    {
+      if (is_opened())
+      {
+         return true;
+      }
+
       if (open("r"))
       {
          close();
@@ -496,24 +424,24 @@ namespace pfm_impl
       return false;
    }
 
-   bool pfm_file_impl::is_opened()const
+   bool mws_file_impl::is_opened() const
    {
       return file_is_open;
    }
 
-   bool pfm_file_impl::is_writable()const
+   bool mws_file_impl::is_writable() const
    {
       return file_is_writable;
    }
 
-   bool pfm_file_impl::open(std::string i_open_mode)
+   bool mws_file_impl::open(std::string i_open_mode)
    {
       file_is_open = open_impl(i_open_mode);
 
       return file_is_open;
    }
 
-   void pfm_file_impl::close()
+   void mws_file_impl::close()
    {
       if (file_is_open)
       {
@@ -524,13 +452,13 @@ namespace pfm_impl
       file_is_open = false;
    }
 
-   void pfm_file_impl::flush()
+   void mws_file_impl::flush()
    {
       check_state();
       flush_impl();
    }
 
-   bool pfm_file_impl::reached_eof() const
+   bool mws_file_impl::reached_eof() const
    {
       check_state();
       FILE* f = get_file_impl();
@@ -540,7 +468,7 @@ namespace pfm_impl
       return is_eof != 0;
    }
 
-   void pfm_file_impl::seek(uint64 i_pos)
+   void mws_file_impl::seek(uint64 i_pos)
    {
       check_state();
 
@@ -548,223 +476,218 @@ namespace pfm_impl
       file_pos = i_pos;
    }
 
-   int pfm_file_impl::read(std::vector<uint8>& i_buffer)
+   int mws_file_impl::read(std::vector<uint8>& i_buffer)
    {
       check_state();
 
       i_buffer.resize((size_t)length());
 
-      return read(begin_ptr(i_buffer), i_buffer.size());
+      return read(i_buffer.data(), i_buffer.size());
    }
 
-   int pfm_file_impl::write(const std::vector<uint8>& i_buffer)
+   int mws_file_impl::write(const std::vector<uint8>& i_buffer)
    {
       check_state();
 
-      return write(begin_ptr(i_buffer), i_buffer.size());
+      return write(i_buffer.data(), i_buffer.size());
    }
 
-   int pfm_file_impl::read(uint8* i_buffer, int i_size)
+   int mws_file_impl::read(uint8* i_buffer, int i_size)
    {
       check_state();
 
-      int bytesread = read_impl(i_buffer, i_size);
+      int bytes_read = read_impl(i_buffer, i_size);
 
-      return bytesread;
+      return bytes_read;
    }
 
-   int pfm_file_impl::write(const uint8* i_buffer, int i_size)
+   int mws_file_impl::write(const uint8* i_buffer, int i_size)
    {
       check_state();
 
-      int byteswritten = write_impl(i_buffer, i_size);
+      int bytes_written = write_impl(i_buffer, i_size);
 
-      return byteswritten;
+      return bytes_written;
    }
 
-   void pfm_file_impl::check_state()const
+   void mws_file_impl::check_state() const
    {
       if (!file_is_open)
       {
-         std::string msg = "file " + ppath.filename + " is not open";
+         std::string msg = "file " + ppath.filename() + " is not open";
 
          mws_throw mws_exception(msg.c_str());
       }
    }
 
-   void pfm_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
+   void mws_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
    {
       fseek(get_file_impl(), (long)i_pos, i_seek_pos);
    }
 
-   uint64 pfm_file_impl::tell_impl()
+   uint64 mws_file_impl::tell_impl()
    {
       return ftell(get_file_impl());
    }
 
-   int pfm_file_impl::read_impl(uint8* i_buffer, int i_size)
+   int mws_file_impl::read_impl(uint8* i_buffer, int i_size)
    {
       return fread(i_buffer, 1, i_size, get_file_impl());
    }
 
-   int pfm_file_impl::write_impl(const uint8* i_buffer, int i_size)
+   int mws_file_impl::write_impl(const uint8* i_buffer, int i_size)
    {
       return fwrite(i_buffer, 1, i_size, get_file_impl());
    }
 }
 
 
-pfm_file::pfm_file()
+mws_file::mws_file()
 {
 }
 
-pfm_file::~pfm_file()
+mws_file::~mws_file()
 {
    io.close();
 }
 
-mws_sp<pfm_file> pfm_file::get_inst(std::string i_filename, std::string i_root_dir)
+mws_sp<mws_file> mws_file::get_inst(const mws_path& i_path)
 {
-   mws_sp<pfm_file> inst;
-   auto ppath = pfm_path::get_inst(i_filename, i_root_dir);
+   mws_sp<mws_file> inst;
 
    // if res map initialized
-   if (pfm_impl::res_files_map)
+   if (mws_impl::res_files_map)
    {
-      auto pfile = pfm_impl::get_res_file(ppath->get_file_name());
+      auto file = mws_impl::get_res_file(i_path.filename());
 
-      if (pfile)
+      if (file)
       {
-         if (ppath->get_root_directory().empty())
+         // if i_path only contains a filename(no directories)
+         if (i_path.directory().is_empty())
          {
-            inst = pfile;
+            inst = file;
          }
+         // if i_path also contains directories besides a filename,
+         // check to see if it's a subpath within the found file's path
          else
          {
-            if (pfile->get_root_directory().find(ppath->get_root_directory()) != std::string::npos)
+            std::string file_dir = file->directory().string();
+            std::string path_dir = i_path.directory().string();
+
+            if (file_dir.find(path_dir) != std::string::npos)
             {
-               inst = pfile;
+               inst = file;
             }
          }
       }
    }
 
+   // if path cannot be found inside the resource directories, this means it's external to the app
    if (!inst)
    {
-      inst = mws_sp<pfm_file>(new pfm_file());
-      inst->io.impl = pfm_app_inst->new_pfm_file_impl(ppath->get_file_name(), ppath->get_root_directory());
+      inst = mws_sp<mws_file>(new mws_file());
+      inst->io.impl = mws_app_inst()->new_pfm_file_impl(i_path);
    }
 
    return inst;
 }
 
-mws_sp<pfm_file> pfm_file::get_inst(mws_sp<pfm_impl::pfm_file_impl> i_impl)
+mws_sp<mws_file> mws_file::get_inst(mws_sp<mws_impl::mws_file_impl> i_impl)
 {
-   mws_sp<pfm_file> inst;
+   mws_sp<mws_file> inst;
 
-   if (pfm_impl::res_files_map)
+   if (mws_impl::res_files_map)
       // res map initialized
    {
-      inst = pfm_impl::get_res_file(i_impl->ppath.get_file_name());
+      inst = mws_impl::get_res_file(i_impl->ppath.filename());
    }
 
    if (!inst)
    {
-      inst = mws_sp<pfm_file>(new pfm_file());
+      inst = mws_sp<mws_file>(new mws_file());
       inst->io.impl = i_impl;
    }
 
    return inst;
 }
 
-bool pfm_file::exists() const
+bool mws_file::exists() const
 {
-   // check if this is a resource file
-   if (pfm_impl::res_files_map)
-   {
-      auto pfile = pfm_impl::get_res_file(get_file_name());
-
-      if (pfile)
-      {
-         return true;
-      }
-   }
-
-   // external(non-resource file). use stat() to check for existence
-   struct stat info;
-   std::string full_path = get_full_path();
-   bool exists = (stat(full_path.c_str(), &info) == 0);
-
-   return exists;
+   return io.impl->exists();
 }
 
-bool pfm_file::is_opened()const
+bool mws_file::is_opened() const
 {
    return io.impl->is_opened();
 }
 
-bool pfm_file::is_writable()const
+bool mws_file::is_writable() const
 {
    return io.impl->is_writable();
 }
 
-uint64 pfm_file::length()
+uint64 mws_file::length()
 {
    return io.impl->length();
 }
 
-uint64 pfm_file::creation_time()const
+uint64 mws_file::creation_time() const
 {
    return io.impl->creation_time();
 }
 
-uint64 pfm_file::last_write_time()const
+uint64 mws_file::last_write_time() const
 {
    return io.impl->last_write_time();
 }
 
-std::string pfm_file::get_full_path()const
+const mws_path& mws_file::path() const
 {
-   return io.impl->ppath.get_full_path();
+   return io.impl->ppath;
 }
 
-const std::string& pfm_file::get_file_name()const
+std::string mws_file::string_path() const
 {
-   return io.impl->ppath.get_file_name();
+   return io.impl->ppath.string();
 }
 
-std::string pfm_file::get_file_stem()const
+std::string mws_file::filename() const
 {
-   return io.impl->ppath.get_file_stem();
+   return io.impl->ppath.filename();
 }
 
-std::string pfm_file::get_file_extension()const
+std::string mws_file::stem() const
 {
-   return io.impl->ppath.get_file_extension();
+   return io.impl->ppath.stem();
 }
 
-const std::string& pfm_file::get_root_directory()const
+std::string mws_file::extension() const
 {
-   return io.impl->ppath.get_root_directory();
+   return io.impl->ppath.extension();
 }
 
-FILE* pfm_file::get_file_impl()const
+mws_path mws_file::directory() const
+{
+   return io.impl->ppath.directory();
+}
+
+FILE* mws_file::get_file_impl() const
 {
    return io.impl->get_file_impl();
 }
 
-pfm_file::io_op::io_op()
+mws_file::io_op::io_op()
 {
 }
 
-bool pfm_file::io_op::open()
+bool mws_file::io_op::open()
 {
    bool file_opened = open("rb");
 
    return file_opened;
 }
 
-bool pfm_file::io_op::open(std::string i_open_mode)
+bool mws_file::io_op::open(std::string i_open_mode)
 {
    if (impl->is_opened())
    {
@@ -775,77 +698,123 @@ bool pfm_file::io_op::open(std::string i_open_mode)
 
    if (!file_opened)
    {
-      mws_print_impl("WARNING[ file [%s] NOT FOUND. ]\n", impl->ppath.get_full_path().c_str());
+      mws_print_impl("WARNING[ file [%s] NOT FOUND. ]\n", impl->ppath.string().c_str());
    }
 
    return file_opened;
 }
 
-void pfm_file::io_op::close()
+void mws_file::io_op::close()
 {
    impl->close();
 }
 
-void pfm_file::io_op::flush()
+void mws_file::io_op::flush()
 {
    impl->flush();
 }
 
-bool pfm_file::io_op::reached_eof() const
+bool mws_file::io_op::reached_eof() const
 {
    return impl->reached_eof();
 }
 
-void pfm_file::io_op::seek(uint64 i_pos)
+void mws_file::io_op::seek(uint64 i_pos)
 {
    impl->seek(i_pos);
 }
 
-int pfm_file::io_op::read(std::vector<uint8>& i_buffer)
+int mws_file::io_op::read(std::vector<uint8>& i_buffer)
 {
    return impl->read(i_buffer);
 }
 
-int pfm_file::io_op::write(const std::vector<uint8>& i_buffer)
+int mws_file::io_op::write(const std::vector<uint8>& i_buffer)
 {
    return impl->write(i_buffer);
 }
 
-int pfm_file::io_op::read(uint8* i_buffer, int i_size)
+int mws_file::io_op::read(uint8* i_buffer, int i_size)
 {
    return impl->read(i_buffer, i_size);
 }
 
-int pfm_file::io_op::write(const uint8* i_buffer, int i_size)
+int mws_file::io_op::write(const uint8* i_buffer, int i_size)
 {
    return impl->write(i_buffer, i_size);
 }
 
 
-mws_sp<pfm_path> pfm_path::get_inst(std::string i_file_path, std::string i_aux_root_dir)
+mws_path::mws_path() {}
+
+mws_path::mws_path(const char* i_path, bool i_regular_path) : mws_path(std::string(i_path), i_regular_path) {}
+
+mws_path::mws_path(const std::string& i_path, bool i_regular_path)
 {
-   struct make_shared_enabler : public pfm_path {};
-   auto inst = std::make_shared<make_shared_enabler>();
-
-   inst->filename = i_file_path;
-   inst->aux_root_dir = i_aux_root_dir;
-   inst->make_standard_path();
-
-   return inst;
+   path = i_path;
+   regular_path = i_regular_path;
+   make_standard_path();
 }
 
-bool pfm_path::remove()
+mws_path::mws_path(const mws_path& i_path) : path(i_path.string()), regular_path(i_path.regular_path) {}
+
+mws_path& mws_path::operator/=(const mws_path& i_path)
+{
+   if (!i_path.is_empty())
+   {
+      if (path.empty())
+      {
+         path = i_path.string();
+      }
+      else
+      {
+         if (i_path.string().front() == '/')
+         {
+            if (path.back() == '/')
+            {
+               // remove '/' from path so we're left with only one between the 2 paths
+               path = path.substr(0, path.length() - 1) + i_path.string();
+            }
+            else
+            {
+               path += i_path.string();
+            }
+         }
+         else
+         {
+            if (path.back() == '/')
+            {
+               path += i_path.string();
+            }
+            else
+            {
+               // add '/' to path to have a separator between the 2 paths
+               path += "/" + i_path.string();
+            }
+         }
+      }
+   }
+
+   // adding a non regular path makes the resulting path non regular also
+   regular_path = regular_path && i_path.regular_path;
+
+   return *this;
+}
+
+bool mws_path::remove() const
 {
    mws_throw mws_exception("not implemented");
 
    return false;
 }
 
-bool pfm_path::is_directory() const
+bool mws_path::is_empty() const { return path.empty(); }
+
+bool mws_path::is_directory() const
 {
    struct stat info;
 
-   if (stat(get_full_path().c_str(), &info) != 0)
+   if (stat(string().c_str(), &info) != 0)
    {
       return false;
    }
@@ -858,11 +827,11 @@ bool pfm_path::is_directory() const
    return false;
 }
 
-bool pfm_path::is_regular_file() const
+bool mws_path::is_regular_file() const
 {
    struct stat info;
 
-   if (stat(get_full_path().c_str(), &info) != 0)
+   if (stat(string().c_str(), &info) != 0)
    {
       return false;
    }
@@ -875,12 +844,12 @@ bool pfm_path::is_regular_file() const
    return false;
 }
 
-bool pfm_path::exists() const
+bool mws_path::exists() const
 {
    // check if this is a resource file
-   if (pfm_impl::res_files_map)
+   if (mws_impl::res_files_map)
    {
-      auto pfile = pfm_impl::get_res_file(get_file_name());
+      auto pfile = mws_impl::get_res_file(filename());
 
       if (pfile)
       {
@@ -890,81 +859,95 @@ bool pfm_path::exists() const
 
    // external(non-resource file). use stat() to check for existence
    struct stat info;
-   std::string full_path = get_full_path();
+   std::string full_path = string();
    bool exists = (stat(full_path.c_str(), &info) == 0);
 
    return exists;
 }
 
-std::string pfm_path::get_full_path() const
+const std::string& mws_path::string() const { return path; }
+
+std::string mws_path::filename() const
 {
-   if (aux_root_dir.empty())
+   auto pos_0 = path.find_last_of('/');
+   int64 pos = (pos_0 != std::string::npos) ? pos_0 : -1;
+   size_t idx = size_t(pos + 1);
+
+   return std::string(path.begin() + idx, path.end());
+}
+
+std::string mws_path::stem() const
+{
+   std::string name = filename();
+   size_t idx = name.find_last_of('.');
+
+   if (idx != name.npos)
    {
-      return filename;
+      return name.substr(0, idx);
    }
 
-   return aux_root_dir + dir_separator + filename;
+   return name;
 }
 
-const std::string& pfm_path::get_file_name() const
+std::string mws_path::extension() const
 {
-   return filename;
-}
+   std::string name = filename();
+   size_t idx = name.find_last_of('.');
 
-std::string pfm_path::get_file_stem() const
-{
-   std::string filename = get_file_name();
-   size_t idx = filename.find_last_of('.');
-
-   if (idx != filename.npos)
+   if (idx != name.npos && idx > 0)
    {
-      return filename.substr(0, idx);
+      return name.substr(idx, name.npos);
    }
 
-   return filename;
+   return name;
 }
 
-std::string pfm_path::get_file_extension() const
+mws_path mws_path::directory() const
 {
-   std::string filename = get_file_name();
-   size_t idx = filename.find_last_of('.');
-
-   if (idx != filename.npos)
+   // if path is a file, return parent path
+   if (!filename().empty())
    {
-      return filename.substr(idx, filename.npos);
+      return parent_path();
    }
 
-   return "";
+   return *this;
 }
 
-const std::string& pfm_path::get_root_directory() const
+mws_path mws_path::parent_path() const
 {
-   return aux_root_dir;
-}
+   auto pos_0 = path.find_last_of('/');
+   int64 pos = -1;
 
-mws_sp<std::vector<mws_sp<pfm_file>>> pfm_path::list_directory(mws_sp<mws_mod> i_mod, bool i_recursive) const
-{
-   auto file_list = std::make_shared<std::vector<mws_sp<pfm_file> > >();
-   std::string base_dir = aux_root_dir;
-   std::replace(base_dir.begin(), base_dir.end(), '\\', '/');
-
-   if (i_mod)
+   if (pos_0 == std::string::npos)
    {
-      if (mws_str::starts_with(base_dir, pfm_impl::get_mod_res_path(i_mod)))
-      {
-         list_directory_impl(base_dir, file_list, i_recursive);
-      }
-      else
-      {
-         std::string base_dir_mod = pfm_impl::get_mod_res_path(i_mod) + "/" + base_dir;
-         std::replace(base_dir_mod.begin(), base_dir_mod.end(), '\\', '/');
-         list_directory_impl(base_dir_mod, file_list, i_recursive);
-      }
+      return mws_path("", regular_path);
+   }
+   else if (pos_0 != std::string::npos)
+   {
+      pos = pos_0;
+   }
+
+   return mws_path(std::string(path.begin(), path.begin() + (size_t)pos), regular_path);
+}
+
+mws_sp<std::vector<mws_sp<mws_file>>> mws_path::list_directory(bool i_recursive) const
+{
+   auto file_list = std::make_shared<std::vector<mws_sp<mws_file>> >();
+   std::string base_dir = parent_path().string();
+
+   if (mws_str::starts_with(base_dir, mws::filesys::res_dir().string()))
+   {
+      list_directory_impl(base_dir, file_list, i_recursive);
+   }
+   else
+   {
+      std::string base_dir_mod = mws::filesys::res_dir().string() + "/" + base_dir;
+      list_directory_impl(base_dir_mod, file_list, i_recursive);
    }
 
    struct pred
    {
-      bool operator()(const mws_sp<pfm_file> a, const mws_sp<pfm_file> b) const
+      bool operator()(const mws_sp<mws_file> a, const mws_sp<mws_file> b) const
       {
          return a->creation_time() > b->creation_time();
       }
@@ -975,48 +958,23 @@ mws_sp<std::vector<mws_sp<pfm_file>>> pfm_path::list_directory(mws_sp<mws_mod> i
    return file_list;
 }
 
-void pfm_path::make_standard_path()
+bool mws_path::is_regular_path() const { return regular_path; }
+
+void mws_path::make_standard_path()
 {
-   // remove trailing directory separator
-   if (!aux_root_dir.empty())
-   {
-      char lc = aux_root_dir.back();
-
-      if (lc == '\\' || lc == '/')
-      {
-         aux_root_dir = aux_root_dir.substr(0, aux_root_dir.length() - 1);
-      }
-   }
-
-   int idx1 = filename.find_last_of('\\');
-   int idx2 = filename.find_last_of('/');
-
-   if (idx1 >= 0 || idx2 >= 0)
-   {
-      int idx = (idx1 >= 0) ? idx1 : idx2;
-      std::string file_root = filename.substr(0, idx);
-      filename = filename.substr(idx + 1, filename.length() - idx - 1);
-
-      if (!aux_root_dir.empty())
-      {
-         aux_root_dir = aux_root_dir + dir_separator + file_root;
-      }
-      else
-      {
-         aux_root_dir = file_root;
-      }
-   }
+   std::replace(path.begin(), path.end(), '\\', '/');
 }
-void pfm_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const
+
+void mws_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<mws_file>> > i_file_list, bool i_recursive) const
 {
    if (i_recursive)
    {
-      auto it = pfm_impl::res_files_map->begin();
+      auto it = mws_impl::res_files_map->begin();
 
-      for (; it != pfm_impl::res_files_map->end(); ++it)
+      for (; it != mws_impl::res_files_map->end(); ++it)
       {
-         mws_sp<pfm_file> file = it->second;
-         std::string rdir = file->get_root_directory();
+         mws_sp<mws_file> file = it->second;
+         std::string rdir = file->directory().string();
 
          if (mws_str::starts_with(rdir, i_base_dir))
          {
@@ -1026,13 +984,13 @@ void pfm_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mw
    }
    else
    {
-      auto it = pfm_impl::res_files_map->begin();
+      auto it = mws_impl::res_files_map->begin();
 
-      for (; it != pfm_impl::res_files_map->end(); ++it)
+      for (; it != mws_impl::res_files_map->end(); ++it)
       {
-         mws_sp<pfm_file> file = it->second;
+         mws_sp<mws_file> file = it->second;
 
-         if (file->get_root_directory() == i_base_dir)
+         if (file->directory().string() == i_base_dir)
          {
             i_file_list->push_back(file);
          }
@@ -1040,28 +998,32 @@ void pfm_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mw
    }
 }
 
-
-pfm_data::pfm_data()
+mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs)
 {
-   screen_width = 1280;
-   screen_height = 720;
-   gfx_available = true;
+   mws_path path = i_lhs;
+   path /= i_rhs;
+
+   return path;
 }
 
 
-pfm_data pfm::data;
 
-
-mws_sp<pfm_main> pfm_main::gi()
+void mws_pfm_app::init()
 {
-   return pfm_app_inst;
+   mws_mod_ctrl::inst()->init_app();
 }
 
-void pfm_main::init() {}
-void pfm_main::start() {}
-void pfm_main::run() {}
+void mws_pfm_app::start()
+{
+   mws_mod_ctrl::inst()->start_app();
+}
 
-key_types pfm_main::apply_key_modifiers(key_types i_key_id) const
+void mws_pfm_app::run()
+{
+   mws_mod_ctrl::inst()->update();
+}
+
+mws_key_types mws_pfm_app::apply_key_modifiers(mws_key_types i_key_id) const
 {
    if (mod_mws_vkb_on)
    {
@@ -1076,33 +1038,199 @@ key_types pfm_main::apply_key_modifiers(key_types i_key_id) const
    return apply_key_modifiers_impl(i_key_id);
 }
 
-float pfm_main::get_screen_scale() const { return 1.f; }
-float pfm_main::get_screen_brightness() const { return 1.f; }
-void pfm_main::set_screen_brightness(float i_brightness) {}
-float pfm_main::get_avg_screen_dpcm()const { return get_avg_screen_dpi() / 2.54f; }
-
-bool pfm_main::back_evt()
+bool mws_pfm_app::back_evt() const
 {
    return mws_mod_ctrl::inst()->back_evt();
 }
 
+float mws_pfm_app::get_screen_scale() const { return 1.f; }
+float mws_pfm_app::get_screen_brightness() const { return 1.f; }
+void mws_pfm_app::set_screen_brightness(float i_brightness) const {}
+void mws_pfm_app::flip_screen() const {}
+float mws_pfm_app::get_avg_screen_dpcm() const { return get_avg_screen_dpi() / 2.54f; }
 
-int pfm::params::get_app_argument_count()
+
+// filesystem
+const std::string mws::filesys::res_idx_name = "index.txt";
+
+const umf_list mws::filesys::get_res_file_list()
+{
+   return mws_impl::res_files_map;
+}
+
+void mws_mod_ctrl::pre_init_app()
+{
+   if (!ul)
+   {
+      ul = mws_mod_list::nwi();
+      ul->set_name("app-mws-mod-list");
+      mws_mod_setup::next_crt_mod = crt_mod = ul;
+
+      mws_mod_setup::append_mod_list(ul);
+   }
+
+   mws_sp<mws_mod> start_mod = get_app_start_mod();
+
+   if (start_mod)
+   {
+      mws_app_inst()->reconfigure_directories(start_mod);
+   }
+}
+
+void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
+{
+   if (i_mod)
+   {
+      if (!crt_mod.expired())
+      {
+         crt_mod.lock()->base_unload();
+      }
+
+      crt_mod = i_mod;
+      mws_app_inst()->reconfigure_directories(i_mod);
+
+      // reload resources
+      if (mws_impl::res_files_mod_name != i_mod->get_name())
+      {
+         mws_impl::res_files_mod_name = i_mod->get_name();
+         mws_impl::res_files_map = std::make_shared<umf_r>();
+         mws_app_inst()->get_directory_listing(mws::filesys::res_dir().string(), mws_impl::res_files_map, true);
+      }
+
+      if (!i_mod->is_init())
+      {
+         i_mod->base_init();
+         i_mod->set_init(true);
+      }
+
+      i_mod->base_load();
+   }
+   else
+   {
+      mws_signal_error("warning: tried to make current a null mws_mod");
+   }
+}
+
+mws_sp<std::vector<uint8>> mws::filesys::load_res_byte_vect(mws_sp<mws_file> i_file)
+{
+   mws_sp<std::vector<uint8>> res;
+
+   if (i_file->io.open())
+   {
+      int size = (int)i_file->length();
+
+      res = mws_sp<std::vector<uint8>>(new std::vector<uint8>(size));
+      i_file->io.read(res->data(), size);
+      i_file->io.close();
+   }
+
+   return res;
+}
+
+mws_sp<std::vector<uint8>> mws::filesys::load_res_byte_vect(std::string i_filename)
+{
+   mws_sp<mws_file> fs = mws_file::get_inst(i_filename);
+
+   return load_res_byte_vect(fs);
+}
+
+mws_sp<std::string> mws::filesys::load_res_as_string(mws_sp<mws_file> i_file)
+{
+   mws_sp<std::string> text;
+
+   if (i_file->io.open("rt"))
+   {
+      int size = (int)i_file->length();
+      auto res = std::make_shared<std::vector<uint8>>(size);
+      const char* res_bytes = (const char*)res->data();
+      int text_size = i_file->io.read(res->data(), size);
+
+      i_file->io.close();
+      text = std::make_shared<std::string>(res_bytes, text_size);
+   }
+
+   return text;
+}
+
+mws_sp<std::string> mws::filesys::load_res_as_string(std::string i_filename)
+{
+   mws_sp<mws_file> fs = mws_file::get_inst(i_filename);
+
+   return load_res_as_string(fs);
+}
+
+const mws_path& mws::filesys::prv_dir()
+{
+   return mws_app_inst()->prv_dir();
+}
+
+const mws_path& mws::filesys::res_dir()
+{
+   return mws_app_inst()->res_dir();
+}
+
+const mws_path& mws::filesys::tmp_dir()
+{
+   return mws_app_inst()->tmp_dir();
+}
+
+bool mws::filesys::make_dir(const mws_path& i_path_left, const mws_path& i_path_right)
+{
+   return false;
+}
+
+
+// input
+mws_key_types mws::input::translate_key(int i_pfm_key_id) { return mws_app_inst()->translate_key(i_pfm_key_id); }
+
+mws_key_types mws::input::apply_key_modifiers(mws_key_types i_key_id) { return mws_app_inst()->apply_key_modifiers(i_key_id); }
+
+bool mws::input::has_touchscreen()
+{
+   switch (get_platform_id())
+   {
+   case mws_pfm_android: return true;
+   case mws_pfm_ios:  return true;
+   case mws_pfm_emscripten: return false;
+   case mws_pfm_windows_pc: return false;
+   }
+
+   return false;
+}
+
+bool mws::input::uses_touchscreen()
+{
+   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+   bool uses_touchscreen = (mod) ? mod->get_preferences()->emulate_mobile_screen() : false;
+
+   return has_touchscreen() || uses_touchscreen;
+}
+
+
+// output
+void mws::output::write_text(const char* i_text) { mws_app_inst()->write_text(i_text); }
+void mws::output::write_text_nl(const char* i_text) { mws_app_inst()->write_text_nl(i_text); }
+void mws::output::write_text(const wchar_t* i_text) { mws_app_inst()->write_text(i_text); }
+void mws::output::write_text_nl(const wchar_t* i_text) { mws_app_inst()->write_text_nl(i_text); }
+
+
+// params
+int mws::args::get_app_argument_count()
 {
    return arg_count;
 }
 
-const unicodestring& pfm::params::get_app_path()
+const unicode_string& mws::args::get_app_path()
 {
    return app_path;
 }
 
-const vector<unicodestring>& pfm::params::get_app_argument_vector()
+const std::vector<unicode_string>& mws::args::get_app_argument_vector()
 {
    return arg_vector;
 }
 
-void pfm::params::set_app_arguments(int i_argument_count, unicodechar** i_argument_vector, bool i_app_path_included)
+void mws::args::set_app_arguments(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included)
 {
    int idx = 0;
 
@@ -1122,345 +1250,64 @@ void pfm::params::set_app_arguments(int i_argument_count, unicodechar** i_argume
 }
 
 
-uint32 pfm::screen::get_width()
+// screen
+bool mws::screen::is_gfx_available() { return mws_mod_ctrl::is_gfx_available(); }
+int mws::screen::get_target_fps() { return 30; }
+void mws::screen::flip_screen() { mws_app_inst()->flip_screen(); }
+bool mws::screen::is_full_screen_mode() { return mws_app_inst()->is_full_screen_mode(); }
+void mws::screen::set_full_screen_mode(bool i_enabled) { mws_app_inst()->set_full_screen_mode(i_enabled); }
+float mws::screen::get_brightness() { return mws_app_inst()->get_screen_brightness(); }
+void mws::screen::set_brightness(float i_brightness) { mws_app_inst()->set_screen_brightness(i_brightness); }
+uint32 mws::screen::get_width() { return mws_mod_ctrl::get_screen_width(); }
+uint32 mws::screen::get_height() { return mws_mod_ctrl::get_screen_height(); }
+float mws::screen::get_scale() { return mws_app_inst()->get_screen_scale(); }
+float mws::screen::get_scaled_width() { return get_width() * get_scale(); }
+float mws::screen::get_scaled_height() { return get_height() * get_scale(); }
+std::pair<uint32, uint32> mws::screen::get_res_px() { return mws_app_inst()->get_screen_res_px(); }
+float mws::screen::get_avg_dpi() { return mws_app_inst()->get_avg_screen_dpi(); }
+std::pair<float, float> mws::screen::get_dpi() { return mws_app_inst()->get_screen_dpi(); }
+std::pair<float, float> mws::screen::get_dim_inch() { return mws_app_inst()->get_screen_dim_inch(); }
+float mws::screen::get_avg_dpcm() { return mws_app_inst()->get_avg_screen_dpcm(); }
+std::pair<float, float> mws::screen::get_dpcm() { return mws_app_inst()->get_screen_dpcm(); }
+std::pair<float, float> mws::screen::get_dim_cm() { return mws_app_inst()->get_screen_dim_cm(); }
+
+
+// time
+std::string mws::time::get_timezone_id()
 {
-   return data.screen_width;
+   return mws_app_inst()->get_timezone_id();
 }
 
-uint32 pfm::screen::get_height()
+std::string mws::time::get_current_date()
 {
-   return data.screen_height;
+   std::time_t t = std::time(nullptr);
+#pragma warning(suppress : 4996)
+   std::tm tm = *std::localtime(&t);
+   std::stringstream ss;
+
+   ss << std::put_time(&tm, "%a %b %d %H:%M:%S %Y");
+
+   auto s = ss.str();
+
+   return s;
 }
 
-float pfm::screen::get_scale()
+std::string mws::time::get_duration_as_string(uint32 i_duration)
 {
-   return pfm_app_inst->get_screen_scale();
-}
-
-float pfm::screen::get_scaled_width()
-{
-   return get_width() * get_scale();
-}
-
-float pfm::screen::get_scaled_height()
-{
-   return get_height() * get_scale();
-}
-
-int pfm::screen::get_target_fps()
-{
-   return 30;
-}
-
-float pfm::screen::get_avg_screen_dpi()
-{
-   return pfm_app_inst->get_avg_screen_dpi();
-}
-
-bool pfm::screen::is_full_screen_mode()
-{
-   return pfm_app_inst->is_full_screen_mode();
-}
-
-void pfm::screen::set_full_screen_mode(bool ienabled)
-{
-   pfm_app_inst->set_full_screen_mode(ienabled);
-}
-
-bool pfm::screen::is_gfx_available()
-{
-   return data.gfx_available;
-}
-
-void pfm::screen::flip_screen()
-{
-   pfm_app_inst->flip_screen();
-}
-
-
-//shared_array<uint8> pfm::storage::load_res_byte_array(string i_filename, int& i_size)
-//{
-//	shared_array<uint8> res;
-//	path p(i_filename.c_str());
-//
-//	if(p.is_relative())
-//	{
-//		p = get_path(i_filename.c_str());
-//	}
-//
-//	if(exists(p))
-//	{
-//		mws_sp<random_access_file> fs = get_random_access(p);
-//		i_size = file_size(p);
-//
-//		res = shared_array<uint8>(new uint8[i_size]);
-//		fs->read(res.get(), i_size);
-//	}
-//
-//	return res;
-//}
-
-
-const std::string pfm::filesystem::res_idx_name = "index.txt";
-
-const umf_list pfm::filesystem::get_res_file_list()
-{
-   return pfm_impl::res_files_map;
-}
-
-std::string pfm::filesystem::get_tmp_path(std::string i_name)
-{
-   std::string p;
-
-   if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
-   {
-      auto mod = mws_mod_ctrl::inst()->get_current_mod();
-
-      if (mod)
-      {
-         p = pfm_impl::get_mod_res_path(mod) + "/../.ign";
-         auto dir = pfm_path::get_inst(p);
-
-         if (!dir->exists())
-         {
-            bool success = dir->make_dir();
-
-            if (!success)
-            {
-               mws_println("cannot create tmp dir [ %s ]", p.c_str());
-            }
-         }
-      }
-   }
-   else
-   {
-      p = pfm_app_inst->get_writable_path();
-   }
-
-   if (!i_name.empty())
-   {
-      if (i_name[0] == '/')
-      {
-         p += i_name;
-      }
-      else
-      {
-         p = p + "/" + i_name;
-      }
-   }
-
-   return p;
-}
-
-std::string pfm::filesystem::get_writable_path(std::string i_name)
-{
-   std::string p;
-
-   if (pfm::get_platform_id() == platform_windows_pc && pfm_impl::res_is_bundled_with_src())
-   {
-      auto mod = mws_mod_ctrl::inst()->get_current_mod();
-
-      if (mod)
-      {
-         p = pfm_impl::get_mod_res_path(mod);
-      }
-   }
-   else
-   {
-      p = pfm_app_inst->get_writable_path();
-   }
-
-   if (!i_name.empty())
-   {
-      if (i_name[0] == '/')
-      {
-         p += i_name;
-      }
-      else
-      {
-         p = p + "/" + i_name;
-      }
-   }
-
-   return p;
-}
-
-std::string pfm::filesystem::get_path(std::string i_name)
-{
-   auto f = pfm_file::get_inst(i_name);
-
-   if (f)
-   {
-      return f->get_full_path();
-   }
-
-   return "";
-}
-
-void pfm::filesystem::load_res_file_map(mws_sp<mws_mod> i_mod)
-{
-   if (pfm_impl::res_files_mod_name != i_mod->get_name())
-   {
-      pfm_impl::res_files_mod_name = i_mod->get_name();
-      pfm_impl::res_files_map = std::make_shared<umf_r>();
-      pfm_app_inst->get_directory_listing(pfm_impl::get_mod_res_path(i_mod), pfm_impl::res_files_map, true);
-   }
-}
-
-mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(mws_sp<pfm_file> i_file)
-{
-   mws_sp<vector<uint8> > res;
-
-   if (i_file->io.open())
-   {
-      int size = (int)i_file->length();
-
-      res = mws_sp<vector<uint8> >(new vector<uint8>(size));
-      i_file->io.read(begin_ptr(res), size);
-      i_file->io.close();
-   }
-
-   return res;
-}
-
-mws_sp<std::vector<uint8> > pfm::filesystem::load_res_byte_vect(string i_filename)
-{
-   mws_sp<pfm_file> fs = pfm_file::get_inst(i_filename);
-
-   return load_res_byte_vect(fs);
-}
-
-mws_sp<std::string> pfm::filesystem::load_res_as_string(mws_sp<pfm_file> i_file)
-{
-   mws_sp<std::string> text;
-
-   if (i_file->io.open("rt"))
-   {
-      int size = (int)i_file->length();
-      auto res = std::make_shared<vector<uint8> >(size);
-      const char* res_bytes = (const char*)begin_ptr(res);
-      int text_size = i_file->io.read(begin_ptr(res), size);
-
-      i_file->io.close();
-      text = std::make_shared<std::string>(res_bytes, text_size);
-   }
-
-   return text;
-}
-
-mws_sp<std::string> pfm::filesystem::load_res_as_string(std::string i_filename)
-{
-   mws_sp<pfm_file> fs = pfm_file::get_inst(i_filename);
-
-   return load_res_as_string(fs);
-}
-
-//shared_array<uint8> pfm::storage::load_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, int& i_size)
-//{
-//	if(!i_mod)
-//	{
-//		return shared_array<uint8>();
-//	}
-//
-//	i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
-//
-//	return load_res_byte_array(i_filename, i_size);
-//}
-
-mws_sp<std::vector<uint8> > pfm::filesystem::load_mod_byte_vect(mws_sp<mws_mod> i_mod, string i_filename)
-{
-   if (!i_mod)
-   {
-      return mws_sp<std::vector<uint8> >();
-   }
-
-   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
-
-   return load_res_byte_vect(i_filename);
-}
-
-bool pfm::filesystem::store_mod_byte_array(mws_sp<mws_mod> i_mod, string i_filename, const uint8* ires, int i_size)
-{
-   if (!i_mod)
-   {
-      return false;
-   }
-
-   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
-
-   //path p = get_path(i_filename.c_str());
-   //mws_sp<random_access_file> fs = get_random_access(p, true);
-
-   //if(exists(p))
-   //{
-   //	fs->write(ires, i_size);
-
-   //	return true;
-   //}
-
-   return false;
-}
-
-bool pfm::filesystem::store_mod_byte_vect(mws_sp<mws_mod> i_mod, string i_filename, const vector<uint8>& ires)
-{
-   if (!i_mod)
-   {
-      return false;
-   }
-
-   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
-
-   //path p = get_path(i_filename.c_str());
-   //mws_sp<random_access_file> fs = get_random_access(p, true);
-
-   //if(exists(p))
-   //{
-   //	fs->write(begin_ptr(ires), ires.size());
-
-   //	return true;
-   //}
-
-   return false;
-}
-
-mws_sp<pfm_file> pfm::filesystem::random_access(mws_sp<mws_mod> i_mod, std::string i_filename)
-{
-   if (!i_mod)
-   {
-      return mws_sp<pfm_file>();
-   }
-
-   //i_filename = trs("mod-data/%1%-%2%") % i_mod->get_name() % i_filename;
-
-   //return get_random_access(get_path(i_filename.c_str()), true);
-   return mws_sp<pfm_file>();
-}
-
-bool pfm::has_touchscreen()
-{
-   switch (get_platform_id())
-   {
-   case platform_android: return true;
-   case platform_ios:  return true;
-   case platform_emscripten: return false;
-   case platform_qt_windows_pc: return false;
-   case platform_windows_pc: return false;
-   }
-
-   return false;
-}
-
-bool pfm::uses_touchscreen()
-{
-   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-   bool uses_touchscreen = (mod) ? mod->get_preferences()->emulate_mobile_screen() : false;
-
-   return has_touchscreen() || uses_touchscreen;
-}
-
-mws_sp<pfm_main> pfm::get_pfm_main_inst()
-{
-   return pfm_app_inst;
+   std::string duration;
+
+   uint32 millis = i_duration % 1000;
+   uint32 seconds = i_duration / 1000;
+   uint32 minutes = seconds / 60;
+   uint32 seconds_remainder = seconds % 60;
+
+   duration += std::to_string(minutes);
+   duration += ":";
+   duration += std::to_string(seconds_remainder);
+   //duration += ":";
+   //duration += std::to_string(millis);
+
+   return duration;
 }
 
 
@@ -1478,7 +1325,7 @@ std::string mws_to_str_fmt(const char* i_format, ...)
 
 void mws_nl_impl()
 {
-   pfm::get_pfm_main_inst()->write_text("\n");
+   mws_app_inst()->write_text("\n");
 }
 
 void mws_print_impl(const char* i_format, ...)
@@ -1489,58 +1336,5 @@ void mws_print_impl(const char* i_format, ...)
    va_start(arg_ptr, i_format);
    vsnprintf(dest, 16000 - 1, i_format, arg_ptr);
    va_end(arg_ptr);
-   pfm::get_pfm_main_inst()->write_text(dest);
+   mws_app_inst()->write_text(dest);
 }
-
-
-#if defined PLATFORM_WINDOWS_PC
-
-//void* operator new(std::size_t i_size, const std::nothrow_t& nothrow_value)
-//{
-//	void* ptr = 0;
-//
-//	if (i_size > 0)
-//	{
-//		ptr = _aligned_malloc(i_size, 16);
-//
-//		mws_assert(ptr);
-//
-//		if (ptr)
-//		{
-//			memset(ptr, 0, i_size);
-//		}
-//	}
-//
-//	return ptr;
-//}
-//
-//void* operator new[](std::size_t i_size, const std::nothrow_t& nothrow_value)
-//{
-//	void* ptr = 0;
-//
-//	if (i_size > 0)
-//	{
-//		ptr = _aligned_malloc(i_size, 16);
-//
-//		mws_assert(ptr);
-//
-//		if (ptr)
-//		{
-//			memset(ptr, 0, i_size);
-//		}
-//	}
-//
-//	return ptr;
-//}
-//
-//void operator delete(void* iptr, const std::nothrow_t& nothrow_constant)
-//{
-//   _aligned_free(iptr);
-//}
-//
-//void operator delete[](void* iptr, const std::nothrow_t& nothrow_constant)
-//{
-//   _aligned_free(iptr);
-//}
-
-#endif

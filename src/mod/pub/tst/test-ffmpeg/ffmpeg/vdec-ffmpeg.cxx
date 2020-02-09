@@ -63,12 +63,12 @@ public:
       free_memory();
    }
 
-   std::string get_video_path()
+   mws_path get_video_path()
    {
       return video_path;
    }
 
-   void set_video_path(std::string i_video_path)
+   void set_video_path(mws_path i_video_path)
    {
       video_path = i_video_path;
    }
@@ -108,7 +108,7 @@ public:
 
    int start_decoding()
    {
-      if (video_path.empty())
+      if (video_path.is_empty())
       {
          mws_throw mws_exception("vdec-ffmpeg [video_path is empty]");
       }
@@ -121,7 +121,7 @@ public:
       AVDictionary* options = 0;
       char errbuf[256];
 
-      r = avformat_open_input(&format_ctx, video_path.c_str(), nullptr, nullptr);
+      r = avformat_open_input(&format_ctx, video_path.string().c_str(), nullptr, nullptr);
 
       if (r < 0)
       {
@@ -139,7 +139,7 @@ public:
       }
 
       // print format info
-      av_dump_format(format_ctx, 0, video_path.c_str(), 0);
+      av_dump_format(format_ctx, 0, video_path.string().c_str(), 0);
       video_stream = -1;
 
       for (uint32 i = 0; i < format_ctx->nb_streams; i++)
@@ -194,7 +194,7 @@ public:
       }
 
       state = mws_vdec_state::st_playing;
-      last_frame_time = uint32(pfm::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
+      last_frame_time = uint32(mws::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
 
       return 0;
    }
@@ -294,7 +294,7 @@ public:
          i_cam = ortho_cam;
       }
 
-      uint32 crt_frame_time = pfm::time::get_time_millis();
+      uint32 crt_frame_time = mws::time::get_time_millis();
 
       if (frame_limit > 0.f)
       {
@@ -512,7 +512,7 @@ private:
    mws_sp<gfx_rt> rt;
    mws_sp<gfx_tex> rt_tex;
    int current_frame_idx;
-   std::string video_path;
+   mws_path video_path;
    int tex_idx;
    float frame_limit;
    uint32 last_frame_time;
@@ -579,12 +579,12 @@ vdec_ffmpeg::~vdec_ffmpeg()
 {
 }
 
-std::string vdec_ffmpeg::get_video_path()
+mws_path vdec_ffmpeg::get_video_path()
 {
    return impl->get_video_path();
 }
 
-void vdec_ffmpeg::set_video_path(std::string i_video_path)
+void vdec_ffmpeg::set_video_path(mws_path i_video_path)
 {
    impl->set_video_path(i_video_path);
 }

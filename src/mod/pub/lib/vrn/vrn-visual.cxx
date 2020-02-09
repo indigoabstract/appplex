@@ -114,7 +114,7 @@ glm::vec4 mws_vrn_cell_borders::calc_2d_bounding_box(const std::vector<glm::vec3
 
 void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
 {
-   const float line_half_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * .035f;
+   const float line_half_thickness = std::max(mws::screen::get_width(), mws::screen::get_height()) * .035f;
    const float z_pos = 0.f;
    std::vector<glm::vec3> cell_nexus_list;
    uint32 cell_count = i_point_count_list.size();
@@ -158,7 +158,7 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    {
       mws_sp<mws_vrn_cell_vxo> mesh = borders_mesh_vect[k];
       std::vector<gfx_indices_type>& ks_indices_data = mesh->get_ix_buffer();
-      vx_fmt_3f_2f* ks_vertices_data = (vx_fmt_3f_2f*)begin_ptr(mesh->get_vx_buffer());
+      vx_fmt_3f_2f* ks_vertices_data = (vx_fmt_3f_2f*)mesh->get_vx_buffer().data();
       uint32 cell_vx_count = i_point_count_list[k];
 
       // build a temp list with the cell's nexus points and with the same first and last point
@@ -463,7 +463,7 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
    i_mesh->set_size(vx_count, ix_count);
    std::vector<gfx_indices_type>& ks_indices_data = i_mesh->get_ix_buffer();
    //std::vector<vx_fmt_3f_4b_2f_1i>& ks_vertices_data = *((std::vector<vx_fmt_3f_4b_2f_1i>*)&i_mesh->get_vx_buffer());
-   vx_fmt_3f_4b_2f_1i* ks_vertices_data = (vx_fmt_3f_4b_2f_1i*)begin_ptr(i_mesh->get_vx_buffer());
+   vx_fmt_3f_4b_2f_1i* ks_vertices_data = (vx_fmt_3f_4b_2f_1i*)i_mesh->get_vx_buffer().data();
    int idx = 0;
    int vx_idx = 0;
    int ix_idx = 0;
@@ -572,7 +572,7 @@ mws_vrn_geom::mws_vrn_geom(mws_sp<mws_vrn_data> i_diag_data) : gfx_node(gfx::i()
 void mws_vrn_geom::init(mws_sp<gfx_camera> i_cam)
 {
    float alpha_val = 1.f;
-   float line_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * 0.009f;
+   float line_thickness = std::max(mws::screen::get_width(), mws::screen::get_height()) * 0.009f;
 
    // cache the shaders, to prevent recompiling
    init_shaders();

@@ -59,7 +59,7 @@ gesture_state dragging_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       return reset();
    }
 
-   //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), pfm::time::get_time_millis());
+   //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), mws::time::get_time_millis());
    switch (new_event->type)
    {
    case mws_ptr_evt::touch_began:
@@ -104,7 +104,7 @@ gesture_state dragging_detector::reset()
 
 void dragging_detector::set_state(detector_state i_st)
 {
-   //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), pfm::time::get_time_millis());
+   //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), mws::time::get_time_millis());
    det_state = i_st;
 }
 
@@ -146,7 +146,7 @@ gesture_state double_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 
    if (det_state > detector_state::ST_READY)
    {
-      auto crt_time = pfm::time::get_time_millis();
+      auto crt_time = mws::time::get_time_millis();
       auto delta = crt_time - start_event->time;
 
       // check for max double tap duration
@@ -293,7 +293,7 @@ gesture_state triple_tap_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 
    if (det_state > detector_state::ST_READY)
    {
-      auto crt_time = pfm::time::get_time_millis();
+      auto crt_time = mws::time::get_time_millis();
       auto delta = crt_time - start_event->time;
 
       // check for max double tap duration
@@ -577,7 +577,7 @@ gesture_state anchor_rotation_one_finger_detector::detect(const mws_sp<mws_ptr_e
       start_event = new_event;
       start_position = mws_ptr_evt::get_pos(new_event->points[0]);
       prev_position = position = start_position;
-      start_time = pfm::time::get_time_millis();
+      start_time = mws::time::get_time_millis();
 
       return GS_START;
    }
@@ -904,13 +904,13 @@ bool swipe_detector::was_started_from_edge() const
 {
    bool started_from_edge = false;
    float dist = 0.f;
-   float horiz_threshold = pfm::screen::get_width() * 0.02f;
-   float vert_threshold = pfm::screen::get_height() * 0.02f;
+   float horiz_threshold = mws::screen::get_width() * 0.02f;
+   float vert_threshold = mws::screen::get_height() * 0.02f;
 
    switch (swipe_direction)
    {
    case swipe_types::left:
-      dist = pfm::screen::get_width() - press_pos.x;
+      dist = mws::screen::get_width() - press_pos.x;
       started_from_edge = (dist < horiz_threshold);
       break;
 
@@ -925,7 +925,7 @@ bool swipe_detector::was_started_from_edge() const
       break;
 
    case swipe_types::down:
-      dist = pfm::screen::get_height() - press_pos.y;
+      dist = mws::screen::get_height() - press_pos.y;
       started_from_edge = (dist < vert_threshold);
       break;
    }
@@ -941,7 +941,7 @@ gesture_state swipe_detector::detect(const mws_sp<mws_ptr_evt> new_event)
       return reset();
    }
 
-   //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), pfm::time::get_time_millis());
+   //mws_print("dragging_detector new_event->type [%s] [%d]\n", new_event->get_evt_type().c_str(), mws::time::get_time_millis());
    switch (new_event->type)
    {
    case mws_ptr_evt::touch_began:
@@ -1005,7 +1005,7 @@ gesture_state swipe_detector::reset()
 
 void swipe_detector::set_state(detector_state i_st)
 {
-   //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), pfm::time::get_time_millis());
+   //mws_print("dragging_detector old state [%s] new state [%s] [%d]\n", to_string(det_state).c_str(), to_string(i_st).c_str(), mws::time::get_time_millis());
    det_state = i_st;
 }
 
@@ -1027,9 +1027,9 @@ std::string swipe_detector::to_string(detector_state i_st) const
 // https://github.com/prime31/TouchKit/blob/master/Assets/TouchKit/Recognizers/TKSwipeRecognizer.cs
 bool swipe_detector::is_valid_swipe()
 {
-   float screen_pixels_per_cm = pfm::get_pfm_main_inst()->get_avg_screen_dpcm();
+   float screen_pixels_per_cm = mws::screen::get_avg_dpcm();
    // if we have a time stipulation and we exceeded it stop listening for swipes, fail
-   if (max_swipe_duration > 0 && (pfm::time::get_time_millis() - start_time) > max_swipe_duration)
+   if (max_swipe_duration > 0 && (mws::time::get_time_millis() - start_time) > max_swipe_duration)
    {
       return false;
    }
@@ -1072,7 +1072,7 @@ bool swipe_detector::is_valid_swipe()
    }
 
    // the speed in cm/s of the swipe
-   swipe_speed_cms = ideal_dist_cm / ((pfm::time::get_time_millis() - start_time) / 1000.f);
+   swipe_speed_cms = ideal_dist_cm / ((mws::time::get_time_millis() - start_time) / 1000.f);
 
    // turn the slope of the ideal swipe line into an angle in degrees
    glm::vec2 v2 = glm::normalize(end_point - start_point);

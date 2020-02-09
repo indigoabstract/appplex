@@ -18,7 +18,7 @@ musical_note::musical_note(note_ids inote, int ioctave)
 
 mws_sp<musical_note> musical_note::get_note(note_ids inote, int ioctave)
 {
-	if (ioctave >= 0 && ioctave < NUMBER_OF_OCTAVES);
+	if (ioctave >= 0 && ioctave < NUMBER_OF_OCTAVES)
 	{
 		// init table
 		if (note_table.empty())

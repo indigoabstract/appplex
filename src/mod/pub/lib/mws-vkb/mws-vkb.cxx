@@ -25,13 +25,13 @@ std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()
    if (vkb_info_vect.empty())
    {
       // search all files in resources
-      auto& file_list = *pfm::filesystem::get_res_file_list();
+      auto& file_list = *mws::filesys::get_res_file_list();
 
       // store all the found vkb files in a list
       for (auto file_it : file_list)
       {
-         mws_sp<pfm_file> file = file_it.second;
-         const std::string& name = file->get_file_name();
+         mws_sp<mws_file> file = file_it.second;
+         const std::string& name = file->filename();
          vkb_info vkb_i = mws_vkb_impl::get_vkb_info(name);
 
          if (vkb_i.aspect_ratio != 0.f)
@@ -52,7 +52,7 @@ bool mws_vkb_file_store_impl::file_exists(const std::string& i_vkb_filename)
 
    for (auto& e : list)
    {
-      if (e.file->get_file_name() == i_vkb_filename)
+      if (e.file->filename() == i_vkb_filename)
       {
          return true;
       }
@@ -64,8 +64,8 @@ bool mws_vkb_file_store_impl::file_exists(const std::string& i_vkb_filename)
 void mws_vkb_file_store_impl::save_vkb(const std::string& i_vkb_filename, const std::string& i_data)
 {
    std::vector<vkb_file_info> flist = get_vkb_list();
-   std::string dir = flist[0].file->get_root_directory();
-   mws_sp<pfm_file> map_file_save = pfm_file::get_inst(i_vkb_filename, dir);
+   mws_path dir = flist[0].file->path().parent_path();
+   mws_sp<mws_file> map_file_save = mws_file::get_inst(dir / i_vkb_filename);
 
    map_file_save->io.open("wt");
    map_file_save->io.write((const uint8*)i_data.c_str(), i_data.length());
@@ -76,7 +76,7 @@ mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_f
 {
    if (file_exists(i_vkb_filename))
    {
-      mws_sp<std::string> str = pfm::filesystem::load_res_as_string(i_vkb_filename);
+      mws_sp<std::string> str = mws::filesys::load_res_as_string(i_vkb_filename);
       return str;
    }
 
@@ -138,9 +138,9 @@ vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
 
 std::string mws_vkb_impl::get_vkb_filename(uint32 i_map_idx)
 {
-   uint32 w = pfm::screen::get_width();
-   uint32 h = pfm::screen::get_height();
-   uint32 gcd = mws_util::math::gcd(w, h);
+   uint32 w = mws::screen::get_width();
+   uint32 h = mws::screen::get_height();
+   uint32 gcd = std::gcd(w, h);
    uint32 wd = w / gcd;
    uint32 hd = h / gcd;
 
@@ -151,7 +151,7 @@ void mws_vkb_impl::setup()
 {
    key_map =
    {
-      {KEY_BACKSPACE, "Backsp"},
+      {mws_key_backspace, "Backsp"},
       {VKB_ENTER, "Enter"},
       {VKB_ALT, "Alt"},
       {VKB_SHIFT, "Shift"},
@@ -159,11 +159,11 @@ void mws_vkb_impl::setup()
       {VKB_DONE, "Done"},
       {VKB_HIDE_KB, "Hide"},
       {VKB_DELETE, "Del"},
-      {KEY_SPACE, ""/*"space"*/},
+      {mws_key_space, ""/*"space"*/},
    };
    {
       setup_font_dimensions();
-      vk = mws_vrn_main::nwi(pfm::screen::get_width(), pfm::screen::get_height(), mws_cam.lock());
+      vk = mws_vrn_main::nwi(mws::screen::get_width(), mws::screen::get_height(), mws_cam.lock());
       vk->toggle_voronoi_object(obj_type_mask);
       vk->init();
       vk->vgeom->position = glm::vec3(0.f, 0.f, -1.f);
@@ -286,7 +286,7 @@ mws_sp<mws_ptr_evt> mws_vkb_impl::on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mw
       {
          glm::vec2 press_0 = dbl_tap_det.get_first_press_pos();
          auto idx_0 = vk->get_kernel_idx_at(press_0.x, press_0.y);
-         key_types active_key = get_key_at(idx_0.idx);
+         mws_key_types active_key = get_key_at(idx_0.idx);
 
          if ((!vkb_hidden && is_mod_key(active_key)) || (vkb_hidden && (idx_0.idx == hide_vkb_idx)))
          {
@@ -320,7 +320,7 @@ void mws_vkb_impl::on_update_state()
    // key lights
    if(build_textures)
    {
-      uint32 crt_time = pfm::time::get_time_millis();
+      uint32 crt_time = mws::time::get_time_millis();
 
       for (auto it = highlight_vect.begin(); it != highlight_vect.end();)
       {
@@ -362,8 +362,8 @@ void mws_vkb_impl::on_resize(uint32 i_width, uint32 i_height)
    if (vkb_dim != scr_dim)
    {
       vkb_file_info vkb_fi = get_closest_vkb_match(i_width, i_height);
-      mws_sp<pfm_file> file = vkb_fi.file;
-      std::string new_filename = file->get_file_name();
+      mws_sp<mws_file> file = vkb_fi.file;
+      std::string new_filename = file->filename();
       vkb_dim = scr_dim;
 
       // check if 'loaded_filename' is the best fit for current resolution and load 'new_filename' if not
@@ -492,7 +492,7 @@ glm::ivec2 mws_vkb_impl::get_dimensions() const
    return vkb_dim;
 }
 
-std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
+std::string mws_vkb_impl::get_key_name(mws_key_types i_key_id) const
 {
    auto it = key_map.find(i_key_id);
 
@@ -509,7 +509,7 @@ std::string mws_vkb_impl::get_key_name(key_types i_key_id) const
    return "";
 }
 
-key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
+mws_key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
 {
    for (auto it = key_map.begin(); it != key_map.end(); ++it)
    {
@@ -525,11 +525,11 @@ key_types mws_vkb_impl::get_key_type(const std::string& i_key_name) const
 
       if (mws_key_evt::is_ascii(ch))
       {
-         return (key_types)ch;
+         return (mws_key_types)ch;
       }
    }
 
-   return KEY_INVALID;
+   return mws_key_invalid;
 }
 
 void mws_vkb_impl::load_map(std::string i_filename)
@@ -544,7 +544,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
    auto db = kxmd::nwi(data->c_str(), data->length());
    kv_ref main = db->main();
    uint32 point_count = 0;
-   glm::ivec2 screen_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::ivec2 screen_dim(mws::screen::get_width(), mws::screen::get_height());
    glm::vec2 resize_fact(0.f);
 
    // size
@@ -557,8 +557,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
    {
       auto invalid_key_check = [](uint32 i_key_id, const std::string& i_filename)
       {
-         if (i_key_id == KEY_INVALID) { mws_println("warning[ invalid key in loaded vkb map [ %s ] ]", i_filename.c_str()); }
-         mws_assert(i_key_id < KEY_COUNT);
+         if (i_key_id == mws_key_invalid) { mws_println("warning[ invalid key in loaded vkb map [ %s ] ]", i_filename.c_str()); }
+         mws_assert(i_key_id < mws_key_count);
       };
       kv_ref pages = main["pages"];
       kv_ref pg_0 = pages["0"];
@@ -594,7 +594,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
                   uint32 key_id = mws_to<uint32>(key);
 
                   invalid_key_check(key_id, i_filename);
-                  key_mod_vect[(uint32)key_mod_types::mod_none][k] = key_types(key_id);
+                  key_mod_vect[(uint32)key_mod_types::mod_none][k] = mws_key_types(key_id);
                }
 
                // mod-alt can be omitted
@@ -606,7 +606,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
                      uint32 key_id = mws_to<uint32>(key);
 
                      invalid_key_check(key_id, i_filename);
-                     key_mod_vect[(uint32)key_mod_types::mod_alt][k] = key_types(key_id);
+                     key_mod_vect[(uint32)key_mod_types::mod_alt][k] = mws_key_types(key_id);
                   }
                }
 
@@ -619,7 +619,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
                      uint32 key_id = mws_to<uint32>(key);
 
                      invalid_key_check(key_id, i_filename);
-                     key_mod_vect[(uint32)key_mod_types::mod_shift][k] = key_types(key_id);
+                     key_mod_vect[(uint32)key_mod_types::mod_shift][k] = mws_key_types(key_id);
                   }
                }
             }
@@ -653,7 +653,7 @@ void mws_vkb_impl::load_map(std::string i_filename)
    mws_println("finished loading keyboard from [ %s ]", loaded_filename.c_str());
 }
 
-std::vector<key_types>& mws_vkb_impl::get_key_vect()
+std::vector<mws_key_types>& mws_vkb_impl::get_key_vect()
 {
    mws_assert(key_mod < key_mod_types::count);
    return key_mod_vect[(uint32)key_mod];
@@ -664,12 +664,12 @@ uint32 mws_vkb_impl::get_key_vect_size()
    return key_mod_vect[(uint32)key_mod_types::mod_none].size();
 }
 
-key_types mws_vkb_impl::get_key_at(int i_idx)
+mws_key_types mws_vkb_impl::get_key_at(int i_idx)
 {
    return get_key_vect()[i_idx];
 }
 
-key_types mws_vkb_impl::get_mod_key_at(key_mod_types i_key_mod, int i_idx)
+mws_key_types mws_vkb_impl::get_mod_key_at(key_mod_types i_key_mod, int i_idx)
 {
    mws_assert(i_key_mod < key_mod_types::count);
    return key_mod_vect[(uint32)i_key_mod][i_idx];
@@ -759,7 +759,7 @@ void mws_vkb_impl::build_cell_border_tex()
 
 void mws_vkb_impl::build_keys_tex()
 {
-   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
    res_specific_params res_params = get_closest_resolution_match(glm::max(scr_dim.x, scr_dim.y));
 
    if (key_border_quad)
@@ -806,7 +806,7 @@ void mws_vkb_impl::build_keys_tex()
          gfx::i()->rt.set_current_render_target(key_border_tex.get_rt());
          gfx_rt::clear_buffers();
          //rvxo.draw_out_of_sync(g);
-         float line_thickness = std::max(pfm::screen::get_width(), pfm::screen::get_height()) * 0.007f;
+         float line_thickness = std::max(mws::screen::get_width(), mws::screen::get_height()) * 0.007f;
          (*vk->vgeom->nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
          (*vk->vgeom->nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, 1.f);
          vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(g);
@@ -1003,7 +1003,7 @@ void mws_vkb_impl::build_keys_tex()
 
 void mws_vkb_impl::show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx)
 {
-   key_types key_id = get_mod_key_at(key_mod_types::mod_none, i_key_idx);
+   mws_key_types key_id = get_mod_key_at(key_mod_types::mod_none, i_key_idx);
 
    if (!is_mod_key(key_id) && !i_ta->is_action_key(key_id))
    {
@@ -1011,7 +1011,7 @@ void mws_vkb_impl::show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_k
    }
 }
 
-bool mws_vkb_impl::is_mod_key(key_types i_key_id)
+bool mws_vkb_impl::is_mod_key(mws_key_types i_key_id)
 {
    switch (i_key_id)
    {
@@ -1028,7 +1028,7 @@ bool mws_vkb_impl::is_mod_key_held(mod_key_types i_mod_key, base_key_state_types
 {
    for (auto it = mod_keys_st.begin(); it != mod_keys_st.end(); ++it)
    {
-      if (it->second == static_cast<key_types>(i_mod_key))
+      if (it->second == static_cast<mws_key_types>(i_mod_key))
       {
          const base_key_state& st = base_key_st[it->first];
 
@@ -1060,7 +1060,7 @@ void mws_vkb_impl::set_mod_key_lock(mod_key_types i_mod_key, bool i_set_lock)
    {
       const base_key_state& st = base_key_st[it->first];
 
-      if (st.key_id == static_cast<key_types>(i_mod_key))
+      if (st.key_id == static_cast<mws_key_types>(i_mod_key))
       {
          if (mod_key_idx == -1)
          {
@@ -1193,7 +1193,7 @@ void mws_vkb_impl::mws_vkb_pressed_key::init(mws_sp<gfx_tex> i_cell_border_tex)
 void mws_vkb_impl::mws_vkb_pressed_key::show_pressed_key
 (const mws_sp<mws_text_area> i_ta, uint32 i_key_idx, mws_sp<mws_vrn_main> i_vk, mws_sp<gfx_tex> i_keys_tex)
 {
-   glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::vec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
    mws_sp<mws_vrn_cell_vxo> cell_border = i_vk->vgeom->get_cell_borders()->get_cell_borders_mesh_at(i_key_idx);
    glm::vec4 bb = cell_border->bounding_box;
    glm::vec2 cell_dim(bb.z - bb.x, bb.w - bb.y);
@@ -1305,7 +1305,7 @@ void mws_vkb_impl::mws_vkb_pressed_key::show_pressed_key
 
 void mws_vkb_impl::mws_vkb_pressed_key::start_light_turnoff()
 {
-   light_turnoff_start = pfm::time::get_time_millis();
+   light_turnoff_start = mws::time::get_time_millis();
 }
 
 bool mws_vkb_impl::mws_vkb_pressed_key::is_fading(uint32 i_crt_time)
@@ -1374,7 +1374,7 @@ mws_vkb_impl::res_specific_params mws_vkb_impl::get_closest_resolution_match(uin
 
 void mws_vkb_impl::setup_font_dimensions()
 {
-   uint32 vkb_size = std::min(pfm::screen::get_width(), pfm::screen::get_height());
+   uint32 vkb_size = std::min(mws::screen::get_width(), mws::screen::get_height());
    mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
    mws_px word_font_height(vkb_size / 5.f / 4.5f, mws_dim::e_vertical);
    mws_sp<mws_font> font = mws_font_db::inst()->get_global_font();
@@ -1575,7 +1575,7 @@ void mws_vkb_impl::draw_keys(mws_sp<mws_draw_text> i_dt, mws_sp<mws_font> i_lett
 
    for (uint32 k = 0; k < size; k++)
    {
-      key_types key_id = get_mod_key_at(i_mod, k);
+      mws_key_types key_id = get_mod_key_at(i_mod, k);
       std::string key = get_key_name(key_id);
 
       // exclude space bar
@@ -1600,7 +1600,7 @@ void mws_vkb_impl::set_key_vect_size(uint32 i_size)
    }
 }
 
-void mws_vkb_impl::set_key_at(int i_idx, key_types i_key_id)
+void mws_vkb_impl::set_key_at(int i_idx, mws_key_types i_key_id)
 {
    get_key_vect()[i_idx] = i_key_id;
 
@@ -1620,7 +1620,7 @@ void mws_vkb_impl::erase_key_at(int i_idx)
    rebuild_key_state();
 }
 
-void mws_vkb_impl::push_back_key(key_types i_key_id)
+void mws_vkb_impl::push_back_key(mws_key_types i_key_id)
 {
    for (uint32 k = 0; k < (uint32)key_mod_types::count; k++)
    {
@@ -1645,7 +1645,7 @@ bool mws_vkb_impl::touch_began(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
          if (key_st.state == base_key_state_types::key_free)
          {
             auto& kc = get_mod()->key_ctrl_inst;
-            kc->key_pressed(key_types(pos_idx));
+            kc->key_pressed(mws_key_types(pos_idx));
 
             if (i_ta)
             {
@@ -1718,7 +1718,7 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
                   if (prev_key_st.pressed_count == 0)
                   {
                      auto& kc = get_mod()->key_ctrl_inst;
-                     kc->key_released(key_types(prev_pos_idx));
+                     kc->key_released(mws_key_types(prev_pos_idx));
                      bool keys_iter_invalidated = set_key_state(prev_pos_idx, base_key_state_types::key_free);
 
                      if (mws_dbg::enabled(mws_dbg::app_touch))
@@ -1747,7 +1747,7 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
                if (key_st.state == base_key_state_types::key_free)
                {
                   auto& kc = get_mod()->key_ctrl_inst;
-                  kc->key_pressed(key_types(pos_idx));
+                  kc->key_pressed(mws_key_types(pos_idx));
 
                   if (i_ta)
                   {
@@ -1776,7 +1776,7 @@ bool mws_vkb_impl::touch_moved(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
             if (key_st.state == base_key_state_types::key_free)
             {
                auto& kc = get_mod()->key_ctrl_inst;
-               kc->key_pressed(key_types(pos_idx));
+               kc->key_pressed(mws_key_types(pos_idx));
             }
 
             key_st.pressed_count++;
@@ -1832,7 +1832,7 @@ bool mws_vkb_impl::touch_ended(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i
             if (key_st.pressed_count == 0)
             {
                auto& kc = get_mod()->key_ctrl_inst;
-               kc->key_released(key_types(pos_idx));
+               kc->key_released(mws_key_types(pos_idx));
                bool keys_iter_invalidated = set_key_state(pos_idx, base_key_state_types::key_free);
 
                // last pointer released
@@ -1953,12 +1953,12 @@ void mws_vkb_impl::fade_key_at(int i_idx)
       {
          if (kh.key_idx == i_idx)
          {
-            kh.release_time = pfm::time::get_time_millis();
+            kh.release_time = mws::time::get_time_millis();
             return;
          }
       }
 
-      highlight_vect.push_back(key_highlight{ i_idx, pfm::time::get_time_millis() });
+      highlight_vect.push_back(key_highlight{ i_idx, mws::time::get_time_millis() });
    }
 }
 
@@ -1976,7 +1976,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
    // update state now, so we can query is_mod_key_held()
    st.state = i_state;
 
-   key_types key_id = get_mod_key_at(key_mod_types::mod_none, i_key_idx);
+   mws_key_types key_id = get_mod_key_at(key_mod_types::mod_none, i_key_idx);
    auto update_lights = [this](int i_key_idx, base_key_state_types i_state)
    {
       if (i_state == base_key_state_types::key_free)
@@ -2122,7 +2122,7 @@ bool mws_vkb_impl::set_key_state(int i_key_idx, base_key_state_types i_state)
 
 void mws_vkb_impl::rebuild_key_state()
 {
-   std::vector<key_types>& key_mod_default = key_mod_vect[(uint32)key_mod_types::mod_none];
+   std::vector<mws_key_types>& key_mod_default = key_mod_vect[(uint32)key_mod_types::mod_none];
    uint32 size = key_mod_default.size();
 
    mod_keys_st.clear();
@@ -2131,7 +2131,7 @@ void mws_vkb_impl::rebuild_key_state()
    // set the base key state and also find and store the mod keys in a hashtable
    for (uint32 k = 0; k < size; k++)
    {
-      key_types key_id = key_mod_default[k];
+      mws_key_types key_id = key_mod_default[k];
 
       if (is_mod_key(key_id))
       {
@@ -2155,31 +2155,31 @@ mws_sp<mws_vkb> mws_vkb::gi()
    return inst;
 }
 
-key_types mws_vkb::apply_key_modifiers(key_types i_key_id) const
+mws_key_types mws_vkb::apply_key_modifiers(mws_key_types i_key_id) const
 {
    uint32 idx = i_key_id;
 
    if (active_vkb && idx < active_vkb->get_key_vect().size())
    {
-      glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+      glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
 
       if (active_vkb->get_dimensions() == scr_dim)
       {
-         key_types key_id = active_vkb->get_key_at(i_key_id);
+         mws_key_types key_id = active_vkb->get_key_at(i_key_id);
 
          return key_id;
       }
    }
 
-   return KEY_INVALID;
+   return mws_key_invalid;
 }
 
 void mws_vkb::receive(mws_sp<mws_dp> i_dp)
 {
-   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
    bool valid_state = active_vkb && (active_vkb->get_dimensions() == scr_dim);
 
-   if (i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE) && valid_state)
+   if (i_dp->is_type(mws_ptr_evt::ptr_evt_type) && valid_state)
    {
       mws_sp<mws_ptr_evt> pe = mws_ptr_evt::as_pointer_evt(i_dp);
       mws_sp<mws_ptr_evt> forwarded_ptr = (ta) ? active_vkb->on_receive(pe, ta) : nullptr;
@@ -2194,7 +2194,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
             if (pt.is_changed)
             {
                auto ret = active_vkb->vk->get_kernel_idx_at(pt.x, pt.y);
-               key_types key_id = active_vkb->get_key_at(ret.idx);
+               mws_key_types key_id = active_vkb->get_key_at(ret.idx);
 
                if (ta && ta->is_action_key(key_id))
                {
@@ -2204,7 +2204,7 @@ void mws_vkb::receive(mws_sp<mws_dp> i_dp)
          }
       }
    }
-   else if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE) && ta)
+   else if (i_dp->is_type(mws_key_evt::key_evt_type) && ta)
    {
       ta->receive(i_dp);
    }
@@ -2232,8 +2232,8 @@ void mws_vkb::update_state()
 
 void mws_vkb::on_resize()
 {
-   uint32 w = pfm::screen::get_width();
-   uint32 h = pfm::screen::get_height();
+   uint32 w = mws::screen::get_width();
+   uint32 h = mws::screen::get_height();
 
    mws_r.x = 0;
    mws_r.y = 0;
@@ -2301,7 +2301,7 @@ void mws_vkb::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_gl
 {
    // cursor pos for the pressed key is available only in the next frame after pressing the key in vkb
    // to avoid flickering, pressed key's position needs to be updated in gfx_scene::update()
-   // it's too late to do it in mws::update_state(), as it runs after gfx_scene::update(), so we do it here
+   // it's too late to do it in mws_obj::update_state(), as it runs after gfx_scene::update(), so we do it here
    if (active_vkb && active_vkb->pressed_key_ker_idx >= 0)
    {
       active_vkb->show_pressed_key(ta, active_vkb->pressed_key_ker_idx);
@@ -2349,7 +2349,7 @@ bool mws_vkb::upcoming_loading_wait()
       return true;
    }
 
-   glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+   glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
 
    // landscape
    if (scr_dim.x > scr_dim.y)
@@ -2399,7 +2399,7 @@ std::function<void()> mws_vkb::get_waiting_msg_op()
          if (camera)
          {
             std::string text = "Loading keyboard\nPlease wait...";
-            glm::vec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+            glm::vec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
             float vert_size = std::min(scr_dim.x, scr_dim.y);
             mws_sp<mws_font> global_font = mws_font_db::inst()->get_global_font();
             mws_px font_height(vert_size / 20.f, mws_dim::e_vertical);
@@ -2419,8 +2419,8 @@ std::function<void()> mws_vkb::get_waiting_msg_op()
 
 mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb()
 {
-   uint32 w = pfm::screen::get_width();
-   uint32 h = pfm::screen::get_height();
+   uint32 w = mws::screen::get_width();
+   uint32 h = mws::screen::get_height();
 
    if (w > h)
    {
@@ -2455,8 +2455,8 @@ void mws_vkb::nwi_inex()
    // if active_vkb is null, load a vkb into it and also assign it to the landscape/portrait references
    if (!active_vkb)
    {
-      uint32 w = pfm::screen::get_width();
-      uint32 h = pfm::screen::get_height();
+      uint32 w = mws::screen::get_width();
+      uint32 h = mws::screen::get_height();
 
       size_changed = false;
       vkb_file_store = active_vkb = nwi_vkb();
@@ -2466,8 +2466,8 @@ void mws_vkb::nwi_inex()
    // if current active_vkb is not null, but the size has changed, we need to do some (elaborate) checking..
    else if (size_changed)
    {
-      uint32 w = pfm::screen::get_width();
-      uint32 h = pfm::screen::get_height();
+      uint32 w = mws::screen::get_width();
+      uint32 h = mws::screen::get_height();
       mws_sp<mws_vkb_impl> inst;
 
       size_changed = false;
@@ -2503,8 +2503,8 @@ void mws_vkb::nwi_inex()
 
 mws_sp<mws_vkb_impl> mws_vkb::nwi_vkb()
 {
-   uint32 w = pfm::screen::get_width();
-   uint32 h = pfm::screen::get_height();
+   uint32 w = mws::screen::get_width();
+   uint32 h = mws::screen::get_height();
    mws_sp<mws_vkb_impl> inst = std::make_shared<mws_vkb_impl>(mws_vrn_obj_types::nexus_pairs | mws_vrn_obj_types::cell_borders);
 
    inst->file_store = get_file_store();

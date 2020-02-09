@@ -142,6 +142,8 @@ public:
       default:
          not_implemented();
       }
+
+      return false;
    }
 
    void enable_state(gl::rsv_states istate)
@@ -604,7 +606,7 @@ public:
             break;
 
          case gl::CURRENT_COLOR_UB:
-            glClearColor(iplist->val[0].int_val, iplist->val[1].int_val, iplist->val[2].int_val, iplist->val[3].int_val);
+            glClearColor(iplist->val[0].int_val / 255.f, iplist->val[1].int_val / 255.f, iplist->val[2].int_val / 255.f, iplist->val[3].int_val / 255.f);
             break;
             //params returns four values: the red, green, blue, and alpha values of the current color. Integer values, if requested, are linearly mapped from the
             //internal floating-point representation such that 1.0 returns the most positive representable integer value,

@@ -79,7 +79,7 @@ template <typename T> void basic_time_slider<T>::start_int(uint32 i_slide_time)
    }
 
    enabled = true;
-   start_time = pfm::time::get_time_millis();
+   start_time = mws::time::get_time_millis();
    slider = 0.f;
    loop_count = 0;
 }
@@ -97,7 +97,7 @@ template <typename T> void basic_time_slider<T>::update()
       return;
    }
 
-   uint32 now = pfm::time::get_time_millis();
+   uint32 now = mws::time::get_time_millis();
    uint32 start_delta = now - start_time;
 
    if (start_delta < slide_time)
@@ -195,7 +195,7 @@ template <typename T> void ping_pong_time_slider<T>::start_int(uint32 i_slide_ti
    }
 
    forward = enabled = true;
-   start_time = pfm::time::get_time_millis();
+   start_time = mws::time::get_time_millis();
    last_start_delta = 0;
    slider = 0.f;
    loop_count = 0;
@@ -214,7 +214,7 @@ template <typename T> void ping_pong_time_slider<T>::update()
       return;
    }
 
-   uint32 now = pfm::time::get_time_millis();
+   uint32 now = mws::time::get_time_millis();
    uint32 start_delta = (now - start_time) % slide_time;
 
    if (start_delta < last_start_delta)
@@ -275,11 +275,11 @@ public:
          // if there is still some scrolling energy
          if (decay > 0)
          {
-            uint32 delta_t = pfm::time::get_time_millis() - decay_start;
+            uint32 delta_t = mws::time::get_time_millis() - decay_start;
             decay = 1.f - inverse((float)delta_t, (float)decay_maxmillis);
 
             //decay = 1 - inverse(mws_mod_ctrl::get_current_mod()->update_ctrl->getTime() - decay_start, decay_maxmillis);
-            //decay = 1 - sigmoid(pfm::getCurrentTime() - decay_start, decay_maxmillis);
+            //decay = 1 - sigmoid(mws::getCurrentTime() - decay_start, decay_maxmillis);
             //decay=decay*.9;
             d.x = speedx * decay;
             d.y = speedy * decay;
@@ -308,7 +308,7 @@ public:
       if (speedx != 0 || speedy != 0)
       {
          decay = 1;
-         decay_start = pfm::time::get_time_millis();
+         decay_start = mws::time::get_time_millis();
 
          //decay_start = mws_mod_ctrl::get_current_mod()->update_ctrl->getTime();
          active = true;

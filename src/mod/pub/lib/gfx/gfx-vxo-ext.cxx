@@ -329,6 +329,6 @@ void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
 
    int vdata_size = rs_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
    int idata_size = rs_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)begin_ptr(rs_vertices_data), vdata_size, begin_ptr(rs_indices_data), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8*)rs_vertices_data.data(), vdata_size, rs_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
    //mws_print("ind length %d") % indicesLength;
 }

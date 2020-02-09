@@ -2,7 +2,6 @@
 
 #include "pfm-def.h"
 #include <cstdio>
-#include <string>
 #include <vector>
 #include <unordered_map>
 #include <utility>
@@ -11,7 +10,7 @@
 #endif
 
 
-#if defined PLATFORM_WINDOWS_PC
+#if defined MWS_PFM_WINDOWS_PC
 
 //void* operator new(std::size_t i_size, const std::nothrow_t& nothrow_value);
 //void operator delete(void* iptr, const std::nothrow_t& nothrow_constant);
@@ -21,20 +20,8 @@
 
 #endif
 
-#if defined UNICODE_USING_STD_STRING
 
-typedef std::string  unicodestring;
-typedef char		 unicodechar;
-
-#elif defined UNICODE_USING_STD_WSTRING
-
-typedef std::wstring unicodestring;
-typedef wchar_t		 unicodechar;
-
-#endif
-
-
-#if defined UNICODE_USING_STD_STRING
+#if defined MWS_UNICODE_USING_STD_STRING
 
 #define untr(arg)	 arg
 #define utrn    trn
@@ -42,7 +29,7 @@ typedef wchar_t		 unicodechar;
 #define utrc	 trc
 #define utrs	 trs
 
-#elif defined UNICODE_USING_STD_WSTRING
+#elif defined MWS_UNICODE_USING_STD_WSTRING
 
 #define untr(arg)	 L##arg
 #define utrn	 wtrn
@@ -52,20 +39,333 @@ typedef wchar_t		 unicodechar;
 
 #endif
 
+
 class mws_mod;
 class mws_mod_ctrl;
-class pfm_file;
+class mws_file;
+class mws_path;
+namespace mws_impl { class mws_file_impl; }
+using umf_r = std::unordered_map<std::string, mws_sp<mws_file>>;
+using umf_list = mws_sp<umf_r>;
 
-namespace pfm_impl
+
+class mws_file final
 {
-   class pfm_file_impl;
+public:
+   static mws_sp<mws_file> get_inst(const mws_path& i_path);
+   static mws_sp<mws_file> get_inst(mws_sp<mws_impl::mws_file_impl> i_impl);
+   virtual ~mws_file();
+
+   bool exists() const;
+   bool is_opened() const;
+   bool is_writable() const;
+   uint64 length();
+   uint64 creation_time() const;
+   uint64 last_write_time() const;
+   // returns the file's path as a mws_path
+   const mws_path& path() const;
+   // returns the file's path as a string
+   std::string string_path() const;
+   // returns the filename path component 
+   std::string filename() const;
+   // returns the stem path component 
+   std::string stem() const;
+   // returns the extension path component 
+   std::string extension() const;
+   // returns the directory path component 
+   mws_path directory() const;
+   FILE* get_file_impl() const;
+
+   class io_op
+   {
+   public:
+      bool open();
+      bool open(std::string i_open_mode);
+      void close();
+      void flush();
+      bool reached_eof() const;
+      void seek(uint64 i_pos);
+
+      int read(std::vector<uint8>& i_buffer);
+      int write(const std::vector<uint8>& i_buffer);
+      int read(uint8* i_buffer, int i_size);
+      int write(const uint8* i_buffer, int i_size);
+
+   private:
+      friend class mws_file;
+      io_op();
+      mws_sp<mws_impl::mws_file_impl> impl;
+   };
+   io_op io;
+
+private:
+   mws_file();
+};
+
+
+class mws_pfm_app
+{
+public:
+   // update
+   virtual void init();
+   virtual void start();
+   virtual void run();
+
+   // input
+   // translate a key from the platform encoding into the appplex encoding
+   virtual mws_key_types translate_key(int i_pfm_key_id) const = 0;
+   // apply any modifiers like shift, ctrl, caps, num lock etc to get the final key value
+   mws_key_types apply_key_modifiers(mws_key_types i_key_id) const;
+   virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const = 0;
+   // return true to exit the app
+   virtual bool back_evt() const;
+
+   // screen
+   virtual bool is_full_screen_mode() const = 0;
+   virtual void set_full_screen_mode(bool i_enabled) const = 0;
+   virtual float get_screen_scale() const;
+   virtual float get_screen_brightness() const;
+   virtual void set_screen_brightness(float i_brightness) const;
+   // switches between screen width and height. this only works in windowed desktop applications
+   virtual void flip_screen() const;
+
+   // screen metrix
+   // horizontal and vertical screen resolution in dots(pixels)
+   virtual std::pair<uint32, uint32> get_screen_res_px() const = 0;
+   // average dots(pixels) per inch
+   virtual float get_avg_screen_dpi() const = 0;
+   // horizontal and vertical dots(pixels) per inch
+   virtual std::pair<float, float> get_screen_dpi() const = 0;
+   // horizontal and vertical dimensions in inch
+   virtual std::pair<float, float> get_screen_dim_inch() const = 0;
+   // average dots(pixels) per cm
+   virtual float get_avg_screen_dpcm() const;
+   // horizontal and vertical dots(pixels) per cm
+   virtual std::pair<float, float> get_screen_dpcm() const = 0;
+   // horizontal and vertical dimensions in cm
+   virtual std::pair<float, float> get_screen_dim_cm() const = 0;
+
+   // output
+   virtual void write_text(const char* i_text) const = 0;
+   virtual void write_text_nl(const char* i_text) const = 0;
+   virtual void write_text(const wchar_t* i_text) const = 0;
+   virtual void write_text_nl(const wchar_t* i_text) const = 0;
+   virtual void write_text_v(const char* i_format, ...) const = 0;
+
+   // filesystem
+   virtual mws_sp<mws_impl::mws_file_impl> new_pfm_file_impl(const mws_path& i_path) const = 0;
+   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const = 0;
+   // writable/private/persistent files directory for the current mod
+   virtual const mws_path& prv_dir() const = 0;
+   // read-only/resource files directory for the current mod
+   virtual const mws_path& res_dir() const = 0;
+   // temporary files directory for the current mod
+   virtual const mws_path& tmp_dir() const = 0;
+   // reconfigures the above directories path to match the current mod
+   virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) = 0;
+   virtual std::string get_timezone_id() const = 0;
+};
+
+
+class mws final
+{
+public:
+   struct filesys
+   {
+      static const std::string res_idx_name;
+      static const umf_list get_res_file_list();
+      static mws_sp<std::vector<uint8>> load_res_byte_vect(mws_sp<mws_file> i_file);
+      static mws_sp<std::vector<uint8>> load_res_byte_vect(std::string i_filename);
+      static mws_sp<std::string> load_res_as_string(mws_sp<mws_file> i_file);
+      static mws_sp<std::string> load_res_as_string(std::string i_filename);
+      // writable/private/persistent files directory
+      static const mws_path& prv_dir();
+      // read-only/resource files directory
+      static const mws_path& res_dir();
+      // temporary files directory
+      static const mws_path& tmp_dir();
+      // makes a directory from 2 paths. returns true on success
+      bool make_dir(const mws_path& i_path_left, const mws_path& i_path_right);
+   };
+
+
+   struct input
+   {
+      // translate a key from the platform encoding into the appplex encoding
+      static mws_key_types translate_key(int i_pfm_key_id);
+      // apply any modifiers like shift, ctrl, caps, num lock etc to get the final key value
+      static mws_key_types apply_key_modifiers(mws_key_types i_key_id);
+      // true if device has a touchscreen
+      static bool has_touchscreen();
+      // true if device has an active touchscreen or emulates one
+      static bool uses_touchscreen();
+   };
+
+
+   struct output
+   {
+      static void write_text(const char* i_text);
+      static void write_text_nl(const char* i_text);
+      static void write_text(const wchar_t* i_text);
+      static void write_text_nl(const wchar_t* i_text);
+   };
+
+
+   struct args
+   {
+      static int get_app_argument_count();
+      static const unicode_string& get_app_path();
+      static const std::vector<unicode_string>& get_app_argument_vector();
+      static void set_app_arguments(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included = false);
+   };
+
+
+   struct screen
+   {
+      static bool is_gfx_available();
+      static int get_target_fps();
+      // switches between screen width and height. this only works in windowed desktop applications
+      static void flip_screen();
+      static bool is_full_screen_mode();
+      static void set_full_screen_mode(bool i_enabled);
+      static float get_brightness();
+      static void set_brightness(float i_brightness);
+
+      static uint32 get_width();
+      static uint32 get_height();
+      static float get_scale();
+      static float get_scaled_width();
+      static float get_scaled_height();
+
+      // screen metrix
+      // horizontal and vertical screen resolution in dots(pixels)
+      static std::pair<uint32, uint32> get_res_px();
+      // average dots(pixels) per inch
+      static float get_avg_dpi();
+      // horizontal and vertical dots(pixels) per inch
+      static std::pair<float, float> get_dpi();
+      // horizontal and vertical dimensions in inch
+      static std::pair<float, float> get_dim_inch();
+      // average dots(pixels) per cm
+      static float get_avg_dpcm();
+      // horizontal and vertical dots(pixels) per cm
+      static std::pair<float, float> get_dpcm();
+      // horizontal and vertical dimensions in cm
+      static std::pair<float, float> get_dim_cm();
+   };
+
+
+   struct time
+   {
+      static std::string get_timezone_id();
+      static uint32 get_time_millis();
+      static std::string get_current_date();
+      static std::string get_duration_as_string(uint32 i_duration);
+   };
+
+
+   static mws_gfx_type get_gfx_type_id();
+   static mws_pfm_id get_platform_id();
+
+private:
+   mws() {}
+};
+
+
+class mws_path final
+{
+public:
+   mws_path();
+   mws_path(const char* i_path, bool i_regular_path = true);
+   mws_path(const std::string& i_path, bool i_regular_path = true);
+   mws_path(const mws_path& i_path);
+   mws_path& operator/=(const mws_path& i_path);
+   // removes a file or directory. returns true on success
+   bool remove() const;
+   // makes a directory. returns true on success
+   bool make_dir() const;
+   // tells if the path is empty
+   bool is_empty() const;
+   // tells if the path refers to a directory 
+   bool is_directory() const;
+   // tells if the path refers to a regular file 
+   bool is_regular_file() const;
+   // tells if the path refers to existing file system object 
+   bool exists() const;
+   const std::string& string() const;
+   // returns the filename path component 
+   std::string filename() const;
+   // returns the stem path component 
+   std::string stem() const;
+   // returns the file extension path component 
+   std::string extension() const;
+   // returns the directory path component 
+   mws_path directory() const;
+   // returns the path of the parent path 
+   mws_path parent_path() const;
+   mws_sp<std::vector<mws_sp<mws_file>>> list_directory(bool i_recursive = false) const;
+   // returns true for regular files and directories(reachable by fopen f.e.). returns false for special files, like resources in the apk on android.
+   bool is_regular_path() const;
+   // returns the current path
+   static std::string current_path();
+
+private:
+   // replaces '\' with '/'
+   void make_standard_path();
+   void list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<mws_file>>> i_file_list, bool i_recursive) const;
+
+   std::string path;
+   bool regular_path = true;
+};
+mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs);
+
+
+namespace mws_impl
+{
+   class mws_file_impl
+   {
+   public:
+      mws_file_impl(const mws_path& i_path);
+      virtual ~mws_file_impl();
+      virtual FILE* get_file_impl() const = 0;
+      virtual bool exists();
+      virtual bool is_opened() const;
+      virtual bool is_writable() const;
+      virtual uint64 length() = 0;
+      virtual uint64 creation_time() const = 0;
+      virtual uint64 last_write_time() const = 0;
+      virtual bool open(std::string i_open_mode);
+      virtual void close();
+      virtual void flush();
+      virtual bool reached_eof() const;
+      virtual void seek(uint64 i_pos);
+      virtual int read(std::vector<uint8>& i_buffer);
+      virtual int write(const std::vector<uint8>& i_buffer);
+      virtual int read(uint8* i_buffer, int i_size);
+      virtual int write(const uint8* i_buffer, int i_size);
+      virtual void check_state() const;
+
+      mws_path ppath;
+      uint64 file_pos;
+      bool file_is_open;
+      bool file_is_writable;
+
+   protected:
+      virtual bool open_impl(std::string i_open_mode) = 0;
+      virtual void close_impl() = 0;
+      virtual void flush_impl() = 0;
+      virtual void seek_impl(uint64 i_pos, int i_seek_pos);
+      virtual uint64 tell_impl();
+      virtual int read_impl(uint8* i_buffer, int i_size);
+      virtual int write_impl(const uint8* i_buffer, int i_size);
+   };
 }
 
 
 // set debug flags for use in conditional expressions to print debug output
 // there should be no cost to using this on release builds, as anything that depends on it should be optimized out,
 // as dead / unreachable code (because mws_debug_enabled will be 'false' on release builds)
-class mws_dbg
+class mws_dbg final
 {
 public:
    // standard flags list
@@ -131,6 +431,8 @@ public:
    }
 
 private:
+   mws_dbg() {}
+
    // current active debug flags
    static inline uint64 flags = 0;
    // set the standard flags
@@ -159,128 +461,6 @@ private:
 };
 
 
-class pfm_path
-{
-public:
-   static mws_sp<pfm_path> get_inst(std::string i_file_path, std::string i_aux_root_dir = "");
-   bool remove();
-   bool make_dir();
-   bool is_directory() const;
-   bool is_regular_file() const;
-   bool exists() const;
-   std::string get_current_path() const;
-   std::string get_full_path() const;
-   const std::string& get_file_name() const;
-   std::string get_file_stem() const;
-   std::string get_file_extension() const;
-   const std::string& get_root_directory() const;
-   mws_sp<std::vector<mws_sp<pfm_file>>> list_directory(mws_sp<mws_mod> i_mod = nullptr, bool i_recursive = false) const;
-
-private:
-   friend class pfm_impl::pfm_file_impl;
-   pfm_path() {}
-   void make_standard_path();
-   void list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<pfm_file> > > i_file_list, bool i_recursive) const;
-
-   std::string filename;
-   std::string aux_root_dir;
-};
-
-
-class pfm_file
-{
-public:
-   static mws_sp<pfm_file> get_inst(std::string i_filename, std::string i_root_dir = "");
-   static mws_sp<pfm_file> get_inst(mws_sp<pfm_impl::pfm_file_impl> i_impl);
-   virtual ~pfm_file();
-
-   bool exists() const;
-   bool is_opened() const;
-   bool is_writable() const;
-   uint64 length();
-   uint64 creation_time() const;
-   uint64 last_write_time() const;
-   std::string get_full_path() const;
-   const std::string& get_file_name() const;
-   std::string get_file_stem() const;
-   std::string get_file_extension() const;
-   const std::string& get_root_directory() const;
-   FILE* get_file_impl() const;
-
-   class io_op
-   {
-   public:
-      bool open();
-      bool open(std::string i_open_mode);
-      void close();
-      void flush();
-      bool reached_eof() const;
-      void seek(uint64 i_pos);
-
-      int read(std::vector<uint8>& i_buffer);
-      int write(const std::vector<uint8>& i_buffer);
-      int read(uint8* i_buffer, int i_size);
-      int write(const uint8* i_buffer, int i_size);
-
-   private:
-      friend class pfm_file;
-      io_op();
-      mws_sp<pfm_impl::pfm_file_impl> impl;
-   };
-   io_op io;
-
-private:
-   friend class msvc_main;
-   pfm_file();
-};
-
-
-using umf_r = std::unordered_map < std::string, mws_sp<pfm_file> >;
-using umf_list = mws_sp < umf_r >;
-
-
-namespace pfm_impl
-{
-   class pfm_file_impl
-   {
-   public:
-      pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir);
-      virtual ~pfm_file_impl();
-      virtual FILE* get_file_impl() const = 0;
-      virtual bool exists();
-      virtual bool is_opened() const;
-      virtual bool is_writable() const;
-      virtual uint64 length() = 0;
-      virtual uint64 creation_time() const = 0;
-      virtual uint64 last_write_time() const = 0;
-      virtual bool open(std::string i_open_mode);
-      virtual void close();
-      virtual void flush();
-      virtual bool reached_eof() const;
-      virtual void seek(uint64 i_pos);
-      virtual int read(std::vector<uint8>& i_buffer);
-      virtual int write(const std::vector<uint8>& i_buffer);
-      virtual int read(uint8* i_buffer, int i_size);
-      virtual int write(const uint8* i_buffer, int i_size);
-      virtual void check_state() const;
-
-      pfm_path ppath;
-      uint64 file_pos;
-      bool file_is_open;
-      bool file_is_writable;
-
-   protected:
-      virtual bool open_impl(std::string i_open_mode) = 0;
-      virtual void close_impl() = 0;
-      virtual void flush_impl() = 0;
-      virtual void seek_impl(uint64 i_pos, int i_seek_pos);
-      virtual uint64 tell_impl();
-      virtual int read_impl(uint8* i_buffer, int i_size);
-      virtual int write_impl(const uint8* i_buffer, int i_size);
-   };
-}
-
-
 class mws_log
 {
 public:
@@ -299,172 +479,35 @@ protected:
 };
 
 
-class pfm_data
-{
-public:
-   pfm_data();
-
-   bool gfx_available;
-   uint32 screen_width;
-   uint32 screen_height;
-};
-
-
-class pfm_main
-{
-public:
-   static mws_sp<pfm_main> gi();
-   virtual void init();
-   virtual void start();
-   virtual void run();
-   // translate a key from the platform encoding into the appplex encoding
-   virtual key_types translate_key(int i_pfm_key_id) const = 0;
-   // apply any modifiers like shift, ctrl, caps, num lock etc to get the final key value
-   key_types apply_key_modifiers(key_types i_key_id) const;
-   virtual key_types apply_key_modifiers_impl(key_types i_key_id) const = 0;
-   virtual float get_screen_scale() const;
-   virtual float get_screen_brightness() const;
-   virtual void set_screen_brightness(float i_brightness);
-   
-   // screen metrix
-   // horizontal and vertical screen resolution in dots(pixels)
-   virtual std::pair<uint32, uint32> get_screen_res_px() const = 0;
-   // average dots(pixels) per inch
-   virtual float get_avg_screen_dpi() const = 0;
-   // horizontal and vertical dots(pixels) per inch
-   virtual std::pair<float, float> get_screen_dpi() const = 0;
-   // horizontal and vertical dimensions in inch
-   virtual std::pair<float, float> get_screen_dim_inch() const = 0;
-   // average dots(pixels) per cm
-   virtual float get_avg_screen_dpcm() const;
-   // horizontal and vertical dots(pixels) per cm
-   virtual std::pair<float, float> get_screen_dpcm() const = 0;
-   // horizontal and vertical dimensions in cm
-   virtual std::pair<float, float> get_screen_dim_cm() const = 0;
-
-   // switches between screen width and height. this only works in windowed desktop applications
-   virtual void flip_screen() {};
-   virtual void write_text(const char* i_text) const = 0;
-   virtual void write_text_nl(const char* i_text) const = 0;
-   virtual void write_text(const wchar_t* i_text) const = 0;
-   virtual void write_text_nl(const wchar_t* i_text) const = 0;
-   virtual void write_text_v(const char* i_format, ...) const = 0;
-   virtual std::string get_writable_path() const = 0;
-   virtual std::string get_timezone_id() const = 0;
-   // return true to exit the app
-   virtual bool back_evt();
-};
-
-
-class pfm
-{
-public:
-   struct params
-   {
-      static int get_app_argument_count();
-      static const unicodestring& get_app_path();
-      static const std::vector<unicodestring>& get_app_argument_vector();
-      static void set_app_arguments(int i_argument_count, unicodechar** i_argument_vector, bool i_app_path_included = false);
-   };
-
-
-   struct screen
-   {
-      static uint32 get_width();
-      static uint32 get_height();
-      static float get_scale();
-      static float get_scaled_width();
-      static float get_scaled_height();
-      static int get_target_fps();
-      static float get_avg_screen_dpi();
-      static bool is_full_screen_mode();
-      static void set_full_screen_mode(bool i_enabled);
-      static bool is_gfx_available();
-      // switches between screen width and height. this only works in windowed desktop applications
-      static void flip_screen();
-   };
-
-
-   class filesystem
-   {
-   public:
-      static const std::string res_idx_name;
-      static const umf_list get_res_file_list();
-      static std::string get_tmp_path(std::string i_name = "");
-      static std::string get_writable_path(std::string i_name = "");
-      static std::string get_path(std::string i_name);
-      static void load_res_file_map(mws_sp<mws_mod> i_mod);
-      //static shared_array<uint8> load_res_byte_array(std::string i_filename, int& i_size);
-      static mws_sp<std::vector<uint8> > load_res_byte_vect(mws_sp<pfm_file> i_file);
-      static mws_sp<std::vector<uint8> > load_res_byte_vect(std::string i_filename);
-      static mws_sp<std::string> load_res_as_string(mws_sp<pfm_file> i_file);
-      static mws_sp<std::string> load_res_as_string(std::string i_filename);
-
-   private:
-
-      friend class mws_mod;
-
-      static mws_sp<std::vector<uint8> > load_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename);
-      //static shared_array<uint8> load_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, int& i_size);
-      static bool store_mod_byte_array(mws_sp<mws_mod> i_mod, std::string i_filename, const uint8* i_res, int i_size);
-      static bool store_mod_byte_vect(mws_sp<mws_mod> i_mod, std::string i_filename, const std::vector<uint8>& i_res);
-      static mws_sp<pfm_file> random_access(mws_sp<mws_mod> i_mod, std::string i_filename);
-   };
-
-
-   struct time
-   {
-      static uint32 get_time_millis();
-   };
-
-
-   static platform_id get_platform_id();
-   // true if device has a touchscreen
-   static bool has_touchscreen();
-   // true if device has an active touchscreen or emulates one
-   static bool uses_touchscreen();
-   static gfx_type_id get_gfx_type_id();
-   static mws_sp<pfm_main> get_pfm_main_inst();
-
-private:
-   friend class mws_mod_ctrl;
-   friend class mws_mod_ctrl;
-
-   static pfm_data data;
-
-   pfm() {}
-};
-
-
 // format lib
 #include <fmt/format.h>
 
-#define trn() pfm::get_pfm_main_inst()->write_text_nl("")
-#define wtrn() pfm::get_pfm_main_inst()->write_text_nl("")
+#define trn() mws::output::write_text_nl("")
+#define wtrn() mws::output::write_text_nl("")
 std::string mws_to_str_fmt(const char* i_format, ...);
 
 template <typename... argst> void trx(const char* i_format, const argst& ... i_args)
 {
    std::string s = fmt::format(i_format, i_args...);
-   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
+   mws::output::write_text_nl(s.c_str());
 }
 
 template <typename... argst> void wtrx(const wchar_t* i_format, const argst& ... i_args)
 {
    std::wstring s = fmt::format(i_format, i_args...);
-   pfm::get_pfm_main_inst()->write_text_nl(s.c_str());
+   mws::output::write_text_nl(s.c_str());
 }
 
 template <typename... argst> void trc(const char* i_format, const argst& ... i_args)
 {
    std::string s = fmt::format(i_format, i_args...);
-   pfm::get_pfm_main_inst()->write_text(s.c_str());
+   mws::output::write_text(s.c_str());
 }
 
 template <typename... argst> void wtrc(const wchar_t* i_format, const argst& ... i_args)
 {
    std::wstring s = fmt::format(i_format, i_args...);
-   pfm::get_pfm_main_inst()->write_text(s.c_str());
+   mws::output::write_text(s.c_str());
 }
 
 template <typename... argst> std::string trs(const char* i_format, const argst& ... i_args)

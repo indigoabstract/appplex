@@ -1,8 +1,15 @@
 #include "stdafx.hxx"
 
-#include "main.hxx"
+#include "pfm-def.h"
 
-#if defined PLATFORM_WINDOWS_PC
+#if defined MWS_PFM_WINDOWS_PC
+
+#define _UNICODE
+#define UNICODE
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
 
 #include "pfm.hxx"
 #include "pfm-gl.h"
@@ -17,6 +24,8 @@
 #include <fcntl.h>
 #include <io.h>
 #include <string>
+#include <windows.h>
+#include <shellapi.h>
 #include <tchar.h>
 #include <wchar.h>
 #include <WindowsX.h>
@@ -26,6 +35,66 @@
 #define WM_TRAYICON						(WM_USER + 1)
 
 
+class msvc_main : public mws_pfm_app
+{
+public:
+   msvc_main();
+   virtual ~msvc_main();
+   virtual mws_key_types translate_key(int i_pfm_key_id) const override;
+   virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const override;
+   // screen metrix
+   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual float get_avg_screen_dpi() const override;
+   virtual std::pair<float, float> get_screen_dpi() const override;
+   virtual std::pair<float, float> get_screen_dim_inch() const override;
+   virtual float get_avg_screen_dpcm() const override;
+   virtual std::pair<float, float> get_screen_dpcm() const override;
+   virtual std::pair<float, float> get_screen_dim_cm() const override;
+   virtual void flip_screen() const override;
+   virtual bool is_full_screen_mode() const override;
+   virtual void set_full_screen_mode(bool i_enabled) const override;
+   virtual void write_text(const char* i_text) const override;
+   virtual void write_text_nl(const char* i_text) const override;
+   virtual void write_text(const wchar_t* i_text) const override;
+   virtual void write_text_nl(const wchar_t* i_text) const override;
+   virtual void write_text_v(const char* i_format, ...) const override;
+   // filesystem
+   virtual mws_sp<mws_impl::mws_file_impl> new_pfm_file_impl(const mws_path& i_path) const override;
+   virtual const mws_path& prv_dir() const override;
+   virtual const mws_path& res_dir() const override;
+   virtual const mws_path& tmp_dir() const override;
+   virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
+   virtual std::string get_timezone_id() const override;
+   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
+};
+
+
+enum lnk_subsystem
+{
+   subsys_console,
+   subsys_windows,
+};
+
+
+bool init_app(int argc, char** argv);
+int main_loop();
+void set_params(HINSTANCE ihinstance, bool incmd_show, lnk_subsystem isubsys);
+HWND get_hwnd();
+HMENU get_hmenu();
+void set_hmenu(HMENU ihmenu);
+UINT get_taskbar_created_msg();
+void minimize_window();
+void restore_window();
+RECT get_window_coord();
+void init_notify_icon_data();
+int console_main_loop();
+int win_main_loop();
+bool create_open_gl_context();
+bool create_open_gl_es_ctx();
+bool create_open_gl_glew_ctx();
+void destroy_open_gl_context();
+
+
 namespace
 {
    const int shift_key_down = (1 << 0);
@@ -33,53 +102,60 @@ namespace
    const int alt_key_down = (1 << 2);
    int mod_keys_down = 0;
    mws_ptr_evt_base::e_pointer_press_type mouse_btn_down = mws_ptr_evt_base::e_not_pressed;
+
+   // main
+
+   mws_sp<msvc_main> instance;
+   bool is_full_screen;
+   bool is_window_flipped = false;
+   uint32 portrait_flip_count = 0;
+   bool emulate_mobile_screen = false;
+   RECT window_coord;
+   bool disable_paint;
+   lnk_subsystem subsys;
+   bool app_has_window;
+   HINSTANCE hinstance;
+   bool ncmd_show;
+   HWND hwnd;
+   HMENU hmenu;
+   NOTIFYICONDATA notify_icon_data;
+   UINT wm_taskbarcreated;
+   HDC hdc_window;
+   HANDLE console_handle;
+   // screen metrix
+   std::pair<uint32, uint32> screen_res;
+   float avg_screen_dpi = 0.f;
+   std::pair<float, float> screen_dpi;
+   std::pair<float, float> screen_dim_inch;
+   float avg_screen_dpcm = 0.f;
+   std::pair<float, float> screen_dpcm;
+   std::pair<float, float> screen_dim_cm;
+   mws_path prv_path;
+   mws_path res_path;
+   mws_path tmp_path;
+   bool prv_path_exists = false;
+   bool tmp_path_exists = false;
+
+#if defined USES_OPENGL_ES
+   EGLDisplay egl_display;
+   EGLConfig egl_config;
+   EGLSurface egl_surface;
+   EGLContext egl_context;
+   NativeWindowType egl_window;
+   EGLint pi32_config_attribs[128];
+#else
+   HGLRC hgl_rendering_context;
+#endif
 }
 
-// app entry points
-int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpcmd_line, int ncmd_show)
-// gui subsystem entry point
-{
-   UNREFERENCED_PARAMETER(hprev_instance);
-   UNREFERENCED_PARAMETER(lpcmd_line);
 
-   mws_sp<msvc_main> app = msvc_main::get_instance();
-
-   app->set_params(hinstance, ncmd_show, subsys_windows);
-
-   if (app->init_app(0, 0))
-   {
-      return app->main_loop();
-   }
-
-   return -1;
-}
+mws_sp<mws_pfm_app> mws_app_inst() { return instance; }
 
 
-int main(int argc, char** argv)
-// console subsystem entry point
-{
-   mws_sp<msvc_main> app = msvc_main::get_instance();
-   HINSTANCE hinstance = GetModuleHandle(NULL);
-   bool nCmdShow = true;
-
-   app->set_params(hinstance, nCmdShow, subsys_console);
-
-   if (app->init_app(argc, argv))
-   {
-      return app->main_loop();
-   }
-
-   return -1;
-}
-
-
-
-class msvc_file_impl : public pfm_impl::pfm_file_impl
+class msvc_file_impl : public mws_impl::mws_file_impl
 {
 public:
-   msvc_file_impl(const std::string& i_filename, const std::string& i_root_dir) : pfm_impl::pfm_file_impl(i_filename, i_root_dir)
-   {
-   }
+   msvc_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
 
    virtual FILE* get_file_impl() const override
    {
@@ -88,7 +164,7 @@ public:
 
    virtual uint64 length() override
    {
-      std::string path = ppath.get_full_path();
+      std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
 
       if (GetFileAttributesExA(path.c_str(), GetFileExInfoStandard, &file_info))
@@ -106,7 +182,7 @@ public:
 
    virtual uint64 creation_time()const override
    {
-      std::string path = ppath.get_full_path();
+      std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
 
       if (GetFileAttributesExA(path.c_str(), GetFileExInfoStandard, &file_info))
@@ -124,7 +200,7 @@ public:
 
    virtual uint64 last_write_time()const override
    {
-      std::string path = ppath.get_full_path();
+      std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
 
       if (GetFileAttributesExA(path.c_str(), GetFileExInfoStandard, &file_info))
@@ -142,7 +218,7 @@ public:
 
    virtual bool open_impl(std::string iopen_mode) override
    {
-      std::string path = ppath.get_full_path();
+      std::string path = ppath.string();
 #pragma warning(suppress : 4996)
       file = fopen(path.c_str(), iopen_mode.c_str());
 
@@ -173,9 +249,6 @@ HWND				create_app_window(HINSTANCE, RECT& iclient_rect);
 LRESULT CALLBACK	wnd_proc(HWND, UINT, WPARAM, LPARAM);
 
 
-mws_sp<msvc_main> msvc_main::instance;
-
-
 msvc_main::msvc_main()
 {
    is_full_screen = false;
@@ -203,149 +276,115 @@ msvc_main::~msvc_main()
 {
 }
 
-mws_sp<msvc_main> msvc_main::get_instance()
-{
-   if (!instance)
-   {
-      instance = mws_sp<msvc_main>(new msvc_main());
-   }
-
-   return instance;
-}
-
-mws_sp<pfm_impl::pfm_file_impl> msvc_main::new_pfm_file_impl(const std::string& i_filename, const std::string& i_root_dir)
-{
-   return std::make_shared<msvc_file_impl>(i_filename, i_root_dir);
-}
-
-void msvc_main::init()
-{
-   pfm_main::init();
-
-   mws_mod_ctrl::inst()->init_app();
-}
-
-void msvc_main::start()
-{
-   pfm_main::start();
-
-   mws_mod_ctrl::inst()->start_app();
-}
-
-void msvc_main::run()
-{
-   mws_mod_ctrl::inst()->update();
-}
-
-key_types msvc_main::translate_key(int i_pfm_key_id) const
+mws_key_types msvc_main::translate_key(int i_pfm_key_id) const
 {
    // test if key is a number
    if (i_pfm_key_id >= '0' && i_pfm_key_id <= '9')
    {
       int diff = i_pfm_key_id - '0';
 
-      return key_types(KEY_0 + diff);
+      return mws_key_types(mws_key_0 + diff);
    }
    // test if key is a letter
    else if (i_pfm_key_id >= 'A' && i_pfm_key_id <= 'Z')
    {
       int diff = i_pfm_key_id - 'A';
 
-      return key_types(KEY_A + diff);
+      return mws_key_types(mws_key_a + diff);
    }
 
    // none of the above, so it's a special key
    switch (i_pfm_key_id)
    {
-   case VK_BACK: return KEY_BACKSPACE;
-   case VK_TAB: return KEY_TAB;
-   case VK_CLEAR: return KEY_NUM5;
-   case VK_RETURN: return KEY_ENTER;
-   case VK_SHIFT: return KEY_SHIFT;
-   case VK_CONTROL: return KEY_CONTROL;
-   case VK_MENU: return KEY_ALT;
-   case VK_ESCAPE: return KEY_ESCAPE;
-   case VK_SPACE: return KEY_SPACE;
-   case VK_END: return KEY_END;
-   case VK_HOME: return KEY_HOME;
-   case VK_LEFT: return KEY_LEFT;
-   case VK_UP: return KEY_UP;
-   case VK_RIGHT: return KEY_RIGHT;
-   case VK_DOWN: return KEY_DOWN;
-   case VK_INSERT: return KEY_INSERT;
-   case VK_DELETE: return KEY_DELETE;
-   case VK_NUMPAD0: return KEY_NUM0;
-   case VK_NUMPAD1: return KEY_NUM1;
-   case VK_NUMPAD2: return KEY_NUM2;
-   case VK_NUMPAD3: return KEY_NUM3;
-   case VK_NUMPAD4: return KEY_NUM4;
-   case VK_NUMPAD5: return KEY_NUM5;
-   case VK_NUMPAD6: return KEY_NUM6;
-   case VK_NUMPAD7: return KEY_NUM7;
-   case VK_NUMPAD8: return KEY_NUM8;
-   case VK_NUMPAD9: return KEY_NUM9;
-   case VK_MULTIPLY: return KEY_NUM_MULTIPLY;
-   case VK_ADD: return KEY_NUM_ADD;
-   case VK_SUBTRACT: return KEY_NUM_SUBTRACT;
-   case VK_DECIMAL: return KEY_NUM_DECIMAL;
-   case VK_DIVIDE: return KEY_NUM_DIVIDE;
-   case VK_F1: return KEY_F1;
-   case VK_F2: return KEY_F2;
-   case VK_F3: return KEY_F3;
-   case VK_F4: return KEY_F4;
-   case VK_F5: return KEY_F5;
-   case VK_F6: return KEY_F6;
-   case VK_F7: return KEY_F7;
-   case VK_F8: return KEY_F8;
-   case VK_F9: return KEY_F9;
-   case VK_F10: return KEY_F10;
-   case VK_F11: return KEY_F11;
-   case VK_F12: return KEY_F12;
-   case VK_OEM_1: return KEY_SEMICOLON; // ';:' for US
-   case VK_OEM_PLUS: return KEY_EQUAL_SIGN; // '+' any country
-   case VK_OEM_COMMA: return  KEY_COMMA; // ',' any country
-   case VK_OEM_MINUS: return KEY_MINUS_SIGN; // '-' any country
-   case VK_OEM_PERIOD: return KEY_PERIOD; // '.' any country
-   case VK_OEM_2: return KEY_SLASH; // '/?' for US
-   case VK_OEM_3: return KEY_GRAVE_ACCENT; // '`~' for US
-   case VK_OEM_4: return KEY_LEFT_BRACKET; //  '[{' for US
-   case VK_OEM_5: return KEY_BACKSLASH; //  '\|' for US
-   case VK_OEM_6: return KEY_RIGHT_BRACKET; //  ']}' for US
-   case VK_OEM_7: return KEY_SINGLE_QUOTE; //  ''"' for US
+   case VK_BACK: return mws_key_backspace;
+   case VK_TAB: return mws_key_tab;
+   case VK_CLEAR: return mws_key_num5;
+   case VK_RETURN: return mws_key_enter;
+   case VK_SHIFT: return mws_key_shift;
+   case VK_CONTROL: return mws_key_control;
+   case VK_MENU: return mws_key_alt;
+   case VK_ESCAPE: return mws_key_escape;
+   case VK_SPACE: return mws_key_space;
+   case VK_END: return mws_key_end;
+   case VK_HOME: return mws_key_home;
+   case VK_LEFT: return mws_key_left;
+   case VK_UP: return mws_key_up;
+   case VK_RIGHT: return mws_key_right;
+   case VK_DOWN: return mws_key_down;
+   case VK_INSERT: return mws_key_insert;
+   case VK_DELETE: return mws_key_delete;
+   case VK_NUMPAD0: return mws_key_num0;
+   case VK_NUMPAD1: return mws_key_num1;
+   case VK_NUMPAD2: return mws_key_num2;
+   case VK_NUMPAD3: return mws_key_num3;
+   case VK_NUMPAD4: return mws_key_num4;
+   case VK_NUMPAD5: return mws_key_num5;
+   case VK_NUMPAD6: return mws_key_num6;
+   case VK_NUMPAD7: return mws_key_num7;
+   case VK_NUMPAD8: return mws_key_num8;
+   case VK_NUMPAD9: return mws_key_num9;
+   case VK_MULTIPLY: return mws_key_num_multiply;
+   case VK_ADD: return mws_key_num_add;
+   case VK_SUBTRACT: return mws_key_num_subtract;
+   case VK_DECIMAL: return mws_key_num_decimal;
+   case VK_DIVIDE: return mws_key_num_divide;
+   case VK_F1: return mws_key_f1;
+   case VK_F2: return mws_key_f2;
+   case VK_F3: return mws_key_f3;
+   case VK_F4: return mws_key_f4;
+   case VK_F5: return mws_key_f5;
+   case VK_F6: return mws_key_f6;
+   case VK_F7: return mws_key_f7;
+   case VK_F8: return mws_key_f8;
+   case VK_F9: return mws_key_f9;
+   case VK_F10: return mws_key_f10;
+   case VK_F11: return mws_key_f11;
+   case VK_F12: return mws_key_f12;
+   case VK_OEM_1: return mws_key_semicolon; // ';:' for US
+   case VK_OEM_PLUS: return mws_key_equal_sign; // '+' any country
+   case VK_OEM_COMMA: return  mws_key_comma; // ',' any country
+   case VK_OEM_MINUS: return mws_key_minus_sign; // '-' any country
+   case VK_OEM_PERIOD: return mws_key_period; // '.' any country
+   case VK_OEM_2: return mws_key_slash; // '/?' for US
+   case VK_OEM_3: return mws_key_grave_accent; // '`~' for US
+   case VK_OEM_4: return mws_key_left_bracket; //  '[{' for US
+   case VK_OEM_5: return mws_key_backslash; //  '\|' for US
+   case VK_OEM_6: return mws_key_right_bracket; //  ']}' for US
+   case VK_OEM_7: return mws_key_single_quote; //  ''"' for US
    }
 
    // key was not recognized. mark as invalid
-   return KEY_INVALID;
+   return mws_key_invalid;
 }
 
-key_types msvc_main::apply_key_modifiers_impl(key_types i_key_id) const
+mws_key_types msvc_main::apply_key_modifiers_impl(mws_key_types i_key_id) const
 {
-   if (i_key_id == KEY_INVALID)
+   if (i_key_id == mws_key_invalid)
    {
-      return KEY_INVALID;
+      return mws_key_invalid;
    }
 
    bool num_lock_active = false;
    bool shift_held = ((mod_keys_down & shift_key_down) != 0);
 
-   if (i_key_id >= KEY_0 && i_key_id <= KEY_9)
+   if (i_key_id >= mws_key_0 && i_key_id <= mws_key_9)
    {
       if (shift_held)
       {
-         int diff = i_key_id - KEY_0;
+         int diff = i_key_id - mws_key_0;
 
          switch (diff)
          {
-         case 0: return KEY_RIGHT_PARENTHESIS;
-         case 1: return KEY_EXCLAMATION;
-         case 2: return KEY_AT_SYMBOL;
-         case 3: return KEY_NUMBER_SIGN;
-         case 4: return KEY_DOLLAR_SIGN;
-         case 5: return KEY_PERCENT_SIGN;
-         case 6: return KEY_CIRCUMFLEX;
-         case 7: return KEY_AMPERSAND;
-         case 8: return KEY_ASTERISK;
-         case 9: return KEY_LEFT_PARENTHESIS;
+         case 0: return mws_key_right_parenthesis;
+         case 1: return mws_key_exclamation;
+         case 2: return mws_key_at_symbol;
+         case 3: return mws_key_number_sign;
+         case 4: return mws_key_dollar_sign;
+         case 5: return mws_key_percent_sign;
+         case 6: return mws_key_circumflex;
+         case 7: return mws_key_ampersand;
+         case 8: return mws_key_asterisk;
+         case 9: return mws_key_left_parenthesis;
          }
       }
       else
@@ -353,13 +392,13 @@ key_types msvc_main::apply_key_modifiers_impl(key_types i_key_id) const
          return i_key_id;
       }
    }
-   else if (i_key_id >= KEY_A && i_key_id <= KEY_Z)
+   else if (i_key_id >= mws_key_a && i_key_id <= mws_key_z)
    {
       if (shift_held)
       {
-         int diff = i_key_id - KEY_A;
+         int diff = i_key_id - mws_key_a;
 
-         return key_types(KEY_A_UPPER_CASE + diff);
+         return mws_key_types(mws_key_a_upper_case + diff);
       }
       else
       {
@@ -369,32 +408,32 @@ key_types msvc_main::apply_key_modifiers_impl(key_types i_key_id) const
 
    switch (i_key_id)
    {
-   case KEY_NUM0: return (num_lock_active) ? KEY_0 : KEY_INSERT;
-   case KEY_NUM1: return (num_lock_active) ? KEY_1 : KEY_END;
-   case KEY_NUM2: return (num_lock_active) ? KEY_2 : KEY_DOWN;
-   case KEY_NUM3: return (num_lock_active) ? KEY_3 : KEY_PAGE_DOWN;
-   case KEY_NUM4: return (num_lock_active) ? KEY_4 : KEY_LEFT;
-   case KEY_NUM5: return (num_lock_active) ? KEY_5 : KEY_ENTER;
-   case KEY_NUM6: return (num_lock_active) ? KEY_6 : KEY_RIGHT;
-   case KEY_NUM7: return (num_lock_active) ? KEY_7 : KEY_HOME;
-   case KEY_NUM8: return (num_lock_active) ? KEY_8 : KEY_UP;
-   case KEY_NUM9: return (num_lock_active) ? KEY_9 : KEY_PAGE_UP;
-   case KEY_NUM_MULTIPLY: return (num_lock_active) ? KEY_ASTERISK : KEY_ASTERISK;
-   case KEY_NUM_ADD: return (num_lock_active) ? KEY_PLUS_SIGN : KEY_PLUS_SIGN;
-   case KEY_NUM_SUBTRACT: return (num_lock_active) ? KEY_MINUS_SIGN : KEY_MINUS_SIGN;
-   case KEY_NUM_DECIMAL: return (num_lock_active) ? KEY_PERIOD : KEY_DEL;
-   case KEY_NUM_DIVIDE: return (num_lock_active) ? KEY_SLASH : KEY_SLASH;
-   case KEY_SEMICOLON: return (shift_held) ? KEY_COLON : KEY_SEMICOLON; // ';:' for US
-   case KEY_EQUAL_SIGN: return (shift_held) ? KEY_PLUS_SIGN : KEY_EQUAL_SIGN; // '+' any country
-   case KEY_COMMA: return (shift_held) ? KEY_LESS_THAN_SIGN : KEY_COMMA; // ',' any country
-   case KEY_MINUS_SIGN: return (shift_held) ? KEY_UNDERSCORE : KEY_MINUS_SIGN; // '-' any country
-   case KEY_PERIOD: return (shift_held) ? KEY_GREATER_THAN_SIGN : KEY_PERIOD; // '.' any country
-   case KEY_SLASH: return (shift_held) ? KEY_QUESTION_MARK : KEY_SLASH; // '/?' for US
-   case KEY_GRAVE_ACCENT: return (shift_held) ? KEY_TILDE_SIGN : KEY_GRAVE_ACCENT; // '`~' for US
-   case KEY_LEFT_BRACKET: return (shift_held) ? KEY_LEFT_BRACE : KEY_LEFT_BRACKET; //  '[{' for US
-   case KEY_BACKSLASH: return (shift_held) ? KEY_VERTICAL_BAR : KEY_BACKSLASH; //  '\|' for US
-   case KEY_RIGHT_BRACKET: return (shift_held) ? KEY_RIGHT_BRACE : KEY_RIGHT_BRACKET; //  ']}' for US
-   case KEY_SINGLE_QUOTE: return (shift_held) ? KEY_DOUBLE_QUOTE : KEY_SINGLE_QUOTE; //  ''"' for US
+   case mws_key_num0: return (num_lock_active) ? mws_key_0 : mws_key_insert;
+   case mws_key_num1: return (num_lock_active) ? mws_key_1 : mws_key_end;
+   case mws_key_num2: return (num_lock_active) ? mws_key_2 : mws_key_down;
+   case mws_key_num3: return (num_lock_active) ? mws_key_3 : mws_key_page_down;
+   case mws_key_num4: return (num_lock_active) ? mws_key_4 : mws_key_left;
+   case mws_key_num5: return (num_lock_active) ? mws_key_5 : mws_key_enter;
+   case mws_key_num6: return (num_lock_active) ? mws_key_6 : mws_key_right;
+   case mws_key_num7: return (num_lock_active) ? mws_key_7 : mws_key_home;
+   case mws_key_num8: return (num_lock_active) ? mws_key_8 : mws_key_up;
+   case mws_key_num9: return (num_lock_active) ? mws_key_9 : mws_key_page_up;
+   case mws_key_num_multiply: return (num_lock_active) ? mws_key_asterisk : mws_key_asterisk;
+   case mws_key_num_add: return (num_lock_active) ? mws_key_plus_sign : mws_key_plus_sign;
+   case mws_key_num_subtract: return (num_lock_active) ? mws_key_minus_sign : mws_key_minus_sign;
+   case mws_key_num_decimal: return (num_lock_active) ? mws_key_period : mws_key_del;
+   case mws_key_num_divide: return (num_lock_active) ? mws_key_slash : mws_key_slash;
+   case mws_key_semicolon: return (shift_held) ? mws_key_colon : mws_key_semicolon; // ';:' for US
+   case mws_key_equal_sign: return (shift_held) ? mws_key_plus_sign : mws_key_equal_sign; // '+' any country
+   case mws_key_comma: return (shift_held) ? mws_key_less_than_sign : mws_key_comma; // ',' any country
+   case mws_key_minus_sign: return (shift_held) ? mws_key_underscore : mws_key_minus_sign; // '-' any country
+   case mws_key_period: return (shift_held) ? mws_key_greater_than_sign : mws_key_period; // '.' any country
+   case mws_key_slash: return (shift_held) ? mws_key_question_mark : mws_key_slash; // '/?' for US
+   case mws_key_grave_accent: return (shift_held) ? mws_key_tilde_sign : mws_key_grave_accent; // '`~' for US
+   case mws_key_left_bracket: return (shift_held) ? mws_key_left_brace : mws_key_left_bracket; //  '[{' for US
+   case mws_key_backslash: return (shift_held) ? mws_key_vertical_bar : mws_key_backslash; //  '\|' for US
+   case mws_key_right_bracket: return (shift_held) ? mws_key_right_brace : mws_key_right_bracket; //  ']}' for US
+   case mws_key_single_quote: return (shift_held) ? mws_key_double_quote : mws_key_single_quote; //  ''"' for US
    }
 
    return i_key_id;
@@ -409,7 +448,7 @@ float msvc_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
 std::pair<float, float> msvc_main::get_screen_dpcm() const { return screen_dpcm; }
 std::pair<float, float> msvc_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
-void msvc_main::flip_screen()
+void msvc_main::flip_screen() const
 {
    if (is_full_screen_mode())
    {
@@ -422,8 +461,8 @@ void msvc_main::flip_screen()
    auto u = mws_mod_ctrl::inst()->get_app_start_mod();
    int x = 0;
    int y = 0;
-   int width = pfm::screen::get_width();
-   int height = pfm::screen::get_height();
+   int width = mws::screen::get_width();
+   int height = mws::screen::get_height();
    bool start_full_screen = false;
 
    if (u)
@@ -447,7 +486,7 @@ void msvc_main::flip_screen()
       height = t;
    }
 
-//#if defined MWS_DEBUG_BUILD
+   //#if defined MWS_DEBUG_BUILD
 
    x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
    y = GetSystemMetrics(SM_CYSCREEN) - height - 5;
@@ -466,7 +505,7 @@ void msvc_main::flip_screen()
       portrait_flip_count++;
    }
 
-//#endif
+   //#endif
    window_coord.left = x;
    window_coord.right = x + width;
    window_coord.top = y;
@@ -477,55 +516,150 @@ void msvc_main::flip_screen()
    //mws_println("flip_screen wnd[ x[ %d ] y [ %d ] w [ %d ] h [ %d ] ]", (int)x, (int)y, int(width), int(height));
 }
 
-void msvc_main::write_text(const char* text)const
+bool msvc_main::is_full_screen_mode() const
 {
-   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
-   {
-      //WriteConsoleA(instance.consoleHandle, text, wcslen(text), NULL, NULL);
-      printf(text);
-   }
-
-   OutputDebugStringA(text);
+   return is_full_screen;
 }
 
-void msvc_main::write_text_nl(const char* text)const
+void msvc_main::set_full_screen_mode(bool i_enabled) const
 {
-   write_text(text);
+   if (is_full_screen != i_enabled)
+   {
+      long style = i_enabled ? WS_POPUP : WS_OVERLAPPEDWINDOW;
+
+      if (!is_full_screen)
+      {
+         window_coord = get_window_coord();
+      }
+
+      SetWindowLong(hwnd, GWL_STYLE, style);
+
+      if (i_enabled)
+      {
+         DEVMODE mode_info;
+         EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &mode_info);
+
+         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, mode_info.dmPelsWidth, mode_info.dmPelsHeight, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_NOREDRAW);
+      }
+      else
+      {
+         int x = window_coord.left;
+         int y = window_coord.top;
+         int width = window_coord.right - window_coord.left;
+         int height = window_coord.bottom - window_coord.top;
+
+         SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_NOREDRAW);
+      }
+
+      is_full_screen = i_enabled;
+      disable_paint = true;
+   }
+}
+
+void msvc_main::write_text(const char* i_text)const
+{
+   if (i_text && console_handle != INVALID_HANDLE_VALUE)
+   {
+      printf(i_text);
+   }
+
+   OutputDebugStringA(i_text);
+}
+
+void msvc_main::write_text_nl(const char* i_text)const
+{
+   write_text(i_text);
    write_text("\n");
 }
 
-void msvc_main::write_text(const wchar_t* text)const
+void msvc_main::write_text(const wchar_t* i_text)const
 {
-   if (text && instance->console_handle != INVALID_HANDLE_VALUE)
+   if (i_text && console_handle != INVALID_HANDLE_VALUE)
    {
-      //WriteConsoleW(instance.consoleHandle, text, wcslen(text), NULL, NULL);
-      wprintf(text);
+      wprintf(i_text);
    }
 
-   OutputDebugStringW(text);
+   OutputDebugStringW(i_text);
 }
 
-void msvc_main::write_text_v(const char* iformat, ...)const
+void msvc_main::write_text_v(const char* i_format, ...)const
 {
    char dest[16000];
    va_list argptr;
 
-   va_start(argptr, iformat);
-   vsnprintf_s(dest, 16000 - 1, _TRUNCATE, iformat, argptr);
+   va_start(argptr, i_format);
+   vsnprintf_s(dest, 16000 - 1, _TRUNCATE, i_format, argptr);
    va_end(argptr);
 
-   if (iformat && instance->console_handle != INVALID_HANDLE_VALUE)
+   if (i_format && console_handle != INVALID_HANDLE_VALUE)
    {
-      //WriteConsoleA(instance.consoleHandle, text, strlen(text), NULL, NULL);
       printf(dest);
    }
 
    OutputDebugStringA(dest);
 }
 
-std::string msvc_main::get_writable_path()const
+static bool make_directory(const mws_path& i_path)
 {
-   return "";
+   bool path_exists = false;
+
+   if (!i_path.exists())
+   {
+      path_exists = i_path.make_dir();
+   }
+   else
+   {
+      path_exists = true;
+   }
+
+   if (!path_exists)
+   {
+      mws_println("WARNING[ failed to create path [ %s ]]", i_path.string().c_str());
+   }
+
+   return path_exists;
+}
+
+mws_sp<mws_impl::mws_file_impl> msvc_main::new_pfm_file_impl(const mws_path& i_path) const
+{
+   return std::make_shared<msvc_file_impl>(i_path);
+}
+
+const mws_path& msvc_main::prv_dir() const
+{
+   if (!prv_path_exists)
+   {
+      prv_path_exists = make_directory(prv_path);
+   }
+
+   return prv_path;
+}
+
+const mws_path& msvc_main::res_dir() const
+{
+   return res_path;
+}
+
+const mws_path& msvc_main::tmp_dir() const
+{
+   if (!tmp_path_exists)
+   {
+      tmp_path_exists = make_directory(tmp_path);
+   }
+
+   return tmp_path;
+}
+
+void msvc_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
+{
+   const mws_path mod_path = mws_path("../../..") / i_crt_mod->get_proj_rel_path();
+
+   mws_assert(i_crt_mod != nullptr);
+   prv_path = mws_path(mod_path / "/.prv/");
+   res_path = mws_path(mws_path(mod_path / "/res/").string(), false);
+   tmp_path = mws_path(mod_path / "/.tmp/");
+   prv_path_exists = false;
+   tmp_path_exists = false;
 }
 
 std::string msvc_main::get_timezone_id()const
@@ -533,13 +667,13 @@ std::string msvc_main::get_timezone_id()const
    return "Europe/Bucharest";
 }
 
-void msvc_main::write_text_nl(const wchar_t* text)const
+void msvc_main::write_text_nl(const wchar_t* i_text)const
 {
-   write_text(text);
+   write_text(i_text);
    write_text(L"\n");
 }
 
-umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool is_recursive)
+umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const
 {
    if (i_directory.length() > 0)
    {
@@ -559,23 +693,26 @@ umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_li
       {
          do
          {
+            // regular file
             if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-               // regular file
             {
                umf_r& list = *i_plist;
                std::string key(fd.cFileName);
+               mws_path path(dir);
+
+               path /= key;
 
                if (list[key])
                {
                   mws_signal_error(std::string("duplicate filename: " + key).c_str());
                }
 
-               mws_sp<msvc_file_impl> file_impl(new msvc_file_impl(key, dir));
+               mws_sp<msvc_file_impl> file_impl(new msvc_file_impl(path));
 
-               list[key] = pfm_file::get_inst(file_impl);
+               list[key] = mws_file::get_inst(file_impl);
             }
-            else if (fd.cFileName[0] != '.' && is_recursive)
-               // directory
+            // directory
+            else if (fd.cFileName[0] != '.' && i_is_recursive)
             {
                std::string sub_dir = dir + fd.cFileName;
                get_directory_listing(sub_dir, i_plist, true);
@@ -589,12 +726,12 @@ umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_li
    return i_plist;
 }
 
-bool msvc_main::init_app(int argc, char** argv)
+bool init_app(int argc, char** argv)
 {
    // pass arguments
    int wargc = 0;
    LPWSTR* arg_list = CommandLineToArgvW(GetCommandLineW(), &wargc);
-   pfm::params::set_app_arguments(wargc, arg_list, true);
+   mws::args::set_app_arguments(wargc, arg_list, true);
    LocalFree(arg_list);
 
    mws_mod_ctrl::inst()->pre_init_app();
@@ -618,17 +755,17 @@ bool msvc_main::init_app(int argc, char** argv)
       // create and show window
       register_new_window_class(hinstance);
 
-      auto u = mws_mod_ctrl::inst()->get_app_start_mod();
       //int x = CW_USEDEFAULT;
       int x = 0;
       int y = 0;
-      int width = pfm::screen::get_width();
-      int height = pfm::screen::get_height();
+      int width = mws::screen::get_width();
+      int height = mws::screen::get_height();
       bool start_full_screen = false;
+      auto start_mod = mws_mod_ctrl::inst()->get_app_start_mod();
 
-      if (u)
+      if (start_mod)
       {
-         auto mod_pref = u->get_preferences();
+         auto mod_pref = start_mod->get_preferences();
          int pref_width = mod_pref->get_preferred_screen_width();
          int pref_height = mod_pref->get_preferred_screen_height();
          start_full_screen = mod_pref->start_full_screen();
@@ -641,7 +778,7 @@ bool msvc_main::init_app(int argc, char** argv)
          }
       }
 
-//#if defined MWS_DEBUG_BUILD
+      //#if defined MWS_DEBUG_BUILD
 
       x = GetSystemMetrics(SM_CXSCREEN) - width - 5;
 
@@ -654,7 +791,7 @@ bool msvc_main::init_app(int argc, char** argv)
          y = 5;
       }
 
-//#endif
+      //#endif
 
       window_coord.left = x;
       window_coord.right = x + width;
@@ -698,7 +835,7 @@ bool msvc_main::init_app(int argc, char** argv)
 
       if (start_full_screen)
       {
-         set_full_screen_mode(true);
+         instance->set_full_screen_mode(true);
       }
 
       init_notify_icon_data();
@@ -722,14 +859,14 @@ bool msvc_main::init_app(int argc, char** argv)
       std::ios_base::sync_with_stdio();
    }
 
-   init();
+   instance->init();
 
    return true;
 }
 
-int msvc_main::main_loop()
+int main_loop()
 {
-   start();
+   instance->start();
 
    if (app_has_window)
    {
@@ -739,93 +876,49 @@ int msvc_main::main_loop()
    return console_main_loop();
 }
 
-void msvc_main::set_params(HINSTANCE ihinstance, bool incmd_show, lnk_subsystem isubsys)
+void set_params(HINSTANCE ihinstance, bool incmd_show, lnk_subsystem isubsys)
 {
    hinstance = ihinstance;
    ncmd_show = incmd_show;
    subsys = isubsys;
 }
 
-HWND msvc_main::get_hwnd()
+HWND get_hwnd()
 {
    return hwnd;
 }
 
-HMENU msvc_main::get_hmenu()
+HMENU get_hmenu()
 {
    return hmenu;
 }
 
-void msvc_main::set_hmenu(HMENU ihmenu)
+void set_hmenu(HMENU ihmenu)
 {
    hmenu = ihmenu;
 }
 
-UINT msvc_main::get_taskbar_created_msg()
+UINT get_taskbar_created_msg()
 {
    return wm_taskbarcreated;
 }
 
-void msvc_main::minimize_window()
+void minimize_window()
 {
    // add the icon to the system tray
    Shell_NotifyIcon(NIM_ADD, &notify_icon_data);
    ShowWindow(hwnd, SW_HIDE);
 }
 
-void msvc_main::restore_window()
+void restore_window()
 {
    // remove the icon from the system tray
    Shell_NotifyIcon(NIM_DELETE, &notify_icon_data);
    ShowWindow(hwnd, SW_SHOW);
 }
 
-float msvc_main::get_screen_scale() const
-{
-   return 1.f;
-}
 
-bool msvc_main::is_full_screen_mode()
-{
-   return is_full_screen;
-}
-
-void msvc_main::set_full_screen_mode(bool ienabled)
-{
-   if (is_full_screen != ienabled)
-   {
-      long style = ienabled ? WS_POPUP : WS_OVERLAPPEDWINDOW;
-
-      if (!is_full_screen)
-      {
-         window_coord = get_window_coord();
-      }
-
-      SetWindowLong(hwnd, GWL_STYLE, style);
-
-      if (ienabled)
-      {
-         DEVMODE mode_info;
-         EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &mode_info);
-
-         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, mode_info.dmPelsWidth, mode_info.dmPelsHeight, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_NOREDRAW);
-      }
-      else
-      {
-         int x = window_coord.left;
-         int y = window_coord.top;
-         int width = window_coord.right - window_coord.left;
-         int height = window_coord.bottom - window_coord.top;
-
-         SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_NOREDRAW);
-      }
-
-      is_full_screen = ienabled;
-      disable_paint = true;
-   }
-}
-
-RECT msvc_main::get_window_coord()
+RECT get_window_coord()
 {
    RECT client_area_coord = {};
 
@@ -834,7 +927,7 @@ RECT msvc_main::get_window_coord()
    return client_area_coord;
 }
 
-void msvc_main::init_notify_icon_data()
+void init_notify_icon_data()
 // initialize the NOTIFYICONDATA structure.
 // see MSDN docs http://msdn.microsoft.com/en-us/library/bb773352(VS.85).aspx for details on the NOTIFYICONDATA structure.
 {
@@ -863,19 +956,19 @@ void msvc_main::init_notify_icon_data()
    wcscpy(notify_icon_data.szInfo, TEXT("SOME TEXT"));
 }
 
-int msvc_main::console_main_loop()
+int console_main_loop()
 {
-   const int timerInterval = 1000 / pfm::screen::get_target_fps();
-   long curTime = pfm::time::get_time_millis();
+   const int timerInterval = 1000 / mws::screen::get_target_fps();
+   long curTime = mws::time::get_time_millis();
    long nextUpdateTime = curTime;
 
    while (!mws_mod_ctrl::inst()->is_set_app_exit_on_next_run())
    {
-      curTime = pfm::time::get_time_millis();
+      curTime = mws::time::get_time_millis();
 
       if (curTime >= nextUpdateTime)
       {
-         run();
+         instance->run();
          nextUpdateTime = curTime + timerInterval;
       }
       else
@@ -889,10 +982,10 @@ int msvc_main::console_main_loop()
    return 0;
 }
 
-int msvc_main::win_main_loop()
+int win_main_loop()
 {
-   const int timer_interval = 1000 / pfm::screen::get_target_fps();
-   uint32 current_time = pfm::time::get_time_millis();
+   const int timer_interval = 1000 / mws::screen::get_target_fps();
+   uint32 current_time = mws::time::get_time_millis();
    uint32 next_update_time = current_time;
    MSG msg;
 
@@ -911,11 +1004,11 @@ int msvc_main::win_main_loop()
          }
       }
 
-      current_time = pfm::time::get_time_millis();
+      current_time = mws::time::get_time_millis();
 
       if (current_time >= next_update_time)
       {
-         run();
+         instance->run();
          {
             if (!disable_paint)
             {
@@ -953,7 +1046,7 @@ int msvc_main::win_main_loop()
    return msg.wParam;
 }
 
-bool msvc_main::create_open_gl_context()
+bool create_open_gl_context()
 {
 #if defined MWS_USES_OPENGL_ES
    return create_open_gl_es_ctx();
@@ -964,7 +1057,7 @@ bool msvc_main::create_open_gl_context()
    return false;
 }
 
-bool msvc_main::create_open_gl_es_ctx()
+bool create_open_gl_es_ctx()
 {
 #if defined MWS_USES_OPENGL_ES
 
@@ -1123,7 +1216,7 @@ bool msvc_main::create_open_gl_es_ctx()
    return false;
 }
 
-bool msvc_main::create_open_gl_glew_ctx()
+bool create_open_gl_glew_ctx()
 {
 #if defined MWS_USES_OPENGL_GLEW
 
@@ -1249,7 +1342,7 @@ bool msvc_main::create_open_gl_glew_ctx()
    return false;
 }
 
-void msvc_main::destroy_open_gl_context()
+void destroy_open_gl_context()
 {
 #if defined MWS_USES_OPENGL_ES
 
@@ -1351,13 +1444,9 @@ POINT get_pointer_coord(HWND hwnd)
 LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 // processes messages for the main window
 {
-   mws_sp<msvc_main> app = msvc_main::get_instance();
-
-   //mws_print("message 0x%04x") % message;
-
-   if (message == app->get_taskbar_created_msg() && !IsWindowVisible(app->get_hwnd()))
+   if (message == get_taskbar_created_msg() && !IsWindowVisible(get_hwnd()))
    {
-      app->minimize_window();
+      minimize_window();
       return 0;
    }
 
@@ -1372,8 +1461,8 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
    case WM_CREATE:
       // create the menu
-      app->set_hmenu(CreatePopupMenu());
-      AppendMenu(app->get_hmenu(), MF_STRING, ID_TRAY_EXIT_CONTEXT_MENU_ITEM, TEXT("Exit"));
+      set_hmenu(CreatePopupMenu());
+      AppendMenu(get_hmenu(), MF_STRING, ID_TRAY_EXIT_CONTEXT_MENU_ITEM, TEXT("Exit"));
       break;
 
    case WM_SYSCOMMAND:
@@ -1382,7 +1471,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       {
       case SC_MINIMIZE:
       case SC_CLOSE:
-         app->minimize_window();
+         minimize_window();
          return 0;
       }
       break;
@@ -1402,7 +1491,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       if (lparam == WM_LBUTTONUP)
       {
          printf("You have restored me!\n");
-         app->restore_window();
+         restore_window();
       }
       else if (lparam == WM_RBUTTONDOWN)
       {
@@ -1416,7 +1505,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          // TrackPopupMenu blocks the app until it returns
          printf("calling track\n");
          UINT clicked = TrackPopupMenu(
-            app->get_hmenu(),
+            get_hmenu(),
             // don't send WM_COMMAND messages about this window, instead return the identifier of the clicked menu item
             TPM_RETURNCMD | TPM_NONOTIFY,
             pointer_coord.x,
@@ -1449,7 +1538,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
-      pfm_te->time = pfm::time::get_time_millis();
+      pfm_te->time = mws::time::get_time_millis();
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_began;
 
@@ -1480,7 +1569,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
-      pfm_te->time = pfm::time::get_time_millis();
+      pfm_te->time = mws::time::get_time_millis();
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_ended;
 
@@ -1510,7 +1599,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       te.is_changed = true;
       te.x = (float)pointer_coord.x;
       te.y = (float)pointer_coord.y;
-      pfm_te->time = pfm::time::get_time_millis();
+      pfm_te->time = mws::time::get_time_millis();
       pfm_te->touch_count = 1;
       pfm_te->type = mws_ptr_evt_base::touch_moved;
       pfm_te->press_type = mouse_btn_down;
@@ -1529,9 +1618,9 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       pointer_coord.y = GET_Y_LPARAM(lparam);
 
       ScreenToClient(hwnd, &pointer_coord);
-      RECT client_area_coord = app->get_window_coord();
-      int width = pfm::screen::get_width();
-      int height = pfm::screen::get_height();
+      RECT client_area_coord = get_window_coord();
+      int width = mws::screen::get_width();
+      int height = mws::screen::get_height();
 
       if (pointer_coord.x >= 0 && pointer_coord.y >= 0 && pointer_coord.x < width && pointer_coord.y < height)
       {
@@ -1542,7 +1631,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
          te.is_changed = false;
          te.x = (float)pointer_coord.x;
          te.y = (float)pointer_coord.y;
-         pfm_te->time = pfm::time::get_time_millis();
+         pfm_te->time = mws::time::get_time_millis();
          pfm_te->touch_count = 1;
          pfm_te->type = mws_ptr_evt_base::mouse_wheel;
          pfm_te->mouse_wheel_delta = (float)wheel_delta;
@@ -1557,7 +1646,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYDOWN:
    case WM_SYSKEYDOWN:
    {
-      key_types key_id = app->translate_key(wparam);
+      mws_key_types key_id = instance->translate_key(wparam);
 
       switch (wparam)
       {
@@ -1566,7 +1655,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
       case VK_MENU: mod_keys_down |= alt_key_down; break;
       }
 
-      mws_mod_ctrl::inst()->key_action(KEY_PRESS, key_id);
+      mws_mod_ctrl::inst()->key_action(mws_key_press, key_id);
 
       return 0;
    }
@@ -1574,11 +1663,11 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    case WM_KEYUP:
    case WM_SYSKEYUP:
    {
-      key_types key_id = app->translate_key(wparam);
+      mws_key_types key_id = instance->translate_key(wparam);
 
-      mws_mod_ctrl::inst()->key_action(KEY_RELEASE, key_id);
+      mws_mod_ctrl::inst()->key_action(mws_key_release, key_id);
 
-      if (key_id == KEY_ESCAPE)
+      if (key_id == mws_key_escape)
       {
          bool back = mws_mod_ctrl::inst()->back_evt();
          mws_mod_ctrl::inst()->set_app_exit_on_next_run(back);
@@ -1596,7 +1685,7 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
    case WM_CLOSE:
       printf("Got an actual WM_CLOSE Message!  Woo hoo!\n");
-      app->minimize_window();
+      minimize_window();
       return 0;
 
    case WM_SIZE:
@@ -1634,5 +1723,43 @@ int mws_is_gl_extension_supported(const char* i_extension)
 
    return is_supported;
 }
+
+
+// app entry points
+int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpcmd_line, int ncmd_show)
+// gui subsystem entry point
+{
+   UNREFERENCED_PARAMETER(hprev_instance);
+   UNREFERENCED_PARAMETER(lpcmd_line);
+
+   instance = mws_sp<msvc_main>(new msvc_main());
+   set_params(hinstance, ncmd_show, subsys_windows);
+
+   if (init_app(0, 0))
+   {
+      return main_loop();
+   }
+
+   return -1;
+}
+
+
+int main(int argc, char** argv)
+// console subsystem entry point
+{
+   HINSTANCE hinstance = GetModuleHandle(NULL);
+   bool nCmdShow = true;
+
+   instance = mws_sp<msvc_main>(new msvc_main());
+   set_params(hinstance, nCmdShow, subsys_console);
+
+   if (init_app(argc, argv))
+   {
+      return main_loop();
+   }
+
+   return -1;
+}
+
 
 #endif

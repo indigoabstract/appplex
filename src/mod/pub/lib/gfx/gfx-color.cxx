@@ -265,7 +265,7 @@ void gfx_color::from_hsb(float hue, float saturation, float brightness)
    }
 
    float h = hue * 6.0f;
-   int i = floor(h);
+   int i = (int)glm::floor(h);
    float f = h - i;
    float p = brightness * (1 - saturation);
    float q = brightness * (1 - saturation * f);
@@ -325,10 +325,10 @@ gfx_color gfx_color::mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_m
 {
    float one_minus_mixf = 1.f - i_mixf;
    return gfx_color(
-      one_minus_mixf * i_c0.r + i_mixf * i_c1.r,
-      one_minus_mixf * i_c0.g + i_mixf * i_c1.g,
-      one_minus_mixf * i_c0.b + i_mixf * i_c1.b,
-      one_minus_mixf * i_c0.a + i_mixf * i_c1.a);
+      uint8(one_minus_mixf * i_c0.r + i_mixf * i_c1.r),
+      uint8(one_minus_mixf * i_c0.g + i_mixf * i_c1.g),
+      uint8(one_minus_mixf * i_c0.b + i_mixf * i_c1.b),
+      uint8(one_minus_mixf * i_c0.a + i_mixf * i_c1.a));
 }
 
 void gfx_color::clamp(int& i_r, int& i_g, int& i_b, int& i_a)

@@ -24,7 +24,7 @@ namespace mod_screen_metrix_ns
    public:
       virtual void init() override
       {
-         auto dpi = pfm_main::gi()->get_screen_dpi();
+         auto dpi = mws::screen::get_dpi();
          test_font = mws_font::nwi("consolas.ttf", height);
          test_font->set_color(gfx_color::colors::red);
          // ready icon
@@ -70,14 +70,14 @@ namespace mod_screen_metrix_ns
          std::string box_top_margin = mws_to_str_fmt("box top margin [ %2.2f ] cm", tl_margin_y.val());
          std::string box_width = mws_to_str_fmt("box width [ %2.2f ] cm", width.val());
          std::string box_height = mws_to_str_fmt("box height [ %2.2f ] cm", height.val());
-         std::string screen_width = mws_to_str_fmt("screen width [ %2.2f ] cm", pfm_main::gi()->get_screen_dim_cm().first);
-         std::string screen_height = mws_to_str_fmt("screen height [ %2.2f ] cm", pfm_main::gi()->get_screen_dim_cm().second);
-         std::string screen_res_width = mws_to_str_fmt("screen res width [ %d ] px", pfm_main::gi()->get_screen_res_px().first);
-         std::string screen_res_height = mws_to_str_fmt("screen res height [ %d ] px", pfm_main::gi()->get_screen_res_px().second);
-         std::string screen_avg_dpi = mws_to_str_fmt("screen average dpi [ %f ] px", pfm_main::gi()->get_avg_screen_dpi());
-         std::string screen_avg_dpcm = mws_to_str_fmt("screen average dpcm [ %f ] px", pfm_main::gi()->get_avg_screen_dpcm());
-         std::string screen_h_dpcm = mws_to_str_fmt("screen e_horizontal dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().first);
-         std::string screen_v_dpcm = mws_to_str_fmt("screen e_vertical dpcm [ %f ] px", pfm_main::gi()->get_screen_dpcm().second);
+         std::string screen_width = mws_to_str_fmt("screen width [ %2.2f ] cm", mws::screen::get_dim_cm().first);
+         std::string screen_height = mws_to_str_fmt("screen height [ %2.2f ] cm", mws::screen::get_dim_cm().second);
+         std::string screen_res_width = mws_to_str_fmt("screen res width [ %d ] px", mws::screen::get_res_px().first);
+         std::string screen_res_height = mws_to_str_fmt("screen res height [ %d ] px", mws::screen::get_res_px().second);
+         std::string screen_avg_dpi = mws_to_str_fmt("screen average dpi [ %f ] px", mws::screen::get_avg_dpi());
+         std::string screen_avg_dpcm = mws_to_str_fmt("screen average dpcm [ %f ] px", mws::screen::get_avg_dpcm());
+         std::string screen_h_dpcm = mws_to_str_fmt("screen e_horizontal dpcm [ %f ] px", mws::screen::get_dpcm().first);
+         std::string screen_v_dpcm = mws_to_str_fmt("screen e_vertical dpcm [ %f ] px", mws::screen::get_dpcm().second);
          float row_height = font_height;
          float y_off = vert_off;// - row_height;
 
@@ -117,7 +117,7 @@ namespace mod_screen_metrix_ns
 
 void mod_screen_metrix::init_mws()
 {
-   mws_sp<pfm_file> font_file = pfm_file::get_inst("consolas.ttf");
+   mws_sp<mws_file> font_file = mws_file::get_inst("consolas.ttf");
 
    if (font_file->exists())
    {
@@ -130,8 +130,8 @@ void mod_screen_metrix::init_mws()
       };
       uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-      mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
-      mws_sp<mws_font> font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.24f));
+      mws_font_db::inst()->store_font_metrix(font_file->filename(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+      mws_sp<mws_font> font = mws_font::nwi(font_file->filename(), mws_cm(0.24f));
       mws_font_db::inst()->set_global_font(font);
    }
 

@@ -17,17 +17,17 @@ const std::string VKB_PREFIX = "vkb-";
 const std::string VKB_EXT = ".kxmd";
 
 // mod keys
-const key_types VKB_ALT = KEY_ALT;
-const key_types VKB_HIDE_KB = KEY_F1;
-const key_types VKB_SHIFT = KEY_SHIFT;
+const mws_key_types VKB_ALT = mws_key_alt;
+const mws_key_types VKB_HIDE_KB = mws_key_f1;
+const mws_key_types VKB_SHIFT = mws_key_shift;
 // special keys
-const key_types VKB_ESCAPE = KEY_ESCAPE;
-const key_types VKB_DONE = KEY_END;
-const key_types VKB_ENTER = KEY_ENTER;
-const key_types VKB_BACKSPACE = KEY_BACKSPACE;
-const key_types VKB_DELETE = KEY_DELETE;
-const key_types VKB_NEXT_SCREEN = KEY_F2;
-const key_types VKB_PREV_SCREEN = KEY_F3;
+const mws_key_types VKB_ESCAPE = mws_key_escape;
+const mws_key_types VKB_DONE = mws_key_end;
+const mws_key_types VKB_ENTER = mws_key_enter;
+const mws_key_types VKB_BACKSPACE = mws_key_backspace;
+const mws_key_types VKB_DELETE = mws_key_delete;
+const mws_key_types VKB_NEXT_SCREEN = mws_key_f2;
+const mws_key_types VKB_PREV_SCREEN = mws_key_f3;
 
 
 enum class key_mod_types
@@ -55,7 +55,7 @@ struct vkb_info
 struct vkb_file_info
 {
    vkb_info info;
-   mws_sp<pfm_file> file;
+   mws_sp<mws_file> file;
 };
 
 
@@ -72,7 +72,7 @@ protected:
 };
 
 
-class mws_vkb_impl : public mws
+class mws_vkb_impl : public mws_obj
 {
 public:
    static inline const float key_lights_off_seconds = 2.5f;
@@ -96,15 +96,15 @@ public:
    virtual void done();
    // returns keyboard dimensions
    virtual glm::ivec2 get_dimensions() const;
-   virtual std::string get_key_name(key_types i_key_id) const;
-   virtual key_types get_key_type(const std::string& i_key_name) const;
+   virtual std::string get_key_name(mws_key_types i_key_id) const;
+   virtual mws_key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
-   virtual std::vector<key_types>& get_key_vect();
+   virtual std::vector<mws_key_types>& get_key_vect();
    virtual uint32 get_key_vect_size();
    // returns the key id at position i_idx
-   virtual key_types get_key_at(int i_idx);
+   virtual mws_key_types get_key_at(int i_idx);
    // returns the key id at position 'i_idx' in mod 'i_key_mod'
-   virtual key_types get_mod_key_at(key_mod_types i_key_mod, int i_idx);
+   virtual mws_key_types get_mod_key_at(key_mod_types i_key_mod, int i_idx);
    virtual void next_page();
    virtual void prev_page();
    virtual void set_on_top();
@@ -113,7 +113,7 @@ public:
    virtual void build_keys_tex();
    virtual void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx);
    virtual mws_sp<mws_font> get_key_font() const { return letter_font; }
-   virtual bool is_mod_key(key_types i_key_id);
+   virtual bool is_mod_key(mws_key_types i_key_id);
    // check if i_mod_key is pressed or locked
    enum class mod_key_types { alt = VKB_ALT, hide_vkb = VKB_HIDE_KB, shift = VKB_SHIFT, };
    enum class base_key_state_types { key_free, key_held, key_locked, };
@@ -166,9 +166,9 @@ protected:
    virtual void set_key_transparency(float i_alpha);
    virtual void draw_keys(mws_sp<mws_draw_text> i_dt, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
    virtual void set_key_vect_size(uint32 i_size);
-   virtual void set_key_at(int i_idx, key_types i_key_id);
+   virtual void set_key_at(int i_idx, mws_key_types i_key_id);
    virtual void erase_key_at(int i_idx);
-   virtual void push_back_key(key_types i_key_id);
+   virtual void push_back_key(mws_key_types i_key_id);
    virtual bool touch_began(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    virtual bool touch_moved(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
    virtual bool touch_ended(mws_sp<mws_ptr_evt> i_crt, mws_sp<mws_text_area> i_ta);
@@ -186,17 +186,17 @@ protected:
    glm::ivec2 vkb_dim = glm::ivec2(0);
    glm::vec2 diag_original_dim = glm::vec2(0.f);
    key_mod_types key_mod = key_mod_types::mod_none;
-   std::vector<key_types> key_mod_vect[(uint32)key_mod_types::count];
-   std::unordered_map<key_types, std::string> key_map;
+   std::vector<mws_key_types> key_mod_vect[(uint32)key_mod_types::count];
+   std::unordered_map<mws_key_types, std::string> key_map;
    int map_idx = 0;
    uint32 crt_page_idx = 0;
    struct key_highlight { int key_idx; uint32 release_time; };
    std::vector<key_highlight> highlight_vect;
    double_tap_detector dbl_tap_det;
-   struct base_key_state { key_types key_id; base_key_state_types state; uint8 pressed_count; };
+   struct base_key_state { mws_key_types key_id; base_key_state_types state; uint8 pressed_count; };
    std::vector<base_key_state> base_key_st;
    mws_sp<mws_ptr_evt> prev_ptr_evt;
-   std::unordered_map<int, key_types> mod_keys_st;
+   std::unordered_map<int, mws_key_types> mod_keys_st;
    const float fade_duration_in_seconds = 0.85f;
    basic_time_slider<float> fade_slider;
    enum class fade_types { e_none, e_hide_vkb, e_show_vkb };
@@ -227,7 +227,7 @@ public:
    static mws_sp<mws_vkb> gi();
    virtual ~mws_vkb() {}
    // i_key_id is not actually a key id, but a position index for the points on the keyboard
-   virtual key_types apply_key_modifiers(key_types i_key_id) const override;
+   virtual mws_key_types apply_key_modifiers(mws_key_types i_key_id) const override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
    virtual void update_state() override;
    virtual void on_resize() override;

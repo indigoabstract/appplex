@@ -209,7 +209,7 @@ public:
 
       // show date of recording
       {
-         auto crt_date_str = mws_util::time::get_current_date();
+         auto crt_date_str = mws::time::get_current_date();
          auto txt_dim = date_fnt->get_text_dim(crt_date_str);
          float px = width - txt_dim.x;
          float py = height - txt_dim.y;
@@ -473,31 +473,6 @@ mws_mod::app_storage::app_storage()
    p = std::make_unique<app_storage_impl>();
 }
 
-mws_sp<std::vector<uint8> > mws_mod::app_storage::load_mod_byte_vect(string name)
-{
-   return pfm::filesystem::load_mod_byte_vect(p->u.lock(), name);
-}
-
-//shared_array<uint8> mws_mod::app_storage::load_mod_byte_array(string name, int& size)
-//{
-//	return pfm::storage::load_mod_byte_array(u.lock(), name, size);
-//}
-
-bool mws_mod::app_storage::store_mod_byte_array(string name, const uint8 * resPtr, int size)
-{
-   return pfm::filesystem::store_mod_byte_array(p->u.lock(), name, resPtr, size);
-}
-
-bool mws_mod::app_storage::store_mod_byte_vect(string name, const std::vector<uint8> & resPtr)
-{
-   return pfm::filesystem::store_mod_byte_vect(p->u.lock(), name, resPtr);
-}
-
-mws_sp<pfm_file> mws_mod::app_storage::random_access(std::string name)
-{
-   return pfm::filesystem::random_access(p->u.lock(), name);
-}
-
 void mws_mod::app_storage::save_screenshot(std::string i_filename)
 {
 #if MOD_GFX && MOD_PNG
@@ -506,7 +481,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
       return;
    }
 
-   mws_sp<pfm_file> screenshot_file;
+   mws_sp<mws_file> screenshot_file;
 
    if (i_filename.empty())
    {
@@ -516,18 +491,17 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
       {
          "00", "0"
       };
-      std::string dir_name = pfm::filesystem::get_tmp_path("screens");
-      auto dir = pfm_path::get_inst(dir_name);
+      mws_path dir = mws::filesys::tmp_dir() / "screens";
       int screenshot_idx = 0;
 
       // if dir doesn't exist, create it
-      if (!dir->exists())
+      if (!dir.exists())
       {
-         bool success = dir->make_dir();
+         bool success = dir.make_dir();
 
          if (!success)
          {
-            mws_println("cannot create dir [ %s ]", dir_name.c_str());
+            mws_println("cannot create dir [ %s ]", dir.string().c_str());
             return;
          }
       }
@@ -556,17 +530,17 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
          }
 
          std::string file_name = mws_to_str_fmt("%s%s", idx_nr.c_str(), img_ext.c_str());
-         screenshot_file = pfm_file::get_inst(dir_name + "/" + file_name);
+         screenshot_file = mws_file::get_inst(dir / file_name);
          screenshot_idx++;
       } while (screenshot_file->exists());
    }
    else
    {
-      screenshot_file = pfm_file::get_inst(i_filename);
+      screenshot_file = mws_file::get_inst(i_filename);
    }
 
    {
-      mws_print("saving screenshot to [ %s ] ... ", screenshot_file->get_full_path().c_str());
+      mws_print("saving screenshot to [ %s ] ... ", screenshot_file->string_path().c_str());
       int w = gfx::i()->rt.get_screen_width();
       int h = gfx::i()->rt.get_screen_height();
       mws_sp<std::vector<uint32>> pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
@@ -620,12 +594,12 @@ mws_mod::mod_type mws_mod::get_mod_type()
 
 int mws_mod::get_width()
 {
-   return pfm::screen::get_width();
+   return mws::screen::get_width();
 }
 
 int mws_mod::get_height()
 {
-   return pfm::screen::get_height();
+   return mws::screen::get_height();
 }
 
 const string& mws_mod::get_name()
@@ -653,14 +627,14 @@ void mws_mod::set_external_name(std::string i_name)
    external_name = i_name;
 }
 
-const std::string& mws_mod::get_proj_rel_path()
+const mws_path& mws_mod::get_proj_rel_path()
 {
    return proj_rel_path;
 }
 
-void mws_mod::set_proj_rel_path(std::string ipath)
+void mws_mod::set_proj_rel_path(std::string i_path)
 {
-   proj_rel_path = ipath;
+   proj_rel_path = i_path;
 }
 
 void mws_mod::set_app_exit_on_next_run(bool iapp_exit_on_next_run)
@@ -670,7 +644,7 @@ void mws_mod::set_app_exit_on_next_run(bool iapp_exit_on_next_run)
 
 bool mws_mod::gfx_available()
 {
-   return pfm::screen::is_gfx_available();
+   return mws::screen::is_gfx_available();
 }
 
 mws_sp<mws_mod> mws_mod::get_smtp_instance()
@@ -701,7 +675,7 @@ bool mws_mod::update()
    if (mod_gfx_on)
    {
       bool force_rebind = false;
-#if defined PLATFORM_IOS
+#if defined MWS_PFM_IOS
       force_rebind = true;
 #endif
       int update_count = 1;//update_ctrl_inst->update();
@@ -741,7 +715,7 @@ bool mws_mod::update()
 
    // update fps
    frame_count++;
-   uint32 now = pfm::time::get_time_millis();
+   uint32 now = mws::time::get_time_millis();
    uint32 dt = now - last_frame_time;
 
    if (dt >= 1000)
@@ -802,13 +776,13 @@ void mws_mod::receive(mws_sp<mws_dp> i_dp)
 
       if (!i_dp->is_processed())
       {
-         if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         if (i_dp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
-            if (ke->get_type() != mws_key_evt::KE_RELEASED)
+            if (ke->get_type() != mws_key_evt::ke_released)
             {
-               if (ke->get_type() != mws_key_evt::KE_REPEATED)
+               if (ke->get_type() != mws_key_evt::ke_repeated)
                {
                   bool key_handled = handle_function_key(ke->get_key());
 
@@ -828,38 +802,38 @@ void mws_mod::process(mws_sp<mws_dp> i_dp)
    i_dp->process(get_smtp_instance());
 }
 
-bool mws_mod::handle_function_key(key_types i_key)
+bool mws_mod::handle_function_key(mws_key_types i_key)
 {
    bool key_handled = true;
 
    switch (i_key)
    {
-   case KEY_F1:
+   case mws_key_f1:
       mws_mod_ctrl::inst()->pause();
       break;
 
-   case KEY_F2:
+   case mws_key_f2:
       mws_mod_ctrl::inst()->resume();
       break;
 
-   case KEY_F3:
-      pfm::screen::flip_screen();
+   case mws_key_f3:
+      mws::screen::flip_screen();
       break;
 
-   case KEY_F4:
+   case mws_key_f4:
       storage.toggle_screen_recording();
       break;
 
-   case KEY_F5:
+   case mws_key_f5:
       storage.save_screenshot();
       break;
 
-   case KEY_F6:
+   case mws_key_f6:
       mws_mod_ctrl::inst()->set_app_exit_on_next_run(true);
       break;
 
-   case KEY_F11:
-      pfm::screen::set_full_screen_mode(!pfm::screen::is_full_screen_mode());
+   case mws_key_f11:
+      mws::screen::set_full_screen_mode(!mws::screen::is_full_screen_mode());
       break;
 
    default:
@@ -888,8 +862,8 @@ void mws_mod::base_init()
       if (mod_input_on)
       {
          update_ctrl_inst = updatectrl::nwi();
-         touch_ctrl_inst = touchctrl::nwi();
-         key_ctrl_inst = key_ctrl::nwi();
+         touch_ctrl_inst = mws_touch_ctrl::nwi();
+         key_ctrl_inst = mws_key_ctrl::nwi();
       }
 
       gfx_scene_inst = mws_sp<gfx_scene>(new gfx_scene());
@@ -1074,7 +1048,7 @@ void mws_mod::base_load()
 {
    fps = 0;
    frame_count = 0;
-   last_frame_time = pfm::time::get_time_millis();
+   last_frame_time = mws::time::get_time_millis();
 
    load();
    //update_ctrl_inst->started();
@@ -1195,7 +1169,7 @@ void mws_mod_list::receive(mws_sp<mws_dp> i_dp)
 {
    if (mod_input_on)
    {
-      if (!i_dp->is_processed() && i_dp->is_type(mws_ptr_evt::TOUCHSYM_EVT_TYPE))
+      if (!i_dp->is_processed() && i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
          mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
       }
@@ -1296,10 +1270,6 @@ void mws_mod_list::init_mws()
 
 #endif
 }
-
-
-mws_wp<mws_mod_list> mws_mod_setup::ul;
-mws_wp<mws_mod> mws_mod_setup::next_crt_mod;
 
 
 mws_sp<mws_mod_list> mws_mod_setup::get_mod_list()

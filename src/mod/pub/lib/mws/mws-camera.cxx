@@ -45,8 +45,8 @@ namespace ns_mws_camera
       {
          int length = seq->r.read_uint32();
          std::vector<char> txt(length);
-         seq->r.read_int8((int8*)begin_ptr(txt), length * sizeof(char), 0);
-         tx = std::string(begin_ptr(txt), length);
+         seq->r.read_int8((int8*)txt.data(), length * sizeof(char), 0);
+         tx = std::string(txt.data(), length);
          x = seq_util::read_float(seq);
          y = seq_util::read_float(seq);
          font_idx = seq->r.read_uint32();

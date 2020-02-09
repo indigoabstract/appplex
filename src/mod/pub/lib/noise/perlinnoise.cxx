@@ -37,7 +37,7 @@ void Perlin::initSettings()
 	float lacunarity = 1.f;
 	float persistence = 0.5f;
 	int octaves = 2;
-	int seed = pfm::time::get_time_millis() & 0x7fffffff;
+	int seed = mws::time::get_time_millis() & 0x7fffffff;
 	setParams(freq, amp, lacunarity, persistence, octaves, seed);
 
 	Perlin::settings.smoothFn = SMOOTHING_ON;

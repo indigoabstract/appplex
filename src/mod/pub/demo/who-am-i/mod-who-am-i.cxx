@@ -33,7 +33,7 @@ mws_sp<mod_who_am_i> mod_who_am_i::nwi()
 void mod_who_am_i::init()
 {
    // set brightness
-   pfm::get_pfm_main_inst()->set_screen_brightness(1.f);
+   mws::screen::set_brightness(1.f);
 }
 
 
@@ -44,7 +44,7 @@ namespace mod_who_am_i_ns
    public:
       virtual void init() override
       {
-         mws_sp<pfm_file> font_file = pfm_file::get_inst("consolas.ttf");
+         mws_sp<mws_file> font_file = mws_file::get_inst("consolas.ttf");
 
          if (font_file->exists())
          {
@@ -57,8 +57,8 @@ namespace mod_who_am_i_ns
             };
             uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
-            mws_font_db::inst()->store_font_metrix(font_file->get_file_name(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
-            font = mws_font::nwi(font_file->get_file_name(), mws_cm(0.35f));
+            mws_font_db::inst()->store_font_metrix(font_file->filename(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
+            font = mws_font::nwi(font_file->filename(), mws_cm(0.35f));
             font->set_color(gfx_color::colors::white);
             mws_font_db::inst()->set_global_font(font);
          }
@@ -71,7 +71,7 @@ namespace mod_who_am_i_ns
             //struct { mws_px x; mws_px y; } letter_dim = { mws_pt(letter_dim_pt.x).to_px(),  mws_pt(letter_dim_pt.y).to_px() };
             mws_sp<mws_camera> g = get_mod()->mws_cam;
             glm::ivec2 tex_dim(256, 512);
-            glm::ivec2 scr_dim(pfm::screen::get_width(), pfm::screen::get_height());
+            glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
 
             gfx_tex_params prm;
             prm.max_anisotropy = 0.f;
@@ -107,7 +107,7 @@ namespace mod_who_am_i_ns
 
          text_0_width = glm::vec3(text_font->get_text_width(who_text), text_font->get_text_width(am_text), text_font->get_text_width(iq_text));
          text_1_width = glm::vec3(text_font->get_text_width(deep_text), text_font->get_text_width(dreamless_text), text_font->get_text_width(sleep_text));
-         last_stage_switch_time = pfm::time::get_time_millis();
+         last_stage_switch_time = mws::time::get_time_millis();
          //stage = stages_types::e_whoami_white_bg_stage;
       }
 
@@ -138,13 +138,13 @@ namespace mod_who_am_i_ns
 
       virtual void update_view(mws_sp<mws_camera> i_g) override
       {
-         uint32 crt_time = pfm::time::get_time_millis();
+         uint32 crt_time = mws::time::get_time_millis();
 
          switch (stage)
          {
          case stages_types::e_i_i_stage:
          {
-            glm::vec2 scr_dim((float)pfm::screen::get_width(), (float)pfm::screen::get_height());
+            glm::vec2 scr_dim((float)mws::screen::get_width(), (float)mws::screen::get_height());
             double v = 1.f;
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -206,8 +206,8 @@ namespace mod_who_am_i_ns
             v = 1.f - v * v * v * v * v * v;
             gfx_color bg = gfx_color::from_float(v, v, v);
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_0_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_0_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, bg);
 
@@ -227,8 +227,8 @@ namespace mod_who_am_i_ns
             const uint32 duration = 3000;
             uint32 delta_t = crt_time - last_stage_switch_time;
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_0_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_0_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -252,8 +252,8 @@ namespace mod_who_am_i_ns
             v = 1.f - v * v * v * v * v;
             gfx_color fg = gfx_color::from_float(v, v, v);
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_0_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_0_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
             text_font->set_color(fg);
@@ -290,8 +290,8 @@ namespace mod_who_am_i_ns
             uint32 delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_1_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -310,8 +310,8 @@ namespace mod_who_am_i_ns
             uint32 delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_1_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -331,8 +331,8 @@ namespace mod_who_am_i_ns
             uint32 delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_1_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -352,8 +352,8 @@ namespace mod_who_am_i_ns
             const uint32 duration = 5000;
             uint32 delta_t = crt_time - last_stage_switch_time;
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_1_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -377,8 +377,8 @@ namespace mod_who_am_i_ns
             v = 1.f - v * v * v * v * v;
             gfx_color fg = gfx_color::from_float(v, v, v);
             float font_height = text_font->get_height();
-            float y_off = (pfm::screen::get_height() - 3.f * font_height) / 2.f;
-            glm::vec3 text_xoff = (glm::vec3((float)pfm::screen::get_width()) - text_1_width) / 2.f;
+            float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
+            glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
             text_font->set_color(fg);

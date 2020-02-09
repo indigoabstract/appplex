@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 #include "appplex-conf.hxx"
 
-#if defined PLATFORM_WINDOWS_PC
+#if defined MWS_PFM_WINDOWS_PC
 
 #include "snd/snd.hxx"
 #include "pfm.hxx"
@@ -272,4 +272,4 @@ void snd::update()
 	fmodSystem->update();
 }
 
-#endif // PLATFORM_WINDOWS_PC
+#endif // MWS_PFM_WINDOWS_PC

@@ -628,15 +628,15 @@ namespace ns_kxmd
       return db;
    }
 
-   mws_sp<kxmd> kxmd::nwi_from_file(const std::string& i_filename)
+   mws_sp<kxmd> kxmd::nwi_from_path(const mws_path& i_path)
    {
-      mws_sp<pfm_file> file = pfm_file::get_inst(i_filename);
+      mws_sp<mws_file> file = mws_file::get_inst(i_path);
       return kxmd::nwi_from_file(file);
    }
 
-   mws_sp<kxmd> kxmd::nwi_from_file(mws_sp<pfm_file> i_file)
+   mws_sp<kxmd> kxmd::nwi_from_file(mws_sp<mws_file> i_file)
    {
-      auto str = pfm::filesystem::load_res_as_string(i_file);
+      auto str = mws::filesys::load_res_as_string(i_file);
       mws_sp<kxmd> db;
 
       if (str)
@@ -934,7 +934,7 @@ namespace ns_kxmd
 
 
    // scanner
-   class kxmd_shared_state : public enable_shared_from_this < kxmd_shared_state >
+   class kxmd_shared_state : public std::enable_shared_from_this < kxmd_shared_state >
    {
    public:
       static mws_sp<kxmd_shared_state> nwi() { return mws_sp<kxmd_shared_state>(new kxmd_shared_state()); }

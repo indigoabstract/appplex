@@ -59,17 +59,17 @@ namespace mod_tex_atlas_ns
 
       virtual void receive(mws_sp<mws_dp> i_dp) override
       {
-         if (i_dp->is_type(mws_key_evt::KEYEVT_EVT_TYPE))
+         if (i_dp->is_type(mws_key_evt::key_evt_type))
          {
             mws_sp<mws_key_evt> ke = mws_key_evt::as_key_evt(i_dp);
 
-            if (ke->get_type() == mws_key_evt::KE_PRESSED)
+            if (ke->get_type() == mws_key_evt::ke_pressed)
             {
                bool do_action = true;
 
                switch (ke->get_key())
                {
-               case KEY_R:
+               case mws_key_r:
                {
                   gen_atlas_regions();
                   fill_sprite_list();

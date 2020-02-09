@@ -19,7 +19,7 @@ class mws_text_box : public mws_text_area
 public:
    static mws_sp<mws_text_box> nwi();
    void setup() override;
-   virtual bool is_action_key(key_types i_key) const override;
+   virtual bool is_action_key(mws_key_types i_key) const override;
    virtual void do_action() override;
    virtual bool is_editable() const;
    virtual void set_editable(bool i_is_editable);
@@ -30,7 +30,7 @@ public:
    virtual void insert_at_cursor(const std::string& i_text);
    virtual void delete_at_cursor(int32 i_count);
    virtual void scroll_text(const glm::vec2& i_off, bool i_snap_to_grid = false);
-   virtual void scroll_to_end(dir_types i_direction);
+   virtual void scroll_to_end(mws_dir_types i_direction);
    virtual void set_position(const glm::vec2& i_position) override;
    virtual void set_size(const glm::vec2& i_size) override;
    virtual void set_font(mws_sp<mws_font> i_font);
@@ -52,7 +52,7 @@ public:
    // called after enter(or an action key) was pressed
    std::function<void()> on_action;
    // called after a key was pressed
-   std::function<void(key_types i_key)> on_key_pressed;
+   std::function<void(mws_key_types i_key)> on_key_pressed;
 
 protected:
    class text_view : public mws_page_item
@@ -127,7 +127,7 @@ class mws_text_field : public mws_text_box
 {
 public:
    static mws_sp<mws_text_field> nwi();
-   virtual bool is_action_key(key_types i_key) const override;
+   virtual bool is_action_key(mws_key_types i_key) const override;
    virtual void insert_at_cursor(const std::string& i_text) override;
    virtual void set_text(const std::string& i_text) override;
 
@@ -160,7 +160,7 @@ public:
    virtual void set_cursor_pos(uint32 i_cursor_pos) override;
    virtual glm::uvec2 get_cursor_coord() override;
    virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) override;
-   virtual void advance_cursor(dir_types i_direction) override;
+   virtual void advance_cursor(mws_dir_types i_direction) override;
 
 protected:
    std::string text;

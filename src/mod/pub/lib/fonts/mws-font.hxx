@@ -28,7 +28,7 @@ struct mws_font_markup
 };
 
 
-class mws_font : public enable_shared_from_this<mws_font>
+class mws_font : public std::enable_shared_from_this<mws_font>
 {
 public:
    static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, float i_size = 0.f, const mws_font_markup* i_markup = nullptr);
@@ -36,11 +36,11 @@ public:
    static mws_sp<mws_font> nwi(mws_sp<mws_font> i_fnt, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
    static mws_sp<mws_font> nwi(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
    mws_sp<mws_font> get_inst();
-   const std::string& get_file_name()const;
-   const std::string& get_full_path()const;
-   std::string get_font_name()const;
-   std::string get_file_extension()const;
-   const std::string& get_root_directory()const;
+   const std::string& filename()const;
+   const std::string& string_path()const;
+   std::string font_name()const;
+   std::string extension()const;
+   mws_path directory()const;
    float get_size()const;
    float get_ascender();
    float get_descender();
