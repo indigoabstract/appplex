@@ -72,9 +72,9 @@ protected:
 class mws_rect
 {
 public:
-   mws_rect();
-   mws_rect(float i_x, float i_y, float i_w, float i_h);
-   void set(float i_x, float i_y, float i_w, float i_h);
+   mws_rect() {}
+   mws_rect(float i_x, float i_y, float i_w, float i_h) { set(i_x, i_y, i_w, i_h); }
+   void set(float i_x, float i_y, float i_w, float i_h) { x = i_x; y = i_y; w = i_w; h = i_h; }
 
    float x = 0.f;
    float y = 0.f;
@@ -108,9 +108,9 @@ class mws_obj : public gfx_node, public mws_node
 public:
    static mws_sp<mws_obj> nwi();
 
+   virtual ~mws_obj() {}
    virtual void init() {}
    virtual void on_destroy() {}
-   virtual ~mws_obj() {}
    mws_sp<mws_obj> get_instance();
 
    virtual gfx_obj::e_gfx_obj_type get_type()const override;
@@ -316,7 +316,7 @@ protected:
 };
 
 
-class mws_text_area : public mws_page_item
+class mws_text_area : public mws_page_item, public mws_text_buffer
 {
 public:
    enum cursor_types

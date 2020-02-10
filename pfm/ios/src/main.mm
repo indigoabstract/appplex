@@ -1,6 +1,6 @@
-#include "main.hxx"
-
+#include "pfm.hxx"
 #include "min.hxx"
+#include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "input/input-ctrl.hxx"
 #include <stdio.h>
@@ -13,9 +13,103 @@
 #include <vector>
 
 
-mws_sp<std::string> load_res_as_string(std::string ifilename)
+class ios_main : public mws_pfm_app
 {
-    auto c_filename = ifilename.c_str();
+public:
+    virtual ~ios_main();
+    void init() override;
+    void start() override;
+    void run() override;
+
+    virtual mws_key_types translate_key(int i_pfm_key_id) const override;
+    virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const override;
+    // screen
+    virtual bool is_full_screen_mode() const override;
+    virtual void set_full_screen_mode(bool i_enabled) const override;
+    virtual float get_screen_scale() const override;
+    virtual float get_screen_brightness() const override;
+    virtual void set_screen_brightness(float i_brightness) const override;
+    // screen metrix
+    virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+    virtual float get_avg_screen_dpi() const override;
+    virtual std::pair<float, float> get_screen_dpi() const override;
+    virtual std::pair<float, float> get_screen_dim_inch() const override;
+    virtual float get_avg_screen_dpcm() const override;
+    virtual std::pair<float, float> get_screen_dpcm() const override;
+    virtual std::pair<float, float> get_screen_dim_cm() const override;
+    // log
+    virtual void write_text(const char* i_text)const override;
+    virtual void write_text_nl(const char* i_text)const override;
+    virtual void write_text(const wchar_t* i_text)const override;
+    virtual void write_text_nl(const wchar_t* i_text)const override;
+    virtual void write_text_v(const char* i_format, ...)const override;
+    virtual std::string get_writable_path()const;
+
+    // filesystem
+    virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
+    virtual const mws_path& prv_dir() const override;
+    virtual const mws_path& res_dir() const override;
+    virtual const mws_path& tmp_dir() const override;
+    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
+    virtual std::string get_timezone_id() const override;
+    virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
+
+    void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
+    void on_resize(uint32 i_screen_width, uint32 i_screen_height);
+	
+    void snd_init(int i_sample_rate, int i_buffer_size);
+    void snd_close();
+
+    int sample_rate;
+    int buffer_size;
+    float screen_scale;
+
+private:
+    std::vector<mws_sp<mws_file> > apk_file_list;
+    umf_list plist = std::make_shared<umf_r>();;
+    bool is_started = false;
+    // screen metrix
+    std::pair<uint32, uint32> screen_res;
+    float avg_screen_dpi = 0.f;
+    std::pair<float, float> screen_dpi;
+    std::pair<float, float> screen_dim_inch;
+    float avg_screen_dpcm = 0.f;
+    std::pair<float, float> screen_dpcm;
+    std::pair<float, float> screen_dim_cm;
+    uint32 screen_width = 0;
+    uint32 screen_height = 0;
+};
+
+
+namespace
+{
+   std::string global_prv_path;
+   std::string global_tmp_path;
+   mws_path prv_path;
+   mws_path res_path;
+   mws_path tmp_path;
+   bool prv_path_exists = false;
+   bool tmp_path_exists = false;
+    mws_sp<ios_main> instance;
+}
+
+
+static mws_sp<ios_main> app_inst()
+{
+   if (!instance)
+   {
+      instance = mws_sp<ios_main>(new ios_main());
+   }
+
+   return instance;
+}
+
+mws_sp<mws_pfm_app> mws_app_inst() { return app_inst(); }
+
+
+mws_sp<std::string> load_res_as_string(std::string i_filename)
+{
+    auto c_filename = i_filename.c_str();
     NSString* nss_filename = [[NSString alloc] initWithUTF8String:c_filename];
     // get the main bundle for the app
     NSBundle* main_bundle = [NSBundle mainBundle];
@@ -48,10 +142,10 @@ mws_sp<std::string> load_res_as_string(std::string ifilename)
 }
 
 
-class ios_file_impl : public pfm_impl::pfm_file_impl
+class ios_file_impl : public mws_impl::mws_file_impl
 {
 public:
-	ios_file_impl(const std::string& ifilename, const std::string& iroot_dir) : pfm_impl::pfm_file_impl(ifilename, iroot_dir)
+	ios_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
 	{
 	}
 
@@ -91,21 +185,21 @@ public:
 
 	virtual uint64 creation_time() const override
 	{
-		std::string path = ppath.get_full_path();
+		std::string path = ppath.string();
 
 		return 0;
 	}
 
 	virtual uint64 last_write_time() const override
 	{
-		std::string path = ppath.get_full_path();
+		std::string path = ppath.string();
 
 		return 0;
 	}
 
 	virtual bool open_impl(std::string i_open_mode) override
 	{
-		std::string path = ppath.get_full_path();
+		std::string path = ppath.string();
         std::string path_in_bundle = get_path_in_bundle(path.c_str());
         std::string* path_ptr = nullptr;
         
@@ -157,7 +251,7 @@ public:
         }
         else
         {
-            mws_print("error[ file [ %s ] is not open! ]", ppath.get_full_path().c_str());
+            mws_print("error[ file [ %s ] is not open! ]", ppath.string().c_str());
         }
     }
 
@@ -171,14 +265,14 @@ public:
         return ftell(file);
 	}
 
-	virtual int read_impl(uint8* ibuffer, int isize) override
+	virtual int read_impl(uint8* i_buffer, int i_size) override
 	{
-        return (int)fread(ibuffer, 1, isize, file);
+        return (int)fread(i_buffer, 1, i_size, file);
 	}
 
-	virtual int write_impl(const uint8* ibuffer, int isize) override
+	virtual int write_impl(const uint8* i_buffer, int i_size) override
 	{
-        return (int)fwrite(ibuffer, 1, isize, file);
+        return (int)fwrite(i_buffer, 1, i_size, file);
 	}
     
     static std::string get_path_in_bundle(std::string i_filename)
@@ -204,37 +298,36 @@ public:
 };
 
 
-mws_sp<ios_main> ios_main::instance;
-
-ios_main::ios_main()
-{
-	plist = std::make_shared<umf_r>();
-	is_started = false;
-}
-
 ios_main::~ios_main()
 {
 }
 
-mws_sp<ios_main> ios_main::get_instance()
-{
-	if (!instance)
-	{
-		instance = mws_sp<ios_main>(new ios_main());
-	}
+mws_key_types ios_main::translate_key(int i_pfm_key_id) const { return i_pfm_key_id; }
+mws_key_types ios_main::apply_key_modifiers_impl(mws_key_types i_key_id) const { return i_key_id; }
 
-	return instance;
+
+bool ios_main::is_full_screen_mode() const
+{
+	return true;
 }
 
-mws_sp<pfm_impl::pfm_file_impl> ios_main::new_pfm_file_impl(const std::string& ifilename, const std::string& iroot_dir)
+void ios_main::set_full_screen_mode(bool ienabled) const
 {
-	return std::make_shared<ios_file_impl>(ifilename, iroot_dir);
 }
 
-key_types ios_main::translate_key(int i_pfm_key_id) const { return i_pfm_key_id; }
-key_types ios_main::apply_key_modifiers_impl(key_types i_key_id) const { return i_key_id; }
+float ios_main::get_screen_scale() const
+{
+	return screen_scale;
+}
 
-// screen metrix
+float ios_main::get_screen_brightness() const
+{
+    return 1.f;
+}
+
+void ios_main::set_screen_brightness(float i_brightness) const 
+{}
+
 std::pair<uint32, uint32> ios_main::get_screen_res_px() const { return screen_res; }
 float ios_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
 std::pair<float, float> ios_main::get_screen_dpi() const { return screen_dpi; }
@@ -242,6 +335,7 @@ std::pair<float, float> ios_main::get_screen_dim_inch() const { return screen_di
 float ios_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
 std::pair<float, float> ios_main::get_screen_dpcm() const { return screen_dpcm; }
 std::pair<float, float> ios_main::get_screen_dim_cm() const { return screen_dim_cm; }
+
 
 void ios_main::write_text(const char* text) const
 {
@@ -285,6 +379,48 @@ std::string ios_main::get_writable_path() const
     return output_path;
 }
 
+mws_sp<mws_impl::mws_file_impl> ios_main::new_mws_file_impl(const mws_path& i_path)
+{
+	return std::make_shared<ios_file_impl>(i_path);
+}
+
+const mws_path& ios_main::prv_dir() const
+{
+   if (!prv_path_exists)
+   {
+      prv_path_exists = make_directory(prv_path);
+   }
+
+   return prv_path;
+}
+
+const mws_path& ios_main::res_dir() const
+{
+   return res_path;
+}
+
+const mws_path& ios_main::tmp_dir() const
+{
+   if (!tmp_path_exists)
+   {
+      tmp_path_exists = make_directory(tmp_path);
+   }
+
+   return tmp_path;
+}
+
+void ios_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
+{
+   std::string mod_dir = i_crt_mod->get_name() + "/";
+
+   mws_assert(i_crt_mod != nullptr);
+   prv_path = mws_path(get_writable_path());
+   res_path = mws_path(get_path_in_bundle(""), false);
+   tmp_path = mws_path(get_writable_path());
+   prv_path_exists = false;
+   tmp_path_exists = false;
+}
+
 std::string ios_main::get_timezone_id()const
 {
     NSTimeZone* time_zone = [NSTimeZone localTimeZone];
@@ -295,28 +431,28 @@ std::string ios_main::get_timezone_id()const
     return name;
 }
 
-void get_directory_listing_helper(umf_list iplist, mws_sp<pfm_file> ifile)
+void get_directory_listing_helper(umf_list i_plist, mws_sp<mws_file> i_file)
 {
-	if (iplist->find(ifile->get_file_name()) != iplist->end())
+	if (i_plist->find(i_file->get_file_name()) != i_plist->end())
 	{
-		mws_print("ios_main::get_directory_listing. duplicate filename: %s", ifile->get_full_path().c_str());
-		throw mws_exception("duplicate filename: " + ifile->get_full_path());
+		mws_print("ios_main::get_directory_listing. duplicate filename: %s", i_file->string().c_str());
+		throw mws_exception("duplicate filename: " + i_file->string());
 	}
 
-	(*iplist)[ifile->get_file_name()] = ifile;
+	(*i_plist)[i_file->get_file_name()] = i_file;
 }
 
-umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list iplist, bool is_recursive)
+umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list i_plist, bool i_is_recursive)
 {
 	if (!idirectory.empty())
 	{
-		if (is_recursive)
+		if (i_is_recursive)
 		{
 			for (auto& e : apk_file_list)
 			{
 				if (mws_str::starts_with(e->get_root_directory(), idirectory))
 				{
-					get_directory_listing_helper(iplist, e);
+					get_directory_listing_helper(i_plist, e);
 				}
 			}
 		}
@@ -326,37 +462,17 @@ umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list
 			{
 				if (idirectory == e->get_root_directory())
 				{
-					get_directory_listing_helper(iplist, e);
+					get_directory_listing_helper(i_plist, e);
 				}
 			}
 		}
 	}
 
-	return iplist;
-}
-
-float ios_main::get_screen_scale() const
-{
-	return screen_scale;
-}
-
-bool ios_main::is_full_screen_mode() const
-{
-	return true;
-}
-
-void ios_main::set_full_screen_mode(bool ienabled)
-{
-}
-
-void ios_main::load_apk_file_list()
-{
+	return i_plist;
 }
 
 void ios_main::init()
 {
-	load_apk_file_list();
-
    // screen metrix
    {
       float horizontal_screen_dpi = 480.f;
@@ -367,9 +483,16 @@ void ios_main::init()
    
 	mws_mod_ctrl::inst()->pre_init_app();
 	mws_mod_ctrl::inst()->set_gfx_available(true);
+    auto start_mod = mws_mod_ctrl::inst()->get_app_start_mod();
+
+    if (start_mod)
+    {
+        auto mod_pref = start_mod->get_preferences();
+        mws_log::set_enabled(mod_pref->log_enabled());
+    }
+
 	mws_mod_ctrl::inst()->init_app();
 
-    //auto s = load_res_as_string("rectangle.png");
 	is_started = true;
 }
 

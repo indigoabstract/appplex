@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
+#include "input/input-def.hxx"
 #include <cstdio>
 #include <vector>
 #include <unordered_map>
@@ -153,7 +154,7 @@ public:
    virtual void write_text_v(const char* i_format, ...) const = 0;
 
    // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_pfm_file_impl(const mws_path& i_path) const = 0;
+   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const = 0;
    virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const = 0;
    // writable/private/persistent files directory for the current mod
    virtual const mws_path& prv_dir() const = 0;
@@ -184,8 +185,6 @@ public:
       static const mws_path& res_dir();
       // temporary files directory
       static const mws_path& tmp_dir();
-      // makes a directory from 2 paths. returns true on success
-      bool make_dir(const mws_path& i_path_left, const mws_path& i_path_right);
    };
 
 
@@ -259,7 +258,7 @@ public:
    {
       static std::string get_timezone_id();
       static uint32 get_time_millis();
-      static std::string get_current_date();
+      static std::string get_current_date(const std::string& i_fmt = "");
       static std::string get_duration_as_string(uint32 i_duration);
    };
 
@@ -461,6 +460,14 @@ private:
 };
 
 
+class mws_text_buffer
+{
+public:
+   virtual void push_front(const char* i_msg) = 0;
+   virtual void clear() = 0;
+};
+
+
 class mws_log
 {
 public:
@@ -471,11 +478,10 @@ public:
    virtual void push(const char* i_msg);
    virtual void pushf(const char* i_fmt, ...);
    virtual void clear();
+   virtual void set_text_buffer(mws_sp<mws_text_buffer> i_text_buffer);
 
 protected:
    mws_log();
-   static mws_sp<mws_log> inst;
-   static bool enabled;
 };
 
 

@@ -10,22 +10,22 @@ extern "C" {
 
  
 extern jobject  g_obj;
-extern JavaVM*  g_pJavaVM;
+extern JavaVM*  g_p_java_vm;
 
 void PreCall(JNIEnv** env, int* isAttached)
 {
 	(*isAttached) = 0;
 	#ifdef __cplusplus
-		int status = (g_pJavaVM)->GetEnv((void**)env, JNI_VERSION_1_4);
+		int status = (g_p_java_vm)->GetEnv((void**)env, JNI_VERSION_1_4);
 	#else
-		int status = (*g_pJavaVM)->GetEnv(g_pJavaVM, (void**)env, JNI_VERSION_1_4);
+		int status = (*g_p_java_vm)->GetEnv(g_p_java_vm, (void**)env, JNI_VERSION_1_4);
 	#endif
 	if (status < 0)
 	{
 		#ifdef __cplusplus
-			status = (g_pJavaVM)->AttachCurrentThread(env, NULL);
+			status = (g_p_java_vm)->AttachCurrentThread(env, NULL);
 		#else
-			status = (*g_pJavaVM)->AttachCurrentThread(g_pJavaVM, env, NULL);
+			status = (*g_p_java_vm)->AttachCurrentThread(g_p_java_vm, env, NULL);
 		#endif
 		if (status < 0)
 		{
@@ -40,9 +40,9 @@ void PostCall(int isAttached)
 	if (isAttached)
 	{
 		#ifdef __cplusplus
-			(g_pJavaVM)->DetachCurrentThread();
+			(g_p_java_vm)->DetachCurrentThread();
 		#else
-			(*g_pJavaVM)->DetachCurrentThread(g_pJavaVM);
+			(*g_p_java_vm)->DetachCurrentThread(g_p_java_vm);
 		#endif
 	}
 }

@@ -170,6 +170,16 @@ void mws_text_box::set_text(const std::string& i_text)
    select_char_at(glm::vec2(0.f));
 }
 
+void mws_text_box::push_front(const char* i_msg)
+{
+   push_front_text(i_msg);
+}
+
+void mws_text_box::clear()
+{
+   set_text("");
+}
+
 void mws_text_box::push_back_text(const std::string& i_text)
 {
    if (!tx_src)

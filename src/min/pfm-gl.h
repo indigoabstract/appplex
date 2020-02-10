@@ -1,13 +1,14 @@
 #pragma once
 // common c/c++ code.
 
+#include "pfm-def.h"
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif 
 
-
-#include "pfm-def.h"
 
 #define MWS_OPENGL_ES_2_0 20
 #define MWS_OPENGL_ES_3_0 30

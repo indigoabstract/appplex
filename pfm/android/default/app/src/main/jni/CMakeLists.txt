@@ -2,7 +2,6 @@ target_sources(app_plex_main
     PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/java-callbacks.h"
 	"${CMAKE_CURRENT_LIST_DIR}/jni-helper.hxx"
-	"${CMAKE_CURRENT_LIST_DIR}/main.hxx"
     PRIVATE
 	"${CMAKE_CURRENT_LIST_DIR}/java-callbacks.c"
 	"${CMAKE_CURRENT_LIST_DIR}/jni-helper.cxx"

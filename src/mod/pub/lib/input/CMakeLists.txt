@@ -1,6 +1,7 @@
 set(headers
 	"${CMAKE_CURRENT_LIST_DIR}/gesture-detectors.hxx"
 	"${CMAKE_CURRENT_LIST_DIR}/input-ctrl.hxx"
+	"${CMAKE_CURRENT_LIST_DIR}/input-def.hxx"
 	"${CMAKE_CURRENT_LIST_DIR}/transitions.hxx"
 	"${CMAKE_CURRENT_LIST_DIR}/update-ctrl.hxx"
 	"${CMAKE_CURRENT_LIST_DIR}/mod-input.hxx"

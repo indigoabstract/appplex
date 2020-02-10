@@ -6,6 +6,7 @@
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "mod-list.hxx"
+#include "data-sequence.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 
 #include <cstdio>
@@ -14,6 +15,7 @@
 #include <cstdarg>
 #include <cassert>
 #include <ctime>
+#include <iomanip>
 #include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -21,30 +23,12 @@
 
 mws_sp<mws_pfm_app> mws_app_inst();
 
+
 // platform specific code
-#if defined MWS_PFM_ANDROID
+#if defined MWS_POSIX_API
 
-
-#include "main.hxx"
-#include <sys/stat.h>
 
 const std::string dir_separator = "/";
-
-mws_pfm_id mws::get_platform_id()
-{
-   return mws_pfm_android;
-}
-
-mws_gfx_type mws::get_gfx_type_id()
-{
-   return mws_gfx_opengl_es;
-}
-
-#include <android/log.h>
-
-// trace
-#define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
-#define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
 
 uint32 mws::time::get_time_millis()
 {
@@ -70,9 +54,35 @@ std::string mws_path::current_path()
 }
 
 
+#endif
+
+
+#if defined MWS_PFM_ANDROID
+
+
+#include <sys/stat.h>
+
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_android;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl_es;
+}
+
+#include <android/log.h>
+
+// trace
+#define os_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
+#define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
+
+
+
 #elif defined MWS_PFM_IOS
 
-#include "main.hxx"
 #include <sys/stat.h>
 
 
@@ -88,34 +98,9 @@ mws_gfx_type mws::get_gfx_type_id()
    return mws_gfx_opengl_es;
 }
 
-uint32 mws::time::get_time_millis()
-{
-   struct timespec ts;
-
-   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-   {
-      mws_app_inst()->write_text_nl("error");
-   }
-
-   return uint32(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-}
-
-bool mws_path::make_dir() const
-{
-   int rval = mkdir(string().c_str(), 0777);
-   return (rval == 0);
-}
-
-std::string mws_path::current_path()
-{
-   return "";
-}
-
 
 #elif defined MWS_PFM_EMSCRIPTEN
 
-
-#include "main.hxx"
 
 const std::string dir_separator = "/";
 
@@ -325,6 +310,9 @@ namespace mws_impl
 {
    std::string res_files_mod_name;
    umf_list res_files_map;
+   mws_sp<mws_log> mws_log_inst;
+   bool mws_log_enabled = false;
+   std::string mws_log_file_name = "app-log";
 
    void print_type_sizes()
    {
@@ -540,6 +528,7 @@ namespace mws_impl
       return fwrite(i_buffer, 1, i_size, get_file_impl());
    }
 }
+using namespace mws_impl;
 
 
 mws_file::mws_file()
@@ -586,7 +575,7 @@ mws_sp<mws_file> mws_file::get_inst(const mws_path& i_path)
    if (!inst)
    {
       inst = mws_sp<mws_file>(new mws_file());
-      inst->io.impl = mws_app_inst()->new_pfm_file_impl(i_path);
+      inst->io.impl = mws_app_inst()->new_mws_file_impl(i_path);
    }
 
    return inst;
@@ -859,8 +848,7 @@ bool mws_path::exists() const
 
    // external(non-resource file). use stat() to check for existence
    struct stat info;
-   std::string full_path = string();
-   bool exists = (stat(full_path.c_str(), &info) == 0);
+   bool exists = (stat(string().c_str(), &info) == 0);
 
    return exists;
 }
@@ -915,7 +903,7 @@ mws_path mws_path::directory() const
 
 mws_path mws_path::parent_path() const
 {
-   auto pos_0 = path.find_last_of('/');
+   size_t pos_0 = path.find_last_of('/');
    int64 pos = -1;
 
    if (pos_0 == std::string::npos)
@@ -924,7 +912,7 @@ mws_path mws_path::parent_path() const
    }
    else if (pos_0 != std::string::npos)
    {
-      pos = pos_0;
+      pos = (int64)pos_0 + 1;
    }
 
    return mws_path(std::string(path.begin(), path.begin() + (size_t)pos), regular_path);
@@ -933,7 +921,7 @@ mws_path mws_path::parent_path() const
 mws_sp<std::vector<mws_sp<mws_file>>> mws_path::list_directory(bool i_recursive) const
 {
    auto file_list = std::make_shared<std::vector<mws_sp<mws_file>> >();
-   std::string base_dir = parent_path().string();
+   std::string base_dir = directory().string();
 
    if (mws_str::starts_with(base_dir, mws::filesys::res_dir().string()))
    {
@@ -1174,11 +1162,6 @@ const mws_path& mws::filesys::tmp_dir()
    return mws_app_inst()->tmp_dir();
 }
 
-bool mws::filesys::make_dir(const mws_path& i_path_left, const mws_path& i_path_right)
-{
-   return false;
-}
-
 
 // input
 mws_key_types mws::input::translate_key(int i_pfm_key_id) { return mws_app_inst()->translate_key(i_pfm_key_id); }
@@ -1278,14 +1261,16 @@ std::string mws::time::get_timezone_id()
    return mws_app_inst()->get_timezone_id();
 }
 
-std::string mws::time::get_current_date()
+std::string mws::time::get_current_date(const std::string& i_fmt)
 {
+   static const char* def_fmt = "%a %b %d %H:%M:%S %Y";
+   const char* fmt = (i_fmt.empty()) ? def_fmt : i_fmt.c_str();
    std::time_t t = std::time(nullptr);
 #pragma warning(suppress : 4996)
    std::tm tm = *std::localtime(&t);
    std::stringstream ss;
 
-   ss << std::put_time(&tm, "%a %b %d %H:%M:%S %Y");
+   ss << std::put_time(&tm, fmt);
 
    auto s = ss.str();
 
@@ -1309,6 +1294,248 @@ std::string mws::time::get_duration_as_string(uint32 i_duration)
 
    return duration;
 }
+
+
+class mws_log_impl : public mws_log
+{
+public:
+   mws_log_impl()
+   {
+      //auto leapseconds_file = mws_file::get_inst("leapseconds");
+      //std::string tzdb_path = leapseconds_file->directory().string();
+      //date::set_install(tzdb_path);
+
+      load();
+   }
+
+   virtual const std::vector<std::string> get_log() override
+   {
+      std::lock_guard<std::mutex> lock(sync_mx);
+      return log;
+   }
+
+   virtual void push(const char* i_msg) override
+   {
+      std::lock_guard<std::mutex> lock(sync_mx);
+      push_impl(i_msg);
+   }
+
+   virtual void pushf(const char* i_fmt, ...) override
+   {
+      char dest[16000];
+      va_list arg_ptr;
+
+      va_start(arg_ptr, i_fmt);
+      vsnprintf(dest, 16000 - 1, i_fmt, arg_ptr);
+      va_end(arg_ptr);
+
+      push(dest);
+   }
+
+   virtual void clear() override
+   {
+      std::lock_guard<std::mutex> lock(sync_mx);
+      check_log_file();
+
+      if (log_file->is_opened())
+      {
+         log_file->io.close();
+      }
+
+      log_file->io.open("wb");
+      log_file->io.close();
+
+      log.clear();
+
+      if (text_buffer)
+      {
+         text_buffer->clear();
+      }
+
+//#ifdef MWS_DEBUG_BUILD
+//
+//      if (app_i())
+//      {
+//         im& app_im = app_i()->i_m<im>();
+//
+//         if (app_im.log_pg->text_box)
+//         {
+//            app_im.log_pg->text_box->set_text("");
+//         }
+//      }
+//
+//#endif
+   }
+
+   virtual void set_text_buffer(mws_sp<mws_text_buffer> i_text_buffer) override
+   {
+      text_buffer = i_text_buffer;
+   }
+
+private:
+   void load()
+   {
+      std::lock_guard<std::mutex> lock(sync_mx);
+      mws_path log_path = mws::filesys::tmp_dir() / mws_log_file_name;
+      log_file = mws_file::get_inst(log_path);
+
+      if (log_file && log_file->exists())
+      {
+         log_file->io.open("rb");
+
+         auto res_rw = rw_file_sequence::nwi(log_file);
+         uint64 file_length = log_file->length();
+
+         while (res_rw->get_read_position() < file_length)
+         {
+            std::string line = res_rw->r.read_string();
+            log.push_back(line);
+         }
+
+         log_file->io.close();
+      }
+   }
+
+   void push_impl(const char* i_msg)
+   {
+      //if (app_i() && !app_i()->i_m_is_null())
+      //{
+      //   auto st = app_settings::i();
+      //   auto tz = st->get_current_timezone();
+      //   auto tp_now = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+      //   std::string date = time_utils::get_date(tp_now, tz);
+      //   std::string msg = date + "[ " + i_msg + std::string(" ]\n");
+
+      //   push_verbatim(msg);
+      //}
+      //else
+      //{
+      //   trx("error[ mws_mod instance is null. msg[ {} ] ]", i_msg);
+      //}
+      std::string msg = mws::time::get_current_date("%Y-%m-%d %H:%M:%S") + "[ " + i_msg + std::string(" ]\n");
+      push_verbatim(msg);
+   }
+
+   void push_verbatim(const std::string& i_msg)
+   {
+      check_log_file();
+      log.push_back(i_msg);
+
+      if (log_file && log_file->is_opened())
+      {
+         auto res_rw = rw_file_sequence::nwi(log_file);
+
+         res_rw->w.write_string(i_msg);
+         log_file->io.flush();
+      }
+
+      if (text_buffer)
+      {
+         text_buffer->push_front(i_msg.c_str());
+      }
+     
+//#ifdef MWS_DEBUG_BUILD
+//
+//      if (app_i() && !app_i()->i_m_is_null())
+//      {
+//         im& app_im = app_i()->i_m<im>();
+//
+//         if (app_im.log_pg)
+//         {
+//            if (!console_active)
+//            {
+//               if (app_im.log_pg->text_box)
+//               {
+//                  std::string buf;
+//                  console_active = true;
+//
+//                  // most recent entries are top most in the console
+//                  for (int k = log.size() - 1; k >= 0; k--)
+//                  {
+//                     buf += log[k];
+//                  }
+//
+//                  app_im.log_pg->text_box->set_text(buf);
+//               }
+//            }
+//            else
+//            {
+//               if (app_im.log_pg->text_box)
+//               {
+//                  app_im.log_pg->text_box->push_front_text(i_msg);
+//               }
+//            }
+//         }
+//      }
+//
+//#endif
+   }
+
+   void check_log_file()
+   {
+      if (!log_file)
+      {
+         mws_path log_path = mws::filesys::tmp_dir() / mws_log_file_name;
+         log_file = mws_file::get_inst(log_path);
+      }
+
+      if (log_file)
+      {
+         if (!log_file->is_opened())
+         {
+            log_file->io.open("ab");
+         }
+      }
+   }
+
+   bool console_active = false;
+   std::vector<std::string> log;
+   mws_sp<mws_file> log_file;
+   std::mutex sync_mx;
+   mws_sp<mws_text_buffer> text_buffer;
+};
+
+
+bool mws_log::is_enabled() { return mws_log_enabled; }
+
+void mws_log::set_enabled(bool i_is_enabled)
+{
+   mws_log_enabled = i_is_enabled;
+   mws_log_inst = nullptr;
+}
+
+mws_sp<mws_log> mws_log::i()
+{
+   if (!mws_log_inst)
+   {
+      if (mws_log_enabled)
+      {
+         mws_log_inst = mws_sp<mws_log>(new mws_log_impl());
+      }
+      else
+      {
+         mws_log_inst = mws_sp<mws_log>(new mws_log());
+      }
+   }
+
+   return mws_log_inst;
+}
+
+const std::vector<std::string> mws_log::get_log()
+{
+   if (mws_log_enabled)
+   {
+      return mws_log_inst->get_log();
+   }
+
+   return std::vector<std::string>();
+}
+
+void mws_log::push(const char*) {}
+void mws_log::pushf(const char*, ...) {}
+void mws_log::clear() {}
+void mws_log::set_text_buffer(mws_sp<mws_text_buffer> i_text_buffer) {}
+mws_log::mws_log() {}
 
 
 std::string mws_to_str_fmt(const char* i_format, ...)

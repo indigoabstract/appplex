@@ -9,9 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 public class AlarmService extends IntentService
 {
@@ -45,18 +44,21 @@ public class AlarmService extends IntentService
         pendingIntent = PendingIntent.getActivity(context, tagId, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Resources res = this.getResources();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        String channel_id = "channel_id";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id);
 
         // Build the notification (using default preferences).
-        builder.setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.icon)
+        builder.setSmallIcon(R.drawable.icon)
                 .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.icon))
                 .setTicker("haiku1break")
                 .setAutoCancel(true)
                 .setContentTitle("haiku2break")
                 .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
                 //.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification))
-                .setDefaults(Notification.DEFAULT_LIGHTS);
+                .setDefaults(Notification.DEFAULT_LIGHTS)
+                .setFullScreenIntent(pendingIntent, true);
 
         // Fire it.
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);

@@ -2,6 +2,7 @@ package com.indigoabstract.appplex;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -151,32 +152,10 @@ public class main extends Activity
 		super.onCreate(i_saved_instance_state);
 
         original_screen_brightness = get_screen_brightness();
-		// test getting external storage directories
-        File primaryExtSd=Environment.getExternalStorageDirectory();
-        File[] files1 = primaryExtSd.listFiles();
-        File parentDir=new File(primaryExtSd.getParent());
-        File[] files2 = parentDir.listFiles();
 
-        String[] dirs = getStorageDirectories();
-		File ff=new File(dirs[0]);
-		File[] files3 = ff.listFiles();
-//        File[][] listf = new File[dirs.length][];
-//
-//        for (int k = 0; k < dirs.length; k++)
-//        {
-//            File f = new File(dirs[k]);
-//            File[] lst = f.listFiles();
-//            listf[k] = lst;
-//        }
-
-        String files_dir = getFilesDir().getPath();
-		File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "dk");
-		String str = file.getPath();
-		native_set_writable_path(files_dir);
-//		if(dirs != null && dirs.length > 1)
-//		{
-//			native_set_writable_path(dirs[1]);
-//		}
+        String prv_dir = getFilesDir().getPath();
+        String tmp_dir = getCacheDir().getPath();
+        native_set_prv_tmp_dirs(prv_dir, tmp_dir);
 
 		PACKAGE_NAME = getApplicationContext().getPackageName();
 		ApplicationInfo appInfo = null;
@@ -220,6 +199,7 @@ public class main extends Activity
 	{
 		Log.i("activity_life_cycle", "main.onStart()");
 		super.onStart();
+        createNotificationChannel();
         opensl_conf params = opensl_conf.createInstance(this);
 		native_snd_init(params.get_sample_rate(), params.get_buffer_size());
     }
@@ -351,6 +331,25 @@ public class main extends Activity
                 inst().back_press();
             }
         });
+    }
+
+    private void createNotificationChannel()
+    {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            CharSequence name = "channel_name";
+            String description = "channel_description";
+            String channel_id = "channel_id";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channel_id, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private static void schedule_alarm(int i_alarm_type, long i_trigger_at_millis, PendingIntent i_operation)
@@ -532,7 +531,7 @@ public class main extends Activity
 	private static native boolean native_back_evt();
 	private static native void native_snd_init(int i_sample_rate, int i_buffer_size);
 	private static native void native_snd_close();
-	private native void native_set_writable_path(String i_writable_path);
+	private native void native_set_prv_tmp_dirs(String i_prv_dir, String i_tmp_dir);
 
     private DisplayMetrics display_metrics;
 	private static main instance = null;

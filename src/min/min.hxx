@@ -67,19 +67,19 @@ struct mws_str
    static std::wstring to_wstr(const std::string& i_input);
    static std::string to_str(const std::wstring& i_input);
 #if defined MWS_UNICODE_USING_STD_STRING
-   static const unicode_string& string2unicodestring(const std::string& i_str);
-   static unicode_string wstring2unicodestring(const std::wstring& i_str);
-   static const std::string& unicodestring2string(const unicode_string& i_str);
-   static std::wstring unicodestring2wstring(const unicode_string& i_str);
-   static unicode_char* unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source);
-   static int unicodestrlen(const unicode_char* i_str);
+   static const unicode_string& string_to_unicode_string(const std::string& i_str);
+   static unicode_string wstring_to_unicode_string(const std::wstring& i_str);
+   static const std::string& unicode_string_to_string(const unicode_string& i_str);
+   static std::wstring unicode_string_to_wstring(const unicode_string& i_str);
+   static unicode_char* unicode_strcpy(unicode_char* i_destination, const unicode_char* i_source);
+   static int unicode_strlen(const unicode_char* i_str);
 #elif defined MWS_UNICODE_USING_STD_WSTRING
-   static unicode_string string2unicodestring(const std::string& i_str);
-   static const unicode_string& wstring2unicodestring(const std::wstring& i_str);
-   static std::string unicodestring2string(const unicode_string& i_str);
-   static const std::wstring& unicodestring2wstring(const unicode_string& i_str);
-   static unicode_char* unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source);
-   static int unicodestrlen(const unicode_char* i_str);
+   static unicode_string string_to_unicode_string(const std::string& i_str);
+   static const unicode_string& wstring_to_unicode_string(const std::wstring& i_str);
+   static std::string unicode_string_to_string(const unicode_string& i_str);
+   static const std::wstring& unicode_string_to_wstring(const unicode_string& i_str);
+   static unicode_char* unicode_strcpy(unicode_char* i_destination, const unicode_char* i_source);
+   static int unicode_strlen(const unicode_char* i_str);
 #endif
    // comparisons
    static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);

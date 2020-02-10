@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pfm.hxx"
+#include "input-def.hxx"
 #include "min.hxx"
 #include "util/util.hxx"
 #include <atomic>

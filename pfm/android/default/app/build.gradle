@@ -5,12 +5,12 @@ def platformVersion = 19    //openGLES 3 min Version
 
 android
 {
-    compileSdkVersion 25
+    compileSdkVersion 29
 
     defaultConfig
     {
         applicationId 'com.indigoabstract.appplex'
-        minSdkVersion 19
+        minSdkVersion 22
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -70,7 +70,7 @@ android.sourceSets
 dependencies
 {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:support-v4:25.0.+"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 }
 
 repositories { mavenCentral() }

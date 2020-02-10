@@ -56,65 +56,65 @@ std::string mws_str::to_str(const std::wstring& i_input)
 
 #if defined MWS_UNICODE_USING_STD_STRING
 
-const unicode_string& mws_str::string2unicodestring(const std::string& i_str)
+const unicode_string& mws_str::string_to_unicode_string(const std::string& i_str)
 {
    return i_str;
 }
 
-unicode_string mws_str::wstring2unicodestring(const std::wstring& i_str)
+unicode_string mws_str::wstring_to_unicode_string(const std::wstring& i_str)
 {
    return mws_str::to_str(i_str);
 }
 
-const std::string& mws_str::unicodestring2string(const unicode_string& i_str)
+const std::string& mws_str::unicode_string_to_string(const unicode_string& i_str)
 {
    return i_str;
 }
 
-std::wstring mws_str::unicodestring2wstring(const unicode_string& i_str)
+std::wstring mws_str::unicode_string_to_wstring(const unicode_string& i_str)
 {
    return mws_str::to_wstr(i_str);
 }
 
-unicode_char* mws_str::unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source)
+unicode_char* mws_str::unicode_strcpy(unicode_char* i_destination, const unicode_char* i_source)
 {
-   return strcpy(destination, source);
+   return strcpy(i_destination, i_source);
 }
 
-int mws_str::unicodestrlen(const unicode_char* i_str)
+int mws_str::unicode_strlen(const unicode_char* i_str)
 {
    return strlen(i_str);
 }
 
 #elif defined MWS_UNICODE_USING_STD_WSTRING
 
-unicode_string mws_str::string2unicodestring(const std::string& i_str)
+unicode_string mws_str::string_to_unicode_string(const std::string& i_str)
 {
    return mws_str::to_wstr(i_str);
 }
 
-const unicode_string& mws_str::wstring2unicodestring(const std::wstring& i_str)
+const unicode_string& mws_str::wstring_to_unicode_string(const std::wstring& i_str)
 {
    return i_str;
 }
 
-std::string mws_str::unicodestring2string(const unicode_string& i_str)
+std::string mws_str::unicode_string_to_string(const unicode_string& i_str)
 {
    return mws_str::to_str(i_str);
 }
 
-const std::wstring& mws_str::unicodestring2wstring(const unicode_string& i_str)
+const std::wstring& mws_str::unicode_string_to_wstring(const unicode_string& i_str)
 {
    return i_str;
 }
 
-unicode_char* mws_str::unicodestrcpy(unicode_char* i_destination, const unicode_char* i_source)
+unicode_char* mws_str::unicode_strcpy(unicode_char* i_destination, const unicode_char* i_source)
 {
 #pragma warning(suppress : 4996)
    return wcscpy(i_destination, i_source);
 }
 
-int mws_str::unicodestrlen(const unicode_char* i_str)
+int mws_str::unicode_strlen(const unicode_char* i_str)
 {
    return wcslen(i_str);
 }

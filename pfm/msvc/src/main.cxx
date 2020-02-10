@@ -53,13 +53,14 @@ public:
    virtual void flip_screen() const override;
    virtual bool is_full_screen_mode() const override;
    virtual void set_full_screen_mode(bool i_enabled) const override;
+   // log
    virtual void write_text(const char* i_text) const override;
    virtual void write_text_nl(const char* i_text) const override;
    virtual void write_text(const wchar_t* i_text) const override;
    virtual void write_text_nl(const wchar_t* i_text) const override;
    virtual void write_text_v(const char* i_format, ...) const override;
    // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_pfm_file_impl(const mws_path& i_path) const override;
+   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
    virtual const mws_path& prv_dir() const override;
    virtual const mws_path& res_dir() const override;
    virtual const mws_path& tmp_dir() const override;
@@ -620,7 +621,7 @@ static bool make_directory(const mws_path& i_path)
    return path_exists;
 }
 
-mws_sp<mws_impl::mws_file_impl> msvc_main::new_pfm_file_impl(const mws_path& i_path) const
+mws_sp<mws_impl::mws_file_impl> msvc_main::new_mws_file_impl(const mws_path& i_path) const
 {
    return std::make_shared<msvc_file_impl>(i_path);
 }
@@ -768,6 +769,7 @@ bool init_app(int argc, char** argv)
          auto mod_pref = start_mod->get_preferences();
          int pref_width = mod_pref->get_preferred_screen_width();
          int pref_height = mod_pref->get_preferred_screen_height();
+         mws_log::set_enabled(mod_pref->log_enabled());
          start_full_screen = mod_pref->start_full_screen();
          emulate_mobile_screen = mod_pref->emulate_mobile_screen();
 

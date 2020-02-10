@@ -20,21 +20,6 @@
 #endif
 
 
-mws_rect::mws_rect() {}
-mws_rect::mws_rect(float i_x, float i_y, float i_w, float i_h)
-{
-   set(i_x, i_y, i_w, i_h);
-}
-
-void mws_rect::set(float i_x, float i_y, float i_w, float i_h)
-{
-   x = i_x;
-   y = i_y;
-   w = i_w;
-   h = i_h;
-}
-
-
 mws_sp<mws_model> mws_model::get_instance()
 {
    return shared_from_this();

@@ -100,7 +100,37 @@ void mws_kawase_bloom::update() {}
 
 #if !MOD_MWS
 #include "mws/mws.hxx"
+mws_sp<mws_obj> mws_obj::nwi() { return nullptr; }
+
+mws_sp<mws_obj> mws_obj::get_instance() { return nullptr; }
+
+gfx_obj::e_gfx_obj_type mws_obj::get_type() const { return gfx_obj::e_mws; }
+void mws_obj::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) {}
+void mws_obj::attach(mws_sp<gfx_node> i_node) {}
+void mws_obj::list_mws_children(std::vector<mws_sp<mws_obj>>& i_mws_subobj_list) {}
+void mws_obj::set_enabled(bool i_is_enabled) {}
+bool mws_obj::is_enabled() const { return false; }
+void mws_obj::set_visible(bool i_is_visible) {}
 bool mws_obj::is_visible() const { return false; }
+void mws_obj::set_id(std::string i_id) {}
+const std::string& mws_obj::get_id() { static std::string t; return t; }
+mws_sp<mws_obj> mws_obj::find_by_id(const std::string& i_id) { return nullptr; }
+mws_sp<mws_obj> mws_obj::contains_id(const std::string& i_id) { return nullptr; }
+bool mws_obj::contains_mws(const mws_sp<mws_obj> i_mws) { return false; }
+mws_sp<mws_obj> mws_obj::get_mws_parent() const { return nullptr; }
+mws_sp<mws_page_tab> mws_obj::get_mws_root() const { return nullptr; }
+mws_sp<mws_mod> mws_obj::get_mod() const { return nullptr; }
+
+void mws_obj::process(mws_sp<mws_dp> i_dp) {}
+void mws_obj::receive(mws_sp<mws_dp> i_dp) {}
+void mws_obj::update_state() {}
+void mws_obj::update_view(mws_sp<mws_camera> g) {}
+const mws_size& mws_obj::get_best_size() const { static mws_size t; return t; }
+void mws_obj::set_best_size(const mws_size& i_size) {}
+mws_rect mws_obj::get_pos() { return  mws_rect(); }
+float mws_obj::get_z() { return 0.f; }
+void mws_obj::set_z(float i_z_position) {}
+mws_sp<mws_sender> mws_obj::sender_inst() { return nullptr; }
 #endif
 
 #if !MOD_MWS_VKB
@@ -125,19 +155,6 @@ std::function<void()> mws_vkb::get_waiting_msg_op() { return nullptr; }
 mws_sp<mws_vkb_impl> mws_vkb::get_active_vkb() { return nullptr; }
 mws_sp<mws_vkb_impl> mws_vkb::nwi_vkb() { return nullptr; }
 void mws_vkb::nwi_inex() {}
-#endif
-
-#if !MOD_OMNIRECALL
-#include "pfm.hxx"
-bool mws_log::is_enabled() { return false; }
-void mws_log::set_enabled(bool i_is_enabled) {}
-mws_sp<mws_log> mws_log::i() { err_na(); return nullptr; }
-const std::vector<std::string> mws_log::get_log() { return std::vector<std::string>(); }
-void mws_log::push(const char* i_msg) {}
-void mws_log::pushf(const char* i_fmt, ...) {}
-void mws_log::clear() {}
-mws_log::mws_log() {}
-mws_sp<mws_log> mws_log::inst;
 #endif
 
 #if !MOD_RES_LD
