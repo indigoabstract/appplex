@@ -389,7 +389,7 @@ void android_main::write_text_v(const char* i_format, ...)const
    va_end(arg_list);
 }
 
-static bool make_directory(const mws_path& i_path)
+static bool mws_make_directory(const mws_path& i_path)
 {
    bool path_exists = false;
 
@@ -419,7 +419,7 @@ const mws_path& android_main::prv_dir() const
 {
    if (!prv_path_exists)
    {
-      prv_path_exists = make_directory(prv_path);
+      prv_path_exists = mws_make_directory(prv_path);
    }
 
    return prv_path;
@@ -434,7 +434,7 @@ const mws_path& android_main::tmp_dir() const
 {
    if (!tmp_path_exists)
    {
-      tmp_path_exists = make_directory(tmp_path);
+      tmp_path_exists = mws_make_directory(tmp_path);
    }
 
    return tmp_path;

@@ -446,40 +446,39 @@ float emst_main::get_avg_screen_dpcm() const { return avg_screen_dpcm; }
 std::pair<float, float> emst_main::get_screen_dpcm() const { return screen_dpcm; }
 std::pair<float, float> emst_main::get_screen_dim_cm() const { return screen_dim_cm; }
 
-void emst_main::write_text(const char* text) const
+void emst_main::write_text(const char* i_text) const
 {
-   printf("%s", text);
+   printf("%s", i_text);
 }
 
-void emst_main::write_text_nl(const char* text) const
+void emst_main::write_text_nl(const char* i_text) const
 {
-   write_text(text);
-   write_text("\n");
+   printf("%s\n", i_text);
 }
 
-void emst_main::write_text(const wchar_t* text) const
+void emst_main::write_text(const wchar_t* i_text) const
 {
    printf("wstring not supported");
 }
 
-void emst_main::write_text_nl(const wchar_t* text) const
+void emst_main::write_text_nl(const wchar_t* i_text) const
 {
-   write_text(text);
+   write_text(i_text);
    write_text(L"\n");
 }
 
-void emst_main::write_text_v(const char* iformat, ...) const
+void emst_main::write_text_v(const char* i_format, ...) const
 {
    char dest[1024 * 16];
    va_list arg_ptr;
 
-   va_start(arg_ptr, iformat);
-   vsnprintf(dest, 1024 * 16 - 1, iformat, arg_ptr);
+   va_start(arg_ptr, i_format);
+   vsnprintf(dest, 1024 * 16 - 1, i_format, arg_ptr);
    va_end(arg_ptr);
    printf("%s", dest);
 }
 
-static bool make_directory(const mws_path& i_path)
+static bool mws_make_directory(const mws_path& i_path)
 {
    bool path_exists = false;
    std::filesystem::path fs_path(i_path.string());
@@ -510,7 +509,7 @@ const mws_path& emst_main::prv_dir() const
 {
    if (!prv_path_exists)
    {
-      prv_path_exists = make_directory(prv_path);
+      prv_path_exists = mws_make_directory(prv_path);
    }
 
    return prv_path;
@@ -525,7 +524,7 @@ const mws_path& emst_main::tmp_dir() const
 {
    if (!tmp_path_exists)
    {
-      tmp_path_exists = make_directory(tmp_path);
+      tmp_path_exists = mws_make_directory(tmp_path);
    }
 
    return tmp_path;
@@ -537,7 +536,7 @@ void emst_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(mod_dir + "-prv/");
-   res_path = mws_path(mod_dir, false);
+   res_path = mws_path(mod_dir + "/", false);
    tmp_path = mws_path(mod_dir + "-tmp/");
    prv_path_exists = false;
    tmp_path_exists = false;
@@ -626,9 +625,9 @@ void emst_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
    mws_mod_ctrl::inst()->resize_app(i_screen_width, i_screen_height);
 }
 
-EM_BOOL emst_key_down(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
+static EM_BOOL mws_emst_key_down(int i_event_type, const EmscriptenKeyboardEvent* i_e, void* i_user_data)
 {
-   mws_key_types key_id = mws::input::translate_key(e->keyCode);
+   mws_key_types key_id = mws::input::translate_key(i_e->keyCode);
 
    switch (key_id)
    {
@@ -653,9 +652,9 @@ EM_BOOL emst_key_down(int event_type, const EmscriptenKeyboardEvent* e, void* us
    return false;
 }
 
-EM_BOOL emst_key_up(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
+static EM_BOOL mws_emst_key_up(int i_event_type, const EmscriptenKeyboardEvent* i_e, void* i_user_data)
 {
-   mws_key_types key_id = mws::input::translate_key(e->keyCode);
+   mws_key_types key_id = mws::input::translate_key(i_e->keyCode);
 
    switch (key_id)
    {
@@ -669,25 +668,25 @@ EM_BOOL emst_key_up(int event_type, const EmscriptenKeyboardEvent* e, void* user
    return false;
 }
 
-EM_BOOL emst_key_press(int event_type, const EmscriptenKeyboardEvent* e, void* user_data)
+static EM_BOOL mws_emst_key_press(int i_event_type, const EmscriptenKeyboardEvent* i_e, void* i_user_data)
 {
    return false;
 }
 
-EM_BOOL emst_mouse_down(int event_type, const EmscriptenMouseEvent* e, void* user_data)
+static EM_BOOL mws_emst_mouse_down(int i_event_type, const EmscriptenMouseEvent* i_e, void* i_user_data)
 {
    auto pfm_te = mws_ptr_evt_base::nwi();
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
    te.is_changed = true;
-   te.x = (float)e->canvasX;
-   te.y = (float)e->canvasY;
+   te.x = (float)i_e->canvasX;
+   te.y = (float)i_e->canvasY;
    pfm_te->time = mws::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_began;
    
-	switch (e->button)
+	switch (i_e->button)
 	{
 	case 0:
 	 mouse_btn_down = pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
@@ -702,20 +701,20 @@ EM_BOOL emst_mouse_down(int event_type, const EmscriptenMouseEvent* e, void* use
    return true;
 }
 
-EM_BOOL emst_mouse_up(int event_type, const EmscriptenMouseEvent* e, void* user_data)
+static EM_BOOL mws_emst_mouse_up(int i_event_type, const EmscriptenMouseEvent* i_e, void* i_user_data)
 {
    auto pfm_te = mws_ptr_evt_base::nwi();
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
    te.is_changed = true;
-   te.x = (float)e->canvasX;
-   te.y = (float)e->canvasY;
+   te.x = (float)i_e->canvasX;
+   te.y = (float)i_e->canvasY;
    pfm_te->time = mws::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_ended;
 
-	switch (e->button)
+	switch (i_e->button)
 	{
 	case 0:
 	 pfm_te->press_type = mws_ptr_evt_base::e_left_mouse_btn; break;
@@ -731,15 +730,15 @@ EM_BOOL emst_mouse_up(int event_type, const EmscriptenMouseEvent* e, void* user_
    return true;
 }
 
-EM_BOOL emst_mouse_move(int event_type, const EmscriptenMouseEvent* e, void* user_data)
+static EM_BOOL mws_emst_mouse_move(int i_event_type, const EmscriptenMouseEvent* i_e, void* i_user_data)
 {
    auto pfm_te = mws_ptr_evt_base::nwi();
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
 
    te.identifier = 0;
    te.is_changed = true;
-   te.x = (float)e->canvasX;
-   te.y = (float)e->canvasY;
+   te.x = (float)i_e->canvasX;
+   te.y = (float)i_e->canvasY;
    pfm_te->time = mws::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::touch_moved;
@@ -750,7 +749,7 @@ EM_BOOL emst_mouse_move(int event_type, const EmscriptenMouseEvent* e, void* use
    return true;
 }
 
-EM_BOOL emst_mouse_wheel(int event_type, const EmscriptenWheelEvent* e, void* user_data)
+static EM_BOOL mws_emst_mouse_wheel(int i_event_type, const EmscriptenWheelEvent* i_e, void* i_user_data)
 {
    auto pfm_te = mws_ptr_evt_base::nwi();
    mws_ptr_evt_base::touch_point& te = pfm_te->points[0];
@@ -762,7 +761,7 @@ EM_BOOL emst_mouse_wheel(int event_type, const EmscriptenWheelEvent* e, void* us
    pfm_te->time = mws::time::get_time_millis();
    pfm_te->touch_count = 1;
    pfm_te->type = mws_ptr_evt_base::mouse_wheel;
-   pfm_te->mouse_wheel_delta = float(e->deltaY * -0.09f);
+   pfm_te->mouse_wheel_delta = float(i_e->deltaY * -0.09f);
 
    mws_mod_ctrl::inst()->pointer_action(pfm_te);
    //trx("mouse wheel %1% %2% %3%") % wheel_delta % pointer_coord.x % pointer_coord.y;
@@ -770,60 +769,103 @@ EM_BOOL emst_mouse_wheel(int event_type, const EmscriptenWheelEvent* e, void* us
    return true;
 }
 
-EM_BOOL emst_touch(int event_type, const EmscriptenTouchEvent* e, void* user_data)
+static EM_BOOL mws_emst_touch(int i_event_type, const EmscriptenTouchEvent* i_e, void* i_user_data)
 {
+   auto pfm_te = mws_ptr_evt_base::nwi();
+
+   switch (i_event_type)
+   {
+   case EMSCRIPTEN_EVENT_TOUCHSTART:
+      pfm_te->type = mws_ptr_evt_base::touch_began;
+      break;
+   case EMSCRIPTEN_EVENT_TOUCHEND:
+      pfm_te->type = mws_ptr_evt_base::touch_ended;
+      break;
+   case EMSCRIPTEN_EVENT_TOUCHMOVE:
+      pfm_te->type = mws_ptr_evt_base::touch_moved;
+      break;
+   case EMSCRIPTEN_EVENT_TOUCHCANCEL:
+      pfm_te->type = mws_ptr_evt_base::touch_cancelled;
+      break;
+   default:
+      return false;
+   }
+
+   pfm_te->time = mws::time::get_time_millis();
+   pfm_te->touch_count = i_e->numTouches;
+
+   for (uint32 k = 0; k < pfm_te->touch_count; k++)
+   {
+      auto& touches = i_e->touches[k];
+      mws_ptr_evt_base::touch_point& point = pfm_te->points[k];
+
+      point.identifier = touches.identifier;
+      point.x = touches.canvasX;
+      point.y = touches.canvasY;
+      point.is_changed = touches.isChanged;
+   }
+
+   mws_mod_ctrl::inst()->pointer_action(pfm_te);
+
    return true;
 }
 
 void emst_main::setup_callbacks()
 {
-   emscripten_set_keydown_callback(0, this, true, emst_key_down);
-   emscripten_set_keyup_callback(0, this, true, emst_key_up);
-   emscripten_set_keypress_callback(0, this, true, emst_key_press);
-   emscripten_set_mousedown_callback("#canvas", this, true, emst_mouse_down);
-   emscripten_set_mouseup_callback("#canvas", this, true, emst_mouse_up);
-   emscripten_set_mousemove_callback("#canvas", this, true, emst_mouse_move);
-   emscripten_set_wheel_callback("#canvas", this, false, emst_mouse_wheel);
-   emscripten_set_touchstart_callback("#canvas", this, true, emst_touch);
-   emscripten_set_touchend_callback("#canvas", this, true, emst_touch);
-   emscripten_set_touchmove_callback("#canvas", this, true, emst_touch);
-   emscripten_set_touchcancel_callback("#canvas", this, true, emst_touch);
+   emscripten_set_keydown_callback(0, this, true, mws_emst_key_down);
+   emscripten_set_keyup_callback(0, this, true, mws_emst_key_up);
+   emscripten_set_keypress_callback(0, this, true, mws_emst_key_press);
+   emscripten_set_mousedown_callback("#canvas", this, true, mws_emst_mouse_down);
+   emscripten_set_mouseup_callback("#canvas", this, true, mws_emst_mouse_up);
+   emscripten_set_mousemove_callback("#canvas", this, true, mws_emst_mouse_move);
+   emscripten_set_wheel_callback("#canvas", this, false, mws_emst_mouse_wheel);
+   emscripten_set_touchstart_callback("#canvas", this, true, mws_emst_touch);
+   emscripten_set_touchend_callback("#canvas", this, true, mws_emst_touch);
+   emscripten_set_touchmove_callback("#canvas", this, true, mws_emst_touch);
+   emscripten_set_touchcancel_callback("#canvas", this, true, mws_emst_touch);
    //emscripten_set_devicemotion_callback(this, true, emst_device_motion);
    //emscripten_set_deviceorientation_callback(this, true, emst_device_orientation);
 }
 
 
-static inline const char* emscripten_event_type_to_string(int event_type)
+static inline const char* mws_emscripten_event_type_to_string(int i_event_type)
 {
-   const char* events[] = { "(invalid)", "(none)", "keypress", "keydown", "keyup", "click", "mousedown", "mouseup", "dblclick", "mousemove", "wheel", "resize",
-     "scroll", "blur", "focus", "focusin", "focusout", "deviceorientation", "devicemotion", "orientationchange", "fullscreenchange", "pointerlockchange",
-     "visibilitychange", "touchstart", "touchend", "touchmove", "touchcancel", "gamepadconnected", "gamepaddisconnected", "beforeunload",
-     "batterychargingchange", "batterylevelchange", "webglcontextlost", "webglcontextrestored", "(invalid)" };
-   ++event_type;
-   if (event_type < 0) event_type = 0;
-   if (event_type >= sizeof(events) / sizeof(events[0])) event_type = sizeof(events) / sizeof(events[0]) - 1;
-   return events[event_type];
+   const char* events[] =
+   {
+     "(invalid)", "(none)", "keypress", "keydown", "keyup", "click", "mousedown", "mouseup", "dblclick", "mousemove", "wheel", "resize",
+     "scroll", "blur", "focus", "focusin", "focusout", "deviceorientation", "devicemotion", "orientationchange", "fullscreenchange",
+     "pointerlockchange", "visibilitychange", "touchstart", "touchend", "touchmove", "touchcancel", "gamepadconnected", "gamepaddisconnected",
+     "beforeunload", "batterychargingchange", "batterylevelchange", "webglcontextlost", "webglcontextrestored", "(invalid)"
+   };
+
+   ++i_event_type;
+
+   if (i_event_type < 0) { i_event_type = 0; }
+   if (i_event_type >= sizeof(events) / sizeof(events[0])) { i_event_type = sizeof(events) / sizeof(events[0]) - 1; }
+
+   return events[i_event_type];
 }
 
-const char* emscripten_result_to_string(EMSCRIPTEN_RESULT result)
+static const char* mws_emscripten_result_to_string(EMSCRIPTEN_RESULT i_result)
 {
-   if (result == EMSCRIPTEN_RESULT_SUCCESS) return "EMSCRIPTEN_RESULT_SUCCESS";
-   if (result == EMSCRIPTEN_RESULT_DEFERRED) return "EMSCRIPTEN_RESULT_DEFERRED";
-   if (result == EMSCRIPTEN_RESULT_NOT_SUPPORTED) return "EMSCRIPTEN_RESULT_NOT_SUPPORTED";
-   if (result == EMSCRIPTEN_RESULT_FAILED_NOT_DEFERRED) return "EMSCRIPTEN_RESULT_FAILED_NOT_DEFERRED";
-   if (result == EMSCRIPTEN_RESULT_INVALID_TARGET) return "EMSCRIPTEN_RESULT_INVALID_TARGET";
-   if (result == EMSCRIPTEN_RESULT_UNKNOWN_TARGET) return "EMSCRIPTEN_RESULT_UNKNOWN_TARGET";
-   if (result == EMSCRIPTEN_RESULT_INVALID_PARAM) return "EMSCRIPTEN_RESULT_INVALID_PARAM";
-   if (result == EMSCRIPTEN_RESULT_FAILED) return "EMSCRIPTEN_RESULT_FAILED";
-   if (result == EMSCRIPTEN_RESULT_NO_DATA) return "EMSCRIPTEN_RESULT_NO_DATA";
+   if (i_result == EMSCRIPTEN_RESULT_SUCCESS) return "EMSCRIPTEN_RESULT_SUCCESS";
+   if (i_result == EMSCRIPTEN_RESULT_DEFERRED) return "EMSCRIPTEN_RESULT_DEFERRED";
+   if (i_result == EMSCRIPTEN_RESULT_NOT_SUPPORTED) return "EMSCRIPTEN_RESULT_NOT_SUPPORTED";
+   if (i_result == EMSCRIPTEN_RESULT_FAILED_NOT_DEFERRED) return "EMSCRIPTEN_RESULT_FAILED_NOT_DEFERRED";
+   if (i_result == EMSCRIPTEN_RESULT_INVALID_TARGET) return "EMSCRIPTEN_RESULT_INVALID_TARGET";
+   if (i_result == EMSCRIPTEN_RESULT_UNKNOWN_TARGET) return "EMSCRIPTEN_RESULT_UNKNOWN_TARGET";
+   if (i_result == EMSCRIPTEN_RESULT_INVALID_PARAM) return "EMSCRIPTEN_RESULT_INVALID_PARAM";
+   if (i_result == EMSCRIPTEN_RESULT_FAILED) return "EMSCRIPTEN_RESULT_FAILED";
+   if (i_result == EMSCRIPTEN_RESULT_NO_DATA) return "EMSCRIPTEN_RESULT_NO_DATA";
+
    return "Unknown EMSCRIPTEN_RESULT!";
 }
 
-#define TEST_RESULT(x) if (ret != EMSCRIPTEN_RESULT_SUCCESS) printf("%s returned %s.\n", #x, emscripten_result_to_string(ret));
+#define TEST_RESULT(x) if (ret != EMSCRIPTEN_RESULT_SUCCESS) printf("%s returned %s.\n", #x, mws_emscripten_result_to_string(ret));
 
-void mws_get_canvas_size(int* width, int* height, int* is_full_screen)
+static void mws_get_canvas_size(int* i_width, int* i_height, int* i_is_full_screen)
 {
-   EMSCRIPTEN_RESULT r = emscripten_get_canvas_element_size("#canvas", width, height);
+   EMSCRIPTEN_RESULT r = emscripten_get_canvas_element_size("#canvas", i_width, i_height);
    EmscriptenFullscreenChangeEvent e;
 
    if (r != EMSCRIPTEN_RESULT_SUCCESS)
@@ -840,10 +882,10 @@ void mws_get_canvas_size(int* width, int* height, int* is_full_screen)
       return;
    }
 
-   *is_full_screen = e.isFullscreen;
+   *i_is_full_screen = e.isFullscreen;
 }
 
-EM_BOOL on_canvassize_changed(int event_type, const void* reserved, void* user_data)
+static EM_BOOL mws_on_canvassize_changed(int i_event_type, const void* i_reserved, void* i_user_data)
 {
    int width, height, fs;
    mws_get_canvas_size(&width, &height, &fs);
@@ -852,36 +894,36 @@ EM_BOOL on_canvassize_changed(int event_type, const void* reserved, void* user_d
    height = (height > 0) ? height : 1;
    app_inst()->on_resize(width, height);
 
-   printf("Canvas resized: WebGL RTT size: %dx%d, canvas CSS size: %02gx%02g\n", width, height, css_width, css_height);
+   printf("canvas resized: WebGL RTT size: %dx%d, canvas CSS size: %02gx%02g\n", width, height, css_width, css_height);
 
    return 0;
 }
 
-void requestFullscreen(int scaleMode, int canvasResolutionScaleMode, int filteringMode)
+static void mws_request_fullscreen(int i_scale_mode, int i_canvas_resolution_scale_mode, int i_filtering_mode)
 {
    EmscriptenFullscreenStrategy s;
    memset(&s, 0, sizeof(s));
-   s.scaleMode = scaleMode;
-   s.canvasResolutionScaleMode = canvasResolutionScaleMode;
-   s.filteringMode = filteringMode;
-   s.canvasResizedCallback = on_canvassize_changed;
+   s.scaleMode = i_scale_mode;
+   s.canvasResolutionScaleMode = i_canvas_resolution_scale_mode;
+   s.filteringMode = i_filtering_mode;
+   s.canvasResizedCallback = mws_on_canvassize_changed;
    EMSCRIPTEN_RESULT ret = emscripten_request_fullscreen_strategy(0, 1, &s);
-   TEST_RESULT(requestFullscreen);
+   TEST_RESULT(mws_request_fullscreen);
 }
 
-void enterSoftFullscreen(int scaleMode, int canvasResolutionScaleMode, int filteringMode)
+static void mws_enter_soft_fullscreen(int i_scale_mode, int i_canvas_resolution_scale_mode, int i_filtering_mode)
 {
    EmscriptenFullscreenStrategy s;
    memset(&s, 0, sizeof(s));
-   s.scaleMode = scaleMode;
-   s.canvasResolutionScaleMode = canvasResolutionScaleMode;
-   s.filteringMode = filteringMode;
-   s.canvasResizedCallback = on_canvassize_changed;
+   s.scaleMode = i_scale_mode;
+   s.canvasResolutionScaleMode = i_canvas_resolution_scale_mode;
+   s.filteringMode = i_filtering_mode;
+   s.canvasResizedCallback = mws_on_canvassize_changed;
    EMSCRIPTEN_RESULT ret = emscripten_enter_soft_fullscreen(0, &s);
-   TEST_RESULT(enterSoftFullscreen);
+   TEST_RESULT(mws_enter_soft_fullscreen);
 }
 
-void run_step()
+static void mws_run_step()
 {
    app_inst()->run();
 }
@@ -895,13 +937,20 @@ GL_APICALL void GL_APIENTRY glGetBufferSubData(GLenum target, GLintptr offset, G
       }, data, size);
 }
 
-GL_APICALL void* GL_APIENTRY glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) { mws_throw mws_exception("glMapBufferRange n/a"); return nullptr; }
-GL_APICALL GLboolean GL_APIENTRY glUnmapBuffer(GLenum target) { mws_throw mws_exception("glUnmapBuffer n/a"); return (GLboolean)false; }
+GL_APICALL void* GL_APIENTRY glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access)
+{
+   mws_throw mws_exception("glMapBufferRange n/a"); return nullptr;
+}
+
+GL_APICALL GLboolean GL_APIENTRY glUnmapBuffer(GLenum target)
+{
+   mws_throw mws_exception("glUnmapBuffer n/a"); return (GLboolean)false;
+}
 
 
 int main()
 {
-   enterSoftFullscreen(EMSCRIPTEN_FULLSCREEN_SCALE_STRETCH, EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_HIDEF, EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT);
+   mws_enter_soft_fullscreen(EMSCRIPTEN_FULLSCREEN_SCALE_STRETCH, EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_HIDEF, EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT);
 
    EmscriptenWebGLContextAttributes attr;
 
@@ -933,7 +982,7 @@ int main()
    app_inst()->init();
    app_inst()->start();
 
-   emscripten_set_main_loop(run_step, 0, 0);
+   emscripten_set_main_loop(mws_run_step, 0, 0);
 
    return 0;
 }
