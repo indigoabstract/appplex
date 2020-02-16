@@ -228,11 +228,6 @@ public:
       file = fopen(path.c_str(), i_open_mode.c_str());
       bool file_opened = (file != nullptr);
 
-      if (file_opened && (i_open_mode.find('w') != std::string::npos))
-      {
-         file_is_writable = true;
-      }
-
       return file_opened;
    }
 

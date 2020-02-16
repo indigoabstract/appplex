@@ -25,6 +25,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 	add_compile_options("/std:c++17")
 	add_compile_options("/Zc:__cplusplus")
+	add_compile_options("/W4")
 
 	add_library(app_plex_main STATIC "")
 	
@@ -38,7 +39,6 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
-	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/ffmpeg")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
@@ -51,7 +51,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	find_library(FREETYPE_LIB freetype.lib)
 	
 	link_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/lib")
-	include("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/src/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/min/windows/CMakeLists.txt")
 	
 	if(GLEW_LIB)
 	else()
@@ -104,7 +104,6 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
-	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/emscripten/src")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	
@@ -119,7 +118,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		message("Libraries: " ${ZLIB_LIB} " and " ${PNG_LIB} "and " ${FREETYPE_LIB})
 	endif()
 	
-	include("${CMAKE_CURRENT_LIST_DIR}/pfm/emscripten/src/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/min/emscripten/CMakeLists.txt")
 	
 elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 
@@ -138,10 +137,9 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
-	include_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jni")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
-	include("${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jni/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/min/android/CMakeLists.txt")
 	
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jniLibs/armeabi-v7a")
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jniLibs/arm64-v8a")

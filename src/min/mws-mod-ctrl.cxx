@@ -43,18 +43,18 @@ mws_sp<mws_mod_ctrl> mws_mod_ctrl::inst()
 
 bool mws_mod_ctrl::back_evt()
 {
-   auto u = crt_mod.lock();
+   auto mod = crt_mod.lock();
 
-   if (u)
+   if (mod)
    {
-      if (u == ul)
+      if (mod == ul)
       {
          set_app_exit_on_next_run(true);
 
          return true;
       }
 
-      return u->back();
+      return mod->back();
    }
 
    return false;
@@ -102,46 +102,36 @@ void mws_mod_ctrl::set_app_exit_on_next_run(bool i_exit_app_on_next_run)
    exit_app_on_next_run = i_exit_app_on_next_run;
 }
 
-void mws_mod_ctrl::destroy_app()
-{
-   ul->on_destroy();
-
-   if (mod_gfx_on)
-   {
-      gfx::on_destroy();
-   }
-}
-
 void mws_mod_ctrl::pre_init_app()
 {
-   if (!ul)
-   {
-      ul = mws_mod_list::nwi();
-      ul->set_name("app-mws-mod-list");
-      mws_mod_setup::next_crt_mod = crt_mod = ul;
-
-      mws_mod_setup::append_mod_list(ul);
-   }
-
+   mws_assert(ul == nullptr);
+   ul = mws_mod_list::nwi();
+   ul->set_name("app-mws-mod-list");
+   mws_mod_setup::next_crt_mod = crt_mod = mws_sp<mws_mod>();
+   mws_mod_setup::append_mod_list(ul);
    mws_sp<mws_mod> start_mod = get_app_start_mod();
 
    if (start_mod)
    {
-      mws_app_inst()->reconfigure_directories(start_mod);
+      set_current_mod(start_mod);
+   }
+   else
+   {
+      set_current_mod(ul);
    }
 }
 
 void mws_mod_ctrl::init_app()
 {
-   mws_sp<mws_mod> start_mod = get_app_start_mod();
+   mws_sp<mws_mod> crt_mod = get_current_mod();
 
    if (mod_gfx_on && gfx_available)
    {
       gfx::global_init();
 
-      if (start_mod)
+      if (crt_mod)
       {
-         start_mod->config_font_db_size();
+         crt_mod->config_font_db_size();
       }
    }
 
@@ -150,9 +140,10 @@ void mws_mod_ctrl::init_app()
       snd::init();
    }
 
+#ifndef SINGLE_MOD_BUILD
    if (ul)
    {
-      if (!start_mod)
+      if (!crt_mod)
       {
          ul->config_font_db_size();
       }
@@ -160,6 +151,24 @@ void mws_mod_ctrl::init_app()
       ul->base_init();
       ul->base_load();
       ul->set_init(true);
+   }
+#endif
+}
+
+void mws_mod_ctrl::start_app()
+{
+   load_current_mod();
+   get_current_mod()->on_resize();
+   app_started = true;
+}
+
+void mws_mod_ctrl::destroy_app()
+{
+   ul->on_destroy();
+
+   if (mod_gfx_on)
+   {
+      gfx::on_destroy();
    }
 }
 
@@ -179,8 +188,8 @@ const unicode_string& mws_mod_ctrl::get_app_description()
 
 void mws_mod_ctrl::update()
 {
-   mws_sp<mws_mod> u = get_current_mod();
-   mws_assert(u != nullptr);
+   mws_sp<mws_mod> mod = get_current_mod();
+   mws_assert(mod != nullptr);
 
    if (mod_gfx_on)
    {
@@ -200,10 +209,10 @@ void mws_mod_ctrl::update()
          }
          else
          {
-            if (u && u->is_init())
+            if (mod && mod->is_init())
             {
                //mws_log::i()->push("mws_mod_ctrl::resize_app()");
-               u->on_resize();
+               mod->on_resize();
             }
          }
       }
@@ -216,38 +225,39 @@ void mws_mod_ctrl::update()
 
 #ifndef SINGLE_MOD_BUILD
 
-   mws_sp<mws_mod> nu = next_mod.lock();
+   mws_sp<mws_mod> next = next_mod.lock();
 
-   if (nu&& nu != u)
+   if (next && next != mod)
    {
-      set_current_mod(nu);
-      u = nu;
+      set_current_mod(next);
+      load_current_mod();
+      mod = next;
    }
 
 #endif
 
-   u->run_step();
+   mod->run_step();
 }
 
 void mws_mod_ctrl::pause()
 {
    //mws_log::i()->push("mws_mod_ctrl::pause()");
-   auto u = get_current_mod();
+   auto mod = get_current_mod();
 
-   if (u)
+   if (mod)
    {
-      u->on_pause();
+      mod->on_pause();
    }
 }
 
 void mws_mod_ctrl::resume()
 {
    //mws_log::i()->push("mws_mod_ctrl::resume()");
-   auto u = get_current_mod();
+   auto mod = get_current_mod();
 
-   if (u)
+   if (mod)
    {
-      u->on_resume();
+      mod->on_resume();
    }
 }
 
@@ -261,11 +271,11 @@ void mws_mod_ctrl::pointer_action(mws_sp<mws_ptr_evt_base> i_te)
 {
    if (mod_input_on)
    {
-      mws_sp<mws_mod> u = get_current_mod();
+      mws_sp<mws_mod> mod = get_current_mod();
 
-      if (u)
+      if (mod)
       {
-         u->touch_ctrl_inst->enqueue_pointer_event(i_te);
+         mod->touch_ctrl_inst->enqueue_pointer_event(i_te);
       }
    }
 }
@@ -274,9 +284,9 @@ void mws_mod_ctrl::key_action(mws_key_actions i_action_type, mws_key_types i_key
 {
    if (mod_input_on)
    {
-      mws_sp<mws_mod> u = get_current_mod();
+      mws_sp<mws_mod> mod = get_current_mod();
 
-      if (u)
+      if (mod)
       {
          bool physical_keyboard_enabled = true;
 
@@ -291,7 +301,7 @@ void mws_mod_ctrl::key_action(mws_key_actions i_action_type, mws_key_types i_key
                // handle function key pressed when virtual keyboard is visible
                if (is_f_key && i_action_type == mws_key_press)
                {
-                  u->handle_function_key(i_key);
+                  mod->handle_function_key(i_key);
                }
 
                physical_keyboard_enabled = false;
@@ -304,11 +314,11 @@ void mws_mod_ctrl::key_action(mws_key_actions i_action_type, mws_key_types i_key
             switch (i_action_type)
             {
             case mws_key_press:
-               u->key_ctrl_inst->key_pressed(i_key);
+               mod->key_ctrl_inst->key_pressed(i_key);
                break;
 
             case mws_key_release:
-               u->key_ctrl_inst->key_released(i_key);
+               mod->key_ctrl_inst->key_released(i_key);
                break;
             }
          }
@@ -328,27 +338,9 @@ void mws_mod_ctrl::set_next_mod(mws_sp<mws_mod> i_mod)
    next_mod = i_mod;
 }
 
-void mws_mod_ctrl::start_app()
-{
-   auto u = mws_mod_setup::next_crt_mod.lock();
-
-   mws_mod_ctrl::set_current_mod(u);
-   //mws_log::i()->push("mws_mod_ctrl::start_app()");
-   u->on_resize();
-
-   app_started = true;
-}
-
 mws_sp<mws_mod> mws_mod_ctrl::get_app_start_mod()
 {
-   auto u = mws_mod_setup::next_crt_mod.lock();
-
-   if (u)
-   {
-      return u;
-   }
-
-   return ul;
+   return mws_mod_setup::next_crt_mod.lock();
 }
 
 void mws_mod_ctrl::set_gfx_available(bool i_is_gfx_available)
@@ -361,6 +353,22 @@ bool mws_mod_ctrl::is_gfx_available() { return gfx_available; }
 uint32 mws_mod_ctrl::get_screen_width() { return screen_width; }
 
 uint32 mws_mod_ctrl::get_screen_height() { return screen_height; }
+
+void mws_mod_ctrl::load_current_mod()
+{
+   mws_sp<mws_mod> mod = crt_mod.lock();
+
+   if (mod)
+   {
+      if (!mod->is_init())
+      {
+         mod->base_init();
+         mod->set_init(true);
+      }
+
+      mod->base_load();
+   }
+}
 
 mws_sp<mws_ptr_evt_base> mws_ptr_evt_base::nwi()
 {

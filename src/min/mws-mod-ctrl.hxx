@@ -20,6 +20,8 @@ public:
    void set_app_exit_on_next_run(bool i_exit_app_on_next_run);
    void pre_init_app();
    void init_app();
+   void start_app();
+   void destroy_app();
    const unicode_string& get_app_name();
    const unicode_string& get_app_description();
    void update();
@@ -32,8 +34,6 @@ public:
    // storage for current mod
    mws_app_storage& app_storage();
    void set_next_mod(mws_sp<mws_mod> i_mod);
-   void destroy_app();
-   void start_app();
    mws_sp<mws_mod> get_app_start_mod();
    void set_gfx_available(bool i_is_gfx_available);
    static bool is_gfx_available();
@@ -44,6 +44,7 @@ private:
    mws_mod_ctrl();
 
    void set_current_mod(mws_sp<mws_mod> i_mod);
+   void load_current_mod();
    mws_sp<mws_mod_list> ul;
    mws_wp<mws_mod> crt_mod;
 };

@@ -630,7 +630,7 @@ mws_sp<mws_vkb_file_store> mws_page_tab::get_file_store()
 #if MOD_MWS_VKB
    if (!vkb_store)
    {
-      set_file_store(std::make_shared<mws_vkb_file_store_impl>());
+      set_file_store(std::make_shared<mws_vkb_file_store_impl>(get_mod()));
    }
 #endif
 

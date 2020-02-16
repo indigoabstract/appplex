@@ -233,11 +233,6 @@ public:
             mws_println("open_impl [ cannot open file %s ]", path.c_str());
         }
 
-        if (file_opened && (i_open_mode.find('w') != std::string::npos))
-        {
-            file_is_writable = true;
-        }
-        
         return file_opened;
 	}
 

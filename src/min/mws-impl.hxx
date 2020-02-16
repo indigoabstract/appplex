@@ -70,6 +70,14 @@ public:
 };
 
 
+class mws_res_index
+{
+public:
+   static mws_file_map read_file_map(mws_sp<mws_file> i_index_file);
+   static void write_file_map(mws_sp<mws_file> i_index_file, const mws_file_map& i_file_map);
+};
+
+
 class mws_file_impl
 {
 public:

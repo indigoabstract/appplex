@@ -547,24 +547,19 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 {
    if (i_mod)
    {
-      if (!crt_mod.expired())
+      if (i_mod != crt_mod.lock())
       {
-         crt_mod.lock()->base_unload();
+         if (!crt_mod.expired())
+         {
+            crt_mod.lock()->base_unload();
+         }
+
+         crt_mod = i_mod;
+         mws_app_inst()->reconfigure_directories(i_mod);
+
+         // reload resources
+         i_mod->storage.p->res_files_map = mws_app_inst()->list_internal_directory();
       }
-
-      crt_mod = i_mod;
-      mws_app_inst()->reconfigure_directories(i_mod);
-
-      // reload resources
-      i_mod->storage.p->res_files_map = mws_app_inst()->list_internal_directory();
-
-      if (!i_mod->is_init())
-      {
-         i_mod->base_init();
-         i_mod->set_init(true);
-      }
-
-      i_mod->base_load();
    }
    else
    {

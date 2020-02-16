@@ -59,7 +59,6 @@ std::string mws_path::current_path()
 
 static void mws_list_external_directory(const mws_path& i_directory, std::vector<mws_sp<mws_file>>& i_file_list, bool i_recursive)
 {
-   std::vector<mws_sp<mws_file>> list;
    DIR* dir = opendir(i_directory.string().c_str());
 
    if (dir != nullptr)
@@ -82,6 +81,8 @@ static void mws_list_external_directory(const mws_path& i_directory, std::vector
 
             mws_list_external_directory(sub_dir, i_file_list, true);
          }
+
+         ent = readdir(dir);
       }
 
       closedir(dir);
@@ -90,11 +91,9 @@ static void mws_list_external_directory(const mws_path& i_directory, std::vector
    {
       mws_println("WARNING[ could not open directory [ %s ] ]", i_directory.string().c_str());
    }
-
-   return list;
 }
 
-std::vector<mws_sp<mws_file>> msvc_main::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+std::vector<mws_sp<mws_file>> mws_app::list_external_directory(const mws_path& i_directory, bool i_recursive) const
 {
    std::vector<mws_sp<mws_file>> list;
 
@@ -328,6 +327,59 @@ void mws_exception::set_msg(const char* i_msg)
 }
 
 
+mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
+{
+   mws_file_map file_map;
+   const bool is_internal = true;
+   const mws_path& res_dir = mws_app_inst()->res_dir();
+
+   i_index_file->io.open("rb");
+
+   if (i_index_file->is_open())
+   {
+      mws_sp<rw_file_sequence> fs = rw_file_sequence::nwi(i_index_file, false);
+      uint32 size = fs->r.read_uint32();
+
+      for (uint32 k = 0; k < size; k++)
+      {
+         std::string file_path = fs->r.read_string();
+         mws_path path = res_dir / file_path;
+         std::string filename = path.filename();
+
+         // check for duplicate file names
+         mws_assert(file_map.find(filename) == file_map.end());
+         file_map[filename] = mws_file::get_inst(mws_app_inst()->new_mws_file_impl(path, is_internal));
+      }
+
+      file_map[mws_app::res_idx_name()] = i_index_file;
+      i_index_file->io.close();
+   }
+   else
+   {
+      mws_println("mws_res_index::read_file_map[ no resources found ]");
+   }
+
+   return file_map;
+}
+
+void mws_res_index::write_file_map(mws_sp<mws_file> i_index_file, const mws_file_map& i_file_map)
+{
+   i_index_file->io.open("wb");
+   mws_sp<rw_file_sequence> fs = rw_file_sequence::nwi(i_index_file, true);
+
+   fs->w.write_uint32(i_file_map.size());
+
+   for (auto it : i_file_map)
+   {
+      std::string path = it.second->string_path();
+
+      fs->w.write_string(path);
+   }
+
+   i_index_file->io.close();
+}
+
+
 mws_file_impl::mws_file_impl(const mws_path& i_path, bool i_is_internal)
 {
    file_is_internal = i_is_internal;
@@ -536,9 +588,9 @@ namespace mws_impl
    {
 #if defined MWS_PFM_WINDOWS_PC && defined MWS_DEBUG_BUILD
       return true;
-#endif
-
+#else
       return false;
+#endif
    }
 
    mws_sp<mws_file> get_res_file(const mws_file_map& i_file_map, const std::string& i_filename)
@@ -855,18 +907,10 @@ std::vector<mws_sp<mws_file>> mws_path::list_directory(bool i_recursive) const
          {
             file_list = list_res_directory(*this, i_recursive);
          }
-         // if not, try concatenating the resources directory path before the original path
+         // if not, it's probably an external path after all. try the external directory listing function
          else
          {
-            mws_path file_dir_mod = res_dir / *this;
-
-            file_list = list_res_directory(file_dir_mod, i_recursive);
-
-            // if file list is empty, it's probably an external path after all. try the external directory listing function
-            if (file_list.empty())
-            {
-               file_list = mws_app_inst()->list_external_directory(*this, i_recursive);
-            }
+            file_list = mws_app_inst()->list_external_directory(*this, i_recursive);
          }
       }
    }
@@ -1122,7 +1166,7 @@ int mws_file::io_op::write(const uint8* i_buffer, int i_size)
 
 const std::string& mws_app::res_idx_name()
 {
-   static std::string res_index = "index.txt";
+   static std::string res_index = "res-idx.str";
    return res_index;
 }
 
@@ -1174,27 +1218,8 @@ mws_file_map mws_app::list_internal_directory() const
    const mws_path& res_dir = mws_app_inst()->res_dir();
    mws_sp<mws_file_impl> res_idx_impl = mws_app_inst()->new_mws_file_impl(res_dir / mws_app::res_idx_name(), is_internal);
    mws_sp<mws_file> res_idx = mws_file::get_inst(res_idx_impl);
-   std::ifstream res_list(res_idx->string_path());
 
-   if (res_list.is_open())
-   {
-      std::string line;
-
-      while (std::getline(res_list, line))
-      {
-         // trim the new line at the end
-         line = mws_str::rtrim(line);
-         mws_path path = res_dir / line;
-         std::string filename = path.filename();
-
-         // check for duplicate file names
-         mws_assert(file_map.find(filename) == file_map.end());
-         file_map[filename] = mws_file::get_inst(mws_app_inst()->new_mws_file_impl(path, is_internal));
-      }
-
-      file_map[mws_app::res_idx_name()] = res_idx;
-      res_list.close();
-   }
+   file_map = mws_res_index::read_file_map(res_idx);
 
    return file_map;
 }
@@ -1389,19 +1414,19 @@ public:
          text_buffer->clear();
       }
 
-//#ifdef MWS_DEBUG_BUILD
-//
-//      if (app_i())
-//      {
-//         im& app_im = app_i()->i_m<im>();
-//
-//         if (app_im.log_pg->text_box)
-//         {
-//            app_im.log_pg->text_box->set_text("");
-//         }
-//      }
-//
-//#endif
+      //#ifdef MWS_DEBUG_BUILD
+      //
+      //      if (app_i())
+      //      {
+      //         im& app_im = app_i()->i_m<im>();
+      //
+      //         if (app_im.log_pg->text_box)
+      //         {
+      //            app_im.log_pg->text_box->set_text("");
+      //         }
+      //      }
+      //
+      //#endif
    }
 
    virtual void set_text_buffer(mws_sp<mws_text_buffer> i_text_buffer) override
@@ -1470,42 +1495,42 @@ private:
       {
          text_buffer->push_front(i_msg.c_str());
       }
-     
-//#ifdef MWS_DEBUG_BUILD
-//
-//      if (app_i() && !app_i()->i_m_is_null())
-//      {
-//         im& app_im = app_i()->i_m<im>();
-//
-//         if (app_im.log_pg)
-//         {
-//            if (!console_active)
-//            {
-//               if (app_im.log_pg->text_box)
-//               {
-//                  std::string buf;
-//                  console_active = true;
-//
-//                  // most recent entries are top most in the console
-//                  for (int k = log.size() - 1; k >= 0; k--)
-//                  {
-//                     buf += log[k];
-//                  }
-//
-//                  app_im.log_pg->text_box->set_text(buf);
-//               }
-//            }
-//            else
-//            {
-//               if (app_im.log_pg->text_box)
-//               {
-//                  app_im.log_pg->text_box->push_front_text(i_msg);
-//               }
-//            }
-//         }
-//      }
-//
-//#endif
+
+      //#ifdef MWS_DEBUG_BUILD
+      //
+      //      if (app_i() && !app_i()->i_m_is_null())
+      //      {
+      //         im& app_im = app_i()->i_m<im>();
+      //
+      //         if (app_im.log_pg)
+      //         {
+      //            if (!console_active)
+      //            {
+      //               if (app_im.log_pg->text_box)
+      //               {
+      //                  std::string buf;
+      //                  console_active = true;
+      //
+      //                  // most recent entries are top most in the console
+      //                  for (int k = log.size() - 1; k >= 0; k--)
+      //                  {
+      //                     buf += log[k];
+      //                  }
+      //
+      //                  app_im.log_pg->text_box->set_text(buf);
+      //               }
+      //            }
+      //            else
+      //            {
+      //               if (app_im.log_pg->text_box)
+      //               {
+      //                  app_im.log_pg->text_box->push_front_text(i_msg);
+      //               }
+      //            }
+      //         }
+      //      }
+      //
+      //#endif
    }
 
    void check_log_file()

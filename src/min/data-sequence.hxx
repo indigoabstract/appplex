@@ -190,9 +190,9 @@ public:
 
    std::string read_string()
    {
-      int32 elem_count = read_int32();
+      uint32 elem_count = read_uint32();
       std::string text(elem_count, 0);
-      read_int8((int8*)&text[0], elem_count, 0);
+      read_int8((int8*)text.data(), elem_count, 0);
 
       return text;
    }
@@ -683,8 +683,8 @@ inline void data_sequence_writer::write_real64(real64 i_seqv)
 
 inline void data_sequence_writer::write_string(const std::string& i_text)
 {
-   write_int32(i_text.length());
-   write_int8((int8*)&i_text[0], i_text.length(), 0);
+   write_uint32(i_text.length());
+   write_int8((int8*)i_text.data(), i_text.length(), 0);
 }
 
 inline void data_sequence_writer::write_line(const std::string& i_text, bool inew_line)

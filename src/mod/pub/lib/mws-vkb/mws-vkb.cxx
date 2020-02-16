@@ -20,12 +20,14 @@
 #include <numeric>
 
 
+mws_vkb_file_store_impl::mws_vkb_file_store_impl(mws_sp<mws_mod> i_mod) : mod(i_mod) {}
+
 std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()
 {
    if (vkb_info_vect.empty())
    {
       // search all files in resources
-      const mws_file_map& file_list = mws_mod_ctrl::inst()->app_storage().get_res_file_list();
+      const mws_file_map& file_list = mod.lock()->storage.get_res_file_list();
 
       // store all the found vkb files in a list
       for (auto file_it : file_list)
@@ -78,7 +80,7 @@ std::string mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
 
    if (file_exists(i_vkb_filename))
    {
-      vkb = mws_mod_ctrl::inst()->app_storage().load_as_string(i_vkb_filename);
+      vkb = mod.lock()->storage.load_as_string(i_vkb_filename);
    }
 
    return vkb;

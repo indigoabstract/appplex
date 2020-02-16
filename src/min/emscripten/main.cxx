@@ -101,6 +101,7 @@ public:
    virtual void write_text_v(const char* i_format, ...) const override;
    // filesystem
    virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const override;
+   virtual std::vector<mws_sp<mws_file>> list_external_directory(const mws_path& i_directory, bool i_recursive) const override;
    virtual const mws_path& prv_dir() const override;
    virtual const mws_path& res_dir() const override;
    virtual const mws_path& tmp_dir() const override;
@@ -209,11 +210,6 @@ public:
       file = fopen(path.c_str(), i_open_mode.c_str());
       bool file_opened = (file != nullptr);
       mws_println("open_impl: opening external file %s success %d", path.c_str(), (int)file_opened);
-
-      if (file_opened && (i_open_mode.find('w') != std::string::npos))
-      {
-         file_is_writable = true;
-      }
 
       return file_opened;
    }
@@ -506,7 +502,27 @@ static bool mws_make_directory(const mws_path& i_path)
 
 mws_sp<mws_file_impl> emst_main::new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const
 {
-   return std::make_shared<emst_file_impl>(i_path, bool i_is_internal);
+   return std::make_shared<emst_file_impl>(i_path, i_is_internal);
+}
+
+std::vector<mws_sp<mws_file>> emst_main::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+{
+   std::vector<mws_sp<mws_file>> list;
+   std::filesystem::recursive_directory_iterator rdi(i_directory.string());
+
+   for (auto& p : rdi)
+   {
+      std::filesystem::path path = p.path();
+
+      if (std::filesystem::is_regular_file(path))
+      {
+         mws_sp<mws_file_impl> file_impl = mws_app_inst()->new_mws_file_impl(path.generic_string());
+
+         list.push_back(mws_file::get_inst(file_impl));
+      }
+   }
+
+   return list;
 }
 
 const mws_path& emst_main::prv_dir() const

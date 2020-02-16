@@ -7,6 +7,7 @@
 
 class mws_draw_text;
 class mws_font;
+class mws_mod;
 class mws_vrn_main;
 class mws_text_vxo;
 class gfx_tex;
@@ -62,6 +63,8 @@ struct vkb_file_info
 class mws_vkb_file_store_impl : public mws_vkb_file_store
 {
 public:
+   mws_vkb_file_store_impl(mws_sp<mws_mod> i_mod);
+
    std::vector<vkb_file_info> get_vkb_list() override;
    bool file_exists(const std::string& i_vkb_filename) override;
    void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) override;
@@ -69,6 +72,7 @@ public:
 
 protected:
    std::vector<vkb_file_info> vkb_info_vect;
+   mws_wp<mws_mod> mod;
 };
 
 

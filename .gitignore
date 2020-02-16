@@ -3,7 +3,7 @@
 .svn
 .tmp
 *.iml
-index.txt
+res-idx.str
 
 /log.txt
 /cmd
