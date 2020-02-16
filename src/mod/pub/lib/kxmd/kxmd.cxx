@@ -1,6 +1,8 @@
 #include "stdafx.hxx"
 
 #include "kxmd.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "pfm.hxx"
 #include <cctype>
@@ -16,7 +18,7 @@ namespace ns_kxmd
    };
 
 
-   mws_sp<kxmd_kv> parse_kxmd(mws_sp<std::string> i_src);
+   mws_sp<kxmd_kv> parse_kxmd(const std::string& i_src);
 
    std::string indent_by_level(int i_level)
    {
@@ -619,7 +621,7 @@ namespace ns_kxmd
       }
       else
       {
-         main = parse_kxmd(mws_sp<std::string>(new std::string(i_kxmd_data)));
+         main = parse_kxmd(i_kxmd_data);
       }
 
       db->p->db_ref = db;
@@ -636,10 +638,10 @@ namespace ns_kxmd
 
    mws_sp<kxmd> kxmd::nwi_from_file(mws_sp<mws_file> i_file)
    {
-      auto str = mws::filesys::load_res_as_string(i_file);
+      std::string str = mws_mod_ctrl::inst()->app_storage().load_as_string(i_file);
       mws_sp<kxmd> db;
 
-      if (str)
+      if (!str.empty())
       {
          db = mws_sp<kxmd>(new kxmd());
          mws_sp<kxmd_kv> main = parse_kxmd(str);
@@ -953,10 +955,10 @@ namespace ns_kxmd
 
       bool is_end_of_line()
       {
-         return crt_idx >= src->length();
+         return crt_idx >= src.length();
       }
 
-      mws_sp<std::string> src;
+      std::string src;
       uint32 crt_idx;
       mws_sp<kxs_elem> kxel;
 
@@ -996,7 +998,7 @@ namespace ns_kxmd
 
       mws_sp<kxs_elem> scan()
       {
-         if (ss->crt_idx < ss->src->length())
+         if (ss->crt_idx < ss->src.length())
          {
             return scan_impl();
          }
@@ -1028,9 +1030,9 @@ namespace ns_kxmd
       {
          uint32 start_idx = ss->crt_idx;
 
-         for (uint32 k = start_idx; k < ss->src->length(); k++)
+         for (uint32 k = start_idx; k < ss->src.length(); k++)
          {
-            char c = ss->src->at(k);
+            char c = ss->src.at(k);
 
             if (kxmd_util::is_white_space(c))
             {
@@ -1043,7 +1045,7 @@ namespace ns_kxmd
                   token_found = true;
 
                   mws_sp<kxmd_whitespace> ke = kxmd_whitespace::nwi();
-                  ke->key = ss->src->substr(start_idx, ss->crt_idx - start_idx);
+                  ke->key = ss->src.substr(start_idx, ss->crt_idx - start_idx);
 
                   return ke;
                }
@@ -1065,7 +1067,7 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (c == ',')
          {
@@ -1088,7 +1090,7 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (!kxmd_util::is_symbol_start_char(c))
          {
@@ -1097,9 +1099,9 @@ namespace ns_kxmd
 
          ss->crt_idx++;
 
-         for (uint32 k = ss->crt_idx; k < ss->src->length(); k++)
+         for (uint32 k = ss->crt_idx; k < ss->src.length(); k++)
          {
-            c = ss->src->at(k);
+            c = ss->src.at(k);
 
             if (kxmd_util::is_symbol_body_char(c))
             {
@@ -1114,7 +1116,7 @@ namespace ns_kxmd
          token_found = true;
 
          mws_sp<kxmd_symbol> ke = kxmd_symbol::nwi();
-         ke->key = ss->src->substr(start_idx, ss->crt_idx - start_idx);
+         ke->key = ss->src.substr(start_idx, ss->crt_idx - start_idx);
 
          return ke;
       }
@@ -1129,7 +1131,7 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (c != '"' && c != '\'')
          {
@@ -1139,9 +1141,9 @@ namespace ns_kxmd
          char end = c;
          ss->crt_idx++;
 
-         for (uint32 k = ss->crt_idx; k < ss->src->length(); k++)
+         for (uint32 k = ss->crt_idx; k < ss->src.length(); k++)
          {
-            char c = ss->src->at(k);
+            char c = ss->src.at(k);
 
             if (c == end)
             {
@@ -1149,7 +1151,7 @@ namespace ns_kxmd
                token_found = true;
 
                mws_sp<kxmd_text> ke = kxmd_text::nwi();
-               ke->key = ss->src->substr(start_idx, ss->crt_idx - start_idx);
+               ke->key = ss->src.substr(start_idx, ss->crt_idx - start_idx);
 
                return ke;
             }
@@ -1161,7 +1163,7 @@ namespace ns_kxmd
 
          if (!token_found)
          {
-            std::string str(ss->src->c_str() + start_idx - 10, 20);
+            std::string str(ss->src.c_str() + start_idx - 10, 20);
             mws_throw mws_exception(mws_to_str_fmt("unterminated text quote at [ %s ]", str.c_str()));
          }
 
@@ -1178,15 +1180,15 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (c == '<')
          {
-            c = ss->src->at(start_idx + 1);
+            c = ss->src.at(start_idx + 1);
 
             if (c == '<')
             {
-               c = ss->src->at(start_idx + 2);
+               c = ss->src.at(start_idx + 2);
 
                if (c == '-')
                {
@@ -1202,11 +1204,11 @@ namespace ns_kxmd
          }
          else if (c == '-')
          {
-            c = ss->src->at(start_idx + 1);
+            c = ss->src.at(start_idx + 1);
 
             if (c == '-')
             {
-               c = ss->src->at(start_idx + 2);
+               c = ss->src.at(start_idx + 2);
 
                if (c == '>')
                {
@@ -1234,11 +1236,11 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (c == '<')
          {
-            c = ss->src->at(start_idx + 1);
+            c = ss->src.at(start_idx + 1);
 
             if (c == '-')
             {
@@ -1253,7 +1255,7 @@ namespace ns_kxmd
          }
          else if (c == '-')
          {
-            c = ss->src->at(start_idx + 1);
+            c = ss->src.at(start_idx + 1);
 
             if (c == '>')
             {
@@ -1283,7 +1285,7 @@ namespace ns_kxmd
          char c = 0;
          mws_sp<kxmd_scn> sc;
 
-         c = ss->src->at(start_idx);
+         c = ss->src.at(start_idx);
 
          if (c != '?')
          {
@@ -1308,7 +1310,7 @@ namespace ns_kxmd
          sc = kxmd_scn_factory::nwi(kxs_whitespace, ss);
          kxt = sc->scan();
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != '[')
          {
@@ -1320,7 +1322,7 @@ namespace ns_kxmd
          sc = kxmd_scn_factory::nwi(kxs_main, ss);
          kxt = sc->scan();
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != ']')
          {
@@ -1351,14 +1353,14 @@ namespace ns_kxmd
          char c = 0;
          mws_sp<kxmd_scn> sc;
 
-         c = ss->src->at(start_idx);
+         c = ss->src.at(start_idx);
 
          if (c != '@')
          {
             return nullptr;
          }
 
-         c = ss->src->at(start_idx + 1);
+         c = ss->src.at(start_idx + 1);
 
          if (c == '@')
          {
@@ -1395,7 +1397,7 @@ namespace ns_kxmd
             return ke;
          }
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != '[')
          {
@@ -1407,7 +1409,7 @@ namespace ns_kxmd
          sc = kxmd_scn_factory::nwi(kxs_main, ss);
          kxt = sc->scan();
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != ']')
          {
@@ -1438,14 +1440,14 @@ namespace ns_kxmd
          char c = 0;
          mws_sp<kxmd_scn> sc;
 
-         c = ss->src->at(start_idx);
+         c = ss->src.at(start_idx);
 
          if (c != '@')
          {
             return nullptr;
          }
 
-         c = ss->src->at(start_idx + 1);
+         c = ss->src.at(start_idx + 1);
 
          if (c != '@')
          {
@@ -1482,7 +1484,7 @@ namespace ns_kxmd
             return ke;
          }
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != '[')
          {
@@ -1517,7 +1519,7 @@ namespace ns_kxmd
       {
          int start_idx = ss->crt_idx;
 
-         if (ss->src->at(start_idx) != '[')
+         if (ss->src.at(start_idx) != '[')
          {
             return nullptr;
          }
@@ -1532,7 +1534,7 @@ namespace ns_kxmd
          };
 
          // search for closing ']'
-         while (ss->crt_idx < ss->src->length())
+         while (ss->crt_idx < ss->src.length())
          {
             bool ttoken_found = false;
 
@@ -1552,9 +1554,9 @@ namespace ns_kxmd
                      ttoken_found = true;
                   }
 
-                  if (ss->crt_idx >= ss->src->length())
+                  if (ss->crt_idx >= ss->src.length())
                   {
-                     if (ss->crt_idx > ss->src->length())
+                     if (ss->crt_idx > ss->src.length())
                      {
                         mws_throw mws_exception("kxscnignoreblock_body - passed the end of the string. this shouldn't happen...");
                      }
@@ -1565,7 +1567,7 @@ namespace ns_kxmd
             } while (ttoken_found);
 
             // no more recognized sequences. check for end of block, or skip character
-            char c = ss->src->at(ss->crt_idx);
+            char c = ss->src.at(ss->crt_idx);
 
             // found the end of the block
             if (c == ']')
@@ -1587,7 +1589,7 @@ namespace ns_kxmd
          }
 
          mws_sp<kxmd_text> ke = kxmd_text::nwi();
-         ke->key = ss->src->substr(start_idx + 1, ss->crt_idx - start_idx - 2);
+         ke->key = ss->src.substr(start_idx + 1, ss->crt_idx - start_idx - 2);
 
          return ke;
       }
@@ -1602,7 +1604,7 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          if (c != '[')
          {
@@ -1617,7 +1619,7 @@ namespace ns_kxmd
          mws_sp<kxmd_scn> sc = kxmd_scn_factory::nwi(kxs_main, ss);
          kxt = sc->scan();
 
-         c = ss->src->at(ss->crt_idx);
+         c = ss->src.at(ss->crt_idx);
 
          if (c != ']')
          {
@@ -1649,7 +1651,7 @@ namespace ns_kxmd
       virtual mws_sp<kxs_elem> scan_impl()
       {
          int start_idx = ss->crt_idx;
-         char c = ss->src->at(start_idx);
+         char c = ss->src.at(start_idx);
 
          kxmd_scanner_type sct[] =
          {
@@ -1723,9 +1725,9 @@ namespace ns_kxmd
                   }
                }
 
-               if (ss->crt_idx >= ss->src->length())
+               if (ss->crt_idx >= ss->src.length())
                {
-                  if (ss->crt_idx > ss->src->length())
+                  if (ss->crt_idx > ss->src.length())
                   {
                      mws_throw mws_exception("passed the end of the string. this shouldn't happen...");
                   }
@@ -1742,17 +1744,17 @@ namespace ns_kxmd
          uint32 idx = ss->crt_idx;
          bool parse_error = false;
 
-         if (idx >= ss->src->length())
+         if (idx >= ss->src.length())
          {
-            idx = ss->src->length() - 1;
+            idx = ss->src.length() - 1;
          }
 
-         c = ss->src->at(idx);
+         c = ss->src.at(idx);
 
          // scanner for the whole program/file
          if (start_idx == 0)
          {
-            if (ss->crt_idx != ss->src->length())
+            if (ss->crt_idx != ss->src.length())
             {
                parse_error = true;
             }
@@ -1842,13 +1844,13 @@ namespace ns_kxmd
    }
 
 
-   mws_sp<kxmd_kv> parse_kxmd(mws_sp<std::string> src)
+   mws_sp<kxmd_kv> parse_kxmd(const std::string& i_src)
    {
       mws_sp<kxmd_scn> sc;
       mws_sp<kxmd_shared_state> ss;
 
       ss = kxmd_shared_state::nwi();
-      ss->src = src;
+      ss->src = i_src;
       sc = kxmd_scn_factory::nwi(kxs_main, ss);
 
       return sc->scan();

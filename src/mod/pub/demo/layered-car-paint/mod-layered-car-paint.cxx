@@ -1155,12 +1155,12 @@ void mod_layered_car_paint::load()
    if (false)
    {
       mws_path path("png");
-      mws_sp<std::vector<mws_sp<mws_file> > > file_list = path.list_directory(true);
+      std::vector<mws_sp<mws_file>> file_list = path.list_directory(true);
       std::vector<std::string> spec_file_list;
       std::vector<std::string> diff_file_list;
-      auto it = file_list->begin();
+      auto it = file_list.begin();
 
-      for (; it != file_list->end(); it++)
+      for (; it != file_list.end(); it++)
       {
          mws_sp<mws_file> file = *it;
          std::string fname = file->filename();
@@ -1186,11 +1186,11 @@ void mod_layered_car_paint::load()
       for (; its != spec_file_list.end(); its++)
       {
          std::string fname = *its;
-         auto it2 = file_list->begin();
+         auto it2 = file_list.begin();
          std::string root = fname.substr(0, fname.length() - 5);
          mws_println("%s", fname.c_str());
 
-         for (; it2 != file_list->end(); it2++)
+         for (; it2 != file_list.end(); it2++)
          {
             mws_sp<mws_file> diff_file = *it2;
             std::string diff_fname = diff_file->filename();

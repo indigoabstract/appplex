@@ -154,10 +154,10 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
    return cmp_res;
 }
 
-bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
+bool mws_str::starts_with(const std::string& i_str, const std::string& i_find)
 {
-   int size = istr.length();
-   int size_find = ifind.length();
+   int size = i_str.length();
+   int size_find = i_find.length();
 
    if (size_find > size)
    {
@@ -166,7 +166,7 @@ bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
 
    for (int k = 0; k < size_find; k++)
    {
-      if (istr[k] != ifind[k])
+      if (i_str[k] != i_find[k])
       {
          return false;
       }
@@ -175,10 +175,10 @@ bool mws_str::starts_with(const std::string& istr, const std::string& ifind)
    return true;
 }
 
-bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
+bool mws_str::ends_with(const std::string& i_str, const std::string& i_find)
 {
-   int size = istr.length();
-   int size_find = ifind.length();
+   int size = i_str.length();
+   int size_find = i_find.length();
 
    if (size_find > size)
    {
@@ -187,7 +187,7 @@ bool mws_str::ends_with(const std::string& istr, const std::string& ifind)
 
    for (int k = size - size_find, l = 0; k < size; k++, l++)
    {
-      if (istr[k] != ifind[l])
+      if (i_str[k] != i_find[l])
       {
          return false;
       }
@@ -429,10 +429,10 @@ void mws_broadcaster::broadcast(mws_sp<mws_sender> i_src, mws_sp<mws_dp> i_dp)
 }
 
 
-bool ends_with(const std::string& istr, const std::string& ifind)
+bool ends_with(const std::string& i_str, const std::string& i_find)
 {
-   int size = istr.length();
-   int size_find = ifind.length();
+   int size = i_str.length();
+   int size_find = i_find.length();
 
    if (size_find > size)
    {
@@ -441,7 +441,7 @@ bool ends_with(const std::string& istr, const std::string& ifind)
 
    for (int k = size - size_find, l = 0; k < size; k++, l++)
    {
-      if (istr[k] != ifind[l])
+      if (i_str[k] != i_find[l])
       {
          return false;
       }

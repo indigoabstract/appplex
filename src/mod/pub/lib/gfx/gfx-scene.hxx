@@ -14,6 +14,7 @@ class gfx;
 class gfx_scene;
 class gfx_camera;
 class gfx_vxo;
+class mws_mod;
 
 
 class gfx_transform
@@ -117,11 +118,12 @@ private:
 class gfx_scene : public gfx_node
 {
 public:
-   gfx_scene(mws_sp<gfx> i_gi = nullptr);
+   gfx_scene(mws_sp<mws_mod> i_mod, mws_sp<gfx> i_gi = nullptr);
    void init();
    virtual void update();
    void draw();
    void post_draw();
+   mws_sp<mws_mod> get_mod() const;
 
 private:
    friend class gfx_node;
@@ -130,4 +132,5 @@ private:
 
    std::vector<mws_sp<gfx_camera> > camera_list;
    std::vector<gfx_param> plist;
+   mws_wp<mws_mod> mod;
 };

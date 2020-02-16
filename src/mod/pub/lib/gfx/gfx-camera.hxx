@@ -18,94 +18,7 @@ class gfx_shader;
 class gfx_camera;
 class gfx_camera_impl;
 class gfx_material;
-
-
-namespace seq_util
-{
-   inline float read_float(mws_sp<rw_sequence> isq)
-   {
-      return isq->r.read_real32();
-   }
-
-   inline glm::vec2 read_vec2(mws_sp<rw_sequence> isq)
-   {
-      glm::vec2 val;
-
-      val.x = isq->r.read_real32();
-      val.y = isq->r.read_real32();
-
-      return val;
-   }
-
-   inline glm::vec3 read_vec3(mws_sp<rw_sequence> isq)
-   {
-      glm::vec3 val;
-
-      val.x = isq->r.read_real32();
-      val.y = isq->r.read_real32();
-      val.z = isq->r.read_real32();
-
-      return val;
-   }
-
-   inline glm::vec4 read_vec4(mws_sp<rw_sequence> isq)
-   {
-      glm::vec4 val;
-
-      val.x = isq->r.read_real32();
-      val.y = isq->r.read_real32();
-      val.z = isq->r.read_real32();
-      val.w = isq->r.read_real32();
-
-      return val;
-   }
-
-   inline glm::quat read_quat(mws_sp<rw_sequence> isq)
-   {
-      glm::quat val;
-
-      val.x = isq->r.read_real32();
-      val.y = isq->r.read_real32();
-      val.z = isq->r.read_real32();
-      val.w = isq->r.read_real32();
-
-      return val;
-   }
-
-   inline void write_float(mws_sp<rw_sequence> isq, float ival)
-   {
-      isq->w.write_real32(ival);
-   }
-
-   inline void write_vec2(mws_sp<rw_sequence> isq, glm::vec2& ival)
-   {
-      isq->w.write_real32(ival.x);
-      isq->w.write_real32(ival.y);
-   }
-
-   inline void write_vec3(mws_sp<rw_sequence> isq, glm::vec3& ival)
-   {
-      isq->w.write_real32(ival.x);
-      isq->w.write_real32(ival.y);
-      isq->w.write_real32(ival.z);
-   }
-
-   inline void write_vec4(mws_sp<rw_sequence> isq, glm::vec4& ival)
-   {
-      isq->w.write_real32(ival.x);
-      isq->w.write_real32(ival.y);
-      isq->w.write_real32(ival.z);
-      isq->w.write_real32(ival.w);
-   }
-
-   inline void write_quat(mws_sp<rw_sequence> isq, glm::quat& ival)
-   {
-      isq->w.write_real32(ival.x);
-      isq->w.write_real32(ival.y);
-      isq->w.write_real32(ival.z);
-      isq->w.write_real32(ival.w);
-   }
-}
+class rw_sequence;
 
 
 const std::string u_m4_model = "u_m4_model";
@@ -225,3 +138,91 @@ public:
 
    static int camera_idx;
 };
+
+
+namespace seq_util
+{
+   inline float read_float(mws_sp<rw_sequence> isq)
+   {
+      return isq->r.read_real32();
+   }
+
+   inline glm::vec2 read_vec2(mws_sp<rw_sequence> isq)
+   {
+      glm::vec2 val;
+
+      val.x = isq->r.read_real32();
+      val.y = isq->r.read_real32();
+
+      return val;
+   }
+
+   inline glm::vec3 read_vec3(mws_sp<rw_sequence> isq)
+   {
+      glm::vec3 val;
+
+      val.x = isq->r.read_real32();
+      val.y = isq->r.read_real32();
+      val.z = isq->r.read_real32();
+
+      return val;
+   }
+
+   inline glm::vec4 read_vec4(mws_sp<rw_sequence> isq)
+   {
+      glm::vec4 val;
+
+      val.x = isq->r.read_real32();
+      val.y = isq->r.read_real32();
+      val.z = isq->r.read_real32();
+      val.w = isq->r.read_real32();
+
+      return val;
+   }
+
+   inline glm::quat read_quat(mws_sp<rw_sequence> isq)
+   {
+      glm::quat val;
+
+      val.x = isq->r.read_real32();
+      val.y = isq->r.read_real32();
+      val.z = isq->r.read_real32();
+      val.w = isq->r.read_real32();
+
+      return val;
+   }
+
+   inline void write_float(mws_sp<rw_sequence> isq, float ival)
+   {
+      isq->w.write_real32(ival);
+   }
+
+   inline void write_vec2(mws_sp<rw_sequence> isq, glm::vec2& ival)
+   {
+      isq->w.write_real32(ival.x);
+      isq->w.write_real32(ival.y);
+   }
+
+   inline void write_vec3(mws_sp<rw_sequence> isq, glm::vec3& ival)
+   {
+      isq->w.write_real32(ival.x);
+      isq->w.write_real32(ival.y);
+      isq->w.write_real32(ival.z);
+   }
+
+   inline void write_vec4(mws_sp<rw_sequence> isq, glm::vec4& ival)
+   {
+      isq->w.write_real32(ival.x);
+      isq->w.write_real32(ival.y);
+      isq->w.write_real32(ival.z);
+      isq->w.write_real32(ival.w);
+   }
+
+   inline void write_quat(mws_sp<rw_sequence> isq, glm::quat& ival)
+   {
+      isq->w.write_real32(ival.x);
+      isq->w.write_real32(ival.y);
+      isq->w.write_real32(ival.z);
+      isq->w.write_real32(ival.w);
+   }
+}

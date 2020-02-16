@@ -241,7 +241,7 @@ void mod_test_stk::init_mws()
 	public:
 		virtual void init()
 		{
-			mws_path res_dir = mws::filesys::res_dir();
+			mws_path res_dir = get_mod()->storage.res_dir();
 			mws_path test_fmod_res_dir = res_dir.parent_path().parent_path() / "test-fmod/res/";
 			FMOD_RESULT result;
 			result = FMOD::System_Create(&fmodSystem);

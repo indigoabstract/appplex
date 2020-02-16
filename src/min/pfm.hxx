@@ -45,20 +45,78 @@ class mws_mod;
 class mws_mod_ctrl;
 class mws_file;
 class mws_path;
-namespace mws_impl { class mws_file_impl; }
-using umf_r = std::unordered_map<std::string, mws_sp<mws_file>>;
-using umf_list = mws_sp<umf_r>;
+class mws_file_impl;
+using mws_file_map = std::unordered_map<std::string, mws_sp<mws_file>>;
 
 
+// represents either an internal path(inside the app's bundled resources) or an external path(outside of the bundled resources)
+class mws_path final
+{
+public:
+   // an internal file(or path) refers to a file inside the resource directory. everything else is considered an external file(or path)
+   // an internal path must only have a filename component, but not a directory component,
+   // as every internal filename is unique so there is no possibility of name collision
+   mws_path();
+   mws_path(const char* i_path);
+   mws_path(const std::string& i_path);
+   mws_path(const mws_path& i_path);
+   mws_path& operator/=(const mws_path& i_path);
+   // removes a file or directory. returns true on success
+   bool remove() const;
+   // makes a directory. returns true on success
+   bool make_dir() const;
+   // tells if the path is empty
+   bool is_empty() const;
+   // tells if the path refers to a directory 
+   bool is_directory() const;
+   // tells if the path refers to a regular file 
+   bool is_regular_file() const;
+   // true if the path is absolute, false otherwise
+   bool is_absolute() const;
+   // false if the path is absolute, true otherwise
+   bool is_relative() const;
+   // tells if the path refers to existing file system object 
+   bool exists() const;
+   const std::string& string() const;
+   // returns the filename path component 
+   std::string filename() const;
+   // returns the stem path component 
+   std::string stem() const;
+   // returns the file extension path component 
+   std::string extension() const;
+   // returns the directory path component 
+   mws_path directory() const;
+   // returns the path of the parent path 
+   mws_path parent_path() const;
+   // returns a list with the files in the directory denoted by this path
+   std::vector<mws_sp<mws_file>> list_directory(bool i_recursive = false) const;
+   // returns true if path is inside the resources directory
+   bool is_internal() const;
+   // returns the current path
+   static std::string current_path();
+
+private:
+   // replaces '\' with '/'
+   void make_standard_path();
+
+   std::string path;
+};
+mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs);
+
+
+// represents a regular file. can be either internal(inside the app's resources) or external(outside of the resource directory)
 class mws_file final
 {
 public:
+   // an internal file(or path) refers to a file inside the resource directory. everything else is considered an external file(or path)
+   // an internal path must only have a filename component, but not a directory component,
+   // as every internal filename is unique so there is no possibility of name collision
    static mws_sp<mws_file> get_inst(const mws_path& i_path);
-   static mws_sp<mws_file> get_inst(mws_sp<mws_impl::mws_file_impl> i_impl);
+   static mws_sp<mws_file> get_inst(mws_sp<mws_file_impl> i_impl);
    virtual ~mws_file();
 
    bool exists() const;
-   bool is_opened() const;
+   bool is_open() const;
    bool is_writable() const;
    uint64 length();
    uint64 creation_time() const;
@@ -75,6 +133,8 @@ public:
    std::string extension() const;
    // returns the directory path component 
    mws_path directory() const;
+   // returns true if file is internal
+   bool is_internal() const;
    FILE* get_file_impl() const;
 
    class io_op
@@ -95,7 +155,7 @@ public:
    private:
       friend class mws_file;
       io_op();
-      mws_sp<mws_impl::mws_file_impl> impl;
+      mws_sp<mws_file_impl> impl;
    };
    io_op io;
 
@@ -104,90 +164,9 @@ private:
 };
 
 
-class mws_pfm_app
-{
-public:
-   // update
-   virtual void init();
-   virtual void start();
-   virtual void run();
-
-   // input
-   // translate a key from the platform encoding into the appplex encoding
-   virtual mws_key_types translate_key(int i_pfm_key_id) const = 0;
-   // apply any modifiers like shift, ctrl, caps, num lock etc to get the final key value
-   mws_key_types apply_key_modifiers(mws_key_types i_key_id) const;
-   virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const = 0;
-   // return true to exit the app
-   virtual bool back_evt() const;
-
-   // screen
-   virtual bool is_full_screen_mode() const = 0;
-   virtual void set_full_screen_mode(bool i_enabled) const = 0;
-   virtual float get_screen_scale() const;
-   virtual float get_screen_brightness() const;
-   virtual void set_screen_brightness(float i_brightness) const;
-   // switches between screen width and height. this only works in windowed desktop applications
-   virtual void flip_screen() const;
-
-   // screen metrix
-   // horizontal and vertical screen resolution in dots(pixels)
-   virtual std::pair<uint32, uint32> get_screen_res_px() const = 0;
-   // average dots(pixels) per inch
-   virtual float get_avg_screen_dpi() const = 0;
-   // horizontal and vertical dots(pixels) per inch
-   virtual std::pair<float, float> get_screen_dpi() const = 0;
-   // horizontal and vertical dimensions in inch
-   virtual std::pair<float, float> get_screen_dim_inch() const = 0;
-   // average dots(pixels) per cm
-   virtual float get_avg_screen_dpcm() const;
-   // horizontal and vertical dots(pixels) per cm
-   virtual std::pair<float, float> get_screen_dpcm() const = 0;
-   // horizontal and vertical dimensions in cm
-   virtual std::pair<float, float> get_screen_dim_cm() const = 0;
-
-   // output
-   virtual void write_text(const char* i_text) const = 0;
-   virtual void write_text_nl(const char* i_text) const = 0;
-   virtual void write_text(const wchar_t* i_text) const = 0;
-   virtual void write_text_nl(const wchar_t* i_text) const = 0;
-   virtual void write_text_v(const char* i_format, ...) const = 0;
-
-   // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const = 0;
-   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const = 0;
-   // writable/private/persistent files directory for the current mod
-   virtual const mws_path& prv_dir() const = 0;
-   // read-only/resource files directory for the current mod
-   virtual const mws_path& res_dir() const = 0;
-   // temporary files directory for the current mod
-   virtual const mws_path& tmp_dir() const = 0;
-   // reconfigures the above directories path to match the current mod
-   virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) = 0;
-   virtual std::string get_timezone_id() const = 0;
-};
-
-
 class mws final
 {
 public:
-   struct filesys
-   {
-      static const std::string res_idx_name;
-      static const umf_list get_res_file_list();
-      static mws_sp<std::vector<uint8>> load_res_byte_vect(mws_sp<mws_file> i_file);
-      static mws_sp<std::vector<uint8>> load_res_byte_vect(std::string i_filename);
-      static mws_sp<std::string> load_res_as_string(mws_sp<mws_file> i_file);
-      static mws_sp<std::string> load_res_as_string(std::string i_filename);
-      // writable/private/persistent files directory
-      static const mws_path& prv_dir();
-      // read-only/resource files directory
-      static const mws_path& res_dir();
-      // temporary files directory
-      static const mws_path& tmp_dir();
-   };
-
-
    struct input
    {
       // translate a key from the platform encoding into the appplex encoding
@@ -223,7 +202,7 @@ public:
    {
       static bool is_gfx_available();
       static int get_target_fps();
-      // switches between screen width and height. this only works in windowed desktop applications
+      // switches between screen width and height. only works in windowed desktop applications
       static void flip_screen();
       static bool is_full_screen_mode();
       static void set_full_screen_mode(bool i_enabled);
@@ -269,96 +248,6 @@ public:
 private:
    mws() {}
 };
-
-
-class mws_path final
-{
-public:
-   mws_path();
-   mws_path(const char* i_path, bool i_regular_path = true);
-   mws_path(const std::string& i_path, bool i_regular_path = true);
-   mws_path(const mws_path& i_path);
-   mws_path& operator/=(const mws_path& i_path);
-   // removes a file or directory. returns true on success
-   bool remove() const;
-   // makes a directory. returns true on success
-   bool make_dir() const;
-   // tells if the path is empty
-   bool is_empty() const;
-   // tells if the path refers to a directory 
-   bool is_directory() const;
-   // tells if the path refers to a regular file 
-   bool is_regular_file() const;
-   // tells if the path refers to existing file system object 
-   bool exists() const;
-   const std::string& string() const;
-   // returns the filename path component 
-   std::string filename() const;
-   // returns the stem path component 
-   std::string stem() const;
-   // returns the file extension path component 
-   std::string extension() const;
-   // returns the directory path component 
-   mws_path directory() const;
-   // returns the path of the parent path 
-   mws_path parent_path() const;
-   mws_sp<std::vector<mws_sp<mws_file>>> list_directory(bool i_recursive = false) const;
-   // returns true for regular files and directories(reachable by fopen f.e.). returns false for special files, like resources in the apk on android.
-   bool is_regular_path() const;
-   // returns the current path
-   static std::string current_path();
-
-private:
-   // replaces '\' with '/'
-   void make_standard_path();
-   void list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<mws_file>>> i_file_list, bool i_recursive) const;
-
-   std::string path;
-   bool regular_path = true;
-};
-mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs);
-
-
-namespace mws_impl
-{
-   class mws_file_impl
-   {
-   public:
-      mws_file_impl(const mws_path& i_path);
-      virtual ~mws_file_impl();
-      virtual FILE* get_file_impl() const = 0;
-      virtual bool exists();
-      virtual bool is_opened() const;
-      virtual bool is_writable() const;
-      virtual uint64 length() = 0;
-      virtual uint64 creation_time() const = 0;
-      virtual uint64 last_write_time() const = 0;
-      virtual bool open(std::string i_open_mode);
-      virtual void close();
-      virtual void flush();
-      virtual bool reached_eof() const;
-      virtual void seek(uint64 i_pos);
-      virtual int read(std::vector<uint8>& i_buffer);
-      virtual int write(const std::vector<uint8>& i_buffer);
-      virtual int read(uint8* i_buffer, int i_size);
-      virtual int write(const uint8* i_buffer, int i_size);
-      virtual void check_state() const;
-
-      mws_path ppath;
-      uint64 file_pos;
-      bool file_is_open;
-      bool file_is_writable;
-
-   protected:
-      virtual bool open_impl(std::string i_open_mode) = 0;
-      virtual void close_impl() = 0;
-      virtual void flush_impl() = 0;
-      virtual void seek_impl(uint64 i_pos, int i_seek_pos);
-      virtual uint64 tell_impl();
-      virtual int read_impl(uint8* i_buffer, int i_size);
-      virtual int write_impl(const uint8* i_buffer, int i_size);
-   };
-}
 
 
 // set debug flags for use in conditional expressions to print debug output
@@ -468,6 +357,7 @@ public:
 };
 
 
+// logging class. writes log to the tmp directory
 class mws_log
 {
 public:

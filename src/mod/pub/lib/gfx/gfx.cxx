@@ -380,7 +380,7 @@ bool gfx::ic_shader::reload_shader_on_modify()
 
 mws_sp<gfx_shader> gfx::ic_shader::new_program_from_src
 (
-   const std::string& i_prg_name, mws_sp<std::string> i_vs_shader_src, mws_sp<std::string> i_fs_shader_src,
+   const std::string& i_prg_name, const std::string& i_vs_shader_src, const std::string& i_fs_shader_src,
    mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg
 )
 {
@@ -499,7 +499,7 @@ mws_sp<gfx_shader> gfx::ic_shader::get_program_by_name(std::string i_prg_name)
       {
          shader_src src = get_std_shader_src(i_prg_name);
          mws_assert(src.vsh && src.fsh);
-         shader = gfx_shader::new_inst_inline(i_prg_name, src.vsh, src.fsh, nullptr, true, gi());
+         shader = gfx_shader::new_inst_inline(i_prg_name, *src.vsh, *src.fsh, nullptr, true, gi());
          mws_assert(shader->is_valid());
          gi()->shader_list.push_back(shader);
          ref_ht[i_prg_name] = shader;

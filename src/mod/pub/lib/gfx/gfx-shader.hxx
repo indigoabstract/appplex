@@ -128,10 +128,8 @@ protected:
 class gfx_shader_listener
 {
 public:
-   virtual const mws_sp<std::string> on_before_submit_vsh_source
-   (mws_sp<gfx_shader> i_gp, const mws_sp<std::string> i_shader_src) = 0;
-   virtual const mws_sp<std::string> on_before_submit_fsh_source
-   (mws_sp<gfx_shader> i_gp, const mws_sp<std::string> i_shader_src) = 0;
+   virtual const std::string on_before_submit_vsh_source(mws_sp<gfx_shader> i_gp, const std::string& i_shader_src) = 0;
+   virtual const std::string on_before_submit_fsh_source(mws_sp<gfx_shader> i_gp, const std::string& i_shader_src) = 0;
 };
 
 
@@ -151,11 +149,11 @@ public:
    );
    static mws_sp<gfx_shader> new_inst_inline
    (
-      const std::string& i_prg_name, const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src,
+      const std::string& i_prg_name, const std::string& i_vs_shader_src, const std::string& i_fs_shader_src,
       mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false, mws_sp<gfx> i_gi = nullptr
    );
 
-   static std::string create_shader_id(std::string i_vertex_shader_name, std::string i_fragment_shader_name);
+   static std::string create_shader_id(const std::string& i_vertex_shader_name, const std::string& i_fragment_shader_name);
    virtual gfx_obj::e_gfx_obj_type get_type()const;
    virtual bool is_valid()const;
    mws_sp<gfx_shader> get_inst();

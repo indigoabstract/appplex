@@ -690,7 +690,7 @@ void mws_vrn_geom::init_shaders()
    vkb_cell_borders_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_cell_borders_sh, true);
    if (!vkb_cell_borders_shader)
    {
-      auto vsh = std::make_shared<std::string>(
+      std::string vsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -712,7 +712,7 @@ void mws_vrn_geom::init_shaders()
          )"
          );
 
-      auto fsh = std::make_shared<std::string>(
+      std::string fsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -743,7 +743,7 @@ void mws_vrn_geom::init_shaders()
    vkb_line_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_line_sh, true);
    if (!vkb_line_shader)
    {
-      auto vsh = std::make_shared<std::string>(
+      std::string vsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -781,7 +781,7 @@ void mws_vrn_geom::init_shaders()
          )"
          );
 
-      auto fsh = std::make_shared<std::string>(
+      std::string fsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -811,7 +811,7 @@ void mws_vrn_geom::init_shaders()
    vkb_point_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_point_sh, true);
    if (!vkb_point_shader)
    {
-      auto vsh = std::make_shared<std::string>(
+      std::string vsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -841,7 +841,7 @@ void mws_vrn_geom::init_shaders()
          )"
          );
 
-      auto fsh = std::make_shared<std::string>(
+      std::string fsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -870,7 +870,7 @@ void mws_vrn_geom::init_shaders()
    vkb_triangle_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_triangle_sh, true);
    if (!vkb_triangle_shader)
    {
-      auto vsh = std::make_shared<std::string>(
+      std::string vsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core
@@ -903,7 +903,7 @@ void mws_vrn_geom::init_shaders()
          )"
          );
 
-      auto fsh = std::make_shared<std::string>(
+      std::string fsh(
          R"(
          //@es #version 300 es
          //@dt #version 330 core

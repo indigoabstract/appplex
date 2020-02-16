@@ -1,6 +1,8 @@
 #include "stdafx.hxx"
 
 #include "mod-png.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "lodepng.h"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
@@ -56,9 +58,9 @@ namespace mod_png_ns
          lodepng::State state; //optionally customize this one
          uint32 error = 0;
          uint32 width = 0, height = 0;
-         mws_sp<std::vector<uint8> > img_data = mws::filesys::load_res_byte_vect(i_img_name);
+         std::vector<uint8> img_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_img_name);
          std::vector<uint8> png;
-         error = lodepng::decode(png, width, height, state, *img_data);
+         error = lodepng::decode(png, width, height, state, img_data);
 
          if (error)
          {
@@ -75,7 +77,7 @@ namespace mod_png_ns
       {
          lodepng::State state; //optionally customize this one
          uint32 error = 0;
-         mws_path out_file = mws::filesys::prv_dir() / i_img_name;
+         mws_path out_file = mws_mod_ctrl::inst()->app_storage().prv_dir() / i_img_name;
          std::vector<uint8> png;
 
          error = lodepng::encode(png, i_img_data, i_width, i_height, state);

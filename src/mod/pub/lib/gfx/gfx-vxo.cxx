@@ -1,6 +1,8 @@
 #include "stdafx.hxx"
 
 #include "gfx-vxo.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "gfx-vxo-ext.hxx"
 #include "mod-list.hxx"
 #include "pfm-gl.h"
@@ -422,8 +424,9 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                         filepath = matId;
                      }
 
-                     mws_sp<std::vector<uint8> > data = mws::filesys::load_res_byte_vect(name);
-                     membuf sbuf(data->data(), data->data() + data->size());
+                     mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+                     std::vector<uint8> data = mod->storage.load_as_byte_vect(name);
+                     membuf sbuf(data.data(), data.data() + data.size());
                      std::istream matIStream(&sbuf);
                      //std::ifstream matIStream(filepath.c_str());
                      return LoadMtl(matMap, matIStream);
@@ -433,8 +436,9 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                   std::string name;
                };
 
-               mws_sp<std::vector<uint8> > data = mws::filesys::load_res_byte_vect(mesh_name);
-               membuf sbuf(data->data(), data->data() + data->size());
+               mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+               std::vector<uint8> data = mod->storage.load_as_byte_vect(mesh_name);
+               membuf sbuf(data.data(), data.data() + data.size());
                std::istream in(&sbuf);
                material_mem_reader mr(mesh_name);
                std::string err = tinyobj::LoadObj(shapes, in, mr);

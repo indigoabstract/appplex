@@ -6,6 +6,7 @@
 class mws_mod;
 class mws_mod_list;
 class mws_ptr_evt_base;
+class mws_app_storage;
 
 
 class mws_mod_ctrl
@@ -28,6 +29,8 @@ public:
    void pointer_action(mws_sp<mws_ptr_evt_base> i_te);
    void key_action(mws_key_actions i_action_type, mws_key_types i_key);
    mws_sp<mws_mod> get_current_mod();
+   // storage for current mod
+   mws_app_storage& app_storage();
    void set_next_mod(mws_sp<mws_mod> i_mod);
    void destroy_app();
    void start_app();

@@ -1,9 +1,10 @@
 #include "stdafx.hxx"
 
 #include "mws-vkb.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "vrn/vrn-diag.hxx"
 #include "vrn/vrn-visual.hxx"
-#include "mws-mod-ctrl.hxx"
 #include "mws/mws-camera.hxx"
 #include "fonts/mws-text-vxo.hxx"
 #include "fonts/mws-font.hxx"
@@ -14,7 +15,6 @@
 #include "gfx-tex.hxx"
 #include "gfx-pbo.hxx"
 #include "tex-atlas/mws-tex-atlas.hxx"
-#include "mws-mod.hxx"
 #include "kxmd/kxmd.hxx"
 #include <array>
 #include <numeric>
@@ -25,7 +25,7 @@ std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()
    if (vkb_info_vect.empty())
    {
       // search all files in resources
-      auto& file_list = *mws::filesys::get_res_file_list();
+      const mws_file_map& file_list = mws_mod_ctrl::inst()->app_storage().get_res_file_list();
 
       // store all the found vkb files in a list
       for (auto file_it : file_list)
@@ -72,15 +72,16 @@ void mws_vkb_file_store_impl::save_vkb(const std::string& i_vkb_filename, const 
    map_file_save->io.close();
 }
 
-mws_sp<std::string> mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
+std::string mws_vkb_file_store_impl::load_vkb(const std::string& i_vkb_filename)
 {
+   std::string vkb;
+
    if (file_exists(i_vkb_filename))
    {
-      mws_sp<std::string> str = mws::filesys::load_res_as_string(i_vkb_filename);
-      return str;
+      vkb = mws_mod_ctrl::inst()->app_storage().load_as_string(i_vkb_filename);
    }
 
-   return nullptr;
+   return vkb;
 }
 
 mws_vkb_impl::mws_vkb_impl(uint32 i_obj_type_mask)
@@ -540,8 +541,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
       return;
    }
 
-   mws_sp<std::string> data = file_store->load_vkb(i_filename);
-   auto db = kxmd::nwi(data->c_str(), data->length());
+   std::string data = file_store->load_vkb(i_filename);
+   auto db = kxmd::nwi(data.c_str(), data.length());
    kv_ref main = db->main();
    uint32 point_count = 0;
    glm::ivec2 screen_dim(mws::screen::get_width(), mws::screen::get_height());
@@ -1390,7 +1391,7 @@ void mws_vkb_impl::init_shaders()
    vkb_keys_fonts_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_fonts_sh, true);
    if (!vkb_keys_fonts_shader)
    {
-      auto vsh = std::make_shared<std::string>(R"(
+      std::string vsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 
@@ -1410,7 +1411,7 @@ void mws_vkb_impl::init_shaders()
       }
       )");
 
-      auto fsh = std::make_shared<std::string>(R"(
+      std::string fsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 
@@ -1441,7 +1442,7 @@ void mws_vkb_impl::init_shaders()
    vkb_keys_outline_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_keys_outline_sh, true);
    if (!vkb_keys_outline_shader)
    {
-      auto vsh = std::make_shared<std::string>(R"(
+      std::string vsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 
@@ -1461,7 +1462,7 @@ void mws_vkb_impl::init_shaders()
       }
       )");
 
-      auto fsh = std::make_shared<std::string>(R"(
+      std::string fsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 
@@ -1492,7 +1493,7 @@ void mws_vkb_impl::init_shaders()
    vkb_hsv_shift_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(vkb_hsv_shift_sh, true);
    if (!vkb_hsv_shift_shader)
    {
-      auto vsh = std::make_shared<std::string>(R"(
+      std::string vsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 
@@ -1512,7 +1513,7 @@ void mws_vkb_impl::init_shaders()
       }
       )");
 
-      auto fsh = std::make_shared<std::string>(R"(
+      std::string fsh(R"(
       //@es #version 300 es
       //@dt #version 330 core
 

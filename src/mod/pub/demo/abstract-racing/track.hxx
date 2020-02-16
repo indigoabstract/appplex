@@ -21,6 +21,7 @@ namespace track_ns
 	};
 }
 using namespace track_ns;
+class mws_mod;
 
 
 class track_section_type
@@ -46,7 +47,7 @@ public:
 class track
 {
 public:
-	track();
+	track(mws_sp<mws_mod> i_mod);
 	void loadTrackData(char* track_name);
 	void generateTrackVertices();
 	glm::vec3& get_segment_pos_at(int isegment_idx);
@@ -73,6 +74,7 @@ public:
 	std::vector<glm::vec3> segment_crd;
 	glm::vec3 start_pos;
 	mws_sp<gfx_tex> tex;
+	mws_wp<mws_mod> mod;
 };
 
 #endif

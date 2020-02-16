@@ -8,6 +8,7 @@
 #include <vector>
 
 
+class mws_app_storage_impl;
 class mws_mod_ctrl;
 class mws_mod_list;
 class mws_page_tab;
@@ -49,6 +50,40 @@ public:
 };
 
 
+class mws_app_storage
+{
+public:
+   const mws_file_map& get_res_file_list() const;
+   std::vector<uint8> load_as_byte_vect(mws_sp<mws_file> i_file) const;
+   std::vector<uint8> load_as_byte_vect(const mws_path& i_file_path) const;
+   mws_sp<std::vector<uint8>> load_as_sp_byte_vect(const mws_path& i_file_path) const;
+   std::string load_as_string(mws_sp<mws_file> i_file) const;
+   std::string load_as_string(const mws_path& i_file_path) const;
+   // writable/private/persistent files directory
+   const mws_path& prv_dir() const;
+   // read-only/resource files directory
+   const mws_path& res_dir() const;
+   // temporary files directory
+   const mws_path& tmp_dir() const;
+
+   // screenshot
+   void save_screenshot(const mws_path& i_file_path = "") const;
+
+   // screen video recording
+   void start_recording_screen(const mws_path& i_file_path = "", const mws_video_params* i_params = nullptr);
+   void stop_recording_screen();
+   bool is_recording_screen();
+   void toggle_screen_recording();
+
+private:
+   friend class mws_mod;
+   friend class mws_mod_ctrl;
+   mws_app_storage();
+
+   mws_up<mws_app_storage_impl> p;
+};
+
+
 class mws_mod : public std::enable_shared_from_this<mws_mod>, public mws_node
 {
 public:
@@ -58,27 +93,6 @@ public:
       e_mod_list,
    };
 
-   class app_storage_impl;
-   class app_storage
-   {
-   public:
-      app_storage();
-
-      // screenshot
-      void save_screenshot(std::string i_filename = "");
-
-      // screen video recording
-      void start_recording_screen(std::string i_filename = "", const mws_video_params* i_params = nullptr);
-      void stop_recording_screen();
-      bool is_recording_screen();
-      void toggle_screen_recording();
-
-   private:
-      friend class mws_mod;
-
-      mws_up<app_storage_impl> p;
-   };
-
    virtual ~mws_mod();
 
    virtual mod_type get_mod_type();
@@ -86,14 +100,14 @@ public:
    int get_height();
    // internal name (only used inside the engine for identification purposes). may be the same as external name
    const std::string& get_name();
-   void set_name(std::string i_name);
+   void set_name(const std::string& i_name);
 
    // external (display name). this is used for example, when setting the application name. may be the same as internal name
    const std::string& get_external_name();
-   void set_external_name(std::string i_name);
+   void set_external_name(const std::string& i_name);
 
    const mws_path& get_proj_rel_path();
-   void set_proj_rel_path(std::string i_path);
+   void set_proj_rel_path(const mws_path& i_path);
    bool is_gfx_mod();
    mws_sp<mws_mod_preferences> get_preferences();
    // true to exit app, false to continue
@@ -114,7 +128,7 @@ public:
    mws_sp<gfx_scene> gfx_scene_inst;
    mws_sp<mws_camera> mws_cam;
    mws_sp<mws_page_tab> mws_root;
-   app_storage storage;
+   mws_app_storage storage;
 
 protected:
    mws_mod(const char* i_include_guard);
@@ -183,7 +197,7 @@ public:
    mod_type get_mod_type();
    void add(mws_sp<mws_mod> i_mod);
    mws_sp<mws_mod> mod_at(int i_index);
-   mws_sp<mws_mod> mod_by_name(std::string i_name);
+   mws_sp<mws_mod> mod_by_name(const std::string& i_name);
    int get_mod_count()const;
    virtual void on_resize();
    virtual void receive(mws_sp<mws_dp> i_dp);
@@ -212,7 +226,7 @@ private:
 
    static void append_mod_list(mws_sp<mws_mod_list> i_mod_list);
    static mws_sp<mws_mod_list> get_mod_list();
-   static void add_mod(mws_sp<mws_mod> i_mod, std::string i_mod_path, bool i_set_current = false);
+   static void add_mod(mws_sp<mws_mod> i_mod, const mws_path& i_mod_path, bool i_set_current = false);
 
    static inline mws_wp<mws_mod_list> ul;
    static inline mws_wp<mws_mod> next_crt_mod;

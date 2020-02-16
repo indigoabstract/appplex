@@ -5,6 +5,8 @@
 #if defined MOD_FONTS
 
 #include "mws-font-db.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "mws-font.hxx"
 #include "min.hxx"
 #include <glm/inc.hpp>
@@ -222,7 +224,7 @@ public:
       )"
          ));
 
-         text_shader = gfx::i()->shader.new_program_from_src(text_shader_name, vsh, fsh);
+         text_shader = gfx::i()->shader.new_program_from_src(text_shader_name, *vsh, *fsh);
       }
 
       clear_db();
@@ -335,7 +337,8 @@ public:
                }
                else
                {
-                  res = mws::filesys::load_res_byte_vect(font_file_name);
+                  mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+                  res = mod->storage.load_as_sp_byte_vect(font_file_name);
                }
 
                if (!res)

@@ -2,6 +2,7 @@
 
 #include "appplex-conf.hxx"
 #include "mws-mod.hxx"
+#include "mws-impl.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "res-ld/res-ld.hxx"
@@ -30,8 +31,8 @@
 
 #endif
 
-using std::string;
-using std::vector;
+
+mws_sp<mws_app> mws_app_inst();
 
 
 bool mws_mod_preferences::requires_gfx()
@@ -39,11 +40,83 @@ bool mws_mod_preferences::requires_gfx()
    return mod_gfx_on;
 }
 
-class mws_mod::app_storage_impl
+class mws_app_storage_impl
 {
 public:
-   app_storage_impl()
+   mws_app_storage_impl()
    {
+   }
+
+   const mws_file_map& get_res_file_list() const
+   {
+      return res_files_map;
+   }
+
+   std::vector<uint8> load_as_byte_vect(mws_sp<mws_file> i_file) const
+   {
+      std::vector<uint8> res;
+
+      if (i_file->io.open())
+      {
+         int size = (int)i_file->length();
+
+         res.resize(size);
+         i_file->io.read(res.data(), size);
+         i_file->io.close();
+      }
+
+      // copy elision
+      return res;
+   }
+
+   std::vector<uint8> load_as_byte_vect(const mws_path& i_file_path) const
+   {
+      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+      return load_as_byte_vect(fs);
+   }
+
+   mws_sp<std::vector<uint8>> load_as_sp_byte_vect(const mws_path& i_file_path) const
+   {
+      mws_sp<std::vector<uint8>> res;
+      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+      if (fs->io.open())
+      {
+         int size = (int)fs->length();
+
+         res = mws_sp<std::vector<uint8>>(new std::vector<uint8>(size));
+         fs->io.read(res->data(), size);
+         fs->io.close();
+      }
+
+      return res;
+   }
+
+   std::string load_as_string(mws_sp<mws_file> i_file) const
+   {
+      std::string text;
+
+      if (i_file->io.open("rt"))
+      {
+         int size = (int)i_file->length();
+         std::vector<uint8> res(size);
+         const char* res_bytes = (const char*)res.data();
+         int text_size = i_file->io.read(res.data(), size);
+
+         i_file->io.close();
+         text = std::string(res_bytes, text_size);
+      }
+
+      // copy elision
+      return text;
+   }
+
+   std::string load_as_string(const mws_path& i_file_path) const
+   {
+      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+      return load_as_string(fs);
    }
 
    void setup_video_encoding(int video_width, int video_height)
@@ -332,10 +405,11 @@ public:
 #endif
    }
 
-   void start_recording_screen(std::string i_filename = "", const mws_video_params * i_params = nullptr)
+   void start_recording_screen(const mws_path& i_file_path = "", const mws_video_params * i_params = nullptr)
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
+      mws_path file_path = i_file_path;
       int video_width = gfx::i()->rt.get_screen_width();
       int video_height = gfx::i()->rt.get_screen_height();
 
@@ -356,14 +430,14 @@ public:
       frame_index = 0;
 
 
-      if (i_filename.empty())
+      if (file_path.is_empty())
       {
-         i_filename = mws_to_str_fmt("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
+         file_path = mws_to_str_fmt("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
       }
 
       const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
 
-      venc->set_video_path(i_filename);
+      venc->set_video_path(file_path);
       venc->start_encoding(*video_params, mws_vid_enc_method::e_enc_m0);
 
 #else
@@ -464,16 +538,95 @@ public:
 
 #endif
 
+   mws_file_map res_files_map;
    mws_wp<mws_mod> u;
 };
 
 
-mws_mod::app_storage::app_storage()
+void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 {
-   p = std::make_unique<app_storage_impl>();
+   if (i_mod)
+   {
+      if (!crt_mod.expired())
+      {
+         crt_mod.lock()->base_unload();
+      }
+
+      crt_mod = i_mod;
+      mws_app_inst()->reconfigure_directories(i_mod);
+
+      // reload resources
+      i_mod->storage.p->res_files_map = mws_app_inst()->list_internal_directory();
+
+      if (!i_mod->is_init())
+      {
+         i_mod->base_init();
+         i_mod->set_init(true);
+      }
+
+      i_mod->base_load();
+   }
+   else
+   {
+      mws_signal_error("warning: tried to make current a null mws_mod");
+   }
 }
 
-void mws_mod::app_storage::save_screenshot(std::string i_filename)
+
+mws_app_storage::mws_app_storage()
+{
+   p = std::make_unique<mws_app_storage_impl>();
+}
+
+const mws_file_map& mws_app_storage::get_res_file_list() const
+{
+   return p->get_res_file_list();
+}
+
+std::vector<uint8> mws_app_storage::load_as_byte_vect(mws_sp<mws_file> i_file) const
+{
+   return p->load_as_byte_vect(i_file);
+}
+
+std::vector<uint8> mws_app_storage::load_as_byte_vect(const mws_path& i_file_path) const
+{
+   return p->load_as_byte_vect(i_file_path);
+}
+
+mws_sp<std::vector<uint8>> mws_app_storage::load_as_sp_byte_vect(const mws_path& i_file_path) const
+{
+   return p->load_as_sp_byte_vect(i_file_path);
+}
+
+std::string mws_app_storage::load_as_string(mws_sp<mws_file> i_file) const
+{
+   return p->load_as_string(i_file);
+}
+
+std::string mws_app_storage::load_as_string(const mws_path& i_file_path) const
+{
+   return p->load_as_string(i_file_path);
+}
+
+// writable/private/persistent files directory
+const mws_path& mws_app_storage::prv_dir() const
+{
+   return mws_app_inst()->prv_dir();
+}
+
+// read-only/resource files directory
+const mws_path& mws_app_storage::res_dir() const
+{
+   return mws_app_inst()->res_dir();
+}
+
+// temporary files directory
+const mws_path& mws_app_storage::tmp_dir() const
+{
+   return mws_app_inst()->tmp_dir();
+}
+
+void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
 {
 #if MOD_GFX && MOD_PNG
    if (!p->u.lock()->is_gfx_mod())
@@ -483,15 +636,15 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
 
    mws_sp<mws_file> screenshot_file;
 
-   if (i_filename.empty())
+   if (i_file_path.is_empty())
    {
-      string file_root = mws_to_str_fmt("%s-", p->u.lock()->get_name().c_str());
-      string img_ext = ".png";
-      string zeroes[] =
+      std::string file_root = mws_to_str_fmt("%s-", p->u.lock()->get_name().c_str());
+      std::string img_ext = ".png";
+      std::string zeroes[] =
       {
          "00", "0"
       };
-      mws_path dir = mws::filesys::tmp_dir() / "screens";
+      mws_path dir = tmp_dir() / "screens";
       int screenshot_idx = 0;
 
       // if dir doesn't exist, create it
@@ -509,7 +662,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
       // find the first available file name.
       do
       {
-         string idx_nr = "";
+         std::string idx_nr = "";
          int digits = 0;
          int ssi = screenshot_idx;
 
@@ -536,7 +689,7 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
    }
    else
    {
-      screenshot_file = mws_file::get_inst(i_filename);
+      screenshot_file = mws_file::get_inst(i_file_path);
    }
 
    {
@@ -551,22 +704,22 @@ void mws_mod::app_storage::save_screenshot(std::string i_filename)
 }
 
 
-void mws_mod::app_storage::start_recording_screen(std::string i_filename, const mws_video_params * i_params)
+void mws_app_storage::start_recording_screen(const mws_path& i_file_path, const mws_video_params* i_params)
 {
-   p->start_recording_screen(i_filename, i_params);
+   p->start_recording_screen(i_file_path, i_params);
 }
 
-void mws_mod::app_storage::stop_recording_screen()
+void mws_app_storage::stop_recording_screen()
 {
    p->stop_recording_screen();
 }
 
-bool mws_mod::app_storage::is_recording_screen()
+bool mws_app_storage::is_recording_screen()
 {
    return p->is_recording_screen();
 }
 
-void mws_mod::app_storage::toggle_screen_recording()
+void mws_app_storage::toggle_screen_recording()
 {
    p->toggle_screen_recording();
 }
@@ -602,12 +755,12 @@ int mws_mod::get_height()
    return mws::screen::get_height();
 }
 
-const string& mws_mod::get_name()
+const std::string& mws_mod::get_name()
 {
    return name;
 }
 
-void mws_mod::set_name(string i_name)
+void mws_mod::set_name(const std::string& i_name)
 {
    name = i_name;
 }
@@ -622,7 +775,7 @@ const std::string& mws_mod::get_external_name()
    return external_name;
 }
 
-void mws_mod::set_external_name(std::string i_name)
+void mws_mod::set_external_name(const std::string& i_name)
 {
    external_name = i_name;
 }
@@ -632,7 +785,7 @@ const mws_path& mws_mod::get_proj_rel_path()
    return proj_rel_path;
 }
 
-void mws_mod::set_proj_rel_path(std::string i_path)
+void mws_mod::set_proj_rel_path(const mws_path& i_path)
 {
    proj_rel_path = i_path;
 }
@@ -866,7 +1019,7 @@ void mws_mod::base_init()
          key_ctrl_inst = mws_key_ctrl::nwi();
       }
 
-      gfx_scene_inst = mws_sp<gfx_scene>(new gfx_scene());
+      gfx_scene_inst = mws_sp<gfx_scene>(new gfx_scene(get_smtp_instance()));
       gfx_scene_inst->init();
    }
 
@@ -1080,7 +1233,7 @@ void mws_mod::update_view(int update_count)
       if (font)
       {
          float ups = 1000.f / update_ctrl_inst->getTimeStepDuration();
-         string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
+         std::string f = mws_to_str_fmt("uc %d u %02.1f f %02.1f", update_count, ups, fps);
          glm::vec2 txt_dim = font->get_text_dim(f);
 
          mws_cam->drawText(f, get_width() - txt_dim.x, 0.f);
@@ -1127,7 +1280,7 @@ mws_sp<mws_mod> mws_mod_list::mod_at(int i_index)
    return ulist[i_index];
 }
 
-mws_sp<mws_mod> mws_mod_list::mod_by_name(string i_name)
+mws_sp<mws_mod> mws_mod_list::mod_by_name(const std::string& i_name)
 {
    int size = ulist.size();
 
@@ -1277,7 +1430,7 @@ mws_sp<mws_mod_list> mws_mod_setup::get_mod_list()
    return ul.lock();
 }
 
-void mws_mod_setup::add_mod(mws_sp<mws_mod> i_mod, std::string i_mod_path, bool i_set_current)
+void mws_mod_setup::add_mod(mws_sp<mws_mod> i_mod, const mws_path& i_mod_path, bool i_set_current)
 {
    i_mod->set_proj_rel_path(i_mod_path);
 

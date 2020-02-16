@@ -155,7 +155,7 @@ public:
       bool reload_shader_on_modify();
       mws_sp<gfx_shader> new_program_from_src
       (
-         const std::string& i_prg_name, mws_sp<std::string> i_vs_shader_src, mws_sp<std::string> i_fs_shader_src,
+         const std::string& i_prg_name, const std::string& i_vs_shader_src, const std::string& i_fs_shader_src,
          mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false
       );
       mws_sp<gfx_shader> new_program(const std::string& i_shader_name, mws_sp<gfx_shader_listener> i_listener = nullptr, bool i_suppress_nex_msg = false);

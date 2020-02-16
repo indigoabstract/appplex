@@ -2,6 +2,8 @@
 
 #include "appplex-conf.hxx"
 #include "res-ld.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 
@@ -129,7 +131,7 @@ mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
 mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
 {
    mws_sp<raw_img_data> rd(new raw_img_data());
-   mws_sp<std::vector<uint8> > png_data = mws::filesys::load_res_byte_vect(i_file);
+   std::vector<uint8> png_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_file);
    {
       uint32 error = 0;
       uint8* img_data = nullptr;
@@ -138,7 +140,7 @@ mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
       int bpp = 0;
 
       lodepng_state_init(&state);
-      error = lodepng_decode(&img_data, &width, &height, &state, png_data->data(), png_data->size());
+      error = lodepng_decode(&img_data, &width, &height, &state, png_data.data(), png_data.size());
 
       if (error)
       {
@@ -163,7 +165,7 @@ mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
       lodepng_state_cleanup(&state);
    }
 
-   mws_println("loading image[ %s ], size[ %d ]", i_file->filename().c_str(), png_data->size());
+   mws_println("loading image[ %s ], size[ %d ]", i_file->filename().c_str(), png_data.size());
 
    return rd;
 }

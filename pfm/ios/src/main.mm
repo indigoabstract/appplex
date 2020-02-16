@@ -1,4 +1,5 @@
 #include "pfm.hxx"
+#include "mws-impl.hxx"
 #include "min.hxx"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
@@ -13,7 +14,7 @@
 #include <vector>
 
 
-class ios_main : public mws_pfm_app
+class ios_main : public mws_app
 {
 public:
     virtual ~ios_main();
@@ -46,13 +47,12 @@ public:
     virtual std::string get_writable_path()const;
 
     // filesystem
-    virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
+    virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal = false) const override;
     virtual const mws_path& prv_dir() const override;
     virtual const mws_path& res_dir() const override;
     virtual const mws_path& tmp_dir() const override;
     virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
     virtual std::string get_timezone_id() const override;
-    virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
 
     void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
     void on_resize(uint32 i_screen_width, uint32 i_screen_height);
@@ -65,8 +65,7 @@ public:
     float screen_scale;
 
 private:
-    std::vector<mws_sp<mws_file> > apk_file_list;
-    umf_list plist = std::make_shared<umf_r>();;
+    mws_file_map plist;
     bool is_started = false;
     // screen metrix
     std::pair<uint32, uint32> screen_res;
@@ -104,7 +103,7 @@ static mws_sp<ios_main> app_inst()
    return instance;
 }
 
-mws_sp<mws_pfm_app> mws_app_inst() { return app_inst(); }
+mws_sp<mws_app> mws_app_inst() { return app_inst(); }
 
 
 mws_sp<std::string> load_res_as_string(std::string i_filename)
@@ -142,10 +141,10 @@ mws_sp<std::string> load_res_as_string(std::string i_filename)
 }
 
 
-class ios_file_impl : public mws_impl::mws_file_impl
+class ios_file_impl : public mws_file_impl
 {
 public:
-	ios_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
+	ios_file_impl(const mws_path& i_path, bool i_is_internal = false) : mws_file_impl(i_path, i_is_internal) {}
 	{
 	}
 
@@ -223,9 +222,9 @@ public:
             file = fopen(path_ptr->c_str(), i_open_mode.c_str());
         }
         
-        bool open_successful = (file != nullptr);
+        bool file_opened = (file != nullptr);
         
-        if(open_successful)
+        if(file_opened)
         {
             mws_println("open_impl [ opening file %s ]", path_ptr->c_str());
         }
@@ -233,8 +232,13 @@ public:
         {
             mws_println("open_impl [ cannot open file %s ]", path.c_str());
         }
+
+        if (file_opened && (i_open_mode.find('w') != std::string::npos))
+        {
+            file_is_writable = true;
+        }
         
-        return open_successful;
+        return file_opened;
 	}
 
 	virtual void close_impl() override
@@ -379,9 +383,30 @@ std::string ios_main::get_writable_path() const
     return output_path;
 }
 
-mws_sp<mws_impl::mws_file_impl> ios_main::new_mws_file_impl(const mws_path& i_path)
+static bool mws_make_directory(const mws_path& i_path)
 {
-	return std::make_shared<ios_file_impl>(i_path);
+   bool path_exists = false;
+
+   if (!i_path.exists())
+   {
+      path_exists = i_path.make_dir();
+   }
+   else
+   {
+      path_exists = true;
+   }
+
+   if (!path_exists)
+   {
+      mws_println("WARNING[ failed to create path [ %s ]]", i_path.string().c_str());
+   }
+
+   return path_exists;
+}
+
+mws_sp<mws_file_impl> ios_main::new_mws_file_impl(const mws_path& i_path, bool i_is_internal)
+{
+	return std::make_shared<ios_file_impl>(i_path, i_is_internal);
 }
 
 const mws_path& ios_main::prv_dir() const
@@ -415,7 +440,7 @@ void ios_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(get_writable_path());
-   res_path = mws_path(get_path_in_bundle(""), false);
+   res_path = mws_path(get_path_in_bundle(""));
    tmp_path = mws_path(get_writable_path());
    prv_path_exists = false;
    tmp_path_exists = false;
@@ -429,46 +454,6 @@ std::string ios_main::get_timezone_id()const
     std::string name(name_c);
     
     return name;
-}
-
-void get_directory_listing_helper(umf_list i_plist, mws_sp<mws_file> i_file)
-{
-	if (i_plist->find(i_file->get_file_name()) != i_plist->end())
-	{
-		mws_print("ios_main::get_directory_listing. duplicate filename: %s", i_file->string().c_str());
-		throw mws_exception("duplicate filename: " + i_file->string());
-	}
-
-	(*i_plist)[i_file->get_file_name()] = i_file;
-}
-
-umf_list ios_main::get_directory_listing(const std::string& idirectory, umf_list i_plist, bool i_is_recursive)
-{
-	if (!idirectory.empty())
-	{
-		if (i_is_recursive)
-		{
-			for (auto& e : apk_file_list)
-			{
-				if (mws_str::starts_with(e->get_root_directory(), idirectory))
-				{
-					get_directory_listing_helper(i_plist, e);
-				}
-			}
-		}
-		else
-		{
-			for (auto& e : apk_file_list)
-			{
-				if (idirectory == e->get_root_directory())
-				{
-					get_directory_listing_helper(i_plist, e);
-				}
-			}
-		}
-	}
-
-	return i_plist;
 }
 
 void ios_main::init()

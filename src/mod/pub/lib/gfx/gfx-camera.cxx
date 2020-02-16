@@ -11,6 +11,7 @@
 #include "pfm-gl.h"
 #include <glm/inc.hpp>
 
+
 draw_context::draw_context(mws_sp<gfx_camera> icam)
 {
    cam = icam;

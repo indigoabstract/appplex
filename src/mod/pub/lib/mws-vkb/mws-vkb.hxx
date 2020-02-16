@@ -65,7 +65,7 @@ public:
    std::vector<vkb_file_info> get_vkb_list() override;
    bool file_exists(const std::string& i_vkb_filename) override;
    void save_vkb(const std::string& i_vkb_filename, const std::string& i_data) override;
-   mws_sp<std::string> load_vkb(const std::string& i_vkb_filename) override;
+   std::string load_vkb(const std::string& i_vkb_filename) override;
 
 protected:
    std::vector<vkb_file_info> vkb_info_vect;

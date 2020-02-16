@@ -1,5 +1,6 @@
-#include "pfm-gl.h"
 #include "pfm.hxx"
+#include "mws-impl.hxx"
+#include "pfm-gl.h"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "gfx.hxx"
@@ -10,7 +11,6 @@
 #include <cstdarg>
 #include <cmath>
 #include <cstring>
-#include <fstream>
 #include <filesystem>
 
 
@@ -74,7 +74,7 @@
 #define VK_OEM_7 222 //  ''"' for US
 
 
-class emst_main : public mws_pfm_app
+class emst_main : public mws_app
 {
 public:
    virtual ~emst_main();
@@ -100,13 +100,12 @@ public:
    virtual void write_text_nl(const wchar_t* i_text) const override;
    virtual void write_text_v(const char* i_format, ...) const override;
    // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
+   virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const override;
    virtual const mws_path& prv_dir() const override;
    virtual const mws_path& res_dir() const override;
    virtual const mws_path& tmp_dir() const override;
    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
    virtual std::string get_timezone_id() const override;
-   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
 
    void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
    void on_resize(uint32 i_screen_width, uint32 i_screen_height);
@@ -114,7 +113,7 @@ public:
 private:
    void setup_callbacks();
 
-   umf_list plist;
+   mws_file_map plist;
    // screen metrix
    std::pair<uint32, uint32> screen_res;
    float avg_screen_dpi = 0.f;
@@ -152,13 +151,13 @@ static mws_sp<emst_main> app_inst()
    return instance;
 }
 
-mws_sp<mws_pfm_app> mws_app_inst() { return app_inst(); }
+mws_sp<mws_app> mws_app_inst() { return app_inst(); }
 
 
-class emst_file_impl : public mws_impl::mws_file_impl
+class emst_file_impl : public mws_file_impl
 {
 public:
-   emst_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
+   emst_file_impl(const mws_path& i_path, bool i_is_internal = false) : mws_file_impl(i_path, i_is_internal) {}
 
    virtual ~emst_file_impl() {}
 
@@ -210,6 +209,11 @@ public:
       file = fopen(path.c_str(), i_open_mode.c_str());
       bool file_opened = (file != nullptr);
       mws_println("open_impl: opening external file %s success %d", path.c_str(), (int)file_opened);
+
+      if (file_opened && (i_open_mode.find('w') != std::string::npos))
+      {
+         file_is_writable = true;
+      }
 
       return file_opened;
    }
@@ -485,7 +489,7 @@ static bool mws_make_directory(const mws_path& i_path)
 
    if (!std::filesystem::exists(fs_path))
    {
-      path_exists = std::filesystem::create_directory(fs_path);
+      path_exists = i_path.make_dir();
    }
    else
    {
@@ -500,9 +504,9 @@ static bool mws_make_directory(const mws_path& i_path)
    return path_exists;
 }
 
-mws_sp<mws_impl::mws_file_impl> emst_main::new_mws_file_impl(const mws_path& i_path) const
+mws_sp<mws_file_impl> emst_main::new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const
 {
-   return std::make_shared<emst_file_impl>(i_path);
+   return std::make_shared<emst_file_impl>(i_path, bool i_is_internal);
 }
 
 const mws_path& emst_main::prv_dir() const
@@ -536,7 +540,7 @@ void emst_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(mod_dir + "-prv/");
-   res_path = mws_path(mod_dir + "/", false);
+   res_path = mws_path(mod_dir + "/");
    tmp_path = mws_path(mod_dir + "-tmp/");
    prv_path_exists = false;
    tmp_path_exists = false;
@@ -547,41 +551,14 @@ std::string emst_main::get_timezone_id() const
    return "Europe/Bucharest";
 }
 
-umf_list emst_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const
+bool mws_path::make_dir() const
 {
-   if (i_plist->find(mws::filesys::res_idx_name) == i_plist->end())
-   {
-      mws_path base_dir(i_directory);
-      umf_r& list = *i_plist;
-      mws_sp<mws_file> index_txt = mws_file::get_inst(std::make_shared<emst_file_impl>(base_dir / mws::filesys::res_idx_name));
-      std::ifstream infile(index_txt->string_path());
-      //mws_println("i_directory %s file size %d path %s", i_directory.c_str(), index_txt->length(), path.c_str());
+   return std::filesystem::create_directory(string());
+}
 
-      if (infile.is_open())
-      {
-         std::string line;
-
-         while (std::getline(infile, line))
-         {
-            // trim the new line at the end
-            line = mws_str::rtrim(line);
-            mws_path path(line);
-            std::string filename = path.filename();
-
-            if (!base_dir.is_empty())
-            {
-               path = base_dir / path;
-            }
-
-            list[filename] = mws_file::get_inst(std::make_shared<emst_file_impl>(path));
-         }
-
-         list[mws::filesys::res_idx_name] = index_txt;
-         infile.close();
-      }
-   }
-
-   return i_plist;
+std::string mws_path::current_path()
+{
+   return std::filesystem::current_path().generic_string();
 }
 
 void emst_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)

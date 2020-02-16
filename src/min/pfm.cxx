@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "pfm.hxx"
+#include "mws-impl.hxx"
 #include "pfm-gl.h"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
@@ -16,19 +17,21 @@
 #include <cassert>
 #include <ctime>
 #include <iomanip>
+#include <fstream>
 #include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 
 
-mws_sp<mws_pfm_app> mws_app_inst();
+mws_sp<mws_app> mws_app_inst();
 
 
 // platform specific code
 #if defined MWS_POSIX_API
 
 
-const std::string dir_separator = "/";
+#include <dirent.h>
+
 
 uint32 mws::time::get_time_millis()
 {
@@ -44,8 +47,9 @@ uint32 mws::time::get_time_millis()
 
 bool mws_path::make_dir() const
 {
-   int rval = mkdir(string().c_str(), 0777);
-   return (rval == 0);
+   int ret_val = mkdir(string().c_str(), 0777);
+
+   return (ret_val == 0);
 }
 
 std::string mws_path::current_path()
@@ -53,14 +57,66 @@ std::string mws_path::current_path()
    return "";
 }
 
+static void mws_list_external_directory(const mws_path& i_directory, std::vector<mws_sp<mws_file>>& i_file_list, bool i_recursive)
+{
+   std::vector<mws_sp<mws_file>> list;
+   DIR* dir = opendir(i_directory.string().c_str());
+
+   if (dir != nullptr)
+   {
+      dirent* ent = readdir(dir);
+
+      while (ent != nullptr)
+      {
+         if (ent->d_type == DT_REG)
+         {
+            std::string filename(ent->d_name);
+            mws_path path = i_directory / filename;
+            mws_sp<mws_file_impl> file_impl = mws_app_inst()->new_mws_file_impl(path);
+
+            i_file_list.push_back(mws_file::get_inst(file_impl));
+         }
+         else if (ent->d_type == DT_DIR && i_recursive && ent->d_name[0] != '.')
+         {
+            mws_path sub_dir = i_directory / ent->d_name;
+
+            mws_list_external_directory(sub_dir, i_file_list, true);
+         }
+      }
+
+      closedir(dir);
+   }
+   else
+   {
+      mws_println("WARNING[ could not open directory [ %s ] ]", i_directory.string().c_str());
+   }
+
+   return list;
+}
+
+std::vector<mws_sp<mws_file>> msvc_main::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+{
+   std::vector<mws_sp<mws_file>> list;
+
+   mws_list_external_directory(i_directory, list, i_recursive);
+
+   return list;
+}
+
+
+#else
+
+
+std::vector<mws_sp<mws_file>> mws_app::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+{
+   return std::vector<mws_sp<mws_file>>();
+}
+
 
 #endif
 
 
 #if defined MWS_PFM_ANDROID
-
-
-#include <sys/stat.h>
 
 
 mws_pfm_id mws::get_platform_id()
@@ -80,13 +136,8 @@ mws_gfx_type mws::get_gfx_type_id()
 #define wos_trace(arg)		__android_log_write(ANDROID_LOG_INFO, "appplex", arg)
 
 
-
 #elif defined MWS_PFM_IOS
 
-#include <sys/stat.h>
-
-
-const std::string dir_separator = "/";
 
 mws_pfm_id mws::get_platform_id()
 {
@@ -101,8 +152,6 @@ mws_gfx_type mws::get_gfx_type_id()
 
 #elif defined MWS_PFM_EMSCRIPTEN
 
-
-const std::string dir_separator = "/";
 
 mws_pfm_id mws::get_platform_id()
 {
@@ -126,25 +175,9 @@ uint32 mws::time::get_time_millis()
    return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-bool mws_path::make_dir() const
-{
-   return false;
-}
-
-std::string mws_path::current_path()
-{
-   return "";
-}
-
 
 #elif defined MWS_PFM_WINDOWS_PC
 
-
-#include <direct.h>
-#include <filesystem>
-
-
-const std::string dir_separator = "\\";
 
 //#ifdef USE_VLD
 //#include <vld.h>
@@ -198,8 +231,8 @@ const std::string dir_separator = "\\";
 //{
 //   _aligned_free(iptr);
 //}
-
-namespace std { const nothrow_t nothrow = nothrow_t(); }
+//
+//namespace std { const nothrow_t nothrow = nothrow_t(); }
 
 mws_pfm_id mws::get_platform_id()
 {
@@ -214,17 +247,6 @@ mws_gfx_type mws::get_gfx_type_id()
 uint32 mws::time::get_time_millis()
 {
    return GetTickCount();
-}
-
-bool mws_path::make_dir() const
-{
-   int rval = _mkdir(string().c_str());
-   return (rval == 0);
-}
-
-std::string mws_path::current_path()
-{
-   return std::filesystem::current_path().generic_string();
 }
 
 
@@ -306,10 +328,171 @@ void mws_exception::set_msg(const char* i_msg)
 }
 
 
+mws_file_impl::mws_file_impl(const mws_path& i_path, bool i_is_internal)
+{
+   file_is_internal = i_is_internal;
+   ppath = i_path;
+}
+
+mws_file_impl::~mws_file_impl() {}
+
+bool mws_file_impl::exists()
+{
+   if (is_open())
+   {
+      return true;
+   }
+
+   if (open("r"))
+   {
+      close();
+
+      return true;
+   }
+
+   return false;
+}
+
+bool mws_file_impl::is_open() const
+{
+   return file_is_open;
+}
+
+bool mws_file_impl::is_writable() const
+{
+   return file_is_writable;
+}
+
+bool mws_file_impl::is_internal() const
+{
+   return file_is_internal;
+}
+
+bool mws_file_impl::open(std::string i_open_mode)
+{
+   open_mode = i_open_mode;
+   file_is_open = open_impl(i_open_mode);
+
+   if (file_is_open && !file_is_writable)
+   {
+      check_file_is_writable();
+   }
+
+   return file_is_open;
+}
+
+void mws_file_impl::close()
+{
+   if (file_is_open)
+   {
+      close_impl();
+   }
+
+   file_pos = 0;
+   file_is_open = false;
+}
+
+void mws_file_impl::flush()
+{
+   check_state();
+   flush_impl();
+}
+
+bool mws_file_impl::reached_eof() const
+{
+   check_state();
+   FILE* f = get_file_impl();
+   //long pos = ftell(f);
+   int is_eof = feof(f);
+
+   return is_eof != 0;
+}
+
+void mws_file_impl::seek(uint64 i_pos)
+{
+   check_state();
+
+   seek_impl(i_pos, SEEK_SET);
+   file_pos = i_pos;
+}
+
+int mws_file_impl::read(std::vector<uint8>& i_buffer)
+{
+   check_state();
+
+   i_buffer.resize((size_t)length());
+
+   return read(i_buffer.data(), i_buffer.size());
+}
+
+int mws_file_impl::write(const std::vector<uint8>& i_buffer)
+{
+   check_state();
+
+   return write(i_buffer.data(), i_buffer.size());
+}
+
+int mws_file_impl::read(uint8* i_buffer, int i_size)
+{
+   check_state();
+
+   int bytes_read = read_impl(i_buffer, i_size);
+
+   return bytes_read;
+}
+
+int mws_file_impl::write(const uint8* i_buffer, int i_size)
+{
+   check_state();
+
+   int bytes_written = write_impl(i_buffer, i_size);
+
+   return bytes_written;
+}
+
+void mws_file_impl::check_state() const
+{
+   if (!file_is_open)
+   {
+      std::string msg = "file " + ppath.filename() + " is not open";
+
+      mws_throw mws_exception(msg.c_str());
+   }
+}
+
+void mws_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
+{
+   fseek(get_file_impl(), (long)i_pos, i_seek_pos);
+}
+
+uint64 mws_file_impl::tell_impl()
+{
+   return ftell(get_file_impl());
+}
+
+int mws_file_impl::read_impl(uint8* i_buffer, int i_size)
+{
+   return fread(i_buffer, 1, i_size, get_file_impl());
+}
+
+int mws_file_impl::write_impl(const uint8* i_buffer, int i_size)
+{
+   return fwrite(i_buffer, 1, i_size, get_file_impl());
+}
+
+void mws_file_impl::check_file_is_writable()
+{
+   bool file_opened = get_file_impl();
+
+   if (file_opened && (open_mode.find('a') != std::string::npos || open_mode.find('w') != std::string::npos))
+   {
+      file_is_writable = true;
+   }
+}
+
+
 namespace mws_impl
 {
-   std::string res_files_mod_name;
-   umf_list res_files_map;
    mws_sp<mws_log> mws_log_inst;
    bool mws_log_enabled = false;
    std::string mws_log_file_name = "app-log";
@@ -358,12 +541,12 @@ namespace mws_impl
       return false;
    }
 
-   mws_sp<mws_file> get_res_file(const std::string& i_filename)
+   mws_sp<mws_file> get_res_file(const mws_file_map& i_file_map, const std::string& i_filename)
    {
       mws_sp<mws_file> file;
-      auto it = res_files_map->find(i_filename);
+      auto it = i_file_map.find(i_filename);
 
-      if (it != res_files_map->end())
+      if (it != i_file_map.end())
       {
          file = it->second;
       }
@@ -371,381 +554,61 @@ namespace mws_impl
       return file;
    }
 
-   void put_res_file(const std::string& i_filename, mws_sp<mws_file> i_file)
+   // lists a directory located inside the resources directory
+   std::vector<mws_sp<mws_file>> list_res_directory(const mws_path& i_base_dir, bool i_recursive)
    {
-      auto it = res_files_map->find(i_filename);
+      std::vector<mws_sp<mws_file>> file_list;
+      mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+      const mws_file_map& file_map = mod->storage.get_res_file_list();
 
-      if (it != res_files_map->end())
+      if (i_recursive)
       {
-         std::string msg = "duplicate filename: " + it->first;
+         auto it = file_map.begin();
 
-         mws_throw mws_exception(msg.c_str());
+         for (; it != file_map.end(); ++it)
+         {
+            mws_sp<mws_file> file = it->second;
+            std::string rdir = file->directory().string();
+
+            if (mws_str::starts_with(rdir, i_base_dir.string()))
+            {
+               file_list.push_back(file);
+            }
+         }
+      }
+      else
+      {
+         auto it = file_map.begin();
+
+         for (; it != file_map.end(); ++it)
+         {
+            mws_sp<mws_file> file = it->second;
+
+            if (file->directory().string() == i_base_dir.string())
+            {
+               file_list.push_back(file);
+            }
+         }
       }
 
-      (*res_files_map)[i_filename] = i_file;
+      return file_list;
    }
 
-   mws_file_impl::mws_file_impl(const mws_path& i_path)
-   {
-      ppath = i_path;
-      file_pos = 0;
-      file_is_open = false;
-      file_is_writable = false;
-   }
-
-   mws_file_impl::~mws_file_impl() {}
-
-   bool mws_file_impl::exists()
-   {
-      if (is_opened())
-      {
-         return true;
-      }
-
-      if (open("r"))
-      {
-         close();
-
-         return true;
-      }
-
-      return false;
-   }
-
-   bool mws_file_impl::is_opened() const
-   {
-      return file_is_open;
-   }
-
-   bool mws_file_impl::is_writable() const
-   {
-      return file_is_writable;
-   }
-
-   bool mws_file_impl::open(std::string i_open_mode)
-   {
-      file_is_open = open_impl(i_open_mode);
-
-      return file_is_open;
-   }
-
-   void mws_file_impl::close()
-   {
-      if (file_is_open)
-      {
-         close_impl();
-      }
-
-      file_pos = 0;
-      file_is_open = false;
-   }
-
-   void mws_file_impl::flush()
-   {
-      check_state();
-      flush_impl();
-   }
-
-   bool mws_file_impl::reached_eof() const
-   {
-      check_state();
-      FILE* f = get_file_impl();
-      //long pos = ftell(f);
-      int is_eof = feof(f);
-
-      return is_eof != 0;
-   }
-
-   void mws_file_impl::seek(uint64 i_pos)
-   {
-      check_state();
-
-      seek_impl(i_pos, SEEK_SET);
-      file_pos = i_pos;
-   }
-
-   int mws_file_impl::read(std::vector<uint8>& i_buffer)
-   {
-      check_state();
-
-      i_buffer.resize((size_t)length());
-
-      return read(i_buffer.data(), i_buffer.size());
-   }
-
-   int mws_file_impl::write(const std::vector<uint8>& i_buffer)
-   {
-      check_state();
-
-      return write(i_buffer.data(), i_buffer.size());
-   }
-
-   int mws_file_impl::read(uint8* i_buffer, int i_size)
-   {
-      check_state();
-
-      int bytes_read = read_impl(i_buffer, i_size);
-
-      return bytes_read;
-   }
-
-   int mws_file_impl::write(const uint8* i_buffer, int i_size)
-   {
-      check_state();
-
-      int bytes_written = write_impl(i_buffer, i_size);
-
-      return bytes_written;
-   }
-
-   void mws_file_impl::check_state() const
-   {
-      if (!file_is_open)
-      {
-         std::string msg = "file " + ppath.filename() + " is not open";
-
-         mws_throw mws_exception(msg.c_str());
-      }
-   }
-
-   void mws_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
-   {
-      fseek(get_file_impl(), (long)i_pos, i_seek_pos);
-   }
-
-   uint64 mws_file_impl::tell_impl()
-   {
-      return ftell(get_file_impl());
-   }
-
-   int mws_file_impl::read_impl(uint8* i_buffer, int i_size)
-   {
-      return fread(i_buffer, 1, i_size, get_file_impl());
-   }
-
-   int mws_file_impl::write_impl(const uint8* i_buffer, int i_size)
-   {
-      return fwrite(i_buffer, 1, i_size, get_file_impl());
-   }
 }
 using namespace mws_impl;
 
 
-mws_file::mws_file()
-{
-}
-
-mws_file::~mws_file()
-{
-   io.close();
-}
-
-mws_sp<mws_file> mws_file::get_inst(const mws_path& i_path)
-{
-   mws_sp<mws_file> inst;
-
-   // if res map initialized
-   if (mws_impl::res_files_map)
-   {
-      auto file = mws_impl::get_res_file(i_path.filename());
-
-      if (file)
-      {
-         // if i_path only contains a filename(no directories)
-         if (i_path.directory().is_empty())
-         {
-            inst = file;
-         }
-         // if i_path also contains directories besides a filename,
-         // check to see if it's a subpath within the found file's path
-         else
-         {
-            std::string file_dir = file->directory().string();
-            std::string path_dir = i_path.directory().string();
-
-            if (file_dir.find(path_dir) != std::string::npos)
-            {
-               inst = file;
-            }
-         }
-      }
-   }
-
-   // if path cannot be found inside the resource directories, this means it's external to the app
-   if (!inst)
-   {
-      inst = mws_sp<mws_file>(new mws_file());
-      inst->io.impl = mws_app_inst()->new_mws_file_impl(i_path);
-   }
-
-   return inst;
-}
-
-mws_sp<mws_file> mws_file::get_inst(mws_sp<mws_impl::mws_file_impl> i_impl)
-{
-   mws_sp<mws_file> inst;
-
-   if (mws_impl::res_files_map)
-      // res map initialized
-   {
-      inst = mws_impl::get_res_file(i_impl->ppath.filename());
-   }
-
-   if (!inst)
-   {
-      inst = mws_sp<mws_file>(new mws_file());
-      inst->io.impl = i_impl;
-   }
-
-   return inst;
-}
-
-bool mws_file::exists() const
-{
-   return io.impl->exists();
-}
-
-bool mws_file::is_opened() const
-{
-   return io.impl->is_opened();
-}
-
-bool mws_file::is_writable() const
-{
-   return io.impl->is_writable();
-}
-
-uint64 mws_file::length()
-{
-   return io.impl->length();
-}
-
-uint64 mws_file::creation_time() const
-{
-   return io.impl->creation_time();
-}
-
-uint64 mws_file::last_write_time() const
-{
-   return io.impl->last_write_time();
-}
-
-const mws_path& mws_file::path() const
-{
-   return io.impl->ppath;
-}
-
-std::string mws_file::string_path() const
-{
-   return io.impl->ppath.string();
-}
-
-std::string mws_file::filename() const
-{
-   return io.impl->ppath.filename();
-}
-
-std::string mws_file::stem() const
-{
-   return io.impl->ppath.stem();
-}
-
-std::string mws_file::extension() const
-{
-   return io.impl->ppath.extension();
-}
-
-mws_path mws_file::directory() const
-{
-   return io.impl->ppath.directory();
-}
-
-FILE* mws_file::get_file_impl() const
-{
-   return io.impl->get_file_impl();
-}
-
-mws_file::io_op::io_op()
-{
-}
-
-bool mws_file::io_op::open()
-{
-   bool file_opened = open("rb");
-
-   return file_opened;
-}
-
-bool mws_file::io_op::open(std::string i_open_mode)
-{
-   if (impl->is_opened())
-   {
-      impl->close();
-   }
-
-   bool file_opened = impl->open(i_open_mode);
-
-   if (!file_opened)
-   {
-      mws_print_impl("WARNING[ file [%s] NOT FOUND. ]\n", impl->ppath.string().c_str());
-   }
-
-   return file_opened;
-}
-
-void mws_file::io_op::close()
-{
-   impl->close();
-}
-
-void mws_file::io_op::flush()
-{
-   impl->flush();
-}
-
-bool mws_file::io_op::reached_eof() const
-{
-   return impl->reached_eof();
-}
-
-void mws_file::io_op::seek(uint64 i_pos)
-{
-   impl->seek(i_pos);
-}
-
-int mws_file::io_op::read(std::vector<uint8>& i_buffer)
-{
-   return impl->read(i_buffer);
-}
-
-int mws_file::io_op::write(const std::vector<uint8>& i_buffer)
-{
-   return impl->write(i_buffer);
-}
-
-int mws_file::io_op::read(uint8* i_buffer, int i_size)
-{
-   return impl->read(i_buffer, i_size);
-}
-
-int mws_file::io_op::write(const uint8* i_buffer, int i_size)
-{
-   return impl->write(i_buffer, i_size);
-}
-
-
 mws_path::mws_path() {}
 
-mws_path::mws_path(const char* i_path, bool i_regular_path) : mws_path(std::string(i_path), i_regular_path) {}
+mws_path::mws_path(const char* i_path) : mws_path(std::string(i_path)) {}
 
-mws_path::mws_path(const std::string& i_path, bool i_regular_path)
+mws_path::mws_path(const std::string& i_path)
 {
    path = i_path;
-   regular_path = i_regular_path;
    make_standard_path();
 }
 
-mws_path::mws_path(const mws_path& i_path) : path(i_path.string()), regular_path(i_path.regular_path) {}
+mws_path::mws_path(const mws_path& i_path) : path(i_path.string()) {}
 
 mws_path& mws_path::operator/=(const mws_path& i_path)
 {
@@ -784,9 +647,6 @@ mws_path& mws_path::operator/=(const mws_path& i_path)
       }
    }
 
-   // adding a non regular path makes the resulting path non regular also
-   regular_path = regular_path && i_path.regular_path;
-
    return *this;
 }
 
@@ -802,6 +662,11 @@ bool mws_path::is_empty() const { return path.empty(); }
 bool mws_path::is_directory() const
 {
    struct stat info;
+
+   if (is_empty())
+   {
+      return false;
+   }
 
    if (stat(string().c_str(), &info) != 0)
    {
@@ -820,6 +685,11 @@ bool mws_path::is_regular_file() const
 {
    struct stat info;
 
+   if (is_empty())
+   {
+      return false;
+   }
+
    if (stat(string().c_str(), &info) != 0)
    {
       return false;
@@ -833,14 +703,36 @@ bool mws_path::is_regular_file() const
    return false;
 }
 
+bool mws_path::is_absolute() const
+{
+   if (path.empty())
+   {
+      return false;
+   }
+
+#if defined MWS_PFM_WINDOWS_PC
+   return (path.size() > 2 && (std::isalpha(path[0])) && (path[1] == ':') && (path[2] == '/'));
+#else
+   return (path[0] == '/');
+#endif
+}
+
+bool mws_path::is_relative() const
+{
+   return !is_absolute();
+}
+
 bool mws_path::exists() const
 {
-   // check if this is a resource file
-   if (mws_impl::res_files_map)
-   {
-      auto pfile = mws_impl::get_res_file(filename());
+   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+   const mws_file_map& file_map = mod->storage.get_res_file_list();
 
-      if (pfile)
+   // check if this is a resource file
+   if (!file_map.empty())
+   {
+      mws_sp<mws_file> file = mws_impl::get_res_file(file_map, filename());
+
+      if (file)
       {
          return true;
       }
@@ -903,87 +795,118 @@ mws_path mws_path::directory() const
 
 mws_path mws_path::parent_path() const
 {
-   size_t pos_0 = path.find_last_of('/');
+   if (path.length() <= 1)
+   {
+      if (path[0] == '/')
+      {
+         return *this;
+      }
+
+      return mws_path("");
+   }
+
+   // consider the case when last char is '/'
+   size_t pos_0 = path.find_last_of('/', path.length() - 2);
    int64 pos = -1;
 
    if (pos_0 == std::string::npos)
    {
-      return mws_path("", regular_path);
+      return mws_path("");
    }
    else if (pos_0 != std::string::npos)
    {
       pos = (int64)pos_0 + 1;
    }
 
-   return mws_path(std::string(path.begin(), path.begin() + (size_t)pos), regular_path);
+   return mws_path(std::string(path.begin(), path.begin() + (size_t)pos));
 }
 
-mws_sp<std::vector<mws_sp<mws_file>>> mws_path::list_directory(bool i_recursive) const
+std::vector<mws_sp<mws_file>> mws_path::list_directory(bool i_recursive) const
 {
-   auto file_list = std::make_shared<std::vector<mws_sp<mws_file>> >();
-   std::string base_dir = directory().string();
+   std::vector<mws_sp<mws_file>> file_list;
 
-   if (mws_str::starts_with(base_dir, mws::filesys::res_dir().string()))
+   // if file's directory is empty, search resource files for this filename
+   if (directory().is_empty())
    {
-      list_directory_impl(base_dir, file_list, i_recursive);
+      std::string file_name = filename();
+
+      // if the file's name is not empty, find it and list files in that directory
+      if (!file_name.empty())
+      {
+         mws_sp<mws_file> file = mws_file::get_inst(file_name);
+
+         file_list = list_res_directory(file->directory(), i_recursive);
+      }
    }
    else
    {
-      std::string base_dir_mod = mws::filesys::res_dir().string() + "/" + base_dir;
-      list_directory_impl(base_dir_mod, file_list, i_recursive);
+      // if path is absolute, it's considered external(not inside the resources directory), so call the external directory listing function
+      if (is_absolute())
+      {
+         file_list = mws_app_inst()->list_external_directory(*this, i_recursive);
+      }
+      // if the path is relative, check if the path starts with the resouces directory path
+      else
+      {
+         const mws_path& res_dir = mws_app_inst()->res_dir();
+
+         // if the path starts with the resouces directory path, then search inside it
+         if (mws_str::starts_with(string(), res_dir.string()))
+         {
+            file_list = list_res_directory(*this, i_recursive);
+         }
+         // if not, try concatenating the resources directory path before the original path
+         else
+         {
+            mws_path file_dir_mod = res_dir / *this;
+
+            file_list = list_res_directory(file_dir_mod, i_recursive);
+
+            // if file list is empty, it's probably an external path after all. try the external directory listing function
+            if (file_list.empty())
+            {
+               file_list = mws_app_inst()->list_external_directory(*this, i_recursive);
+            }
+         }
+      }
    }
 
-   struct pred
+   auto cmp = [](const mws_sp<mws_file>& i_left, const mws_sp<mws_file>& i_right)
    {
-      bool operator()(const mws_sp<mws_file> a, const mws_sp<mws_file> b) const
-      {
-         return a->creation_time() > b->creation_time();
-      }
+      return i_left->creation_time() > i_right->creation_time();
    };
 
-   std::sort(file_list->begin(), file_list->end(), pred());
+   std::sort(file_list.begin(), file_list.end(), cmp);
 
    return file_list;
 }
 
-bool mws_path::is_regular_path() const { return regular_path; }
+bool mws_path::is_internal() const
+{
+   if (is_empty())
+   {
+      return false;
+   }
+
+   // if we only have a filename, check if it's inside the resource directory
+   if (directory().is_empty())
+   {
+      mws_sp<mws_file> file = mws_file::get_inst(filename());
+
+      if (file->is_internal())
+      {
+         return true;
+      }
+   }
+
+   const mws_path& res_dir = mws_app_inst()->res_dir();
+
+   return mws_str::starts_with(path, res_dir.string());
+}
 
 void mws_path::make_standard_path()
 {
    std::replace(path.begin(), path.end(), '\\', '/');
-}
-
-void mws_path::list_directory_impl(std::string i_base_dir, mws_sp<std::vector<mws_sp<mws_file>> > i_file_list, bool i_recursive) const
-{
-   if (i_recursive)
-   {
-      auto it = mws_impl::res_files_map->begin();
-
-      for (; it != mws_impl::res_files_map->end(); ++it)
-      {
-         mws_sp<mws_file> file = it->second;
-         std::string rdir = file->directory().string();
-
-         if (mws_str::starts_with(rdir, i_base_dir))
-         {
-            i_file_list->push_back(file);
-         }
-      }
-   }
-   else
-   {
-      auto it = mws_impl::res_files_map->begin();
-
-      for (; it != mws_impl::res_files_map->end(); ++it)
-      {
-         mws_sp<mws_file> file = it->second;
-
-         if (file->directory().string() == i_base_dir)
-         {
-            i_file_list->push_back(file);
-         }
-      }
-   }
 }
 
 mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs)
@@ -995,23 +918,230 @@ mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs)
 }
 
 
+mws_file::mws_file()
+{
+}
 
-void mws_pfm_app::init()
+mws_file::~mws_file()
+{
+   io.close();
+}
+
+mws_sp<mws_file> mws_file::get_inst(const mws_path& i_path)
+{
+   mws_sp<mws_file> inst;
+   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+   const mws_file_map& file_map = mod->storage.get_res_file_list();
+
+   // if res map initialized
+   if (!file_map.empty())
+   {
+      mws_path file_dir = i_path.directory();
+
+      if (file_dir.is_empty())
+      {
+         inst = mws_impl::get_res_file(file_map, i_path.filename());
+      }
+   }
+
+   // this is an external file
+   if (!inst)
+   {
+      inst = mws_sp<mws_file>(new mws_file());
+      inst->io.impl = mws_app_inst()->new_mws_file_impl(i_path);
+   }
+
+   return inst;
+}
+
+mws_sp<mws_file> mws_file::get_inst(mws_sp<mws_file_impl> i_impl)
+{
+   mws_sp<mws_file> inst;
+   mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+   const mws_file_map& file_map = mod->storage.get_res_file_list();
+
+   // if res map initialized
+   if (!file_map.empty())
+   {
+      mws_path file_dir = i_impl->ppath.directory();
+
+      if (file_dir.is_empty())
+      {
+         inst = mws_impl::get_res_file(file_map, i_impl->ppath.filename());
+      }
+   }
+
+   // this is an external file
+   if (!inst)
+   {
+      inst = mws_sp<mws_file>(new mws_file());
+      inst->io.impl = i_impl;
+   }
+
+   return inst;
+}
+
+bool mws_file::exists() const
+{
+   return io.impl->exists();
+}
+
+bool mws_file::is_open() const
+{
+   return io.impl->is_open();
+}
+
+bool mws_file::is_writable() const
+{
+   return io.impl->is_writable();
+}
+
+uint64 mws_file::length()
+{
+   return io.impl->length();
+}
+
+uint64 mws_file::creation_time() const
+{
+   return io.impl->creation_time();
+}
+
+uint64 mws_file::last_write_time() const
+{
+   return io.impl->last_write_time();
+}
+
+const mws_path& mws_file::path() const
+{
+   return io.impl->ppath;
+}
+
+std::string mws_file::string_path() const
+{
+   return io.impl->ppath.string();
+}
+
+std::string mws_file::filename() const
+{
+   return io.impl->ppath.filename();
+}
+
+std::string mws_file::stem() const
+{
+   return io.impl->ppath.stem();
+}
+
+std::string mws_file::extension() const
+{
+   return io.impl->ppath.extension();
+}
+
+mws_path mws_file::directory() const
+{
+   return io.impl->ppath.directory();
+}
+
+bool mws_file::is_internal() const
+{
+   return io.impl->is_internal();
+}
+
+FILE* mws_file::get_file_impl() const
+{
+   return io.impl->get_file_impl();
+}
+
+mws_file::io_op::io_op()
+{
+}
+
+bool mws_file::io_op::open()
+{
+   bool file_opened = open("rb");
+
+   return file_opened;
+}
+
+bool mws_file::io_op::open(std::string i_open_mode)
+{
+   if (impl->is_open())
+   {
+      impl->close();
+   }
+
+   bool file_opened = impl->open(i_open_mode);
+
+   if (!file_opened)
+   {
+      mws_print_impl("WARNING[ file [%s] NOT FOUND. ]\n", impl->ppath.string().c_str());
+   }
+
+   return file_opened;
+}
+
+void mws_file::io_op::close()
+{
+   impl->close();
+}
+
+void mws_file::io_op::flush()
+{
+   impl->flush();
+}
+
+bool mws_file::io_op::reached_eof() const
+{
+   return impl->reached_eof();
+}
+
+void mws_file::io_op::seek(uint64 i_pos)
+{
+   impl->seek(i_pos);
+}
+
+int mws_file::io_op::read(std::vector<uint8>& i_buffer)
+{
+   return impl->read(i_buffer);
+}
+
+int mws_file::io_op::write(const std::vector<uint8>& i_buffer)
+{
+   return impl->write(i_buffer);
+}
+
+int mws_file::io_op::read(uint8* i_buffer, int i_size)
+{
+   return impl->read(i_buffer, i_size);
+}
+
+int mws_file::io_op::write(const uint8* i_buffer, int i_size)
+{
+   return impl->write(i_buffer, i_size);
+}
+
+
+const std::string& mws_app::res_idx_name()
+{
+   static std::string res_index = "index.txt";
+   return res_index;
+}
+
+void mws_app::init()
 {
    mws_mod_ctrl::inst()->init_app();
 }
 
-void mws_pfm_app::start()
+void mws_app::start()
 {
    mws_mod_ctrl::inst()->start_app();
 }
 
-void mws_pfm_app::run()
+void mws_app::run()
 {
    mws_mod_ctrl::inst()->update();
 }
 
-mws_key_types mws_pfm_app::apply_key_modifiers(mws_key_types i_key_id) const
+mws_key_types mws_app::apply_key_modifiers(mws_key_types i_key_id) const
 {
    if (mod_mws_vkb_on)
    {
@@ -1026,140 +1156,47 @@ mws_key_types mws_pfm_app::apply_key_modifiers(mws_key_types i_key_id) const
    return apply_key_modifiers_impl(i_key_id);
 }
 
-bool mws_pfm_app::back_evt() const
+bool mws_app::back_evt() const
 {
    return mws_mod_ctrl::inst()->back_evt();
 }
 
-float mws_pfm_app::get_screen_scale() const { return 1.f; }
-float mws_pfm_app::get_screen_brightness() const { return 1.f; }
-void mws_pfm_app::set_screen_brightness(float i_brightness) const {}
-void mws_pfm_app::flip_screen() const {}
-float mws_pfm_app::get_avg_screen_dpcm() const { return get_avg_screen_dpi() / 2.54f; }
+float mws_app::get_screen_scale() const { return 1.f; }
+float mws_app::get_screen_brightness() const { return 1.f; }
+void mws_app::set_screen_brightness(float i_brightness) const {}
+void mws_app::flip_screen() const {}
+float mws_app::get_avg_screen_dpcm() const { return get_avg_screen_dpi() / 2.54f; }
 
-
-// filesystem
-const std::string mws::filesys::res_idx_name = "index.txt";
-
-const umf_list mws::filesys::get_res_file_list()
+mws_file_map mws_app::list_internal_directory() const
 {
-   return mws_impl::res_files_map;
-}
+   mws_file_map file_map;
+   const bool is_internal = true;
+   const mws_path& res_dir = mws_app_inst()->res_dir();
+   mws_sp<mws_file_impl> res_idx_impl = mws_app_inst()->new_mws_file_impl(res_dir / mws_app::res_idx_name(), is_internal);
+   mws_sp<mws_file> res_idx = mws_file::get_inst(res_idx_impl);
+   std::ifstream res_list(res_idx->string_path());
 
-void mws_mod_ctrl::pre_init_app()
-{
-   if (!ul)
+   if (res_list.is_open())
    {
-      ul = mws_mod_list::nwi();
-      ul->set_name("app-mws-mod-list");
-      mws_mod_setup::next_crt_mod = crt_mod = ul;
+      std::string line;
 
-      mws_mod_setup::append_mod_list(ul);
-   }
-
-   mws_sp<mws_mod> start_mod = get_app_start_mod();
-
-   if (start_mod)
-   {
-      mws_app_inst()->reconfigure_directories(start_mod);
-   }
-}
-
-void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
-{
-   if (i_mod)
-   {
-      if (!crt_mod.expired())
+      while (std::getline(res_list, line))
       {
-         crt_mod.lock()->base_unload();
+         // trim the new line at the end
+         line = mws_str::rtrim(line);
+         mws_path path = res_dir / line;
+         std::string filename = path.filename();
+
+         // check for duplicate file names
+         mws_assert(file_map.find(filename) == file_map.end());
+         file_map[filename] = mws_file::get_inst(mws_app_inst()->new_mws_file_impl(path, is_internal));
       }
 
-      crt_mod = i_mod;
-      mws_app_inst()->reconfigure_directories(i_mod);
-
-      // reload resources
-      if (mws_impl::res_files_mod_name != i_mod->get_name())
-      {
-         mws_impl::res_files_mod_name = i_mod->get_name();
-         mws_impl::res_files_map = std::make_shared<umf_r>();
-         mws_app_inst()->get_directory_listing(mws::filesys::res_dir().string(), mws_impl::res_files_map, true);
-      }
-
-      if (!i_mod->is_init())
-      {
-         i_mod->base_init();
-         i_mod->set_init(true);
-      }
-
-      i_mod->base_load();
-   }
-   else
-   {
-      mws_signal_error("warning: tried to make current a null mws_mod");
-   }
-}
-
-mws_sp<std::vector<uint8>> mws::filesys::load_res_byte_vect(mws_sp<mws_file> i_file)
-{
-   mws_sp<std::vector<uint8>> res;
-
-   if (i_file->io.open())
-   {
-      int size = (int)i_file->length();
-
-      res = mws_sp<std::vector<uint8>>(new std::vector<uint8>(size));
-      i_file->io.read(res->data(), size);
-      i_file->io.close();
+      file_map[mws_app::res_idx_name()] = res_idx;
+      res_list.close();
    }
 
-   return res;
-}
-
-mws_sp<std::vector<uint8>> mws::filesys::load_res_byte_vect(std::string i_filename)
-{
-   mws_sp<mws_file> fs = mws_file::get_inst(i_filename);
-
-   return load_res_byte_vect(fs);
-}
-
-mws_sp<std::string> mws::filesys::load_res_as_string(mws_sp<mws_file> i_file)
-{
-   mws_sp<std::string> text;
-
-   if (i_file->io.open("rt"))
-   {
-      int size = (int)i_file->length();
-      auto res = std::make_shared<std::vector<uint8>>(size);
-      const char* res_bytes = (const char*)res->data();
-      int text_size = i_file->io.read(res->data(), size);
-
-      i_file->io.close();
-      text = std::make_shared<std::string>(res_bytes, text_size);
-   }
-
-   return text;
-}
-
-mws_sp<std::string> mws::filesys::load_res_as_string(std::string i_filename)
-{
-   mws_sp<mws_file> fs = mws_file::get_inst(i_filename);
-
-   return load_res_as_string(fs);
-}
-
-const mws_path& mws::filesys::prv_dir()
-{
-   return mws_app_inst()->prv_dir();
-}
-
-const mws_path& mws::filesys::res_dir()
-{
-   return mws_app_inst()->res_dir();
-}
-
-const mws_path& mws::filesys::tmp_dir()
-{
-   return mws_app_inst()->tmp_dir();
+   return file_map;
 }
 
 
@@ -1337,7 +1374,7 @@ public:
       std::lock_guard<std::mutex> lock(sync_mx);
       check_log_file();
 
-      if (log_file->is_opened())
+      if (log_file->is_open())
       {
          log_file->io.close();
       }
@@ -1376,14 +1413,14 @@ private:
    void load()
    {
       std::lock_guard<std::mutex> lock(sync_mx);
-      mws_path log_path = mws::filesys::tmp_dir() / mws_log_file_name;
+      mws_path log_path = mws_app_inst()->tmp_dir() / mws_log_file_name;
       log_file = mws_file::get_inst(log_path);
 
       if (log_file && log_file->exists())
       {
          log_file->io.open("rb");
 
-         auto res_rw = rw_file_sequence::nwi(log_file);
+         auto res_rw = rw_file_sequence::nwi(log_file, false);
          uint64 file_length = log_file->length();
 
          while (res_rw->get_read_position() < file_length)
@@ -1421,9 +1458,9 @@ private:
       check_log_file();
       log.push_back(i_msg);
 
-      if (log_file && log_file->is_opened())
+      if (log_file && log_file->is_open())
       {
-         auto res_rw = rw_file_sequence::nwi(log_file);
+         auto res_rw = rw_file_sequence::nwi(log_file, true);
 
          res_rw->w.write_string(i_msg);
          log_file->io.flush();
@@ -1475,13 +1512,13 @@ private:
    {
       if (!log_file)
       {
-         mws_path log_path = mws::filesys::tmp_dir() / mws_log_file_name;
+         mws_path log_path = mws_app_inst()->tmp_dir() / mws_log_file_name;
          log_file = mws_file::get_inst(log_path);
       }
 
       if (log_file)
       {
-         if (!log_file->is_opened())
+         if (!log_file->is_open())
          {
             log_file->io.open("ab");
          }

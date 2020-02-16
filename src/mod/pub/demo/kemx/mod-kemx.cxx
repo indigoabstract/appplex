@@ -42,9 +42,9 @@ mws_sp<mod_kemx> mod_kemx::nwi()
 
 void mod_kemx::init()
 {
-   auto kemx = mws::filesys::load_res_as_string("kemx-access.txt");
-   int kemxSize = kemx->size();
-   data = "[ " + *kemx + " ]";
+   std::string kemx = storage.load_as_string("kemx-access.txt");
+   int kemxSize = kemx.size();
+   data = "[ " + kemx + " ]";
 
    mws_sp<memory_data_sequence> mds1(new memory_data_sequence());
    data_sequence_writer dsw(mds1);

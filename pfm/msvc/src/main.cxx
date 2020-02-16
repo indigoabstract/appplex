@@ -12,6 +12,7 @@
 #endif
 
 #include "pfm.hxx"
+#include "mws-impl.hxx"
 #include "pfm-gl.h"
 #include "min.hxx"
 #include "mws-mod.hxx"
@@ -29,13 +30,15 @@
 #include <tchar.h>
 #include <wchar.h>
 #include <WindowsX.h>
+#include <direct.h>
+#include <filesystem>
 
 #define ID_TRAY_APP_ICON                5000
 #define ID_TRAY_EXIT_CONTEXT_MENU_ITEM  3000
 #define WM_TRAYICON						(WM_USER + 1)
 
 
-class msvc_main : public mws_pfm_app
+class msvc_main : public mws_app
 {
 public:
    msvc_main();
@@ -60,13 +63,14 @@ public:
    virtual void write_text_nl(const wchar_t* i_text) const override;
    virtual void write_text_v(const char* i_format, ...) const override;
    // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
+   virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal = false) const override;
+   virtual mws_file_map list_internal_directory() const override;
+   virtual std::vector<mws_sp<mws_file>> list_external_directory(const mws_path& i_directory, bool i_recursive) const override;
    virtual const mws_path& prv_dir() const override;
    virtual const mws_path& res_dir() const override;
    virtual const mws_path& tmp_dir() const override;
    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
    virtual std::string get_timezone_id() const override;
-   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
 };
 
 
@@ -150,13 +154,13 @@ namespace
 }
 
 
-mws_sp<mws_pfm_app> mws_app_inst() { return instance; }
+mws_sp<mws_app> mws_app_inst() { return instance; }
 
 
-class msvc_file_impl : public mws_impl::mws_file_impl
+class msvc_file_impl : public mws_file_impl
 {
 public:
-   msvc_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
+   msvc_file_impl(const mws_path& i_path, bool i_is_internal = false) : mws_file_impl(i_path, i_is_internal) {}
 
    virtual FILE* get_file_impl() const override
    {
@@ -217,13 +221,19 @@ public:
       return 0;
    }
 
-   virtual bool open_impl(std::string iopen_mode) override
+   virtual bool open_impl(std::string i_open_mode) override
    {
       std::string path = ppath.string();
 #pragma warning(suppress : 4996)
-      file = fopen(path.c_str(), iopen_mode.c_str());
+      file = fopen(path.c_str(), i_open_mode.c_str());
+      bool file_opened = (file != nullptr);
 
-      return file != nullptr;
+      if (file_opened && (i_open_mode.find('w') != std::string::npos))
+      {
+         file_is_writable = true;
+      }
+
+      return file_opened;
    }
 
    virtual void close_impl() override
@@ -621,9 +631,74 @@ static bool mws_make_directory(const mws_path& i_path)
    return path_exists;
 }
 
-mws_sp<mws_impl::mws_file_impl> msvc_main::new_mws_file_impl(const mws_path& i_path) const
+mws_sp<mws_file_impl> msvc_main::new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const
 {
-   return std::make_shared<msvc_file_impl>(i_path);
+   return std::make_shared<msvc_file_impl>(i_path, i_is_internal);
+}
+
+static void mws_list_external_directory(const mws_path& i_directory, std::vector<mws_sp<mws_file>>& i_file_list, bool i_recursive)
+{
+   if (!i_directory.is_empty())
+   {
+      WIN32_FIND_DATAA fd;
+      HANDLE hfind = 0;
+      mws_path search_path = i_directory / "*.*";
+      hfind = ::FindFirstFileA(search_path.string().c_str(), &fd);
+
+      if (hfind != INVALID_HANDLE_VALUE)
+      {
+         do
+         {
+            // regular file
+            if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+            {
+               std::string filename(fd.cFileName);
+               mws_path path = i_directory / filename;
+               mws_sp<msvc_file_impl> file_impl(new msvc_file_impl(path));
+
+               i_file_list.push_back(mws_file::get_inst(file_impl));
+            }
+            // directory
+            else if (fd.cFileName[0] != '.' && i_recursive)
+            {
+               mws_path sub_dir = i_directory / fd.cFileName;
+
+               mws_list_external_directory(sub_dir, i_file_list, true);
+            }
+         }
+         while (::FindNextFileA(hfind, &fd));
+
+         ::FindClose(hfind);
+      }
+   }
+}
+
+mws_file_map msvc_main::list_internal_directory() const
+{
+   mws_file_map file_map;
+   std::vector<mws_sp<mws_file>> list;
+
+   mws_list_external_directory(mws_app_inst()->res_dir(), list, true);
+
+   for (auto& file : list)
+   {
+      std::string filename = file->filename();
+
+      // check for duplicate file names
+      mws_assert(file_map.find(filename) == file_map.end());
+      file_map[filename] = file;
+   }
+
+   return file_map;
+}
+
+std::vector<mws_sp<mws_file>> msvc_main::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+{
+   std::vector<mws_sp<mws_file>> list;
+
+   mws_list_external_directory(i_directory, list, i_recursive);
+
+   return list;
 }
 
 const mws_path& msvc_main::prv_dir() const
@@ -657,7 +732,7 @@ void msvc_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(mod_path / "/.prv/");
-   res_path = mws_path(mws_path(mod_path / "/res/").string(), false);
+   res_path = mws_path(mws_path(mod_path / "/res/").string());
    tmp_path = mws_path(mod_path / "/.tmp/");
    prv_path_exists = false;
    tmp_path_exists = false;
@@ -674,57 +749,16 @@ void msvc_main::write_text_nl(const wchar_t* i_text)const
    write_text(L"\n");
 }
 
-umf_list msvc_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const
+bool mws_path::make_dir() const
 {
-   if (i_directory.length() > 0)
-   {
-      std::string dir = i_directory;
-      WIN32_FIND_DATAA fd;
-      HANDLE hfind = 0;
+   int ret_val = _mkdir(string().c_str());
 
-      if (dir[dir.length() - 1] != '/')
-      {
-         dir += "/";
-      }
+   return (ret_val == 0);
+}
 
-      std::string search_path = dir + "*.*";
-      hfind = ::FindFirstFileA(search_path.c_str(), &fd);
-
-      if (hfind != INVALID_HANDLE_VALUE)
-      {
-         do
-         {
-            // regular file
-            if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            {
-               umf_r& list = *i_plist;
-               std::string key(fd.cFileName);
-               mws_path path(dir);
-
-               path /= key;
-
-               if (list[key])
-               {
-                  mws_signal_error(std::string("duplicate filename: " + key).c_str());
-               }
-
-               mws_sp<msvc_file_impl> file_impl(new msvc_file_impl(path));
-
-               list[key] = mws_file::get_inst(file_impl);
-            }
-            // directory
-            else if (fd.cFileName[0] != '.' && i_is_recursive)
-            {
-               std::string sub_dir = dir + fd.cFileName;
-               get_directory_listing(sub_dir, i_plist, true);
-            }
-         } while (::FindNextFileA(hfind, &fd));
-
-         ::FindClose(hfind);
-      }
-   }
-
-   return i_plist;
+std::string mws_path::current_path()
+{
+   return std::filesystem::current_path().generic_string();
 }
 
 bool init_app(int argc, char** argv)

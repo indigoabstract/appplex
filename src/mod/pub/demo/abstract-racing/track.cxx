@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "track.hxx"
+#include "mws-mod.hxx"
 #include "gfx.hxx"
 #include "gfx-camera.hxx"
 #include "util/util.hxx"
@@ -28,17 +29,15 @@ void track_sections::set_section_type(track_section_type tst)
 	}
 }
 
-track::track()
-{
-}
+track::track(mws_sp<mws_mod> i_mod) : mod(i_mod) {}
 
 void track::loadTrackData(char* track_name)
 {
 	tex = gfx::i()->tex.nwi("square.png");
 
 	std::string fn = trs("abstract-racing/{}", track_name);
-	mws_sp<std::vector<uint8> > res = mws::filesys::load_res_byte_vect(fn);
-	memory_data_sequence mds(res->data(), res->size());
+	std::vector<uint8> res = mod.lock()->storage.load_as_byte_vect(fn);
+	memory_data_sequence mds(res.data(), res.size());
 	data_sequence_reader_big_endian dsr(&mds);
 
 	version_number = dsr.read_int32();

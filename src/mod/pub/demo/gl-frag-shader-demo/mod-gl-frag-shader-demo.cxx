@@ -192,12 +192,12 @@ public:
 		return mws_sp<add_header_uniforms>(new add_header_uniforms(istate));
 	}
 
-	virtual const mws_sp<std::string> on_before_submit_vsh_source(mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src)
+	virtual const std::string on_before_submit_vsh_source(mws_sp<gfx_shader> gp, const std::string& i_shader_src) override
 	{
-		return ishader_src;
+		return i_shader_src;
 	}
 
-	virtual const mws_sp<std::string> on_before_submit_fsh_source(mws_sp<gfx_shader> gp, const mws_sp<std::string> ishader_src)
+	virtual const std::string on_before_submit_fsh_source(mws_sp<gfx_shader> gp, const std::string& i_shader_src) override
 	{
 		std::string fsh =
       "#ifdef GL_ES\n\
@@ -224,17 +224,17 @@ public:
 		{
 			std::string channel = trs("iChannel{}", k);
 			std::string channel_id = channel + ":";
-			auto idx = ishader_src->find(channel_id);
+			auto idx = i_shader_src.find(channel_id);
 			bool invalid = true;
 
-			if (idx != ishader_src->npos)
+			if (idx != i_shader_src.npos)
 			{
 				int idx_start = idx + channel_id.length();
-				auto idx_end = ishader_src->find('\n', idx_start);
+				auto idx_end = i_shader_src.find('\n', idx_start);
 
-				if (idx_end != ishader_src->npos)
+				if (idx_end != i_shader_src.npos)
 				{
-					std::string name = ishader_src->substr(idx_start, idx_end - idx_start);
+					std::string name = i_shader_src.substr(idx_start, idx_end - idx_start);
 					name = trim(name);
 
 					if (!name.empty())
@@ -256,19 +256,16 @@ public:
 		}
 
 		fsh += channel_list;
-		fsh.append(*ishader_src);
+		fsh.append(i_shader_src);
 
-		if (ishader_src->find("mainImage") != std::string::npos)
+		if (i_shader_src.find("mainImage") != std::string::npos)
 		{
 			fsh.append("\nvoid main()\n{\nmainImage(gl_FragColor, gl_FragCoord.xy);\n}\n");
 		}
 		
 		state->needs_update = true;
 
-		mws_sp<std::string> src = mws_sp<std::string>(new std::string(fsh));
-		//mws_print("%s\n", src->c_str());
-
-		return src;
+		return fsh;
 	}
 
 private:
@@ -296,12 +293,12 @@ public:
 		std::string active_shader = "Antialiasing";
 		active_shader = "";
 		mws_path path("fx-shaders");
-		mws_sp<std::vector<mws_sp<mws_file> > > file_list = path.list_directory(true);
-		auto it = file_list->begin();
+		std::vector<mws_sp<mws_file>> file_list = path.list_directory(true);
+		auto it = file_list.begin();
 
 		shader_state_list.clear();
 
-		for (; it != file_list->end(); it++)
+		for (; it != file_list.end(); it++)
 		{
 			mws_sp<mws_file> file = *it;
 			shader_state_list.push_back(mws_sp<shader_state>(new shader_state()));

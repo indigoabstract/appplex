@@ -1,6 +1,8 @@
 #include "stdafx.hxx"
 
 #include "gfx-shader.hxx"
+#include "mws-mod.hxx"
+#include "mws-mod-ctrl.hxx"
 #include "gfx.hxx"
 #include "pfm-def.h"
 #include "gfx-util.hxx"
@@ -77,7 +79,7 @@ public:
       g = i_gi;
    }
 
-   void load(const mws_sp<std::string> i_vs_shader_src = nullptr, const mws_sp<std::string> i_fs_shader_src = nullptr)
+   void load(const std::string& i_vs_shader_src = "", const std::string& i_fs_shader_src = "")
    {
       if (vsh_file_name.length() > 0 && fsh_file_name.length() > 0)
       {
@@ -89,8 +91,9 @@ public:
       }
    }
 
-   mws_sp<std::string> add_platform_code(const mws_sp<std::string> i_shader_src)
+   std::string add_platform_code(const std::string& i_shader_src)
    {
+      std::string shader_src;
       std::string tag;
       std::string version;
       std::string def_platform;
@@ -125,42 +128,51 @@ public:
          break;
       }
 
-      int idx = i_shader_src->find(tag);
+      size_t idx = i_shader_src.find(tag);
 
       if (idx != std::string::npos)
       {
-         int idx_start = idx + tag.length();
-         int idx_end = i_shader_src->find('\n', idx_start);
-         version = i_shader_src->substr(idx_start, idx_end - idx_start);
-         version = trim(version);
+         size_t idx_start = idx + tag.length();
+         size_t idx_end = i_shader_src.find('\n', idx_start);
+         version = i_shader_src.substr(idx_start, idx_end - idx_start);
+         version = mws_str::trim(version);
       }
 
-      //*i_shader_src = version + "\n" + def_platform + "\n" + *i_shader_src;
+      //shader_src = version + "\n" + def_platform + "\n" + i_shader_src;
 
       if (!version.empty())
       {
-         *i_shader_src = version + "\n" + *i_shader_src;
+         shader_src = version + "\n" + i_shader_src;
+      }
+      else
+      {
+         shader_src = i_shader_src;
       }
 
-      return i_shader_src;
+      return shader_src;
    }
 
-   void create_program(const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src, const std::string& i_shader_id)
+   void create_program(const std::string& i_vs_shader_src, const std::string& i_fs_shader_src, const std::string& i_shader_id)
    {
       mws_try
       {
          int linked = 0;
-         mws_sp<std::string> vs_shader_src = i_vs_shader_src;
-         mws_sp<std::string> fs_shader_src = i_fs_shader_src;
+         std::string vs_shader_src;
+         std::string fs_shader_src;
 
          if (listener)
          {
             vs_shader_src = listener->on_before_submit_vsh_source(parent.lock(), i_vs_shader_src);
             fs_shader_src = listener->on_before_submit_fsh_source(parent.lock(), i_fs_shader_src);
+            vs_shader_src = add_platform_code(vs_shader_src);
+            fs_shader_src = add_platform_code(fs_shader_src);
+         }
+         else
+         {
+            vs_shader_src = add_platform_code(i_vs_shader_src);
+            fs_shader_src = add_platform_code(i_fs_shader_src);
          }
 
-         vs_shader_src = add_platform_code(vs_shader_src);
-         fs_shader_src = add_platform_code(fs_shader_src);
 
          vertex_shader_id = compile_shader(GL_VERTEX_SHADER, vs_shader_src);
          throw_if_false(vertex_shader_id != 0, "Error loading vertex shader: " + i_shader_id);
@@ -233,7 +245,7 @@ public:
       }
    }
 
-   int compile_shader(int ishader_type, const mws_sp<std::string> i_shader_src)
+   int compile_shader(int ishader_type, const std::string& i_shader_src)
    {
       int shader = 0;
       int compiled;
@@ -242,8 +254,8 @@ public:
       //mws_assert("Error creating " + shader_desc + " : " + shader_path, shader != 0);
       throw_if_false(shader != 0, "Error creating shader: " + shader_id);
 
-      int length = i_shader_src->length();
-      const char* shader_src_vect[1] = { i_shader_src->c_str() };
+      gfx_int length = (gfx_int)i_shader_src.length();
+      const char* shader_src_vect[1] = { i_shader_src.c_str() };
 
       glShaderSource(shader, 1, shader_src_vect, &length);
       glCompileShader(shader);
@@ -299,16 +311,17 @@ public:
          }
       }
 
-      const mws_sp<std::string> vs_shader_src = mws::filesys::load_res_as_string(vs_shader_file);
-      const mws_sp<std::string> fs_shader_src = mws::filesys::load_res_as_string(fs_shader_file);
+      mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
+      std::string vs_shader_src = mod->storage.load_as_string(vs_shader_file);
+      std::string fs_shader_src = mod->storage.load_as_string(fs_shader_file);
 
-      if (!vs_shader_src)
+      if (vs_shader_src.empty())
       {
          mws_print("fragment shader file [%s] not found\n", fsh_file_name.c_str());
          return;
       }
 
-      if (!fs_shader_src)
+      if (fs_shader_src.empty())
       {
          mws_print("vertex shader file [%s] not found\n", vsh_file_name.c_str());
          return;
@@ -512,7 +525,7 @@ mws_sp<gfx_shader> gfx_shader::nwi
 
 mws_sp<gfx_shader> gfx_shader::new_inst_inline
 (
-   const std::string& i_prg_name, const mws_sp<std::string> i_vs_shader_src, const mws_sp<std::string> i_fs_shader_src,
+   const std::string& i_prg_name, const std::string& i_vs_shader_src, const std::string& i_fs_shader_src,
    mws_sp<gfx_shader_listener> i_listener, bool i_suppress_nex_msg, mws_sp<gfx> i_gfx_inst
 )
 {
@@ -526,14 +539,14 @@ mws_sp<gfx_shader> gfx_shader::new_inst_inline
    return inst;
 }
 
-std::string gfx_shader::create_shader_id(std::string ivertex_shader, std::string ifragment_shader)
+std::string gfx_shader::create_shader_id(const std::string& i_vertex_shader, const std::string& i_fragment_shader)
 {
    std::string shader_id;
    std::string vsh_id;
    std::string fsh_id;
 
-   vsh_id = append_if_missing_ext(ivertex_shader, VS_EXT);
-   fsh_id = append_if_missing_ext(ifragment_shader, FS_EXT);
+   vsh_id = append_if_missing_ext(i_vertex_shader, VS_EXT);
+   fsh_id = append_if_missing_ext(i_fragment_shader, FS_EXT);
    shader_id = vsh_id + fsh_id;
 
    return shader_id;

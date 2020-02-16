@@ -131,7 +131,6 @@ extern "C"
 #define MWS_UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define MWS_CXX_VERSION 17
 
 #elif defined __APPLE__
     
@@ -158,7 +157,6 @@ extern "C"
 #define MWS_UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define MWS_CXX_VERSION 17
 
 #elif defined EMSCRIPTEN
 
@@ -166,7 +164,6 @@ extern "C"
 #define MWS_UNICODE_USING_STD_STRING
 //#define MWS_USES_EXCEPTIONS
 //#define MWS_USES_RTTI
-#define MWS_CXX_VERSION 17
 
 #elif defined WIN32
 
@@ -175,7 +172,6 @@ extern "C"
 #define MWS_UNICODE_USING_STD_WSTRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
-#define MWS_CXX_VERSION 17
 
 #else
 

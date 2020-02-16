@@ -83,8 +83,8 @@ struct mws_str
 #endif
    // comparisons
    static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);
-   static bool starts_with(const std::string& istr, const std::string& ifind);
-   static bool ends_with(const std::string& istr, const std::string& ifind);
+   static bool starts_with(const std::string& i_str, const std::string& i_find);
+   static bool ends_with(const std::string& i_str, const std::string& i_find);
    // trim from start
    static std::string ltrim(const std::string& i_str);
    // trim from end
@@ -101,11 +101,11 @@ struct mws_str
       return mapped;
    }
    static std::string escape_char(char character);
-   static std::string escape_string(const std::string& str);
+   static std::string escape_string(const std::string& i_str);
    static std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
    static std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
-   static std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
-   static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+   static std::vector<std::string> str_split(const std::string& i_str, const std::vector<std::string>& delimiters);
+   static std::vector<std::string> str_split(const std::string& i_str, const std::string& delimiter);
    // removes all the occurrences of the string from the input. the input sequence is modified in-place.
    template<typename sequence, typename range> void static erase_all(sequence& i_input, const range& i_search)
    {
@@ -448,7 +448,7 @@ inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
 
-bool ends_with(const std::string& istr, const std::string& ifind);
+bool ends_with(const std::string& i_str, const std::string& i_find);
 
 // trim from start
 inline std::string ltrim(const std::string& is)
@@ -475,8 +475,8 @@ inline std::string trim(const std::string& is)
 std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
 template<typename T2, typename T1, class unary_operation> std::vector<T2> map(const std::vector<T1>& original, unary_operation mapping_function);
 std::string escape_char(char character);
-std::string escape_string(const std::string& str);
+std::string escape_string(const std::string& i_str);
 std::vector<std::string> escape_strings(const std::vector<std::string>& delimiters);
 std::string str_join(const std::vector<std::string>& tokens, const std::string& delimiter);
-std::vector<std::string> str_split(const std::string& str, const std::vector<std::string>& delimiters);
-std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+std::vector<std::string> str_split(const std::string& i_str, const std::vector<std::string>& delimiters);
+std::vector<std::string> str_split(const std::string& i_str, const std::string& delimiter);

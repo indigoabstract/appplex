@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "pfm.hxx"
+#include "mws-impl.hxx"
 #include "pfm-gl.h"
 #include "min.hxx"
 #include "mws-mod.hxx"
@@ -28,7 +29,7 @@
 #define CLASS_MAIN_PATH "com/indigoabstract/appplex/main"
 
 
-class android_main : public mws_pfm_app
+class android_main : public mws_app
 {
 public:
    android_main();
@@ -60,13 +61,13 @@ public:
    virtual void write_text_nl(const wchar_t* i_text) const override;
    virtual void write_text_v(const char* i_format, ...) const override;
    // filesystem
-   virtual mws_sp<mws_impl::mws_file_impl> new_mws_file_impl(const mws_path& i_path) const override;
+   virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal = false) const override;
+   virtual mws_file_map list_internal_directory() const override;
    virtual const mws_path& prv_dir() const override;
    virtual const mws_path& res_dir() const override;
    virtual const mws_path& tmp_dir() const override;
    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
    virtual std::string get_timezone_id() const override;
-   virtual umf_list get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const override;
 
    void snd_init(int i_sample_rate, int i_buffer_size);
    void snd_close();
@@ -81,7 +82,7 @@ private:
    void load_apk_file_list();
 
    std::vector<mws_sp<mws_file> > apk_file_list;
-   umf_list plist;
+   mws_file_map plist;
    // screen metrix
    std::pair<uint32, uint32> screen_res;
    float avg_screen_dpi = 0.f;
@@ -121,13 +122,13 @@ static mws_sp<android_main> app_inst()
    return instance;
 }
 
-mws_sp<mws_pfm_app> mws_app_inst() { return app_inst(); }
+mws_sp<mws_app> mws_app_inst() { return app_inst(); }
 
 
-class android_file_impl : public mws_impl::mws_file_impl
+class android_file_impl : public mws_file_impl
 {
 public:
-   android_file_impl(const mws_path& i_path) : mws_impl::mws_file_impl(i_path) {}
+   android_file_impl(const mws_path& i_path, bool i_is_internal = false) : mws_file_impl(i_path, i_is_internal) {}
 
    virtual ~android_file_impl() {}
 
@@ -199,9 +200,15 @@ public:
       {
          // external path
          file = fopen(path.c_str(), i_open_mode.c_str());
+         bool file_opened = (file != nullptr);
          mws_print("open_impl: opening external file %s\n", path.c_str());
 
-         return file != nullptr;
+         if (file_opened && (i_open_mode.find('w') != std::string::npos))
+         {
+            file_is_writable = true;
+         }
+
+         return file_opened;
       }
 
       asset_file = AAssetManager_open(asset_manager, path.c_str(), 0);
@@ -299,10 +306,7 @@ public:
 };
 
 
-android_main::android_main()
-{
-   plist = std::make_shared<umf_r>();
-}
+android_main::android_main() {}
 
 android_main::~android_main()
 {
@@ -410,9 +414,51 @@ static bool mws_make_directory(const mws_path& i_path)
    return path_exists;
 }
 
-mws_sp<mws_impl::mws_file_impl> android_main::new_mws_file_impl(const mws_path& i_path) const
+mws_sp<mws_file_impl> android_main::new_mws_file_impl(const mws_path& i_path, bool i_is_internal) const
 {
-   return std::make_shared<android_file_impl>(i_path);
+   return std::make_shared<android_file_impl>(i_path, bool i_is_internal);
+}
+
+mws_file_map android_main::list_internal_directory() const
+{
+   mws_file_map file_map;
+
+   auto listing_helper = [](mws_file_map& file_map, mws_sp<mws_file> i_file)
+   {
+      if (file_map->find(i_file->filename()) != file_map->end())
+      {
+         mws_print("android_main::list_internal_directory. duplicate filename: %s", i_file->string_path().c_str());
+         mws_throw mws_exception("duplicate filename: " + i_file->string_path());
+      }
+
+      (*file_map)[i_file->filename()] = i_file;
+   }
+
+      if (!i_directory.is_empty())
+      {
+         if (i_is_recursive)
+         {
+            for (auto& e : apk_file_list)
+            {
+               if (mws_str::starts_with(e->directory().string(), i_directory.string()))
+               {
+                  listing_helper(file_map, e);
+               }
+            }
+         }
+         else
+         {
+            for (auto& e : apk_file_list)
+            {
+               if (i_directory.string() == e->directory().string())
+               {
+                  listing_helper(file_map, e);
+               }
+            }
+         }
+      }
+
+   return file_map;
 }
 
 const mws_path& android_main::prv_dir() const
@@ -446,7 +492,7 @@ void android_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(global_prv_path) / mod_dir;
-   res_path = mws_path(mod_dir, false);
+   res_path = mws_path(mod_dir);
    tmp_path = mws_path(global_tmp_path) / mod_dir;
    prv_path_exists = false;
    tmp_path_exists = false;
@@ -470,51 +516,11 @@ std::string android_main::get_timezone_id()const
    return ret;
 }
 
-void get_directory_listing_helper(umf_list i_plist, mws_sp<mws_file> i_file)
-{
-   if (i_plist->find(i_file->filename()) != i_plist->end())
-   {
-      mws_print("android_main::get_directory_listing. duplicate filename: %s", i_file->string_path().c_str());
-      mws_throw mws_exception("duplicate filename: " + i_file->string_path());
-   }
-
-   (*i_plist)[i_file->filename()] = i_file;
-}
-
-umf_list android_main::get_directory_listing(const std::string& i_directory, umf_list i_plist, bool i_is_recursive) const
-{
-   if (!i_directory.empty())
-   {
-      if (i_is_recursive)
-      {
-         for (auto& e : apk_file_list)
-         {
-            if (mws_str::starts_with(e->directory().string(), i_directory))
-            {
-               get_directory_listing_helper(i_plist, e);
-            }
-         }
-      }
-      else
-      {
-         for (auto& e : apk_file_list)
-         {
-            if (i_directory == e->directory().string())
-            {
-               get_directory_listing_helper(i_plist, e);
-            }
-         }
-      }
-   }
-
-   return i_plist;
-}
-
 void android_main::load_apk_file_list()
 {
-   umf_r& list = *plist;
    zip* apk_archive = zip_open(g_apk_path.c_str(), 0, nullptr);
    int file_count = zip_get_num_files(apk_archive);
+   const bool is_internal = true;
    //mws_print("android_main::load_apk_file_list zip %s %d", g_apk_path.c_str(), file_count);
 
    for (int i = 0; i < file_count; i++)
@@ -533,9 +539,9 @@ void android_main::load_apk_file_list()
 
          if (mws_str::starts_with(full_path, assets_pfx))
          {
-            mws_path path(full_path.substr(assets_pfx.length(), std::string::npos), false);
-            auto file_impl = std::make_shared<android_file_impl>(path);
-            auto p_file = mws_file::get_inst(file_impl);
+            mws_path path(full_path.substr(assets_pfx.length(), std::string::npos));
+            mws_sp<android_file_impl> file_impl = std::make_shared<android_file_impl>(path, is_internal);
+            mws_sp<android_file_impl> p_file = mws_file::get_inst(file_impl);
 
             apk_file_list.push_back(p_file);
          }

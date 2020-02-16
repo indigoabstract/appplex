@@ -199,7 +199,7 @@ void mws_kawase_bloom::init_shaders()
    kawase_blur_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(kawase_blur_sh_id, true);
    if (!kawase_blur_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      std::string vsh(
          R"(
       //@es #version 300 es
       //@dt #version 330 core
@@ -217,9 +217,9 @@ void mws_kawase_bloom::init_shaders()
 	      gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
       )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      std::string fsh(
          R"(
       //@es #version 300 es
       //@dt #version 330 core
@@ -276,14 +276,14 @@ void mws_kawase_bloom::init_shaders()
 	      v4_frag_color = vec4(v4_col);
       }
       )"
-      ));
+      );
 
       kawase_blur_shader = gfx::i()->shader.new_program_from_src(kawase_blur_sh_id, vsh, fsh);
    }
    accumulation_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(accumulation_sh_id, true);
    if (!accumulation_shader)
    {
-      auto vsh = mws_sp<std::string>(new std::string(
+      std::string vsh(
          R"(
       //@es #version 300 es
       //@dt #version 330 core
@@ -301,9 +301,9 @@ void mws_kawase_bloom::init_shaders()
 	      gl_Position = u_m4_model_view_proj * vec4(a_v3_position, 1.0);
       }
       )"
-      ));
+      );
 
-      auto fsh = mws_sp<std::string>(new std::string(
+      std::string fsh(
          R"(
       //@es #version 300 es
       //@dt #version 330 core
@@ -329,7 +329,7 @@ void mws_kawase_bloom::init_shaders()
           v4_frag_color = vec4(v3_col, v4_col_0.a);
       }
       )"
-      ));
+      );
 
       accumulation_shader = gfx::i()->shader.new_program_from_src(accumulation_sh_id, vsh, fsh);
    }

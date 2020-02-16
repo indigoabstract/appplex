@@ -410,10 +410,9 @@ public:
 
       if (file->exists())
       {
-         auto fds = std::make_shared<file_data_sequence>(file);
-         auto dr = std::make_shared<data_sequence_reader>(fds);
-
          file->io.open();
+         auto fds = std::make_shared<file_data_sequence>(file, false);
+         auto dr = std::make_shared<data_sequence_reader>(fds);
          int size = dr->read_int32();
 
          tube_pos.resize(size);

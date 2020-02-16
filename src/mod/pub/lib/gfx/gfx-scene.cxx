@@ -116,7 +116,7 @@ void gfx_node::detach()
 
       parent_node->children.erase(std::find(parent_node->children.begin(), parent_node->children.end(), get_mws_sp()));
       parent = mws_sp<gfx_node>();
-      root = mws_sp<gfx_scene>();
+      root = mws_sp<gfx_scene>(nullptr);
       on_detach();
    }
    else
@@ -232,9 +232,7 @@ void gfx_node::update_recursive(const glm::mat4 & i_global_tf_mx, bool i_update_
    }
 }
 
-gfx_scene::gfx_scene(mws_sp<gfx> i_gi) : gfx_node(i_gi)
-{
-}
+gfx_scene::gfx_scene(mws_sp<mws_mod> i_mod, mws_sp<gfx> i_gi) : gfx_node(i_gi), mod(i_mod) {}
 
 void gfx_scene::init()
 {
@@ -399,6 +397,8 @@ void gfx_scene::post_draw()
       cam->update_camera_state();
    }
 }
+
+mws_sp<mws_mod> gfx_scene::get_mod() const { return mod.lock(); }
 
 void gfx_scene::add_camera_node(mws_sp<gfx_camera> i_camera)
 {

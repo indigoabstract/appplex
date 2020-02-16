@@ -19,9 +19,9 @@ namespace mod_texxed_ns
 			int w = get_mod()->get_width();
 			int h = get_mod()->get_height();
 
-			tx_res = mws::filesys::load_res_as_string("kappaxx-src.kxmd");
+			tx_res = get_mod()->storage.load_as_string("kappaxx-src.kxmd");
 
-			if (!tx_res)
+			if (tx_res.empty())
 			{
 				trx("error: kappaxx-src.kxmd not found.");
 
@@ -31,7 +31,7 @@ namespace mod_texxed_ns
 			ta = mws_text_box::nwi();
 			ta->set_position(glm::vec2(50, 70));
 			ta->set_size(glm::vec2(w - 80, h - 130));
-			ta->set_text(*tx_res);
+			ta->set_text(tx_res);
          ta->push_back_text("nl 1\n");
          ta->push_back_text("nl 2\n");
          ta->push_back_text("nl 3\n");
@@ -82,7 +82,7 @@ namespace mod_texxed_ns
 		}
 
 		mws_sp<mws_text_box> ta;
-		mws_sp<std::string > tx_res;
+		std::string tx_res;
 	};
 }
 

@@ -1,6 +1,7 @@
 #include "stdafx.hxx"
 
 #include "mws-mod-ctrl.hxx"
+#include "mws-impl.hxx"
 #include "mws-mod.hxx"
 #include "input/input-ctrl.hxx"
 #include "min.hxx"
@@ -10,6 +11,9 @@
 #include "mod-list.hxx"
 #include <atomic>
 #include <cstdlib>
+
+
+mws_sp<mws_app> mws_app_inst();
 
 
 namespace
@@ -105,6 +109,25 @@ void mws_mod_ctrl::destroy_app()
    if (mod_gfx_on)
    {
       gfx::on_destroy();
+   }
+}
+
+void mws_mod_ctrl::pre_init_app()
+{
+   if (!ul)
+   {
+      ul = mws_mod_list::nwi();
+      ul->set_name("app-mws-mod-list");
+      mws_mod_setup::next_crt_mod = crt_mod = ul;
+
+      mws_mod_setup::append_mod_list(ul);
+   }
+
+   mws_sp<mws_mod> start_mod = get_app_start_mod();
+
+   if (start_mod)
+   {
+      mws_app_inst()->reconfigure_directories(start_mod);
    }
 }
 
@@ -297,6 +320,8 @@ mws_sp<mws_mod> mws_mod_ctrl::get_current_mod()
 {
    return crt_mod.lock();
 }
+
+mws_app_storage& mws_mod_ctrl::app_storage() { return get_current_mod()->storage; }
 
 void mws_mod_ctrl::set_next_mod(mws_sp<mws_mod> i_mod)
 {

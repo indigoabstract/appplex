@@ -22,9 +22,9 @@ mws_sp<mod_abstract_racing> mod_abstract_racing::nwi()
 	return mws_sp<mod_abstract_racing>(new mod_abstract_racing());
 }
 
-namespace mod_abstract_racing_main_page
+namespace
 {
-	class mainpage : public mws_page
+	class main_page : public mws_page
 	{
 	public:
 		virtual void init()
@@ -38,10 +38,11 @@ namespace mod_abstract_racing_main_page
 			camera_tm = camera_tm * glm::translate(glm::vec3(0.f, 0.f, 3500.f));
 
 			duringSegmentCrossing = false;
-			t.loadTrackData("04_02.dat");
-			t.generateTrackVertices();
-			segmentIdx = t.start_point * t.interpolation_steps_count;
-			crtPos = t.segment_crd[segmentIdx];
+			t = std::make_shared<track>(get_mod());
+			t->loadTrackData("04_02.dat");
+			t->generateTrackVertices();
+			segmentIdx = t->start_point * t->interpolation_steps_count;
+			crtPos = t->segment_crd[segmentIdx];
 			last_time = mws::time::get_time_millis();
 		}
 
@@ -54,13 +55,7 @@ namespace mod_abstract_racing_main_page
 
 				if(ke->get_type() != mws_key_evt::ke_released)
 				{
-					bool do_action = true;
-
-					switch(ke->get_key())
-					{
-					default:
-						do_action = false;
-					}
+					bool do_action = false;
 
 					if(do_action)
 					{
@@ -87,15 +82,15 @@ namespace mod_abstract_racing_main_page
 				last_time = now;
 
 				segmentIdx++;
-				segmentIdx %= t.segment_crd.size();
-				crtPos = t.get_segment_pos_at(segmentIdx);
+				segmentIdx %= t->segment_crd.size();
+				crtPos = t->get_segment_pos_at(segmentIdx);
 			}
 			else
 			{
 				float d = delta / segmentCrossTime;
 				float md = 1 - d;
-				glm::vec3 p1 = t.get_segment_pos_at(segmentIdx);
-				glm::vec3 p2 = t.get_segment_pos_at(segmentIdx + 1);
+				glm::vec3 p1 = t->get_segment_pos_at(segmentIdx);
+				glm::vec3 p2 = t->get_segment_pos_at(segmentIdx + 1);
 
 				crtPos.x = p1.x * md + p2.x * d;
 				crtPos.y = p1.y * md + p2.y * d;
@@ -123,9 +118,9 @@ namespace mod_abstract_racing_main_page
 			r.mx.push_view_matrix(camera_tm);
 
 
-			glm::vec3 sp = t.start_pos;
+			glm::vec3 sp = t->start_pos;
 			glm::vec3 v1 = crtPos;
-			glm::vec3 v2 = t.get_segment_pos_at(segmentIdx + 1);
+			glm::vec3 v2 = t->get_segment_pos_at(segmentIdx + 1);
 			glm::vec3 direction = v1 - v2;
 			direction.y = 0;
 			//direction.Normalise();
@@ -145,7 +140,7 @@ namespace mod_abstract_racing_main_page
 			glm::vec3 cp = carPos;
 			cp.y += 50;
 
-			t.drawTrack(&r);
+			t->drawTrack(&r);
 
 			glm::mat4 tf;
 			float sl = 50;
@@ -199,7 +194,7 @@ namespace mod_abstract_racing_main_page
 
 		glm::mat4 camera;
 		glm::mat4 camera_tm;
-		track t;
+		mws_sp<track> t;
 		int segmentIdx;
 		glm::vec3 crtPos;
 		bool duringSegmentCrossing;
@@ -211,7 +206,7 @@ namespace mod_abstract_racing_main_page
 
 void mod_abstract_racing::init_mws()
 {
-   mws_root->new_page<mod_abstract_racing_main_page::mainpage>();
+   mws_root->new_page<main_page>();
 }
 
 void mod_abstract_racing::init()
