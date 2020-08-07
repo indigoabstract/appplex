@@ -28,12 +28,19 @@ THE SOFTWARE.
 #include <jni.h>
 #include <string>
 
+
+#define APPNAME "appplex"
+#define PACKAGE_NAME "com/indigoabstract/appplex"
+#define CLASS_MAIN_PATH "com/indigoabstract/appplex/main"
+
+
 typedef struct JniMethodInfo_
 {
     JNIEnv *    env;
     jclass      classID;
     jmethodID   methodID;
 } JniMethodInfo;
+
 
 class JniHelper
 {

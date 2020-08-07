@@ -23,11 +23,6 @@
 #include <vector>
 
 
-#define APPNAME "appplex"
-#define PACKAGE_NAME "com/indigoabstract/appplex"
-#define CLASS_MAIN_PATH "com/indigoabstract/appplex/main"
-
-
 class android_main : public mws_app
 {
 public:
@@ -78,8 +73,6 @@ public:
    int buffer_size;
 
 private:
-   //void load_apk_file_list();
-
    std::vector<mws_sp<mws_file> > apk_file_list;
    mws_file_map plist;
    // screen metrix
@@ -470,18 +463,8 @@ std::string android_main::get_timezone_id()const
 
 void android_main::init()
 {
-   //load_apk_file_list();
-
    mws_mod_ctrl::inst()->pre_init_app();
    mws_mod_ctrl::inst()->set_gfx_available(true);
-   auto start_mod = mws_mod_ctrl::inst()->get_app_start_mod();
-
-   if (start_mod)
-   {
-      auto mod_pref = start_mod->get_preferences();
-      mws_log::set_enabled(mod_pref->log_enabled());
-   }
-   
    mws_mod_ctrl::inst()->init_app();
 }
 

@@ -353,6 +353,7 @@ class mws_text_buffer
 {
 public:
    virtual void push_front(const char* i_msg) = 0;
+   virtual void push_front(const std::string& i_msg) = 0;
    virtual void clear() = 0;
 };
 

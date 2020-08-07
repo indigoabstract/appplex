@@ -51,7 +51,7 @@
   <body class="page_bg">
 	<div id='mws_screen_dpi_div' style='height: 1in; left: -100%; position: absolute; top: -100%; width: 1in;'></div>
     <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+      <canvas class="emscripten" id="canvas" width="100%" height="100%" style="width: 100%; height: 100%;" oncontextmenu="event.preventDefault()"></canvas>
     </div>
 
     <figure style="overflow:visible;" id="spinner"><div class="spinner"></div></figure>
@@ -117,14 +117,18 @@
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         },
+		mws_device_pixel_ratio: function()
+		{
+			return window.devicePixelRatio;
+		},
 		mws_horiz_screen_dpi: 0,
 		mws_vert_screen_dpi: 0,
 		mws_query_screen_dpi: function()
 		{
-			var mws_device_pixel_ratio = window.devicePixelRatio || 1;
+			var mws_dev_pixel_ratio = window.devicePixelRatio || 1;
 			var mws_screen_dpi_div = document.getElementById('mws_screen_dpi_div');
-			mws_horiz_screen_dpi = mws_screen_dpi_div.offsetWidth * mws_device_pixel_ratio;
-			mws_vert_screen_dpi = mws_screen_dpi_div.offsetHeight * mws_device_pixel_ratio;
+			mws_horiz_screen_dpi = mws_screen_dpi_div.offsetWidth * mws_dev_pixel_ratio;
+			mws_vert_screen_dpi = mws_screen_dpi_div.offsetHeight * mws_dev_pixel_ratio;
 		},
 		mws_horizontal_screen_dpi: function()
 		{

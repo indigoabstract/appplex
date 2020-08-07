@@ -8,7 +8,7 @@ No more lost or misplaced works!
 
 
 Includes a minimal 3D engine, OpenGL graphics, playing sounds and loading resources/images.
-Atm, it works on Windows and Android.
+Atm, it works on Windows, WebGL/Browser, iOS and Android.
 
 
 # Getting Started
@@ -25,6 +25,4 @@ https://cmake.org/download/
 
 # Future work:
 
-- WebGL support, to run apps in the browser
-- iOS/macOS support
 - Public apps, so you can share them (with a link), or private apps, to keep them just for yourself.

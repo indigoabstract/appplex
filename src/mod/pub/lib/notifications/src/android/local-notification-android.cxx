@@ -1,8 +1,8 @@
 #include "stdafx.hxx"
 
 #include "notifications/local-notification.hxx"
-#include "main.hxx"
-#include "jni-helper.hxx"
+#include "pfm.hxx"
+#include "android/jni-helper.hxx"
 #include <jni.h>
 #include <algorithm>
 

@@ -26,6 +26,7 @@ public:
    virtual const std::string& get_text() const;
    virtual void set_text(const std::string& i_text) override;
    virtual void push_front(const char* i_msg) override;
+   virtual void push_front(const std::string& i_msg) override;
    virtual void clear() override;
    virtual void push_back_text(const std::string& i_text);
    virtual void push_front_text(const std::string& i_text);

@@ -138,6 +138,7 @@ namespace
    mws_path tmp_path;
    bool prv_path_exists = false;
    bool tmp_path_exists = false;
+   float device_pixel_ratio = 0.f;
    mws_sp<emst_main> instance;
 }
 
@@ -249,20 +250,13 @@ void emst_main::init()
       double horizontal_screen_dpi = EM_ASM_DOUBLE({ return Module.mws_horizontal_screen_dpi(); });
       double vertical_screen_dpi = EM_ASM_DOUBLE({ return Module.mws_vertical_screen_dpi(); });
 
+	  device_pixel_ratio = (float)EM_ASM_DOUBLE({ return Module.mws_device_pixel_ratio(); });
       init_screen_metrix((uint32)screen_width, (uint32)screen_height, (float)horizontal_screen_dpi, (float)vertical_screen_dpi);
    }
 
    setup_callbacks();
    mws_mod_ctrl::inst()->pre_init_app();
    mws_mod_ctrl::inst()->set_gfx_available(true);
-   auto start_mod = mws_mod_ctrl::inst()->get_app_start_mod();
-
-   if (start_mod)
-   {
-      auto mod_pref = start_mod->get_preferences();
-      mws_log::set_enabled(mod_pref->log_enabled());
-   }
-
    mws_mod_ctrl::inst()->init_app();
 }
 
@@ -790,12 +784,12 @@ static EM_BOOL mws_emst_touch(int i_event_type, const EmscriptenTouchEvent* i_e,
    for (uint32 k = 0; k < pfm_te->touch_count; k++)
    {
       auto& touches = i_e->touches[k];
-      mws_ptr_evt_base::touch_point& point = pfm_te->points[k];
+      mws_ptr_evt_base::touch_point& te = pfm_te->points[k];
 
-      point.identifier = touches.identifier;
-      point.x = touches.canvasX;
-      point.y = touches.canvasY;
-      point.is_changed = touches.isChanged;
+      te.identifier = touches.identifier;
+      te.x = (float)touches.canvasX * device_pixel_ratio;
+      te.y = (float)touches.canvasY * device_pixel_ratio;
+      te.is_changed = touches.isChanged;
    }
 
    mws_mod_ctrl::inst()->pointer_action(pfm_te);

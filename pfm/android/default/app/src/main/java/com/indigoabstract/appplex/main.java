@@ -36,7 +36,6 @@ public class main extends Activity
 {
 	static
 	{
-        System.loadLibrary("zip");
 		System.loadLibrary("freetype2-static");
 		System.loadLibrary("app_plex_main");
 	}

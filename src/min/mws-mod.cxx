@@ -549,6 +549,8 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
    {
       if (i_mod != crt_mod.lock())
       {
+         auto mod_pref = i_mod->get_preferences();
+
          if (!crt_mod.expired())
          {
             crt_mod.lock()->base_unload();
@@ -556,6 +558,7 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 
          crt_mod = i_mod;
          mws_app_inst()->reconfigure_directories(i_mod);
+         mws_log::set_enabled(mod_pref->log_enabled());
 
          // reload resources
          i_mod->storage.p->res_files_map = mws_app_inst()->list_internal_directory();

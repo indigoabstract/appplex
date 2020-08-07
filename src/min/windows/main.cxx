@@ -798,7 +798,6 @@ bool init_app(int argc, char** argv)
          auto mod_pref = start_mod->get_preferences();
          int pref_width = mod_pref->get_preferred_screen_width();
          int pref_height = mod_pref->get_preferred_screen_height();
-         mws_log::set_enabled(mod_pref->log_enabled());
          start_full_screen = mod_pref->start_full_screen();
          emulate_mobile_screen = mod_pref->emulate_mobile_screen();
 

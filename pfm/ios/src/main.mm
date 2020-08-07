@@ -463,16 +463,7 @@ void ios_main::init()
    
 	mws_mod_ctrl::inst()->pre_init_app();
 	mws_mod_ctrl::inst()->set_gfx_available(true);
-    auto start_mod = mws_mod_ctrl::inst()->get_app_start_mod();
-
-    if (start_mod)
-    {
-        auto mod_pref = start_mod->get_preferences();
-        mws_log::set_enabled(mod_pref->log_enabled());
-    }
-
 	mws_mod_ctrl::inst()->init_app();
-
 	is_started = true;
 }
 

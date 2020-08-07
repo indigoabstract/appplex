@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ storage-dir-tst ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ dyn-geometry ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -146,8 +146,8 @@ mod
 	test-gl-uniform-blocks[ uses[ gfx ], platf[ windows, android, ios ], ],
 	test-res-ld[ uses[ gfx, png, res-ld ], platf[ all ], ],
 	test-gl-outlines[ uses[ gfx, png ], platf[ all ], ],
-	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts], ],
-	multi-touch-input[ uses[ bitmap-fonts, gfx, fonts, input, mws ], ],
+	keyboard[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, util, vector-fonts ], ],
+	multi-touch-input[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	screen-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	mouse-input[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	font-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],

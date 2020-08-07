@@ -294,8 +294,7 @@ void mws_img_btn::setup()
 
    {
       auto& rvxo = *vxo;
-      rvxo.camera_id_list.clear();
-      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo.camera_id_list = { "mws_cam" };
       rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;
@@ -384,13 +383,15 @@ void mws_button::update_state()
 {
    if (text_visible && !text.empty())
    {
-      auto& tf = get_vxo()->get_global_tf_mx();
-      auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
-      glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
-      auto root = get_mws_root();
-      auto text_ref = root->get_text_vxo();
+      mws_sp<mws_font> fnt = get_font();
+      const glm::mat4& tf = get_vxo()->get_global_tf_mx();
+      const glm::vec4& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
+      glm::vec2 text_dim = fnt->get_text_dim(text);
+      glm::vec2 pos(pos_v4.x - mws_r.w / 2 + (mws_r.w - text_dim.x) / 2.f, pos_v4.y - (mws_r.h - text_dim.y) / 2.f);
+      const auto& root = get_mws_root();
+      mws_sp<mws_text_vxo> text_ref = root->get_text_vxo();
 
-      text_ref->add_text(text, pos, get_font());
+      text_ref->add_text(text, pos, fnt);
    }
 }
 
@@ -445,8 +446,7 @@ void mws_button::setup()
    {
       auto& rvxo = *vxo;
       color = gfx_color::from_argb(0xff333333);
-      rvxo.camera_id_list.clear();
-      rvxo.camera_id_list.push_back("mws_cam");
+      rvxo.camera_id_list = { "mws_cam" };
       rvxo[MP_SHADER_NAME] = gfx::mws_sh_id;
       rvxo[MP_DEPTH_TEST] = true;
       rvxo[MP_DEPTH_WRITE] = true;

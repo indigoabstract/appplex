@@ -1431,7 +1431,21 @@ public:
 
    virtual void set_text_buffer(mws_sp<mws_text_buffer> i_text_buffer) override
    {
+      std::string buff;
       text_buffer = i_text_buffer;
+      text_buffer->clear();
+      console_active = true;
+
+      if (!log.empty())
+      {
+         // most recent entries are top most in the console
+         for (int32 k = (int32)log.size() - 1; k >= 0; k--)
+         {
+            buff += log[k];
+         }
+
+         text_buffer->push_front(buff);
+      }
    }
 
 private:

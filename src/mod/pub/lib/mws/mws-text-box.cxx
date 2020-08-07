@@ -175,6 +175,11 @@ void mws_text_box::push_front(const char* i_msg)
    push_front_text(i_msg);
 }
 
+void mws_text_box::push_front(const std::string& i_msg)
+{
+   push_front_text(i_msg);
+}
+
 void mws_text_box::clear()
 {
    set_text("");
