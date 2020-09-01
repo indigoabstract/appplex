@@ -248,6 +248,17 @@ uint32 mws::time::get_time_millis()
    return GetTickCount();
 }
 
+#elif defined MWS_PFM_LINUX
+
+mws_pfm_id mws::get_platform_id()
+{
+   return mws_pfm_linux;
+}
+
+mws_gfx_type mws::get_gfx_type_id()
+{
+   return mws_gfx_opengl;
+}
 
 #endif
 
@@ -1238,6 +1249,7 @@ bool mws::input::has_touchscreen()
    case mws_pfm_ios:  return true;
    case mws_pfm_emscripten: return false;
    case mws_pfm_windows_pc: return false;
+   case mws_pfm_linux: return false;
    }
 
    return false;

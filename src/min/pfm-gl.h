@@ -134,6 +134,15 @@ GL_APICALL GLboolean GL_APIENTRY glUnmapBuffer(GLenum target);
 #define hasGetBufferSubData() (true)
 #define hasMapBufferRange() (true)
 
+// --- LINUX ---
+#elif defined MWS_PFM_LINUX
+
+#define MWS_USES_OPENGL
+#include <GL/gl.h>
+
+#define hasGetBufferSubData() (true)
+#define hasMapBufferRange() (true)
+
 #endif
 // --- END PLATFORMS ---
 

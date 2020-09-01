@@ -1,12 +1,8 @@
 #pragma once
 
 #include "pfm.hxx"
-
-
-namespace std
-{
-	class thread;
-}
+//clang disallows forward declarations for std::
+#include <thread>
 
 
 class long_operation

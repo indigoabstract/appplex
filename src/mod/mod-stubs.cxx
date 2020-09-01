@@ -49,6 +49,19 @@ void gfx::on_destroy() { err_na(); }
 void gfx::on_resize(int, int) { err_na(); }
 void gfx::ic_rt::set_current_render_target(mws_sp<gfx_rt> irdt, bool i_force_binding) { err_na(); }
 
+gfx_obj::~gfx_obj(){}
+
+gfx_node::~gfx_node(){}
+gfx_node::e_gfx_obj_type gfx_node::get_type() const  { return gfx_obj::e_obj; }
+void gfx_node::add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent){}
+void gfx_node::draw_in_sync(mws_sp<gfx_camera>){}
+void gfx_node::draw_out_of_sync(mws_sp<gfx_camera>){}
+void gfx_node::attach(mws_sp<gfx_node> i_node){}
+void gfx_node::detach(){}
+void gfx_node::on_attach(){}
+void gfx_node::on_detach(){}
+void gfx_node::update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx){}
+
 void gfx_scene::draw() { err_na(); }
 void gfx_scene::post_draw() { err_na(); }
 

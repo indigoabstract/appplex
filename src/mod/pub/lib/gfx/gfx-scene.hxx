@@ -2,6 +2,7 @@
 
 #include "cpp-property.hxx"
 #include "pfm-def.h"
+#include "gfx-obj.hxx"
 #include "gfx-state.hxx"
 #include "gfx-util.hxx"
 #include <glm/inc.hpp>

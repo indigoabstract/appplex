@@ -14,6 +14,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 message("CMAKE_SYSTEM_VERSION  " ${CMAKE_SYSTEM_VERSION})
 message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 message("CMAKE_SYSTEM_NAME  " ${CMAKE_SYSTEM_NAME})
+message("CMAKE_CXX_COMPILER_ID  " ${CMAKE_CXX_COMPILER_ID})
+message("CMAKE_CXX_COMPILER_VERSION  " ${CMAKE_CXX_COMPILER_VERSION})
 message("CMAKE_CURRENT_LIST_DIR  " ${CMAKE_CURRENT_LIST_DIR})
 message("PROJECT_SOURCE_DIR  " ${PROJECT_SOURCE_DIR})
 
@@ -58,6 +60,37 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 		message(FATAL_ERROR "glew32 library not found")
 	endif()
 	
+
+elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -frtti -fexceptions -Wall")
+	# for clang
+	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+	add_library(app_plex_main STATIC "")
+	
+	# common include directories
+	include_directories(
+	"${CMAKE_CURRENT_LIST_DIR}/src"
+	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
+	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
+	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
+	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
+	)
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/ffmpeg")
+	
+	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
+	
+	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/linux/lib")
+	
+	#find_library(FREETYPE_LIB freetype.lib)
+	
+	link_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/linux/lib")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/min/linux/CMakeLists.txt")
+		
 elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
 	message("CMAKE_CURRENT_LIST_DIR  " ${CMAKE_CURRENT_LIST_DIR})

@@ -80,6 +80,7 @@ enum mws_pfm_id
    mws_pfm_ios,
    mws_pfm_emscripten,
    mws_pfm_windows_pc,
+   mws_pfm_linux,
 };
 
 
@@ -170,6 +171,14 @@ extern "C"
 #define MWS_PFM_WINDOWS_PC
 #define MWS_WINDOWS_API
 #define MWS_UNICODE_USING_STD_WSTRING
+#define MWS_USES_EXCEPTIONS
+#define MWS_USES_RTTI
+
+#elif defined __linux__
+
+#define MWS_PFM_LINUX
+#define MWS_POSIX_API
+#define MWS_UNICODE_USING_STD_STRING
 #define MWS_USES_EXCEPTIONS
 #define MWS_USES_RTTI
 

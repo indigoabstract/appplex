@@ -126,6 +126,10 @@ public:
       case mws_pfm_windows_pc:
          def_platform = "#define WINDOWS";
          break;
+
+      case mws_pfm_linux:
+         def_platform = "#define LINUX";
+         break;
       }
 
       size_t idx = i_shader_src.find(tag);
