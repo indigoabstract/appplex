@@ -24,6 +24,7 @@ res-idx.str
 /pfm/emscripten/build
 /pfm/emscripten/src/res
 /pfm/ios/xcode
+/pfm/linux/proj
 /pfm/msvc/proj
 /pfm/msvc/appplex.exe
 /pfm/msvc/appplex.exp
@@ -33,6 +34,7 @@ res-idx.str
 /pfm/appplex.exp
 /pfm/appplex.ilk
 /pfm/appplex.lib
+/nbproject
 /src/min/appplex-conf.hxx
 /src/min/appplex-conf.cxx
 /src/mod/prv
@@ -40,3 +42,4 @@ res-idx.str
 /src/mod/pub/demo/CMakeLists.txt
 /src/mod/pub/lib/CMakeLists.txt
 /src/mod/pub/tst/CMakeLists.txt
+

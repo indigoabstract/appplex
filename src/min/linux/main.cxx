@@ -20,8 +20,6 @@
 #include <thread>
 #include <chrono>
 
-#define OutputDebugStringA printf
-
 
 class linux_main : public mws_app
 {
@@ -120,7 +118,29 @@ public:
 
    virtual uint64 length() override
    {
-      return 0;
+      uint64 size = 0;
+
+      if (!file)
+      {
+         open("rb");
+
+         if (file)
+         {
+            fseek(file, 0, SEEK_END);
+            size = ftell(file);
+            close();
+         }
+      }
+      else
+      {
+         long crt_pos = ftell(file);
+
+         fseek(file, 0, SEEK_END);
+         size = ftell(file);
+         fseek(file, crt_pos, SEEK_SET);
+      }
+
+      return size;
    }
 
    virtual uint64 creation_time()const override
@@ -154,7 +174,10 @@ public:
 
    virtual void flush_impl() override
    {
-      fflush(file);
+      if (file)
+      {
+         fflush(file);
+      }
    }
 
    FILE* file = nullptr;
@@ -405,8 +428,6 @@ void linux_main::write_text(const char* i_text)const
    {
       printf(i_text);
    }
-
-   OutputDebugStringA(i_text);
 }
 
 void linux_main::write_text_nl(const char* i_text)const

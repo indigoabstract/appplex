@@ -9,16 +9,6 @@ project (appplex)
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Command to output information to the console
-# Useful for displaying errors, warnings, and debugging
-message("CMAKE_SYSTEM_VERSION  " ${CMAKE_SYSTEM_VERSION})
-message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
-message("CMAKE_SYSTEM_NAME  " ${CMAKE_SYSTEM_NAME})
-message("CMAKE_CXX_COMPILER_ID  " ${CMAKE_CXX_COMPILER_ID})
-message("CMAKE_CXX_COMPILER_VERSION  " ${CMAKE_CXX_COMPILER_VERSION})
-message("CMAKE_CURRENT_LIST_DIR  " ${CMAKE_CURRENT_LIST_DIR})
-message("PROJECT_SOURCE_DIR  " ${PROJECT_SOURCE_DIR})
-
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
 	# Set compiler flags and options. 
@@ -64,7 +54,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -frtti -fexceptions -Wall")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -no-pie -frtti -fexceptions -Wall")
 	# for clang
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
@@ -577,3 +567,12 @@ endif()
 # elseif(IOS)
     # set(ADDITIONAL_LIBRARIES "")
 # endif()
+
+message("CMAKE_SYSTEM_VERSION  " ${CMAKE_SYSTEM_VERSION})
+message("CMAKE_CXX_FLAGS  " ${CMAKE_CXX_FLAGS})
+message("CMAKE_SYSTEM_NAME  " ${CMAKE_SYSTEM_NAME})
+message("CMAKE_CXX_COMPILER_ID  " ${CMAKE_CXX_COMPILER_ID})
+message("CMAKE_CXX_COMPILER_VERSION  " ${CMAKE_CXX_COMPILER_VERSION})
+message("CMAKE_CURRENT_LIST_DIR  " ${CMAKE_CURRENT_LIST_DIR})
+message("PROJECT_BINARY_DIR  " ${PROJECT_BINARY_DIR})
+message("PROJECT_SOURCE_DIR  " ${PROJECT_SOURCE_DIR})

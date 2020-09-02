@@ -1,7 +1,5 @@
-#export PATH=/usr/local/clang_9.0.0/bin:$PATH
-#export LD_LIBRARY_PATH=/usr/local/clang_9.0.0/lib:$LD_LIBRARY_PATH
-
 cd ./pfm/linux/proj/
-make -j 8 VERBOSE=1
-cd /home/indigoabstract/Desktop/appplex
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../../..
+make -j 12 VERBOSE=1
+cd /home/osboxes/Desktop/appplex
 

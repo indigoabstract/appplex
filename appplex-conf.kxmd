@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ dyn-geometry ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ appplex-conf ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, exercise, kappaxx ],
 	],
 ],
@@ -20,7 +20,7 @@ mod
 	@@[ private mods ],
 	@@load-and-replace[ "src/mod/prv/mods.kxmd", mods ],
 
-	appplex-conf[ uses[ fmt, kxmd ], platf[ windows ], ],
+	appplex-conf[ uses[ fmt, kxmd ], platf[ windows, linux ], ],
 	barnes-hut[ enabled[ false ], ],
 	kappaxx[ uses[ boost, gfx, kxmd ], platf[ windows ], ],
 	reliquus[ uses[ gfx, gfx-ext, fonts, fmt, freetype, freetype-gl, input, mws, noise, png, res-ld, util, vector-fonts ] ],
