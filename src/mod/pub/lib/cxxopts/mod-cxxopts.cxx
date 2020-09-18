@@ -35,15 +35,16 @@ bool mod_cxxopts::update()
 
 void mod_cxxopts::load()
 {
-   try
+   mws_try
    {
       int argc = mws::args::get_str_arg_count();
       const char** argv = mws::args::get_str_arg_vect();
+      cxxopts::Options options(argv[0], "");
 
-      cxxopts::Options options(argv[0], " - example command line options");
+      options.positional_help("[optional args]").show_positional_help();
       options.add_options()
-         ("s,source-path", "source path - directory to search", cxxopts::value<std::string>())
-         ("e,exclude-path", "exclude path - list of directories excluded from search", cxxopts::value<std::vector<std::string>>())
+         ("s,source-path", "required argument containing the directory with the sources path. must be an absolute path.", cxxopts::value<std::string>())
+         ("e,exclude-path", "optional list of directories excluded from search. if set, must be relative to the source-path argument", cxxopts::value<std::vector<std::string>>())
          ("h,help", "print usage");
 
       for (int k = 0; k < argc; k++)
@@ -52,6 +53,13 @@ void mod_cxxopts::load()
       }
 
       auto result = options.parse(argc, argv);
+
+      if (result.count("h"))
+      {
+         trx("{}", options.help({ "", "Group" }));
+         return;
+      }
+
       auto arg_list = result.arguments();
 
       for (auto& arg : arg_list)
@@ -69,7 +77,7 @@ void mod_cxxopts::load()
          }
       }
    }
-   catch (const cxxopts::OptionException& i_e)
+   mws_catch (const cxxopts::OptionException& i_e)
    {
       mws_println("error parsing options: %s", i_e.what());
       mws_mod::set_app_exit_on_next_run(true);
