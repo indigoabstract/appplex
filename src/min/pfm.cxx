@@ -263,15 +263,6 @@ mws_gfx_type mws::get_gfx_type_id()
 #endif
 
 
-
-namespace
-{
-   int arg_count = 0;
-   unicode_string app_path;
-   std::vector<unicode_string> arg_vector;
-}
-
-
 void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message)
 {
 #if defined MWS_DEBUG_BUILD
@@ -1272,37 +1263,84 @@ void mws::output::write_text_nl(const wchar_t* i_text) { mws_app_inst()->write_t
 
 
 // params
-int mws::args::get_app_argument_count()
+namespace
 {
-   return arg_count;
+   // std string arguments
+   int mws_str_argc = 0;
+   const char** mws_str_argv;
+   std::string mws_str_app_path;
+   std::vector<std::string> mws_str_arg_vector;
+
+   // std wstring(unicode) arguments
+   int mws_wstr_argc = 0;
+   unicode_string mws_wstr_app_path;
+   std::vector<unicode_string> mws_wstr_arg_vector;
 }
 
-const unicode_string& mws::args::get_app_path()
+
+int mws::args::get_str_arg_count()
 {
-   return app_path;
+   return mws_str_argc;
 }
 
-const std::vector<unicode_string>& mws::args::get_app_argument_vector()
+const std::string& mws::args::get_str_path()
 {
-   return arg_vector;
+   return mws_str_app_path;
 }
 
-void mws::args::set_app_arguments(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included)
+const char** mws::args::get_str_arg_vect()
 {
-   int idx = 0;
+   return mws_str_argv;
+}
 
-   arg_count = i_argument_count;
+const std::vector<std::string>& mws::args::get_str_arg_str_vect()
+{
+   return mws_str_arg_vector;
+}
 
-   if (i_app_path_included && arg_count > 0)
+void mws::args::set_str_args(int i_argument_count, const char** i_argument_vector, bool i_app_path_included)
+{
+   mws_str_argc = i_argument_count;
+   mws_str_argv = i_argument_vector;
+
+   if (i_app_path_included)
    {
-      arg_count--;
-      idx = 1;
-      app_path.assign(i_argument_vector[0]);
+      mws_str_app_path.assign(i_argument_vector[0]);
    }
 
-   for (int k = 0; k < arg_count; k++, idx++)
+   for (int k = 0; k < mws_wstr_argc; k++)
    {
-      arg_vector.push_back(i_argument_vector[idx]);
+      mws_str_arg_vector.push_back(i_argument_vector[k]);
+   }
+}
+
+int mws::args::get_unicode_arg_count()
+{
+   return mws_wstr_argc;
+}
+
+const unicode_string& mws::args::get_unicode_path()
+{
+   return mws_wstr_app_path;
+}
+
+const std::vector<unicode_string>& mws::args::get_unicode_arg_vect()
+{
+   return mws_wstr_arg_vector;
+}
+
+void mws::args::set_unicode_args(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included)
+{
+   mws_wstr_argc = i_argument_count;
+
+   if (i_app_path_included)
+   {
+      mws_wstr_app_path.assign(i_argument_vector[0]);
+   }
+
+   for (int k = 0; k < mws_wstr_argc; k++)
+   {
+      mws_wstr_arg_vector.push_back(i_argument_vector[k]);
    }
 }
 

@@ -81,7 +81,7 @@ enum lnk_subsystem
 };
 
 
-bool init_app(int argc, char** argv);
+bool init_app(int argc, const char** argv);
 int main_loop();
 void set_params(HINSTANCE ihinstance, bool incmd_show, lnk_subsystem isubsys);
 HWND get_hwnd();
@@ -756,12 +756,13 @@ std::string mws_path::current_path()
    return std::filesystem::current_path().generic_string();
 }
 
-bool init_app(int argc, char** argv)
+bool init_app(int argc, const char** argv)
 {
    // pass arguments
    int wargc = 0;
    LPWSTR* arg_list = CommandLineToArgvW(GetCommandLineW(), &wargc);
-   mws::args::set_app_arguments(wargc, arg_list, true);
+   mws::args::set_str_args(argc, argv, true);
+   mws::args::set_unicode_args(wargc, static_cast<unicode_char**>(arg_list), true);
    LocalFree(arg_list);
 
    mws_mod_ctrl::inst()->pre_init_app();
@@ -1082,9 +1083,9 @@ bool create_open_gl_context()
    return create_open_gl_es_ctx();
 #elif defined MWS_USES_OPENGL_GLEW
    return create_open_gl_glew_ctx();
-#endif
-
+#else
    return false;
+#endif
 }
 
 bool create_open_gl_es_ctx()
@@ -1367,9 +1368,12 @@ bool create_open_gl_glew_ctx()
    //}
 
    return true;
-#endif
 
-   return false;
+#else
+
+return false;
+
+#endif
 }
 
 void destroy_open_gl_context()
@@ -1765,7 +1769,7 @@ int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpc
    instance = mws_sp<msvc_main>(new msvc_main());
    set_params(hinstance, ncmd_show, subsys_windows);
 
-   if (init_app(0, 0))
+   if (init_app(0, nullptr))
    {
       return main_loop();
    }
@@ -1774,7 +1778,7 @@ int APIENTRY _tWinMain(HINSTANCE hinstance, HINSTANCE hprev_instance, LPTSTR lpc
 }
 
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 // console subsystem entry point
 {
    HINSTANCE hinstance = GetModuleHandle(NULL);

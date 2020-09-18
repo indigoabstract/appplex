@@ -9,11 +9,6 @@ class local_notification
 {
 public:
     /**
-     * Registers the types of notifications the app is using
-     */
-    static void register_for_notifications();
-
-    /**
     * Schedules a local notification
     * @param message - message to be shown in notification
     * @param delay_in_seconds - the notification will be fired after this number of seconds have elapsed (since 'schedule_by_delay()' is called).

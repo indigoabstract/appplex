@@ -189,12 +189,21 @@ public:
    };
 
 
+   // arguments passed from the command line
    struct args
    {
-      static int get_app_argument_count();
-      static const unicode_string& get_app_path();
-      static const std::vector<unicode_string>& get_app_argument_vector();
-      static void set_app_arguments(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included = false);
+      // standard string command line arguments
+      static int get_str_arg_count();
+      static const std::string& get_str_path();
+      static const char** get_str_arg_vect();
+      static const std::vector<std::string>& get_str_arg_str_vect();
+      static void set_str_args(int i_argument_count, const char** i_argument_vector, bool i_app_path_included);
+
+      // unicode(wide char) command line arguments(used for windows unicode paths)
+      static int get_unicode_arg_count();
+      static const unicode_string& get_unicode_path();
+      static const std::vector<unicode_string>& get_unicode_arg_vect();
+      static void set_unicode_args(int i_argument_count, unicode_char** i_argument_vector, bool i_app_path_included);
    };
 
 
@@ -309,11 +318,13 @@ public:
    // if using non standard flag, register it first, to prevent collisions with other non standard flags
    static void register_flags(uint64 i_flags)
    {
+#if defined MWS_DEBUG_BUILD
       uint64 std_flags = last_std_flag + last_std_flag - 1;
       // standard flags are already taken, cannot register
       mws_assert((i_flags & std_flags) == 0);
       // flags must not already be registered
       mws_assert((i_flags & used_flags) == 0);
+#endif
       // register the custom flags
       used_flags |= i_flags;
    }

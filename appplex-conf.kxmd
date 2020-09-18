@@ -46,7 +46,7 @@ mod
 			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn
 		]
 	],
-	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn ] ],
+	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp
 	[
 		uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
@@ -67,10 +67,15 @@ mod
 	text-extractor[ uses[ gfx ], platf[ windows ], ],
 	alarms[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, notifications, mws, vector-fonts ], platf[ windows, android, ios ], ],
 	
+	@@[ command line apps ],
+	
+	std-fmt-renamer[ uses[ cxxopts, fmt ] ],
+	
 	@@[ public mods ],
 
 	@@[ lib ],
 	
+	cxxopts[ uses[], platf[ windows, linux ], ],
 	ffmpeg,
 	fmod,
 	fmt[],

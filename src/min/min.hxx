@@ -61,6 +61,7 @@ template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
 }
 
 
+// only ASCII and 16-bit windows wstrings supported. don't use with multibyte encodings, like utf-8
 struct mws_str
 {
    // conversions
@@ -81,10 +82,13 @@ struct mws_str
    static unicode_char* unicode_strcpy(unicode_char* i_destination, const unicode_char* i_source);
    static int unicode_strlen(const unicode_char* i_str);
 #endif
+   // set string to lower & upper case
+   static void to_lower(std::string& i_str);
+   static void to_upper(std::string& i_str);
    // comparisons
    static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);
-   static bool starts_with(const std::string& i_str, const std::string& i_find);
-   static bool ends_with(const std::string& i_str, const std::string& i_find);
+   static bool starts_with(const std::string& i_str, const std::string& i_match);
+   static bool ends_with(const std::string& i_str, const std::string& i_match);
    // trim from start
    static std::string ltrim(const std::string& i_str);
    // trim from end
@@ -448,7 +452,7 @@ inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
 
-bool ends_with(const std::string& i_str, const std::string& i_find);
+bool ends_with(const std::string& i_str, const std::string& i_match);
 
 // trim from start
 inline std::string ltrim(const std::string& is)

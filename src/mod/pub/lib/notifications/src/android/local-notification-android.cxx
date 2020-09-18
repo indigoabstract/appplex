@@ -6,9 +6,6 @@
 #include <jni.h>
 #include <algorithm>
 
-void local_notification::register_for_notifications()
-{
-}
 
 void local_notification::schedule_wakeup_by_date(std::string message, const std::chrono::system_clock::time_point& time_point_date, int tag)
 {

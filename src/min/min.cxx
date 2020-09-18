@@ -121,6 +121,16 @@ int mws_str::unicode_strlen(const unicode_char* i_str)
 
 #endif
 
+void mws_str::to_lower(std::string& i_str)
+{
+   std::transform(i_str.begin(), i_str.end(), i_str.begin(), ::tolower);
+}
+
+void mws_str::to_upper(std::string& i_str)
+{
+   std::transform(i_str.begin(), i_str.end(), i_str.begin(), ::toupper);
+}
+
 int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
 {
    auto comp_ch = [](const char i_0, const char i_1) -> int32
@@ -154,10 +164,10 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
    return cmp_res;
 }
 
-bool mws_str::starts_with(const std::string& i_str, const std::string& i_find)
+bool mws_str::starts_with(const std::string& i_str, const std::string& i_match)
 {
    int size = i_str.length();
-   int size_find = i_find.length();
+   int size_find = i_match.length();
 
    if (size_find > size)
    {
@@ -166,7 +176,7 @@ bool mws_str::starts_with(const std::string& i_str, const std::string& i_find)
 
    for (int k = 0; k < size_find; k++)
    {
-      if (i_str[k] != i_find[k])
+      if (i_str[k] != i_match[k])
       {
          return false;
       }
@@ -175,10 +185,10 @@ bool mws_str::starts_with(const std::string& i_str, const std::string& i_find)
    return true;
 }
 
-bool mws_str::ends_with(const std::string& i_str, const std::string& i_find)
+bool mws_str::ends_with(const std::string& i_str, const std::string& i_match)
 {
    int size = i_str.length();
-   int size_find = i_find.length();
+   int size_find = i_match.length();
 
    if (size_find > size)
    {
@@ -187,7 +197,7 @@ bool mws_str::ends_with(const std::string& i_str, const std::string& i_find)
 
    for (int k = size - size_find, l = 0; k < size; k++, l++)
    {
-      if (i_str[k] != i_find[l])
+      if (i_str[k] != i_match[l])
       {
          return false;
       }
@@ -393,7 +403,6 @@ void mws_broadcaster::add_receiver(mws_sp<mws_receiver> i_recv)
 void mws_broadcaster::remove_receiver(mws_sp<mws_receiver> i_recv)
 {
    int idx = -1;
-   int k = 0;
    int size = receivers.size();
 
    for (int k = 0; k < size; k++)
@@ -429,10 +438,10 @@ void mws_broadcaster::broadcast(mws_sp<mws_sender> i_src, mws_sp<mws_dp> i_dp)
 }
 
 
-bool ends_with(const std::string& i_str, const std::string& i_find)
+bool ends_with(const std::string& i_str, const std::string& i_match)
 {
    int size = i_str.length();
-   int size_find = i_find.length();
+   int size_find = i_match.length();
 
    if (size_find > size)
    {
@@ -441,7 +450,7 @@ bool ends_with(const std::string& i_str, const std::string& i_find)
 
    for (int k = size - size_find, l = 0; k < size; k++, l++)
    {
-      if (i_str[k] != i_find[l])
+      if (i_str[k] != i_match[l])
       {
          return false;
       }
