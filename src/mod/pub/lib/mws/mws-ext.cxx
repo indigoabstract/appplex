@@ -3,10 +3,7 @@
 #include "mws-ext.hxx"
 
 
-using std::string;
-
-
-mws_list_menu_item::mws_list_menu_item(string idisplay, string i_id)
+mws_list_menu_item::mws_list_menu_item(std::string idisplay, std::string i_id)
 {
    display = idisplay;
    id = i_id;
@@ -17,7 +14,7 @@ mws_list_menu_item::mws_list_menu_item(string idisplay, string i_id)
    }
 }
 
-mws_list_menu_item::mws_list_menu_item(string idisplay, mws_sp<mws_page> ipage)
+mws_list_menu_item::mws_list_menu_item(std::string idisplay, mws_sp<mws_page> ipage)
 {
    display = idisplay;
 }
@@ -37,7 +34,7 @@ int mws_list_menu_model::get_length()
    return elems.size();
 }
 
-string mws_list_menu_model::elem_at(int idx)
+std::string mws_list_menu_model::elem_at(int idx)
 {
    return elems[idx].display;
 }
@@ -93,7 +90,7 @@ mws_list_menu_page::mws_list_menu_page()
 {
 }
 
-mws_sp<mws_list_menu_page> mws_list_menu_page::nwi(mws_sp<mws_page_tab> i_parent, string i_id)
+mws_sp<mws_list_menu_page> mws_list_menu_page::nwi(mws_sp<mws_page_tab> i_parent, std::string i_id)
 {
    auto u = mws_sp<mws_list_menu_page>(new mws_list_menu_page());
    i_parent->add_page(u);

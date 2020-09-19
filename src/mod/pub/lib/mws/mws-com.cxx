@@ -14,8 +14,188 @@
 #include <glm/vec2.hpp>
 #include <algorithm>
 
-using std::string;
-using std::vector;
+
+mws_sp<mws_table_border> mws_table_border::nwi()
+{
+   mws_sp<mws_table_border> tb = mws_sp<mws_table_border>(new mws_table_border());
+   tb->setup();
+   return tb;
+}
+
+void mws_table_border::set_color(const gfx_color& i_color)
+{
+   (*this)["u_v4_color"] = i_color.to_vec4();
+}
+
+mws_table_border::mws_table_border() : gfx_2d_sprite(nullptr) {}
+
+void mws_table_border::setup()
+{
+   auto& rvxo = *this;
+   rvxo.camera_id_list = { "mws_cam" };
+   rvxo[MP_SHADER_NAME] = gfx::c_o_sh_id;
+   rvxo[MP_DEPTH_TEST] = true;
+   rvxo[MP_DEPTH_WRITE] = true;
+   rvxo[MP_DEPTH_FUNCTION] = MV_LESS_OR_EQUAL;
+   //rvxo["u_v4_color"] = gfx_color::from_argb(0xff050505).to_vec4();
+   rvxo["u_v4_color"] = gfx_color::colors::magenta.to_vec4();
+   rvxo.set_dimensions(1, 1);
+   rvxo.set_anchor(gfx_quad_2d::e_top_left);
+}
+
+
+mws_sp<mws_table_layout> mws_table_layout::nwi()
+{
+   mws_sp<mws_table_layout> table = mws_sp<mws_table_layout>(new mws_table_layout());
+   table->setup();
+   return table;
+}
+
+void mws_table_layout::set_position(const glm::vec2& i_position)
+{
+   mws_page_item::set_position(i_position);
+}
+
+void mws_table_layout::set_size(const glm::vec2& i_size)
+{
+   mws_page_item::set_size(i_size);
+}
+
+void mws_table_layout::add_row(mws_sp<mws_page_item> i_item)
+{
+   attach(i_item);
+   item_rows.push_back(i_item);
+
+   if (item_rows.size() > 1)
+   {
+      mws_sp<mws_table_border> row_div = mws_table_border::nwi();
+
+      row_div->set_color(color);
+      attach(row_div);
+      row_divs.push_back(row_div);
+   }
+}
+
+void mws_table_layout::add_col(uint32 i_row_idx, mws_sp<mws_page_item> i_item)
+{
+   //attach(i_item);
+}
+
+void mws_table_layout::set_cell_at(uint32 i_row_idx, uint32 i_col_idx, mws_sp<mws_page_item> i_item)
+{
+   //attach(i_item);
+}
+
+// returns one of the 4 table enclosing borders
+mws_sp<mws_table_border> mws_table_layout::get_border(border_types i_border_type) const
+{
+   return borders[i_border_type];
+}
+
+// returns one of the inner row borders/dividers
+mws_sp<mws_table_border> mws_table_layout::get_row_divider(uint32 i_row_idx) const
+{
+   return row_divs[i_row_idx];
+}
+
+// returns one of the inner col borders/dividers in the specified row
+mws_sp<mws_table_border> mws_table_layout::get_col_divider(uint32 i_row_idx, uint32 i_col_idx) const
+{
+   return nullptr;
+}
+
+void mws_table_layout::set_color(const gfx_color& i_color)
+{
+   color = i_color;
+
+   for (mws_sp<mws_table_border>& tb : borders)
+   {
+      tb->set_color(i_color);
+   }
+
+   for (mws_sp<mws_table_border>& tb : row_divs)
+   {
+      tb->set_color(i_color);
+   }
+}
+
+void mws_table_layout::on_resize()
+{
+   set_border_size(border_size);
+}
+
+float mws_table_layout::get_border_size() const { return border_size; }
+
+void mws_table_layout::set_border_size(float i_border_size)
+{
+   border_size = i_border_size;
+   borders[e_left_border]->set_translation(mws_r.x, mws_r.y);
+   borders[e_left_border]->set_scale(border_size, mws_r.h);
+   borders[e_right_border]->set_translation(mws_r.x + mws_r.w - border_size, mws_r.y);
+   borders[e_right_border]->set_scale(border_size, mws_r.h);
+   borders[e_top_border]->set_translation(mws_r.x + border_size, mws_r.y);
+   borders[e_top_border]->set_scale(mws_r.x + mws_r.w - 2.f * border_size, border_size);
+   borders[e_btm_border]->set_translation(border_size, mws_r.y + mws_r.h - border_size);
+   borders[e_btm_border]->set_scale(mws_r.x + mws_r.w - 2.f * border_size, border_size);
+
+   if (!item_rows.empty())
+   {
+      mws_sp<mws_page_item> item_0 = item_rows[0];
+      float tx_0 = borders[e_left_border]->get_translation().x + borders[e_left_border]->get_scale().x;
+      float ty_0 = borders[e_top_border]->get_translation().y + borders[e_top_border]->get_scale().y;
+      const mws_size& size_0 = item_0->get_best_size();
+      //float sx_0 = std::get<mws_px>(size_0.get_width()).val();
+      float sy_0 = std::get<mws_px>(size_0.get_height()).val();
+      float row_width = borders[e_right_border]->get_translation().x - tx_0;
+
+      item_0->set_rect(mws_rect(tx_0, ty_0, row_width, sy_0));
+
+      if (!row_divs.empty())
+      {
+         mws_sp<mws_table_border> row_0 = row_divs[0];
+
+         row_0->set_translation(tx_0, item_0->get_pos().y + item_0->get_pos().h);
+         row_0->set_scale(borders[e_right_border]->get_translation().x - tx_0, i_border_size);
+
+         for (uint32 k = 1; k < item_rows.size(); k++)
+         {
+            mws_sp<mws_page_item> item_km1 = item_rows[k - 1];
+            mws_sp<mws_table_border> row_km1 = row_divs[k - 1];
+            float row_km1_y = row_km1->get_translation().y;
+            float row_km1_h = row_km1->get_scale().y;
+            mws_sp<mws_page_item> item_k = item_rows[k];
+            const mws_size& size_k = item_k->get_best_size();
+            float sy_k = std::get<mws_px>(size_k.get_height()).val();
+
+            item_k->set_rect(mws_rect(tx_0, row_km1_y + row_km1_h, row_width, sy_k));
+
+            if (k < row_divs.size())
+            {
+               mws_sp<mws_table_border> row_k = row_divs[k];
+               float item_k_y = item_k->get_pos().y;
+               float item_k_h = item_k->get_pos().h;
+
+               row_k->set_translation(tx_0, item_k_y + item_k_h);
+               row_k->set_scale(borders[e_right_border]->get_translation().x - tx_0, i_border_size);
+            }
+         }
+      }
+   }
+}
+
+
+void mws_table_layout::setup()
+{
+   mws_page_item::setup();
+
+   for (int k = 0; k < 4; k++)
+   {
+      mws_sp<mws_table_border> border = mws_table_border::nwi();
+
+      attach(border);
+      borders.push_back(border);
+   }
+}
 
 
 mws_sp<mws_stack_page_nav> mws_stack_page_nav::nwi(mws_sp<mws_page_tab> i_tab)
@@ -168,7 +348,7 @@ void mws_label::update_state()
    }
 }
 
-void mws_label::set_text(string i_text)
+void mws_label::set_text(std::string i_text)
 {
    text = i_text;
 }
@@ -400,7 +580,7 @@ const std::string& mws_button::get_text() const
    return text;
 }
 
-void mws_button::set_text(string i_text)
+void mws_button::set_text(std::string i_text)
 {
    text = i_text;
 }

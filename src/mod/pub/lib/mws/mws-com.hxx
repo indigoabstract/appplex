@@ -3,11 +3,65 @@
 #include "mws.hxx"
 #include "input/gesture-detectors.hxx"
 #include "gfx-color.hxx"
+#include "gfx-quad-2d.hxx"
 #include <stack>
 
 
 class gfx_quad_2d;
 class mws_font;
+
+
+class mws_table_border : public gfx_2d_sprite
+{
+public:
+   static mws_sp<mws_table_border> nwi();
+   void set_color(const gfx_color& i_color);
+
+protected:
+   mws_table_border();
+   void setup();
+};
+
+
+class mws_table_layout : public mws_page_item
+{
+public:
+   enum border_types
+   {
+      e_left_border,
+      e_top_border,
+      e_right_border,
+      e_btm_border,
+   };
+
+   static mws_sp<mws_table_layout> nwi();
+   virtual ~mws_table_layout() {}
+   virtual void set_position(const glm::vec2& i_position) override;
+   virtual void set_size(const glm::vec2& i_size) override;
+   virtual void add_row(mws_sp<mws_page_item> i_item);
+   virtual void add_col(uint32 i_row_idx, mws_sp<mws_page_item> i_item);
+   virtual void set_cell_at(uint32 i_row_idx, uint32 i_col_idx, mws_sp<mws_page_item> i_item);
+   // returns one of the 4 table enclosing borders
+   virtual mws_sp<mws_table_border> get_border(border_types i_border_type) const;
+   // returns one of the inner row borders/dividers
+   virtual mws_sp<mws_table_border> get_row_divider(uint32 i_row_idx) const;
+   // returns one of the inner col borders/dividers in the specified row
+   virtual mws_sp<mws_table_border> get_col_divider(uint32 i_row_idx, uint32 i_col_idx) const;
+   virtual void set_color(const gfx_color& i_color);
+   virtual void on_resize();
+   virtual float get_border_size() const;
+   virtual void set_border_size(float i_border_size);
+
+protected:
+   mws_table_layout() {}
+   virtual void setup() override;
+
+   gfx_color color;
+   float border_size = 0.f;
+   std::vector<mws_sp<mws_table_border>> borders;
+   std::vector<mws_sp<mws_page_item>> item_rows;
+   std::vector<mws_sp<mws_table_border>> row_divs;
+};
 
 
 class mws_stack_page_nav : public mws_page_nav
