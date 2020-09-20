@@ -17,7 +17,7 @@ public:
    bool app_uses_gfx();
    void exit_app(int exit_code = 0);
    bool is_set_app_exit_on_next_run();
-   void set_app_exit_on_next_run(bool i_exit_app_on_next_run);
+   void set_app_exit_on_next_run(bool i_exit_app_on_next_run = true);
    void pre_init_app();
    void init_app();
    void start_app();

@@ -123,8 +123,35 @@ extern "C"
 #endif
 
 
-   // determine compile target platform
-   // unicode strings are 16-bit characters on windows, and 8-bit utf-8 characters on others
+#if defined(_MSC_VER)
+
+#define mws_push_disable_all_warnings       __pragma(warning(push, 0))
+#define mws_pop_disable_all_warnings        __pragma(warning(pop))
+#define mws_push_disable_warning            __pragma(warning(push))
+#define mws_pop_disable_warning             __pragma(warning(pop)) 
+#define mws_disable_warning(warning_number) __pragma(warning(disable : warning_number))
+
+#elif defined(__GNUC__) || defined(__clang__)
+
+#define mws_push_disable_all_warnings
+#define mws_pop_disable_all_warnings
+#define mws_push_disable_warning
+#define mws_pop_disable_warning
+#define mws_disable_warning(warning_number)
+
+#else
+
+#define mws_push_disable_all_warnings
+#define mws_pop_disable_all_warnings
+#define mws_push_disable_warning
+#define mws_pop_disable_warning
+#define mws_disable_warning(warning_number)
+
+#endif
+
+
+// determine compile target platform
+// unicode strings are 16-bit characters on windows, and 8-bit utf-8 characters on others
 #if defined ANDROID
 
 #define MWS_PFM_ANDROID
