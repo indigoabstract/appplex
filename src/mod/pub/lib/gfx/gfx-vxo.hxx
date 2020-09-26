@@ -6,10 +6,12 @@
 #include "gfx-scene.hxx"
 #include "gfx-state.hxx"
 #include "gfx-util.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>
+mws_pop_disable_all_warnings
 
 class gfx;
 class gfx_camera;

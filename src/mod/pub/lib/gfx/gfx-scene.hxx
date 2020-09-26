@@ -5,10 +5,12 @@
 #include "gfx-obj.hxx"
 #include "gfx-state.hxx"
 #include "gfx-util.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <functional>
 #include <string>
 #include <vector>
+mws_pop_disable_all_warnings
 
 
 class gfx;

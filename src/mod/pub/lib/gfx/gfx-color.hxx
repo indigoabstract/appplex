@@ -2,9 +2,11 @@
 
 #include "pfm-def.h"
 #include "min.hxx"
+mws_push_disable_all_warnings
 #include <glm/fwd.hpp>
 #include <string>
 #include <vector>
+mws_pop_disable_all_warnings
 
 
 class gfx_color

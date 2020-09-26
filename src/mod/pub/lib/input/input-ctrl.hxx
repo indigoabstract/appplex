@@ -3,10 +3,12 @@
 #include "input-def.hxx"
 #include "min.hxx"
 #include "util/util.hxx"
+mws_push_disable_all_warnings
+#include <glm/inc.hpp>
 #include <atomic>
 #include <string>
 #include <vector>
-#include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 class mws_key_ctrl;
 class mws_touch_ctrl;

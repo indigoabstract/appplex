@@ -9,8 +9,11 @@
 *		C++ implementation of C# Property functionality.
 */
 
+#include "pfm-def.h"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <string>
+mws_pop_disable_all_warnings
 
 
 /*!

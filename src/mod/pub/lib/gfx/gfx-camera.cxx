@@ -9,7 +9,9 @@
 #include "gfx-color.hxx"
 #include "gfx-rt.hxx"
 #include "pfm-gl.h"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 draw_context::draw_context(mws_sp<gfx_camera> icam)

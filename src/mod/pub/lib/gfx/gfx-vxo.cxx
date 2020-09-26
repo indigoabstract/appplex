@@ -12,9 +12,11 @@
 #include "gfx-shader.hxx"
 #include "gfx-state.hxx"
 #include "gfx.hxx"
+mws_push_disable_all_warnings
 #include "tiny-obj-loader/tiny_obj_loader.hxx"
 #include <glm/inc.hpp>
 #include <iostream>
+mws_pop_disable_all_warnings
 
 
 namespace gfx_vxo_util

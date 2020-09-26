@@ -7,7 +7,9 @@
 #include "min.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 class mws_font_impl

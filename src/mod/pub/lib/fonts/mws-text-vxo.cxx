@@ -15,8 +15,10 @@
 #include "gfx-state.hxx"
 #include "gfx-vxo.hxx"
 #include "pfm-gl.h"
+mws_push_disable_all_warnings
 #include <freetype-gl/vertex-buffer.h>
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 using namespace ftgl;

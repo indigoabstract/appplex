@@ -3,7 +3,9 @@
 #include "input-ctrl.hxx"
 #include "pfm-def.h"
 #include "mws-mod.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 const std::string mws_ptr_evt::ptr_evt_type = "ts-";

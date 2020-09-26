@@ -2,7 +2,9 @@
 
 #include "gfx-vxo.hxx"
 #include "mws-font.hxx"
+mws_push_disable_all_warnings
 #include <glm/fwd.hpp>
+mws_pop_disable_all_warnings
 
 
 class mws_font;

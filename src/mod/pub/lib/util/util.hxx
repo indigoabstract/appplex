@@ -1,10 +1,12 @@
 #pragma once
 
 #include "pfm.hxx"
+mws_push_disable_all_warnings
 #include <glm/vec2.hpp>
 #include <string>
 #include <vector>
 #include <cmath>
+mws_pop_disable_all_warnings
 
 
 class ms_linear_transition;

@@ -1,8 +1,10 @@
 #pragma once
 
 #include "min.hxx"
-#include <glm/inc.hpp>
 #include "input/gesture-detectors.hxx"
+mws_push_disable_all_warnings
+#include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 class gfx_camera;

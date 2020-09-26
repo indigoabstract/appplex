@@ -9,16 +9,18 @@
 #include "mws-mod-ctrl.hxx"
 #include "mws-font.hxx"
 #include "min.hxx"
-#include <glm/inc.hpp>
 
 
 #if defined MOD_VECTOR_FONTS
 
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
-#include <freetype-gl/freetype-gl.h>
 // default font binary data
 #include "font-def.inl"
+mws_push_disable_all_warnings
+#include <glm/inc.hpp>
+#include <freetype-gl/freetype-gl.h>
+mws_pop_disable_all_warnings
 
 
 font_glyph::font_glyph()

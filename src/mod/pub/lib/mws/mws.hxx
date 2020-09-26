@@ -6,10 +6,12 @@
 #include "input/input-ctrl.hxx"
 #include "gfx.hxx"
 #include "gfx-scene.hxx"
+mws_push_disable_all_warnings
 #include <glm/fwd.hpp>
 #include <string>
 #include <variant>
 #include <vector>
+mws_pop_disable_all_warnings
 
 class mws_mod_ctrl;
 class linear_transition;
@@ -130,7 +132,7 @@ public:
    mws_sp<mws_page_tab> get_mws_root() const;
    virtual mws_sp<mws_mod> get_mod() const;
 
-   virtual void on_focus_changed(bool i_has_focus) {}
+   virtual void on_focus_changed(bool /*i_has_focus*/) {}
    virtual void process(mws_sp<mws_dp> i_dp);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state();
@@ -330,7 +332,7 @@ public:
 
    virtual ~mws_text_area() {}
    virtual void do_action() {}
-   virtual bool is_action_key(mws_key_types i_key) const { return false; }
+   virtual bool is_action_key(mws_key_types /*i_key*/) const { return false; }
    virtual mws_rect get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos = true) = 0;
    virtual void set_text(const std::string& i_text) = 0;
 

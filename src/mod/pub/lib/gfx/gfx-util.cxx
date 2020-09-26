@@ -7,7 +7,9 @@
 #include "gfx-quad-2d.hxx"
 #include "gfx-tex.hxx"
 #include "pfm-gl.h"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 gfx_tex_info::gfx_tex_info(std::string i_id, gfx_enum i_internal_format, gfx_enum i_format, gfx_enum i_type, int i_bpp)

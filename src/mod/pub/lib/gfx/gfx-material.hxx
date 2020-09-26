@@ -6,10 +6,12 @@
 #include "gfx-util.hxx"
 #include "gfx-tex.hxx"
 #include "gfx-shader.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>
+mws_pop_disable_all_warnings
 
 class gfx;
 class gfx_material;

@@ -2,7 +2,9 @@
 
 #include "pfm-def.h"
 #include "gfx-state-const.hxx"
+mws_push_disable_all_warnings
 #include <glm/vec4.hpp>
+mws_pop_disable_all_warnings
 
 
 class gl_state_impl;

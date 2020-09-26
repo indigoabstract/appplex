@@ -1,8 +1,10 @@
 #pragma once
 
 #include "pfm-def.h"
+mws_push_disable_all_warnings
 #include <glm/vec2.hpp>
 #include <vector>
+mws_pop_disable_all_warnings
 
 
 class mws_vrn_data;

@@ -3,10 +3,12 @@
 #include "pfm-def.h"
 #include "pfm.hxx"
 #include "gfx-shader.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <memory>
 #include <string>
 #include <vector>
+mws_pop_disable_all_warnings
 
 class gfx_tex;
 class gfx_camera;

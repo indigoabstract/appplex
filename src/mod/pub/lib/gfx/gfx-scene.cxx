@@ -9,7 +9,9 @@
 #include "gfx-util.hxx"
 #include "gfx-shader.hxx"
 #include "pfm-gl.h"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 gfx_transform::gfx_transform() : position(this), orientation(this), scaling(this), transform_mx(this)

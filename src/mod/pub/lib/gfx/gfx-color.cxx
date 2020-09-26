@@ -2,7 +2,9 @@
 
 #include "gfx-color.hxx"
 #include "pfm.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 gfx_color gfx_color::colors::black = gfx_color::from_rgba(0x000000ff);

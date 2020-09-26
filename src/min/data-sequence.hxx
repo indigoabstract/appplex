@@ -444,7 +444,7 @@ inline void mws_ro_mem_seq::set_read_position(uint64 i_position)
    }
 }
 
-inline void mws_ro_mem_seq::set_write_position(uint64 i_position)
+inline void mws_ro_mem_seq::set_write_position(uint64)
 {
    mws_throw mws_exception("n/a");
 }
@@ -462,7 +462,7 @@ inline int mws_ro_mem_seq::read_int8(int8* i_seqv, int i_elem_count, int i_offse
    return bytes_to_read;
 }
 
-inline int mws_ro_mem_seq::write_int8(const int8* i_seqv, int i_elem_count, int i_offset)
+inline int mws_ro_mem_seq::write_int8(const int8*, int, int)
 {
    mws_throw mws_exception("n/a");
 

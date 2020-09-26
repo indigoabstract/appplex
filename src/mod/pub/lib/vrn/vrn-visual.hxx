@@ -8,7 +8,9 @@
 #include "vrn/vrn-diag-data.hxx"
 #include "vrn/vrn-diag.hxx"
 #include "rng/rng.hxx"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 static const std::string vkb_cell_borders_sh = "mws-vkb-cell-borders";

@@ -12,9 +12,11 @@
 #include "res-ld/res-ld.hxx"
 #include "min.hxx"
 #include "pfm-gl.h"
+mws_push_disable_all_warnings
 #include <glm/inc.hpp>
 #include <limits>
 #include <unordered_map>
+mws_pop_disable_all_warnings
 
 
 static const float cm_in_pt = 28.3465f;

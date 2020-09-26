@@ -1,8 +1,10 @@
 #pragma once
 
 #include "pfm.hxx"
+mws_push_disable_all_warnings
 #include "jc_voronoi.h"
 #include <glm/inc.hpp>
+mws_pop_disable_all_warnings
 
 
 class mws_vrn_data;

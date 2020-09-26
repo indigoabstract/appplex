@@ -2,7 +2,9 @@
 
 #include "mws.hxx"
 #include "mws-com.hxx"
+mws_push_disable_all_warnings
 #include <glm/vec2.hpp>
+mws_pop_disable_all_warnings
 
 
 class mws_dp;

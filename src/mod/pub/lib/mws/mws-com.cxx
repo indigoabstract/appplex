@@ -11,8 +11,10 @@
 #include "gfx.hxx"
 #include "gfx-util.hxx"
 #include "gfx-color.hxx"
+mws_push_disable_all_warnings
 #include <glm/vec2.hpp>
 #include <algorithm>
+mws_pop_disable_all_warnings
 
 
 mws_sp<mws_table_border> mws_table_border::nwi()
