@@ -2,6 +2,7 @@ package com.indigoabstract.appplex;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -30,6 +31,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class main extends Activity
@@ -191,6 +194,8 @@ public class main extends Activity
 			setContentView(rl);
 			ApplicationInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		}
+
+        turnScreenOnAndKeyguardOff();
 	}
 
 	@Override
@@ -259,6 +264,7 @@ public class main extends Activity
 	{
 		Log.i("activity_life_cycle", "main.onDestroy()");
 		super.onDestroy();
+        turnScreenOffAndKeyguardOn();
 
         if(main_glsv_inst != null)
         {
@@ -377,10 +383,12 @@ public class main extends Activity
      * @param delay_in_seconds Time (in seconds from now) after which the notification is fired.
      * @param tag Identifier for the alarm/notification.
      */
-    public static void schedule_wakeup(String message, int delay_in_seconds, int tag){
+    public static void schedule_wakeup(String message, int delay_in_seconds, int tag)
+    {
         Context ctx = inst();
         Intent alarm_intent = new Intent(ctx, AlarmReceiver.class);
 
+        alarm_intent.setAction("mws-alarm");
         alarm_intent.putExtra("type", "wakeup");
         alarm_intent.putExtra("message", message);
         alarm_intent.putExtra("tagId", tag);
@@ -402,7 +410,8 @@ public class main extends Activity
 	 * @param delay_in_seconds Time (in seconds from now) after which the notification is fired.
 	 * @param tag Identifier for the alarm/notification.
 	 */
-	public static void schedule_notification(String message, int delay_in_seconds, int tag){
+	public static void schedule_notification(String message, int delay_in_seconds, int tag)
+    {
 		Context ctx = inst();
 		Intent alarm_intent = new Intent(ctx, AlarmReceiver.class);
 
@@ -424,7 +433,8 @@ public class main extends Activity
 	 * @param i_start_tag first identifier for the cancelled alarms/notifications.
 	 * @param i_stop_tag last identifier for the cancelled alarms/notifications.
 	 */
-	public static void cancel_notification_interval(int i_start_tag, int i_stop_tag){
+	public static void cancel_notification_interval(int i_start_tag, int i_stop_tag)
+    {
 		Context ctx = inst();
 		AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
 		Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
@@ -450,7 +460,8 @@ public class main extends Activity
 	 * Cancel one pending alarm/notification identified by tag.
 	 * @param tag Identifier for the cancelled alarm/notification.
 	 */
-	public static void cancel_notification(int tag){
+	public static void cancel_notification(int tag)
+    {
 		Context ctx = inst();
 		AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
 		Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
@@ -506,6 +517,45 @@ public class main extends Activity
     {
         String tz_id = TimeZone.getDefault().getID();
         return tz_id;
+    }
+
+    private void turnScreenOnAndKeyguardOff()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
+        {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        }
+        else
+        {
+            getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                            | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+            );
+        }
+
+        KeyguardManager keyguardLock = ((KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            keyguardLock.requestDismissKeyguard(this, null);
+        }
+    }
+
+    private void turnScreenOffAndKeyguardOn()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
+        {
+            setShowWhenLocked(false);
+            setTurnScreenOn(false);
+        }
+        else
+        {
+            getWindow().clearFlags(
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                            | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+            );
+        }
     }
 
     static native void native_log(String i_msg);
