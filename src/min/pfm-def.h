@@ -18,8 +18,8 @@ using uint32 = uint32_t;
 using int64 = int64_t;
 using sint64 = int64_t;
 using uint64 = uint64_t;
-using real32 = float;
-using real64 = double;
+using fltp32 = float;
+using fltp64 = double;
 
 using std::static_pointer_cast;
 template <typename T> using mws_sp = std::shared_ptr<T>;
@@ -42,8 +42,8 @@ typedef unsigned int uint32;
 typedef long long int64;
 typedef signed long long sint64;
 typedef unsigned long long uint64;
-typedef float real32;
-typedef double real64;
+typedef float fltp32;
+typedef double fltp64;
 #endif
 
 // gl types
@@ -58,10 +58,10 @@ typedef int32 gfx_sizei;
 typedef uint8 gfx_ubyte;
 typedef uint16 gfx_ushort;
 typedef uint32 gfx_uint;
-typedef real32 gfx_float;
-typedef real32 gfx_clampf;
-typedef real64 gfx_double;
-typedef real64 gfx_clampd;
+typedef fltp32 gfx_float;
+typedef fltp32 gfx_clampf;
+typedef fltp64 gfx_double;
+typedef fltp64 gfx_clampd;
 typedef void gfx_void;
 typedef uint32 gfx_indices_type;
 

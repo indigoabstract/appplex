@@ -30,8 +30,8 @@ inline std::string mws_to_str(const int32& i_input) { return std::to_string(i_in
 inline std::string mws_to_str(const uint32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const int64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const uint64& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const real32& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const real64& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const fltp32& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const fltp64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
 template<typename T> T mws_to(const std::string& i_input) { mws_assert(false); return T(); }
 template<> int32 mws_to(const std::string& i_input);
@@ -318,7 +318,7 @@ public:
    uint32 time = 0;
    uint32 touch_count = 0;
    touch_point points[max_touch_points];
-   real32 mouse_wheel_delta = 0;
+   fltp32 mouse_wheel_delta = 0;
 
 protected:
    mws_ptr_evt_base() : mws_dp("ts-") {}

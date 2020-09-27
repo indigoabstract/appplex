@@ -174,18 +174,18 @@ public:
       return (uint64)read_int64();
    }
 
-   real32 read_real32()
+   fltp32 read_fltp32()
    {
       int32 r = read_int32();
 
-      return *(real32*)&r;
+      return *(fltp32*)&r;
    }
 
-   real64 read_real64()
+   fltp64 read_fltp64()
    {
       int64 r = read_int64();
 
-      return *(real64*)&r;
+      return *(fltp64*)&r;
    }
 
    std::string read_string()
@@ -271,12 +271,12 @@ public:
       return read_int64((int64*)i_seqv, i_elem_count, i_offset);
    }
 
-   int read_real32(real32* i_seqv, int i_elem_count, int i_offset)
+   int read_fltp32(fltp32* i_seqv, int i_elem_count, int i_offset)
    {
       return read_int32((int32*)i_seqv, i_elem_count, i_offset);
    }
 
-   int read_real64(real64* i_seqv, int i_elem_count, int i_offset)
+   int read_fltp64(fltp64* i_seqv, int i_elem_count, int i_offset)
    {
       return read_int64((int64*)i_seqv, i_elem_count, i_offset);
    }
@@ -309,8 +309,8 @@ public:
    void write_uint32(uint32 d);
    void write_int64(int64 d);
    void write_uint64(uint64 d);
-   void write_real32(real32 d);
-   void write_real64(real64 d);
+   void write_fltp32(fltp32 d);
+   void write_fltp64(fltp64 d);
    void write_string(const std::string& i_text);
    void write_line(const std::string& i_text, bool inew_line = true);
    template<class T> void write_pointer(T* const i_seqv);
@@ -324,8 +324,8 @@ public:
    void write_uint32(const uint32* i_seqv, int i_elem_count, int i_offset);
    void write_int64(const int64* i_seqv, int i_elem_count, int i_offset);
    void write_uint64(const uint64* i_seqv, int i_elem_count, int i_offset);
-   void write_real32(const real32* i_seqv, int i_elem_count, int i_offset);
-   void write_real64(const real64* i_seqv, int i_elem_count, int i_offset);
+   void write_fltp32(const fltp32* i_seqv, int i_elem_count, int i_offset);
+   void write_fltp64(const fltp64* i_seqv, int i_elem_count, int i_offset);
 
 private:
    mws_sp<data_sequence> sequence;
@@ -671,12 +671,12 @@ inline void data_sequence_writer::write_uint64(uint64 i_seqv)
    write_int64(i_seqv);
 }
 
-inline void data_sequence_writer::write_real32(real32 i_seqv)
+inline void data_sequence_writer::write_fltp32(fltp32 i_seqv)
 {
    write_int8((int8*)&i_seqv, 4, 0);
 }
 
-inline void data_sequence_writer::write_real64(real64 i_seqv)
+inline void data_sequence_writer::write_fltp64(fltp64 i_seqv)
 {
    write_int8((int8*)&i_seqv, 8, 0);
 }
@@ -756,12 +756,12 @@ inline void data_sequence_writer::write_uint64(const uint64* i_seqv, int i_elem_
    write_int64((int64*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_sequence_writer::write_real32(const real32* i_seqv, int i_elem_count, int i_offset)
+inline void data_sequence_writer::write_fltp32(const fltp32* i_seqv, int i_elem_count, int i_offset)
 {
    write_int32((int32*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_sequence_writer::write_real64(const real64* i_seqv, int i_elem_count, int i_offset)
+inline void data_sequence_writer::write_fltp64(const fltp64* i_seqv, int i_elem_count, int i_offset)
 {
    write_int64((int64*)i_seqv, i_elem_count, i_offset);
 }
@@ -784,8 +784,8 @@ public:
    uint32 read_uint32();
    int64 read_int64();
    uint64 read_uint64();
-   real32 read_real32();
-   real64 read_real64();
+   fltp32 read_fltp32();
+   fltp64 read_fltp64();
 
    // sequence data versions
    void read_int8(int8* i_seqv, int i_elem_count, int i_offset);
@@ -796,8 +796,8 @@ public:
    //void read_uint32(uint32* i_seqv, int i_elem_count, int i_offset);
    //void read_int64(int64* i_seqv, int i_elem_count, int i_offset);
    //void read_uint64(uint64* i_seqv, int i_elem_count, int i_offset);
-   //void read_real32(real32* i_seqv, int i_elem_count, int i_offset);
-   //void read_real64(real64* i_seqv, int i_elem_count, int i_offset);
+   //void read_fltp32(fltp32* i_seqv, int i_elem_count, int i_offset);
+   //void read_fltp64(fltp64* i_seqv, int i_elem_count, int i_offset);
 
 private:
    data_sequence* sequence;
@@ -860,18 +860,18 @@ inline uint64 data_sequence_reader_big_endian::read_uint64()
    return (uint64)read_int64();
 }
 
-inline real32 data_sequence_reader_big_endian::read_real32()
+inline fltp32 data_sequence_reader_big_endian::read_fltp32()
 {
    int32 r = read_int32();
 
-   return *(real32*)&r;
+   return *(fltp32*)&r;
 }
 
-inline real64 data_sequence_reader_big_endian::read_real64()
+inline fltp64 data_sequence_reader_big_endian::read_fltp64()
 {
    int64 r = read_int64();
 
-   return *(real64*)&r;
+   return *(fltp64*)&r;
 }
 
 inline void data_sequence_reader_big_endian::read_int8(int8* i_seqv, int i_elem_count, int i_offset)

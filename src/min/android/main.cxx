@@ -621,8 +621,8 @@ extern "C"
          auto& te = pfm_te->points[k];
 
          te.identifier = dsr.read_uint32();
-         te.x = dsr.read_real32();
-         te.y = dsr.read_real32();
+         te.x = dsr.read_fltp32();
+         te.y = dsr.read_fltp32();
          te.is_changed = static_cast<bool>(dsr.read_uint32());
       }
 

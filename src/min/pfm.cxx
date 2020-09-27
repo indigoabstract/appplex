@@ -565,8 +565,8 @@ namespace mws_impl
       static_assert(sizeof(int64) == 8);
       static_assert(sizeof(sint64) == 8);
       static_assert(sizeof(uint64) == 8);
-      static_assert(sizeof(real32) == 4);
-      static_assert(sizeof(real64) == 8);
+      static_assert(sizeof(fltp32) == 4);
+      static_assert(sizeof(fltp64) == 8);
 
       mws_print("print type sizes\n");
       mws_print("sizeof int8 [%d]\n", sizeof(int8));
@@ -581,8 +581,8 @@ namespace mws_impl
       mws_print("sizeof int64 [%d]\n", sizeof(int64));
       mws_print("sizeof sint64 [%d]\n", sizeof(sint64));
       mws_print("sizeof uint64 [%d]\n", sizeof(uint64));
-      mws_print("sizeof real32 [%d]\n", sizeof(real32));
-      mws_print("sizeof real64 [%d]\n", sizeof(real64));
+      mws_print("sizeof fltp32 [%d]\n", sizeof(fltp32));
+      mws_print("sizeof fltp64 [%d]\n", sizeof(fltp64));
    }
 
    //true if res is in the same dir as src

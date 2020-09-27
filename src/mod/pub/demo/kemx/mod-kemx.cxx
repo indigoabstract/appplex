@@ -56,8 +56,8 @@ void mod_kemx::init()
    uint32 t6 = 4294967289;
    int64 t7 = -140737488355319LL;
    uint64 t8 = 240737488355319LL;
-   real32 t9 = 1333.757845f;
-   real64 t10 = (real64)76429.856330875;
+   fltp32 t9 = 1333.757845f;
+   fltp64 t10 = (fltp64)76429.856330875;
 
    dsw.write_int8(t1);
    dsw.write_uint8(t2);
@@ -67,8 +67,8 @@ void mod_kemx::init()
    dsw.write_uint32(t6);
    dsw.write_int64(t7);
    dsw.write_uint64(t8);
-   dsw.write_real32(t9);
-   dsw.write_real64(t10);
+   dsw.write_fltp32(t9);
+   dsw.write_fltp64(t10);
 
    const uint8* s = mds1->get_data_as_byte_array();
    //bool x = storage.store_mod_byte_array("ds-test", s, mds1->get_size());
@@ -85,8 +85,8 @@ void mod_kemx::init()
    uint32 s6 = dsr.read_uint32();
    int64 s7 = dsr.read_int64();
    uint64 s8 = dsr.read_uint64();
-   real32 s9 = dsr.read_real32();
-   real64 s10 = dsr.read_real64();
+   fltp32 s9 = dsr.read_fltp32();
+   fltp64 s10 = dsr.read_fltp64();
 
    int idx = 0;
    checker<int8>::compare_values(t1, s1, idx++);
@@ -97,8 +97,8 @@ void mod_kemx::init()
    checker<uint32>::compare_values(t6, s6, idx++);
    checker<int64>::compare_values(t7, s7, idx++);
    checker<uint64>::compare_values(t8, s8, idx++);
-   checker<real32>::compare_values(t9, s9, idx++);
-   checker<real64>::compare_values(t10, s10, idx++);
+   checker<fltp32>::compare_values(t9, s9, idx++);
+   checker<fltp64>::compare_values(t10, s10, idx++);
 
    //int64 l1 = -2147483639;
    //l1 *= 64;

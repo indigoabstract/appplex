@@ -44,7 +44,7 @@ void track::loadTrackData(char* track_name)
 	base_point_count = dsr.read_int32();
 	interpolation_steps_count = dsr.read_int32();
 	start_point = dsr.read_int32();
-	road_side_width = dsr.read_real32();
+	road_side_width = dsr.read_fltp32();
 
 	int bpSize = base_point_count * 5;
 	base_points = new int[bpSize];

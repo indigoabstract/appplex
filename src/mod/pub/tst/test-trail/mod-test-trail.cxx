@@ -420,9 +420,9 @@ public:
 
          for (int i = 0; i < tube_pos.size(); i++)
          {
-            float x = dr->read_real32();
-            float y = dr->read_real32();
-            float z = dr->read_real32();
+            float x = dr->read_fltp32();
+            float y = dr->read_fltp32();
+            float z = dr->read_fltp32();
             tube_pos[i] = glm::vec3(x, y, z);
          }
          for (int i = 0; i < tube_ts.size(); i++)
