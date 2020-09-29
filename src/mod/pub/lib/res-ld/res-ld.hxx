@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm.hxx"
+#pragma warning(disable : 4201)
 
 
 class gfx_tex;

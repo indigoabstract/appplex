@@ -7,6 +7,7 @@ mws_push_disable_all_warnings
 #include <string>
 #include <vector>
 mws_pop_disable_all_warnings
+#pragma warning(disable : 4201)
 
 
 class gfx_color

@@ -175,18 +175,18 @@ public:
       bl_ws = glm::vec2(tr.x + p.x, tr.y + p.y);
    }
 
-   bool point_inside_triangle(glm::vec2& s, glm::vec2& a, glm::vec2& b, glm::vec2& c)
+   bool point_inside_triangle(glm::vec2& i_s, glm::vec2& i_a, glm::vec2& i_b, glm::vec2& i_c)
    {
-      float as_x = s.x - a.x;
-      float as_y = s.y - a.y;
-      bool s_ab = (b.x - a.x) * as_y - (b.y - a.y) * as_x > 0.f;
+      float as_x = i_s.x - i_a.x;
+      float as_y = i_s.y - i_a.y;
+      bool s_ab = (i_b.x - i_a.x) * as_y - (i_b.y - i_a.y) * as_x > 0.f;
 
-      if ((c.x - a.x) * as_y - (c.y - a.y) * as_x > 0.f == s_ab)
+      if ((i_c.x - i_a.x) * as_y - (i_c.y - i_a.y) * as_x > 0.f == s_ab)
       {
          return false;
       }
 
-      if ((c.x - b.x) * (s.y - b.y) - (c.y - b.y) * (s.x - b.x) > 0.f != s_ab)
+      if ((i_c.x - i_b.x) * (i_s.y - i_b.y) - (i_c.y - i_b.y) * (i_s.x - i_b.x) > 0.f != s_ab)
       {
          return false;
       }
