@@ -123,7 +123,6 @@ mod
 	cmd[ uses[ boost, fmt, kxmd ], platf[ windows ], ],
 	gl-frag-shader-demo[ uses[ bitmap-fonts, fmt, gfx, fonts, mws, png ], platf[ windows, android ], ],
 	mx-lisp[ uses[ ], platf[ windows ], ],
-	kemx[ uses[ boost, gfx, ], platf[ windows ], ],
 	kinetic-scrolling[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ], ],
 	abstract-racing[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ],  ],
 	texxed[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts ], ],
