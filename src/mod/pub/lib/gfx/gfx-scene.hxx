@@ -78,7 +78,7 @@ public:
    template <class host> class name_accessor : public string_accessor<host>
    {
    public:
-      virtual void set(host* i_host, const std::string& i_value) override
+      virtual void set(host* /*i_host*/, const std::string& i_value) override
       {
          if (i_value != this->val)
          {

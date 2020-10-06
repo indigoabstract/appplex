@@ -2,9 +2,11 @@
 
 #include "min.hxx"
 #include "mws-mod-ctrl.hxx"
+mws_push_disable_all_warnings
 #include <cstring>
 #include <regex>
 #include <sstream>
+mws_pop_disable_all_warnings
 
 
 template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
@@ -292,6 +294,11 @@ std::vector<std::string> mws_str::escape_strings(const std::vector<std::string>&
 
 std::string mws_str::str_join(const std::vector<std::string>& tokens, const std::string& delimiter)
 {
+   if (tokens.empty())
+   {
+      return std::string();
+   }
+
    std::stringstream stream;
 
    stream << tokens.front();
@@ -300,20 +307,24 @@ std::string mws_str::str_join(const std::vector<std::string>& tokens, const std:
    return stream.str();
 }
 
-std::vector<std::string> mws_str::str_split(const std::string& str, const std::vector<std::string>& delimiters)
+std::vector<std::string> mws_str::str_split(const std::string& i_str, const std::vector<std::string>& delimiters)
 {
-   std::regex rgx(str_join(escape_strings(delimiters), "|"));
+   if (i_str.empty())
+   {
+      return {};
+   }
 
-   std::sregex_token_iterator first{ begin(str), end(str), rgx, -1 }, last;
+   std::regex rgx(str_join(escape_strings(delimiters), "|"));
+   std::sregex_token_iterator first{ begin(i_str), end(i_str), rgx, -1 }, last;
 
    return{ first, last };
 }
 
-std::vector<std::string> mws_str::str_split(const std::string& str, const std::string& delimiter)
+std::vector<std::string> mws_str::str_split(const std::string& i_str, const std::string& delimiter)
 {
    std::vector<std::string> delimiters = { delimiter };
 
-   return str_split(str, delimiters);
+   return str_split(i_str, delimiters);
 }
 
 

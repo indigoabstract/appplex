@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
+mws_push_disable_all_warnings
 #include <stdio.h>
 #include <algorithm> 
 #include <cctype>
@@ -11,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <numeric>
+mws_pop_disable_all_warnings
 
 
 class mws_sender;
