@@ -227,6 +227,10 @@ std::string mws_str::trim(const std::string& i_str)
    return ltrim(rtrim(i_str));
 }
 
+bool mws_str::is_double_quoted(const std::string& i_str) { return mws_str::starts_with(i_str, "\"") && mws_str::ends_with(i_str, "\""); }
+
+bool mws_str::is_single_quoted(const std::string& i_str) { return mws_str::starts_with(i_str, "'") && mws_str::ends_with(i_str, "'"); }
+
 std::string mws_str::strip_enclosing_quotes(const std::string& i_text)
 {
    const char single_quote = '\'';

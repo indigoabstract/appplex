@@ -97,6 +97,8 @@ struct mws_str
    static std::string rtrim(const std::string& i_str);
    // trim from both ends
    static std::string trim(const std::string& i_str);
+   static bool is_double_quoted(const std::string& i_str);
+   static bool is_single_quoted(const std::string& i_str);
    // strips enclosing (front and back) quotes and double quotes
    static std::string strip_enclosing_quotes(const std::string& i_text);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
