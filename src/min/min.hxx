@@ -40,8 +40,8 @@ template<> int32 mws_to(const std::string& i_input);
 template<> uint32 mws_to(const std::string& i_input);
 template<> int64 mws_to(const std::string& i_input);
 template<> uint64 mws_to(const std::string& i_input);
-template<> float mws_to(const std::string& i_input);
-template<> double mws_to(const std::string& i_input);
+template<> fltp32 mws_to(const std::string& i_input);
+template<> fltp64 mws_to(const std::string& i_input);
 template<> bool mws_to(const std::string& i_input);
 
 template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
@@ -99,7 +99,7 @@ struct mws_str
    static std::string trim(const std::string& i_str);
    static bool is_double_quoted(const std::string& i_str);
    static bool is_single_quoted(const std::string& i_str);
-   // strips enclosing (front and back) quotes and double quotes
+   // strips enclosing (front and back) quotes and fltp64 quotes
    static std::string strip_enclosing_quotes(const std::string& i_text);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
    template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function)
@@ -146,7 +146,7 @@ template <typename T, typename mixer> class mws_val_mixer
 public:
    struct pos_val
    {
-      float pos;
+      fltp32 pos;
       T val;
    };
 
@@ -175,7 +175,7 @@ public:
       pos_val_vect = i_pos_val_vect;
    }
 
-   int set_val_at(T i_val, float i_position)
+   int set_val_at(T i_val, fltp32 i_position)
    {
       mws_assert(pos_val_vect.size() >= 2);
       if (i_position < 0.f || i_position > 1.f)
@@ -204,7 +204,7 @@ public:
       return idx;
    }
 
-   T get_val_at(float i_position)
+   T get_val_at(fltp32 i_position)
    {
       if (i_position <= 0.f)
       {
@@ -220,8 +220,8 @@ public:
       auto lim_sup = closest_gte_val(pos_val_vect, i_position);
       auto lim_inf = lim_sup - 1;
       // switch interval to [0, lim_sup - lim_inf]
-      float interval = lim_sup->pos - lim_inf->pos;
-      float mixf = (i_position - lim_inf->pos) / interval;
+      fltp32 interval = lim_sup->pos - lim_inf->pos;
+      fltp32 mixf = (i_position - lim_inf->pos) / interval;
 
       return mixer()(lim_inf->val, lim_sup->val, mixf);
    }
@@ -240,7 +240,7 @@ public:
 
 protected:
    // find the the closest match that's not less than i_position (can be equal)
-   typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, float i_position)
+   typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, fltp32 i_position)
    {
       static auto cmp_positions = [](const pos_val& i_a, const pos_val& i_b) { return i_a.pos < i_b.pos; };
       pos_val pc;
@@ -312,8 +312,8 @@ public:
    struct touch_point
    {
       uintptr_t identifier = 0;
-      float x = 0.f;
-      float y = 0.f;
+      fltp32 x = 0.f;
+      fltp32 y = 0.f;
       bool is_changed = false;
    };
 
@@ -446,12 +446,12 @@ template <typename T> T const& mws_any_cast(mws_any const& a)
 }
 
 
-template<typename T> T lerp(const T& start, const T& end, float t)
+template<typename T> T lerp(const T& start, const T& end, fltp32 t)
 {
    return start * (1.f - t) + end * t;
 }
 
-inline bool is_inside_box(float x, float y, float box_x, float box_y, float box_width, float box_height)
+inline bool is_inside_box(fltp32 x, fltp32 y, fltp32 box_x, fltp32 box_y, fltp32 box_width, fltp32 box_height)
 {
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }
