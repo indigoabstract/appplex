@@ -129,7 +129,7 @@ public:
    std::string filename() const;
    // returns the stem path component 
    std::string stem() const;
-   // returns the extension path component 
+   // returns the extension path component, including the dot
    std::string extension() const;
    // returns the directory path component 
    mws_path directory() const;
