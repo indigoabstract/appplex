@@ -250,7 +250,7 @@ namespace mod_freeimage_page1
 		{
 			mws_page::update_view(g);
 
-			const string& text = get_mod()->get_name();
+			const string& text = get_mod()->name();
 
 			g->drawImage(imgxxx, 0, 0);
 			g->drawText(text, 10, 10);
@@ -337,7 +337,7 @@ namespace mod_freeimage_page2
 		{
 			mws_page::update_view(g);
 
-			const string& text = get_mod()->get_name();
+			const string& text = get_mod()->name();
 
 			g->drawImage(imgxxx, 0, 0);
 			g->drawText(text, 10, 10);

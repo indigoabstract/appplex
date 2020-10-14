@@ -106,7 +106,7 @@ void mws_mod_ctrl::pre_init_app()
 {
    mws_assert(ul == nullptr);
    ul = mws_mod_list::nwi();
-   ul->set_name("app-mws-mod-list");
+   ul->name("app-mws-mod-list");
    mws_mod_setup::next_crt_mod = crt_mod = mws_sp<mws_mod>();
    mws_mod_setup::append_mod_list(ul);
    mws_sp<mws_mod> start_mod = get_app_start_mod();
@@ -172,16 +172,36 @@ void mws_mod_ctrl::destroy_app()
    }
 }
 
-const unicode_string& mws_mod_ctrl::get_app_name()
+unicode_string mws_mod_ctrl::app_name()
 {
-   static const unicode_string name(untr("appplex"));
+   static unicode_string name;
+   mws_sp<mws_mod> mod = get_current_mod();
+
+   if (mod)
+   {
+      name = mws_str::string_to_unicode_string(mod->external_name());
+   }
+   else
+   {
+      name = untr("appplex");
+   }
 
    return name;
 }
 
-const unicode_string& mws_mod_ctrl::get_app_description()
+unicode_string mws_mod_ctrl::app_description()
 {
-   static const unicode_string name(untr("appplex description"));
+   static unicode_string name;
+   mws_sp<mws_mod> mod = get_current_mod();
+
+   if (mod)
+   {
+      name = mws_str::string_to_unicode_string(mod->description());
+   }
+   else
+   {
+      name = untr("appplex description");
+   }
 
    return name;
 }

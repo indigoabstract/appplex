@@ -22,8 +22,8 @@ public:
    void init_app();
    void start_app();
    void destroy_app();
-   const unicode_string& get_app_name();
-   const unicode_string& get_app_description();
+   unicode_string app_name();
+   unicode_string app_description();
    void update();
    void pause();
    void resume();

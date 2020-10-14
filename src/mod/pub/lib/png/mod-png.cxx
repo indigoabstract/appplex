@@ -47,7 +47,7 @@ namespace mod_png_ns
       {
          mws_page::update_view(i_g);
 
-         const std::string& text = get_mod()->get_name();
+         const std::string& text = get_mod()->name();
 
          i_g->drawImage(img, 50, 50);
          i_g->drawText(text, 10, 20);

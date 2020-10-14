@@ -217,7 +217,7 @@ namespace mod_gen_texture_mainpage
 
 			//signal_opengl_error();
 
-			const std::string& text = get_mod()->get_name();
+			const std::string& text = get_mod()->name();
 
 			g->drawText(text, 10, 20);
 		}

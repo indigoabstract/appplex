@@ -105,7 +105,7 @@ namespace mod_test_snd_android_ns
 		{
 			mws_page::update_view(g);
 
-			const std::string& text = get_mod()->get_name();
+			const std::string& text = get_mod()->name();
 
 			g->drawText(text, 10, 20);
 		}

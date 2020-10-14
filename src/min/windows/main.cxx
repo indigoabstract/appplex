@@ -127,6 +127,7 @@ namespace
    UINT wm_taskbarcreated;
    HDC hdc_window;
    HANDLE console_handle;
+   unicode_string wnd_class_name = untr("appplex");
    // screen metrix
    std::pair<uint32, uint32> screen_res;
    float avg_screen_dpi = 0.f;
@@ -1421,7 +1422,7 @@ ATOM register_new_window_class(HINSTANCE hinstance)
    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
    wcex.lpszMenuName = NULL;
-   wcex.lpszClassName = mws_mod_ctrl::inst()->get_app_name().c_str();
+   wcex.lpszClassName = wnd_class_name.c_str();
 
    return RegisterClassEx(&wcex);
 }
@@ -1455,7 +1456,8 @@ HWND create_app_window(HINSTANCE hinstance, RECT& iclient_rect)
    int width = iclient_rect.right - x;
    int height = iclient_rect.bottom - y;
 
-   hWnd = CreateWindow(mws_mod_ctrl::inst()->get_app_name().c_str(), mws_mod_ctrl::inst()->get_app_name().c_str(), WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
+   hWnd = CreateWindow(wnd_class_name.c_str(), mws_mod_ctrl::inst()->app_name().c_str(),
+      WS_OVERLAPPEDWINDOW, x, y, width, height, NULL, NULL, hinstance, NULL);
 
    if (!hWnd)
    {

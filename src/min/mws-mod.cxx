@@ -405,7 +405,7 @@ public:
 #endif
    }
 
-   void start_recording_screen(const mws_path& i_file_path = "", const mws_video_params * i_params = nullptr)
+   void start_recording_screen(const mws_path& i_file_path = "", const mws_video_params* i_params = nullptr)
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
@@ -413,7 +413,7 @@ public:
       int video_width = gfx::i()->rt.get_screen_width();
       int video_height = gfx::i()->rt.get_screen_height();
 
-      if (venc&& venc->is_encoding())
+      if (venc && venc->is_encoding())
       {
          venc->stop_encoding();
       }
@@ -636,7 +636,7 @@ void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
 
    if (i_file_path.is_empty())
    {
-      std::string file_root = mws_to_str_fmt("%s-", p->u.lock()->get_name().c_str());
+      std::string file_root = mws_to_str_fmt("%s-", p->u.lock()->name().c_str());
       std::string img_ext = ".png";
       std::string zeroes[] =
       {
@@ -707,20 +707,9 @@ void mws_app_storage::start_recording_screen(const mws_path& i_file_path, const 
    p->start_recording_screen(i_file_path, i_params);
 }
 
-void mws_app_storage::stop_recording_screen()
-{
-   p->stop_recording_screen();
-}
-
-bool mws_app_storage::is_recording_screen()
-{
-   return p->is_recording_screen();
-}
-
-void mws_app_storage::toggle_screen_recording()
-{
-   p->toggle_screen_recording();
-}
+void mws_app_storage::stop_recording_screen() { p->stop_recording_screen(); }
+bool mws_app_storage::is_recording_screen() { return p->is_recording_screen(); }
+void mws_app_storage::toggle_screen_recording() { p->toggle_screen_recording(); }
 
 
 int mws_mod::mod_count = 0;
@@ -734,91 +723,38 @@ mws_mod::mws_mod(const char* i_include_guard)
    game_time = 0;
 }
 
-mws_mod::~mws_mod()
-{
-}
-
-mws_mod::mod_type mws_mod::get_mod_type()
-{
-   return e_mod_base;
-}
-
-int mws_mod::get_width()
-{
-   return mws::screen::get_width();
-}
-
-int mws_mod::get_height()
-{
-   return mws::screen::get_height();
-}
-
-const std::string& mws_mod::get_name()
-{
-   return name;
-}
-
-void mws_mod::set_name(const std::string& i_name)
-{
-   name = i_name;
-}
-
-const std::string& mws_mod::get_external_name()
-{
-   if (external_name.empty())
-   {
-      return get_name();
-   }
-
-   return external_name;
-}
-
-void mws_mod::set_external_name(const std::string& i_name)
-{
-   external_name = i_name;
-}
-
-const mws_path& mws_mod::get_proj_rel_path()
-{
-   return proj_rel_path;
-}
-
-void mws_mod::set_proj_rel_path(const mws_path& i_path)
-{
-   proj_rel_path = i_path;
-}
-
-void mws_mod::set_app_exit_on_next_run(bool iapp_exit_on_next_run)
-{
-   mws_mod_ctrl::inst()->set_app_exit_on_next_run(iapp_exit_on_next_run);
-}
-
-bool mws_mod::gfx_available()
-{
-   return mws::screen::is_gfx_available();
-}
-
-mws_sp<mws_mod> mws_mod::get_smtp_instance()
-{
-   return shared_from_this();
-}
+mws_mod::~mws_mod() {}
+mws_mod::mod_type mws_mod::get_mod_type() { return e_mod_base; }
+int mws_mod::get_width() { return mws::screen::get_width(); }
+int mws_mod::get_height() { return mws::screen::get_height(); }
+const std::string& mws_mod::name() const { return name_v; }
+void mws_mod::name(const std::string& i_name) { name_v = i_name; }
+const std::string& mws_mod::external_name() const { return (external_name_v.empty()) ? name() : external_name_v; }
+void mws_mod::external_name(const std::string& i_name) { external_name_v = i_name; }
+const std::string& mws_mod::description() const { return (description_v.empty()) ? external_name() : description_v; }
+void mws_mod::description(const std::string& i_description) { description_v = i_description; }
+const mws_path& mws_mod::get_proj_rel_path() { return proj_rel_path; }
+void mws_mod::set_proj_rel_path(const mws_path& i_path) { proj_rel_path = i_path; }
+void mws_mod::set_app_exit_on_next_run(bool i_app_exit_on_next_run) { mws_mod_ctrl::inst()->set_app_exit_on_next_run(i_app_exit_on_next_run); }
+bool mws_mod::gfx_available() { return mws::screen::is_gfx_available(); }
+mws_sp<mws_mod> mws_mod::get_smtp_instance() { return shared_from_this(); }
 
 void mws_mod::set_internal_name_from_include_guard(const char* i_include_guard)
 {
-   std::string name(i_include_guard);
-   int idx = name.find('_');
+   std::string name_t(i_include_guard);
+   int idx = name_t.find('_');
 
    if (idx <= 0)
    {
       mws_throw mws_exception("invalid format for the include guard");
    }
 
-   std::string internal_name = name.substr(idx + 1, std::string::npos);
+   std::string internal_name = name_t.substr(idx + 1, std::string::npos);
 
    std::transform(internal_name.begin(), internal_name.end(), internal_name.begin(), ::tolower);
    // replace all '_' with '-'
    std::replace(internal_name.begin(), internal_name.end(), '_', '-');
-   set_name(internal_name);
+   name(internal_name);
 }
 
 bool mws_mod::update()
@@ -1286,7 +1222,7 @@ mws_sp<mws_mod> mws_mod_list::mod_by_name(const std::string& i_name)
    {
       mws_sp<mws_mod> u = ulist[i];
 
-      if (u->get_name().compare(i_name) == 0)
+      if (u->name().compare(i_name) == 0)
       {
          return u;
       }
@@ -1389,7 +1325,7 @@ void mws_mod_list::init_mws()
 
       std::string elem_at(int idx)
       {
-         return get_mod_list()->ulist[idx]->get_name();
+         return get_mod_list()->ulist[idx]->name();
       }
 
       void on_elem_selected(int idx)

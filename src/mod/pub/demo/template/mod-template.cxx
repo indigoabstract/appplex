@@ -41,7 +41,7 @@ namespace
       {
          mws_page::update_view(i_g);
 
-         const std::string& text = get_mod()->get_name();
+         const std::string& text = get_mod()->name();
 
          i_g->drawText(text, 10, 20);
       }

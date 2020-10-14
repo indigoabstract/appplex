@@ -99,12 +99,14 @@ public:
    int get_width();
    int get_height();
    // internal name (only used inside the engine for identification purposes). may be the same as external name
-   const std::string& get_name();
-   void set_name(const std::string& i_name);
+   const std::string& name() const;
+   void name(const std::string& i_name);
 
    // external (display name). this is used for example, when setting the application name. may be the same as internal name
-   const std::string& get_external_name();
-   void set_external_name(const std::string& i_name);
+   const std::string& external_name() const;
+   void external_name(const std::string& i_name);
+   const std::string& description() const;
+   void description(const std::string& i_description);
 
    const mws_path& get_proj_rel_path();
    void set_proj_rel_path(const mws_path& i_path);
@@ -136,7 +138,7 @@ protected:
    mws_sp<mws_mod> get_smtp_instance();
    void set_internal_name_from_include_guard(const char* i_include_guard);
 
-   static void set_app_exit_on_next_run(bool iapp_exit_on_next_run);
+   static void set_app_exit_on_next_run(bool i_app_exit_on_next_run);
    static bool gfx_available();
 
    virtual bool update();
@@ -174,9 +176,10 @@ private:
    void set_init(bool i_is_init);
 
    // mws_mod name/id
-   std::string name;
+   std::string name_v;
    // mws_mod external/display name
-   std::string external_name;
+   std::string external_name_v;
+   std::string description_v;
    // mws_mod path, relative to project (appplex) path
    mws_path proj_rel_path;
    mws_wp<mws_mod> parent;

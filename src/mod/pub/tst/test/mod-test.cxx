@@ -180,7 +180,7 @@ namespace mod_test_main_page
 			//g->fillAlphaRect(122, 233, 255, 122, 0x7fff00ff);
 			//g->drawImage(img, 144, 33);
 
-			const std::string& text = get_mod()->get_name();
+			const std::string& text = get_mod()->name();
 
 			g->drawText(text, 10, 20);
 		}
