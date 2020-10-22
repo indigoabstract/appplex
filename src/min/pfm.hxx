@@ -266,15 +266,21 @@ class mws_dbg final
 {
 public:
    // standard flags list
+   // memory allocations/deallocations
+   static inline const uint64 pfm_mem = 1 << 0;
+   static inline const uint64 app_mem = 1 << 1;
+   // file io - open/close
+   static inline const uint64 pfm_files = 1 << 2;
+   static inline const uint64 app_files = 1 << 3;
    // touch events
-   static inline const uint64 pfm_touch = 1 << 0;
-   static inline const uint64 app_touch = 1 << 1;
+   static inline const uint64 pfm_touch = 1 << 4;
+   static inline const uint64 app_touch = 1 << 5;
    // mws/ui events
-   static inline const uint64 pfm_mws = 1 << 1;
-   static inline const uint64 app_mws = 1 << 2;
+   static inline const uint64 pfm_mws = 1 << 6;
+   static inline const uint64 app_mws = 1 << 7;
    // net events
-   static inline const uint64 pfm_net = 1 << 3;
-   static inline const uint64 app_net = 1 << 4;
+   static inline const uint64 pfm_net = 1 << 8;
+   static inline const uint64 app_net = 1 << 9;
    // last standard flag. flag values greater than this are considered custom flag values
    static inline const uint64 last_std_flag = app_net;
 
