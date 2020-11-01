@@ -23,13 +23,13 @@ void mod_test_res_ld::init()
 {
 }
 
-namespace test_gl
+namespace ns_test_res_ld
 {
    mws_sp<gfx_camera> ortho_cam;
 	mws_sp<gfx_quad_2d> quad_mesh;
 }
 
-using namespace test_gl;
+using namespace ns_test_res_ld;
 
 void mod_test_res_ld::load()
 {

@@ -411,7 +411,7 @@ public:
       if (file->exists())
       {
          file->io.open();
-         auto fds = std::make_shared<file_data_sequence>(file, false);
+         auto fds = std::make_shared<file_data_seqv>(file, false);
          auto dr = std::make_shared<data_sequence_reader>(fds);
          int size = dr->read_int32();
 

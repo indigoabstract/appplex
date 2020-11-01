@@ -6,7 +6,7 @@
 #include "gfx-camera.hxx"
 #include "util/util.hxx"
 #include "spline.hxx"
-#include "data-sequence.hxx"
+#include "data-seqv.hxx"
 #include <glm/inc.hpp>
 #include <cstdio>
 
@@ -37,8 +37,8 @@ void track::loadTrackData(char* track_name)
 
 	std::string fn = trs("abstract-racing/{}", track_name);
 	std::vector<uint8> res = mod.lock()->storage.load_as_byte_vect(fn);
-	memory_data_sequence mds(res.data(), res.size());
-	data_sequence_reader_big_endian dsr(&mds);
+	mem_data_seqv mds(res.data(), res.size());
+	data_seqv_reader_big_endian dsr(&mds);
 
 	version_number = dsr.read_int32();
 	base_point_count = dsr.read_int32();

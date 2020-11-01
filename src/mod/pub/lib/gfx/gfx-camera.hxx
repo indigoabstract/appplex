@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
-#include "data-sequence.hxx"
+#include "data-seqv.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-util.hxx"
 #include "gfx-color.hxx"
@@ -20,7 +20,7 @@ class gfx_shader;
 class gfx_camera;
 class gfx_camera_impl;
 class gfx_material;
-class rw_sequence;
+class rw_seqv;
 
 
 const std::string u_m4_model = "u_m4_model";
@@ -57,8 +57,8 @@ public:
 class draw_op
 {
 public:
-   virtual void read_data(mws_sp<rw_sequence> seq) = 0;
-   virtual void write_data(mws_sp<rw_sequence> seq) = 0;
+   virtual void read_data(mws_sp<rw_seqv> seq) = 0;
+   virtual void write_data(mws_sp<rw_seqv> seq) = 0;
    virtual void draw(mws_sp<draw_context> idc) = 0;
 };
 
@@ -130,7 +130,7 @@ protected:
    virtual void load(mws_sp<gfx_camera> inst);
    virtual void update_camera_state_impl();
    mws_sp<draw_context> draw_ctx;
-   mws_sp<rw_sequence> draw_ops;
+   mws_sp<rw_seqv> draw_ops;
 
 public:
    glm::mat4 camera_mx = glm::mat4(1.f);
@@ -144,12 +144,12 @@ public:
 
 namespace seq_util
 {
-   inline float read_float(mws_sp<rw_sequence> isq)
+   inline float read_float(mws_sp<rw_seqv> isq)
    {
       return isq->r.read_fltp32();
    }
 
-   inline glm::vec2 read_vec2(mws_sp<rw_sequence> isq)
+   inline glm::vec2 read_vec2(mws_sp<rw_seqv> isq)
    {
       glm::vec2 val;
 
@@ -159,7 +159,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec3 read_vec3(mws_sp<rw_sequence> isq)
+   inline glm::vec3 read_vec3(mws_sp<rw_seqv> isq)
    {
       glm::vec3 val;
 
@@ -170,7 +170,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec4 read_vec4(mws_sp<rw_sequence> isq)
+   inline glm::vec4 read_vec4(mws_sp<rw_seqv> isq)
    {
       glm::vec4 val;
 
@@ -182,7 +182,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::quat read_quat(mws_sp<rw_sequence> isq)
+   inline glm::quat read_quat(mws_sp<rw_seqv> isq)
    {
       glm::quat val;
 
@@ -194,25 +194,25 @@ namespace seq_util
       return val;
    }
 
-   inline void write_float(mws_sp<rw_sequence> isq, float ival)
+   inline void write_float(mws_sp<rw_seqv> isq, float ival)
    {
       isq->w.write_fltp32(ival);
    }
 
-   inline void write_vec2(mws_sp<rw_sequence> isq, glm::vec2& ival)
+   inline void write_vec2(mws_sp<rw_seqv> isq, glm::vec2& ival)
    {
       isq->w.write_fltp32(ival.x);
       isq->w.write_fltp32(ival.y);
    }
 
-   inline void write_vec3(mws_sp<rw_sequence> isq, glm::vec3& ival)
+   inline void write_vec3(mws_sp<rw_seqv> isq, glm::vec3& ival)
    {
       isq->w.write_fltp32(ival.x);
       isq->w.write_fltp32(ival.y);
       isq->w.write_fltp32(ival.z);
    }
 
-   inline void write_vec4(mws_sp<rw_sequence> isq, glm::vec4& ival)
+   inline void write_vec4(mws_sp<rw_seqv> isq, glm::vec4& ival)
    {
       isq->w.write_fltp32(ival.x);
       isq->w.write_fltp32(ival.y);
@@ -220,7 +220,7 @@ namespace seq_util
       isq->w.write_fltp32(ival.w);
    }
 
-   inline void write_quat(mws_sp<rw_sequence> isq, glm::quat& ival)
+   inline void write_quat(mws_sp<rw_seqv> isq, glm::quat& ival)
    {
       isq->w.write_fltp32(ival.x);
       isq->w.write_fltp32(ival.y);

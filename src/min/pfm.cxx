@@ -7,7 +7,7 @@
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "mod-list.hxx"
-#include "data-sequence.hxx"
+#include "data-seqv.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 
 #include <cstdio>
@@ -339,7 +339,7 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
 
    if (i_index_file->is_open())
    {
-      mws_sp<rw_file_sequence> fs = rw_file_sequence::nwi(i_index_file, false);
+      mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, false);
       uint32 size = fs->r.read_uint32();
 
       for (uint32 k = 0; k < size; k++)
@@ -367,7 +367,7 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
 void mws_res_index::write_file_map(mws_sp<mws_file> i_index_file, const mws_file_map& i_file_map)
 {
    i_index_file->io.open("wb");
-   mws_sp<rw_file_sequence> fs = rw_file_sequence::nwi(i_index_file, true);
+   mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, true);
 
    fs->w.write_uint32(i_file_map.size());
 
@@ -1509,10 +1509,10 @@ private:
       {
          log_file->io.open("rb");
 
-         auto res_rw = rw_file_sequence::nwi(log_file, false);
+         auto res_rw = rw_file_seqv::nwi(log_file, false);
          uint64 file_length = log_file->length();
 
-         while (res_rw->get_read_position() < file_length)
+         while (res_rw->read_position() < file_length)
          {
             std::string line = res_rw->r.read_string();
             log.push_back(line);
@@ -1549,7 +1549,7 @@ private:
 
       if (log_file && log_file->is_open())
       {
-         auto res_rw = rw_file_sequence::nwi(log_file, true);
+         auto res_rw = rw_file_seqv::nwi(log_file, true);
 
          res_rw->w.write_string(i_msg);
          log_file->io.flush();

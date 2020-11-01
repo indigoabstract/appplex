@@ -23,7 +23,7 @@ void mod_storage_dir_tst::init()
    mws_path res_path(storage.res_dir());
    mws_path tmp_path(storage.tmp_dir());
    mws_path parent_path = prv_path.parent_path();
-   const unicode_string& app_path_wstr = mws::args::get_app_path();
+   const unicode_string& app_path_wstr = mws::args::get_unicode_path();
    std::string app_path_str = mws_str::unicode_string_to_string(app_path_wstr);
    mws_path app_path(app_path_str);
    std::string sample = storage.load_as_string("sample.txt");

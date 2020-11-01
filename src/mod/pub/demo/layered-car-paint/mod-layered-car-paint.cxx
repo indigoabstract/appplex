@@ -958,158 +958,163 @@ void mod_layered_car_paint::init()
 {
 }
 
-bool merge_diffuse_specular(mws_sp<mws_file> idiff_file, mws_sp<mws_file> ispec_file)
+namespace ns_mod_layered_car_paint
 {
-   union color32
+   bool merge_diffuse_specular(mws_sp<mws_file> idiff_file, mws_sp<mws_file> ispec_file)
    {
-      uint32 rgba;
-      struct
+      union color32
       {
-         uint8 r;
-         uint8 g;
-         uint8 b;
-         uint8 a;
+         uint32 rgba;
+         struct
+         {
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
+         };
       };
-   };
 
-   mws_sp<raw_img_data> diffmap = res_ld::inst()->load_image(idiff_file);
-   color32* diffmap_ptr = (color32*)diffmap->data;
-   mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
-   color32* specularmap_ptr = (color32*)specularmap->data;
+      mws_sp<raw_img_data> diffmap = res_ld::inst()->load_image(idiff_file);
+      color32* diffmap_ptr = (color32*)diffmap->data;
+      mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
+      color32* specularmap_ptr = (color32*)specularmap->data;
 
-   uint32 width = diffmap->width;
-   uint32 height = diffmap->height;
-   uint32 size = width * height;
+      uint32 width = diffmap->width;
+      uint32 height = diffmap->height;
+      uint32 size = width * height;
 
-   if (specularmap->width != width || specularmap->height != height)
-   {
-      mws_print("specularmap size != diffmap size [%s, %s]", ispec_file->filename().c_str(), idiff_file->filename().c_str());
-
-      return false;
-   }
-
-   std::vector<uint32> rgba(size);
-
-   for (uint32 k = 0; k < size; k++)
-   {
-      uint32 specular = specularmap_ptr[k].r;
-      uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
-
-      rgba[k] = normal | ((specular << 24) & 0xff000000);
-   }
-
-   std::string new_filename = "new_diff_" + idiff_file->filename();
-   mws_sp<mws_file> f = mws_file::get_inst(new_filename);
-   res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
-
-   return true;
-}
-
-bool merge_diffuse_specular(std::string idiff_fname, std::string ispec_fname)
-{
-   mws_sp<mws_file> idiff_file = mws_file::get_inst(idiff_fname);
-   mws_sp<mws_file> ispec_file = mws_file::get_inst(ispec_fname);
-
-   return merge_diffuse_specular(idiff_file, ispec_file);
-}
-
-void extract_alpha_channel()
-{
-   union color32
-   {
-      uint32 rgba;
-      struct
+      if (specularmap->width != width || specularmap->height != height)
       {
-         uint8 r;
-         uint8 g;
-         uint8 b;
-         uint8 a;
-      };
-   };
+         mws_print("specularmap size != diffmap size [%s, %s]", ispec_file->filename().c_str(), idiff_file->filename().c_str());
 
-   mws_sp<raw_img_data> img = res_ld::inst()->load_image("trail.png");
-   color32* img_ptr = (color32*)img->data;
-   uint32 size = img->width * img->height;
+         return false;
+      }
 
-   for (uint32 k = 0; k < size; k++)
-   {
-      img_ptr[k].a = img_ptr[k].r;
-      img_ptr[k].r = img_ptr[k].g = img_ptr[k].b = 255;
-   }
+      std::vector<uint32> rgba(size);
 
-   mws_sp<mws_file> f = mws_file::get_inst("trail-2.png");
-   res_ld::inst()->save_image(f, img->width, img->height, img->data);
-}
-
-void combine_lightmaps()
-{
-   union color32
-   {
-      uint32 rgba;
-      struct
+      for (uint32 k = 0; k < size; k++)
       {
-         uint8 r;
-         uint8 g;
-         uint8 b;
-         uint8 a;
-      };
-   };
+         uint32 specular = specularmap_ptr[k].r;
+         uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
 
-   mws_sp<raw_img_data> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
-   mws_sp<raw_img_data> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
-   mws_sp<raw_img_data> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
-   color32* img_day_ptr = (color32*)img_day->data;
-   color32* img_night_ptr = (color32*)img_night->data;
-   color32* img_overcast_ptr = (color32*)img_overcast->data;
-   uint32 size = img_day->width * img_day->height;
-   std::vector<uint32> rgba(size);
-   color32* img_ptr = (color32*)&rgba[0];
+         rgba[k] = normal | ((specular << 24) & 0xff000000);
+      }
 
-   for (uint32 k = 0; k < size; k++)
-   {
-      img_ptr[k].a = 0;
-      img_ptr[k].r = img_overcast_ptr[k].a;
-      img_ptr[k].g = img_night_ptr[k].a;
-      img_ptr[k].b = img_day_ptr[k].a;
+      std::string new_filename = "new_diff_" + idiff_file->filename();
+      mws_sp<mws_file> f = mws_file::get_inst(new_filename);
+      res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+
+      return true;
    }
 
-   mws_sp<mws_file> f = mws_file::get_inst("Track25_Lightmap2.png");
-   res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
-}
-
-void combine_trail()
-{
-   union color32
+   bool merge_diffuse_specular(std::string idiff_fname, std::string ispec_fname)
    {
-      uint32 rgba;
-      struct
+      mws_sp<mws_file> idiff_file = mws_file::get_inst(idiff_fname);
+      mws_sp<mws_file> ispec_file = mws_file::get_inst(ispec_fname);
+
+      return merge_diffuse_specular(idiff_file, ispec_file);
+   }
+
+   void extract_alpha_channel()
+   {
+      union color32
       {
-         uint8 r;
-         uint8 g;
-         uint8 b;
-         uint8 a;
+         uint32 rgba;
+         struct
+         {
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
+         };
       };
-   };
 
-   mws_sp<raw_img_data> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
-   mws_sp<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
-   color32* img_alpha_ptr = (color32*)img_alpha->data;
-   color32* img_outline_ptr = (color32*)img_outline->data;
-   uint32 size = img_alpha->width * img_alpha->height;
-   std::vector<uint32> rgba(size);
-   color32* img_ptr = (color32*)&rgba[0];
+      mws_sp<raw_img_data> img = res_ld::inst()->load_image("trail.png");
+      color32* img_ptr = (color32*)img->data;
+      uint32 size = img->width * img->height;
 
-   for (uint32 k = 0; k < size; k++)
-   {
-      img_ptr[k].a = img_alpha_ptr[k].a;
-      img_ptr[k].b = img_outline_ptr[k].a;
-      img_ptr[k].g = 0;
-      img_ptr[k].r = 0;
+      for (uint32 k = 0; k < size; k++)
+      {
+         img_ptr[k].a = img_ptr[k].r;
+         img_ptr[k].r = img_ptr[k].g = img_ptr[k].b = 255;
+      }
+
+      mws_sp<mws_file> f = mws_file::get_inst("trail-2.png");
+      res_ld::inst()->save_image(f, img->width, img->height, img->data);
    }
 
-   mws_sp<mws_file> f = mws_file::get_inst("trail-new.png");
-   res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
+   void combine_lightmaps()
+   {
+      union color32
+      {
+         uint32 rgba;
+         struct
+         {
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
+         };
+      };
+
+      mws_sp<raw_img_data> img_day = res_ld::inst()->load_image("Track25_Lightmap_Day2.png");
+      mws_sp<raw_img_data> img_night = res_ld::inst()->load_image("Track25_Lightmap_Night2.png");
+      mws_sp<raw_img_data> img_overcast = res_ld::inst()->load_image("Track25_Lightmap_Overcast2.png");
+      color32* img_day_ptr = (color32*)img_day->data;
+      color32* img_night_ptr = (color32*)img_night->data;
+      color32* img_overcast_ptr = (color32*)img_overcast->data;
+      uint32 size = img_day->width * img_day->height;
+      std::vector<uint32> rgba(size);
+      color32* img_ptr = (color32*)&rgba[0];
+
+      for (uint32 k = 0; k < size; k++)
+      {
+         img_ptr[k].a = 0;
+         img_ptr[k].r = img_overcast_ptr[k].a;
+         img_ptr[k].g = img_night_ptr[k].a;
+         img_ptr[k].b = img_day_ptr[k].a;
+      }
+
+      mws_sp<mws_file> f = mws_file::get_inst("Track25_Lightmap2.png");
+      res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
+   }
+
+   void combine_trail()
+   {
+      union color32
+      {
+         uint32 rgba;
+         struct
+         {
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
+         };
+      };
+
+      mws_sp<raw_img_data> img_alpha = res_ld::inst()->load_image("trail-alpha.png");
+      mws_sp<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
+      color32* img_alpha_ptr = (color32*)img_alpha->data;
+      color32* img_outline_ptr = (color32*)img_outline->data;
+      uint32 size = img_alpha->width * img_alpha->height;
+      std::vector<uint32> rgba(size);
+      color32* img_ptr = (color32*)&rgba[0];
+
+      for (uint32 k = 0; k < size; k++)
+      {
+         img_ptr[k].a = img_alpha_ptr[k].a;
+         img_ptr[k].b = img_outline_ptr[k].a;
+         img_ptr[k].g = 0;
+         img_ptr[k].r = 0;
+      }
+
+      mws_sp<mws_file> f = mws_file::get_inst("trail-new.png");
+      res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
+   }
 }
+using namespace ns_mod_layered_car_paint;
+
 
 void mod_layered_car_paint::load()
 {

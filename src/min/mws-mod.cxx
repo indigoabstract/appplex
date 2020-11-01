@@ -432,7 +432,7 @@ public:
 
       if (file_path.is_empty())
       {
-         file_path = mws_to_str_fmt("app-%s-screen-capture.mp4", u.lock()->get_name().c_str());
+         file_path = mws_to_str_fmt("app-%s-screen-capture.mp4", u.lock()->name().c_str());
       }
 
       const mws_video_params* video_params = (i_params) ? i_params : &default_video_params;
