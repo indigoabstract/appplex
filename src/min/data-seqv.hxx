@@ -14,6 +14,8 @@ public:
    virtual ~data_seqv();
    virtual bool reached_end_of_sequence();
    void close();
+   virtual const uint8_t* data_as_byte_array() = 0;
+   // return total number of bytes in the sequence
    virtual uint64_t size()const = 0;
    virtual void reset() = 0;
    uint64_t read_position()const { return read_position_v; }
@@ -46,7 +48,7 @@ public:
    ro_mem_seqv(const uint8_t* i_seqv, uint64_t i_elem_count) : seqv(i_seqv), size_v(i_elem_count) {}
    virtual ~ro_mem_seqv() {}
 
-   const uint8_t* data_as_byte_array() { return seqv; }
+   const uint8_t* data_as_byte_array() override { return seqv; }
    virtual uint64_t size() const { return size_v; }
    virtual void reset() { rewind(); }
    virtual void rewind() override { set_read_position(0); }
@@ -74,7 +76,7 @@ public:
 
    virtual uint64_t size()const { return seqv.size(); }
    virtual void reset() { rewind(); seqv.clear(); }
-   const uint8_t* data_as_byte_array();
+   const uint8_t* data_as_byte_array() override;
    std::shared_ptr<std::vector<uint8_t>> data_as_byte_vector();
    virtual void rewind() override { set_read_position(0); set_write_position(0); }
    void set_read_position(uint64_t i_position);
@@ -97,6 +99,7 @@ public:
 
    bool reached_end_of_sequence() override;
    void close();
+   virtual const uint8_t* data_as_byte_array() override { return nullptr; }
    virtual uint64_t size()const;
    virtual void reset() override;
    virtual void rewind() override;

@@ -136,6 +136,7 @@ public:
    std::vector<uint8>& get_vx_buffer();
    std::vector<gfx_indices_type>& get_ix_buffer();
    virtual void set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer);
+   virtual void set_data(const uint8* i_vx_buff, uint32 i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32 i_idx_buff_count);
    void update_data();
    virtual gfx_material_entry& operator[](const std::string i_name);
    mws_sp<gfx_material> get_material();

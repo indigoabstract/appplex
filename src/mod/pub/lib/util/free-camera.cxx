@@ -11,14 +11,14 @@
 free_camera::free_camera(mws_sp<mws_mod> i_mod)
 {
    u = i_mod;
-   look_at_dir = glm::vec3(0.f, 0.f, -1.f);
-   up_dir = glm::vec3(0.f, 1.f, 0.f);
+   look_at_dir = glm::vec3(0.f, 1.f, 0.f);
+   up_dir = glm::vec3(0.f, 0.f, 1.f);
    speed = 0.f;
    mw_speed_factor = 25.f;
-   inf_phi_deg = 1.f;
-   sup_phi_deg = 179.f;
-   phi_deg = 90.f;
-   theta_deg = 210.f;
+   inf_phi_deg = 0.1f;
+   sup_phi_deg = 179.9f;
+   phi_deg = inf_phi_deg;
+   theta_deg = 180.f;
    ks = std::make_shared<kinetic_scrolling>();
    mov_type = e_roll_view_axis;
 }
@@ -87,7 +87,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
             float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
 
-            theta_deg -= dragging_det.drag_diff.x * camera_radius * 0.00045f;
+            theta_deg += dragging_det.drag_diff.x * camera_radius * 0.00045f;
             phi_deg -= dragging_det.drag_diff.y * camera_radius * 0.00045f;
             clamp_angles();
             //mws_print("tdx %f pdx %f\n", theta_deg, phi_deg);
@@ -207,7 +207,6 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
 
 void free_camera::update()
 {
-
    glm::vec2 scroll_pos = ks->update();
 
    switch (mov_type)
@@ -228,27 +227,26 @@ void free_camera::update()
    {
       float camera_radius = glm::distance(persp_cam->position(), target_ref_point);
 
-      //mws_print("td0 %f pd0 %f", theta_deg, phi_deg);
       if (ks->is_active())
       {
-         theta_deg -= scroll_pos.x * 0.1f;
+         theta_deg += scroll_pos.x * 0.1f;
          phi_deg -= scroll_pos.y * 0.1f;
          clamp_angles();
+         //mws_println("theta[ %f ] phi[ %f ]", theta_deg, phi_deg);
       }
-      //mws_print("td1 %f pd1 %f\n", theta_deg, phi_deg);
 
       float sin_phi = glm::sin(glm::radians(phi_deg));
       float cos_phi = glm::cos(glm::radians(phi_deg));
       float sin_theta = glm::sin(glm::radians(theta_deg));
       float cos_theta = glm::cos(glm::radians(theta_deg));
-      glm::vec3 sphere_position(camera_radius * sin_theta * sin_phi, camera_radius * cos_phi, camera_radius * cos_theta * sin_phi);
+      glm::vec3 sphere_position(camera_radius * sin_theta * sin_phi, camera_radius * cos_theta * sin_phi, camera_radius * cos_phi);
 
       glm::vec3 view_pos = target_ref_point + sphere_position;
       persp_cam->position = view_pos;
       persp_cam->look_at_pos(target_ref_point, up_dir);
       look_at_dir = glm::normalize(target_ref_point - persp_cam->position);
 
-      up_dir = glm::vec3(0, 1, 0);
+      up_dir = glm::vec3(0, 0, 1);
       glm::vec3 right_dir = glm::normalize(glm::cross(look_at_dir, up_dir));
       up_dir = glm::normalize(glm::cross(right_dir, look_at_dir));
       persp_cam->look_at_pos(target_ref_point, up_dir);

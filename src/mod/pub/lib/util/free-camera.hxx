@@ -39,7 +39,9 @@ private:
 
    float inf_phi_deg = 0.f;
    float sup_phi_deg = 0.f;
-   float phi_deg = 0.f; // [10, 80]
+   // roll around the right axis
+   float phi_deg = 0.f; // [inf_phi_deg, sup_phi_deg]
+   // roll around the up axis(Oz)
    float theta_deg = 0.f; // [0, 360)
    float sign_phi = 0.f;
    e_movement_types mov_type = e_movement_types::e_translation;

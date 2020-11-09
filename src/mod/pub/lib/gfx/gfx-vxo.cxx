@@ -116,8 +116,15 @@ std::vector<gfx_indices_type>& gfx_vxo::get_ix_buffer()
 
 void gfx_vxo::set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer)
 {
-   vertices_buffer = i_vertices_buffer;
-   indices_buffer = i_indices_buffer;
+   set_data(i_vertices_buffer.data(), i_vertices_buffer.size(), i_indices_buffer.data(), i_indices_buffer.size());
+}
+
+void gfx_vxo::set_data(const uint8* i_vx_buff, uint32 i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32 i_idx_buff_count)
+{
+   vertices_buffer.clear();
+   vertices_buffer.insert(vertices_buffer.end(), i_vx_buff, i_vx_buff + i_vx_buff_count);
+   indices_buffer.clear();
+   indices_buffer.insert(indices_buffer.end(), i_idx_buff, i_idx_buff + i_idx_buff_count);
    idx_count = indices_buffer.size();
    buffer_changed = true;
 
