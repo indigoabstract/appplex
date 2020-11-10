@@ -1,11 +1,12 @@
 #include "stdafx.hxx"
 
 #include "gfx-vxo-ext.hxx"
+#include "data-seqv.hxx"
 
 
 using gfx_vxo_util::set_mesh_data;
 
-gfx_debug_vxo::gfx_debug_vxo(vx_info ivxi, bool iis_submesh) : gfx_vxo(ivxi, iis_submesh)
+gfx_debug_vxo::gfx_debug_vxo(vx_info i_vxi, bool i_is_submesh) : gfx_vxo(i_vxi, i_is_submesh)
 {
 }
 
@@ -20,9 +21,9 @@ gfx_obj_vxo::gfx_obj_vxo() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_t
    is_loaded = false;
 }
 
-void gfx_obj_vxo::operator=(const std::string& imesh_name)
+void gfx_obj_vxo::operator=(const std::string& i_mesh_name)
 {
-   set_mesh_name(imesh_name);
+   set_mesh_name(i_mesh_name);
 }
 
 //void gfx_obj_mesh::draw_in_sync(mws_sp<gfx_camera> i_camera)
@@ -40,16 +41,16 @@ gfx_plane::gfx_plane(mws_sp<gfx> i_gi) : gfx_vxo(vx_info("a_v3_position, a_v3_no
 {
 }
 
-void gfx_plane::set_dimensions(float idx, float idy, float i_z_val)
+void gfx_plane::set_dimensions(float i_dx, float i_dy, float i_z_val)
 {
    float p = 0.5;
    const vx_fmt_p3f_n3f_t2f tvertices_data[] =
       // xyz, uv
    {
-      {{-p * idx,  p * idy, i_z_val}, {0, 0, -1}, {0, 1}},
-      {{-p * idx, -p * idy, i_z_val}, {0, 0, -1}, {0, 0}},
-      {{ p * idx, -p * idy, i_z_val}, {0, 0, -1}, {1, 0}},
-      {{ p * idx,  p * idy, i_z_val}, {0, 0, -1}, {1, 1}},
+      {{-p * i_dx,  p * i_dy, i_z_val}, {0, 0, -1}, {0, 1}},
+      {{-p * i_dx, -p * i_dy, i_z_val}, {0, 0, -1}, {0, 0}},
+      {{ p * i_dx, -p * i_dy, i_z_val}, {0, 0, -1}, {1, 0}},
+      {{ p * i_dx,  p * i_dy, i_z_val}, {0, 0, -1}, {1, 1}},
    };
 
    const gfx_indices_type tindices_data[] =
@@ -99,7 +100,7 @@ void gfx_grid::set_dimensions(int i_h_point_count, int i_v_point_count)
          float hf = j / float(i_h_point_count - 1);
          glm::vec3 it_vx = glm::mix(left_vx, right_vx, hf);
          glm::vec2 it_tx = glm::mix(left_tx, right_tx, hf);
-         auto & r = tvertices_data[i_h_point_count * i + j];
+         auto& r = tvertices_data[i_h_point_count * i + j];
 
          r.pos = it_vx;
          r.nrm = glm::vec3(0, 0, -1);
@@ -136,7 +137,7 @@ gfx_box::gfx_box() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord
 {
 }
 
-void gfx_box::set_dimensions(float idx, float idy, float idz)
+void gfx_box::set_dimensions(float i_dx, float i_dy, float i_dz)
 {
    vx_fmt_p3f_n3f_t2f tvertices_data[] =
       // x,y,z,	nx,ny,nz,	u,v,
@@ -186,9 +187,9 @@ void gfx_box::set_dimensions(float idx, float idy, float idz)
    {
       glm::vec3& pos = tvertices_data[k].pos;
 
-      pos.x *= idx;
-      pos.y *= idy;
-      pos.z *= idz;
+      pos.x *= i_dx;
+      pos.y *= i_dy;
+      pos.z *= i_dz;
    }
 
    set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
@@ -199,9 +200,9 @@ gfx_vpc_ring_sphere::gfx_vpc_ring_sphere() : gfx_vxo(vx_info("a_v3_position, a_v
 {
 }
 
-void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
+void gfx_vpc_ring_sphere::set_dimensions(float i_radius, int i_grid_point_count)
 {
-   int gridPointsWidth = igrid_point_count;
+   int gridPointsWidth = i_grid_point_count;
 
    if (gridPointsWidth % 2 == 0)
       // the number horizontal points has to be odd, not even and > 1
@@ -247,7 +248,7 @@ void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
       // spherical coordinates theta; theta in [0*, 180*]
       float theta = (h / float(gridPointsHeight - 1)) * glm::pi<float>();
       // spherical coordinates z is mapped as y, with y in [-1, +1]
-      float y = iradius * -glm::cos(theta);
+      float y = i_radius * -glm::cos(theta);
       float sintheta = glm::sin(theta);
 
       for (int w = 0; w < gridPointsWidth; w++, idx++)
@@ -255,8 +256,8 @@ void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
          // spherical coordinates phi; phi in [0*, 360*]
          float phi = (w / float(gridPointsWidth - 1)) * 2 * glm::pi<float>();
          //radius = rng.range(1000, 1025) / 1000.f;
-         float x = iradius * glm::sin(phi) * sintheta;
-         float z = iradius * glm::cos(phi) * sintheta;
+         float x = i_radius * glm::sin(phi) * sintheta;
+         float z = i_radius * glm::cos(phi) * sintheta;
 
          //vertexCrd[idx].x = x;
          //vertexCrd[idx].y = y;
@@ -331,4 +332,270 @@ void gfx_vpc_ring_sphere::set_dimensions(float iradius, int igrid_point_count)
    int idata_size = rs_indices_data.size() * sizeof(gfx_indices_type);
    set_mesh_data((const uint8*)rs_vertices_data.data(), vdata_size, rs_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
    //mws_print("ind length %d") % indicesLength;
+}
+
+
+gfx_right_prism::gfx_right_prism() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord")) {}
+
+void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertices, float i_height)
+{
+   const uint32 side_count = i_base_vertices.size();
+   mws_assert(side_count >= 3);
+   const gfx_indices_type vx_offset = 2;
+   // origin in zero
+   const glm::vec3 origin(0.f);
+   std::vector<gfx_indices_type> indices_data;
+   data_seqv_writer dsw(std::make_shared<mem_data_seqv>());
+
+   // write bottom origin positions
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   // normals
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   // tex coords
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+
+   // write top origin positions
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(i_height);
+   // normals
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   // tex coords
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+
+   // write bottom face vertices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      const glm::vec2& vx = i_base_vertices[k];
+      // bottom face positions
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+   }
+
+   // write top face vertices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      const glm::vec2& vx = i_base_vertices[k];
+      // top face positions
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(i_height);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+   }
+
+   // write side face vertices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      uint32 kxx = (k + 1) % side_count;
+      const glm::vec2& vx = i_base_vertices[k];
+      const glm::vec2& vx_next = i_base_vertices[kxx];
+      // positions 0 bottom
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+
+      // positions 1 bottom
+      dsw.write_fltp32(vx_next.x);
+      dsw.write_fltp32(vx_next.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+
+      // positions 2 top
+      dsw.write_fltp32(vx_next.x);
+      dsw.write_fltp32(vx_next.y);
+      dsw.write_fltp32(i_height);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+
+      // positions 3 top
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(i_height);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+   }
+
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      uint32 k_next = (k + 1) % side_count;
+      // bottom face indices
+      indices_data.push_back(0);
+      indices_data.push_back(vx_offset + k);
+      indices_data.push_back(vx_offset + k_next);
+      // top face indices
+      indices_data.push_back(1);
+      indices_data.push_back(vx_offset + side_count + k_next);
+      indices_data.push_back(vx_offset + side_count + k);
+   }
+
+   // side face indices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      const gfx_indices_type vx_side_offset = vx_offset + 2 * side_count;
+      indices_data.push_back(vx_side_offset + 4 * k + 0);
+      indices_data.push_back(vx_side_offset + 4 * k + 2);
+      indices_data.push_back(vx_side_offset + 4 * k + 1);
+      indices_data.push_back(vx_side_offset + 4 * k + 0);
+      indices_data.push_back(vx_side_offset + 4 * k + 3);
+      indices_data.push_back(vx_side_offset + 4 * k + 2);
+   }
+
+   std::shared_ptr<data_seqv> ds = dsw.get_data_sequence();
+   const uint8_t* vertices_data = ds->data_as_byte_array();
+
+   set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
+}
+
+
+gfx_right_pyramid::gfx_right_pyramid() : gfx_vxo(vx_info("a_v3_position, a_v3_normal, a_v2_tex_coord")) {}
+
+void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vertices, float i_height)
+{
+   const uint32 side_count = i_base_vertices.size();
+   mws_assert(side_count >= 3);
+   const gfx_indices_type vx_offset = 1;
+   // origin in zero
+   const glm::vec3 origin(0.f);
+   std::vector<gfx_indices_type> indices_data;
+   data_seqv_writer dsw(std::make_shared<mem_data_seqv>());
+
+   // write bottom origin positions
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   // normals
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+   // tex coords
+   dsw.write_fltp32(0.f);
+   dsw.write_fltp32(0.f);
+
+   // write bottom face vertices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      const glm::vec2& vx = i_base_vertices[k];
+      // bottom face positions
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+   }
+
+   // write side face vertices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      uint32 kxx = (k + 1) % side_count;
+      const glm::vec2& vx = i_base_vertices[k];
+      const glm::vec2& vx_next = i_base_vertices[kxx];
+      // positions 0 bottom
+      dsw.write_fltp32(vx.x);
+      dsw.write_fltp32(vx.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+
+      // positions 1 bottom
+      dsw.write_fltp32(vx_next.x);
+      dsw.write_fltp32(vx_next.y);
+      dsw.write_fltp32(0.f);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+
+      // positions 2 top origin
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(i_height);
+      // normals
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+      // tex coords
+      dsw.write_fltp32(0.f);
+      dsw.write_fltp32(0.f);
+   }
+
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      uint32 k_next = (k + 1) % side_count;
+      // bottom face indices
+      indices_data.push_back(0);
+      indices_data.push_back(vx_offset + k);
+      indices_data.push_back(vx_offset + k_next);
+   }
+
+   // side face indices
+   for (uint32 k = 0; k < side_count; k++)
+   {
+      const gfx_indices_type vx_side_offset = vx_offset + side_count;
+      indices_data.push_back(vx_side_offset + 3 * k + 0);
+      indices_data.push_back(vx_side_offset + 3 * k + 2);
+      indices_data.push_back(vx_side_offset + 3 * k + 1);
+   }
+
+   std::shared_ptr<data_seqv> ds = dsw.get_data_sequence();
+   const uint8_t* vertices_data = ds->data_as_byte_array();
+
+   set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
 }
