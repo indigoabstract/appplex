@@ -23,7 +23,7 @@ public:
    };
 
    free_camera(mws_sp<mws_mod> i_mod);
-
+   void vertical_scroll_limit(float i_inf_lim_degrees, float i_sup_lim_degrees);
 	void update_input(mws_sp<mws_dp> i_dp);
 	void update();
 

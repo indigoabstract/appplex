@@ -23,6 +23,16 @@ free_camera::free_camera(mws_sp<mws_mod> i_mod)
    mov_type = e_roll_view_axis;
 }
 
+void free_camera::vertical_scroll_limit(float i_inf_lim_degrees, float i_sup_lim_degrees)
+{
+   mws_assert(i_inf_lim_degrees < i_sup_lim_degrees);
+   mws_assert(i_inf_lim_degrees > 0.f);
+   mws_assert(sup_phi_deg < 180.f);
+   inf_phi_deg = i_inf_lim_degrees;
+   sup_phi_deg = i_sup_lim_degrees;
+   clamp_angles();
+}
+
 void free_camera::update_input(mws_sp<mws_dp> i_dp)
 {
    if (i_dp->is_processed())

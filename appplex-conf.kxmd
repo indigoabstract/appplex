@@ -54,7 +54,7 @@ mod
 	demo-fx[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ] ],
 	robobo1221-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	songbook[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ], ],
-	house[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, util, vector-fonts, vrn ] ],
+	house[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts, vrn ] ],
 
 	@@[ npw ],
 	
