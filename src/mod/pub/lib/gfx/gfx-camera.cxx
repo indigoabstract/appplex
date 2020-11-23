@@ -633,7 +633,7 @@ public:
 
 void z_order_sort(mws_sp<gfx_camera> i_cam, std::vector<mws_sp<gfx_vxo> >& i_opaque, std::vector<mws_sp<gfx_vxo> >& i_translucent)
 {
-   static auto z_sort = [](mws_sp<gfx_vxo> a, mws_sp<gfx_vxo> b)
+   const auto z_sort = [](mws_sp<gfx_vxo> a, mws_sp<gfx_vxo> b)
    {
       auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
       auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());

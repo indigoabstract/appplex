@@ -359,7 +359,7 @@ void mws_page_tab::init()
 
 void mws_page_tab::init_subobj()
 {
-   auto z_sort = [](mws_sp<mws_obj> a, mws_sp<mws_obj> b)
+   const auto z_sort = [](mws_sp<mws_obj> a, mws_sp<mws_obj> b)
    {
       return (a->get_z() > b->get_z());
    };
@@ -761,7 +761,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
    {
       mws_sp<mws_obj> new_selected_item;
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-      static auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
+      const auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
          auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());

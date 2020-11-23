@@ -135,7 +135,7 @@ void mws_str::to_upper(std::string& i_str)
 
 int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
 {
-   auto comp_ch = [](const char i_0, const char i_1) -> int32
+   const auto comp_ch = [](const char i_0, const char i_1) -> int32
    {
       if (i_0 == i_1)
       {

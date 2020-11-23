@@ -242,7 +242,7 @@ protected:
    // find the the closest match that's not less than i_position (can be equal)
    typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, fltp32 i_position)
    {
-      static auto cmp_positions = [](const pos_val& i_a, const pos_val& i_b) { return i_a.pos < i_b.pos; };
+      const auto cmp_positions = [](const pos_val& i_a, const pos_val& i_b) { return i_a.pos < i_b.pos; };
       pos_val pc;
       pc.pos = i_position;
       // i_vect is ordered, so we can do a binary search
