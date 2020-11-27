@@ -9,6 +9,12 @@ mws_push_disable_all_warnings
 mws_pop_disable_all_warnings
 
 
+template<> std::byte mws_to(const std::string& i_input) { return static_cast<std::byte>(std::stoi(i_input)); }
+template<> char mws_to(const std::string& i_input) { return i_input[0]; }
+template<> int8 mws_to(const std::string& i_input) { return static_cast<int8>(std::stoi(i_input)); }
+template<> uint8 mws_to(const std::string& i_input) { return static_cast<uint8>(std::stoi(i_input)); }
+template<> int16 mws_to(const std::string& i_input) { return static_cast<int16>(std::stoi(i_input)); }
+template<> uint16 mws_to(const std::string& i_input) { return static_cast<uint16>(std::stoi(i_input)); }
 template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
 template<> uint32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
 template<> int64 mws_to(const std::string& i_input) { return std::stoll(i_input); }

@@ -28,6 +28,12 @@ template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)
 
 
 inline std::string mws_to_str(const bool& i_input) { return (i_input) ? "true" : "false"; }
+inline std::string mws_to_str(const std::byte& i_input) { return std::to_string(static_cast<char>(i_input)); }
+inline std::string mws_to_str(const char& i_input) { return std::string(1, i_input); }
+inline std::string mws_to_str(const int8& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint8& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const int16& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint16& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const int32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const uint32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const int64& i_input) { return std::to_string(i_input); }
@@ -36,13 +42,19 @@ inline std::string mws_to_str(const fltp32& i_input) { return std::to_string(i_i
 inline std::string mws_to_str(const fltp64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
 template<typename T> T mws_to(const std::string& i_input) { mws_assert(false); return T(); }
+template<> bool mws_to(const std::string& i_input);
+template<> std::byte mws_to(const std::string& i_input);
+template<> char mws_to(const std::string& i_input);
+template<> int8 mws_to(const std::string& i_input);
+template<> uint8 mws_to(const std::string& i_input);
+template<> int16 mws_to(const std::string& i_input);
+template<> uint16 mws_to(const std::string& i_input);
 template<> int32 mws_to(const std::string& i_input);
 template<> uint32 mws_to(const std::string& i_input);
 template<> int64 mws_to(const std::string& i_input);
 template<> uint64 mws_to(const std::string& i_input);
 template<> fltp32 mws_to(const std::string& i_input);
 template<> fltp64 mws_to(const std::string& i_input);
-template<> bool mws_to(const std::string& i_input);
 
 template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
 {
