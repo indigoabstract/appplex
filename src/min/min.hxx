@@ -27,7 +27,7 @@ template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)
 }
 
 
-inline std::string mws_to_str(const bool& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const bool& i_input) { return (i_input) ? "true" : "false"; }
 inline std::string mws_to_str(const int32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const uint32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const int64& i_input) { return std::to_string(i_input); }
