@@ -40,11 +40,11 @@ void track::loadTrackData(char* track_name)
 	mem_data_seqv mds(res.data(), res.size());
 	data_seqv_reader_big_endian dsr(&mds);
 
-	version_number = dsr.read_int32();
-	base_point_count = dsr.read_int32();
-	interpolation_steps_count = dsr.read_int32();
-	start_point = dsr.read_int32();
-	road_side_width = dsr.read_fltp32();
+	version_number = dsr.read_i32();
+	base_point_count = dsr.read_i32();
+	interpolation_steps_count = dsr.read_i32();
+	start_point = dsr.read_i32();
+	road_side_width = dsr.read_f32();
 
 	int bpSize = base_point_count * 5;
 	base_points = new int[bpSize];
@@ -53,11 +53,11 @@ void track::loadTrackData(char* track_name)
 	{
 		if (i < start_point * 5)
 		{
-			base_points[bpSize + i - start_point * 5] = dsr.read_int32();
+			base_points[bpSize + i - start_point * 5] = dsr.read_i32();
 		}
 		else
 		{
-			base_points[i - start_point * 5] = dsr.read_int32();                    
+			base_points[i - start_point * 5] = dsr.read_i32();                    
 		}
 	}
 }

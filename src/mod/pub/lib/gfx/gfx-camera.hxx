@@ -144,17 +144,17 @@ public:
 
 namespace seq_util
 {
-   inline float read_float(mws_sp<rw_seqv> isq)
+   inline float read_f32(mws_sp<rw_seqv> isq)
    {
-      return isq->r.read_fltp32();
+      return isq->r.read_f32();
    }
 
    inline glm::vec2 read_vec2(mws_sp<rw_seqv> isq)
    {
       glm::vec2 val;
 
-      val.x = isq->r.read_fltp32();
-      val.y = isq->r.read_fltp32();
+      val.x = isq->r.read_f32();
+      val.y = isq->r.read_f32();
 
       return val;
    }
@@ -163,9 +163,9 @@ namespace seq_util
    {
       glm::vec3 val;
 
-      val.x = isq->r.read_fltp32();
-      val.y = isq->r.read_fltp32();
-      val.z = isq->r.read_fltp32();
+      val.x = isq->r.read_f32();
+      val.y = isq->r.read_f32();
+      val.z = isq->r.read_f32();
 
       return val;
    }
@@ -174,10 +174,10 @@ namespace seq_util
    {
       glm::vec4 val;
 
-      val.x = isq->r.read_fltp32();
-      val.y = isq->r.read_fltp32();
-      val.z = isq->r.read_fltp32();
-      val.w = isq->r.read_fltp32();
+      val.x = isq->r.read_f32();
+      val.y = isq->r.read_f32();
+      val.z = isq->r.read_f32();
+      val.w = isq->r.read_f32();
 
       return val;
    }
@@ -186,45 +186,45 @@ namespace seq_util
    {
       glm::quat val;
 
-      val.x = isq->r.read_fltp32();
-      val.y = isq->r.read_fltp32();
-      val.z = isq->r.read_fltp32();
-      val.w = isq->r.read_fltp32();
+      val.x = isq->r.read_f32();
+      val.y = isq->r.read_f32();
+      val.z = isq->r.read_f32();
+      val.w = isq->r.read_f32();
 
       return val;
    }
 
-   inline void write_float(mws_sp<rw_seqv> isq, float ival)
+   inline void write_f32(mws_sp<rw_seqv> isq, float ival)
    {
-      isq->w.write_fltp32(ival);
+      isq->w.write_f32(ival);
    }
 
    inline void write_vec2(mws_sp<rw_seqv> isq, glm::vec2& ival)
    {
-      isq->w.write_fltp32(ival.x);
-      isq->w.write_fltp32(ival.y);
+      isq->w.write_f32(ival.x);
+      isq->w.write_f32(ival.y);
    }
 
    inline void write_vec3(mws_sp<rw_seqv> isq, glm::vec3& ival)
    {
-      isq->w.write_fltp32(ival.x);
-      isq->w.write_fltp32(ival.y);
-      isq->w.write_fltp32(ival.z);
+      isq->w.write_f32(ival.x);
+      isq->w.write_f32(ival.y);
+      isq->w.write_f32(ival.z);
    }
 
    inline void write_vec4(mws_sp<rw_seqv> isq, glm::vec4& ival)
    {
-      isq->w.write_fltp32(ival.x);
-      isq->w.write_fltp32(ival.y);
-      isq->w.write_fltp32(ival.z);
-      isq->w.write_fltp32(ival.w);
+      isq->w.write_f32(ival.x);
+      isq->w.write_f32(ival.y);
+      isq->w.write_f32(ival.z);
+      isq->w.write_f32(ival.w);
    }
 
    inline void write_quat(mws_sp<rw_seqv> isq, glm::quat& ival)
    {
-      isq->w.write_fltp32(ival.x);
-      isq->w.write_fltp32(ival.y);
-      isq->w.write_fltp32(ival.z);
-      isq->w.write_fltp32(ival.w);
+      isq->w.write_f32(ival.x);
+      isq->w.write_f32(ival.y);
+      isq->w.write_f32(ival.z);
+      isq->w.write_f32(ival.w);
    }
 }

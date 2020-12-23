@@ -43,22 +43,22 @@ namespace ns_mws_camera
 
       virtual void read_data(mws_sp<rw_seqv> seq)
       {
-         int length = seq->r.read_uint32();
+         int length = seq->r.read_u32();
          std::vector<char> txt(length);
-         seq->r.read_int8((int8*)txt.data(), length * sizeof(char), 0);
+         seq->r.read_i8((int8*)txt.data(), length * sizeof(char), 0);
          tx = std::string(txt.data(), length);
-         x = seq_util::read_float(seq);
-         y = seq_util::read_float(seq);
-         font_idx = seq->r.read_uint32();
+         x = seq_util::read_f32(seq);
+         y = seq_util::read_f32(seq);
+         font_idx = seq->r.read_u32();
       }
 
       virtual void write_data(mws_sp<rw_seqv> seq)
       {
-         seq->w.write_uint32(tx.length());
-         seq->w.write_int8((int8*)tx.c_str(), tx.length() * sizeof(char), 0);
-         seq_util::write_float(seq, x);
-         seq_util::write_float(seq, y);
-         seq->w.write_uint32(font_idx);
+         seq->w.write_u32(tx.length());
+         seq->w.write_i8((int8*)tx.c_str(), tx.length() * sizeof(char), 0);
+         seq_util::write_f32(seq, x);
+         seq_util::write_f32(seq, y);
+         seq->w.write_u32(font_idx);
       }
 
       void on_update_start(mws_sp<draw_context> idc)

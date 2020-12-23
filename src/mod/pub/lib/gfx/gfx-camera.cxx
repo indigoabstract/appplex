@@ -153,15 +153,15 @@ public:
    virtual void read_data(mws_sp<rw_seqv> seq)
    {
       start = seq_util::read_vec3(seq);
-      length = seq_util::read_float(seq);
-      thickness = seq_util::read_float(seq);
+      length = seq_util::read_f32(seq);
+      thickness = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
    {
       seq_util::write_vec3(seq, start);
-      seq_util::write_float(seq, length);
-      seq_util::write_float(seq, thickness);
+      seq_util::write_f32(seq, length);
+      seq_util::write_f32(seq, thickness);
    }
 
    virtual void draw(mws_sp<draw_context> idc)
@@ -197,7 +197,7 @@ public:
       size = seq_util::read_vec3(seq);
       orientation = seq_util::read_quat(seq);
       color = seq_util::read_vec4(seq);
-      thickness = seq_util::read_float(seq);
+      thickness = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
@@ -206,7 +206,7 @@ public:
       seq_util::write_vec3(seq, size);
       seq_util::write_quat(seq, orientation);
       seq_util::write_vec4(seq, color);
-      seq_util::write_float(seq, thickness);
+      seq_util::write_f32(seq, thickness);
    }
 
    virtual void draw(mws_sp<draw_context> idc)
@@ -264,21 +264,21 @@ public:
    virtual void read_data(mws_sp<rw_seqv> seq)
    {
       position = seq_util::read_vec3(seq);
-      radius = seq_util::read_float(seq);
+      radius = seq_util::read_f32(seq);
       normal = seq_util::read_vec3(seq);
       color = seq_util::read_vec4(seq);
-      precision = seq_util::read_float(seq);
-      thickness = seq_util::read_float(seq);
+      precision = seq_util::read_f32(seq);
+      thickness = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
    {
       seq_util::write_vec3(seq, position);
-      seq_util::write_float(seq, radius);
+      seq_util::write_f32(seq, radius);
       seq_util::write_vec3(seq, normal);
       seq_util::write_vec4(seq, color);
-      seq_util::write_float(seq, precision);
-      seq_util::write_float(seq, thickness);
+      seq_util::write_f32(seq, precision);
+      seq_util::write_f32(seq, thickness);
    }
 
    virtual void draw(mws_sp<draw_context> idc)
@@ -312,7 +312,7 @@ public:
       start = seq_util::read_vec3(seq);
       finish = seq_util::read_vec3(seq);
       color = seq_util::read_vec4(seq);
-      thickness = seq_util::read_float(seq);
+      thickness = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
@@ -320,7 +320,7 @@ public:
       seq_util::write_vec3(seq, start);
       seq_util::write_vec3(seq, finish);
       seq_util::write_vec4(seq, color);
-      seq_util::write_float(seq, thickness);
+      seq_util::write_f32(seq, thickness);
    }
 
    virtual void draw(mws_sp<draw_context> idc)
@@ -351,20 +351,20 @@ public:
 
    virtual void read_data(mws_sp<rw_seqv> seq)
    {
-      name = seq->r.read_string();
-      x = seq_util::read_float(seq);
-      y = seq_util::read_float(seq);
-      width = seq_util::read_float(seq);
-      height = seq_util::read_float(seq);
+      name = seq->r.read_text();
+      x = seq_util::read_f32(seq);
+      y = seq_util::read_f32(seq);
+      width = seq_util::read_f32(seq);
+      height = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
    {
-      seq->w.write_string(name);
-      seq_util::write_float(seq, x);
-      seq_util::write_float(seq, y);
-      seq_util::write_float(seq, width);
-      seq_util::write_float(seq, height);
+      seq->w.write_text(name);
+      seq_util::write_f32(seq, x);
+      seq_util::write_f32(seq, y);
+      seq_util::write_f32(seq, width);
+      seq_util::write_f32(seq, height);
    }
 
    virtual void draw(mws_sp<draw_context> idc)
@@ -481,14 +481,14 @@ public:
    {
       center = seq_util::read_vec3(seq);
       color = seq_util::read_vec4(seq);
-      thickness = seq_util::read_float(seq);
+      thickness = seq_util::read_f32(seq);
    }
 
    virtual void write_data(mws_sp<rw_seqv> seq)
    {
       seq_util::write_vec3(seq, center);
       seq_util::write_vec4(seq, color);
-      seq_util::write_float(seq, thickness);
+      seq_util::write_f32(seq, thickness);
    }
 
    virtual void draw(mws_sp<draw_context> idc)

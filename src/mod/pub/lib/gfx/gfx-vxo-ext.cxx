@@ -349,44 +349,44 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    data_seqv_writer dsw(std::make_shared<mem_data_seqv>());
 
    // write bottom origin positions
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
    // normals
-   dsw.write_fltp32(-up_dir.x);
-   dsw.write_fltp32(-up_dir.y);
-   dsw.write_fltp32(-up_dir.z);
+   dsw.write_f32(-up_dir.x);
+   dsw.write_f32(-up_dir.y);
+   dsw.write_f32(-up_dir.z);
    // tex coords
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
 
    // write top origin positions
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(i_height);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(i_height);
    // normals
-   dsw.write_fltp32(up_dir.x);
-   dsw.write_fltp32(up_dir.y);
-   dsw.write_fltp32(up_dir.z);
+   dsw.write_f32(up_dir.x);
+   dsw.write_f32(up_dir.y);
+   dsw.write_f32(up_dir.z);
    // tex coords
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
 
    // write bottom face vertices
    for (uint32 k = 0; k < side_count; k++)
    {
       const glm::vec2& vx = i_base_vertices[k];
       // bottom face positions
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(-up_dir.x);
-      dsw.write_fltp32(-up_dir.y);
-      dsw.write_fltp32(-up_dir.z);
+      dsw.write_f32(-up_dir.x);
+      dsw.write_f32(-up_dir.y);
+      dsw.write_f32(-up_dir.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
    }
 
    // write top face vertices
@@ -394,16 +394,16 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    {
       const glm::vec2& vx = i_base_vertices[k];
       // top face positions
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(i_height);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(i_height);
       // normals
-      dsw.write_fltp32(up_dir.x);
-      dsw.write_fltp32(up_dir.y);
-      dsw.write_fltp32(up_dir.z);
+      dsw.write_f32(up_dir.x);
+      dsw.write_f32(up_dir.y);
+      dsw.write_f32(up_dir.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
    }
 
    // write side face vertices
@@ -418,52 +418,52 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
       normal = glm::normalize(normal);
 
       // positions 0 bottom
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
 
       // positions 1 bottom
-      dsw.write_fltp32(vx_next.x);
-      dsw.write_fltp32(vx_next.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx_next.x);
+      dsw.write_f32(vx_next.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
 
       // positions 2 top
-      dsw.write_fltp32(vx_next.x);
-      dsw.write_fltp32(vx_next.y);
-      dsw.write_fltp32(i_height);
+      dsw.write_f32(vx_next.x);
+      dsw.write_f32(vx_next.y);
+      dsw.write_f32(i_height);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
 
       // positions 3 top
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(i_height);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(i_height);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
    }
 
    for (uint32 k = 0; k < side_count; k++)
@@ -491,7 +491,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
       indices_data.push_back(vx_side_offset + 4 * k + 2);
    }
 
-   std::shared_ptr<data_seqv> ds = dsw.get_data_sequence();
+   std::shared_ptr<data_seqv> ds = dsw.data_sequence();
    const uint8_t* vertices_data = ds->data_as_byte_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
@@ -513,32 +513,32 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    data_seqv_writer dsw(std::make_shared<mem_data_seqv>());
 
    // write bottom origin positions
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
    // normals
-   dsw.write_fltp32(-up_dir.x);
-   dsw.write_fltp32(-up_dir.y);
-   dsw.write_fltp32(-up_dir.z);
+   dsw.write_f32(-up_dir.x);
+   dsw.write_f32(-up_dir.y);
+   dsw.write_f32(-up_dir.z);
    // tex coords
-   dsw.write_fltp32(0.f);
-   dsw.write_fltp32(0.f);
+   dsw.write_f32(0.f);
+   dsw.write_f32(0.f);
 
    // write bottom face vertices
    for (uint32 k = 0; k < side_count; k++)
    {
       const glm::vec2& vx = i_base_vertices[k];
       // bottom face positions
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(-up_dir.x);
-      dsw.write_fltp32(-up_dir.y);
-      dsw.write_fltp32(-up_dir.z);
+      dsw.write_f32(-up_dir.x);
+      dsw.write_f32(-up_dir.y);
+      dsw.write_f32(-up_dir.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
    }
 
    // write side face vertices
@@ -555,40 +555,40 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
       normal = glm::normalize(normal);
 
       // positions 0 bottom
-      dsw.write_fltp32(vx.x);
-      dsw.write_fltp32(vx.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx.x);
+      dsw.write_f32(vx.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
 
       // positions 1 bottom
-      dsw.write_fltp32(vx_next.x);
-      dsw.write_fltp32(vx_next.y);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(vx_next.x);
+      dsw.write_f32(vx_next.y);
+      dsw.write_f32(0.f);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
 
       // positions 2 top origin
-      dsw.write_fltp32(top_pos.x);
-      dsw.write_fltp32(top_pos.y);
-      dsw.write_fltp32(top_pos.z);
+      dsw.write_f32(top_pos.x);
+      dsw.write_f32(top_pos.y);
+      dsw.write_f32(top_pos.z);
       // normals
-      dsw.write_fltp32(normal.x);
-      dsw.write_fltp32(normal.y);
-      dsw.write_fltp32(normal.z);
+      dsw.write_f32(normal.x);
+      dsw.write_f32(normal.y);
+      dsw.write_f32(normal.z);
       // tex coords
-      dsw.write_fltp32(0.f);
-      dsw.write_fltp32(0.f);
+      dsw.write_f32(0.f);
+      dsw.write_f32(0.f);
    }
 
    for (uint32 k = 0; k < side_count; k++)
@@ -609,7 +609,7 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
       indices_data.push_back(vx_side_offset + 3 * k + 1);
    }
 
-   std::shared_ptr<data_seqv> ds = dsw.get_data_sequence();
+   std::shared_ptr<data_seqv> ds = dsw.data_sequence();
    const uint8_t* vertices_data = ds->data_as_byte_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());

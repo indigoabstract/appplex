@@ -95,7 +95,7 @@ public:
    virtual void close();
    virtual void flush();
    virtual bool reached_eof() const;
-   virtual void seek(uint64 i_pos);
+   virtual void set_io_position(uint64 i_pos);
    virtual int read(std::vector<uint8>& i_buffer);
    virtual int write(const std::vector<uint8>& i_buffer);
    virtual int read(uint8* i_buffer, int i_size);
@@ -114,7 +114,7 @@ protected:
    virtual bool open_impl(std::string i_open_mode) = 0;
    virtual void close_impl() = 0;
    virtual void flush_impl() = 0;
-   virtual void seek_impl(uint64 i_pos, int i_seek_pos);
+   virtual void set_io_position_impl(uint64 i_pos, int i_io_pos);
    virtual uint64 tell_impl();
    virtual int read_impl(uint8* i_buffer, int i_size);
    virtual int write_impl(const uint8* i_buffer, int i_size);

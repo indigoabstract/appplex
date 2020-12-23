@@ -254,9 +254,9 @@ public:
         }
     }
 
-    virtual void seek_impl(uint64 ipos, int iseek_pos) override
+    virtual void set_io_position_impl(uint64 i_pos, int i_io_pos) override
 	{
-        fseek(file, ipos, iseek_pos);
+        fseek(file, i_pos, i_io_pos);
 	}
 
 	virtual uint64 tell_impl() override

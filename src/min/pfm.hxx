@@ -145,7 +145,7 @@ public:
       void close();
       void flush();
       bool reached_eof() const;
-      void seek(uint64 i_pos);
+      void set_io_position(uint64 i_pos);
 
       int read(std::vector<uint8>& i_buffer);
       int write(const std::vector<uint8>& i_buffer);

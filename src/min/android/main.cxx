@@ -238,15 +238,15 @@ public:
       }
    }
 
-   virtual void seek_impl(uint64 i_pos, int i_seek_pos) override
+   virtual void set_io_position_impl(uint64 i_pos, int i_io_pos) override
    {
       if (file)
       {
-         fseek(file, i_pos, i_seek_pos);
+         fseek(file, i_pos, i_io_pos);
       }
       else if (asset_file)
       {
-         AAsset_seek64(asset_file, i_pos, i_seek_pos);
+         AAsset_seek64(asset_file, i_pos, i_io_pos);
       }
       else
       {

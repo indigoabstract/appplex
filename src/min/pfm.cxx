@@ -340,11 +340,11 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
    if (i_index_file->is_open())
    {
       mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, false);
-      uint32 size = fs->r.read_uint32();
+      uint32 size = fs->r.read_u32();
 
       for (uint32 k = 0; k < size; k++)
       {
-         std::string file_path = fs->r.read_string();
+         std::string file_path = fs->r.read_text();
          mws_path path = res_dir / file_path;
          std::string filename = path.filename();
 
@@ -369,13 +369,13 @@ void mws_res_index::write_file_map(mws_sp<mws_file> i_index_file, const mws_file
    i_index_file->io.open("wb");
    mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, true);
 
-   fs->w.write_uint32(i_file_map.size());
+   fs->w.write_u32(i_file_map.size());
 
    for (auto it : i_file_map)
    {
       std::string path = it.second->string_path();
 
-      fs->w.write_string(path);
+      fs->w.write_text(path);
    }
 
    i_index_file->io.close();
@@ -462,11 +462,11 @@ bool mws_file_impl::reached_eof() const
    return is_eof != 0;
 }
 
-void mws_file_impl::seek(uint64 i_pos)
+void mws_file_impl::set_io_position(uint64 i_pos)
 {
    check_state();
 
-   seek_impl(i_pos, SEEK_SET);
+   set_io_position_impl(i_pos, SEEK_SET);
    file_pos = i_pos;
 }
 
@@ -514,9 +514,9 @@ void mws_file_impl::check_state() const
    }
 }
 
-void mws_file_impl::seek_impl(uint64 i_pos, int i_seek_pos)
+void mws_file_impl::set_io_position_impl(uint64 i_pos, int i_io_pos)
 {
-   fseek(get_file_impl(), (long)i_pos, i_seek_pos);
+   fseek(get_file_impl(), (long)i_pos, i_io_pos);
 }
 
 uint64 mws_file_impl::tell_impl()
@@ -1140,9 +1140,9 @@ bool mws_file::io_op::reached_eof() const
    return impl->reached_eof();
 }
 
-void mws_file::io_op::seek(uint64 i_pos)
+void mws_file::io_op::set_io_position(uint64 i_pos)
 {
-   impl->seek(i_pos);
+   impl->set_io_position(i_pos);
 }
 
 int mws_file::io_op::read(std::vector<uint8>& i_buffer)
@@ -1514,7 +1514,7 @@ private:
 
          while (res_rw->read_position() < file_length)
          {
-            std::string line = res_rw->r.read_string();
+            std::string line = res_rw->r.read_text();
             log.push_back(line);
          }
 
@@ -1551,7 +1551,7 @@ private:
       {
          auto res_rw = rw_file_seqv::nwi(log_file, true);
 
-         res_rw->w.write_string(i_msg);
+         res_rw->w.write_text(i_msg);
          log_file->io.flush();
       }
 
