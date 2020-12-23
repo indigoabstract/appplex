@@ -7,6 +7,7 @@
 #include <string>
 
 
+// data_seqv
 class data_seqv
 {
 public:
@@ -41,7 +42,7 @@ private:
 };
 
 
-// doesn't copy the input data, but uses it directly. be very careful with this.
+// ro_mem_seqv. doesn't copy the input data, but uses it directly. be very careful with this.
 class ro_mem_seqv : public data_seqv
 {
 public:
@@ -67,6 +68,7 @@ private:
 };
 
 
+// mem_data_seqv
 class mem_data_seqv : public data_seqv
 {
 public:
@@ -91,6 +93,7 @@ private:
 };
 
 
+// file_data_seqv
 class file_inst
 {
 public:
@@ -106,6 +109,7 @@ public:
 class file_data_seqv : public data_seqv
 {
 public:
+   file_data_seqv() {}
    file_data_seqv(std::shared_ptr<mws_file> i_file, bool i_is_writable);
    virtual ~file_data_seqv() {}
 
@@ -128,14 +132,23 @@ private:
 };
 
 
-template<class seqv_ptr> class data_seqv_reader
+// data_seqv_reader_base
+template<class T> struct read_bytes_ref
+{
+   int operator() (T& i_data_seqv, int8_t* i_seqv, int i_elem_count, int i_offset) { return i_data_seqv.read_bytes(i_seqv, i_elem_count, i_offset); }
+};
+
+template<class T> struct read_bytes_ptr
+{
+   int operator() (T& i_data_seqv, int8_t* i_seqv, int i_elem_count, int i_offset) { return i_data_seqv->read_bytes(i_seqv, i_elem_count, i_offset); }
+};
+
+template<class T, class reader> class data_seqv_reader_base
 {
 public:
-   data_seqv_reader();
-   data_seqv_reader(seqv_ptr i_seqv);
-   ~data_seqv_reader();
-   seqv_ptr data_sequence();
-   void set_data_sequence(seqv_ptr i_seqv);
+   data_seqv_reader_base();
+   ~data_seqv_reader_base();
+   T& data_sequence();
    // single data versions
    int8_t read_i8();
    uint8_t read_u8();
@@ -149,8 +162,8 @@ public:
    double read_f64();
    std::string read_text();
    std::string read_line();
-   template<class T> void read_pointer(T*& i_seqv);
-   // seqv data versions. return the number of bytes read
+   template<class T0> void read_pointer(T0*& i_seqv);
+   // seqv data versions. each returns the number of bytes read
    int read_i8(int8_t* i_seqv, int i_elem_count, int i_offset);
    int read_u8(uint8_t* i_seqv, int i_elem_count, int i_offset);
    int read_i16(int16_t* i_seqv, int i_elem_count, int i_offset);
@@ -162,23 +175,63 @@ public:
    int read_f32(float* i_seqv, int i_elem_count, int i_offset);
    int read_f64(double* i_seqv, int i_elem_count, int i_offset);
 
-private:
-   seqv_ptr seqv = nullptr;
+protected:
+   data_seqv_reader_base(const data_seqv_reader_base&) = delete;
+   data_seqv_reader_base& operator=(const data_seqv_reader_base&) = delete;
+
+   T seqv;
+};
+
+class data_seqv_mem_reader : public data_seqv_reader_base<mem_data_seqv, read_bytes_ref<data_seqv>>
+{
+public:
+   data_seqv_mem_reader() {}
+   data_seqv_mem_reader(const mem_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const mem_data_seqv& i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_file_reader : public data_seqv_reader_base<file_data_seqv, read_bytes_ref<data_seqv>>
+{
+public:
+   data_seqv_file_reader() {}
+   data_seqv_file_reader(const file_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const file_data_seqv& i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_reader_ptr : public data_seqv_reader_base<data_seqv*, read_bytes_ptr<data_seqv*>>
+{
+public:
+   data_seqv_reader_ptr() { seqv = nullptr; }
+   data_seqv_reader_ptr(data_seqv* i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(data_seqv* i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_reader_sp : public data_seqv_reader_base<std::shared_ptr<data_seqv>, read_bytes_ptr<std::shared_ptr<data_seqv>>>
+{
+public:
+   data_seqv_reader_sp() {}
+   data_seqv_reader_sp(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
 };
 
 
-using data_sequence_reader = data_seqv_reader<std::shared_ptr<data_seqv>>;
-using data_seq_rdr_ptr = data_seqv_reader<data_seqv*>;
+// data_seqv_writer_base
+template<class T> struct write_bytes_ref
+{
+   void operator() (T& i_data_seqv, const int8_t* i_seqv, int i_elem_count, int i_offset) { i_data_seqv.write_bytes(i_seqv, i_elem_count, i_offset); }
+};
 
+template<class T> struct write_bytes_ptr
+{
+   void operator() (T& i_data_seqv, const int8_t* i_seqv, int i_elem_count, int i_offset) { i_data_seqv->write_bytes(i_seqv, i_elem_count, i_offset); }
+};
 
-class data_seqv_writer
+template<class T, class writer> class data_seqv_writer_base
 {
 public:
-   data_seqv_writer() {}
-   data_seqv_writer(std::shared_ptr<data_seqv> i_seqv) : seqv(i_seqv) {}
-   ~data_seqv_writer() {}
-   std::shared_ptr<data_seqv> data_sequence() { return seqv; }
-   void set_data_sequence(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
+   data_seqv_writer_base();
+   ~data_seqv_writer_base();
+   T& data_sequence();
    // single data versions
    void write_i8(int8_t d);
    void write_u8(uint8_t d);
@@ -191,8 +244,8 @@ public:
    void write_f32(float d);
    void write_f64(double d);
    void write_text(const std::string& i_text);
-   void write_line(const std::string& i_text, bool inew_line = true);
-   template<class T> void write_pointer(T* const i_seqv);
+   void write_line(const std::string& i_text, bool i_new_line = true);
+   template<class T0> void write_pointer(T0* const i_seqv);
    // seqv data versions
    void write_i8(const int8_t* i_seqv, int i_elem_count, int i_offset);
    void write_u8(const uint8_t* i_seqv, int i_elem_count, int i_offset);
@@ -205,11 +258,47 @@ public:
    void write_f32(const float* i_seqv, int i_elem_count, int i_offset);
    void write_f64(const double* i_seqv, int i_elem_count, int i_offset);
 
-private:
-   std::shared_ptr<data_seqv> seqv;
+protected:
+   data_seqv_writer_base(const data_seqv_writer_base&) = delete;
+   data_seqv_writer_base& operator=(const data_seqv_writer_base&) = delete;
+
+   T seqv;
+};
+
+class data_seqv_mem_writer : public data_seqv_writer_base<mem_data_seqv, write_bytes_ref<data_seqv>>
+{
+public:
+   data_seqv_mem_writer() {}
+   data_seqv_mem_writer(const mem_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const mem_data_seqv& i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_file_writer : public data_seqv_writer_base<file_data_seqv, write_bytes_ref<data_seqv>>
+{
+public:
+   data_seqv_file_writer() {}
+   data_seqv_file_writer(const file_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const file_data_seqv& i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_writer_ptr : public data_seqv_writer_base<data_seqv*, write_bytes_ptr<data_seqv*>>
+{
+public:
+   data_seqv_writer_ptr() { seqv = nullptr; }
+   data_seqv_writer_ptr(data_seqv* i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(data_seqv* i_seqv) { seqv = i_seqv; }
+};
+
+class data_seqv_writer_sp : public data_seqv_writer_base<std::shared_ptr<data_seqv>, write_bytes_ptr<std::shared_ptr<data_seqv>>>
+{
+public:
+   data_seqv_writer_sp() {}
+   data_seqv_writer_sp(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
 };
 
 
+// rw_seqv
 class rw_seqv : public mem_data_seqv
 {
 public:
@@ -223,14 +312,15 @@ public:
       return inst;
    }
 
-   data_sequence_reader r;
-   data_seqv_writer w;
+   data_seqv_reader_sp r;
+   data_seqv_writer_sp w;
 
 private:
    rw_seqv() {}
 };
 
 
+// rw_file_seqv
 class rw_file_seqv : public file_data_seqv
 {
 public:
@@ -244,12 +334,55 @@ public:
       return inst;
    }
 
-   data_sequence_reader r;
-   data_seqv_writer w;
+   data_seqv_reader_sp r;
+   data_seqv_writer_sp w;
 
 private:
    rw_file_seqv(std::shared_ptr<mws_file> i_file, bool i_is_writable) : file_data_seqv(i_file, i_is_writable) {}
 };
+
+
+// data_seqv_reader_big_endian
+class data_seqv_reader_big_endian
+{
+public:
+   data_seqv_reader_big_endian(data_seqv* i_seqv) : seqv(i_seqv) {}
+   ~data_seqv_reader_big_endian() {}
+
+   // single data versions
+   int8_t read_i8();
+   uint8_t read_u8();
+   int16_t read_i16();
+   uint16_t read_u16();
+   int32_t read_i32();
+   uint32_t read_u32();
+   int64_t read_i64();
+   uint64_t read_u64();
+   float read_f32();
+   double read_f64();
+
+   // seqv data versions
+   void read_i8(int8_t* i_seqv, int i_elem_count, int i_offset);
+   void read_u8(uint8_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_i16(int16_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_u16(uint16_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_i32(int32_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_u32(uint32_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_i64(int64_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_u64(uint64_t* i_seqv, int i_elem_count, int i_offset);
+   //void read_f32(float* i_seqv, int i_elem_count, int i_offset);
+   //void read_f64(double* i_seqv, int i_elem_count, int i_offset);
+
+private:
+   data_seqv* seqv;
+};
+
+
+
+
+
+
+
 
 
 
@@ -257,6 +390,14 @@ private:
 
 
 
+
+
+
+
+
+
+
+// data_seqv
 inline data_seqv::data_seqv() : read_position_v(0), write_position_v(0), total_bytes_read_v(0), total_bytes_written_v(0) {}
 inline data_seqv::~data_seqv() {}
 inline bool data_seqv::reached_end_of_sequence() { return read_position() >= size(); }
@@ -281,6 +422,7 @@ inline void data_seqv::write_bytes(const int8_t* i_seqv, int i_elem_count, int i
 }
 
 
+// ro_mem_seqv
 inline std::shared_ptr<std::vector<uint8_t>> ro_mem_seqv::data_as_byte_vector()
 {
    std::shared_ptr<std::vector<uint8_t>> sq;
@@ -314,6 +456,7 @@ inline int ro_mem_seqv::read_i8(int8_t * i_seqv, int i_elem_count, int i_offset)
 inline int ro_mem_seqv::write_i8(const int8_t*, int, int){   mws_throw mws_exception("n/a");   return -1;}
 
 
+// mem_data_seqv
 inline mem_data_seqv::mem_data_seqv(){}
 
 inline mem_data_seqv::mem_data_seqv(const uint8_t* i_seqv, int i_elem_count)
@@ -371,6 +514,7 @@ inline int mem_data_seqv::write_i8(const int8_t* i_seqv, int i_elem_count, int i
 }
 
 
+// file_data_seqv
 inline file_data_seqv::file_data_seqv(std::shared_ptr<mws_file> i_file, bool i_is_writable)
 {
    mws_assert(i_file != nullptr);
@@ -454,25 +598,22 @@ inline int file_data_seqv::write_i8(const int8_t* i_seqv, int i_elem_count, int 
 }
 
 
-template<class seqv_ptr> data_seqv_reader<seqv_ptr>::data_seqv_reader() {}
-template<class seqv_ptr> data_seqv_reader<seqv_ptr>::data_seqv_reader(seqv_ptr i_seqv) : seqv(i_seqv) {}
-template<class seqv_ptr> data_seqv_reader<seqv_ptr>::~data_seqv_reader() {}
-template<class seqv_ptr> seqv_ptr data_seqv_reader<seqv_ptr>::data_sequence() { return seqv; }
-template<class seqv_ptr> void data_seqv_reader<seqv_ptr>::set_data_sequence(seqv_ptr i_seqv) { seqv = i_seqv; }
+// data_seqv_reader_base
+template<class T, class reader> data_seqv_reader_base<T, reader>::data_seqv_reader_base() {}
+template<class T, class reader> data_seqv_reader_base<T, reader>::~data_seqv_reader_base() {}
+template<class T, class reader> T& data_seqv_reader_base<T, reader>::data_sequence() { return seqv; }
+template<class T, class reader> int8_t data_seqv_reader_base<T, reader>::read_i8() { int8_t sq; read_i8(&sq, 1, 0); return sq; }
+template<class T, class reader> uint8_t data_seqv_reader_base<T, reader>::read_u8() { return (uint8_t)read_i8(); }
+template<class T, class reader> int16_t data_seqv_reader_base<T, reader>::read_i16() { int8_t sq[2]; read_i8(sq, 2, 0); return *(int16_t*)sq; }
+template<class T, class reader> uint16_t data_seqv_reader_base<T, reader>::read_u16() { return (uint16_t)read_i16(); }
+template<class T, class reader> int32_t data_seqv_reader_base<T, reader>::read_i32() { int8_t sq[4]; read_i8(sq, 4, 0); return *(int32_t*)sq; }
+template<class T, class reader> uint32_t data_seqv_reader_base<T, reader>::read_u32() { return (uint32_t)read_i32(); }
+template<class T, class reader> int64_t data_seqv_reader_base<T, reader>::read_i64() { int8_t sq[8]; read_i8(sq, 8, 0); return *(int64_t*)sq; }
+template<class T, class reader> uint64_t data_seqv_reader_base<T, reader>::read_u64() { return (uint64_t)read_i64(); }
+template<class T, class reader> float data_seqv_reader_base<T, reader>::read_f32() { int32_t r = read_i32(); return *(float*)&r; }
+template<class T, class reader> double data_seqv_reader_base<T, reader>::read_f64() { int64_t r = read_i64(); return *(double*)&r; }
 
-// single data versions
-template<class seqv_ptr> int8_t data_seqv_reader<seqv_ptr>::read_i8() { int8_t sq; read_i8(&sq, 1, 0); return sq; }
-template<class seqv_ptr> uint8_t data_seqv_reader<seqv_ptr>::read_u8() { return (uint8_t)read_i8(); }
-template<class seqv_ptr> int16_t data_seqv_reader<seqv_ptr>::read_i16() { int8_t sq[2]; read_i8(sq, 2, 0); return *(int16_t*)sq; }
-template<class seqv_ptr> uint16_t data_seqv_reader<seqv_ptr>::read_u16() { return (uint16_t)read_i16(); }
-template<class seqv_ptr> int32_t data_seqv_reader<seqv_ptr>::read_i32() { int8_t sq[4]; read_i8(sq, 4, 0); return *(int32_t*)sq; }
-template<class seqv_ptr> uint32_t data_seqv_reader<seqv_ptr>::read_u32() { return (uint32_t)read_i32(); }
-template<class seqv_ptr> int64_t data_seqv_reader<seqv_ptr>::read_i64() { int8_t sq[8]; read_i8(sq, 8, 0); return *(int64_t*)sq; }
-template<class seqv_ptr> uint64_t data_seqv_reader<seqv_ptr>::read_u64() { return (uint64_t)read_i64(); }
-template<class seqv_ptr> float data_seqv_reader<seqv_ptr>::read_f32() { int32_t r = read_i32(); return *(float*)&r; }
-template<class seqv_ptr> double data_seqv_reader<seqv_ptr>::read_f64() { int64_t r = read_i64(); return *(double*)&r; }
-
-template<class seqv_ptr> std::string data_seqv_reader<seqv_ptr>::read_text()
+template<class T, class reader> std::string data_seqv_reader_base<T, reader>::read_text()
 {
    uint32_t elem_count = read_u32();
    std::string text(elem_count, 0);
@@ -481,7 +622,7 @@ template<class seqv_ptr> std::string data_seqv_reader<seqv_ptr>::read_text()
    return text;
 }
 
-template<class seqv_ptr> std::string data_seqv_reader<seqv_ptr>::read_line()
+template<class T, class reader> std::string data_seqv_reader_base<T, reader>::read_line()
 {
    std::string text;
    std::vector<char> line;
@@ -508,237 +649,150 @@ template<class seqv_ptr> std::string data_seqv_reader<seqv_ptr>::read_line()
    return text;
 }
 
-template<class seqv_ptr> template<class T> void data_seqv_reader<seqv_ptr>::read_pointer(T*& i_seqv)
+template<class T, class reader> template<class T0> void data_seqv_reader_base<T, reader>::read_pointer(T0*& i_seqv)
 {
-   int8_t* p = (int8_t*)&i_seqv;
-   seqv->read_bytes(p, sizeof(p), 0);
+   reader()(seqv, reinterpret_cast<int8_t*>(&i_seqv), sizeof(uintptr_t), 0);
 }
 
-// seqv data versions. return the number of bytes read
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_i8(int8_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_i8(int8_t* i_seqv, int i_elem_count, int i_offset)
 {
-   return seqv->read_bytes(i_seqv, i_elem_count, i_offset);
+   return reader()(seqv, i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_u8(uint8_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_u8(uint8_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i8((int8_t*)i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_i16(int16_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_i16(int16_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i8((int8_t*)i_seqv, i_elem_count * 2, i_offset * 2);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_u16(uint16_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_u16(uint16_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i16((int16_t*)i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_i32(int32_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_i32(int32_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i8((int8_t*)i_seqv, i_elem_count * 4, i_offset * 4);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_u32(uint32_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_u32(uint32_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i32((int32_t*)i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_i64(int64_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_i64(int64_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i8((int8_t*)i_seqv, i_elem_count * 8, i_offset * 8);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_u64(uint64_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_u64(uint64_t* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i64((int64_t*)i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_f32(float* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_f32(float* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i32((int32_t*)i_seqv, i_elem_count, i_offset);
 }
 
-template<class seqv_ptr> int data_seqv_reader<seqv_ptr>::read_f64(double* i_seqv, int i_elem_count, int i_offset)
+template<class T, class reader> int data_seqv_reader_base<T, reader>::read_f64(double* i_seqv, int i_elem_count, int i_offset)
 {
    return read_i64((int64_t*)i_seqv, i_elem_count, i_offset);
 }
 
 
-inline void data_seqv_writer::write_i8(int8_t i_seqv)
-{
-   write_i8(&i_seqv, 1, 0);
-}
+// data_seqv_writer_base
+template<class T, class writer> data_seqv_writer_base<T, writer>::data_seqv_writer_base() {}
+template<class T, class writer> data_seqv_writer_base<T, writer>::~data_seqv_writer_base() {}
+template<class T, class writer> T& data_seqv_writer_base<T, writer>::data_sequence() { return seqv; }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i8(int8_t i_seqv) { write_i8(&i_seqv, 1, 0); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u8(uint8_t i_seqv) { write_i8(i_seqv); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i16(int16_t i_seqv) { write_i8((int8_t*)&i_seqv, 2, 0); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u16(uint16_t i_seqv) { write_i16(i_seqv); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i32(int32_t i_seqv) { write_i8((int8_t*)&i_seqv, 4, 0); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u32(uint32_t i_seqv) { write_i32(i_seqv); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i64(int64_t i_seqv) { write_i8((int8_t*)&i_seqv, 8, 0); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u64(uint64_t i_seqv) { write_i64(i_seqv); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f32(float i_seqv) { write_i8((int8_t*)&i_seqv, 4, 0); }
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f64(double i_seqv) { write_i8((int8_t*)&i_seqv, 8, 0); }
 
-inline void data_seqv_writer::write_u8(uint8_t i_seqv)
-{
-   write_i8(i_seqv);
-}
-
-inline void data_seqv_writer::write_i16(int16_t i_seqv)
-{
-   write_i8((int8_t*)&i_seqv, 2, 0);
-}
-
-inline void data_seqv_writer::write_u16(uint16_t i_seqv)
-{
-   write_i16(i_seqv);
-}
-
-inline void data_seqv_writer::write_i32(int32_t i_seqv)
-{
-   write_i8((int8_t*)&i_seqv, 4, 0);
-}
-
-inline void data_seqv_writer::write_u32(uint32_t i_seqv)
-{
-   write_i32(i_seqv);
-}
-
-inline void data_seqv_writer::write_i64(int64_t i_seqv)
-{
-   write_i8((int8_t*)&i_seqv, 8, 0);
-}
-
-inline void data_seqv_writer::write_u64(uint64_t i_seqv)
-{
-   write_i64(i_seqv);
-}
-
-inline void data_seqv_writer::write_f32(float i_seqv)
-{
-   write_i8((int8_t*)&i_seqv, 4, 0);
-}
-
-inline void data_seqv_writer::write_f64(double i_seqv)
-{
-   write_i8((int8_t*)&i_seqv, 8, 0);
-}
-
-inline void data_seqv_writer::write_text(const std::string& i_text)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_text(const std::string& i_text)
 {
    write_u32(i_text.length());
    write_i8((int8_t*)i_text.data(), i_text.length(), 0);
 }
 
-inline void data_seqv_writer::write_line(const std::string& i_text, bool inew_line)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_line(const std::string& i_text, bool i_new_line)
 {
    write_i8((int8_t*)&i_text[0], i_text.length(), 0);
 
-   if (inew_line)
+   if (i_new_line)
    {
       write_i8('\n');
    }
 }
 
-template<int> void write_pointer_helper(std::shared_ptr<data_seqv> seqv, void* i_seqv);
-
-// 32-bit systems
-template<> inline void write_pointer_helper<4>(std::shared_ptr<data_seqv> seqv, void* i_seqv)
+template<class T, class writer> template<class T0> void data_seqv_writer_base<T, writer>::write_pointer(T0* const i_seqv)
 {
-   seqv->write_bytes((int8_t*)i_seqv, 4, 0);
+   writer()(seqv, reinterpret_cast<int8_t*>(i_seqv), sizeof(uintptr_t), 0);
 }
 
-// 64-bit systems
-template<> inline void write_pointer_helper<8>(std::shared_ptr<data_seqv> seqv, void* i_seqv)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i8(const int8_t* i_seqv, int i_elem_count, int i_offset)
 {
-   seqv->write_bytes((int8_t*)i_seqv, 8, 0);
+   writer()(seqv, i_seqv, i_elem_count, i_offset);
 }
 
-template<class T> inline void data_seqv_writer::write_pointer(T* const i_seqv)
-{
-   write_pointer_helper<sizeof(void*)>(seqv, (void*)&i_seqv);
-}
-
-inline void data_seqv_writer::write_i8(const int8_t* i_seqv, int i_elem_count, int i_offset)
-{
-   seqv->write_bytes(i_seqv, i_elem_count, i_offset);
-}
-
-inline void data_seqv_writer::write_u8(const uint8_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u8(const uint8_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i8((int8_t*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_seqv_writer::write_i16(const int16_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i16(const int16_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i8((int8_t*)i_seqv, i_elem_count * 2, i_offset * 2);
 }
 
-inline void data_seqv_writer::write_u16(const uint16_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u16(const uint16_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i16((int16_t*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_seqv_writer::write_i32(const int32_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i32(const int32_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i8((int8_t*)i_seqv, i_elem_count * 4, i_offset * 4);
 }
 
-inline void data_seqv_writer::write_u32(const uint32_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u32(const uint32_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i32((int32_t*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_seqv_writer::write_i64(const int64_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i64(const int64_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i8((int8_t*)i_seqv, i_elem_count * 8, i_offset * 8);
 }
 
-inline void data_seqv_writer::write_u64(const uint64_t* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u64(const uint64_t* i_seqv, int i_elem_count, int i_offset)
 {
    write_i64((int64_t*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_seqv_writer::write_f32(const float* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f32(const float* i_seqv, int i_elem_count, int i_offset)
 {
    write_i32((int32_t*)i_seqv, i_elem_count, i_offset);
 }
 
-inline void data_seqv_writer::write_f64(const double* i_seqv, int i_elem_count, int i_offset)
+template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f64(const double* i_seqv, int i_elem_count, int i_offset)
 {
    write_i64((int64_t*)i_seqv, i_elem_count, i_offset);
 }
 
 
-
-
-class data_seqv_reader_big_endian
-{
-public:
-   data_seqv_reader_big_endian(data_seqv* i_seqv) : seqv(i_seqv) {}
-   ~data_seqv_reader_big_endian() {}
-
-   // single data versions
-   int8_t read_i8();
-   uint8_t read_u8();
-   int16_t read_i16();
-   uint16_t read_u16();
-   int32_t read_i32();
-   uint32_t read_u32();
-   int64_t read_i64();
-   uint64_t read_u64();
-   float read_f32();
-   double read_f64();
-
-   // seqv data versions
-   void read_i8(int8_t* i_seqv, int i_elem_count, int i_offset);
-   void read_u8(uint8_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_i16(int16_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_u16(uint16_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_i32(int32_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_u32(uint32_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_i64(int64_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_u64(uint64_t* i_seqv, int i_elem_count, int i_offset);
-   //void read_f32(float* i_seqv, int i_elem_count, int i_offset);
-   //void read_f64(double* i_seqv, int i_elem_count, int i_offset);
-
-private:
-   data_seqv* seqv;
-};
-
-
+// data_seqv_reader_big_endian
 inline int8_t data_seqv_reader_big_endian::read_i8()
 {
    int8_t sq;
