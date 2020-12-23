@@ -29,7 +29,7 @@ public:
    virtual mws_key_types translate_key(int i_pfm_key_id) const override;
    virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const override;
    // screen metrix
-   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const override;
    virtual float get_avg_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dim_inch() const override;
@@ -82,13 +82,13 @@ namespace
    mws_sp<linux_main> instance;
    bool is_full_screen = false;
    bool is_window_flipped = false;
-   uint32 portrait_flip_count = 0;
+   uint32_t portrait_flip_count = 0;
    bool emulate_mobile_screen = false;
    bool disable_paint = false;
    lnk_subsystem subsys;
    bool app_has_window = false;
    // screen metrix
-   std::pair<uint32, uint32> screen_res;
+   std::pair<uint32_t, uint32_t> screen_res;
    float avg_screen_dpi = 0.f;
    std::pair<float, float> screen_dpi;
    std::pair<float, float> screen_dim_inch;
@@ -116,9 +116,9 @@ public:
       return file;
    }
 
-   virtual uint64 length() override
+   virtual uint64_t length() override
    {
-      uint64 size = 0;
+      uint64_t size = 0;
 
       if (!file)
       {
@@ -143,12 +143,12 @@ public:
       return size;
    }
 
-   virtual uint64 creation_time()const override
+   virtual uint64_t creation_time()const override
    {
       return 0;
    }
 
-   virtual uint64 last_write_time()const override
+   virtual uint64_t last_write_time()const override
    {
       return 0;
    }
@@ -364,7 +364,7 @@ mws_key_types linux_main::apply_key_modifiers_impl(mws_key_types i_key_id) const
 }
 
 // screen metrix
-std::pair<uint32, uint32> linux_main::get_screen_res_px() const { return screen_res; }
+std::pair<uint32_t, uint32_t> linux_main::get_screen_res_px() const { return screen_res; }
 float linux_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
 std::pair<float, float> linux_main::get_screen_dpi() const { return screen_dpi; }
 std::pair<float, float> linux_main::get_screen_dim_inch() const { return screen_dim_inch; }

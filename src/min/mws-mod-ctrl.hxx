@@ -27,7 +27,7 @@ public:
    void update();
    void pause();
    void resume();
-   void resize_app(uint32 i_width, uint32 i_height);
+   void resize_app(uint32_t i_width, uint32_t i_height);
    void pointer_action(mws_sp<mws_ptr_evt_base> i_te);
    void key_action(mws_key_actions i_action_type, mws_key_types i_key);
    mws_sp<mws_mod> get_current_mod();
@@ -37,8 +37,8 @@ public:
    mws_sp<mws_mod> get_app_start_mod();
    void set_gfx_available(bool i_is_gfx_available);
    static bool is_gfx_available();
-   static uint32 get_screen_width();
-   static uint32 get_screen_height();
+   static uint32_t get_screen_width();
+   static uint32_t get_screen_height();
 
 private:
    mws_mod_ctrl();

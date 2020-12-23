@@ -284,7 +284,7 @@ public:
    virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual glm::vec2 get_dim() const;
-   mws_sp<mws_obj> get_mws_at(uint32 i_idx);
+   mws_sp<mws_obj> get_mws_at(uint32_t i_idx);
    virtual bool is_selected(mws_sp<mws_obj> i_item);
    virtual void set_focus(mws_sp<mws_obj> i_item, bool i_set_focus = true);
 

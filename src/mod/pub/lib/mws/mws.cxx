@@ -976,9 +976,9 @@ glm::vec2 mws_page::get_dim() const
    return glm::vec2(mws_r.w - mws_r.x, mws_r.h - mws_r.y);
 }
 
-mws_sp<mws_obj> mws_page::get_mws_at(uint32 i_idx)
+mws_sp<mws_obj> mws_page::get_mws_at(uint32_t i_idx)
 {
-   uint32 k = 0;
+   uint32_t k = 0;
 
    for (auto& c : children)
    {

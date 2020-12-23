@@ -38,7 +38,7 @@ public:
    //    PointerIndex... pointer index
    // return:
    //    returns a touch point at PointerIndex if it exists, else if PointerIndex is 0 return mouse press if it exists, else return null
-   const touch_point* get_pointer_press_by_index(uint32 i_pointer_index);
+   const touch_point* get_pointer_press_by_index(uint32_t i_pointer_index);
 
    const touch_point* find_point(uintptr_t i_touch_id) const;
    bool same_touches(const mws_ptr_evt& i_other) const;
@@ -137,7 +137,7 @@ private:
 
    bool events_pending = false;
    // common for all instances
-   static uint32 time_until_first_key_repeat_ms;
-   static uint32 key_repeat_threshold_ms;
-   static uint32 max_key_repeat_count;
+   static uint32_t time_until_first_key_repeat_ms;
+   static uint32_t key_repeat_threshold_ms;
+   static uint32_t max_key_repeat_count;
 };

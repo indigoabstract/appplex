@@ -14,7 +14,7 @@
 
 mod_font_metrix::mod_font_metrix() : mws_mod(mws_stringify(MOD_FONT_METRIX))
 {
-   struct mod_preferences_detail : public mws_mod_preferences { virtual uint32 get_font_db_pow_of_two_size() const override { return 13; } };
+   struct mod_preferences_detail : public mws_mod_preferences { virtual uint32_t get_font_db_pow_of_two_size() const override { return 13; } };
    prefs = mws_sp<mws_mod_preferences>(new mod_preferences_detail());
 }
 
@@ -29,21 +29,21 @@ namespace mod_font_metrix_ns
    struct font_pixel_info
    {
       // font size in points(pt) used to generate the font
-      uint32 font_size;
+      uint32_t font_size;
       // first non zero pixel's vertical coord
-      uint32 vert_start;
+      uint32_t vert_start;
       // last non zero pixel's vertical coord
-      uint32 vert_end;
+      uint32_t vert_end;
       // max measured height in pixels
-      uint32 height;
+      uint32_t height;
    };
 
 
    struct font_step
    {
-      uint32 start_size;
-      uint32 end_size;
-      uint32 step;
+      uint32_t start_size;
+      uint32_t end_size;
+      uint32_t step;
    };
 
 
@@ -122,7 +122,7 @@ namespace mod_font_metrix_ns
             mws_sp<mws_camera> g = get_mod()->mws_cam;
             mws_sp<mws_font> font = mws_font::nwi(ref_font, (float)current_font_size);
             const font_step& crt_font_step = font_steps[crt_font_step_idx];
-            uint32 font_step_size = crt_font_step.step;
+            uint32_t font_step_size = crt_font_step.step;
 
             {
                font_pixel_info fpi = draw_letters(g, font);
@@ -159,12 +159,12 @@ namespace mod_font_metrix_ns
             {
                font_pixel_info& start = fpi_vect.front();
                font_pixel_info& end = fpi_vect.back();
-               uint32 smallest_height = start.height;
-               uint32 largest_height = end.height;
+               uint32_t smallest_height = start.height;
+               uint32_t largest_height = end.height;
 
                mws_nl();
 
-               for (uint32 k = 0; k < fpi_vect.size(); k++)
+               for (uint32_t k = 0; k < fpi_vect.size(); k++)
                {
                   font_pixel_info& fpi = fpi_vect[k];
                   float size_alpha = float(fpi.font_size - start.font_size) / (end.font_size - start.font_size);
@@ -181,7 +181,7 @@ namespace mod_font_metrix_ns
                mws_print("font-sizes[ %d, %d ], pixel-heights[ %d, %d ] font-size/pixel-height =\n{ ",
                   start.font_size, end.font_size, smallest_height, largest_height);
 
-               for (uint32 k = 0; k < size_height_mixer.size(); k++)
+               for (uint32_t k = 0; k < size_height_mixer.size(); k++)
                {
                   auto& pos_val = size_height_mixer[k];
                   mws_print("{%ff, %.0f.f}", pos_val.pos, pos_val.val);
@@ -193,7 +193,7 @@ namespace mod_font_metrix_ns
                mws_print("*copy this data* into mws_font_db:\npixel-heights[ %d, %d ], font-sizes[ %d, %d ], pixel-height/font-size =\n{ ",
                   smallest_height, largest_height, start.font_size, end.font_size);
 
-               for (uint32 k = 0; k < height_size_mixer.size(); k++)
+               for (uint32_t k = 0; k < height_size_mixer.size(); k++)
                {
                   auto& pos_val = height_size_mixer[k];
                   mws_print("{%ff, %.0f.f}", pos_val.pos, pos_val.val);
@@ -237,20 +237,20 @@ namespace mod_font_metrix_ns
          }
 
          i_g->update_camera_state();
-         mws_sp<std::vector<uint32>> pixels = gfx::i()->rt.get_render_target_pixels<uint32>(rt);
+         mws_sp<std::vector<uint32_t>> pixels = gfx::i()->rt.get_render_target_pixels<uint32_t>(rt);
          gfx::i()->rt.set_current_render_target();
 
          {
-            uint32 w = rt->get_width();
-            uint32 h = rt->get_height();
-            int32 font_v_start = -1;
-            int32 font_v_end = -1;
+            uint32_t w = rt->get_width();
+            uint32_t h = rt->get_height();
+            int32_t font_v_start = -1;
+            int32_t font_v_end = -1;
 
-            for (uint32 k = 0; k < h; k++)
+            for (uint32_t k = 0; k < h; k++)
             {
-               for (uint32 i = 0; i < w; i++)
+               for (uint32_t i = 0; i < w; i++)
                {
-                  uint32 pixel = pixels->at(k * w + i);
+                  uint32_t pixel = pixels->at(k * w + i);
 
                   if (pixel != 0)
                   {
@@ -266,7 +266,7 @@ namespace mod_font_metrix_ns
                }
             }
 
-            fpi.font_size = (uint32)i_font->get_size();
+            fpi.font_size = (uint32_t)i_font->get_size();
             fpi.height = font_v_end - font_v_start;
             fpi.vert_end = font_v_end;
             fpi.vert_start = font_v_start;
@@ -281,10 +281,10 @@ namespace mod_font_metrix_ns
       mws_sp<gfx_2d_sprite> font_quad;
       mws_sp<mws_font> ref_font;
       std::vector<font_step> font_steps = { {2, 19, 1}, {20, 90, 10}, {100, 1000, 100} };
-      uint32 smallest_font_size = 0;
-      uint32 largest_font_size = 0;
-      uint32 current_font_size = 0;
-      uint32 crt_font_step_idx = 0;
+      uint32_t smallest_font_size = 0;
+      uint32_t largest_font_size = 0;
+      uint32_t current_font_size = 0;
+      uint32_t crt_font_step_idx = 0;
       std::string font_name;// = "consolas.ttf";
       std::vector<font_pixel_info> fpi_vect;
       struct mix_f { float operator()(const float& i_c0, const float& i_c1, float i_f) { return (1.f - i_f) * i_c0 + i_f * i_c1; } };

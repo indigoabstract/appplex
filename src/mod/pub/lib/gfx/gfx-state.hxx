@@ -29,8 +29,8 @@ union if_val
    // (the bit representation of 1 as an integer is NOT 1.f as a float)
 {
    if_val() : int_val(0) {}
-   if_val(uint32 iint) : int_val(iint) {}
-   if_val(int32 iint) : int_val(iint) {}
+   if_val(uint32_t iint) : int_val(iint) {}
+   if_val(int32_t iint) : int_val(iint) {}
    if_val(float ifloat) : float_val(ifloat) {}
    if_val(double idouble) : float_val((float)idouble) {}
 

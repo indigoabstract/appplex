@@ -28,7 +28,7 @@ public:
     * @param depth bit depth of the atlas
     * @return a new empty texture atlas.
     */
-   static mws_sp<mws_tex_atlas> nwi(uint32 i_width, uint32 i_height, uint32 i_depth);
+   static mws_sp<mws_tex_atlas> nwi(uint32_t i_width, uint32_t i_height, uint32_t i_depth);
 
    // get the underlying texture
    mws_sp<gfx_tex> get_tex() const;
@@ -46,7 +46,7 @@ public:
     *  @param height height of the region to allocate
     *  @return coordinates of the allocated region
     */
-   const region& get_region(uint32 i_width, uint32 i_height);
+   const region& get_region(uint32_t i_width, uint32_t i_height);
 
    /**
     *  Upload data to the specified atlas region in CPU memory.
@@ -57,29 +57,29 @@ public:
     *  @param data data to be uploaded into the specified region
     *  @param stride stride of the data
     */
-   void set_region(const region& i_reg, const uint8* i_data, uint32 i_stride);
+   void set_region(const region& i_reg, const uint8_t* i_data, uint32_t i_stride);
 
    // clear the atlas
    void clear();
 
 protected:
    mws_tex_atlas() { inst_count++; }
-   int fit(uint32 i_index, uint32 i_width, uint32 i_height);
+   int fit(uint32_t i_index, uint32_t i_width, uint32_t i_height);
    void merge();
 
    std::vector<glm::ivec3> nodes;
    std::vector<region> region_vect;
    // width, height (in pixels) and depth (in bytes) of the underlying texture
-   uint32 width = 0;
-   uint32 height = 0;
-   uint32 depth = 0;
+   uint32_t width = 0;
+   uint32_t height = 0;
+   uint32_t depth = 0;
    // allocated surface size
-   uint32 used = 0;
+   uint32_t used = 0;
    // atlas data
-   std::vector<uint8> data;
+   std::vector<uint8_t> data;
    mws_sp<gfx_tex> tex;
    static inline region out_of_space = { { -1, -1, 0, 0 }, -1 };
-   static inline uint32 inst_count = 0;
+   static inline uint32_t inst_count = 0;
 };
 
 

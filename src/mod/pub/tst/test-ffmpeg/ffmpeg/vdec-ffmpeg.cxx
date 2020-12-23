@@ -142,7 +142,7 @@ public:
       av_dump_format(format_ctx, 0, video_path.string().c_str(), 0);
       video_stream = -1;
 
-      for (uint32 i = 0; i < format_ctx->nb_streams; i++)
+      for (uint32_t i = 0; i < format_ctx->nb_streams; i++)
       {
          if (format_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
          {
@@ -194,7 +194,7 @@ public:
       }
 
       state = mws_vdec_state::st_playing;
-      last_frame_time = uint32(mws::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
+      last_frame_time = uint32_t(mws::time::get_time_millis() + 1000.f / (frame_limit + 1.f));
 
       return 0;
    }
@@ -294,7 +294,7 @@ public:
          i_cam = ortho_cam;
       }
 
-      uint32 crt_frame_time = mws::time::get_time_millis();
+      uint32_t crt_frame_time = mws::time::get_time_millis();
 
       if (frame_limit > 0.f)
       {
@@ -515,7 +515,7 @@ private:
    mws_path video_path;
    int tex_idx;
    float frame_limit;
-   uint32 last_frame_time;
+   uint32_t last_frame_time;
    mws_sp<mws_vdec_listener> listener;
    mws_sp<gfx_camera> ortho_cam;
 };
@@ -536,7 +536,7 @@ int ffmpeg_media_info::get_current_frame_index()
    return impl.lock()->current_frame_idx;
 }
 
-int64 ffmpeg_media_info::get_frame_count()
+int64_t ffmpeg_media_info::get_frame_count()
 {
    return impl.lock()->av_stream->nb_frames;
 }

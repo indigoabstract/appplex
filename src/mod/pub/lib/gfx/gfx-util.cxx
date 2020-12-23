@@ -371,7 +371,7 @@ int gfx_util::get_tex_2d_mipmap_count(int iwidth, int iheight)
    return int(floor(log2(std::max(iwidth, iheight))) + 1);
 }
 
-uint32 gfx_util::next_power_of_2(uint32 in)
+uint32_t gfx_util::next_power_of_2(uint32_t in)
 {
    in -= 1;
 
@@ -384,7 +384,7 @@ uint32 gfx_util::next_power_of_2(uint32 in)
    return in + 1;
 }
 
-void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line)
+void mws_report_gfx_errs_impl(const char* i_file, uint32_t i_line)
 {
 #if defined MWS_REPORT_GL_ERRORS
 

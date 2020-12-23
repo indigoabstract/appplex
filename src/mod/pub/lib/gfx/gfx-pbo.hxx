@@ -25,7 +25,7 @@ public:
    static mws_sp<gfx_readback> nwi(mws_sp<gfx> i_gi = nullptr);
    e_gfx_obj_type get_type()const override;
    int get_pbo_size() const;
-   const std::vector<uint8>& get_pbo_pixels() const;
+   const std::vector<uint8_t>& get_pbo_pixels() const;
    void rewind();
    void set_params(int i_width, int i_height, std::string i_format);
    void set_read_method(mws_read_method i_read_method);
@@ -44,7 +44,7 @@ private:
    int pbo_count = 0;
    std::vector<gfx_uint> pbo_id_vect;
    int pbo_index = 0;
-   std::vector<uint8> pbo_pixels;
+   std::vector<uint8_t> pbo_pixels;
    int pbo_data_size = 0;
    int frame_idx = 0;
    mws_sp<gfx_tex_info> ti;
@@ -73,9 +73,9 @@ class mws_gfx_ppb
 public:
    mws_gfx_ppb();
    mws_gfx_ppb(mws_sp<gfx_tex> i_tex);
-   mws_gfx_ppb(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm = nullptr);
+   mws_gfx_ppb(const std::string& i_tex_id, uint32_t i_tex_width, uint32_t i_tex_height, const gfx_tex_params* i_prm = nullptr);
    void init(mws_sp<gfx_tex> i_tex);
-   void init(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm = nullptr);
+   void init(const std::string& i_tex_id, uint32_t i_tex_width, uint32_t i_tex_height, const gfx_tex_params* i_prm = nullptr);
    mws_sp<gfx_rt> get_rt();
    mws_sp<gfx_tex> get_tex() const;
    mws_sp<gfx_quad_2d> get_quad();

@@ -358,7 +358,7 @@ void gfx_tube::add_position(glm::vec3 ipos)
       }
    }
 
-   std::vector<uint32> tindices_data;
+   std::vector<uint32_t> tindices_data;
    int indices_size = mPositions.size() - 1;
    int quad_index_count = 6;
    tindices_data.resize(indices_size * quad_index_count * mRingVertexCount);
@@ -378,7 +378,7 @@ void gfx_tube::add_position(glm::vec3 ipos)
       }
    }
 
-   gfx_vxo_util::set_mesh_data((const uint8*)&tvertices_data[0], tvertices_data.size() * sizeof(float), &tindices_data[0], tindices_data.size() * sizeof(uint32), inst);
+   gfx_vxo_util::set_mesh_data((const uint8_t*)&tvertices_data[0], tvertices_data.size() * sizeof(float), &tindices_data[0], tindices_data.size() * sizeof(uint32_t), inst);
 }
 
 
@@ -454,7 +454,7 @@ public:
    glm::vec3 up_dir;
    float speed;
    float sphere_radius;
-   uint32 last_update_time;
+   uint32_t last_update_time;
    std::vector<glm::vec3> tube_pos;
    std::vector<int> tube_ts;
 
@@ -538,7 +538,7 @@ int idx = 0;
 
 bool mod_test_trail::update()
 {
-   uint32 last_update_time = mws::time::get_time_millis();
+   uint32_t last_update_time = mws::time::get_time_millis();
 
    if (!update_started)
    {
@@ -561,7 +561,7 @@ bool mod_test_trail::update()
    p->trail_mesh->add_position(trail_pos);
    p->trail_mesh->visible = true;
 
-   uint32 diff = last_update_time - p->last_update_time;
+   uint32_t diff = last_update_time - p->last_update_time;
 
    if (idx < p->tube_ts.size() && diff >= p->tube_ts[idx])
    {

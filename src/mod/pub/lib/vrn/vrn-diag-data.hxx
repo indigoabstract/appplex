@@ -18,16 +18,16 @@ public:
       _first_idx = _last_idx = 0;
    }
 
-   virtual uint32 get_id_at(uint32 i_idx) { return 0; }
-   virtual glm::vec3& get_position_at(uint32 i_idx) = 0;
-   virtual void set_position_at(const glm::vec3& iposition, uint32 i_idx) = 0;
-   virtual uint32 size() const = 0;
-   virtual void resize(uint32 i_new_size) = 0;
-   virtual uint32 first_idx() const { return _first_idx; }
-   virtual uint32 last_idx() const { return _last_idx; }
+   virtual uint32_t get_id_at(uint32_t i_idx) { return 0; }
+   virtual glm::vec3& get_position_at(uint32_t i_idx) = 0;
+   virtual void set_position_at(const glm::vec3& iposition, uint32_t i_idx) = 0;
+   virtual uint32_t size() const = 0;
+   virtual void resize(uint32_t i_new_size) = 0;
+   virtual uint32_t first_idx() const { return _first_idx; }
+   virtual uint32_t last_idx() const { return _last_idx; }
 
-   uint32 _first_idx;
-   uint32 _last_idx;
+   uint32_t _first_idx;
+   uint32_t _last_idx;
 };
 
 
@@ -40,7 +40,7 @@ public:
    }
 
    glm::vec3 position = glm::vec3(0.f);
-   uint32 id = -1;
+   uint32_t id = -1;
 };
 
 
@@ -63,22 +63,22 @@ public:
 template <class T> class mws_vrn_pt_vect : public mws_vrn_pos_vect
 {
 public:
-   virtual uint32 get_id_at(uint32 i_idx)
+   virtual uint32_t get_id_at(uint32_t i_idx)
    {
       return vect[i_idx].id;
    }
 
-   virtual T& operator[](uint32 i_idx)
+   virtual T& operator[](uint32_t i_idx)
    {
       return vect[i_idx];
    }
 
-   virtual glm::vec3& get_position_at(uint32 i_idx)
+   virtual glm::vec3& get_position_at(uint32_t i_idx)
    {
       return vect[i_idx].position;
    }
 
-   virtual void set_position_at(const glm::vec3& iposition, uint32 i_idx)
+   virtual void set_position_at(const glm::vec3& iposition, uint32_t i_idx)
    {
       if (i_idx >= vect.size())
       {
@@ -88,7 +88,7 @@ public:
       vect[i_idx].set_position(iposition);
    }
 
-   virtual void resize(uint32 i_new_size)
+   virtual void resize(uint32_t i_new_size)
    {
       vect.resize(i_new_size);
    }
@@ -98,7 +98,7 @@ public:
       vect.clear();
    }
 
-   virtual uint32 size() const
+   virtual uint32_t size() const
    {
       return vect.size();
    }
@@ -110,12 +110,12 @@ public:
 class mws_vrn_kernel_pt_vect : public mws_vrn_pt_vect < mws_vrn_kernel_pt >
 {
 public:
-   virtual jcv_site* get_cell_at(uint32 i_idx)
+   virtual jcv_site* get_cell_at(uint32_t i_idx)
    {
       return vect[i_idx].cell;
    }
 
-   virtual void set_cell_at(jcv_site* icell, uint32 i_idx)
+   virtual void set_cell_at(jcv_site* icell, uint32_t i_idx)
    {
       if (i_idx >= vect.size())
       {
@@ -130,12 +130,12 @@ public:
 class mws_vrn_nexus_pt_vect : public mws_vrn_pt_vect < mws_vrn_nexus_pt >
 {
 public:
-   virtual jcv_edge* get_edge_at(uint32 i_idx)
+   virtual jcv_edge* get_edge_at(uint32_t i_idx)
    {
       return vect[i_idx].starting_edge;
    }
 
-   virtual void set_edge_at(jcv_edge* iincident_edge, uint32 i_idx)
+   virtual void set_edge_at(jcv_edge* iincident_edge, uint32_t i_idx)
    {
       if (i_idx >= vect.size())
       {
@@ -151,16 +151,16 @@ public:
 class mws_vrn_nexus_pair
 {
 public:
-   uint32 nexus0_id = -1;
-   uint32 nexus1_id = -1;
+   uint32_t nexus0_id = -1;
+   uint32_t nexus1_id = -1;
 };
 
 
 class mws_vrn_cell_pt_id
 {
 public:
-   uint32 point_id = -1;
-   uint32 id = -1;
+   uint32_t point_id = -1;
+   uint32_t id = -1;
 };
 
 
@@ -169,20 +169,20 @@ class mws_vrn_cell_pt_id_vect : public mws_vrn_pos_vect
 public:
    mws_vrn_cell_pt_id_vect() {}
 
-   virtual mws_vrn_cell_pt_id& operator[](uint32 i_idx)
+   virtual mws_vrn_cell_pt_id& operator[](uint32_t i_idx)
    {
       return vect[i_idx];
    }
 
-   virtual uint32 get_id_at(uint32 i_idx)
+   virtual uint32_t get_id_at(uint32_t i_idx)
    {
       return vect[i_idx].id;
    }
 
-   glm::vec3& get_position_at(uint32 i_idx) override;
-   void set_position_at(const glm::vec3& iposition, uint32 i_idx) override;
+   glm::vec3& get_position_at(uint32_t i_idx) override;
+   void set_position_at(const glm::vec3& iposition, uint32_t i_idx) override;
 
-   virtual void set_cpi_at(const mws_vrn_cell_pt_id& icpi, uint32 i_idx)
+   virtual void set_cpi_at(const mws_vrn_cell_pt_id& icpi, uint32_t i_idx)
    {
       if (i_idx >= vect.size())
       {
@@ -194,12 +194,12 @@ public:
       vect[i_idx] = icpi;
    }
 
-   virtual void resize(uint32 i_new_size) override
+   virtual void resize(uint32_t i_new_size) override
    {
       vect.resize(i_new_size);
    }
 
-   virtual uint32 size() const
+   virtual uint32_t size() const
    {
       return vect.size();
    }
@@ -216,7 +216,7 @@ public:
    {
    }
 
-   virtual void set_min_size(uint32 imin_size)
+   virtual void set_min_size(uint32_t imin_size)
    {
       if (imin_size >= vect.size())
       {
@@ -224,12 +224,12 @@ public:
       }
    }
 
-   virtual void resize(uint32 i_new_size)
+   virtual void resize(uint32_t i_new_size)
    {
       vect.resize(i_new_size);
    }
 
-   virtual uint32 size() const
+   virtual uint32_t size() const
    {
       return vect.size();
    }
@@ -242,29 +242,29 @@ class mws_vrn_point_3d
 {
 public:
    glm::vec3 position = glm::vec3(0.f);
-   uint32 id = 0;
+   uint32_t id = 0;
 };
 
 
 class mws_vrn_picking_vec3 : public mws_vrn_pos_vect
 {
 public:
-   virtual mws_vrn_point_3d& operator[](uint32 i_idx)
+   virtual mws_vrn_point_3d& operator[](uint32_t i_idx)
    {
       return vect[i_idx];
    }
 
-   virtual uint32 get_id_at(uint32 i_idx)
+   virtual uint32_t get_id_at(uint32_t i_idx)
    {
       return vect[i_idx].id;
    }
 
-   virtual glm::vec3& get_position_at(uint32 i_idx)
+   virtual glm::vec3& get_position_at(uint32_t i_idx)
    {
       return vect[i_idx].position;
    }
 
-   virtual void set_position_at(const glm::vec3& iposition, uint32 i_idx)
+   virtual void set_position_at(const glm::vec3& iposition, uint32_t i_idx)
    {
       if (i_idx >= vect.size())
       {
@@ -274,12 +274,12 @@ public:
       vect[i_idx].position = iposition;
    }
 
-   virtual void resize(uint32 i_new_size)
+   virtual void resize(uint32_t i_new_size)
    {
       vect.resize(i_new_size);
    }
 
-   virtual uint32 size() const
+   virtual uint32_t size() const
    {
       return vect.size();
    }
@@ -302,10 +302,10 @@ class mws_vrn_data
 public:
    struct settings
    {
-      uint32 original_diag_width = 0;
-      uint32 original_diag_height = 0;
-      uint32 diag_width = 0;
-      uint32 diag_height = 0;
+      uint32_t original_diag_width = 0;
+      uint32_t original_diag_height = 0;
+      uint32_t diag_width = 0;
+      uint32_t diag_height = 0;
       bool kernel_points_visible = false;
       bool nexus_points_visible = false;
       bool nexus_pairs_visible = false;
@@ -325,7 +325,7 @@ public:
       // corners for each cell (for building triangles)
       //picking_vec3 cell_points;
       mws_vrn_cell_pt_id_vect cell_points_ids;
-      std::vector<uint32> cell_point_count;
+      std::vector<uint32_t> cell_point_count;
 
       // lines delimiting the cells
       mws_vrn_nexus_pair_vect nexus_pairs;
@@ -334,29 +334,29 @@ public:
       mws_vrn_picking_vec3 convex_hull_points;
       mws_vrn_picking_vec3 grid_points;
       // value of the last id (out of all ids. the first value is always 1 (value of picking_start_idx))
-      uint32 last_geom_id;
+      uint32_t last_geom_id;
    };
 
    // return if a kernel or a nexus point based on i_id value
    // return invalid value if i_id is outside of range
-   mws_vrn_diag_pt_type get_diagram_point_type_by_id(uint32 i_id);
+   mws_vrn_diag_pt_type get_diagram_point_type_by_id(uint32_t i_id);
    // return a kernel or a nexus point based on id value
    // return null if id is outside of range
-   mws_vrn_diag_pt* get_diagram_point_by_id(uint32 i_id);
-   mws_vrn_kernel_pt* get_kernel_point_by_id(uint32 i_id);
-   mws_vrn_nexus_pt* get_nexus_point_by_id(uint32 i_id);
+   mws_vrn_diag_pt* get_diagram_point_by_id(uint32_t i_id);
+   mws_vrn_kernel_pt* get_kernel_point_by_id(uint32_t i_id);
+   mws_vrn_nexus_pt* get_nexus_point_by_id(uint32_t i_id);
 
    settings info;
    mws_vrn_geom_data geom;
 };
 
 
-inline glm::vec3& mws_vrn_cell_pt_id_vect::get_position_at(uint32 i_idx)
+inline glm::vec3& mws_vrn_cell_pt_id_vect::get_position_at(uint32_t i_idx)
 {
    return vdata.lock()->get_diagram_point_by_id(vect[i_idx].point_id)->position;
 }
 
-inline void mws_vrn_cell_pt_id_vect::set_position_at(const glm::vec3& iposition, uint32 i_idx)
+inline void mws_vrn_cell_pt_id_vect::set_position_at(const glm::vec3& iposition, uint32_t i_idx)
 {
    if (i_idx >= vect.size())
    {

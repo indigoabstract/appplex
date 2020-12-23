@@ -101,10 +101,10 @@ class mws_font_db
 {
 public:
    static const std::string default_font_name;
-   static mws_sp<mws_font_db> nwi_inex(uint32 i_pow_of_two_db_size);
+   static mws_sp<mws_font_db> nwi_inex(uint32_t i_pow_of_two_db_size);
    static mws_sp<mws_font_db> inst();
    void clear_db();
-   void resize_db(uint32 i_pow_of_two);
+   void resize_db(uint32_t i_pow_of_two);
    const mws_sp<mws_font> get_global_font() const;
    void set_global_font(const std::string& i_font_name, float i_size = 0.f);
    void set_global_font(mws_sp<mws_font> i_font);
@@ -116,12 +116,12 @@ public:
    float get_height(mws_sp<mws_font> i_font);
    glm::vec2 get_text_dim(mws_sp<mws_font> i_font, const std::string& i_text);
    void store_font_metrix(const std::string& i_font_path, const mws_pt& i_min_height_pt, const mws_px& i_min_height_px,
-      const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32 i_data_elem_count);
+      const mws_pt& i_max_height_pt, const mws_px& i_max_height_px, const std::pair<float, float>* i_pixels_to_points_data, uint32_t i_data_elem_count);
    mws_sp<mws_font> load_font_by_metrix(const std::string& i_font_path, const mws_dim& i_height, const mws_font_markup* i_markup = nullptr);
 
 private:
    friend class mws_mod;
-   mws_font_db(uint32 i_pow_of_two);
+   mws_font_db(uint32_t i_pow_of_two);
    void on_frame_start();
 
    static mws_sp<mws_font_db> instance;

@@ -8,15 +8,15 @@
 #include <unordered_map>
 
 
-static uint64 get_key(glm::vec3& pos)
+static uint64_t get_key(glm::vec3& pos)
 {
 	float k1 = pos.x * 1.23f + pos.y * 4.56f + pos.z * 7.89f;
 	float k2 = pos.x * 9.87f + pos.y * 6.54f + pos.z * 3.21f;
 	int* x = (int*)&k1;
 	int* y = (int*)&k2;
-	uint64 x64 = *x & 0xffffffff;
-	uint64 y64 = *y & 0xffffffff;
-	uint64 r = (x64 << 32) | y64;
+	uint64_t x64 = *x & 0xffffffff;
+	uint64_t y64 = *y & 0xffffffff;
+	uint64_t r = (x64 << 32) | y64;
 
 	return r;
 }
@@ -54,7 +54,7 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 	std::vector<vx_fmt_p3f_c4b_n3f_t2f> vx_data;
 	std::vector<gfx_indices_type> ind_data;
 	std::vector<gfx_indices_type> ind_data_new;
-	std::unordered_map<uint64, uint32> vertex_map;
+	std::unordered_map<uint64_t, uint32_t> vertex_map;
 	gfx_color& c = face_color;
 	gfx_color clr = {c.r, c.g, c.b, c.a};
 
@@ -98,9 +98,9 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 			vx_fmt_p3f_c4b_n3f_t2f vcb = {{cb.x, cb.y, cb.z}, clr, {}, {0, 0,}};
 			vx_fmt_p3f_c4b_n3f_t2f vac = {{ac.x, ac.y, ac.z}, clr, {}, {0, 0,}};
 
-			uint64 r1 = get_key(vab.pos);
-			uint64 r2 = get_key(vcb.pos);
-			uint64 r3 = get_key(vac.pos);
+			uint64_t r1 = get_key(vab.pos);
+			uint64_t r2 = get_key(vcb.pos);
+			uint64_t r3 = get_key(vac.pos);
 			int vab_idx = -1;
 			int vcb_idx = -1;
 			int vac_idx = -1;
@@ -168,7 +168,7 @@ void icosphere_face::gen_geometry(int isubdiv_count)
 
 	int vdata_size = vx_data.size() * sizeof(vx_fmt_p3f_c4b_n3f_t2f);
 	int idata_size = ind_data.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)vx_data.data(), vdata_size, ind_data.data(), idata_size, static_pointer_cast<gfx_vxo>(get_mws_sp()));
+	gfx_vxo_util::set_mesh_data((const uint8_t*)vx_data.data(), vdata_size, ind_data.data(), idata_size, static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 

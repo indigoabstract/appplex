@@ -6,21 +6,8 @@
 #include <cstdint>
 #include <memory>
 
-using int8 = int8_t;
-using sint8 = int8_t;
-using uint8 = uint8_t;
-using int16 = int16_t;
-using sint16 = int16_t;
-using uint16 = uint16_t;
-using int32 = int32_t;
-using sint32 = int32_t;
-using uint32 = uint32_t;
-using int64 = int64_t;
-using sint64 = int64_t;
-using uint64 = uint64_t;
-using fltp32 = float;
-using fltp64 = double;
-
+using float32 = float;
+using float64 = double;
 using std::static_pointer_cast;
 template <typename T> using mws_sp = std::shared_ptr<T>;
 template <typename T> using mws_wp = std::weak_ptr<T>;
@@ -30,40 +17,36 @@ template <typename T> using mws_up = std::unique_ptr<T>;
 typedef unsigned int bool;
 typedef enum { false = 0, true = 1 }bool_type;
 #endif
-typedef char int8;
-typedef signed char sint8;
-typedef unsigned char uint8;
-typedef short int16;
-typedef signed short sint16;
-typedef unsigned short uint16;
-typedef int int32;
-typedef signed int sint32;
-typedef unsigned int uint32;
-typedef long long int64;
-typedef signed long long sint64;
-typedef unsigned long long uint64;
-typedef float fltp32;
-typedef double fltp64;
+typedef char int8_t;
+typedef unsigned char uint8_t;
+typedef short int16_t;
+typedef unsigned short uint16_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef long long int64_t;
+typedef unsigned long long uint64_t;
+typedef float float32;
+typedef double float64;
 #endif
 
 // gl types
 typedef char gfx_char;
-typedef uint32 gfx_enum;
-typedef uint8 gfx_boolean;
-typedef uint32 gfx_bitfield;
-typedef int8 gfx_byte;
-typedef int16 gfx_short;
-typedef int32 gfx_int;
-typedef int32 gfx_sizei;
-typedef uint8 gfx_ubyte;
-typedef uint16 gfx_ushort;
-typedef uint32 gfx_uint;
-typedef fltp32 gfx_float;
-typedef fltp32 gfx_clampf;
-typedef fltp64 gfx_double;
-typedef fltp64 gfx_clampd;
+typedef uint32_t gfx_enum;
+typedef uint8_t gfx_boolean;
+typedef uint32_t gfx_bitfield;
+typedef int8_t gfx_byte;
+typedef int16_t gfx_short;
+typedef int32_t gfx_int;
+typedef int32_t gfx_sizei;
+typedef uint8_t gfx_ubyte;
+typedef uint16_t gfx_ushort;
+typedef uint32_t gfx_uint;
+typedef float32 gfx_float;
+typedef float32 gfx_clampf;
+typedef float64 gfx_double;
+typedef float64 gfx_clampd;
 typedef void gfx_void;
-typedef uint32 gfx_indices_type;
+typedef uint32_t gfx_indices_type;
 
 
 enum mws_gfx_type
@@ -251,9 +234,9 @@ extern "C"
 #endif
 
 
-   void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message);
-   void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition);
-   void mws_report_gfx_errs_impl(const char* i_file, uint32 i_line);
+   void mws_signal_error_impl(const char* i_file, uint32_t i_line, const char* i_message);
+   void mws_assert_impl(const char* i_file, uint32_t i_line, bool i_condition);
+   void mws_report_gfx_errs_impl(const char* i_file, uint32_t i_line);
    void mws_nl_impl();
    void mws_print_impl(const char* i_format, ...);
 

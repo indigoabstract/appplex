@@ -65,9 +65,9 @@ public:
 	virtual void update();
 
 protected:
-   uint32 start_time;
-   uint32 pause_time;
-   uint32 pause_duration;
+   uint32_t start_time;
+   uint32_t pause_time;
+   uint32_t pause_duration;
 	bool finished;
 	bool paused;
 };
@@ -102,12 +102,12 @@ public:
 protected:
 	friend class ms_linear_transition;
 	virtual void reset();
-	virtual void start(uint32 offset);
+	virtual void start(uint32_t offset);
 
 	int duration;
-	uint32 start_time;
-   uint32 pause_time;
-   uint32 pause_duration;
+	uint32_t start_time;
+   uint32_t pause_time;
+   uint32_t pause_duration;
 	float position;
 	bool finished;
 	bool paused;

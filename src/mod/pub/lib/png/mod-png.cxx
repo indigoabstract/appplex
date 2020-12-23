@@ -29,7 +29,7 @@ namespace mod_png_ns
    public:
       virtual void init() override
       {
-         std::vector<uint8> png_data = decode("pentagon.png");
+         std::vector<uint8_t> png_data = decode("pentagon.png");
          encode("pentagon-out.png", png_data, img->get_width(), img->get_height());
       }
 
@@ -53,13 +53,13 @@ namespace mod_png_ns
          i_g->drawText(text, 10, 20);
       }
 
-      std::vector<uint8> decode(const std::string& i_img_name)
+      std::vector<uint8_t> decode(const std::string& i_img_name)
       {
          lodepng::State state; //optionally customize this one
-         uint32 error = 0;
-         uint32 width = 0, height = 0;
-         std::vector<uint8> img_data =get_mod()->storage.load_as_byte_vect(i_img_name);
-         std::vector<uint8> png;
+         uint32_t error = 0;
+         uint32_t width = 0, height = 0;
+         std::vector<uint8_t> img_data =get_mod()->storage.load_as_byte_vect(i_img_name);
+         std::vector<uint8_t> png;
          error = lodepng::decode(png, width, height, state, img_data);
 
          if (error)
@@ -73,12 +73,12 @@ namespace mod_png_ns
          return png;
       }
 
-      void encode(const std::string& i_img_name, const std::vector<uint8>& i_img_data, uint32 i_width, uint32 i_height)
+      void encode(const std::string& i_img_name, const std::vector<uint8_t>& i_img_data, uint32_t i_width, uint32_t i_height)
       {
          lodepng::State state; //optionally customize this one
-         uint32 error = 0;
+         uint32_t error = 0;
          mws_path out_file = get_mod()->storage.prv_dir() / i_img_name;
-         std::vector<uint8> png;
+         std::vector<uint8_t> png;
 
          error = lodepng::encode(png, i_img_data, i_width, i_height, state);
 

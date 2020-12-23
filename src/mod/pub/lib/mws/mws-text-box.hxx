@@ -33,7 +33,7 @@ public:
    virtual void push_back_text(const std::string& i_text);
    virtual void push_front_text(const std::string& i_text);
    virtual void insert_at_cursor(const std::string& i_text);
-   virtual void delete_at_cursor(int32 i_count);
+   virtual void delete_at_cursor(int32_t i_count);
    virtual void scroll_text(const glm::vec2& i_off, bool i_snap_to_grid = false);
    virtual void scroll_to_end(mws_dir_types i_direction);
    virtual void set_position(const glm::vec2& i_position) override;
@@ -73,9 +73,9 @@ protected:
       virtual void update_cursor();
       virtual mws_sp<mws_text_box> get_text_box() { return static_pointer_cast<mws_text_box>(get_parent()); }
       virtual mws_rect get_cursor_rect(cursor_types i_cursor_type);
-      virtual int32 get_lines_from_the_top_count();
-      virtual void set_lines_from_the_top_count(int32 i_lines_from_the_top_count);
-      virtual void clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim);
+      virtual int32_t get_lines_from_the_top_count();
+      virtual void set_lines_from_the_top_count(int32_t i_lines_from_the_top_count);
+      virtual void clamp_lines_from_the_top_count(int32_t i_inf_lim, int32_t i_sup_lim);
 
       mws_sp<mws_text_area_model> tx_src;
       mws_sp<mws_text_vxo> tx_vxo;
@@ -87,9 +87,9 @@ protected:
       // used for scrolling. the vertical text offset is always less than font's height
       glm::vec2 tx_offset;
       // number of lines visible on screen
-      uint32 max_lines_allowed_by_height = 0;
+      uint32_t max_lines_allowed_by_height = 0;
       // the distance from the first line of tx_src to the first line of the text grid
-      int32 lines_from_the_top_count = 0;
+      int32_t lines_from_the_top_count = 0;
       // maximum width of the lines in the text grid
       float max_line_width = 0.f;
 
@@ -98,7 +98,7 @@ protected:
       mws_sp<mws_rect> left_char_rect;
       mws_sp<mws_rect> right_char_rect;
       // add 2 extra lines of text at the bottom to prevent the 'popping' text becoming visible when scrolling upwards
-      inline static const uint32 extra_lines_count = 2;
+      inline static const uint32_t extra_lines_count = 2;
    };
 
 
@@ -148,29 +148,29 @@ public:
    mws_text_area_model_rw();
    virtual bool get_word_wrap() override;
    virtual void set_word_wrap(bool i_word_wrap) override;
-   virtual uint32 get_line_count() override;
-   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) override;
-   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) override;
+   virtual uint32_t get_line_count() override;
+   virtual std::string get_line_at(uint32_t i_idx, bool i_keep_line_break = true) override;
+   virtual std::vector<std::string> get_lines_at(uint32_t i_idx, uint32_t i_line_count, bool i_keep_line_break = true) override;
    virtual const std::string& get_text() override;
    virtual void set_text(const std::string& i_text) override;
-   virtual void set_text(const char* i_text, uint32 i_length) override;
-   virtual void set_size(uint32 i_width, uint32 i_height) override;
+   virtual void set_text(const char* i_text, uint32_t i_length) override;
+   virtual void set_size(uint32_t i_width, uint32_t i_height) override;
    virtual void set_font(mws_sp<mws_font> i_font) override;
    virtual int get_char_at_pixel(float i_x, float i_y) override;
-   virtual void push_back(const char* i_text, uint32 i_length) override;
-   virtual void push_front(const char* i_text, uint32 i_length) override;
+   virtual void push_back(const char* i_text, uint32_t i_length) override;
+   virtual void push_front(const char* i_text, uint32_t i_length) override;
    virtual void insert_at_cursor(const std::string& i_text) override;
-   virtual void delete_at_cursor(int32 i_count) override;
-   virtual uint32 get_cursor_pos() override;
-   virtual void set_cursor_pos(uint32 i_cursor_pos) override;
+   virtual void delete_at_cursor(int32_t i_count) override;
+   virtual uint32_t get_cursor_pos() override;
+   virtual void set_cursor_pos(uint32_t i_cursor_pos) override;
    virtual glm::uvec2 get_cursor_coord() override;
-   virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) override;
+   virtual uint32_t get_cursor_pos_at_line(uint32_t i_line_idx) override;
    virtual void advance_cursor(mws_dir_types i_direction) override;
 
 protected:
    std::string text;
    // cursor linear position(index in the 'text' element)
-   uint32 cursor_pos = 0;
+   uint32_t cursor_pos = 0;
    // [x, y] cursor position. y tells the line position, x tells the position withing that line 
    glm::uvec2 cursor_grid_pos = glm::uvec2(0);
    bool word_wrap = false;
@@ -182,18 +182,18 @@ class mws_text_area_model_ro : public mws_text_area_model_rw
 {
 public:
    mws_text_area_model_ro();
-   virtual uint32 get_line_count() override;
-   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) override;
-   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) override;
+   virtual uint32_t get_line_count() override;
+   virtual std::string get_line_at(uint32_t i_idx, bool i_keep_line_break = true) override;
+   virtual std::vector<std::string> get_lines_at(uint32_t i_idx, uint32_t i_line_count, bool i_keep_line_break = true) override;
    //virtual void set_text(const std::string& i_text) override;
-   //virtual void set_text(const char* i_text, uint32 i_length) override;
-   virtual void push_back(const char* i_text, uint32 i_length) override;
-   virtual void push_front(const char* i_text, uint32 i_length) override;
+   //virtual void set_text(const char* i_text, uint32_t i_length) override;
+   virtual void push_back(const char* i_text, uint32_t i_length) override;
+   virtual void push_front(const char* i_text, uint32_t i_length) override;
 
 protected:
    void update_back_added_line_offsets(const std::string& i_new_text);
    void update_front_added_line_offsets(const std::string& i_new_text);
    void update_line_offsets();
 
-   std::vector<uint32> line_offsets;
+   std::vector<uint32_t> line_offsets;
 };

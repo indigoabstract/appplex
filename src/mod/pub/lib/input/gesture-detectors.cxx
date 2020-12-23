@@ -237,9 +237,9 @@ gesture_state double_tap_detector::reset()
    return GS_NONE;
 }
 
-uint32 double_tap_detector::get_double_tap_max_duration() const { return max_duration; }
+uint32_t double_tap_detector::get_double_tap_max_duration() const { return max_duration; }
 
-void double_tap_detector::set_double_tap_max_duration(uint32 i_max_duration) { max_duration = i_max_duration; }
+void double_tap_detector::set_double_tap_max_duration(uint32_t i_max_duration) { max_duration = i_max_duration; }
 
 mws_cm double_tap_detector::get_double_tap_max_pointer_distance() const { return max_distance; }
 
@@ -1057,7 +1057,7 @@ bool swipe_detector::is_valid_swipe()
    }
 
    // add up distances between all points sampled during the gesture to get the real distance
-   for (uint32 i = 1; i < touch_vect.size(); i++)
+   for (uint32_t i = 1; i < touch_vect.size(); i++)
    {
       glm::vec2 p0 = mws_ptr_evt::get_pos(touch_vect[i - 1]->points[0]);
       glm::vec2 p1 = mws_ptr_evt::get_pos(touch_vect[i]->points[0]);

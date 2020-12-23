@@ -146,7 +146,7 @@ public:
    static glm::quat quat_from_two_vectors(glm::vec3 u, glm::vec3 v);
    static glm::quat look_at(glm::vec3 direction, glm::vec3 desiredUp);
    static int get_tex_2d_mipmap_count(int iwidth, int iheight);
-   static uint32 next_power_of_2(uint32 in);
+   static uint32_t next_power_of_2(uint32_t in);
 
    static void init();
 };

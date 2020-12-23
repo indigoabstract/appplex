@@ -78,12 +78,12 @@ void mws_table_layout::add_row(mws_sp<mws_page_item> i_item)
    }
 }
 
-void mws_table_layout::add_col(uint32 i_row_idx, mws_sp<mws_page_item> i_item)
+void mws_table_layout::add_col(uint32_t i_row_idx, mws_sp<mws_page_item> i_item)
 {
    //attach(i_item);
 }
 
-void mws_table_layout::set_cell_at(uint32 i_row_idx, uint32 i_col_idx, mws_sp<mws_page_item> i_item)
+void mws_table_layout::set_cell_at(uint32_t i_row_idx, uint32_t i_col_idx, mws_sp<mws_page_item> i_item)
 {
    //attach(i_item);
 }
@@ -95,13 +95,13 @@ mws_sp<mws_table_border> mws_table_layout::get_border(border_types i_border_type
 }
 
 // returns one of the inner row borders/dividers
-mws_sp<mws_table_border> mws_table_layout::get_row_divider(uint32 i_row_idx) const
+mws_sp<mws_table_border> mws_table_layout::get_row_divider(uint32_t i_row_idx) const
 {
    return row_divs[i_row_idx];
 }
 
 // returns one of the inner col borders/dividers in the specified row
-mws_sp<mws_table_border> mws_table_layout::get_col_divider(uint32 i_row_idx, uint32 i_col_idx) const
+mws_sp<mws_table_border> mws_table_layout::get_col_divider(uint32_t i_row_idx, uint32_t i_col_idx) const
 {
    return nullptr;
 }
@@ -159,7 +159,7 @@ void mws_table_layout::set_border_size(float i_border_size)
          row_0->set_translation(tx_0, item_0->get_pos().y + item_0->get_pos().h);
          row_0->set_scale(borders[e_right_border]->get_translation().x - tx_0, i_border_size);
 
-         for (uint32 k = 1; k < item_rows.size(); k++)
+         for (uint32_t k = 1; k < item_rows.size(); k++)
          {
             mws_sp<mws_page_item> item_km1 = item_rows[k - 1];
             mws_sp<mws_table_border> row_km1 = row_divs[k - 1];

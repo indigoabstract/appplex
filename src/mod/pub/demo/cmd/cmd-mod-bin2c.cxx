@@ -82,22 +82,22 @@ void convert_bin_2_c_array(const std::string& i_src_path, const std::string& i_d
 {
    FILE* f = fopen(i_src_path.c_str(), "rb");
    FILE* fw = fopen(i_dst_path.c_str(), "w");
-   uint32 max_column_count = 0;
+   uint32_t max_column_count = 0;
    uintmax_t size = fs::file_size(fs::path(i_src_path));
 
-   fprintf(fw, "unsigned int bin_res_size = %d;\n", (uint32)size);
+   fprintf(fw, "unsigned int bin_res_size = %d;\n", (uint32_t)size);
    fprintf(fw, "unsigned char bin_res[] =\n{\n");
 
    while ((!feof(f)))
    {
-      uint8 c;
+      uint8_t c;
 
       if (fread(&c, 1, 1, f) == 0)
       {
          break;
       }
 
-      fprintf(fw, "%d,", (uint32)c);
+      fprintf(fw, "%d,", (uint32_t)c);
       ++max_column_count;
 
       if (max_column_count % 50 == 0)

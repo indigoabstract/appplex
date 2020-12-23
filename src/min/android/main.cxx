@@ -41,7 +41,7 @@ public:
    virtual float get_screen_brightness() const override;
    virtual void set_screen_brightness(float i_brightness) const override;
    // screen metrix
-   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const override;
    virtual float get_avg_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dim_inch() const override;
@@ -66,8 +66,8 @@ public:
    void snd_init(int i_sample_rate, int i_buffer_size);
    void snd_close();
 
-   void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
-   void on_resize(uint32 i_screen_width, uint32 i_screen_height);
+   void init_screen_metrix(uint32_t i_screen_width, uint32_t i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
+   void on_resize(uint32_t i_screen_width, uint32_t i_screen_height);
 
    int sample_rate;
    int buffer_size;
@@ -76,7 +76,7 @@ private:
    std::vector<mws_sp<mws_file> > apk_file_list;
    mws_file_map plist;
    // screen metrix
-   std::pair<uint32, uint32> screen_res;
+   std::pair<uint32_t, uint32_t> screen_res;
    float avg_screen_dpi = 0.f;
    std::pair<float, float> screen_dpi;
    std::pair<float, float> screen_dim_inch;
@@ -129,9 +129,9 @@ public:
       return file;
    }
 
-   virtual uint64 length() override
+   virtual uint64_t length() override
    {
-      uint64 size = 0;
+      uint64_t size = 0;
 
       if (asset_file)
       {
@@ -165,14 +165,14 @@ public:
       return size;
    }
 
-   virtual uint64 creation_time() const override
+   virtual uint64_t creation_time() const override
    {
       std::string path = ppath.string();
 
       return 0;
    }
 
-   virtual uint64 last_write_time()const override
+   virtual uint64_t last_write_time()const override
    {
       std::string path = ppath.string();
 
@@ -238,7 +238,7 @@ public:
       }
    }
 
-   virtual void set_io_position_impl(uint64 i_pos, int i_io_pos) override
+   virtual void set_io_position_impl(uint64_t i_pos, int i_io_pos) override
    {
       if (file)
       {
@@ -254,7 +254,7 @@ public:
       }
    }
 
-   virtual uint64 tell_impl() override
+   virtual uint64_t tell_impl() override
    {
       if (file)
       {
@@ -266,7 +266,7 @@ public:
       return 0;
    }
 
-   virtual int read_impl(uint8* i_buffer, int i_size) override
+   virtual int read_impl(uint8_t* i_buffer, int i_size) override
    {
       if (file)
       {
@@ -276,7 +276,7 @@ public:
       return AAsset_read(asset_file, i_buffer, i_size);
    }
 
-   virtual int write_impl(const uint8* i_buffer, int i_size) override
+   virtual int write_impl(const uint8_t* i_buffer, int i_size) override
    {
       if (file)
       {
@@ -343,7 +343,7 @@ void android_main::set_screen_brightness(float i_brightness) const
    env->CallStaticVoidMethod(clazz, mid, (jfloat)i_brightness);
 }
 
-std::pair<uint32, uint32> android_main::get_screen_res_px() const { return screen_res; }
+std::pair<uint32_t, uint32_t> android_main::get_screen_res_px() const { return screen_res; }
 float android_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
 std::pair<float, float> android_main::get_screen_dpi() const { return screen_dpi; }
 std::pair<float, float> android_main::get_screen_dim_inch() const { return screen_dim_inch; }
@@ -478,7 +478,7 @@ void android_main::run()
    mws_mod_ctrl::inst()->update();
 }
 
-void android_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
+void android_main::init_screen_metrix(uint32_t i_screen_width, uint32_t i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
 {
    float horizontal_dim_inch = i_screen_width / i_screen_horizontal_dpi;
    float vertical_dim_inch = i_screen_height / i_screen_vertical_dpi;
@@ -487,7 +487,7 @@ void android_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_hei
    float horizontal_screen_dpcm = mws_cm(i_screen_horizontal_dpi).to_in().val();
    float vertical_screen_dpcm = mws_cm(i_screen_vertical_dpi).to_in().val();
 
-   screen_res = std::make_pair((uint32)i_screen_width, (uint32)i_screen_height);
+   screen_res = std::make_pair((uint32_t)i_screen_width, (uint32_t)i_screen_height);
    screen_dim_inch = std::make_pair(horizontal_dim_inch, vertical_dim_inch);
    screen_dpi = std::make_pair(i_screen_horizontal_dpi, i_screen_vertical_dpi);
    avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
@@ -496,7 +496,7 @@ void android_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_hei
    avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
 }
 
-void android_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
+void android_main::on_resize(uint32_t i_screen_width, uint32_t i_screen_height)
 {
    bool is_landscape_0 = (i_screen_width > i_screen_height);
    bool is_landscape_1 = (screen_res.first > screen_res.second);
@@ -605,7 +605,7 @@ extern "C"
 
    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)
    {
-      uint8* byte_buff_addr = (uint8*)i_env->GetDirectBufferAddress(i_byte_buff);
+      uint8_t* byte_buff_addr = (uint8_t*)i_env->GetDirectBufferAddress(i_byte_buff);
       // type + count + 8 * (id, x, y, is_changed)
       const int touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
       mws_ro_mem_seq ro_mem(byte_buff_addr, touch_data_size);
@@ -616,7 +616,7 @@ extern "C"
       pfm_te->touch_count = dsr.read_uint32();
       pfm_te->time = mws::time::get_time_millis();
 
-      for (uint32 k = 0; k < pfm_te->touch_count; k++)
+      for (uint32_t k = 0; k < pfm_te->touch_count; k++)
       {
          auto& te = pfm_te->points[k];
 

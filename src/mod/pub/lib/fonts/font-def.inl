@@ -1,4 +1,4 @@
-static const uint8 mws_def_font_data[] =
+static const uint8_t mws_def_font_data[] =
 {
 0,1,0,0,0,14,0,128,0,3,0,96,79,83,47,50,91,231,164,155,0,0,1,136,0,0,0,86,99,109,97,112,155,106,42,153,0,0,31,240,0,0,1,202,99,118,116,32,15,192,
 16,0,0,0,26,184,0,0,2,0,102,112,103,109,1,82,156,24,0,0,28,184,0,0,0,179,103,97,115,112,0,23,0,6,0,0,26,168,0,0,0,16,103,108,121,102,220,228,80,89,
@@ -327,7 +327,7 @@ static const uint8 mws_def_font_data[] =
 53,35,53,35,53,132,132,132,66,66,66,66,2,16,66,254,50,66,66,198,66,198,66,0,0,1,0,0,1,8,1,74,1,140,0,15,0,9,179,10,66,12,0,43,0,48,49,17,21,51,
 53,51,21,51,53,51,53,35,21,35,53,35,21,66,132,66,66,66,66,132,1,74,66,66,66,66,66,66,66,66
 };
-static const uint32 mws_def_font_data_size = sizeof(mws_def_font_data) / sizeof(uint8);
+static const uint32_t mws_def_font_data_size = sizeof(mws_def_font_data) / sizeof(uint8_t);
 static const std::pair<float, float> mws_def_font_data_metrix[] =
 {
    {0.000000f, 4.f}, {0.003115f, 7.f}, {0.004673f, 10.f}, {0.009346f, 13.f}, {0.010903f, 16.f}, {0.012461f, 15.f}, {0.014019f, 19.f},
@@ -336,8 +336,8 @@ static const std::pair<float, float> mws_def_font_data_metrix[] =
 {0.699377f, 700.f}, {0.799065f, 800.f}, {0.898754f, 900.f}, {1.000000f, 1000.f}
 };
 
-static const uint32 mws_def_font_data_metrix_size = sizeof(mws_def_font_data_metrix) / sizeof(std::pair<float, float>);
-static const uint32 min_height_pt = 2;
-static const uint32 min_height_px = 2;
-static const uint32 max_height_pt = 1000;
-static const uint32 max_height_px = 644;
+static const uint32_t mws_def_font_data_metrix_size = sizeof(mws_def_font_data_metrix) / sizeof(std::pair<float, float>);
+static const uint32_t min_height_pt = 2;
+static const uint32_t min_height_px = 2;
+static const uint32_t max_height_pt = 1000;
+static const uint32_t max_height_px = 644;

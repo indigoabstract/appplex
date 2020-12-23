@@ -28,8 +28,8 @@ public:
    RNG()
    {
       auto now_tp = std::chrono::system_clock::now();
-      uint64 count = now_tp.time_since_epoch().count();
-      uint32 t = count & 0x7fffffff;// mws::time::get_time_millis();
+      uint64_t count = now_tp.time_since_epoch().count();
+      uint32_t t = count & 0x7fffffff;// mws::time::get_time_millis();
       setSeed(t);
       //System.out.println("t " + t + " is " + init_seed);
    }

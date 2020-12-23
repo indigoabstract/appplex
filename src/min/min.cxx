@@ -11,16 +11,16 @@ mws_pop_disable_all_warnings
 
 template<> std::byte mws_to(const std::string& i_input) { return static_cast<std::byte>(std::stoi(i_input)); }
 template<> char mws_to(const std::string& i_input) { return i_input[0]; }
-template<> int8 mws_to(const std::string& i_input) { return static_cast<int8>(std::stoi(i_input)); }
-template<> uint8 mws_to(const std::string& i_input) { return static_cast<uint8>(std::stoi(i_input)); }
-template<> int16 mws_to(const std::string& i_input) { return static_cast<int16>(std::stoi(i_input)); }
-template<> uint16 mws_to(const std::string& i_input) { return static_cast<uint16>(std::stoi(i_input)); }
-template<> int32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> uint32 mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> int64 mws_to(const std::string& i_input) { return std::stoll(i_input); }
-template<> uint64 mws_to(const std::string& i_input) { return std::stoull(i_input); }
-template<> fltp32 mws_to(const std::string& i_input) { return std::stof(i_input); }
-template<> fltp64 mws_to(const std::string& i_input) { return std::stod(i_input); }
+template<> int8_t mws_to(const std::string& i_input) { return static_cast<int8_t>(std::stoi(i_input)); }
+template<> uint8_t mws_to(const std::string& i_input) { return static_cast<uint8_t>(std::stoi(i_input)); }
+template<> int16_t mws_to(const std::string& i_input) { return static_cast<int16_t>(std::stoi(i_input)); }
+template<> uint16_t mws_to(const std::string& i_input) { return static_cast<uint16_t>(std::stoi(i_input)); }
+template<> int32_t mws_to(const std::string& i_input) { return std::stoi(i_input); }
+template<> uint32_t mws_to(const std::string& i_input) { return std::stoi(i_input); }
+template<> int64_t mws_to(const std::string& i_input) { return std::stoll(i_input); }
+template<> uint64_t mws_to(const std::string& i_input) { return std::stoull(i_input); }
+template<> float32 mws_to(const std::string& i_input) { return std::stof(i_input); }
+template<> float64 mws_to(const std::string& i_input) { return std::stod(i_input); }
 template<> bool mws_to(const std::string& i_input)
 {
    if (i_input == "0" || i_input == "false")
@@ -139,9 +139,9 @@ void mws_str::to_upper(std::string& i_str)
    std::transform(i_str.begin(), i_str.end(), i_str.begin(), ::toupper);
 }
 
-int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
+int32_t mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
 {
-   const auto comp_ch = [](const char i_0, const char i_1) -> int32
+   const auto comp_ch = [](const char i_0, const char i_1) -> int32_t
    {
       if (i_0 == i_1)
       {
@@ -154,7 +154,7 @@ int32 mws_str::cmp_ignore_case(const std::string& i_0, const std::string& i_1)
    const char* s1 = (const char*)i_0.c_str();
    const char* s2 = (const char*)i_1.c_str();
    char c1, c2;
-   int32 cmp_res = 0;
+   int32_t cmp_res = 0;
 
    do
    {

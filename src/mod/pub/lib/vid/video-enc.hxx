@@ -69,7 +69,7 @@ public:
    virtual mws_path get_video_path() = 0;
    virtual void set_video_path(mws_path i_video_path) = 0;
    virtual void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) = 0;
-   virtual void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) = 0;
+   virtual void encode_frame_m0_yuv420(const uint8_t* y_frame, const uint8_t* u_frame, const uint8_t* v_frame) = 0;
    virtual void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length) = 0;
    virtual void encode_frame_m2_rbga(mws_sp<gfx_tex> i_frame_tex) = 0;
    virtual void stop_encoding() = 0;

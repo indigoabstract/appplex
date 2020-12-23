@@ -75,14 +75,14 @@ public:
    void set_video_path(mws_path i_video_path) override;
    void start_encoding(const mws_video_params& i_prm, mws_vid_enc_method i_enc_method) override;
    void encode_frame_impl(AVFrame* i_frame);
-   void encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame) override;
+   void encode_frame_m0_yuv420(const uint8_t* y_frame, const uint8_t* u_frame, const uint8_t* v_frame) override;
    void encode_frame_m1_yuv420(const char* iframe_data, int iframe_data_length) override;
    void encode_frame_m2_rbga(mws_sp<gfx_tex> i_frame_tex) override;
    void stop_encoding() override;
    void update();
 
 private:
-   void encode_frame_m0_yuv420_impl(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame);
+   void encode_frame_m0_yuv420_impl(const uint8_t* y_frame, const uint8_t* u_frame, const uint8_t* v_frame);
    void encode_frame_m1_yuv420_impl(const char* iframe_data, int iframe_data_length);
    void encode_frame_m2_rbga_impl(mws_sp<gfx_tex> i_frame_tex);
 

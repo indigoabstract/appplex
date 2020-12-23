@@ -32,7 +32,7 @@ namespace mod_multi_touch_input_ns
          ptr_vxo_assigned.assign(mws_ptr_evt::max_touch_points, false);
          ptr_vxo_vect.resize(mws_ptr_evt::max_touch_points);
 
-         for(uint32 k = 0; k < mws_ptr_evt::max_touch_points; k++)
+         for(uint32_t k = 0; k < mws_ptr_evt::max_touch_points; k++)
          {
             ptr_vxo_vect[k] = gfx_2d_sprite::nwi();
             gfx_2d_sprite& vxo = *ptr_vxo_vect[k];
@@ -96,7 +96,7 @@ namespace mod_multi_touch_input_ns
 
             case mws_ptr_evt::touch_began:
             {
-               for (uint32 k = 0; k < pe->touch_count; k++)
+               for (uint32_t k = 0; k < pe->touch_count; k++)
                {
                   mws_ptr_evt::touch_point& pt = pe->points[k];
 
@@ -131,7 +131,7 @@ namespace mod_multi_touch_input_ns
 
             case mws_ptr_evt::touch_moved:
             {
-               for (uint32 k = 0; k < pe->touch_count; k++)
+               for (uint32_t k = 0; k < pe->touch_count; k++)
                {
                   mws_ptr_evt::touch_point& pt = pe->points[k];
 
@@ -155,7 +155,7 @@ namespace mod_multi_touch_input_ns
 
             case mws_ptr_evt::touch_ended:
             {
-               for (uint32 k = 0; k < pe->touch_count; k++)
+               for (uint32_t k = 0; k < pe->touch_count; k++)
                {
                   mws_ptr_evt::touch_point& pt = pe->points[k];
 

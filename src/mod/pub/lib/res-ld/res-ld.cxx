@@ -14,7 +14,7 @@ raw_img_data::raw_img_data(int i_width, int i_height)
    height = i_height;
    size = width * height * 4;
    gl_color_format = 1;
-   data = (uint8*)malloc(size);
+   data = (uint8_t*)malloc(size);
    memset(data, 0, size);
 }
 
@@ -29,11 +29,11 @@ res_ld::res_ld()
 {
 }
 
-mws_sp<std::vector<uint8>> res_ld::flip_buffer(int i_width, int i_height, uint8* i_buffer, flip_types i_flip)
+mws_sp<std::vector<uint8_t>> res_ld::flip_buffer(int i_width, int i_height, uint8_t* i_buffer, flip_types i_flip)
 {
    size_t buffer_size = i_width * i_height * 4;
-   mws_sp<std::vector<uint8>> buffer = std::make_shared<std::vector<uint8>>(buffer_size);
-   uint8* buf_data = buffer->data();
+   mws_sp<std::vector<uint8_t>> buffer = std::make_shared<std::vector<uint8_t>>(buffer_size);
+   uint8_t* buf_data = buffer->data();
    size_t row_size = i_width * 4;
    const auto horizontal_flip = [&]()
    {
@@ -41,8 +41,8 @@ mws_sp<std::vector<uint8>> res_ld::flip_buffer(int i_width, int i_height, uint8*
       {
          for (int j = 0, l = i_width - 1; j < i_width; j++, l--)
          {
-            uint8* src = i_buffer + i * row_size + j * 4;
-            uint8* dst = buf_data + i * row_size + l * 4;
+            uint8_t* src = i_buffer + i * row_size + j * 4;
+            uint8_t* dst = buf_data + i * row_size + l * 4;
             *dst = *src;
          }
       }
@@ -51,8 +51,8 @@ mws_sp<std::vector<uint8>> res_ld::flip_buffer(int i_width, int i_height, uint8*
    {
       for (int i = 0, j = i_height - 1; i < i_height; i++, j--)
       {
-         uint8* src = i_buffer + i * row_size;
-         uint8* dst = buf_data + j * row_size;
+         uint8_t* src = i_buffer + i * row_size;
+         uint8_t* dst = buf_data + j * row_size;
          memcpy(dst, src, row_size);
       }
    };
@@ -131,11 +131,11 @@ mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
 mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
 {
    mws_sp<raw_img_data> rd(new raw_img_data());
-   std::vector<uint8> png_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_file);
+   std::vector<uint8_t> png_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_file);
    {
-      uint32 error = 0;
-      uint8* img_data = nullptr;
-      uint32 width = 0, height = 0;
+      uint32_t error = 0;
+      uint8_t* img_data = nullptr;
+      uint32_t width = 0, height = 0;
       LodePNGState state;
       int bpp = 0;
 
@@ -184,19 +184,19 @@ mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
    return load_image(file);
 }
 
-bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8 * i_buffer, flip_types i_flip)
+bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8_t * i_buffer, flip_types i_flip)
 {
-   uint8* png = nullptr;
+   uint8_t* png = nullptr;
    size_t png_size = 0;
-   mws_sp<std::vector<uint8>> flip_buff;
+   mws_sp<std::vector<uint8_t>> flip_buff;
 
    if (i_flip != flip_types::e_no_flip)
    {
       flip_buff = flip_buffer(i_width, i_height, i_buffer, i_flip);
    }
 
-   const uint8* buffer = (flip_buff) ? flip_buff->data() : i_buffer;
-   uint32 error = lodepng_encode32(&png, &png_size, buffer, i_width, i_height);
+   const uint8_t* buffer = (flip_buff) ? flip_buff->data() : i_buffer;
+   uint32_t error = lodepng_encode32(&png, &png_size, buffer, i_width, i_height);
 
    if (!error)
    {
@@ -228,7 +228,7 @@ mws_sp<raw_img_data> res_ld::load_image(std::string i_filename)
    return std::make_shared<raw_img_data>(32, 32);
 }
 
-bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip)
+bool res_ld::save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8_t* i_buffer, flip_types i_flip)
 {
    mws_print("img [%s] not saved. MOD_PNG is disabled.\n", i_file->filename().c_str());
    return false;

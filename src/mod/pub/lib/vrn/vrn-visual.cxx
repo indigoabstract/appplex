@@ -93,9 +93,9 @@ mws_vrn_cell_vxo::mws_vrn_cell_vxo() : gfx_vxo(vx_info("a_v3_position, a_v2_tex_
 // mws_vrn_cell_borders
 mws_sp<mws_vrn_cell_borders> mws_vrn_cell_borders::nwi() { return mws_sp<mws_vrn_cell_borders>(new mws_vrn_cell_borders()); }
 
-uint32 mws_vrn_cell_borders::get_cell_borders_mesh_size() const { return cell_borders_mesh_vect.size(); }
+uint32_t mws_vrn_cell_borders::get_cell_borders_mesh_size() const { return cell_borders_mesh_vect.size(); }
 
-mws_sp<mws_vrn_cell_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32 i_idx) const { return cell_borders_mesh_vect[i_idx]; }
+mws_sp<mws_vrn_cell_vxo> mws_vrn_cell_borders::get_cell_borders_mesh_at(uint32_t i_idx) const { return cell_borders_mesh_vect[i_idx]; }
 
 void mws_vrn_cell_borders::set_cell_borders_tex(mws_sp<gfx_tex> i_tex) { tex = i_tex; }
 
@@ -112,12 +112,12 @@ glm::vec4 mws_vrn_cell_borders::calc_2d_bounding_box(const std::vector<glm::vec3
    return glm::vec4(upper_left, lower_right);
 }
 
-void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list)
+void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list)
 {
    const float line_half_thickness = std::max(mws::screen::get_width(), mws::screen::get_height()) * .035f;
    const float z_pos = 0.f;
    std::vector<glm::vec3> cell_nexus_list;
-   uint32 cell_count = i_point_count_list.size();
+   uint32_t cell_count = i_point_count_list.size();
    std::vector<mws_sp<mws_vrn_cell_vxo>> borders_mesh_vect(cell_count);
 
    for (mws_sp<mws_vrn_cell_vxo> border : cell_borders_mesh_vect)
@@ -127,12 +127,12 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
 
    cell_borders_mesh_vect.clear();
 
-   for (uint32 k = 0; k < cell_count; k++)
+   for (uint32_t k = 0; k < cell_count; k++)
    {
-      uint32 cell_nexus_count = i_point_count_list[k] - 1;
+      uint32_t cell_nexus_count = i_point_count_list[k] - 1;
       mws_sp<mws_vrn_cell_vxo> border = mws_vrn_cell_vxo::nwi();
-      uint32 vx_count = cell_nexus_count * 4;
-      uint32 ix_count = cell_nexus_count * 6;
+      uint32_t vx_count = cell_nexus_count * 4;
+      uint32_t ix_count = cell_nexus_count * 6;
       mws_vrn_cell_vxo& rvxo = *border;
 
       rvxo.set_keep_geometry_data(true);
@@ -154,12 +154,12 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    }
 
    // loop through each cell and build its contour
-   for (uint32 k = 0, idx = 0; k < cell_count; k++)
+   for (uint32_t k = 0, idx = 0; k < cell_count; k++)
    {
       mws_sp<mws_vrn_cell_vxo> mesh = borders_mesh_vect[k];
       std::vector<gfx_indices_type>& ks_indices_data = mesh->get_ix_buffer();
       vx_fmt_3f_2f* ks_vertices_data = (vx_fmt_3f_2f*)mesh->get_vx_buffer().data();
-      uint32 cell_vx_count = i_point_count_list[k];
+      uint32_t cell_vx_count = i_point_count_list[k];
 
       // build a temp list with the cell's nexus points and with the same first and last point
       glm::vec3 kernel_pos = i_point_list.get_position_at(idx);
@@ -170,7 +170,7 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
 
       // we only need nexus points to build the contour and since the first vertex is always the kernel, skip it
       idx++;
-      for (uint32 l = 1; l < cell_vx_count; l++)
+      for (uint32_t l = 1; l < cell_vx_count; l++)
       {
          const glm::vec3& p = i_point_list.get_position_at(idx);
          mesh->nexus_pos_vect.push_back(p);
@@ -182,7 +182,7 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       // push first nexus at the back of the list, so we can easily wrap around the direction calculations
       cell_nexus_list.push_back(cell_nexus_list[0]);
 
-      uint32 cell_nexus_list_count = cell_nexus_list.size();
+      uint32_t cell_nexus_list_count = cell_nexus_list.size();
       std::vector<glm::vec3> inside_border_points;
       std::vector<glm::vec3> outside_border_points;
 
@@ -200,10 +200,10 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
       }
 
       // build the contour as a list of rectangles
-      for (uint32 i = 1; i < cell_nexus_list_count; i++)
+      for (uint32_t i = 1; i < cell_nexus_list_count; i++)
       {
-         uint32 ix_idx = 6 * (i - 1);
-         uint32 vx_idx = 4 * (i - 1);
+         uint32_t ix_idx = 6 * (i - 1);
+         uint32_t vx_idx = 4 * (i - 1);
 
          vx_fmt_3f_2f vx0 = { inside_border_points[i - 1], glm::vec2(1.f, 0.f) };
          vx0.pos.z = z_pos;
@@ -235,9 +235,9 @@ void mws_vrn_cell_borders::set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vr
    // rearrange the order
    cell_borders_mesh_vect.resize(cell_count);
 
-   for (uint32 k = 0, kernel_list_idx = 0; k < cell_count; k++)
+   for (uint32_t k = 0, kernel_list_idx = 0; k < cell_count; k++)
    {
-      uint32 kernel_idx = i_point_list[kernel_list_idx].point_id;
+      uint32_t kernel_idx = i_point_list[kernel_list_idx].point_id;
       cell_borders_mesh_vect[kernel_idx] = borders_mesh_vect[k];
       kernel_list_idx += i_point_count_list[k];
    }
@@ -298,7 +298,7 @@ void mws_vrn_geom::update_geometry(mws_sp<mws_vrn_data> i_diag_data)
 
 void mws_vrn_geom::set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws_sp<gfx_vxo> i_mesh)
 {
-   uint32 list_size = i_line_points.size();
+   uint32_t list_size = i_line_points.size();
    i_mesh->set_size(list_size * 4, list_size * 6);
    std::vector<gfx_indices_type>& ks_indices_data = i_mesh->get_ix_buffer();
    std::vector<vx_fmt_3f_4f_4b_2f_1i>& ks_vertices_data = *((std::vector<vx_fmt_3f_4f_4b_2f_1i>*) & i_mesh->get_vx_buffer());
@@ -325,7 +325,7 @@ void mws_vrn_geom::set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws
    glm::vec2 tex2 = { -0.5f, +0.5f };
    glm::vec2 tex3 = { +0.5f, +0.5f };
 
-   for (uint32 k = 0; k < list_size; k++)
+   for (uint32_t k = 0; k < list_size; k++)
    {
       mws_vrn_nexus_pair& p = i_line_points.vect[k];
       mws_vrn_nexus_pt* np0 = diag_data->get_nexus_point_by_id(p.nexus0_id);
@@ -360,11 +360,11 @@ void mws_vrn_geom::set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws
       ks_vertices_data[4 * k + 3] = vx3;
    }
 
-   uint32 ind_size = ks_vertices_data.size() / 4;
+   uint32_t ind_size = ks_vertices_data.size() / 4;
 
-   for (uint32 k = 0; k < ind_size; k++)
+   for (uint32_t k = 0; k < ind_size; k++)
    {
-      uint32 i_off = 4 * k;
+      uint32_t i_off = 4 * k;
       ks_indices_data[6 * k + 0] = i_off + 1;
       ks_indices_data[6 * k + 1] = i_off + 2;
       ks_indices_data[6 * k + 2] = i_off + 0;
@@ -387,12 +387,12 @@ void mws_vrn_geom::set_points_geometry(mws_vrn_pos_vect& i_point_list, mws_sp<gf
 
    glm::vec3 pos;
    glm::vec2 tex;
-   uint32 list_size = i_point_list.size();
+   uint32_t list_size = i_point_list.size();
    i_mesh->set_size(list_size * 4, list_size * 6);
    std::vector<gfx_indices_type>& ks_indices_data = i_mesh->get_ix_buffer();
    std::vector<vx_fmt_p3f_t2f_1i>& ks_vertices_data = *((std::vector<vx_fmt_p3f_t2f_1i>*) & i_mesh->get_vx_buffer());
 
-   for (uint32 k = 0; k < list_size; k++)
+   for (uint32_t k = 0; k < list_size; k++)
    {
       const glm::vec3& p = i_point_list.get_position_at(k);
       gfx_uint id = i_point_list.get_id_at(k);
@@ -418,11 +418,11 @@ void mws_vrn_geom::set_points_geometry(mws_vrn_pos_vect& i_point_list, mws_sp<gf
       ks_vertices_data[4 * k + 3] = vx3;
    }
 
-   uint32 ind_size = ks_vertices_data.size() / 4;
+   uint32_t ind_size = ks_vertices_data.size() / 4;
 
-   for (uint32 k = 0; k < ind_size; k++)
+   for (uint32_t k = 0; k < ind_size; k++)
    {
-      uint32 i_off = 4 * k;
+      uint32_t i_off = 4 * k;
       ks_indices_data[6 * k + 0] = i_off + 1;
       ks_indices_data[6 * k + 1] = i_off + 2;
       ks_indices_data[6 * k + 2] = i_off + 0;
@@ -434,7 +434,7 @@ void mws_vrn_geom::set_points_geometry(mws_vrn_pos_vect& i_point_list, mws_sp<gf
    i_mesh->update_data();
 }
 
-void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const std::vector<uint32>& i_point_count_list, mws_sp<gfx_vxo> i_mesh)
+void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list, mws_sp<gfx_vxo> i_mesh)
 {
    struct vx_fmt_3f_4b_2f_1i
    {
@@ -447,14 +447,14 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
    glm::vec3 pos;
    gfx_color clr;
    glm::vec2 tex;
-   uint32 list_size = i_point_count_list.size();
-   uint32 vx_count = 0;
-   uint32 ix_count = 0;
+   uint32_t list_size = i_point_count_list.size();
+   uint32_t vx_count = 0;
+   uint32_t ix_count = 0;
 
-   for (uint32 k = 0; k < list_size; k++)
+   for (uint32_t k = 0; k < list_size; k++)
    {
-      uint32 l2_size = i_point_count_list[k];
-      uint32 ind_size = l2_size - 1;
+      uint32_t l2_size = i_point_count_list[k];
+      uint32_t ind_size = l2_size - 1;
 
       vx_count += l2_size;
       ix_count += ind_size * 3;
@@ -468,10 +468,10 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
    int vx_idx = 0;
    int ix_idx = 0;
 
-   for (uint32 k = 0; k < list_size; k++)
+   for (uint32_t k = 0; k < list_size; k++)
    {
       gfx_uint id = i_point_list.get_id_at(k);
-      uint32 l2_size = i_point_count_list[k];
+      uint32_t l2_size = i_point_count_list[k];
       int i_idx = idx;
 
       clr.r = 0;
@@ -479,7 +479,7 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
       clr.b = 0;
       clr.a = 255;
 
-      for (uint32 l = 0; l < l2_size; l++)
+      for (uint32_t l = 0; l < l2_size; l++)
       {
          const glm::vec3& p = i_point_list.get_position_at(idx);
 
@@ -491,9 +491,9 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
          idx++;
       }
 
-      uint32 ind_size = l2_size - 1;
+      uint32_t ind_size = l2_size - 1;
 
-      for (uint32 i = 0; i < ind_size; i++)
+      for (uint32_t i = 0; i < ind_size; i++)
       {
          int i1 = i_idx + i + 1;
          int i2 = i + 2;
@@ -513,7 +513,7 @@ void mws_vrn_geom::set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const s
    i_mesh->update_data();
 }
 
-void mws_vrn_geom::set_cell_borders_geom(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list, mws_sp<mws_vrn_cell_borders> i_mesh)
+void mws_vrn_geom::set_cell_borders_geom(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list, mws_sp<mws_vrn_cell_borders> i_mesh)
 {
    i_mesh->set_geometry(i_diag_data, i_point_list, i_point_count_list);
 }
@@ -528,7 +528,7 @@ void mws_vrn_geom::set_cell_borders(mws_sp<mws_vrn_cell_borders> i_cell_borders)
    cell_borders = i_cell_borders;
 }
 
-void mws_vrn_geom::make_obj_visible(uint32 i_obj_type)
+void mws_vrn_geom::make_obj_visible(uint32_t i_obj_type)
 {
    mws_vrn_data::settings& s = diag_data->info;
    bool is_visible = false;
@@ -937,7 +937,7 @@ mws_vrn_main::~mws_vrn_main()
    }
 }
 
-mws_sp<mws_vrn_main> mws_vrn_main::nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
+mws_sp<mws_vrn_main> mws_vrn_main::nwi(uint32_t i_diag_width, uint32_t i_diag_height, mws_sp<gfx_camera> i_cam)
 {
    mws_sp<mws_vrn_main> inst(new mws_vrn_main());
    inst->setup(i_diag_width, i_diag_height, i_cam);
@@ -951,15 +951,15 @@ void mws_vrn_main::init()
    vgeom = mws_vrn_geom::nwi(diag_data, cam.lock());
 }
 
-void mws_vrn_main::toggle_voronoi_object(uint32 i_obj_type_mask)
+void mws_vrn_main::toggle_voronoi_object(uint32_t i_obj_type_mask)
 {
    bool visibility_changed = false;
    mws_vrn_data::settings& s = diag_data->info;
 
-   for (uint32 k = 0; k < (uint32)mws_vrn_obj_types::obj_count; k++)
+   for (uint32_t k = 0; k < (uint32_t)mws_vrn_obj_types::obj_count; k++)
    {
-      uint32 idx = (1 << k);
-      uint32 obj_type = uint32(idx & i_obj_type_mask);
+      uint32_t idx = (1 << k);
+      uint32_t obj_type = uint32_t(idx & i_obj_type_mask);
       mws_sp<gfx_node> node;
       bool is_visible = false;
       visibility_changed = true;
@@ -1034,7 +1034,7 @@ void mws_vrn_main::update_geometry()
    vgeom->update_geometry(diag_data);
 }
 
-void mws_vrn_main::resize(uint32 i_diag_width, uint32 i_diag_height)
+void mws_vrn_main::resize(uint32_t i_diag_width, uint32_t i_diag_height)
 {
    mws_assert(i_diag_width > 0 && i_diag_height > 0);
    const std::vector<float>& vx = vgen->vx;
@@ -1042,13 +1042,13 @@ void mws_vrn_main::resize(uint32 i_diag_width, uint32 i_diag_height)
    diag_data->info.diag_width = i_diag_width;
    diag_data->info.diag_height = i_diag_height;
 
-   uint32 size = vx.size();
+   uint32_t size = vx.size();
    glm::vec2 resize_fact = glm::vec2(diag_data->info.diag_width, diag_data->info.diag_height) /
       glm::vec2(diag_data->info.original_diag_width, diag_data->info.original_diag_height);
    std::vector<float> kvx(size);
    std::vector<float> kvy(size);
 
-   for (uint32 k = 0; k < size; k++)
+   for (uint32_t k = 0; k < size; k++)
    {
       kvx[k] = vx[k] * resize_fact.x;
       kvy[k] = vy[k] * resize_fact.y;
@@ -1073,12 +1073,12 @@ void mws_vrn_main::set_kernel_points(std::vector<glm::vec2> i_kernel_points)
 {
    std::vector<float>& vx = vgen->vx;
    std::vector<float>& vy = vgen->vy;
-   uint32 size = i_kernel_points.size();
+   uint32_t size = i_kernel_points.size();
 
    vx.resize(size);
    vy.resize(size);
 
-   for (uint32 k = 0; k < size; k++)
+   for (uint32_t k = 0; k < size; k++)
    {
       vx[k] = i_kernel_points[k].x;
       vy[k] = i_kernel_points[k].y;
@@ -1093,12 +1093,12 @@ mws_vrn_diag::idx_dist mws_vrn_main::get_kernel_idx_at(float i_x, float i_y) con
    return vgen->voronoi_diag_impl->get_kernel_idx_at(i_x, i_y);
 }
 
-glm::vec2 mws_vrn_main::get_kernel_at(uint32 i_idx) const
+glm::vec2 mws_vrn_main::get_kernel_at(uint32_t i_idx) const
 {
    return vgen->voronoi_diag_impl->get_kernel_at(i_idx);
 }
 
-void mws_vrn_main::move_kernel_to(uint32 i_idx, float i_x, float i_y)
+void mws_vrn_main::move_kernel_to(uint32_t i_idx, float i_x, float i_y)
 {
    vgen->voronoi_diag_impl->move_kernel_to(i_idx, i_x, i_y);
    vgeom->update_geometry(diag_data);
@@ -1110,7 +1110,7 @@ void mws_vrn_main::insert_kernel_at(float i_x, float i_y)
    vgeom->update_geometry(diag_data);
 }
 
-void mws_vrn_main::remove_kernel(uint32 i_idx)
+void mws_vrn_main::remove_kernel(uint32_t i_idx)
 {
    vgen->voronoi_diag_impl->remove_kernel(i_idx);
    update_geometry();
@@ -1118,7 +1118,7 @@ void mws_vrn_main::remove_kernel(uint32 i_idx)
 
 mws_vrn_main::mws_vrn_main() {}
 
-void mws_vrn_main::setup(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam)
+void mws_vrn_main::setup(uint32_t i_diag_width, uint32_t i_diag_height, mws_sp<gfx_camera> i_cam)
 {
    diag_data = mws_sp<mws_vrn_data>(new mws_vrn_data());
    diag_data->geom.cell_points_ids.vdata = diag_data;

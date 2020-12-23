@@ -43,9 +43,9 @@ private:
 	int updateInterval;
 
 	// internal timekeeping
-	uint32 startTime;
-	uint32 pauseTime;
-	uint32 pauseStartTime;
+	uint32_t startTime;
+	uint32_t pauseTime;
+	uint32_t pauseStartTime;
 	// current game state
 	updatestatetype state;
 

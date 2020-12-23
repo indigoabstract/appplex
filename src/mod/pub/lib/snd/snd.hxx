@@ -115,7 +115,7 @@ private:
 	musical_note(note_ids inote, int ioctave);
 
 	note_ids note_id;
-	uint8 octave;
+	uint8_t octave;
 
 	static std::vector< std::vector<mws_sp<musical_note> > > note_table;
 	static std::vector<note_ids> note_list;

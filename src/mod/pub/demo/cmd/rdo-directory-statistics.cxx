@@ -35,10 +35,10 @@ private:
 	bfs::path src_dir;
 	int file_count;
 	int directory_count;
-	uint64 total_file_size;
-	uint64 max_file_size;
+	uint64_t total_file_size;
+	uint64_t max_file_size;
 	path max_file;
-	uint64 min_file_size;
+	uint64_t min_file_size;
 	path min_file;
 };
 
@@ -140,7 +140,7 @@ void rec_dir_op_dir_statistics::on_leaving_dir(mws_sp<dir_node> dir)
 
 void rec_dir_op_dir_statistics::apply_to_file(mws_sp<file_node> file)
 {
-	uint64 fileSize = file_size(file->abs_file_path);
+	uint64_t fileSize = file_size(file->abs_file_path);
 
 	if(fileSize > max_file_size)
 	{

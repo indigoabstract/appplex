@@ -12,8 +12,8 @@ public:
    ~gfx_rt();
    virtual gfx_obj::e_gfx_obj_type get_type()const;
    virtual bool is_valid()const;
-   uint32 get_width();
-   uint32 get_height();
+   uint32_t get_width();
+   uint32_t get_height();
    mws_sp<gfx_tex> get_color_attachment();
    void set_color_attachment(mws_sp<gfx_tex> icolor_att);
    void set_depth_stencil_attachment(mws_sp<gfx_tex> idepth_stencil_att);

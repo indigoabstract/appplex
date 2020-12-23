@@ -217,7 +217,7 @@ void mws_text_box::insert_at_cursor(const std::string& i_text)
    sync_view_to_cursor_pos();
 }
 
-void mws_text_box::delete_at_cursor(int32 i_count)
+void mws_text_box::delete_at_cursor(int32_t i_count)
 {
    tx_src->delete_at_cursor(i_count);
    sync_view_to_cursor_pos();
@@ -236,7 +236,7 @@ void mws_text_box::scroll_to_end(mws_dir_types i_direction)
 {
    if (i_direction == mws_dir_types::mws_dir_down_left)
    {
-      uint32 tx_src_line_count = tx_src->get_line_count();
+      uint32_t tx_src_line_count = tx_src->get_line_count();
       float font_height = font->get_height();
       float total_height = tx_src_line_count * font_height;
 
@@ -440,7 +440,7 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
    float text_row_remainder = tx_offset.y;
 
-   cursor_grid_pos.y = uint32((i_pos.y + text_row_remainder) / font->get_height());
+   cursor_grid_pos.y = uint32_t((i_pos.y + text_row_remainder) / font->get_height());
    cursor_grid_pos.x = 0;
 
    if (mws_dbg::enabled(mws_dbg::pfm_mws))
@@ -451,13 +451,13 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
    *left_char_rect = *right_char_rect = mws_rect();
    left_char_rect->h = right_char_rect->h = font->get_height();
 
-   if (cursor_grid_pos.y >= (int32)tx_lines.size())
+   if (cursor_grid_pos.y >= (int32_t)tx_lines.size())
    {
       cursor_grid_pos.y = std::max(0, int(tx_lines.size() - 1));
       //mws_println("select_char_at1 cursor_grid_pos.y [ %d ]", cursor_grid_pos.y);
       cursor_grid_pos.x = tx_lines[cursor_grid_pos.y].size();
-      uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
-      uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
+      uint32_t line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
+      uint32_t cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
       glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
       tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
       //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
@@ -475,8 +475,8 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
       if (get_text_box()->is_editable())
       {
-         uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
-         uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
+         uint32_t line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
+         uint32_t cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
          glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
          tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
          //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
@@ -489,8 +489,8 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
    auto& glyphs = mws_font_db::inst()->get_glyph_vect(font->get_inst(), text);
    float x_off = -tx_offset.x;
-   uint32 text_length = (text.back() != '\n') ? text.length() : text.length() - 1;
-   uint32 k = 0;
+   uint32_t text_length = (text.back() != '\n') ? text.length() : text.length() - 1;
+   uint32_t k = 0;
 
    if (glyphs.size() < text_length)
    {
@@ -542,8 +542,8 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
    if (get_text_box()->is_editable())
    {
-      uint32 line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
-      uint32 cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
+      uint32_t line_index = get_lines_from_the_top_count() + cursor_grid_pos.y;
+      uint32_t cursor_pos = tx_src->get_cursor_pos_at_line(line_index);
       glm::uvec2 cursor_coord = tx_src->get_cursor_coord();
       tx_src->set_cursor_pos(cursor_pos + cursor_grid_pos.x);
       //glm::uvec2 new_cursor_coord = tx_src->get_cursor_coord();
@@ -554,8 +554,8 @@ void mws_text_box::text_view::select_char_at(const glm::vec2& i_pos)
 
 void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap_to_grid)
 {
-   uint32 tx_src_line_count = tx_src->get_line_count();
-   uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
+   uint32_t tx_src_line_count = tx_src->get_line_count();
+   uint32_t max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
    float font_height = font->get_height();
    bool changed_sign = false;
 
@@ -568,7 +568,7 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
 
       tx_offset.y += fact * font_height;
       changed_sign = true;
-      set_lines_from_the_top_count(get_lines_from_the_top_count() - (int32)fact);
+      set_lines_from_the_top_count(get_lines_from_the_top_count() - (int32_t)fact);
    }
 
    // disable scrolling upwards when at the page top
@@ -577,7 +577,7 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
       tx_offset.y = 0.f;
    }
    // disable scrolling downwards when at the page bottom
-   else if ((i_offset.y < 0.f) && (get_lines_from_the_top_count() >= int32(tx_src_line_count - max_actual_lines - 1)))
+   else if ((i_offset.y < 0.f) && (get_lines_from_the_top_count() >= int32_t(tx_src_line_count - max_actual_lines - 1)))
    {
       tx_offset.y = 0.f;
    }
@@ -598,7 +598,7 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
 
       if (((lines > 1.f) && (lines_scrolled != 0.f)) || changed_sign)
       {
-         set_lines_from_the_top_count(get_lines_from_the_top_count() + int32(lines_scrolled));
+         set_lines_from_the_top_count(get_lines_from_the_top_count() + int32_t(lines_scrolled));
 
          if (tx_offset.y != 0.f)
          {
@@ -615,17 +615,17 @@ void mws_text_box::text_view::scroll_text(const glm::vec2& i_offset, bool i_snap
 
 void mws_text_box::text_view::sync_view()
 {
-   uint32 tx_src_line_count = tx_src->get_line_count();
-   uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
+   uint32_t tx_src_line_count = tx_src->get_line_count();
+   uint32_t max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
    float font_height = font->get_height();
-   uint32 src_line_count = tx_src->get_line_count();
-   uint32 actual_line_count = glm::min(max_actual_lines + extra_lines_count, src_line_count);
+   uint32_t src_line_count = tx_src->get_line_count();
+   uint32_t actual_line_count = glm::min(max_actual_lines + extra_lines_count, src_line_count);
    tx_lines = tx_src->get_lines_at(get_lines_from_the_top_count(), actual_line_count);
-   uint32 line_count = tx_lines.size();
+   uint32_t line_count = tx_lines.size();
    max_line_width = 0.f;
    tx_vxo->clear_text();
 
-   for (uint32 k = 0; k < line_count; k++)
+   for (uint32_t k = 0; k < line_count; k++)
    {
       float text_width = font->get_text_width(tx_lines[k]);
       max_line_width = glm::max(max_line_width, text_width);
@@ -643,16 +643,16 @@ void mws_text_box::text_view::sync_view()
 
 void mws_text_box::text_view::sync_view_to_cursor_pos()
 {
-   uint32 tx_src_line_count = tx_src->get_line_count();
-   uint32 max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
+   uint32_t tx_src_line_count = tx_src->get_line_count();
+   uint32_t max_actual_lines = glm::min(max_lines_allowed_by_height, tx_src_line_count);
    glm::uvec2 global_cursor_pos = tx_src->get_cursor_coord();
 
-   if ((int32)global_cursor_pos.y < get_lines_from_the_top_count())
+   if ((int32_t)global_cursor_pos.y < get_lines_from_the_top_count())
    {
       set_lines_from_the_top_count(global_cursor_pos.y);
       tx_offset = glm::vec2(0.f);
    }
-   else if ((int32)global_cursor_pos.y > (get_lines_from_the_top_count() + max_actual_lines))
+   else if ((int32_t)global_cursor_pos.y > (get_lines_from_the_top_count() + max_actual_lines))
    {
       set_lines_from_the_top_count(global_cursor_pos.y - max_actual_lines);
    }
@@ -690,7 +690,7 @@ float mws_text_box::text_view::get_span(const font_glyph& i_glyph, std::string& 
 
 void mws_text_box::text_view::update_cursor()
 {
-   if (tx_lines.empty() || (cursor_grid_pos.y < 0 || cursor_grid_pos.y >= (int32)tx_lines.size()) || cursor_grid_pos.x < 0)
+   if (tx_lines.empty() || (cursor_grid_pos.y < 0 || cursor_grid_pos.y >= (int32_t)tx_lines.size()) || cursor_grid_pos.x < 0)
    {
       cursor_left = cursor_right = nullptr;
       return;
@@ -704,9 +704,9 @@ void mws_text_box::text_view::update_cursor()
    {
       auto& glyphs = mws_font_db::inst()->get_glyph_vect(font->get_inst(), text);
       bool is_new_line_terminated = (text.back() == '\n');
-      uint32 text_length = (is_new_line_terminated) ? text.length() - 1 : text.length();
+      uint32_t text_length = (is_new_line_terminated) ? text.length() - 1 : text.length();
       float x_off = -tx_offset.x;
-      mws_assert(cursor_grid_pos.x <= (int32)text_length);
+      mws_assert(cursor_grid_pos.x <= (int32_t)text_length);
 
       if (glyphs.empty())
       {
@@ -729,7 +729,7 @@ void mws_text_box::text_view::update_cursor()
          // either last char is a new line and the cursor position is just before it
          // or, there's no new line at the end, so the cursor position is after the last char
          // we treat both cases the same
-         for (uint32 k = 0; (int32)k < cursor_grid_pos.x - 1; k++)
+         for (uint32_t k = 0; (int32_t)k < cursor_grid_pos.x - 1; k++)
          {
             font_glyph glyph = glyphs[k];
             float span = get_span(glyph, text, k);
@@ -749,7 +749,7 @@ void mws_text_box::text_view::update_cursor()
       // cursor position is between the first and last char
       else
       {
-         for (uint32 k = 0; (int32)k < cursor_grid_pos.x - 1; k++)
+         for (uint32_t k = 0; (int32_t)k < cursor_grid_pos.x - 1; k++)
          {
             font_glyph glyph = glyphs[k];
             float span = get_span(glyph, text, k);
@@ -855,17 +855,17 @@ mws_rect mws_text_box::text_view::get_cursor_rect(cursor_types i_cursor_type)
    return cursor;
 }
 
-int32 mws_text_box::text_view::get_lines_from_the_top_count()
+int32_t mws_text_box::text_view::get_lines_from_the_top_count()
 {
    return lines_from_the_top_count;
 }
 
-void mws_text_box::text_view::set_lines_from_the_top_count(int32 i_lines_from_the_top_count)
+void mws_text_box::text_view::set_lines_from_the_top_count(int32_t i_lines_from_the_top_count)
 {
    lines_from_the_top_count = i_lines_from_the_top_count;
 }
 
-void mws_text_box::text_view::clamp_lines_from_the_top_count(int32 i_inf_lim, int32 i_sup_lim)
+void mws_text_box::text_view::clamp_lines_from_the_top_count(int32_t i_inf_lim, int32_t i_sup_lim)
 {
    if (i_sup_lim < 0)
    {
@@ -967,7 +967,7 @@ void mws_text_box::handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe)
    {
       if (dragging_det.is_finished())
       {
-         uint32 delta_t = i_pe->time - dragging_det.last_move_pos_time;
+         uint32_t delta_t = i_pe->time - dragging_det.last_move_pos_time;
 
          if (delta_t < 150)
          {
@@ -1201,7 +1201,7 @@ bool mws_text_area_model_rw::get_word_wrap() { return false; }
 
 void mws_text_area_model_rw::set_word_wrap(bool i_word_wrap) { word_wrap = i_word_wrap; }
 
-uint32 mws_text_area_model_rw::get_line_count()
+uint32_t mws_text_area_model_rw::get_line_count()
 {
    int length = text.length();
    int line_count = 1;
@@ -1217,7 +1217,7 @@ uint32 mws_text_area_model_rw::get_line_count()
    return line_count;
 }
 
-std::string mws_text_area_model_rw::get_line_at(uint32 i_idx, bool i_keep_line_break)
+std::string mws_text_area_model_rw::get_line_at(uint32_t i_idx, bool i_keep_line_break)
 {
    int length = text.length();
    int line_count = 1;
@@ -1258,11 +1258,11 @@ std::string mws_text_area_model_rw::get_line_at(uint32 i_idx, bool i_keep_line_b
    return line;
 }
 
-std::vector<std::string> mws_text_area_model_rw::get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break)
+std::vector<std::string> mws_text_area_model_rw::get_lines_at(uint32_t i_idx, uint32_t i_line_count, bool i_keep_line_break)
 {
    std::vector<std::string> lines;
 
-   for (uint32 k = 0; k < i_line_count; k++)
+   for (uint32_t k = 0; k < i_line_count; k++)
    {
       lines.push_back(get_line_at(i_idx + k, i_keep_line_break));
    }
@@ -1280,24 +1280,24 @@ void mws_text_area_model_rw::set_text(const std::string& i_text)
    text = i_text;
 }
 
-void mws_text_area_model_rw::set_text(const char* i_text, uint32 i_length)
+void mws_text_area_model_rw::set_text(const char* i_text, uint32_t i_length)
 {
    text = std::string(i_text, i_length);
 }
 
-void mws_text_area_model_rw::set_size(uint32 i_width, uint32 i_height) {}
+void mws_text_area_model_rw::set_size(uint32_t i_width, uint32_t i_height) {}
 
 void mws_text_area_model_rw::set_font(mws_sp<mws_font> i_font) {}
 
 int mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
 
-void mws_text_area_model_rw::push_back(const char* i_text, uint32 i_length)
+void mws_text_area_model_rw::push_back(const char* i_text, uint32_t i_length)
 {
    set_cursor_pos(text.length());
    insert_at_cursor(std::string(i_text, i_length));
 }
 
-void mws_text_area_model_rw::push_front(const char* i_text, uint32 i_length)
+void mws_text_area_model_rw::push_front(const char* i_text, uint32_t i_length)
 {
    set_cursor_pos(0);
    insert_at_cursor(std::string(i_text, i_length));
@@ -1309,7 +1309,7 @@ void mws_text_area_model_rw::insert_at_cursor(const std::string& i_text)
    set_cursor_pos(get_cursor_pos() + i_text.length());
 }
 
-void mws_text_area_model_rw::delete_at_cursor(int32 i_count)
+void mws_text_area_model_rw::delete_at_cursor(int32_t i_count)
 {
    if (i_count > 0)
    {
@@ -1328,19 +1328,19 @@ void mws_text_area_model_rw::delete_at_cursor(int32 i_count)
    }
 }
 
-uint32 mws_text_area_model_rw::get_cursor_pos()
+uint32_t mws_text_area_model_rw::get_cursor_pos()
 {
    return cursor_pos;
 }
 
-void mws_text_area_model_rw::set_cursor_pos(uint32 i_cursor_pos)
+void mws_text_area_model_rw::set_cursor_pos(uint32_t i_cursor_pos)
 {
    if (i_cursor_pos <= text.length())
    {
       cursor_pos = i_cursor_pos;
       cursor_grid_pos = glm::uvec2(0);
 
-      for (uint32 k = 0; k < cursor_pos; k++)
+      for (uint32_t k = 0; k < cursor_pos; k++)
       {
          cursor_grid_pos.x++;
 
@@ -1358,18 +1358,18 @@ glm::uvec2 mws_text_area_model_rw::get_cursor_coord()
    return cursor_grid_pos;
 }
 
-uint32 mws_text_area_model_rw::get_cursor_pos_at_line(uint32 i_line_idx)
+uint32_t mws_text_area_model_rw::get_cursor_pos_at_line(uint32_t i_line_idx)
 {
    int cursor_idx = 0;
    int line_idx = 0;
-   uint32 length = text.length();
+   uint32_t length = text.length();
 
    if (i_line_idx == 0)
    {
       return 0;
    }
 
-   for (uint32 k = 0; k < length; k++, cursor_idx++)
+   for (uint32_t k = 0; k < length; k++, cursor_idx++)
    {
       if (text[k] == '\n')
       {
@@ -1396,15 +1396,15 @@ void mws_text_area_model_rw::advance_cursor(mws_dir_types i_direction)
    case mws_dir_up:
    {
       glm::uvec2 pos = get_cursor_coord();
-      uint32 row_idx = pos.y;
+      uint32_t row_idx = pos.y;
 
       if (row_idx > 0)
       {
-         uint32 col_idx = pos.x;
+         uint32_t col_idx = pos.x;
          std::string prev_line = get_line_at(row_idx - 1);
-         uint32 prev_line_pos = get_cursor_pos_at_line(row_idx - 1);
-         uint32 prev_line_col_idx = std::max((int32)prev_line.length() - 1, 0);
-         uint32 prev_col_idx = std::min(col_idx, prev_line_col_idx);
+         uint32_t prev_line_pos = get_cursor_pos_at_line(row_idx - 1);
+         uint32_t prev_line_col_idx = std::max((int32_t)prev_line.length() - 1, 0);
+         uint32_t prev_col_idx = std::min(col_idx, prev_line_col_idx);
 
          set_cursor_pos(prev_line_pos + prev_col_idx);
       }
@@ -1422,16 +1422,16 @@ void mws_text_area_model_rw::advance_cursor(mws_dir_types i_direction)
    case mws_dir_down:
    {
       glm::uvec2 pos = get_cursor_coord();
-      uint32 row_idx = pos.y;
-      uint32 line_count = get_line_count();
+      uint32_t row_idx = pos.y;
+      uint32_t line_count = get_line_count();
 
       if (row_idx < line_count - 1)
       {
-         uint32 col_idx = pos.x;
+         uint32_t col_idx = pos.x;
          std::string next_line = get_line_at(row_idx + 1);
-         uint32 next_line_pos = get_cursor_pos_at_line(row_idx + 1);
-         uint32 next_line_col_idx = std::max((int32)next_line.length() - 1, 0);
-         uint32 next_col_idx = std::min(col_idx, next_line_col_idx);
+         uint32_t next_line_pos = get_cursor_pos_at_line(row_idx + 1);
+         uint32_t next_line_col_idx = std::max((int32_t)next_line.length() - 1, 0);
+         uint32_t next_col_idx = std::min(col_idx, next_line_col_idx);
 
          set_cursor_pos(next_line_pos + next_col_idx);
       }
@@ -1450,9 +1450,9 @@ mws_text_area_model_ro::mws_text_area_model_ro()
    //update_line_offsets();
 }
 
-uint32 mws_text_area_model_ro::get_line_count() { return mws_text_area_model_rw::get_line_count(); /*return line_offsets.size() - 1;*/ }
+uint32_t mws_text_area_model_ro::get_line_count() { return mws_text_area_model_rw::get_line_count(); /*return line_offsets.size() - 1;*/ }
 
-std::string mws_text_area_model_ro::get_line_at(uint32 i_idx, bool i_keep_line_break)
+std::string mws_text_area_model_ro::get_line_at(uint32_t i_idx, bool i_keep_line_break)
 {
    return mws_text_area_model_rw::get_line_at(i_idx, i_keep_line_break);
    //int start_idx = line_offsets[i_idx];
@@ -1472,7 +1472,7 @@ std::string mws_text_area_model_ro::get_line_at(uint32 i_idx, bool i_keep_line_b
    //return line;
 }
 
-std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break)
+std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32_t i_idx, uint32_t i_line_count, bool i_keep_line_break)
 {
    return mws_text_area_model_rw::get_lines_at(i_idx, i_line_count, i_keep_line_break);
    //std::vector<std::string> lines;
@@ -1482,7 +1482,7 @@ std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32 i_idx, uint
    //   i_idx--;
    //}
 
-   //for (uint32 k = 0; k < i_line_count; k++)
+   //for (uint32_t k = 0; k < i_line_count; k++)
    //{
    //   lines.push_back(get_line_at(i_idx + k, i_keep_line_break));
    //}
@@ -1490,7 +1490,7 @@ std::vector<std::string> mws_text_area_model_ro::get_lines_at(uint32 i_idx, uint
    //return lines;
 }
 
-void mws_text_area_model_ro::push_back(const char* i_text, uint32 i_length)
+void mws_text_area_model_ro::push_back(const char* i_text, uint32_t i_length)
 {
    mws_text_area_model_rw::push_back(i_text, i_length);
    //std::string new_text(i_text, i_length);
@@ -1498,7 +1498,7 @@ void mws_text_area_model_ro::push_back(const char* i_text, uint32 i_length)
    //update_back_added_line_offsets(new_text);
 }
 
-void mws_text_area_model_ro::push_front(const char* i_text, uint32 i_length)
+void mws_text_area_model_ro::push_front(const char* i_text, uint32_t i_length)
 {
    mws_text_area_model_rw::push_front(i_text, i_length);
    //std::string new_text(i_text, i_length);
@@ -1511,7 +1511,7 @@ void mws_text_area_model_ro::push_front(const char* i_text, uint32 i_length)
 //   set_text(i_text.c_str(), i_text.length());
 //}
 //
-//void mws_text_area_model_ro::set_text(const char* i_text, uint32 i_length)
+//void mws_text_area_model_ro::set_text(const char* i_text, uint32_t i_length)
 //{
 //   text = std::string(i_text, i_length);
 //   update_line_offsets();
@@ -1537,11 +1537,11 @@ void mws_text_area_model_ro::update_back_added_line_offsets(const std::string& i
 
 void mws_text_area_model_ro::update_front_added_line_offsets(const std::string& i_new_text)
 {
-   std::vector<uint32> lo;
+   std::vector<uint32_t> lo;
    int len = i_new_text.length();
    int idx = 1;
 
-   for (uint32 k = 1; k < line_offsets.size(); k++)
+   for (uint32_t k = 1; k < line_offsets.size(); k++)
    {
       line_offsets[k] += len;
    }

@@ -22,8 +22,8 @@ public:
    static mws_sp<mws_kawase_bloom> nwi(mws_sp<gfx_tex> i_input_tex = nullptr);
    mws_sp<gfx_tex> get_blurred_tex() const;
    mws_sp<gfx_tex> get_bloom_tex() const;
-   void set_iter_count(uint32 i_iter_count, float i_weight_fact);
-   void set_iter_count(uint32 i_iter_count, const std::vector<float>& i_weight_fact);
+   void set_iter_count(uint32_t i_iter_count, float i_weight_fact);
+   void set_iter_count(uint32_t i_iter_count, const std::vector<float>& i_weight_fact);
    void set_alpha_op_type(set_alpha_op_types i_alpha_op, float i_new_alpha_val = 1.f);
    void init(mws_sp<gfx_tex> i_input_tex);
    void update();
@@ -34,7 +34,7 @@ protected:
 
    set_alpha_op_types alpha_op = e_set_alpha_to_blur;
    float new_alpha_val = 1.f;
-   uint32 iteration_count = 0;
+   uint32_t iteration_count = 0;
    float weight_fact = 0.f;
    std::vector<float> weight_fact_vect;
    mws_sp<gfx_camera> ortho_cam;
@@ -48,5 +48,5 @@ protected:
    std::array<mws_gfx_ppb, 2> accumulation_buff;
    mws_sp<gfx_shader> accumulation_shader;
    static const inline std::string accumulation_sh_id = "accumulation";
-   static inline uint32 tex_count = 0;
+   static inline uint32_t tex_count = 0;
 };

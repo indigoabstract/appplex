@@ -36,7 +36,7 @@ void track::loadTrackData(char* track_name)
 	tex = gfx::i()->tex.nwi("square.png");
 
 	std::string fn = trs("abstract-racing/{}", track_name);
-	std::vector<uint8> res = mod.lock()->storage.load_as_byte_vect(fn);
+	std::vector<uint8_t> res = mod.lock()->storage.load_as_byte_vect(fn);
 	mem_data_seqv mds(res.data(), res.size());
 	data_seqv_reader_big_endian dsr(&mds);
 

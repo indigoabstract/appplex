@@ -280,19 +280,19 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	return vghandle;
 //}
 //
-//void vg_paint::set_color_argb_ub(uint32 iargb)
+//void vg_paint::set_color_argb_ub(uint32_t iargb)
 //{
 //	gfx_color c(iargb);
 //
 //	vgSetColor(vghandle, c.rgba());
 //}
 //
-//void vg_paint::set_color_rgba_ub(uint32 irgba)
+//void vg_paint::set_color_rgba_ub(uint32_t irgba)
 //{
 //	vgSetColor(vghandle, irgba);
 //}
 //
-//void vg_paint::set_color_rgba_ub(uint32 ir, uint32 ig, uint32 ib, uint32 ia)
+//void vg_paint::set_color_rgba_ub(uint32_t ir, uint32_t ig, uint32_t ib, uint32_t ia)
 //{
 //	gfx_color c(ir, ig, ib, ia);
 //
@@ -319,7 +319,7 @@ void vg_path::transformed_bounds(gfx_float* imin_x, gfx_float* imin_y, gfx_float
 //	return mws_sp<vg_image>(new vg_image(iwidth, iheight, iimg_format));
 //}
 //
-//mws_sp<vg_image> vg_image::nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
+//mws_sp<vg_image> vg_image::nwi(uint8_t* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format)
 //{
 //	mws_sp<vg_image> img(new vg_image(iwidth, iheight, iimg_format));
 //	unsigned int dbpp = 4;
@@ -367,7 +367,7 @@ int vg_image::get_texture_height()
 
 mws_sp<vg_image> vg_image::load_image(std::string iimg_path)
 {
-   mws_sp<std::vector<uint8> > data = pfm::filesystem::load_res_byte_vect(iimg_path);
+   mws_sp<std::vector<uint8_t> > data = pfm::filesystem::load_res_byte_vect(iimg_path);
 	spvg_image img;
 
 	if (data)
@@ -375,7 +375,7 @@ mws_sp<vg_image> vg_image::load_image(std::string iimg_path)
 		//PngDecoder png;
 		//unsigned long width, height;
 		//bool hasAlpha;
-		//mws_sp<std::vector<uint8> > rgb(png.decodePNG(width, height, hasAlpha, begin_ptr(data), data->size()));
+		//mws_sp<std::vector<uint8_t> > rgb(png.decodePNG(width, height, hasAlpha, begin_ptr(data), data->size()));
 		//unsigned int dbpp = 4;
 		//unsigned int dstride = width * dbpp;
 		//vg::image_format::e_image_format rgbaFormat = vg::image_format::sABGR_8888;

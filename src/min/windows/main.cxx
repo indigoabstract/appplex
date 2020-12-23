@@ -46,7 +46,7 @@ public:
    virtual mws_key_types translate_key(int i_pfm_key_id) const override;
    virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const override;
    // screen metrix
-   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const override;
    virtual float get_avg_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dim_inch() const override;
@@ -113,7 +113,7 @@ namespace
    mws_sp<msvc_main> instance;
    bool is_full_screen;
    bool is_window_flipped = false;
-   uint32 portrait_flip_count = 0;
+   uint32_t portrait_flip_count = 0;
    bool emulate_mobile_screen = false;
    RECT window_coord;
    bool disable_paint;
@@ -129,7 +129,7 @@ namespace
    HANDLE console_handle;
    unicode_string wnd_class_name = untr("appplex");
    // screen metrix
-   std::pair<uint32, uint32> screen_res;
+   std::pair<uint32_t, uint32_t> screen_res;
    float avg_screen_dpi = 0.f;
    std::pair<float, float> screen_dpi;
    std::pair<float, float> screen_dim_inch;
@@ -168,7 +168,7 @@ public:
       return file;
    }
 
-   virtual uint64 length() override
+   virtual uint64_t length() override
    {
       std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -186,7 +186,7 @@ public:
       return 0;
    }
 
-   virtual uint64 creation_time()const override
+   virtual uint64_t creation_time()const override
    {
       std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -204,7 +204,7 @@ public:
       return 0;
    }
 
-   virtual uint64 last_write_time()const override
+   virtual uint64_t last_write_time()const override
    {
       std::string path = ppath.string();
       WIN32_FILE_ATTRIBUTE_DATA file_info;
@@ -447,7 +447,7 @@ mws_key_types msvc_main::apply_key_modifiers_impl(mws_key_types i_key_id) const
 }
 
 // screen metrix
-std::pair<uint32, uint32> msvc_main::get_screen_res_px() const { return screen_res; }
+std::pair<uint32_t, uint32_t> msvc_main::get_screen_res_px() const { return screen_res; }
 float msvc_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
 std::pair<float, float> msvc_main::get_screen_dpi() const { return screen_dpi; }
 std::pair<float, float> msvc_main::get_screen_dim_inch() const { return screen_dim_inch; }
@@ -853,8 +853,8 @@ bool init_app(int argc, const char** argv)
          float horizontal_dim_cm = horizontal_dim_mm / 10.f;
          int vertical_dim_mm = GetDeviceCaps(hdc_window, VERTSIZE);
          float vertical_dim_cm = vertical_dim_mm / 10.f;
-         uint32 horizontal_res_px = (uint32)GetDeviceCaps(hdc_window, HORZRES);
-         uint32 vertical_res_px = (uint32)GetDeviceCaps(hdc_window, VERTRES);
+         uint32_t horizontal_res_px = (uint32_t)GetDeviceCaps(hdc_window, HORZRES);
+         uint32_t vertical_res_px = (uint32_t)GetDeviceCaps(hdc_window, VERTRES);
 
          screen_res = std::make_pair(horizontal_res_px, vertical_res_px);
          screen_dim_cm = std::make_pair(horizontal_dim_cm, vertical_dim_cm);
@@ -1017,8 +1017,8 @@ int console_main_loop()
 int win_main_loop()
 {
    const int timer_interval = 1000 / mws::screen::get_target_fps();
-   uint32 current_time = mws::time::get_time_millis();
-   uint32 next_update_time = current_time;
+   uint32_t current_time = mws::time::get_time_millis();
+   uint32_t next_update_time = current_time;
    MSG msg;
 
    while (!mws_mod_ctrl::inst()->is_set_app_exit_on_next_run())

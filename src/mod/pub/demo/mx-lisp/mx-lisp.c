@@ -6,15 +6,8 @@
 #ifdef STANDALONE
 
 //#define MMIX 1
-#define bool int
-#define false 0
-#define true 1
 #define mws_assert(cond)
 #define mws_signal_error()
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef signed long long int64;
-typedef unsigned long long uint64;
 
 #else
 
@@ -28,7 +21,7 @@ typedef unsigned long long uint64;
 
 
 // Implementarea unui interpretor pentru limbajul LISP (pentru o masina MMIX)
-typedef int64 numeric_dt;
+typedef int64_t numeric_dt;
 struct mx_elem;
 struct mx_env;
 
@@ -154,8 +147,8 @@ const int test_sample_list_size = sizeof(test_sample_list) / sizeof(mx_test_samp
 
 struct mx_mem_block
 {
-   uint16 type;
-   uint16 elem_span;
+   uint16_t type;
+   uint16_t elem_span;
    struct mx_mem_block* next;
 };
 
@@ -164,7 +157,7 @@ struct mx_mem_block
 // global data
 //
 
-int size_of_address() { return sizeof(uint64*); }
+int size_of_address() { return sizeof(uint64_t*); }
 void mx_lisp_set_vkb_enabled(int i_enabled);
 float mx_lisp_set_scr_brightness(int i_brightness);
 void mx_lisp_use_sq_brackets_as_parenths(int i_enabled);
@@ -179,9 +172,9 @@ static eval_fnct_type mx_fnct_id_by_name(const char* i_name);
 #define MX_CTX_ELEM_SIZE 128
 #define GLOBAL_INPUT_LENGTH 1024
 
-static const uint16 FREE_BLOCK = 0;
-static const uint16 FULL_BLOCK = 1;
-static const uint16 INVL_BLOCK = 2;
+static const uint16_t FREE_BLOCK = 0;
+static const uint16_t FULL_BLOCK = 1;
+static const uint16_t INVL_BLOCK = 2;
 
 #ifdef STANDALONE
 
@@ -2438,11 +2431,11 @@ void mx_mem_clear(void* i_dst, int i_size)
 
    int size = i_size / 8;
 
-   uint64* dst = (uint64*)i_dst;
+   uint64_t* dst = (uint64_t*)i_dst;
 
    for (int k = 0; k < size; k++)
    {
-      *dst++ = (uint64)0;
+      *dst++ = (uint64_t)0;
    }
 }
 
@@ -2877,7 +2870,7 @@ mx_vect* mx_vect_ctor(int i_initial_capacity, int i_capacity_increment)
    i_v->elem_vect_length = i_initial_capacity;
    i_v->capacity_increment = i_capacity_increment;
    i_v->elem_count = 0;
-   i_v->elem_vect = (mx_smart_ptr * *)mx_mem_alloc(i_initial_capacity * sizeof(uint64*));
+   i_v->elem_vect = (mx_smart_ptr * *)mx_mem_alloc(i_initial_capacity * sizeof(uint64_t*));
 
    return i_v;
 }
@@ -2946,7 +2939,7 @@ void mx_vect_reallocate(mx_vect* i_v)
    }
 
    i_v->elem_vect_length = new_size;
-   i_v->elem_vect = (mx_smart_ptr * *)mx_mem_realloc(i_v->elem_vect, new_size * sizeof(uint64*));
+   i_v->elem_vect = (mx_smart_ptr * *)mx_mem_realloc(i_v->elem_vect, new_size * sizeof(uint64_t*));
 }
 
 void mx_vect_add_elem(mx_vect* i_v, mx_smart_ptr* i_elem)
@@ -2983,7 +2976,7 @@ void mx_vect_del_elem_at(mx_vect* i_v, int i_index)
    // arraycopy(elem_vect, i_index + 1, elem_vect, i_index, elem_count - 1 - i_index);
    mx_smart_ptr** src = i_v->elem_vect + i_index + 1;
    mx_smart_ptr** dst = i_v->elem_vect + i_index;
-   int size = (i_v->elem_count - 1 - i_index) * sizeof(uint64*);
+   int size = (i_v->elem_count - 1 - i_index) * sizeof(uint64_t*);
 
    assign_smart_ptr(&i_v->elem_vect[i_index], 0);
    mx_mem_copy(src, dst, size);

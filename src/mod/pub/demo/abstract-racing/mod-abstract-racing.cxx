@@ -73,8 +73,8 @@ namespace
 
 			int segmentCrossTime = 250;
 			duringSegmentCrossing = false;
-			uint32 now = mws::time::get_time_millis();
-			uint32 delta = now - last_time;
+			uint32_t now = mws::time::get_time_millis();
+			uint32_t delta = now - last_time;
 
 			if(delta > segmentCrossTime)
 			{
@@ -198,7 +198,7 @@ namespace
 		int segmentIdx;
 		glm::vec3 crtPos;
 		bool duringSegmentCrossing;
-		uint32 last_time;
+		uint32_t last_time;
 		mws_sp<gfx_box> cube1, cube2;
 	};
 }

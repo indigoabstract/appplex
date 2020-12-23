@@ -21,9 +21,9 @@ mws_pop_disable_all_warnings
 
 namespace gfx_vxo_util
 {
-   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, mws_sp<gfx_vxo> imesh)
+   void set_mesh_data(const uint8_t* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, mws_sp<gfx_vxo> imesh)
    {
-      mws_sp<std::vector<uint8> > vertices_data(new std::vector<uint8>(tvertices_data_size / sizeof(uint8)));
+      mws_sp<std::vector<uint8_t> > vertices_data(new std::vector<uint8_t>(tvertices_data_size / sizeof(uint8_t)));
       mws_sp<std::vector<gfx_indices_type> > indices_data(new std::vector<gfx_indices_type>(tindices_data_size / sizeof(gfx_indices_type)));
 
       memcpy(vertices_data->data(), tvertices_data, tvertices_data_size);
@@ -104,7 +104,7 @@ void gfx_vxo::operator=(const std::string& i_mesh_name)
    set_mesh_name(i_mesh_name);
 }
 
-std::vector<uint8>& gfx_vxo::get_vx_buffer()
+std::vector<uint8_t>& gfx_vxo::get_vx_buffer()
 {
    return vertices_buffer;
 }
@@ -114,12 +114,12 @@ std::vector<gfx_indices_type>& gfx_vxo::get_ix_buffer()
    return indices_buffer;
 }
 
-void gfx_vxo::set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer)
+void gfx_vxo::set_data(const std::vector<uint8_t>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer)
 {
    set_data(i_vertices_buffer.data(), i_vertices_buffer.size(), i_indices_buffer.data(), i_indices_buffer.size());
 }
 
-void gfx_vxo::set_data(const uint8* i_vx_buff, uint32 i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32 i_idx_buff_count)
+void gfx_vxo::set_data(const uint8_t* i_vx_buff, uint32_t i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32_t i_idx_buff_count)
 {
    vertices_buffer.clear();
    vertices_buffer.insert(vertices_buffer.end(), i_vx_buff, i_vx_buff + i_vx_buff_count);
@@ -397,7 +397,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                struct membuf : std::streambuf
                {
-                  membuf(uint8* begin, uint8* end)
+                  membuf(uint8_t* begin, uint8_t* end)
                   {
                      this->setg((char*)begin, (char*)begin, (char*)end);
                   }
@@ -434,7 +434,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                      }
 
                      mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-                     std::vector<uint8> data = mod->storage.load_as_byte_vect(name);
+                     std::vector<uint8_t> data = mod->storage.load_as_byte_vect(name);
                      membuf sbuf(data.data(), data.data() + data.size());
                      std::istream matIStream(&sbuf);
                      //std::ifstream matIStream(filepath.c_str());
@@ -446,7 +446,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                };
 
                mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-               std::vector<uint8> data = mod->storage.load_as_byte_vect(mesh_name);
+               std::vector<uint8_t> data = mod->storage.load_as_byte_vect(mesh_name);
                membuf sbuf(data.data(), data.data() + data.size());
                std::istream in(&sbuf);
                material_mem_reader mr(mesh_name);
@@ -512,7 +512,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                      int vdata_size = ks_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
                      int idata_size = ks_indices_data.size() * sizeof(gfx_indices_type);
-                     gfx_vxo_util::set_mesh_data((const uint8*)ks_vertices_data.data(), vdata_size, ks_indices_data.data(), idata_size, obj_mesh);
+                     gfx_vxo_util::set_mesh_data((const uint8_t*)ks_vertices_data.data(), vdata_size, ks_indices_data.data(), idata_size, obj_mesh);
                      //obj_mesh->mesh_list.push_back(mesh);
                      mws_print("done\n");
                      obj_mesh->is_loaded = true;
@@ -626,7 +626,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
    }
 }
 
-void gfx_vxo::set_size(uint32 i_vx_count, uint32 i_idx_count)
+void gfx_vxo::set_size(uint32_t i_vx_count, uint32_t i_idx_count)
 {
    vx_count = i_vx_count;
    idx_count = i_idx_count;

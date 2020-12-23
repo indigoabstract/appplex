@@ -54,7 +54,7 @@ int mws_ptr_evt::pointer_down_count()
 //    PointerIndex... pointer index
 // return:
 //    returns a touch point at PointerIndex if it exists, else if PointerIndex is 0 return mouse press if it exists, else return null
-const mws_ptr_evt::touch_point* mws_ptr_evt::get_pointer_press_by_index(uint32 i_pointer_index)
+const mws_ptr_evt::touch_point* mws_ptr_evt::get_pointer_press_by_index(uint32_t i_pointer_index)
 {
    if (touch_count > i_pointer_index)
    {
@@ -70,7 +70,7 @@ const mws_ptr_evt::touch_point* mws_ptr_evt::get_pointer_press_by_index(uint32 i
 
 const mws_ptr_evt::touch_point* mws_ptr_evt::find_point(uintptr_t i_touch_id) const
 {
-   for (uint32 i = 0; i < touch_count; i++)
+   for (uint32_t i = 0; i < touch_count; i++)
    {
       if (points[i].identifier == i_touch_id)
       {
@@ -85,7 +85,7 @@ bool mws_ptr_evt::same_touches(const mws_ptr_evt& i_other) const
 {
    if (i_other.touch_count == this->touch_count)
    {
-      for (uint32 i = 0; i < this->touch_count; i++)
+      for (uint32_t i = 0; i < this->touch_count; i++)
       {
          if (nullptr == this->find_point(i_other.points[i].identifier))
          {
@@ -182,7 +182,7 @@ void mws_touch_ctrl::update()
                if (!evt_type) { evt_type = "ended"; }
                std::string msg = mws_to_str_fmt("ptr-%s[ ", evt_type);
 
-               for (uint32 k = 0; k < i_pe->touch_count; k++)
+               for (uint32_t k = 0; k < i_pe->touch_count; k++)
                {
                   const mws_ptr_evt::touch_point& pt = i_pe->points[k];
 
@@ -234,7 +234,7 @@ void mws_touch_ctrl::update()
                // calculate 'is_changed' for pointer move events
                if (prev_ptr_evt)
                {
-                  for (uint32 k = 0; k < i_pe->touch_count; k++)
+                  for (uint32_t k = 0; k < i_pe->touch_count; k++)
                   {
                      mws_ptr_evt::touch_point& pt = i_pe->points[k];
 
@@ -395,11 +395,11 @@ enum mws_key_status
 
 
 // there are at most mws_key_count different keys that we're interested in handling
-static struct { uint32 time; mws_key_status status; } key_list[mws_key_count];
-uint32 mws_key_ctrl::time_until_first_key_repeat_ms = 600;
-uint32 mws_key_ctrl::key_repeat_threshold_ms = 150;
-const uint32 infinite_key_repeats = 0xffffffff;
-uint32 mws_key_ctrl::max_key_repeat_count = infinite_key_repeats;
+static struct { uint32_t time; mws_key_status status; } key_list[mws_key_count];
+uint32_t mws_key_ctrl::time_until_first_key_repeat_ms = 600;
+uint32_t mws_key_ctrl::key_repeat_threshold_ms = 150;
+const uint32_t infinite_key_repeats = 0xffffffff;
+uint32_t mws_key_ctrl::max_key_repeat_count = infinite_key_repeats;
 
 mws_key_ctrl::mws_key_ctrl()
 {
@@ -421,7 +421,7 @@ void mws_key_ctrl::update()
    if (events_pending)
    {
       auto inst = get_instance();
-      uint32 crt_time = mws::time::get_time_millis();
+      uint32_t crt_time = mws::time::get_time_millis();
       bool events_still_pending = false;
       const auto key_released = [&](int i_idx, mws_key_types i_key_id)
       {
@@ -464,11 +464,11 @@ void mws_key_ctrl::update()
 
          case mws_key_repeated:
          {
-            uint32 dt = crt_time - kp.time;
+            uint32_t dt = crt_time - kp.time;
 
             if (dt > key_repeat_threshold_ms)
             {
-               const uint64 max_repeat_threshold_ms = (uint64)key_repeat_threshold_ms * max_key_repeat_count;
+               const uint64_t max_repeat_threshold_ms = (uint64_t)key_repeat_threshold_ms * max_key_repeat_count;
                mws_key_types key_id = mws::input::apply_key_modifiers(key_id_no_mods);
 
                // if the key repeat is past the max number of repeats for this key, force release it

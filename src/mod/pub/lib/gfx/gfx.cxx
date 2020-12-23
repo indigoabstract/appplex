@@ -55,7 +55,7 @@ mws_pt mws_pt::to_pt() const { return *this; }
 mws_px mws_pt::to_px(dpi_types i_dpi_type) const { return mws_cm(size * pt_in_cm).to_px(i_dpi_type); }
 
 
-uint32 mws_px::int_val() const { return static_cast<uint32>(glm::round(size)); }
+uint32_t mws_px::int_val() const { return static_cast<uint32_t>(glm::round(size)); }
 mws_cm mws_px::to_cm() const
 {
    float px_per_cm = get_px_per_cm(dpi_type);
@@ -653,7 +653,7 @@ mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bo
    return tex_cube_map;
 }
 
-mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32 i_size)
+mws_sp<gfx_tex_cube_map> gfx::ic_tex::new_tex_cube_map(uint32_t i_size)
 {
    mws_sp<gfx_tex_cube_map> tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(i_size));
 

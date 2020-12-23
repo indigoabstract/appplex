@@ -298,7 +298,7 @@ public:
 
 		std::vector<glm::vec3>& curve_point_list = cm->curve->final_point_list;
 
-		for (uint32 k = 1; k < curve_point_list.size(); k++)
+		for (uint32_t k = 1; k < curve_point_list.size(); k++)
 		{
 			glm::vec3& p0 = curve_point_list[k - 1];
 			glm::vec3& p1 = curve_point_list[k];
@@ -306,7 +306,7 @@ public:
 			ortho_cam->draw_line(p0, p1, gfx_color::colors::cyan.to_vec4(), 2.f);
 		}
 
-		//for (uint32 k = 1; k < min_dist_point_list.size(); k++)
+		//for (uint32_t k = 1; k < min_dist_point_list.size(); k++)
 		//{
 		//	glm::vec3& p0 = min_dist_point_list[k - 1];
 		//	glm::vec3& p1 = min_dist_point_list[k];
@@ -314,7 +314,7 @@ public:
 		//	ortho_cam->draw_line(p0, p1, ia_color::colors::cyan.to_vec4(), 2.f);
 		//}
 
-		for (uint32 k = 0; k < min_dist_point_list.size(); k++)
+		for (uint32_t k = 0; k < min_dist_point_list.size(); k++)
 		{
 			glm::vec3& p = min_dist_point_list[k];
 
@@ -327,7 +327,7 @@ public:
 		int width = get_mod()->get_width();
 		int height = get_mod()->get_height();
 
-		for (uint32 k = 0; k < button_list.size(); k++)
+		for (uint32_t k = 0; k < button_list.size(); k++)
 		{
 			mws_sp<mws_select_button> btn = button_list[k];
 
@@ -503,7 +503,7 @@ void mod_dyn_geometry::load()
 	gfx_scene_inst->attach(p->ortho_cam);
 	gfx_scene_inst->attach(p->cm);
 
-	for (uint32 k = 0; k < p->button_list.size(); k++)
+	for (uint32_t k = 0; k < p->button_list.size(); k++)
 	{
 		p->button_list[k]->camera_id_list.clear();
 		p->button_list[k]->camera_id_list.push_back(p->ortho_cam->camera_id());
@@ -532,7 +532,7 @@ bool mod_dyn_geometry::update()
 	//}
 
 	std::vector<glm::vec2>& poly = *p->poly;
-	for (uint32 i = 0; i < poly.size() - 1; i++)
+	for (uint32_t i = 0; i < poly.size() - 1; i++)
 	{
 		p->ortho_cam->draw_line(glm::vec3(poly[i], 0), glm::vec3(poly[i + 1], 0), glm::vec4(1.0), 1);
 	}

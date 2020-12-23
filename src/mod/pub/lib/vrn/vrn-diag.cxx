@@ -5,7 +5,7 @@
 #define JC_VORONOI_IMPLEMENTATION
 #include "jc_voronoi.h"
 
-const uint32 picking_start_idx = 0;
+const uint32_t picking_start_idx = 0;
 
 
 class voronoi_2d_diag_impl : public mws_vrn_diag
@@ -18,7 +18,7 @@ public:
       clip_dim = { jcv_point {0.f, 0.f}, jcv_point{ (float)i_vdata->info.diag_width, (float)i_vdata->info.diag_height } };
       full_clear();
 
-      for (uint32 k = 0; k < vx.size(); ++k)
+      for (uint32_t k = 0; k < vx.size(); ++k)
       {
          jcv_point p = { vx[k], vy[k] };
          kernels_list.push_back(p);
@@ -38,9 +38,9 @@ public:
       float min_dist = JCV_FLT_MAX;
       idx_dist ret = { -1, min_dist };
       glm::vec2 ref_pt(i_x, i_y);
-      uint32 size = kernels_list.size();
+      uint32_t size = kernels_list.size();
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          auto& kp = kernels_list[k];
          glm::vec2 kp_pt(kp.x, kp.y);
@@ -61,7 +61,7 @@ public:
       return ret;
    }
 
-   virtual glm::vec2 get_kernel_at(uint32 i_idx) const override
+   virtual glm::vec2 get_kernel_at(uint32_t i_idx) const override
    {
       mws_assert(i_idx < kernels_list.size());
       const jcv_point& ker = kernels_list[i_idx];
@@ -73,7 +73,7 @@ public:
       mws_sp<mws_vrn_data> vdata = vrn_data.lock();
       mws_vrn_data::settings& s = vdata->info;
       mws_vrn_data::mws_vrn_geom_data& g = vdata->geom;
-      uint32 current_picking_start_idx = picking_start_idx;
+      uint32_t current_picking_start_idx = picking_start_idx;
 
       {
          mws_vrn_kernel_pt_vect& p = g.kernel_points;
@@ -104,7 +104,7 @@ public:
       }
    }
 
-   virtual void move_kernel_to(uint32 i_idx, float i_x, float i_y) override
+   virtual void move_kernel_to(uint32_t i_idx, float i_x, float i_y) override
    {
       jcv_clipper* clipper = nullptr;
       auto& kp = kernels_list[i_idx];
@@ -129,7 +129,7 @@ public:
       update_data();
    }
 
-   virtual void remove_kernel(uint32 i_idx) override
+   virtual void remove_kernel(uint32_t i_idx) override
    {
       jcv_clipper* clipper = nullptr;
 
@@ -162,7 +162,7 @@ public:
    {
       i_vdata->geom.kernel_points.resize(kernels_list.size());
 
-      for (uint32 k = 0; k < kernels_list.size(); k++)
+      for (uint32_t k = 0; k < kernels_list.size(); k++)
       {
          auto& p = kernels_list[k];
          glm::vec3 pos(p.x, p.y, 0.f);
@@ -177,7 +177,7 @@ public:
       for (int k = 0; k < size; k++)
       {
          mws_vrn_kernel_pt& p = i_vdata->geom.kernel_points.vect[k];
-         uint64 key = get_key(p.position);
+         uint64_t key = get_key(p.position);
 
          mws_assert(p.id >= 0);
          kernel_id_map[key] = p.id;
@@ -213,7 +213,7 @@ public:
       for (int k = 0; k < size; k++)
       {
          mws_vrn_nexus_pt& p = i_vdata->geom.nexus_points.vect[k];
-         uint64 key = get_key(p.position);
+         uint64_t key = get_key(p.position);
 
          mws_assert(p.id > 0);
          nexus_id_map[key] = p.id;
@@ -240,12 +240,12 @@ public:
          glm::vec3 position0(edge->pos[0].x, edge->pos[0].y, 0.f);
          glm::vec3 position1(edge->pos[1].x, edge->pos[1].y, 0.f);
 
-         uint64 key0 = get_key(position0);
-         uint64 key1 = get_key(position1);
+         uint64_t key0 = get_key(position0);
+         uint64_t key1 = get_key(position1);
          bool p0_found = (nexus_id_map.find(key0) != nexus_id_map.end());
          bool p1_found = (nexus_id_map.find(key1) != nexus_id_map.end());
-         uint32 p0_id = -1;
-         uint32 p1_id = -1;
+         uint32_t p0_id = -1;
+         uint32_t p1_id = -1;
 
          if (!p0_found)
          {
@@ -309,7 +309,7 @@ public:
 
          glm::vec3 kp_pos = glm::vec3(vertex.x, vertex.y, 0.f);
 
-         uint64 kp_key = get_key(kp_pos);
+         uint64_t kp_key = get_key(kp_pos);
          bool kp_key_found = (kernel_id_map.find(kp_key) != kernel_id_map.end());
          mws_assert(kp_key_found);
 
@@ -333,7 +333,7 @@ public:
             //{
             glm::vec3 np_pos = glm::vec3(e->pos[0].x, e->pos[0].y, 0.f);
 
-            uint64 np_key = get_key(np_pos);
+            uint64_t np_key = get_key(np_pos);
             bool np_key_found = (nexus_id_map.find(np_key) != nexus_id_map.end());
             mws_assert(np_key_found);
             mws_vrn_cell_pt_id cpi;
@@ -364,20 +364,20 @@ public:
       i_vdata->geom.cell_points_ids.resize(k);
    }
 
-   static uint64 get_key(glm::vec3 & iposition)
+   static uint64_t get_key(glm::vec3 & iposition)
    {
       int* x = (int*)& iposition.x;
       int* y = (int*)& iposition.y;
-      uint64 x64 = *x & 0xffffffff;
-      uint64 y64 = *y & 0xffffffff;
-      uint64 r = (x64 << 32) | y64;
+      uint64_t x64 = *x & 0xffffffff;
+      uint64_t y64 = *y & 0xffffffff;
+      uint64_t r = (x64 << 32) | y64;
 
       return r;
    }
 
    std::vector<jcv_point> kernels_list;
-   std::unordered_map<uint64, uint32> nexus_id_map;
-   std::unordered_map<uint64, uint32> kernel_id_map;
+   std::unordered_map<uint64_t, uint32_t> nexus_id_map;
+   std::unordered_map<uint64_t, uint32_t> kernel_id_map;
    jcv_diagram diagram;
    jcv_rect clip_dim;
    mws_wp<mws_vrn_data> vrn_data;

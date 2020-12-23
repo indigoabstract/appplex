@@ -22,11 +22,11 @@ enum gesture_state
 
 
 // max duration of a double tap. if more that this time has passed between taps, it's not considered a double tap anymore
-const uint32 DOUBLE_TAP_MAX_DURATION = 500;
+const uint32_t DOUBLE_TAP_MAX_DURATION = 500;
 // max distance between first press position an subsequent pointer positions
 const mws_cm DOUBLE_TAP_MAX_POINTER_DISTANCE(0.1f);
 // max distance between first press position an subsequent pointer positions for rotating with touch gestures
-const uint32 ROTATION_MAX_POINTER_DEVIATION = 15;
+const uint32_t ROTATION_MAX_POINTER_DEVIATION = 15;
 
 
 class dragging_detector
@@ -43,7 +43,7 @@ public:
    glm::vec2 press_pos = glm::vec2(0.f);
    glm::vec2 pointer_pos = glm::vec2(0.f);
    glm::vec2 last_move_pos = glm::vec2(0.f);
-   uint32 last_move_pos_time = 0;
+   uint32_t last_move_pos_time = 0;
    glm::vec2 last_move_pos_bak = glm::vec2(0.f);
 
 private:
@@ -72,8 +72,8 @@ public:
    glm::vec2 get_first_press_pos()const { return first_press_pos; }
    glm::vec2 get_second_press_pos() const { return second_press_pos; }
    // max duration of a double tap(in ms). if more that this time has passed between taps, it's not considered a double tap anymore
-   uint32 get_double_tap_max_duration() const;
-   void set_double_tap_max_duration(uint32 i_max_duration);
+   uint32_t get_double_tap_max_duration() const;
+   void set_double_tap_max_duration(uint32_t i_max_duration);
    // max distance between first press position an subsequent pointer positions
    mws_cm get_double_tap_max_pointer_distance() const;
    void set_double_tap_max_pointer_distance(mws_cm i_max_distance);
@@ -96,7 +96,7 @@ private:
    // get start position of tap
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
-   uint32 max_duration = DOUBLE_TAP_MAX_DURATION;
+   uint32_t max_duration = DOUBLE_TAP_MAX_DURATION;
    mws_cm max_distance = DOUBLE_TAP_MAX_POINTER_DISTANCE;
 
    mws_sp<mws_ptr_evt> start_event;
@@ -129,7 +129,7 @@ private:
    glm::vec2 first_press_pos = glm::vec2(0.f);
    glm::vec2 second_press_pos = glm::vec2(0.f);
    glm::vec2 third_press_pos = glm::vec2(0.f);
-   uint32 max_duration = DOUBLE_TAP_MAX_DURATION;
+   uint32_t max_duration = DOUBLE_TAP_MAX_DURATION;
    mws_cm max_distance = DOUBLE_TAP_MAX_POINTER_DISTANCE;
 
    mws_sp<mws_ptr_evt> start_event;
@@ -272,7 +272,7 @@ enum class swipe_types
 class swipe_detector
 {
 public:
-   uint32 max_swipe_duration = 500;
+   uint32_t max_swipe_duration = 500;
    float swipe_speed_cms = 0.f;
    swipe_types swipe_direction;
    int min_fingers_pressed = 1;
@@ -281,7 +281,7 @@ public:
    float min_swipe_dist_cm = 2.f;
    float max_swipe_dist_cm = 10.f;
    std::vector<mws_sp<mws_ptr_evt>> touch_vect;
-   uint32 start_time;
+   uint32_t start_time;
 
    swipe_detector();
    bool detect_helper(mws_sp<mws_ptr_evt> evt);

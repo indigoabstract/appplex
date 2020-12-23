@@ -83,7 +83,7 @@ bool linear_transition::is_paused()const
 
 int linear_transition::get_elapsed_time()const
 {
-	uint32 delta = mws::time::get_time_millis() - start_time - pause_duration;
+	uint32_t delta = mws::time::get_time_millis() - start_time - pause_duration;
 
 	return delta;
 }
@@ -159,7 +159,7 @@ void linear_transition::reset()
 	paused = false;
 }
 
-void linear_transition::start(uint32 offset)
+void linear_transition::start(uint32_t offset)
 {
 	reset();
 	start_time = mws::time::get_time_millis() - offset;
@@ -253,7 +253,7 @@ void ms_linear_transition::update()
 	if(tr->is_finished())
 		// current transition finished. move to the next
 	{
-		if((uint32)interval_idx < transitions.size() - 1)
+		if((uint32_t)interval_idx < transitions.size() - 1)
 			// next transition exists. start it and call update
 		{
 			int td = 0;

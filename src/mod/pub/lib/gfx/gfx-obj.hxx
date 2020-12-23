@@ -39,5 +39,5 @@ private:
    friend class gfx;
 
    mws_wp<gfx> g;
-   static inline uint32 obj_idx = 0;
+   static inline uint32_t obj_idx = 0;
 };

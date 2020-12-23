@@ -22,17 +22,17 @@ public:
    T get_value() const;
    int get_loop_count() const;
    void start(T i_slide_time = 0.f);
-   void start_int(uint32 i_slide_time);
+   void start_int(uint32_t i_slide_time);
    void stop();
    void update();
 
 private:
 
-   static uint32 fp_2_int_time(T i_seconds);
+   static uint32_t fp_2_int_time(T i_seconds);
 
    bool enabled;
-   uint32 start_time;
-   uint32 slide_time;
+   uint32_t start_time;
+   uint32_t slide_time;
    T slider;
    int loop_count;
 };
@@ -63,7 +63,7 @@ template <typename T> int basic_time_slider<T>::get_loop_count() const
 
 template <typename T> void basic_time_slider<T>::start(T i_slide_time)
 {
-   uint32 st = 0;
+   uint32_t st = 0;
 
    if (i_slide_time > 0.f)
    {
@@ -73,7 +73,7 @@ template <typename T> void basic_time_slider<T>::start(T i_slide_time)
    start_int(st);
 }
 
-template <typename T> void basic_time_slider<T>::start_int(uint32 i_slide_time)
+template <typename T> void basic_time_slider<T>::start_int(uint32_t i_slide_time)
 {
    if (i_slide_time > 0)
    {
@@ -99,8 +99,8 @@ template <typename T> void basic_time_slider<T>::update()
       return;
    }
 
-   uint32 now = mws::time::get_time_millis();
-   uint32 start_delta = now - start_time;
+   uint32_t now = mws::time::get_time_millis();
+   uint32_t start_delta = now - start_time;
 
    if (start_delta < slide_time)
    {
@@ -114,13 +114,13 @@ template <typename T> void basic_time_slider<T>::update()
    }
 }
 
-template <typename T> uint32 basic_time_slider<T>::fp_2_int_time(T i_seconds)
+template <typename T> uint32_t basic_time_slider<T>::fp_2_int_time(T i_seconds)
 {
    T int_part = std::floor(i_seconds);
-   uint32 sec = int(int_part) * 1000;
+   uint32_t sec = int(int_part) * 1000;
    T fract_part = i_seconds - int_part;
-   uint32 ms = int(fract_part * 1000.f);
-   uint32 total_time = sec + ms;
+   uint32_t ms = int(fract_part * 1000.f);
+   uint32_t total_time = sec + ms;
 
    return total_time;
 }
@@ -135,19 +135,19 @@ public:
    T get_value() const;
    int get_loop_count() const;
    void start(T i_slide_time = 0.f);
-   void start_int(uint32 i_slide_time);
+   void start_int(uint32_t i_slide_time);
    void stop();
    void update();
 
 private:
 
-   static uint32 fp_2_int_time(T i_seconds);
+   static uint32_t fp_2_int_time(T i_seconds);
 
    bool enabled;
    bool forward;
-   uint32 start_time;
-   uint32 last_start_delta;
-   uint32 slide_time;
+   uint32_t start_time;
+   uint32_t last_start_delta;
+   uint32_t slide_time;
    T slider;
    int loop_count;
 };
@@ -179,7 +179,7 @@ template <typename T> int ping_pong_time_slider<T>::get_loop_count() const
 
 template <typename T> void ping_pong_time_slider<T>::start(T i_slide_time)
 {
-   uint32 st = 0;
+   uint32_t st = 0;
 
    if (i_slide_time > 0.f)
    {
@@ -189,7 +189,7 @@ template <typename T> void ping_pong_time_slider<T>::start(T i_slide_time)
    start_int(st);
 }
 
-template <typename T> void ping_pong_time_slider<T>::start_int(uint32 i_slide_time)
+template <typename T> void ping_pong_time_slider<T>::start_int(uint32_t i_slide_time)
 {
    if (i_slide_time > 0)
    {
@@ -216,8 +216,8 @@ template <typename T> void ping_pong_time_slider<T>::update()
       return;
    }
 
-   uint32 now = mws::time::get_time_millis();
-   uint32 start_delta = (now - start_time) % slide_time;
+   uint32_t now = mws::time::get_time_millis();
+   uint32_t start_delta = (now - start_time) % slide_time;
 
    if (start_delta < last_start_delta)
    {
@@ -242,13 +242,13 @@ template <typename T> void ping_pong_time_slider<T>::update()
    last_start_delta = start_delta;
 }
 
-template <typename T> uint32 ping_pong_time_slider<T>::fp_2_int_time(T i_seconds)
+template <typename T> uint32_t ping_pong_time_slider<T>::fp_2_int_time(T i_seconds)
 {
    T int_part = std::floor(i_seconds);
-   uint32 sec = int(int_part) * 1000;
+   uint32_t sec = int(int_part) * 1000;
    T fract_part = i_seconds - int_part;
-   uint32 ms = int(fract_part * 1000.f);
-   uint32 total_time = sec + ms;
+   uint32_t ms = int(fract_part * 1000.f);
+   uint32_t total_time = sec + ms;
 
    return total_time;
 }
@@ -277,7 +277,7 @@ public:
          // if there is still some scrolling energy
          if (decay > 0)
          {
-            uint32 delta_t = mws::time::get_time_millis() - decay_start;
+            uint32_t delta_t = mws::time::get_time_millis() - decay_start;
             decay = 1.f - inverse((float)delta_t, (float)decay_maxmillis);
 
             //decay = 1 - inverse(mws_mod_ctrl::get_current_mod()->update_ctrl->getTime() - decay_start, decay_maxmillis);
@@ -327,7 +327,7 @@ private:
    float startx;
    float starty;
    float decay;
-   uint32 decay_start;
+   uint32_t decay_start;
    int decay_maxmillis;
    bool active;
 };

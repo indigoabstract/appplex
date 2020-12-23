@@ -151,7 +151,7 @@ namespace ns_kxmd
          }
       }
 
-      static void erase(const kv_ref* i_ref, uint32 i_idx)
+      static void erase(const kv_ref* i_ref, uint32_t i_idx)
       {
          mws_sp<kxmd_kv> kv;
 
@@ -163,7 +163,7 @@ namespace ns_kxmd
          }
       }
 
-      static kv_ref elem_at_idx(const kv_ref* i_ref, uint32 i_idx)
+      static kv_ref elem_at_idx(const kv_ref* i_ref, uint32_t i_idx)
       {
          mws_sp<kxmd> db;
          mws_sp<kxmd_kv> kv;
@@ -536,7 +536,7 @@ namespace ns_kxmd
       kxmd_impl::clear(this);
    }
 
-   void kv_ref::erase(uint32 i_idx) const
+   void kv_ref::erase(uint32_t i_idx) const
    {
       kxmd_impl::erase(this, i_idx);
    }
@@ -546,7 +546,7 @@ namespace ns_kxmd
       return i_ref.db.lock() == db.lock() && i_ref.kv.lock() == kv.lock();
    }
 
-   kv_ref kv_ref::operator[](uint32 i_idx) const
+   kv_ref kv_ref::operator[](uint32_t i_idx) const
    {
       return kxmd_impl::elem_at_idx(this, i_idx);
    }
@@ -604,7 +604,7 @@ namespace ns_kxmd
    kv_ref::kv_ref(mws_sp<kxmd> i_db, mws_sp<kxmd_kv> i_kv) : db(i_db), kv(i_kv) {};
 
 
-   mws_sp<kxmd> kxmd::nwi(const char* i_kxmd_data, uint32 i_size)
+   mws_sp<kxmd> kxmd::nwi(const char* i_kxmd_data, uint32_t i_size)
    {
       mws_sp<std::string> str(new std::string(i_kxmd_data, i_size));
       return nwi(*str);
@@ -671,7 +671,7 @@ namespace ns_kxmd
       return p->get_main_ref();
    }
 
-   uint32 kxmd::get_version() const
+   uint32_t kxmd::get_version() const
    {
       return 20190319;
    }
@@ -959,7 +959,7 @@ namespace ns_kxmd
       }
 
       std::string src;
-      uint32 crt_idx;
+      uint32_t crt_idx;
       mws_sp<kxs_elem> kxel;
 
    private:
@@ -1028,9 +1028,9 @@ namespace ns_kxmd
 
       virtual mws_sp<kxs_elem> scan_impl()
       {
-         uint32 start_idx = ss->crt_idx;
+         uint32_t start_idx = ss->crt_idx;
 
-         for (uint32 k = start_idx; k < ss->src.length(); k++)
+         for (uint32_t k = start_idx; k < ss->src.length(); k++)
          {
             char c = ss->src.at(k);
 
@@ -1099,7 +1099,7 @@ namespace ns_kxmd
 
          ss->crt_idx++;
 
-         for (uint32 k = ss->crt_idx; k < ss->src.length(); k++)
+         for (uint32_t k = ss->crt_idx; k < ss->src.length(); k++)
          {
             c = ss->src.at(k);
 
@@ -1141,7 +1141,7 @@ namespace ns_kxmd
          char end = c;
          ss->crt_idx++;
 
-         for (uint32 k = ss->crt_idx; k < ss->src.length(); k++)
+         for (uint32_t k = ss->crt_idx; k < ss->src.length(); k++)
          {
             char c = ss->src.at(k);
 
@@ -1741,7 +1741,7 @@ namespace ns_kxmd
             }
          }
 
-         uint32 idx = ss->crt_idx;
+         uint32_t idx = ss->crt_idx;
          bool parse_error = false;
 
          if (idx >= ss->src.length())

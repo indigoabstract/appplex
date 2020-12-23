@@ -118,9 +118,9 @@ public:
    bool exists() const;
    bool is_open() const;
    bool is_writable() const;
-   uint64 length();
-   uint64 creation_time() const;
-   uint64 last_write_time() const;
+   uint64_t length();
+   uint64_t creation_time() const;
+   uint64_t last_write_time() const;
    // returns the file's path as a mws_path
    const mws_path& path() const;
    // returns the file's path as a string
@@ -145,12 +145,12 @@ public:
       void close();
       void flush();
       bool reached_eof() const;
-      void set_io_position(uint64 i_pos);
+      void set_io_position(uint64_t i_pos);
 
-      int read(std::vector<uint8>& i_buffer);
-      int write(const std::vector<uint8>& i_buffer);
-      int read(uint8* i_buffer, int i_size);
-      int write(const uint8* i_buffer, int i_size);
+      int read(std::vector<uint8_t>& i_buffer);
+      int write(const std::vector<uint8_t>& i_buffer);
+      int read(uint8_t* i_buffer, int i_size);
+      int write(const uint8_t* i_buffer, int i_size);
 
    private:
       friend class mws_file;
@@ -218,15 +218,15 @@ public:
       static float get_brightness();
       static void set_brightness(float i_brightness);
 
-      static uint32 get_width();
-      static uint32 get_height();
+      static uint32_t get_width();
+      static uint32_t get_height();
       static float get_scale();
       static float get_scaled_width();
       static float get_scaled_height();
 
       // screen metrix
       // horizontal and vertical screen resolution in dots(pixels)
-      static std::pair<uint32, uint32> get_res_px();
+      static std::pair<uint32_t, uint32_t> get_res_px();
       // average dots(pixels) per inch
       static float get_avg_dpi();
       // horizontal and vertical dots(pixels) per inch
@@ -245,9 +245,9 @@ public:
    struct time
    {
       static std::string get_timezone_id();
-      static uint32 get_time_millis();
+      static uint32_t get_time_millis();
       static std::string get_current_date(const std::string& i_fmt = "");
-      static std::string get_duration_as_string(uint32 i_duration);
+      static std::string get_duration_as_string(uint32_t i_duration);
    };
 
 
@@ -267,27 +267,27 @@ class mws_dbg final
 public:
    // standard flags list
    // memory allocations/deallocations
-   static inline const uint64 pfm_mem = 1 << 0;
-   static inline const uint64 app_mem = 1 << 1;
+   static inline const uint64_t pfm_mem = 1 << 0;
+   static inline const uint64_t app_mem = 1 << 1;
    // file io - open/close
-   static inline const uint64 pfm_files = 1 << 2;
-   static inline const uint64 app_files = 1 << 3;
+   static inline const uint64_t pfm_files = 1 << 2;
+   static inline const uint64_t app_files = 1 << 3;
    // touch events
-   static inline const uint64 pfm_touch = 1 << 4;
-   static inline const uint64 app_touch = 1 << 5;
+   static inline const uint64_t pfm_touch = 1 << 4;
+   static inline const uint64_t app_touch = 1 << 5;
    // mws/ui events
-   static inline const uint64 pfm_mws = 1 << 6;
-   static inline const uint64 app_mws = 1 << 7;
+   static inline const uint64_t pfm_mws = 1 << 6;
+   static inline const uint64_t app_mws = 1 << 7;
    // net events
-   static inline const uint64 pfm_net = 1 << 8;
-   static inline const uint64 app_net = 1 << 9;
+   static inline const uint64_t pfm_net = 1 << 8;
+   static inline const uint64_t app_net = 1 << 9;
    // last standard flag. flag values greater than this are considered custom flag values
-   static inline const uint64 last_std_flag = app_net;
+   static inline const uint64_t last_std_flag = app_net;
 
-   static bool enabled(uint64 i_flags) { return mws_debug_enabled && ((flags & i_flags) != 0); }
-   static uint64 get_active_flags() { return flags; }
+   static bool enabled(uint64_t i_flags) { return mws_debug_enabled && ((flags & i_flags) != 0); }
+   static uint64_t get_active_flags() { return flags; }
 
-   static void set_flags(uint64 i_flags, bool i_clear_flags = false)
+   static void set_flags(uint64_t i_flags, bool i_clear_flags = false)
    {
       // used flags must have already been registered
       mws_assert((i_flags & used_flags) == i_flags);
@@ -304,14 +304,14 @@ public:
 
    // returns the most significant bit set in the registered flags
    // use this to register a new custom flag, by shifting left the returned value
-   static uint64 get_registered_flags_msb_val()
+   static uint64_t get_registered_flags_msb_val()
    {
       if (!used_flags)
       {
          return 0;
       }
 
-      uint64 msb_val = 1;
+      uint64_t msb_val = 1;
 
       while (used_flags >>= 1)
       {
@@ -322,10 +322,10 @@ public:
    }
 
    // if using non standard flag, register it first, to prevent collisions with other non standard flags
-   static void register_flags(uint64 i_flags)
+   static void register_flags(uint64_t i_flags)
    {
 #if defined MWS_DEBUG_BUILD
-      uint64 std_flags = last_std_flag + last_std_flag - 1;
+      uint64_t std_flags = last_std_flag + last_std_flag - 1;
       // standard flags are already taken, cannot register
       mws_assert((i_flags & std_flags) == 0);
       // flags must not already be registered
@@ -339,9 +339,9 @@ private:
    mws_dbg() {}
 
    // current active debug flags
-   static inline uint64 flags = 0;
+   static inline uint64_t flags = 0;
    // set the standard flags
-   static inline uint64 used_flags = last_std_flag + last_std_flag - 1;
+   static inline uint64_t used_flags = last_std_flag + last_std_flag - 1;
 };
 
 

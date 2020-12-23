@@ -132,7 +132,7 @@ namespace mod_keyboard_ns
          }
          y_off += y_add;
 
-         for (uint32 k = mws_key_invalid + 1; k < mws_key_count; k++)
+         for (uint32_t k = mws_key_invalid + 1; k < mws_key_count; k++)
          {
             mws_key_types key = (mws_key_types)k;
 

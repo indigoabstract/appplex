@@ -81,9 +81,9 @@ public:
 	vg_paint_handle handle();
 
 	gfx_uint get_color();
-	void set_color_argb_ub(uint32 iargb);
-	void set_color_rgba_ub(uint32 irgba);
-	void set_color_rgba_ub(uint32 ir, uint32 ig, uint32 ib, uint32 ia);
+	void set_color_argb_ub(uint32_t iargb);
+	void set_color_rgba_ub(uint32_t irgba);
+	void set_color_rgba_ub(uint32_t ir, uint32_t ig, uint32_t ib, uint32_t ia);
 	void set_color_rgba_f(float ir, float ig, float ib, float ia);
 
 	void paint_pattern(spvg_image ipattern);
@@ -104,7 +104,7 @@ class vg_image
 {
 public:
 	static mws_sp<vg_image> nwi(int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
-	static mws_sp<vg_image> nwi(uint8* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
+	static mws_sp<vg_image> nwi(uint8_t* data, int iwidth, int iheight, vg::image_format::e_image_format iimg_format = vg::image_format::sABGR_8888);
 	virtual ~vg_image();
 	vg_image_handle handle();
 

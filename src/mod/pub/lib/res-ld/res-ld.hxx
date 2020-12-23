@@ -9,14 +9,14 @@ class gfx_tex;
 
 union rgba_32_fmt
 {
-   uint32 abgr;
+   uint32_t abgr;
 
    struct
    {
-      uint8 r;
-      uint8 g;
-      uint8 b;
-      uint8 a;
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+      uint8_t a;
    };
 };
 
@@ -32,7 +32,7 @@ public:
    int height;
    int size;
    gfx_enum gl_color_format;
-   uint8* data;
+   uint8_t* data;
 };
 
 
@@ -51,9 +51,9 @@ public:
    mws_sp<gfx_tex> load_tex(std::string i_filename);
    mws_sp<raw_img_data> load_image(mws_sp<mws_file> i_file);
    mws_sp<raw_img_data> load_image(std::string i_filename);
-   bool save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8* i_buffer, flip_types i_flip = e_no_flip);
+   bool save_image(mws_sp<mws_file> i_file, int i_width, int i_height, uint8_t* i_buffer, flip_types i_flip = e_no_flip);
 
 private:
    res_ld();
-   static mws_sp<std::vector<uint8>> flip_buffer(int i_width, int i_height, uint8* i_buffer, flip_types i_flip);
+   static mws_sp<std::vector<uint8_t>> flip_buffer(int i_width, int i_height, uint8_t* i_buffer, flip_types i_flip);
 };

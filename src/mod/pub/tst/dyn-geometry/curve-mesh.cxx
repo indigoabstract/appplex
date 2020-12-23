@@ -95,7 +95,7 @@ void curve_mesh::calc_points(std::vector<mws_ptr_evt::touch_point>& ipoint_list)
 	{
 		reset();
 
-		for (uint32 k = 0; k < sampled_point_list.size(); k++)
+		for (uint32_t k = 0; k < sampled_point_list.size(); k++)
 		{
 			glm::vec3& p = sampled_point_list[k];
 
@@ -188,7 +188,7 @@ void curve_mesh::calc_geometry()
 
 	int vdata_size = vx_tab.size() * sizeof(vx_fmt_p3f_t2f);
 	int idata_size = ix_tab.size() * sizeof(gfx_indices_type);
-	gfx_vxo_util::set_mesh_data((const uint8*)vx_tab.data(), vdata_size, ix_tab.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+	gfx_vxo_util::set_mesh_data((const uint8_t*)vx_tab.data(), vdata_size, ix_tab.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 	drawing_mode_changed = true;
 }
 

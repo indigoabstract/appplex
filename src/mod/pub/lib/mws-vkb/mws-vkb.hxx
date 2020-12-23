@@ -45,10 +45,10 @@ enum class key_mod_types
 
 struct vkb_info
 {
-   uint32 width = 0;
-   uint32 height = 0;
+   uint32_t width = 0;
+   uint32_t height = 0;
    // file index for this aspect ratio
-   uint32 index = 0;
+   uint32_t index = 0;
    float aspect_ratio = 0.f;
 };
 
@@ -83,17 +83,17 @@ public:
    static inline const float pressed_key_lights_hold_seconds = 0.3f;
    static inline const float pressed_key_lights_off_seconds = 0.8f;
 
-   mws_vkb_impl(uint32 i_obj_type_mask);
+   mws_vkb_impl(uint32_t i_obj_type_mask);
    static vkb_info get_vkb_info(const std::string& i_filename);
-   static std::string get_vkb_filename(uint32 i_map_idx);
+   static std::string get_vkb_filename(uint32_t i_map_idx);
    virtual void setup() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override {}
    virtual void update_state() override {}
    virtual void update_view(mws_sp<mws_camera> g) override {}
    virtual mws_sp<mws_ptr_evt> on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i_ta);
    virtual void on_update_state();
-   virtual void on_resize(uint32 i_width, uint32 i_height);
-   virtual vkb_file_info get_closest_vkb_match(uint32 i_width, uint32 i_height);
+   virtual void on_resize(uint32_t i_width, uint32_t i_height);
+   virtual vkb_file_info get_closest_vkb_match(uint32_t i_width, uint32_t i_height);
    virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_letter_fnt, mws_sp<mws_font> i_word_fnt);
    virtual void start_anim();
@@ -104,7 +104,7 @@ public:
    virtual mws_key_types get_key_type(const std::string& i_key_name) const;
    void load_map(std::string i_filename);
    virtual std::vector<mws_key_types>& get_key_vect();
-   virtual uint32 get_key_vect_size();
+   virtual uint32_t get_key_vect_size();
    // returns the key id at position i_idx
    virtual mws_key_types get_key_at(int i_idx);
    // returns the key id at position 'i_idx' in mod 'i_key_mod'
@@ -115,7 +115,7 @@ public:
    virtual std::vector<mws_sp<gfx_tex>> get_tex_list();
    virtual void build_cell_border_tex();
    virtual void build_keys_tex();
-   virtual void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx);
+   virtual void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32_t i_key_idx);
    virtual mws_sp<mws_font> get_key_font() const { return letter_font; }
    virtual bool is_mod_key(mws_key_types i_key_id);
    // check if i_mod_key is pressed or locked
@@ -138,7 +138,7 @@ protected:
    {
    public:
       // keyboard resolution, in pixels (it's the same for both landscape or portrait keyboards, just put the largest value)
-      uint32 resolution_px = 0;
+      uint32_t resolution_px = 0;
       // weight factors for kawase bloom filter on the keys
       std::vector<float> key_weight_fact;
    };
@@ -149,9 +149,9 @@ protected:
    public:
       mws_vkb_pressed_key();
       void init(mws_sp<gfx_tex> i_cell_border_tex);
-      void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32 i_key_idx, mws_sp<mws_vrn_main> i_vk, mws_sp<gfx_tex> i_keys_tex);
+      void show_pressed_key(const mws_sp<mws_text_area> i_ta, uint32_t i_key_idx, mws_sp<mws_vrn_main> i_vk, mws_sp<gfx_tex> i_keys_tex);
       void start_light_turnoff();
-      bool is_fading(uint32 i_crt_time);
+      bool is_fading(uint32_t i_crt_time);
       void set_fade_gradient(float i_gradient);
 
       glm::vec4 arrow_color = glm::vec4(0.9f, 0.08f, 1.f, 0.7f);
@@ -160,16 +160,16 @@ protected:
       mws_sp<gfx_vxo> label;
       mws_sp<gfx_vxo> label_bg;
       mws_sp<gfx_vxo> border;
-      uint32 light_turnoff_start = 0;
+      uint32_t light_turnoff_start = 0;
    };
 
 
-   virtual res_specific_params get_closest_resolution_match(uint32 i_resolution_px);
+   virtual res_specific_params get_closest_resolution_match(uint32_t i_resolution_px);
    virtual void setup_font_dimensions();
    virtual void init_shaders();
    virtual void set_key_transparency(float i_alpha);
    virtual void draw_keys(mws_sp<mws_draw_text> i_dt, mws_sp<mws_font> i_letter_font, mws_sp<mws_font> i_word_font, key_mod_types i_mod, mws_vrn_kernel_pt_vect& i_kp_vect);
-   virtual void set_key_vect_size(uint32 i_size);
+   virtual void set_key_vect_size(uint32_t i_size);
    virtual void set_key_at(int i_idx, mws_key_types i_key_id);
    virtual void erase_key_at(int i_idx);
    virtual void push_back_key(mws_key_types i_key_id);
@@ -186,18 +186,18 @@ protected:
    virtual void rebuild_key_state();
 
    bool build_textures = true;
-   uint32 obj_type_mask = 0;
+   uint32_t obj_type_mask = 0;
    glm::ivec2 vkb_dim = glm::ivec2(0);
    glm::vec2 diag_original_dim = glm::vec2(0.f);
    key_mod_types key_mod = key_mod_types::mod_none;
-   std::vector<mws_key_types> key_mod_vect[(uint32)key_mod_types::count];
+   std::vector<mws_key_types> key_mod_vect[(uint32_t)key_mod_types::count];
    std::unordered_map<mws_key_types, std::string> key_map;
    int map_idx = 0;
-   uint32 crt_page_idx = 0;
-   struct key_highlight { int key_idx; uint32 release_time; };
+   uint32_t crt_page_idx = 0;
+   struct key_highlight { int key_idx; uint32_t release_time; };
    std::vector<key_highlight> highlight_vect;
    double_tap_detector dbl_tap_det;
-   struct base_key_state { mws_key_types key_id; base_key_state_types state; uint8 pressed_count; };
+   struct base_key_state { mws_key_types key_id; base_key_state_types state; uint8_t pressed_count; };
    std::vector<base_key_state> base_key_st;
    mws_sp<mws_ptr_evt> prev_ptr_evt;
    std::unordered_map<int, mws_key_types> mod_keys_st;

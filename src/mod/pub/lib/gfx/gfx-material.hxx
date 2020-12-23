@@ -155,8 +155,8 @@ private:
    static void init();
 
    mws_sp<gfx_shader> shader;
-   uint32 shader_compile_time;
-   uint64 fsh_last_write;
-   uint64 vsh_last_write;
+   uint32_t shader_compile_time;
+   uint64_t fsh_last_write;
+   uint64_t vsh_last_write;
    static std::unordered_map<std::string, mws_sp<gfx_material_entry> > static_std_param;
 };

@@ -25,7 +25,7 @@ int gfx_readback::get_pbo_size() const
    return width * height * ti->get_bpp();
 }
 
-const std::vector<uint8>& gfx_readback::get_pbo_pixels() const
+const std::vector<uint8_t>& gfx_readback::get_pbo_pixels() const
 {
    return pbo_pixels;
 }
@@ -241,7 +241,7 @@ void mws_pbo_bundle::update(mws_sp<gfx_camera> i_cam)
 mws_gfx_ppb::mws_gfx_ppb() {}
 mws_gfx_ppb::mws_gfx_ppb(mws_sp<gfx_tex> i_tex) { init(i_tex); }
 
-mws_gfx_ppb::mws_gfx_ppb(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm)
+mws_gfx_ppb::mws_gfx_ppb(const std::string& i_tex_id, uint32_t i_tex_width, uint32_t i_tex_height, const gfx_tex_params* i_prm)
 {
    init(i_tex_id, i_tex_width, i_tex_height, i_prm);
 }
@@ -263,7 +263,7 @@ void mws_gfx_ppb::init(mws_sp<gfx_tex> i_tex)
    }
 }
 
-void mws_gfx_ppb::init(const std::string& i_tex_id, uint32 i_tex_width, uint32 i_tex_height, const gfx_tex_params* i_prm)
+void mws_gfx_ppb::init(const std::string& i_tex_id, uint32_t i_tex_width, uint32_t i_tex_height, const gfx_tex_params* i_prm)
 {
    // tex
    {

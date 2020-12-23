@@ -163,8 +163,8 @@ void mod_exercise::init_mws()
 			int uw = get_mod()->get_width();
 			int uh = get_mod()->get_height();
 			float bh = 10.7;
-			uint8 a1 = 60;
-			uint8 a2 = 225;
+			uint8_t a1 = 60;
+			uint8_t a2 = 225;
 			int color = 0x5050ff;
 			float t = 3;
 

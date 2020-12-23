@@ -33,7 +33,7 @@ mws_sp<mws_app> mws_app_inst();
 #include <dirent.h>
 
 
-uint32 mws::time::get_time_millis()
+uint32_t mws::time::get_time_millis()
 {
    struct timespec ts;
 
@@ -162,7 +162,7 @@ mws_gfx_type mws::get_gfx_type_id()
    return mws_gfx_opengl_es;
 }
 
-uint32 mws::time::get_time_millis()
+uint32_t mws::time::get_time_millis()
 {
    struct timespec ts;
 
@@ -243,7 +243,7 @@ mws_gfx_type mws::get_gfx_type_id()
    return mws_gfx_opengl;
 }
 
-uint32 mws::time::get_time_millis()
+uint32_t mws::time::get_time_millis()
 {
    return GetTickCount();
 }
@@ -263,7 +263,7 @@ mws_gfx_type mws::get_gfx_type_id()
 #endif
 
 
-void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_message)
+void mws_signal_error_impl(const char* i_file, uint32_t i_line, const char* i_message)
 {
 #if defined MWS_DEBUG_BUILD
 
@@ -282,7 +282,7 @@ void mws_signal_error_impl(const char* i_file, uint32 i_line, const char* i_mess
 #endif
 }
 
-void mws_assert_impl(const char* i_file, uint32 i_line, bool i_condition)
+void mws_assert_impl(const char* i_file, uint32_t i_line, bool i_condition)
 {
 #if defined MWS_DEBUG_BUILD
 
@@ -340,9 +340,9 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
    if (i_index_file->is_open())
    {
       mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, false);
-      uint32 size = fs->r.read_u32();
+      uint32_t size = fs->r.read_u32();
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          std::string file_path = fs->r.read_text();
          mws_path path = res_dir / file_path;
@@ -462,7 +462,7 @@ bool mws_file_impl::reached_eof() const
    return is_eof != 0;
 }
 
-void mws_file_impl::set_io_position(uint64 i_pos)
+void mws_file_impl::set_io_position(uint64_t i_pos)
 {
    check_state();
 
@@ -470,7 +470,7 @@ void mws_file_impl::set_io_position(uint64 i_pos)
    file_pos = i_pos;
 }
 
-int mws_file_impl::read(std::vector<uint8>& i_buffer)
+int mws_file_impl::read(std::vector<uint8_t>& i_buffer)
 {
    check_state();
 
@@ -479,14 +479,14 @@ int mws_file_impl::read(std::vector<uint8>& i_buffer)
    return read(i_buffer.data(), i_buffer.size());
 }
 
-int mws_file_impl::write(const std::vector<uint8>& i_buffer)
+int mws_file_impl::write(const std::vector<uint8_t>& i_buffer)
 {
    check_state();
 
    return write(i_buffer.data(), i_buffer.size());
 }
 
-int mws_file_impl::read(uint8* i_buffer, int i_size)
+int mws_file_impl::read(uint8_t* i_buffer, int i_size)
 {
    check_state();
 
@@ -495,7 +495,7 @@ int mws_file_impl::read(uint8* i_buffer, int i_size)
    return bytes_read;
 }
 
-int mws_file_impl::write(const uint8* i_buffer, int i_size)
+int mws_file_impl::write(const uint8_t* i_buffer, int i_size)
 {
    check_state();
 
@@ -514,22 +514,22 @@ void mws_file_impl::check_state() const
    }
 }
 
-void mws_file_impl::set_io_position_impl(uint64 i_pos, int i_io_pos)
+void mws_file_impl::set_io_position_impl(uint64_t i_pos, int i_io_pos)
 {
    fseek(get_file_impl(), (long)i_pos, i_io_pos);
 }
 
-uint64 mws_file_impl::tell_impl()
+uint64_t mws_file_impl::tell_impl()
 {
    return ftell(get_file_impl());
 }
 
-int mws_file_impl::read_impl(uint8* i_buffer, int i_size)
+int mws_file_impl::read_impl(uint8_t* i_buffer, int i_size)
 {
    return fread(i_buffer, 1, i_size, get_file_impl());
 }
 
-int mws_file_impl::write_impl(const uint8* i_buffer, int i_size)
+int mws_file_impl::write_impl(const uint8_t* i_buffer, int i_size)
 {
    return fwrite(i_buffer, 1, i_size, get_file_impl());
 }
@@ -550,40 +550,6 @@ namespace mws_impl
    mws_sp<mws_log> mws_log_inst;
    bool mws_log_enabled = false;
    std::string mws_log_file_name = "app-log";
-
-   void print_type_sizes()
-   {
-      static_assert(sizeof(int8) == 1);
-      static_assert(sizeof(sint8) == 1);
-      static_assert(sizeof(uint8) == 1);
-      static_assert(sizeof(int16) == 2);
-      static_assert(sizeof(sint16) == 2);
-      static_assert(sizeof(uint16) == 2);
-      static_assert(sizeof(int32) == 4);
-      static_assert(sizeof(sint32) == 4);
-      static_assert(sizeof(uint32) == 4);
-      static_assert(sizeof(int64) == 8);
-      static_assert(sizeof(sint64) == 8);
-      static_assert(sizeof(uint64) == 8);
-      static_assert(sizeof(fltp32) == 4);
-      static_assert(sizeof(fltp64) == 8);
-
-      mws_print("print type sizes\n");
-      mws_print("sizeof int8 [%d]\n", sizeof(int8));
-      mws_print("sizeof sint8 [%d]\n", sizeof(sint8));
-      mws_print("sizeof uint8 [%d]\n", sizeof(uint8));
-      mws_print("sizeof int16 [%d]\n", sizeof(int16));
-      mws_print("sizeof sint16 [%d]\n", sizeof(sint16));
-      mws_print("sizeof uint16 [%d]\n", sizeof(uint16));
-      mws_print("sizeof int32 [%d]\n", sizeof(int32));
-      mws_print("sizeof sint32 [%d]\n", sizeof(sint32));
-      mws_print("sizeof uint32 [%d]\n", sizeof(uint32));
-      mws_print("sizeof int64 [%d]\n", sizeof(int64));
-      mws_print("sizeof sint64 [%d]\n", sizeof(sint64));
-      mws_print("sizeof uint64 [%d]\n", sizeof(uint64));
-      mws_print("sizeof fltp32 [%d]\n", sizeof(fltp32));
-      mws_print("sizeof fltp64 [%d]\n", sizeof(fltp64));
-   }
 
    //true if res is in the same dir as src
    bool res_is_bundled_with_src()
@@ -804,7 +770,7 @@ const std::string& mws_path::string() const { return path; }
 std::string mws_path::filename() const
 {
    auto pos_0 = path.find_last_of('/');
-   int64 pos = (pos_0 != std::string::npos) ? pos_0 : -1;
+   int64_t pos = (pos_0 != std::string::npos) ? pos_0 : -1;
    size_t idx = size_t(pos + 1);
 
    return std::string(path.begin() + idx, path.end());
@@ -861,7 +827,7 @@ mws_path mws_path::parent_path() const
 
    // consider the case when last char is '/'
    size_t pos_0 = path.find_last_of('/', path.length() - 2);
-   int64 pos = -1;
+   int64_t pos = -1;
 
    if (pos_0 == std::string::npos)
    {
@@ -869,7 +835,7 @@ mws_path mws_path::parent_path() const
    }
    else if (pos_0 != std::string::npos)
    {
-      pos = (int64)pos_0 + 1;
+      pos = (int64_t)pos_0 + 1;
    }
 
    return mws_path(std::string(path.begin(), path.begin() + (size_t)pos));
@@ -1042,17 +1008,17 @@ bool mws_file::is_writable() const
    return io.impl->is_writable();
 }
 
-uint64 mws_file::length()
+uint64_t mws_file::length()
 {
    return io.impl->length();
 }
 
-uint64 mws_file::creation_time() const
+uint64_t mws_file::creation_time() const
 {
    return io.impl->creation_time();
 }
 
-uint64 mws_file::last_write_time() const
+uint64_t mws_file::last_write_time() const
 {
    return io.impl->last_write_time();
 }
@@ -1140,27 +1106,27 @@ bool mws_file::io_op::reached_eof() const
    return impl->reached_eof();
 }
 
-void mws_file::io_op::set_io_position(uint64 i_pos)
+void mws_file::io_op::set_io_position(uint64_t i_pos)
 {
    impl->set_io_position(i_pos);
 }
 
-int mws_file::io_op::read(std::vector<uint8>& i_buffer)
+int mws_file::io_op::read(std::vector<uint8_t>& i_buffer)
 {
    return impl->read(i_buffer);
 }
 
-int mws_file::io_op::write(const std::vector<uint8>& i_buffer)
+int mws_file::io_op::write(const std::vector<uint8_t>& i_buffer)
 {
    return impl->write(i_buffer);
 }
 
-int mws_file::io_op::read(uint8* i_buffer, int i_size)
+int mws_file::io_op::read(uint8_t* i_buffer, int i_size)
 {
    return impl->read(i_buffer, i_size);
 }
 
-int mws_file::io_op::write(const uint8* i_buffer, int i_size)
+int mws_file::io_op::write(const uint8_t* i_buffer, int i_size)
 {
    return impl->write(i_buffer, i_size);
 }
@@ -1353,12 +1319,12 @@ bool mws::screen::is_full_screen_mode() { return mws_app_inst()->is_full_screen_
 void mws::screen::set_full_screen_mode(bool i_enabled) { mws_app_inst()->set_full_screen_mode(i_enabled); }
 float mws::screen::get_brightness() { return mws_app_inst()->get_screen_brightness(); }
 void mws::screen::set_brightness(float i_brightness) { mws_app_inst()->set_screen_brightness(i_brightness); }
-uint32 mws::screen::get_width() { return mws_mod_ctrl::get_screen_width(); }
-uint32 mws::screen::get_height() { return mws_mod_ctrl::get_screen_height(); }
+uint32_t mws::screen::get_width() { return mws_mod_ctrl::get_screen_width(); }
+uint32_t mws::screen::get_height() { return mws_mod_ctrl::get_screen_height(); }
 float mws::screen::get_scale() { return mws_app_inst()->get_screen_scale(); }
 float mws::screen::get_scaled_width() { return get_width() * get_scale(); }
 float mws::screen::get_scaled_height() { return get_height() * get_scale(); }
-std::pair<uint32, uint32> mws::screen::get_res_px() { return mws_app_inst()->get_screen_res_px(); }
+std::pair<uint32_t, uint32_t> mws::screen::get_res_px() { return mws_app_inst()->get_screen_res_px(); }
 float mws::screen::get_avg_dpi() { return mws_app_inst()->get_avg_screen_dpi(); }
 std::pair<float, float> mws::screen::get_dpi() { return mws_app_inst()->get_screen_dpi(); }
 std::pair<float, float> mws::screen::get_dim_inch() { return mws_app_inst()->get_screen_dim_inch(); }
@@ -1389,14 +1355,14 @@ std::string mws::time::get_current_date(const std::string& i_fmt)
    return s;
 }
 
-std::string mws::time::get_duration_as_string(uint32 i_duration)
+std::string mws::time::get_duration_as_string(uint32_t i_duration)
 {
    std::string duration;
 
-   uint32 millis = i_duration % 1000;
-   uint32 seconds = i_duration / 1000;
-   uint32 minutes = seconds / 60;
-   uint32 seconds_remainder = seconds % 60;
+   uint32_t millis = i_duration % 1000;
+   uint32_t seconds = i_duration / 1000;
+   uint32_t minutes = seconds / 60;
+   uint32_t seconds_remainder = seconds % 60;
 
    duration += std::to_string(minutes);
    duration += ":";
@@ -1489,7 +1455,7 @@ public:
       if (!log.empty())
       {
          // most recent entries are top most in the console
-         for (int32 k = (int32)log.size() - 1; k >= 0; k--)
+         for (int32_t k = (int32_t)log.size() - 1; k >= 0; k--)
          {
             buff += log[k];
          }
@@ -1510,7 +1476,7 @@ private:
          log_file->io.open("rb");
 
          auto res_rw = rw_file_seqv::nwi(log_file, false);
-         uint64 file_length = log_file->length();
+         uint64_t file_length = log_file->length();
 
          while (res_rw->read_position() < file_length)
          {

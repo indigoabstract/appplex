@@ -39,14 +39,14 @@ public:
    virtual void set_position(const glm::vec2& i_position) override;
    virtual void set_size(const glm::vec2& i_size) override;
    virtual void add_row(mws_sp<mws_page_item> i_item);
-   virtual void add_col(uint32 i_row_idx, mws_sp<mws_page_item> i_item);
-   virtual void set_cell_at(uint32 i_row_idx, uint32 i_col_idx, mws_sp<mws_page_item> i_item);
+   virtual void add_col(uint32_t i_row_idx, mws_sp<mws_page_item> i_item);
+   virtual void set_cell_at(uint32_t i_row_idx, uint32_t i_col_idx, mws_sp<mws_page_item> i_item);
    // returns one of the 4 table enclosing borders
    virtual mws_sp<mws_table_border> get_border(border_types i_border_type) const;
    // returns one of the inner row borders/dividers
-   virtual mws_sp<mws_table_border> get_row_divider(uint32 i_row_idx) const;
+   virtual mws_sp<mws_table_border> get_row_divider(uint32_t i_row_idx) const;
    // returns one of the inner col borders/dividers in the specified row
-   virtual mws_sp<mws_table_border> get_col_divider(uint32 i_row_idx, uint32 i_col_idx) const;
+   virtual mws_sp<mws_table_border> get_col_divider(uint32_t i_row_idx, uint32_t i_col_idx) const;
    virtual void set_color(const gfx_color& i_color);
    virtual void on_resize();
    virtual float get_border_size() const;
@@ -309,26 +309,26 @@ public:
    // common
    virtual bool get_word_wrap() = 0;
    virtual void set_word_wrap(bool i_word_wrap) = 0;
-   virtual uint32 get_line_count() = 0;
-   virtual std::string get_line_at(uint32 i_idx, bool i_keep_line_break = true) = 0;
-   virtual std::vector<std::string> get_lines_at(uint32 i_idx, uint32 i_line_count, bool i_keep_line_break = true) = 0;
+   virtual uint32_t get_line_count() = 0;
+   virtual std::string get_line_at(uint32_t i_idx, bool i_keep_line_break = true) = 0;
+   virtual std::vector<std::string> get_lines_at(uint32_t i_idx, uint32_t i_line_count, bool i_keep_line_break = true) = 0;
    virtual const std::string& get_text() = 0;
    virtual void set_text(const std::string& i_text) = 0;
-   virtual void set_text(const char* i_text, uint32 i_length) = 0;
-   virtual void set_size(uint32 i_width, uint32 i_height) = 0;
+   virtual void set_text(const char* i_text, uint32_t i_length) = 0;
+   virtual void set_size(uint32_t i_width, uint32_t i_height) = 0;
    virtual void set_font(mws_sp<mws_font> i_font) = 0;
    virtual int get_char_at_pixel(float i_x, float i_y) = 0;
 
    // viewer only
-   virtual void push_back(const char* i_text, uint32 i_length) = 0;
-   virtual void push_front(const char* i_text, uint32 i_length) = 0;
+   virtual void push_back(const char* i_text, uint32_t i_length) = 0;
+   virtual void push_front(const char* i_text, uint32_t i_length) = 0;
 
    // editor only
    virtual void insert_at_cursor(const std::string& i_text) = 0;
-   virtual void delete_at_cursor(int32 i_count) = 0;
-   virtual uint32 get_cursor_pos() = 0;
-   virtual void set_cursor_pos(uint32 i_cursor_pos) = 0;
-   virtual uint32 get_cursor_pos_at_line(uint32 i_line_idx) = 0;
+   virtual void delete_at_cursor(int32_t i_count) = 0;
+   virtual uint32_t get_cursor_pos() = 0;
+   virtual void set_cursor_pos(uint32_t i_cursor_pos) = 0;
+   virtual uint32_t get_cursor_pos_at_line(uint32_t i_line_idx) = 0;
    // returns [ horizontal, vertical ] position of the cursor
    virtual glm::uvec2 get_cursor_coord() = 0;
    virtual void advance_cursor(mws_dir_types i_direction) = 0;

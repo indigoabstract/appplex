@@ -11,18 +11,18 @@
 class embeddedRes
 {
 public:
-	static void printByteArray(mws_sp<std::vector<uint8> > res)
+	static void printByteArray(mws_sp<std::vector<uint8_t> > res)
 	{
 		int cols = 20;
-		std::vector<uint8>& r = *res;
+		std::vector<uint8_t>& r = *res;
 
 		trx("byte array resource");
 		trx("int resSize = {};", res->size());
-		trx("uint8 res[] =\n{");
+		trx("uint8_t res[] =\n{");
 
 		for(int k = 0; k < res->size(); k++)
 		{
-			uint32 b = r[k];
+			uint32_t b = r[k];
 
 			if((k + 1) % cols == 0)
 			{

@@ -32,7 +32,7 @@ public:
 
    // screen metrix
    // horizontal and vertical screen resolution in dots(pixels)
-   virtual std::pair<uint32, uint32> get_screen_res_px() const = 0;
+   virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const = 0;
    // average dots(pixels) per inch
    virtual float get_avg_screen_dpi() const = 0;
    // horizontal and vertical dots(pixels) per inch
@@ -88,22 +88,22 @@ public:
    virtual bool is_open() const;
    virtual bool is_writable() const;
    virtual bool is_internal() const;
-   virtual uint64 length() = 0;
-   virtual uint64 creation_time() const = 0;
-   virtual uint64 last_write_time() const = 0;
+   virtual uint64_t length() = 0;
+   virtual uint64_t creation_time() const = 0;
+   virtual uint64_t last_write_time() const = 0;
    virtual bool open(std::string i_open_mode);
    virtual void close();
    virtual void flush();
    virtual bool reached_eof() const;
-   virtual void set_io_position(uint64 i_pos);
-   virtual int read(std::vector<uint8>& i_buffer);
-   virtual int write(const std::vector<uint8>& i_buffer);
-   virtual int read(uint8* i_buffer, int i_size);
-   virtual int write(const uint8* i_buffer, int i_size);
+   virtual void set_io_position(uint64_t i_pos);
+   virtual int read(std::vector<uint8_t>& i_buffer);
+   virtual int write(const std::vector<uint8_t>& i_buffer);
+   virtual int read(uint8_t* i_buffer, int i_size);
+   virtual int write(const uint8_t* i_buffer, int i_size);
    virtual void check_state() const;
 
    mws_path ppath;
-   uint64 file_pos = 0;
+   uint64_t file_pos = 0;
    bool file_is_open = false;
    bool file_is_writable = false;
 
@@ -114,9 +114,9 @@ protected:
    virtual bool open_impl(std::string i_open_mode) = 0;
    virtual void close_impl() = 0;
    virtual void flush_impl() = 0;
-   virtual void set_io_position_impl(uint64 i_pos, int i_io_pos);
-   virtual uint64 tell_impl();
-   virtual int read_impl(uint8* i_buffer, int i_size);
-   virtual int write_impl(const uint8* i_buffer, int i_size);
+   virtual void set_io_position_impl(uint64_t i_pos, int i_io_pos);
+   virtual uint64_t tell_impl();
+   virtual int read_impl(uint8_t* i_buffer, int i_size);
+   virtual int write_impl(const uint8_t* i_buffer, int i_size);
    virtual void check_file_is_writable();
 };

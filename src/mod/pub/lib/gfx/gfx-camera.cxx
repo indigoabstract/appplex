@@ -90,7 +90,7 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
       //2, 0, 1, 0, 2, 3,
    };
 
-   gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
+   gfx_vxo_util::set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
    (*line_mesh)["u_v4_color"] = color;
    line_mesh->draw_in_sync(cam);
@@ -130,7 +130,7 @@ void draw_context::draw_texture(std::string tex_name, float ix, float iy, float 
          1, 0, 2, 2, 0, 3,
       };
 
-      gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(img_mesh));
+      gfx_vxo_util::set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(img_mesh));
 
       (*img_mesh)["u_s2d_tex"] = tex_name;
       img_mesh->draw_in_sync(cam);
@@ -452,7 +452,7 @@ public:
 
       mws_sp<gfx_vxo> line_mesh = idc->line_mesh;
 
-      gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
+      gfx_vxo_util::set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
       line_mesh->draw_in_sync(cam);
@@ -536,7 +536,7 @@ public:
 
       mws_sp<gfx_vxo> line_mesh = idc->line_mesh;
 
-      gfx_vxo_util::set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
+      gfx_vxo_util::set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(line_mesh));
 
       (*line_mesh)["u_v4_color"] = color;
       line_mesh->draw_in_sync(cam);
@@ -597,12 +597,12 @@ public:
    void flush_commands(mws_sp<gfx_camera> icam)
    {
       mws_sp<rw_seqv> draw_ops = icam->draw_ops;
-      uint64 size = draw_ops->size();
+      uint64_t size = draw_ops->size();
 
       draw_ops->rewind();
       icam->draw_ctx->cam = icam;
 
-      uint64 read_pos = draw_ops->read_position();
+      uint64_t read_pos = draw_ops->read_position();
 
       while (read_pos < size)
       {

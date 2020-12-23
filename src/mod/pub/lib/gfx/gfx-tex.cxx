@@ -187,7 +187,7 @@ bool gfx_tex::mipmaps_supported(gfx_enum i_internal_format)
 
 std::string gfx_tex::gen_id()
 {
-   uint32 time = mws::time::get_time_millis();
+   uint32_t time = mws::time::get_time_millis();
    std::string name = mws_to_str_fmt("tex-%d-%d", texture_name_idx, time);
    texture_name_idx++;
 
@@ -651,6 +651,6 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gf
    is_valid_state = true;
 }
 
-gfx_tex_cube_map::gfx_tex_cube_map(uint32 i_size, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_cube_map::gfx_tex_cube_map(uint32_t i_size, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
 }

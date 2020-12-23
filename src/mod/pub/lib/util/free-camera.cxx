@@ -79,7 +79,7 @@ void free_camera::update_input(mws_sp<mws_dp> i_dp)
          {
             if (dragging_det.is_finished())
             {
-               uint32 delta_t = ts->time - dragging_det.last_move_pos_time;
+               uint32_t delta_t = ts->time - dragging_det.last_move_pos_time;
 
                if (delta_t < 150)
                {

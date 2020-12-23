@@ -9,7 +9,7 @@
 #include <array>
 
 
-mws_sp<mws_tex_atlas> mws_tex_atlas::nwi(uint32 i_width, uint32 i_height, uint32 i_depth)
+mws_sp<mws_tex_atlas> mws_tex_atlas::nwi(uint32_t i_width, uint32_t i_height, uint32_t i_depth)
 {
    mws_sp<mws_tex_atlas> inst = mws_sp<mws_tex_atlas>(new mws_tex_atlas());
 
@@ -48,16 +48,16 @@ void mws_tex_atlas::upload()
 
 const mws_tex_atlas::region& mws_tex_atlas::get_region_by_id(int i_region_id) const { return region_vect[i_region_id]; }
 
-const mws_tex_atlas::region& mws_tex_atlas::get_region(uint32 i_width, uint32 i_height)
+const mws_tex_atlas::region& mws_tex_atlas::get_region(uint32_t i_width, uint32_t i_height)
 {
    int best_index = -1;
    glm::ivec4 reg = { 0, 0, i_width, i_height };
 
    {
-      uint32 best_height = INT_MAX;
+      uint32_t best_height = INT_MAX;
       int best_width = INT_MAX;
 
-      for (uint32 i = 0; i < nodes.size(); ++i)
+      for (uint32_t i = 0; i < nodes.size(); ++i)
       {
          int y = fit(i, i_width, i_height);
 
@@ -88,7 +88,7 @@ const mws_tex_atlas::region& mws_tex_atlas::get_region(uint32 i_width, uint32 i_
       nodes.insert(nodes.begin() + best_index, t_node);
    }
 
-   for (uint32 i = best_index + 1; i < nodes.size(); ++i)
+   for (uint32_t i = best_index + 1; i < nodes.size(); ++i)
    {
       glm::ivec3* node = &nodes[i];
       glm::ivec3* prev = &nodes[i - 1];
@@ -123,16 +123,16 @@ const mws_tex_atlas::region& mws_tex_atlas::get_region(uint32 i_width, uint32 i_
    return region_vect.back();
 }
 
-void mws_tex_atlas::set_region(const region& i_reg, const uint8* i_data, uint32 i_stride)
+void mws_tex_atlas::set_region(const region& i_reg, const uint8_t* i_data, uint32_t i_stride)
 {
    mws_assert(i_reg.rect.x > 0);
    mws_assert(i_reg.rect.y > 0);
-   mws_assert((uint32)i_reg.rect.x < (width - 1));
-   mws_assert(uint32(i_reg.rect.x + i_reg.rect.z) <= (width - 1));
-   mws_assert((uint32)i_reg.rect.y < (height - 1));
-   mws_assert(uint32(i_reg.rect.y + i_reg.rect.w) <= (height - 1));
+   mws_assert((uint32_t)i_reg.rect.x < (width - 1));
+   mws_assert(uint32_t(i_reg.rect.x + i_reg.rect.z) <= (width - 1));
+   mws_assert((uint32_t)i_reg.rect.y < (height - 1));
+   mws_assert(uint32_t(i_reg.rect.y + i_reg.rect.w) <= (height - 1));
 
-   for (uint32 i = 0; i < (uint32)i_reg.rect.w; ++i)
+   for (uint32_t i = 0; i < (uint32_t)i_reg.rect.w; ++i)
    {
       memcpy(data.data() + ((i_reg.rect.y + i) * width + i_reg.rect.x) * depth, i_data + (i * i_stride), i_reg.rect.z * depth);
    }
@@ -147,16 +147,16 @@ void mws_tex_atlas::clear()
    nodes.push_back(node);
    region_vect.clear();
    used = 0;
-   data.assign(width * height * depth, uint8(0));
+   data.assign(width * height * depth, uint8_t(0));
 }
 
-int mws_tex_atlas::fit(uint32 i_index, uint32 i_width, uint32 i_height)
+int mws_tex_atlas::fit(uint32_t i_index, uint32_t i_width, uint32_t i_height)
 {
    glm::ivec3* node = &nodes[i_index];
    int x = node->x;
    int y = node->y;
    int width_left = i_width;
-   uint32 i = i_index;
+   uint32_t i = i_index;
 
    if ((x + i_width) > (width - 1))
    {
@@ -186,7 +186,7 @@ int mws_tex_atlas::fit(uint32 i_index, uint32 i_width, uint32 i_height)
 
 void mws_tex_atlas::merge()
 {
-   for (uint32 i = 0; i < nodes.size() - 1; ++i)
+   for (uint32_t i = 0; i < nodes.size() - 1; ++i)
    {
       glm::ivec3* node = &nodes[i];
       glm::ivec3* next = &nodes[i + 1];
@@ -220,7 +220,7 @@ void mws_atlas_sprite_list::add(int i_sprite_id, float i_x, float i_y, gfx_quad_
    float dy = float(r.w);
    float z_val = 0.f;
    float p = 0.5f;
-   uint32 vx_start = vx_buff.size();
+   uint32_t vx_start = vx_buff.size();
    float px = i_x;
    float py = i_y;
    glm::vec4 tc(r.x / tw, 1.f - r.y / th, (r.x + r.z) / tw, 1.f - (r.y + r.w) / th);
@@ -254,7 +254,7 @@ void mws_atlas_sprite_list::add(int i_sprite_id, float i_x, float i_y, gfx_quad_
 void mws_atlas_sprite_list::push_data()
 {
    gfx_vxo_util::set_mesh_data(
-      (const uint8*)vx_buff.data(), vx_buff.size() * sizeof(vx_data),
+      (const uint8_t*)vx_buff.data(), vx_buff.size() * sizeof(vx_data),
       idx_buff.data(), idx_buff.size() * sizeof(gfx_indices_type),
       std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }

@@ -23,8 +23,8 @@ namespace
    bool exit_app_on_next_run = false;
    bool app_started = false;
    bool gfx_available = true;
-   uint32 screen_width = 1280;
-   uint32 screen_height = 720;
+   uint32_t screen_width = 1280;
+   uint32_t screen_height = 720;
    mws_sp<mws_mod_ctrl> instance;
 }
 
@@ -213,9 +213,9 @@ void mws_mod_ctrl::update()
 
    if (mod_gfx_on)
    {
-      uint32 dim = atomic_dim;
-      uint32 width = (dim >> 16);
-      uint32 height = (dim & 0xffff);
+      uint32_t dim = atomic_dim;
+      uint32_t width = (dim >> 16);
+      uint32_t height = (dim & 0xffff);
 
       if (screen_width != width || screen_height != height)
       {
@@ -281,9 +281,9 @@ void mws_mod_ctrl::resume()
    }
 }
 
-void mws_mod_ctrl::resize_app(uint32 i_width, uint32 i_height)
+void mws_mod_ctrl::resize_app(uint32_t i_width, uint32_t i_height)
 {
-   uint32 dim = (i_width << 16) | i_height;
+   uint32_t dim = (i_width << 16) | i_height;
    atomic_dim = dim;
 }
 
@@ -370,9 +370,9 @@ void mws_mod_ctrl::set_gfx_available(bool i_is_gfx_available)
 
 bool mws_mod_ctrl::is_gfx_available() { return gfx_available; }
 
-uint32 mws_mod_ctrl::get_screen_width() { return screen_width; }
+uint32_t mws_mod_ctrl::get_screen_width() { return screen_width; }
 
-uint32 mws_mod_ctrl::get_screen_height() { return screen_height; }
+uint32_t mws_mod_ctrl::get_screen_height() { return screen_height; }
 
 void mws_mod_ctrl::load_current_mod()
 {

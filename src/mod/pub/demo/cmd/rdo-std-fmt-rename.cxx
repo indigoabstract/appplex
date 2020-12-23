@@ -40,7 +40,7 @@ private:
    int ren_exception_count;
    int file_count;
    int directory_count;
-   uint64 total_file_size;
+   uint64_t total_file_size;
    int files_renamed_count;
    int directories_renamed_count;
 };

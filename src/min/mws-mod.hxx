@@ -44,7 +44,7 @@ public:
    virtual bool draw_touch_symbols_trail() { return false; }
    virtual bool show_onscreen_console() { return false; }
    virtual bool show_fps() const { return true; }
-   virtual uint32 get_font_db_pow_of_two_size() const { return 9; }
+   virtual uint32_t get_font_db_pow_of_two_size() const { return 9; }
 
    virtual bool emulate_mobile_screen() { return false; }
 };
@@ -54,9 +54,9 @@ class mws_app_storage
 {
 public:
    const mws_file_map& get_res_file_list() const;
-   std::vector<uint8> load_as_byte_vect(mws_sp<mws_file> i_file) const;
-   std::vector<uint8> load_as_byte_vect(const mws_path& i_file_path) const;
-   mws_sp<std::vector<uint8>> load_as_sp_byte_vect(const mws_path& i_file_path) const;
+   std::vector<uint8_t> load_as_byte_vect(mws_sp<mws_file> i_file) const;
+   std::vector<uint8_t> load_as_byte_vect(const mws_path& i_file_path) const;
+   mws_sp<std::vector<uint8_t>> load_as_sp_byte_vect(const mws_path& i_file_path) const;
    std::string load_as_string(mws_sp<mws_file> i_file) const;
    std::string load_as_string(const mws_path& i_file_path) const;
    // writable/private/persistent files directory
@@ -163,7 +163,7 @@ protected:
    mws_sp<mws_mod_preferences> prefs;
    int frame_count = 0;
    float fps = 0.f;
-   uint32 last_frame_time = 0;
+   uint32_t last_frame_time = 0;
 
 private:
    friend class mws_mod_ctrl;

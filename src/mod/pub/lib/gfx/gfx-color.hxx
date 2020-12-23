@@ -17,24 +17,24 @@ public:
    {
       // 0xaabbggrr is stored in memory as 0xrrggbbaa, because little endian
       // we need this order to be compatible with opengl's RGBA8 format
-      uint32 abgr;
+      uint32_t abgr;
       struct
       {
-         uint8 r;
-         uint8 g;
-         uint8 b;
-         uint8 a;
+         uint8_t r;
+         uint8_t g;
+         uint8_t b;
+         uint8_t a;
       };
    };
 
    gfx_color();
-   gfx_color(uint8 i_r, uint8 i_g, uint8 i_b, uint8 i_a = 0xff);
-   gfx_color(const uint8* i_c);
+   gfx_color(uint8_t i_r, uint8_t i_g, uint8_t i_b, uint8_t i_a = 0xff);
+   gfx_color(const uint8_t* i_c);
    gfx_color(const gfx_color& i_c);
 
-   static gfx_color from_abgr(uint32 i_abgr);
-   static gfx_color from_argb(uint32 i_argb);
-   static gfx_color from_rgba(uint32 i_rgba);
+   static gfx_color from_abgr(uint32_t i_abgr);
+   static gfx_color from_argb(uint32_t i_argb);
+   static gfx_color from_rgba(uint32_t i_rgba);
    static gfx_color from_vec4(const glm::vec4& i_vec4);
    static gfx_color from_float(float i_r, float i_g, float i_b, float i_a = 1.f);
 
@@ -44,15 +44,15 @@ public:
    gfx_color operator + (gfx_color const& i_c);
    gfx_color operator * (gfx_color const& i_c);
    gfx_color operator * (float i_f);
-   operator uint8* ();
+   operator uint8_t* ();
    bool operator == (gfx_color const& i_c);
    bool operator != (gfx_color const& i_c);
    gfx_color operator += (gfx_color const& i_c);
-   const uint8* rgba_array() const { return &r; }
-   uint32 to_rgba() const { return abgr; };
-   uint32 to_argb() const;
+   const uint8_t* rgba_array() const { return &r; }
+   uint32_t to_rgba() const { return abgr; };
+   uint32_t to_argb() const;
    glm::vec4 to_vec4() const;
-   uint8 intensity();
+   uint8_t intensity();
    void to_hsv(float& i_hue, float& i_saturation, float& i_value);
    void hsv2rgb_smooth(float& i_hue, float& i_saturation, float& i_value);
    void from_hsv(float hue, float i_saturation, float i_value);
@@ -110,7 +110,7 @@ public:
    void clear();
    int set_color_at(gfx_color i_color, float i_position);
    gfx_color get_color_at(float i_position);
-   bool remove_idx(uint32 i_idx);
+   bool remove_idx(uint32_t i_idx);
 
 protected:
    struct mix_f { gfx_color operator()(const gfx_color& i_c0, const gfx_color& i_c1, float i_f) { return gfx_color::mix(i_c0, i_c1, i_f); } };

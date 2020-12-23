@@ -29,7 +29,7 @@ namespace ns_kxmd
       virtual std::string key() const;
       template<typename T> T key_as() const { return mws_to<T>(key()); }
       virtual std::vector<kv_ref> val() const;
-      template<typename T> T val_as(uint32 i_idx = 0) const { return mws_to<T>((*this)[i_idx]); }
+      template<typename T> T val_as(uint32_t i_idx = 0) const { return mws_to<T>((*this)[i_idx]); }
       virtual size_t size() const;
       virtual bool empty() const;
       virtual bool is_leaf() const;
@@ -37,9 +37,9 @@ namespace ns_kxmd
       // deletes all vals
       virtual void clear() const;
       // erases val at i_idx
-      virtual void erase(uint32 i_idx) const;
+      virtual void erase(uint32_t i_idx) const;
       virtual bool operator==(const kv_ref& i_ref) const;
-      virtual kv_ref operator[](uint32 i_idx) const;
+      virtual kv_ref operator[](uint32_t i_idx) const;
       // gets a reference to an elem that's inside the given elem
       // i_path is like xxx.yyy.zzz.etc
       virtual kv_ref operator[](const std::string& i_path) const;
@@ -75,13 +75,13 @@ namespace ns_kxmd
    class kxmd
    {
    public:
-      static mws_sp<kxmd> nwi(const char* i_kxmd_data, uint32 i_size);
+      static mws_sp<kxmd> nwi(const char* i_kxmd_data, uint32_t i_size);
       static mws_sp<kxmd> nwi(const std::string& i_kxmd_data = "");
       static mws_sp<kxmd> nwi_from_path(const mws_path& i_path);
       static mws_sp<kxmd> nwi_from_file(mws_sp<mws_file> i_file);
       ~kxmd();
       kv_ref main() const;
-      uint32 get_version() const;
+      uint32_t get_version() const;
 
    private:
       friend class kxmd_impl;

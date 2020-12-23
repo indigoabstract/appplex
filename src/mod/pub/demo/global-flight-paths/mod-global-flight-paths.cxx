@@ -301,7 +301,7 @@ namespace global_flight_paths_ns
          }
 
          gfx_vxo_util::set_mesh_data(
-            (const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f_t2f) * tvertices_data.size(),
+            (const uint8_t*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f_t2f) * tvertices_data.size(),
             indices.data(), indices.size() * sizeof(gfx_indices_type), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
       }
 
@@ -397,7 +397,7 @@ namespace global_flight_paths_ns
          l_makevisible = false;
       }
 
-      uint32 last_update_time;
+      uint32_t last_update_time;
       float chain_distance;
       int last_link_idx;
       float current_position;

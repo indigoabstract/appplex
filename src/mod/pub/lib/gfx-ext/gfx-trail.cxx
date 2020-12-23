@@ -48,7 +48,7 @@ void gfx_trail::add_position(glm::vec3 ipos)
       }
    }
 
-   std::vector<uint32> tindices_data;
+   std::vector<uint32_t> tindices_data;
    int indices_size = positions.size() - 1;
    tindices_data.resize(indices_size * 6);
 
@@ -63,7 +63,7 @@ void gfx_trail::add_position(glm::vec3 ipos)
       tindices_data[index++] = i4 + 2;
    }
 
-   gfx_vxo_util::set_mesh_data((const uint8*)&tvertices_data[0], tvertices_data.size() * sizeof(float), &tindices_data[0], tindices_data.size() * sizeof(uint32), inst);
+   gfx_vxo_util::set_mesh_data((const uint8_t*)&tvertices_data[0], tvertices_data.size() * sizeof(float), &tindices_data[0], tindices_data.size() * sizeof(uint32_t), inst);
 
    std::vector<glm::vec3> pos_vect({ positions.begin(), positions.end() });
    (*this)["u_v3_positions"] = pos_vect;

@@ -178,7 +178,7 @@ namespace
          {
             std::vector<mws_sp<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
 
-            for (uint32 k = 0; k < mesh_list.size(); k++)
+            for (uint32_t k = 0; k < mesh_list.size(); k++)
             {
                mesh_list[k]->detach();
             }
@@ -191,7 +191,7 @@ namespace
 
          std::vector<mws_sp<gfx_vxo> >& mesh_list = obj_tf_inst->mesh_list;
 
-         for (uint32 k = 0; k < mesh_list.size(); k++)
+         for (uint32_t k = 0; k < mesh_list.size(); k++)
          {
             //mesh_list[k]->get_material()->clear_entries();
             mesh_tab.push_back(mesh_list[k]);
@@ -220,7 +220,7 @@ namespace
             mat["u_v4_paint_back_color"] = glm::vec4(0.2706, 0.f, 1.f, 0.f);
             mat["u_v4_flake_color"] = glm::vec4(0.0164, 0.9268, 1.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -248,7 +248,7 @@ namespace
             mat["u_v4_paint_back_color"] = glm::vec4(0.f, 0.35f, -0.35f, 0.f);
             mat["u_v4_flake_color"] = glm::vec4(0.501961f, 0.5f, 0.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -276,7 +276,7 @@ namespace
             mat["u_v4_paint_back_color"] = glm::vec4(0.2706, 0.f, 1.f, 0.f);
             mat["u_v4_flake_color"] = glm::vec4(0.0164, 0.9268, 1.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -304,7 +304,7 @@ namespace
             mat["u_v4_paint_back_color"] = glm::vec4(0.92706, 0.f, 0.f, 0.f);
             mat["u_v4_flake_color"] = glm::vec4(0.0164, 0.9268, 1.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -332,7 +332,7 @@ namespace
             mat["u_v4_paint_back_color"] = glm::vec4(0.0, 0.f, 0.1f, 0.0f);
             mat["u_v4_flake_color"] = glm::vec4(0.0164, 0.9268, 1.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -362,7 +362,7 @@ namespace
             mat["u_v4_paint_back_color"] = chrome;
             mat["u_v4_flake_color"] = glm::vec4(0.90164, 0.9268, 1.f, 0.f);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(new_mat);
             }
@@ -374,7 +374,7 @@ namespace
          {
             load_material(e_car_wheel_rim);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(mat_car_wheel_rims);
             }
@@ -386,7 +386,7 @@ namespace
          {
             load_material(e_car_tyre);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(mat_car_tyres);
             }
@@ -398,7 +398,7 @@ namespace
          {
             load_material(e_car_glass);
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->set_material(mat_car_windows);
             }
@@ -412,12 +412,12 @@ namespace
             mesh_tab[0]->look_at(glm::vec3(0, -1, 0), glm::vec3(0, 0, 1));
             obj_tf_inst->init_orientation = mesh_tab[0]->orientation;
 
-            for (uint32 k = 0; k <= e_car_interior; k++)
+            for (uint32_t k = 0; k <= e_car_interior; k++)
             {
                load_material((e_material_types)k);
             }
 
-            for (uint32 k = 0; k < mesh_tab.size(); k++)
+            for (uint32_t k = 0; k < mesh_tab.size(); k++)
             {
                mesh_tab[k]->orientation = obj_tf_inst->init_orientation;
             }
@@ -425,7 +425,7 @@ namespace
          }
          }
 
-         for (uint32 k = 0; k < mesh_tab.size(); k++)
+         for (uint32_t k = 0; k < mesh_tab.size(); k++)
          {
             gfx_scene_inst->attach(mesh_tab[k]);
          }
@@ -797,7 +797,7 @@ namespace
             mws_sp<gfx_obj_vxo> obj_mesh_tab[DIM];
             std::vector<mws_sp<gfx_vxo> > mesh_list;
 
-            for (uint32 k = 0; k < DIM; k++)
+            for (uint32_t k = 0; k < DIM; k++)
             {
                obj_mesh_tab[k] = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
                gfx_obj_vxo& r_obj_mesh = *obj_mesh_tab[k];
@@ -832,7 +832,7 @@ namespace
             mws_sp<gfx_obj_vxo> obj_mesh_tab[DIM];
             std::vector<mws_sp<gfx_vxo> > mesh_list;
 
-            for (uint32 k = 0; k < DIM; k++)
+            for (uint32_t k = 0; k < DIM; k++)
             {
                obj_mesh_tab[k] = mws_sp<gfx_obj_vxo>(new gfx_obj_vxo());
                gfx_obj_vxo& r_obj_mesh = *obj_mesh_tab[k];
@@ -872,7 +872,7 @@ namespace
          free_cam->up_dir = glm::vec3(0.0f, 1.0f, 0.0f);
          gfx_scene_inst->attach(ortho_cam);
 
-         for (uint32 k = 0; k < button_list.size(); k++)
+         for (uint32_t k = 0; k < button_list.size(); k++)
          {
             button_list[k]->camera_id_list.clear();
             button_list[k]->camera_id_list.push_back(ortho_cam->camera_id());
@@ -885,7 +885,7 @@ namespace
          int width = get_mod()->get_width();
          int height = get_mod()->get_height();
 
-         for (uint32 k = 0; k < button_list.size(); k++)
+         for (uint32_t k = 0; k < button_list.size(); k++)
          {
             mws_sp<mws_select_button> btn = button_list[k];
 
@@ -940,7 +940,7 @@ namespace
       mws_sp<gfx_material> mat_car_headlights;
       mws_sp<gfx_material> mat_car_headlights_glass;
 
-      std::map<uint32, std::string> scene_idx_map;
+      std::map<uint32_t, std::string> scene_idx_map;
       std::map<std::string, mws_sp<obj_tf> > obj_map;
       mws_wp<mod_layered_car_paint> unit;
    };
@@ -964,13 +964,13 @@ namespace ns_mod_layered_car_paint
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -979,9 +979,9 @@ namespace ns_mod_layered_car_paint
       mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image(ispec_file);
       color32* specularmap_ptr = (color32*)specularmap->data;
 
-      uint32 width = diffmap->width;
-      uint32 height = diffmap->height;
-      uint32 size = width * height;
+      uint32_t width = diffmap->width;
+      uint32_t height = diffmap->height;
+      uint32_t size = width * height;
 
       if (specularmap->width != width || specularmap->height != height)
       {
@@ -990,19 +990,19 @@ namespace ns_mod_layered_car_paint
          return false;
       }
 
-      std::vector<uint32> rgba(size);
+      std::vector<uint32_t> rgba(size);
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
-         uint32 specular = specularmap_ptr[k].r;
-         uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
+         uint32_t specular = specularmap_ptr[k].r;
+         uint32_t normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
 
          rgba[k] = normal | ((specular << 24) & 0xff000000);
       }
 
       std::string new_filename = "new_diff_" + idiff_file->filename();
       mws_sp<mws_file> f = mws_file::get_inst(new_filename);
-      res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+      res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 
       return true;
    }
@@ -1019,21 +1019,21 @@ namespace ns_mod_layered_car_paint
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
       mws_sp<raw_img_data> img = res_ld::inst()->load_image("trail.png");
       color32* img_ptr = (color32*)img->data;
-      uint32 size = img->width * img->height;
+      uint32_t size = img->width * img->height;
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          img_ptr[k].a = img_ptr[k].r;
          img_ptr[k].r = img_ptr[k].g = img_ptr[k].b = 255;
@@ -1047,13 +1047,13 @@ namespace ns_mod_layered_car_paint
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1063,11 +1063,11 @@ namespace ns_mod_layered_car_paint
       color32* img_day_ptr = (color32*)img_day->data;
       color32* img_night_ptr = (color32*)img_night->data;
       color32* img_overcast_ptr = (color32*)img_overcast->data;
-      uint32 size = img_day->width * img_day->height;
-      std::vector<uint32> rgba(size);
+      uint32_t size = img_day->width * img_day->height;
+      std::vector<uint32_t> rgba(size);
       color32* img_ptr = (color32*)&rgba[0];
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          img_ptr[k].a = 0;
          img_ptr[k].r = img_overcast_ptr[k].a;
@@ -1076,20 +1076,20 @@ namespace ns_mod_layered_car_paint
       }
 
       mws_sp<mws_file> f = mws_file::get_inst("Track25_Lightmap2.png");
-      res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
+      res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8_t*)img_ptr);
    }
 
    void combine_trail()
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1097,11 +1097,11 @@ namespace ns_mod_layered_car_paint
       mws_sp<raw_img_data> img_outline = res_ld::inst()->load_image("trail-outline.png");
       color32* img_alpha_ptr = (color32*)img_alpha->data;
       color32* img_outline_ptr = (color32*)img_outline->data;
-      uint32 size = img_alpha->width * img_alpha->height;
-      std::vector<uint32> rgba(size);
+      uint32_t size = img_alpha->width * img_alpha->height;
+      std::vector<uint32_t> rgba(size);
       color32* img_ptr = (color32*)&rgba[0];
 
-      for (uint32 k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          img_ptr[k].a = img_alpha_ptr[k].a;
          img_ptr[k].b = img_outline_ptr[k].a;
@@ -1110,7 +1110,7 @@ namespace ns_mod_layered_car_paint
       }
 
       mws_sp<mws_file> f = mws_file::get_inst("trail-new.png");
-      res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
+      res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8_t*)img_ptr);
    }
 }
 using namespace ns_mod_layered_car_paint;
@@ -1216,10 +1216,10 @@ void mod_layered_car_paint::load()
    //int width = 2048;
    //int height = 1024;
    //int size = width * height;
-   //std::vector<uint32> rgba(size);
+   //std::vector<uint32_t> rgba(size);
    //RNG rng;
 
-   //for (uint32 k = 0; k < size; k++)
+   //for (uint32_t k = 0; k < size; k++)
    //{
    //	int a = 255;
    //	int r = rng.nextInt(256);
@@ -1231,17 +1231,17 @@ void mod_layered_car_paint::load()
    //}
 
    //mws_sp<mws_file> f = mws_file::get_inst("sparkle-normal-map.png");
-   //res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+   //res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 
    //union color32
    //{
-   //	uint32 rgba;
+   //	uint32_t rgba;
    //	struct
    //	{
-   //		uint8 r;
-   //		uint8 g;
-   //		uint8 b;
-   //		uint8 a;
+   //		uint8_t r;
+   //		uint8_t g;
+   //		uint8_t b;
+   //		uint8_t a;
    //	};
    //};
 
@@ -1250,16 +1250,16 @@ void mod_layered_car_paint::load()
    //mws_sp<raw_img_data> specularmap = res_ld::inst()->load_image("earth_flat_map_spec.png");
    //color32* specularmap_ptr = (color32*)specularmap->data;
 
-   //for (uint32 k = 0; k < size; k++)
+   //for (uint32_t k = 0; k < size; k++)
    //{
-   //	uint32 specular = specularmap_ptr[k].r;
-   //	uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
+   //	uint32_t specular = specularmap_ptr[k].r;
+   //	uint32_t normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
 
    //	rgba[k] = normal | ((specular << 24) & 0xff000000);
    //}
 
    //mws_sp<mws_file> f = mws_file::get_inst("earth_normal_spec_map.png");
-   //res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+   //res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 
    p = mws_sp<mod_layered_car_paint_impl>(new mod_layered_car_paint_impl(static_pointer_cast<mod_layered_car_paint>(get_smtp_instance())));
    p->init(gfx_scene_inst);
@@ -1275,7 +1275,7 @@ bool mod_layered_car_paint::update()
 
    std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
 
-   for (uint32 k = 0; k < mesh_list.size(); k++)
+   for (uint32_t k = 0; k < mesh_list.size(); k++)
    {
       mesh_list[k]->orientation = glm::quat(glm::vec3(0, -t, 0)) * p->obj_tf_inst->init_orientation;
    }
@@ -1380,7 +1380,7 @@ void mod_layered_car_paint::receive(mws_sp<mws_dp> i_dp)
          {
             std::vector<mws_sp<gfx_vxo> >& mesh_list = p->obj_tf_inst->mesh_list;
 
-            for (uint32 k = 0; k < mesh_list.size(); k++)
+            for (uint32_t k = 0; k < mesh_list.size(); k++)
             {
                gfx_vxo& mesh = *mesh_list[k];
                wireframe_mode wf_mode = static_cast<wireframe_mode>(mesh[MP_WIREFRAME_MODE].get_value<int>());

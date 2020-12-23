@@ -21,7 +21,7 @@ public:
 	int get_width();
 	int get_height();
 	int get_current_frame_index();
-	int64 get_frame_count();
+	int64_t get_frame_count();
 	double get_frame_rate();
 	unsigned long long get_duration_us();
 	mws_sp<gfx_tex> get_current_frame();

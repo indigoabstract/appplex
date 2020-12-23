@@ -299,17 +299,17 @@ namespace test_video_recording
             {
                gfx::i()->rt.set_current_render_target(rt_u);
                rt_u_quad->draw_out_of_sync(mws_cam);
-               mws_sp<std::vector<uint8> > pixels_u_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_u);
+               mws_sp<std::vector<uint8_t> > pixels_u_tex = gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_u);
                gfx::i()->rt.set_current_render_target();
                mws_report_gfx_errs();
 
                gfx::i()->rt.set_current_render_target(rt_y);
                rt_y_quad->draw_out_of_sync(mws_cam);
-               mws_sp<std::vector<uint8> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_y);
+               mws_sp<std::vector<uint8_t> > pixels_y_tex = gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_y);
 
                gfx::i()->rt.set_current_render_target(rt_v);
                rt_v_quad->draw_out_of_sync(mws_cam);
-               mws_sp<std::vector<uint8> > pixels_v_tex = gfx::i()->rt.get_render_target_pixels<uint8>(rt_v);
+               mws_sp<std::vector<uint8_t> > pixels_v_tex = gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_v);
 
                mws_report_gfx_errs();
 

@@ -41,7 +41,7 @@ static void err_na() { mws_throw mws_exception("call not available"); }
 
 #if !MOD_GFX
 #include "gfx/gfx-inc.hxx"
-void mws_report_gfx_errs_impl(const char*, uint32) { err_na(); }
+void mws_report_gfx_errs_impl(const char*, uint32_t) { err_na(); }
 
 mws_sp<gfx> gfx::main_instance;
 void gfx::global_init() { err_na(); }

@@ -111,9 +111,9 @@ public:
 	std::string name;
 	bool needs_update;
 	std::vector<mws_sp<shader_channel> > channel_list;
-	uint32 start_time;
-	uint32 stop_time;
-	uint32 pause_time;
+	uint32_t start_time;
+	uint32_t stop_time;
+	uint32_t pause_time;
 
 	std::string get_channel_uniform_type(int i_channel_idx)
 	{
@@ -408,7 +408,7 @@ public:
 			fx_glsl = gfx::i()->shader.new_program(shader_name, "fx", shader_name, add_header_uniforms::nwi(ss));
 		}
 
-		uint32 crt_time = mws::time::get_time_millis();
+		uint32_t crt_time = mws::time::get_time_millis();
 
 		if (ss->start_time == 0)
 		{
@@ -423,7 +423,7 @@ public:
 	void reset_time()
 	{
 		mws_sp<shader_state> ss = shader_state_list[current_fx_index];
-		uint32 crt_time = mws::time::get_time_millis();
+		uint32_t crt_time = mws::time::get_time_millis();
 
 		ss->pause_time = 0;
 		ss->start_time = ss->stop_time = crt_time;
@@ -434,7 +434,7 @@ public:
 		if (is_active != iis_active)
 		{
 			mws_sp<shader_state> ss = shader_state_list[current_fx_index];
-			uint32 crt_time = mws::time::get_time_millis();
+			uint32_t crt_time = mws::time::get_time_millis();
 
 			is_active = iis_active;
 

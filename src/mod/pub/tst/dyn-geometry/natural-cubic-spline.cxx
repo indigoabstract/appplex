@@ -13,9 +13,9 @@ void NatCubic::calcFinalPoints()
 
 	final_point_list.push_back(p0);
 
-	for (uint32 i = 0; i < vx->size(); i++)
+	for (uint32_t i = 0; i < vx->size(); i++)
 	{
-		for (uint32 j = 1; j <= STEPS; j++)
+		for (uint32_t j = 1; j <= STEPS; j++)
 		{
 			float u = j / (float) STEPS;
 			glm::vec3 p((*vx)[i]->eval(u), (*vy)[i]->eval(u), 0);

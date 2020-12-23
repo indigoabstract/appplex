@@ -981,7 +981,7 @@ namespace ns_mod_test_normal_mapping
 		mws_sp<gfx_material> mat_car_headlights;
 		mws_sp<gfx_material> mat_car_headlights_glass;
 
-		std::map<uint32, std::string> scene_idx_map;
+		std::map<uint32_t, std::string> scene_idx_map;
 		std::map<std::string, mws_sp<obj_tf> > obj_map;
 		mws_wp<mod_test_normal_mapping> mws_mod;
 	};
@@ -1010,13 +1010,13 @@ namespace ns_mod_test_normal_mapping
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1036,19 +1036,19 @@ namespace ns_mod_test_normal_mapping
          return false;
       }
 
-      std::vector<uint32> rgba(size);
+      std::vector<uint32_t> rgba(size);
 
       for (int k = 0; k < size; k++)
       {
-         uint32 specular = specularmap_ptr[k].r;
-         uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
+         uint32_t specular = specularmap_ptr[k].r;
+         uint32_t normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
 
          rgba[k] = normal | ((specular << 24) & 0xff000000);
       }
 
       std::string new_filename = "new_diff_" + idiff_file->filename();
       mws_sp<mws_file> f = mws_file::get_inst(new_filename);
-      res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+      res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 
       return true;
    }
@@ -1065,13 +1065,13 @@ namespace ns_mod_test_normal_mapping
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1093,13 +1093,13 @@ namespace ns_mod_test_normal_mapping
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1110,7 +1110,7 @@ namespace ns_mod_test_normal_mapping
       color32* img_night_ptr = (color32*)img_night->data;
       color32* img_overcast_ptr = (color32*)img_overcast->data;
       int size = img_day->width * img_day->height;
-      std::vector<uint32> rgba(size);
+      std::vector<uint32_t> rgba(size);
       color32* img_ptr = (color32*)&rgba[0];
 
       for (int k = 0; k < size; k++)
@@ -1122,20 +1122,20 @@ namespace ns_mod_test_normal_mapping
       }
 
       mws_sp<mws_file> f = mws_file::get_inst("Track25_Lightmap2.png");
-      res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8*)img_ptr);
+      res_ld::inst()->save_image(f, img_day->width, img_day->height, (uint8_t*)img_ptr);
    }
 
    void combine_trail()
    {
       union color32
       {
-         uint32 rgba;
+         uint32_t rgba;
          struct
          {
-            uint8 r;
-            uint8 g;
-            uint8 b;
-            uint8 a;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
          };
       };
 
@@ -1144,7 +1144,7 @@ namespace ns_mod_test_normal_mapping
       color32* img_alpha_ptr = (color32*)img_alpha->data;
       color32* img_outline_ptr = (color32*)img_outline->data;
       int size = img_alpha->width * img_alpha->height;
-      std::vector<uint32> rgba(size);
+      std::vector<uint32_t> rgba(size);
       color32* img_ptr = (color32*)&rgba[0];
 
       for (int k = 0; k < size; k++)
@@ -1156,7 +1156,7 @@ namespace ns_mod_test_normal_mapping
       }
 
       mws_sp<mws_file> f = mws_file::get_inst("trail-new.png");
-      res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8*)img_ptr);
+      res_ld::inst()->save_image(f, img_alpha->width, img_alpha->height, (uint8_t*)img_ptr);
    }
 }
 
@@ -1260,7 +1260,7 @@ void mod_test_normal_mapping::load()
 	//int width = 2048;
 	//int height = 1024;
 	//int size = width * height;
-	//std::vector<uint32> rgba(size);
+	//std::vector<uint32_t> rgba(size);
 	//RNG rng;
 
 	//for (int k = 0; k < size; k++)
@@ -1275,17 +1275,17 @@ void mod_test_normal_mapping::load()
 	//}
 
 	//mws_sp<mws_file> f = mws_file::get_inst("sparkle-normal-map.png");
-	//res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+	//res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 	
 	//union color32
 	//{
-	//	uint32 rgba;
+	//	uint32_t rgba;
 	//	struct
 	//	{
-	//		uint8 r;
-	//		uint8 g;
-	//		uint8 b;
-	//		uint8 a;
+	//		uint8_t r;
+	//		uint8_t g;
+	//		uint8_t b;
+	//		uint8_t a;
 	//	};
 	//};
 
@@ -1296,14 +1296,14 @@ void mod_test_normal_mapping::load()
 
 	//for (int k = 0; k < size; k++)
 	//{
-	//	uint32 specular = specularmap_ptr[k].r;
-	//	uint32 normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
+	//	uint32_t specular = specularmap_ptr[k].r;
+	//	uint32_t normal = (diffmap_ptr[k].r << 16) | (diffmap_ptr[k].g << 8) | diffmap_ptr[k].b;
 
 	//	rgba[k] = normal | ((specular << 24) & 0xff000000);
 	//}
 
 	//mws_sp<mws_file> f = mws_file::get_inst("earth_normal_spec_map.png");
-	//res_ld::inst()->save_image(f, width, height, (uint8*)rgba.data());
+	//res_ld::inst()->save_image(f, width, height, (uint8_t*)rgba.data());
 
 	p = mws_sp<impl>(new impl(static_pointer_cast<mod_test_normal_mapping>(get_smtp_instance())));
 	p->init(gfx_scene_inst);

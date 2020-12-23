@@ -37,7 +37,7 @@ public:
    virtual int get_width() = 0;
    virtual int get_height() = 0;
    virtual int get_current_frame_index() = 0;
-   virtual int64 get_frame_count() = 0;
+   virtual int64_t get_frame_count() = 0;
    virtual double get_frame_rate() = 0;
    virtual unsigned long long get_duration_us() = 0;
    virtual mws_sp<gfx_tex> get_current_frame() = 0;

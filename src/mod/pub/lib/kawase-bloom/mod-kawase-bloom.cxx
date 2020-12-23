@@ -42,7 +42,7 @@ namespace mod_kawase_bloom_ns
                {0.077892f, 70.f}, {0.089347f, 80.f}, {0.100802f, 90.f}, {0.112257f, 100.f}, {0.229095f, 200.f}, {0.343643f, 300.f}, {0.459336f, 400.f},
                {0.573883f, 500.f}, {0.689576f, 600.f}, {0.802978f, 700.f}, {0.915235f, 800.f}, {0.957617f, 900.f}, {1.000000f, 1000.f}
                };
-               uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
+               uint32_t size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
                mws_font_db::inst()->store_font_metrix(font_file->filename(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
                mws_sp<mws_font> font = mws_font::nwi(font_file->filename(), mws_cm(0.2f));
@@ -66,7 +66,7 @@ namespace mod_kawase_bloom_ns
             ortho_cam->clear_depth = true;
          }
 
-         uint32 vkb_size = std::min(mws::screen::get_width(), mws::screen::get_height());
+         uint32_t vkb_size = std::min(mws::screen::get_width(), mws::screen::get_height());
          mws_px letter_font_height(vkb_size / 5.f / 2.5f, mws_dim::e_vertical);
          mws_px word_font_height(vkb_size / 5.f / 4.f, mws_dim::e_vertical);
          mws_sp<mws_font> fnt = ortho_cam->get_font();

@@ -736,14 +736,14 @@ namespace shivavg_tp2
 		{
 			mws_page::update_view(g);
 
-			uint32 now = pfm::time::get_time_millis();
+			uint32_t now = pfm::time::get_time_millis();
 			display(now - lastTime);
 			lastTime = now;
 
 			g->drawText("shivavg_tp2", 10, 10);
 		}
 
-		uint32 lastTime;
+		uint32_t lastTime;
 	};
 }
 

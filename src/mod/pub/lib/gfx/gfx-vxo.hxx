@@ -18,7 +18,7 @@ class gfx_camera;
 
 namespace gfx_vxo_util
 {
-   void set_mesh_data(const uint8* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, mws_sp<gfx_vxo> imesh);
+   void set_mesh_data(const uint8_t* tvertices_data, int tvertices_data_size, const gfx_indices_type* tindices_data, int tindices_data_size, mws_sp<gfx_vxo> imesh);
 }
 
 enum gfx_primitive
@@ -133,10 +133,10 @@ public:
    bool is_translucent();
    virtual void set_mesh_name(const std::string& i_mesh_name);
    virtual void operator=(const std::string& i_mesh_name);
-   std::vector<uint8>& get_vx_buffer();
+   std::vector<uint8_t>& get_vx_buffer();
    std::vector<gfx_indices_type>& get_ix_buffer();
-   virtual void set_data(const std::vector<uint8>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer);
-   virtual void set_data(const uint8* i_vx_buff, uint32 i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32 i_idx_buff_count);
+   virtual void set_data(const std::vector<uint8_t>& i_vertices_buffer, const std::vector<gfx_indices_type>& i_indices_buffer);
+   virtual void set_data(const uint8_t* i_vx_buff, uint32_t i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32_t i_idx_buff_count);
    void update_data();
    virtual gfx_material_entry& operator[](const std::string i_name);
    mws_sp<gfx_material> get_material();
@@ -154,7 +154,7 @@ public:
    virtual void draw_in_sync(mws_sp<gfx_camera> i_camera) override;
 
    void push_material_params(mws_sp<gfx_material> i_mat);
-   void set_size(uint32 i_vx_count, uint32 i_idx_count);
+   void set_size(uint32_t i_vx_count, uint32_t i_idx_count);
    void set_keep_geometry_data(bool i_keep_geometry_data);
 
    std::vector<std::string> camera_id_list;
@@ -173,11 +173,11 @@ protected:
    bool name_changed = false;
    bool setup_tangent_basis = false;
    mws_sp<gfx_material> material;
-   std::vector<uint8> vertices_buffer;
-   std::vector<uint8> aux_vertices_buffer;
+   std::vector<uint8_t> vertices_buffer;
+   std::vector<uint8_t> aux_vertices_buffer;
    std::vector<gfx_indices_type> indices_buffer;
-   uint32 vx_count = 0;
-   uint32 idx_count = 0;
+   uint32_t vx_count = 0;
+   uint32_t idx_count = 0;
    gfx_uint array_buffer_id = 0;
    gfx_uint elem_buffer_id = 0;
    bool buffer_changed = false;

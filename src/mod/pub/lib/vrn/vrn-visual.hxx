@@ -21,15 +21,15 @@ static const std::string vkb_triangle_sh = "mws-vkb-triangle";
 
 struct mws_vrn_obj_types
 {
-   static const uint32 none = 0;
-   static const uint32 kernel_points = (1 << 0);
-   static const uint32 nexus_points = (1 << 1);
-   static const uint32 nexus_pairs = (1 << 2);
-   static const uint32 cells = (1 << 3);
-   static const uint32 delaunay_diag = (1 << 4);
-   static const uint32 convex_hull = (1 << 5);
-   static const uint32 cell_borders = (1 << 6);
-   static const uint32 obj_count = 7;
+   static const uint32_t none = 0;
+   static const uint32_t kernel_points = (1 << 0);
+   static const uint32_t nexus_points = (1 << 1);
+   static const uint32_t nexus_pairs = (1 << 2);
+   static const uint32_t cells = (1 << 3);
+   static const uint32_t delaunay_diag = (1 << 4);
+   static const uint32_t convex_hull = (1 << 5);
+   static const uint32_t cell_borders = (1 << 6);
+   static const uint32_t obj_count = 7;
 };
 
 
@@ -84,11 +84,11 @@ public:
    };
 
    static mws_sp<mws_vrn_cell_borders> nwi();
-   uint32 get_cell_borders_mesh_size() const;
-   mws_sp<mws_vrn_cell_vxo> get_cell_borders_mesh_at(uint32 i_idx) const;
+   uint32_t get_cell_borders_mesh_size() const;
+   mws_sp<mws_vrn_cell_vxo> get_cell_borders_mesh_at(uint32_t i_idx) const;
    void set_cell_borders_tex(mws_sp<gfx_tex> i_tex);
    glm::vec4 calc_2d_bounding_box(const std::vector<glm::vec3>& i_point_list);
-   void set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list);
+   void set_geometry(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list);
 
 protected:
    mws_vrn_cell_borders();
@@ -114,11 +114,11 @@ public:
    void update_geometry(mws_sp<mws_vrn_data> i_diag_data);
    void set_line_geometry(mws_vrn_nexus_pair_vect& i_line_points, mws_sp<gfx_vxo> i_mesh);
    void set_points_geometry(mws_vrn_pos_vect& i_point_list, mws_sp<gfx_vxo> i_mesh);
-   void set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const std::vector<uint32>& i_point_count_list, mws_sp<gfx_vxo> i_mesh);
-   void set_cell_borders_geom(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32>& i_point_count_list, mws_sp<mws_vrn_cell_borders> i_mesh);
+   void set_triangle_geometry(mws_vrn_pos_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list, mws_sp<gfx_vxo> i_mesh);
+   void set_cell_borders_geom(mws_sp<mws_vrn_data> i_diag_data, mws_vrn_cell_pt_id_vect& i_point_list, const std::vector<uint32_t>& i_point_count_list, mws_sp<mws_vrn_cell_borders> i_mesh);
    mws_sp<mws_vrn_cell_borders> get_cell_borders();
    void set_cell_borders(mws_sp<mws_vrn_cell_borders> i_cell_borders);
-   void make_obj_visible(uint32 i_obj_type);
+   void make_obj_visible(uint32_t i_obj_type);
 
    mws_sp<mws_vrn_data> diag_data;
    mws_sp<gfx_plane> quad_mesh;
@@ -146,22 +146,22 @@ class mws_vrn_main
 {
 public:
    ~mws_vrn_main();
-   static mws_sp<mws_vrn_main> nwi(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam);
+   static mws_sp<mws_vrn_main> nwi(uint32_t i_diag_width, uint32_t i_diag_height, mws_sp<gfx_camera> i_cam);
    void init();
-   void toggle_voronoi_object(uint32 i_obj_type_mask);
+   void toggle_voronoi_object(uint32_t i_obj_type_mask);
    void update_diag();
    void update_geometry();
    // resizes the diagram using the existing kernel point set
-   void resize(uint32 i_diag_width, uint32 i_diag_height);
+   void resize(uint32_t i_diag_width, uint32_t i_diag_height);
    const mws_sp<mws_vrn_data> get_diag_data() const;
    void update_nexus_pairs_geometry();
    // creates a new diagram using a new set of kernel points
    void set_kernel_points(std::vector<glm::vec2> i_kernel_points);
    mws_vrn_diag::idx_dist get_kernel_idx_at(float i_x, float i_y) const;
-   glm::vec2 get_kernel_at(uint32 i_idx) const;
-   void move_kernel_to(uint32 i_idx, float i_x, float i_y);
+   glm::vec2 get_kernel_at(uint32_t i_idx) const;
+   void move_kernel_to(uint32_t i_idx, float i_x, float i_y);
    void insert_kernel_at(float i_x, float i_y);
-   void remove_kernel(uint32 i_idx);
+   void remove_kernel(uint32_t i_idx);
 
    mws_sp<mws_vrn_data> diag_data;
    mws_sp<mws_vrn_gen> vgen;
@@ -169,7 +169,7 @@ public:
 
 private:
    mws_vrn_main();
-   void setup(uint32 i_diag_width, uint32 i_diag_height, mws_sp<gfx_camera> i_cam);
+   void setup(uint32_t i_diag_width, uint32_t i_diag_height, mws_sp<gfx_camera> i_cam);
 
    mws_wp<gfx_camera> cam;
 };

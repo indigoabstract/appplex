@@ -18,7 +18,7 @@ public:
    virtual void init_mws();
    virtual void load();
 
-   static void save_image(std::string i_filename, mws_sp<std::vector<uint32> > ibgra);
+   static void save_image(std::string i_filename, mws_sp<std::vector<uint32_t> > ibgra);
 
 private:
    mod_test_freeimage();

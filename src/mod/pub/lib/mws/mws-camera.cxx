@@ -45,7 +45,7 @@ namespace ns_mws_camera
       {
          int length = seq->r.read_u32();
          std::vector<char> txt(length);
-         seq->r.read_i8((int8*)txt.data(), length * sizeof(char), 0);
+         seq->r.read_i8((int8_t*)txt.data(), length * sizeof(char), 0);
          tx = std::string(txt.data(), length);
          x = seq_util::read_f32(seq);
          y = seq_util::read_f32(seq);
@@ -55,7 +55,7 @@ namespace ns_mws_camera
       virtual void write_data(mws_sp<rw_seqv> seq)
       {
          seq->w.write_u32(tx.length());
-         seq->w.write_i8((int8*)tx.c_str(), tx.length() * sizeof(char), 0);
+         seq->w.write_i8((int8_t*)tx.c_str(), tx.length() * sizeof(char), 0);
          seq_util::write_f32(seq, x);
          seq_util::write_f32(seq, y);
          seq->w.write_u32(font_idx);

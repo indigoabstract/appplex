@@ -301,7 +301,7 @@ namespace mod_test_touch_input_ns
                glGenBuffers(PBO_COUNT, pbo_id_vect.data());
                //pbo_data.resize(pbo_data_size);
 
-               for (uint32 k = 0; k < PBO_COUNT; k++)
+               for (uint32_t k = 0; k < PBO_COUNT; k++)
                {
                   glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo_id_vect[k]);
                   glBufferData(GL_PIXEL_PACK_BUFFER, pbo_data_size, 0, GL_STREAM_READ);
@@ -443,8 +443,8 @@ namespace mod_test_touch_input_ns
                }
 
                int idx = (picking_tex->get_height() - map_click_y - 1) * picking_tex->get_width() + map_click_x;
-               //uint8 px = pbo_data[idx];
-               uint8 px = src[idx];
+               //uint8_t px = pbo_data[idx];
+               uint8_t px = src[idx];
 
                // release pointer to the mapped buffer
                glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
@@ -481,7 +481,7 @@ namespace mod_test_touch_input_ns
                      obj_vect.erase(obj_vect.begin() + obj_index);
                      obj_vect.push_back(obj);
 
-                     for (uint32 k = obj_index; k < obj_vect.size(); k++)
+                     for (uint32_t k = obj_index; k < obj_vect.size(); k++)
                      {
                         obj_vect[k]->set_z(obj_vect[k]->get_z() - 1.f);
                      }
@@ -521,7 +521,7 @@ namespace mod_test_touch_input_ns
          }
       }
 
-      uint32 frame_idx;
+      uint32_t frame_idx;
       std::vector<mws_sp<gfx_quad_2d> > obj_vect;
       float obj_scaling;
       glm::vec2 last_click;
@@ -538,10 +538,10 @@ namespace mod_test_touch_input_ns
       mws_sp<gfx_tex> picking_tex;
       mws_sp<gfx_rt> picking_rt;
       mws_sp<gfx_shader> picking_shader;
-      const uint32 PBO_COUNT = 2;
+      const uint32_t PBO_COUNT = 2;
       std::vector<gfx_uint> pbo_id_vect;
       int pbo_index;
-      std::vector<uint8> pbo_data;
+      std::vector<uint8_t> pbo_data;
       int pbo_data_size;
 
       // gesture

@@ -86,7 +86,7 @@ public:
    virtual bool is_full_screen_mode() const override;
    virtual void set_full_screen_mode(bool i_enabled) const override;
    // screen metrix
-   virtual std::pair<uint32, uint32> get_screen_res_px() const override;
+   virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const override;
    virtual float get_avg_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dpi() const override;
    virtual std::pair<float, float> get_screen_dim_inch() const override;
@@ -108,15 +108,15 @@ public:
    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
    virtual std::string get_timezone_id() const override;
 
-   void init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
-   void on_resize(uint32 i_screen_width, uint32 i_screen_height);
+   void init_screen_metrix(uint32_t i_screen_width, uint32_t i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi);
+   void on_resize(uint32_t i_screen_width, uint32_t i_screen_height);
 
 private:
    void setup_callbacks();
 
    mws_file_map plist;
    // screen metrix
-   std::pair<uint32, uint32> screen_res;
+   std::pair<uint32_t, uint32_t> screen_res;
    float avg_screen_dpi = 0.f;
    std::pair<float, float> screen_dpi;
    std::pair<float, float> screen_dim_inch;
@@ -168,9 +168,9 @@ public:
       return file;
    }
 
-   virtual uint64 length() override
+   virtual uint64_t length() override
    {
-      uint64 size = 0;
+      uint64_t size = 0;
 
       if (!file)
       {
@@ -195,12 +195,12 @@ public:
       return size;
    }
 
-   virtual uint64 creation_time() const override
+   virtual uint64_t creation_time() const override
    {
       return 0;
    }
 
-   virtual uint64 last_write_time() const override
+   virtual uint64_t last_write_time() const override
    {
       return 0;
    }
@@ -251,7 +251,7 @@ void emst_main::init()
       double vertical_screen_dpi = EM_ASM_DOUBLE({ return Module.mws_vertical_screen_dpi(); });
 
 	  device_pixel_ratio = (float)EM_ASM_DOUBLE({ return Module.mws_device_pixel_ratio(); });
-      init_screen_metrix((uint32)screen_width, (uint32)screen_height, (float)horizontal_screen_dpi, (float)vertical_screen_dpi);
+      init_screen_metrix((uint32_t)screen_width, (uint32_t)screen_height, (float)horizontal_screen_dpi, (float)vertical_screen_dpi);
    }
 
    setup_callbacks();
@@ -432,7 +432,7 @@ void emst_main::set_full_screen_mode(bool i_enabled) const
 {
 }
 
-std::pair<uint32, uint32> emst_main::get_screen_res_px() const { return screen_res; }
+std::pair<uint32_t, uint32_t> emst_main::get_screen_res_px() const { return screen_res; }
 float emst_main::get_avg_screen_dpi() const { return avg_screen_dpi; }
 std::pair<float, float> emst_main::get_screen_dpi() const { return screen_dpi; }
 std::pair<float, float> emst_main::get_screen_dim_inch() const { return screen_dim_inch; }
@@ -571,7 +571,7 @@ std::string mws_path::current_path()
    return std::filesystem::current_path().generic_string();
 }
 
-void emst_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
+void emst_main::init_screen_metrix(uint32_t i_screen_width, uint32_t i_screen_height, float i_screen_horizontal_dpi, float i_screen_vertical_dpi)
 {
    const float scale_factor = 1.33f;
    i_screen_horizontal_dpi *= scale_factor;
@@ -586,7 +586,7 @@ void emst_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height
    float horizontal_screen_dpcm = mws_cm(i_screen_horizontal_dpi).to_in().val();
    float vertical_screen_dpcm = mws_cm(i_screen_vertical_dpi).to_in().val();
 
-   screen_res = std::make_pair((uint32)i_screen_width, (uint32)i_screen_height);
+   screen_res = std::make_pair((uint32_t)i_screen_width, (uint32_t)i_screen_height);
    screen_dim_inch = std::make_pair(horizontal_dim_inch, vertical_dim_inch);
    screen_dpi = std::make_pair(i_screen_horizontal_dpi, i_screen_vertical_dpi);
    avg_screen_dpi = (screen_dpi.first + screen_dpi.second) * 0.5f;
@@ -595,7 +595,7 @@ void emst_main::init_screen_metrix(uint32 i_screen_width, uint32 i_screen_height
    avg_screen_dpcm = (screen_dpcm.first + screen_dpcm.second) * 0.5f;
 }
 
-void emst_main::on_resize(uint32 i_screen_width, uint32 i_screen_height)
+void emst_main::on_resize(uint32_t i_screen_width, uint32_t i_screen_height)
 {
    bool is_landscape_0 = (i_screen_width > i_screen_height);
    bool is_landscape_1 = (screen_res.first > screen_res.second);
@@ -781,7 +781,7 @@ static EM_BOOL mws_emst_touch(int i_event_type, const EmscriptenTouchEvent* i_e,
    pfm_te->time = mws::time::get_time_millis();
    pfm_te->touch_count = i_e->numTouches;
 
-   for (uint32 k = 0; k < pfm_te->touch_count; k++)
+   for (uint32_t k = 0; k < pfm_te->touch_count; k++)
    {
       auto& touches = i_e->touches[k];
       mws_ptr_evt_base::touch_point& te = pfm_te->points[k];

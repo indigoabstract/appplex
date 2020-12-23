@@ -15,7 +15,7 @@ namespace track_ns
 	struct vxfmt_v3fc4bn3t2f
 	{
 		float x, y, z;
-		uint8 r, g, b, a;
+		uint8_t r, g, b, a;
 		float nx, ny, nz;
 		float u, v;
 	};

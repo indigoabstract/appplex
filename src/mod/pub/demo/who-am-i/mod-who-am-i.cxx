@@ -55,7 +55,7 @@ namespace mod_who_am_i_ns
             {0.077892f, 70.f}, {0.089347f, 80.f}, {0.100802f, 90.f}, {0.112257f, 100.f}, {0.229095f, 200.f}, {0.343643f, 300.f}, {0.459336f, 400.f},
             {0.573883f, 500.f}, {0.689576f, 600.f}, {0.802978f, 700.f}, {0.915235f, 800.f}, {0.957617f, 900.f}, {1.000000f, 1000.f}
             };
-            uint32 size = sizeof(metrix) / sizeof(std::pair<float, float>);
+            uint32_t size = sizeof(metrix) / sizeof(std::pair<float, float>);
 
             mws_font_db::inst()->store_font_metrix(font_file->filename(), mws_pt(2), mws_px(2), mws_pt(1000), mws_px(875), metrix, size);
             font = mws_font::nwi(font_file->filename(), mws_cm(0.35f));
@@ -138,7 +138,7 @@ namespace mod_who_am_i_ns
 
       virtual void update_view(mws_sp<mws_camera> i_g) override
       {
-         uint32 crt_time = mws::time::get_time_millis();
+         uint32_t crt_time = mws::time::get_time_millis();
 
          switch (stage)
          {
@@ -185,7 +185,7 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_whoami_white_bg_stage:
          {
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::white);
 
@@ -199,8 +199,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_whoami_bg_fade_stage:
          {
-            const uint32 duration = 5000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 5000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
             float v = (float)delta_t / duration;
             v = glm::clamp<float>(v, 0.f, 1.f);
             v = 1.f - v * v * v * v * v * v;
@@ -224,8 +224,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_whoami_stay_stage:
          {
-            const uint32 duration = 3000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 3000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
             float font_height = text_font->get_height();
             float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
             glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_0_width) / 2.f;
@@ -245,8 +245,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_whoami_fg_fade_stage:
          {
-            const uint32 duration = 5000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 5000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
             float v = (float)delta_t / duration;
             v = glm::clamp<float>(v, 0.f, 1.f);
             v = 1.f - v * v * v * v * v;
@@ -271,8 +271,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_inter_text_stage:
          {
-            const uint32 duration = 3000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 3000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -286,8 +286,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_deep_stage:
          {
-            const uint32 duration = 1500;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 1500;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
             float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
@@ -306,8 +306,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_dreamless_stage:
          {
-            const uint32 duration = 1500;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 1500;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
             float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
@@ -327,8 +327,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_sleep_stage:
          {
-            const uint32 duration = 1500;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 1500;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             float font_height = text_font->get_height();
             float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
@@ -349,8 +349,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_final_stay_stage:
          {
-            const uint32 duration = 5000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 5000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
             float font_height = text_font->get_height();
             float y_off = (mws::screen::get_height() - 3.f * font_height) / 2.f;
             glm::vec3 text_xoff = (glm::vec3((float)mws::screen::get_width()) - text_1_width) / 2.f;
@@ -370,8 +370,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_final_fade_stage:
          {
-            const uint32 duration = 5000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 5000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
             float v = (float)delta_t / duration;
             v = glm::clamp<float>(v, 0.f, 1.f);
             v = 1.f - v * v * v * v * v;
@@ -396,8 +396,8 @@ namespace mod_who_am_i_ns
          }
          case stages_types::e_final_stage:
          {
-            const uint32 duration = 5000;
-            uint32 delta_t = crt_time - last_stage_switch_time;
+            const uint32_t duration = 5000;
+            uint32_t delta_t = crt_time - last_stage_switch_time;
 
             gfx_rt::clear_buffers(true, false, false, gfx_color::colors::black);
 
@@ -421,7 +421,7 @@ namespace mod_who_am_i_ns
       std::string sleep_text = "Sleep";
       glm::vec3 text_0_width;
       glm::vec3 text_1_width;
-      uint32 last_stage_switch_time = 0;
+      uint32_t last_stage_switch_time = 0;
       mws_sp<mws_font> font;
       mws_sp<mws_font> letter_font;
       mws_sp<mws_font> text_font;
@@ -429,7 +429,7 @@ namespace mod_who_am_i_ns
       mws_sp<gfx_quad_2d> font_quad;
       basic_time_slider<float> slider;
       std::vector<float> slider_seconds_vect;
-      uint32 slider_idx = 0;
+      uint32_t slider_idx = 0;
    };
 }
 

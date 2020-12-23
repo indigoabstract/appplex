@@ -412,7 +412,7 @@ void venc_ffmpeg::encode_frame_impl(AVFrame* i_frame)
    pts_idx++;
 }
 
-void venc_ffmpeg::encode_frame_m0_yuv420(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
+void venc_ffmpeg::encode_frame_m0_yuv420(const uint8_t* y_frame, const uint8_t* u_frame, const uint8_t* v_frame)
 {
    mws_assert(enc_method == mws_vid_enc_method::e_enc_m0);
    encode_frame_m0_yuv420_impl(y_frame, u_frame, v_frame);
@@ -493,7 +493,7 @@ static AVFrame* alloc_audio_frame(enum AVSampleFormat sample_fmt, uint64_t chann
    return frame;
 }
 
-void venc_ffmpeg::encode_frame_m0_yuv420_impl(const uint8* y_frame, const uint8* u_frame, const uint8* v_frame)
+void venc_ffmpeg::encode_frame_m0_yuv420_impl(const uint8_t* y_frame, const uint8_t* u_frame, const uint8_t* v_frame)
 {
    uint8_t* p0 = &frame->data[0][0];
    uint8_t* p1 = &frame->data[0][1];

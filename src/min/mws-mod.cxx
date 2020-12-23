@@ -52,9 +52,9 @@ public:
       return res_files_map;
    }
 
-   std::vector<uint8> load_as_byte_vect(mws_sp<mws_file> i_file) const
+   std::vector<uint8_t> load_as_byte_vect(mws_sp<mws_file> i_file) const
    {
-      std::vector<uint8> res;
+      std::vector<uint8_t> res;
 
       if (i_file->io.open())
       {
@@ -69,23 +69,23 @@ public:
       return res;
    }
 
-   std::vector<uint8> load_as_byte_vect(const mws_path& i_file_path) const
+   std::vector<uint8_t> load_as_byte_vect(const mws_path& i_file_path) const
    {
       mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
 
       return load_as_byte_vect(fs);
    }
 
-   mws_sp<std::vector<uint8>> load_as_sp_byte_vect(const mws_path& i_file_path) const
+   mws_sp<std::vector<uint8_t>> load_as_sp_byte_vect(const mws_path& i_file_path) const
    {
-      mws_sp<std::vector<uint8>> res;
+      mws_sp<std::vector<uint8_t>> res;
       mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
 
       if (fs->io.open())
       {
          int size = (int)fs->length();
 
-         res = mws_sp<std::vector<uint8>>(new std::vector<uint8>(size));
+         res = mws_sp<std::vector<uint8_t>>(new std::vector<uint8_t>(size));
          fs->io.read(res->data(), size);
          fs->io.close();
       }
@@ -100,7 +100,7 @@ public:
       if (i_file->io.open("rt"))
       {
          int size = (int)i_file->length();
-         std::vector<uint8> res(size);
+         std::vector<uint8_t> res(size);
          const char* res_bytes = (const char*)res.data();
          int text_size = i_file->io.read(res.data(), size);
 
@@ -296,7 +296,7 @@ public:
 
       struct helper
       {
-         static void read_pixels_helper(bool pbo_supported, mws_sp<gfx_tex> i_tex, gfx_uint pbo_id, gfx_uint pbo_next_id, std::vector<uint8>& i_data_dst)
+         static void read_pixels_helper(bool pbo_supported, mws_sp<gfx_tex> i_tex, gfx_uint pbo_id, gfx_uint pbo_next_id, std::vector<uint8_t>& i_data_dst)
          {
             const gfx_tex_params& tex_prm = i_tex->get_params();
 
@@ -352,21 +352,21 @@ public:
       mws_report_gfx_errs();
       gfx::i()->rt.set_current_render_target(rt_y);
       rt_y_quad->draw_out_of_sync(mws_cam);
-      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_y, pixels_y_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_y, pixels_y_tex);
       mws_report_gfx_errs();
       helper::read_pixels_helper(pbo_supported, rt_y_tex, y_pbo_ids[pbo_index], y_pbo_ids[pbo_next_index], pixels_y_tex);
       mws_report_gfx_errs();
 
       gfx::i()->rt.set_current_render_target(rt_u);
       rt_u_quad->draw_out_of_sync(mws_cam);
-      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_u, pixels_u_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_u, pixels_u_tex);
       helper::read_pixels_helper(pbo_supported, rt_u_tex, u_pbo_ids[pbo_index], u_pbo_ids[pbo_next_index], pixels_u_tex);
       gfx::i()->rt.set_current_render_target();
       mws_report_gfx_errs();
 
       gfx::i()->rt.set_current_render_target(rt_v);
       rt_v_quad->draw_out_of_sync(mws_cam);
-      //gfx::i()->rt.get_render_target_pixels<uint8>(rt_v, pixels_v_tex);
+      //gfx::i()->rt.get_render_target_pixels<uint8_t>(rt_v, pixels_v_tex);
       helper::read_pixels_helper(pbo_supported, rt_v_tex, v_pbo_ids[pbo_index], v_pbo_ids[pbo_next_index], pixels_v_tex);
       gfx::i()->rt.set_current_render_target();
       mws_report_gfx_errs();
@@ -393,7 +393,7 @@ public:
          float v = sv;
 
          v = 1.f - (1.f - v) * (1.f - v);
-         c2.a = uint8(v * 255);
+         c2.a = uint8_t(v * 255);
          recording_fnt->set_color(c2);
          mws_cam->drawText(recording_txt, px, py, recording_fnt);
          //mws_print("slider: %f %f\n", sv, v);
@@ -518,9 +518,9 @@ public:
    mws_sp<gfx_rt> rt_v;
    mws_sp<gfx_tex> rt_v_tex;
    mws_sp<gfx_quad_2d> rt_v_quad;
-   std::vector<uint8> pixels_y_tex;
-   std::vector<uint8> pixels_u_tex;
-   std::vector<uint8> pixels_v_tex;
+   std::vector<uint8_t> pixels_y_tex;
+   std::vector<uint8_t> pixels_u_tex;
+   std::vector<uint8_t> pixels_v_tex;
    bool pbo_supported;
    std::vector<gfx_uint> y_pbo_ids;
    std::vector<gfx_uint> u_pbo_ids;
@@ -581,17 +581,17 @@ const mws_file_map& mws_app_storage::get_res_file_list() const
    return p->get_res_file_list();
 }
 
-std::vector<uint8> mws_app_storage::load_as_byte_vect(mws_sp<mws_file> i_file) const
+std::vector<uint8_t> mws_app_storage::load_as_byte_vect(mws_sp<mws_file> i_file) const
 {
    return p->load_as_byte_vect(i_file);
 }
 
-std::vector<uint8> mws_app_storage::load_as_byte_vect(const mws_path& i_file_path) const
+std::vector<uint8_t> mws_app_storage::load_as_byte_vect(const mws_path& i_file_path) const
 {
    return p->load_as_byte_vect(i_file_path);
 }
 
-mws_sp<std::vector<uint8>> mws_app_storage::load_as_sp_byte_vect(const mws_path& i_file_path) const
+mws_sp<std::vector<uint8_t>> mws_app_storage::load_as_sp_byte_vect(const mws_path& i_file_path) const
 {
    return p->load_as_sp_byte_vect(i_file_path);
 }
@@ -694,8 +694,8 @@ void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
       mws_print("saving screenshot to [ %s ] ... ", screenshot_file->string_path().c_str());
       int w = gfx::i()->rt.get_screen_width();
       int h = gfx::i()->rt.get_screen_height();
-      mws_sp<std::vector<uint32>> pixels = gfx::i()->rt.get_render_target_pixels<uint32>();
-      res_ld::inst()->save_image(screenshot_file, w, h, (uint8*)pixels->data(), res_ld::e_vertical_flip);
+      mws_sp<std::vector<uint32_t>> pixels = gfx::i()->rt.get_render_target_pixels<uint32_t>();
+      res_ld::inst()->save_image(screenshot_file, w, h, (uint8_t*)pixels->data(), res_ld::e_vertical_flip);
       mws_println("done.");
    }
 #endif
@@ -802,8 +802,8 @@ bool mws_mod::update()
 
    // update fps
    frame_count++;
-   uint32 now = mws::time::get_time_millis();
-   uint32 dt = now - last_frame_time;
+   uint32_t now = mws::time::get_time_millis();
+   uint32_t dt = now - last_frame_time;
 
    if (dt >= 1000)
    {
@@ -934,7 +934,7 @@ void mws_mod::config_font_db_size()
 {
 #if MOD_VECTOR_FONTS
 
-   uint32 pow_of_two = get_preferences()->get_font_db_pow_of_two_size();
+   uint32_t pow_of_two = get_preferences()->get_font_db_pow_of_two_size();
    mws_font_db::nwi_inex(pow_of_two);
 
 #endif
@@ -1291,7 +1291,7 @@ void mws_mod_list::up_one_level()
       if (parent->get_mod_type() == e_mod_list)
       {
          mws_sp<mws_mod_list> ul = static_pointer_cast<mws_mod_list>(parent);
-         uint32 idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
+         uint32_t idx = std::find(ul->ulist.begin(), ul->ulist.end(), u) - ul->ulist.begin();
 
          if (idx < ul->ulist.size())
          {

@@ -451,12 +451,12 @@ public:
    {
       if (fsh_name.length() > 0 && vsh_name.length() > 0)
       {
-         uint32 current_time = mws::time::get_time_millis();
+         uint32_t current_time = mws::time::get_time_millis();
 
          if (current_time - last_compile_time > 3000)
          {
-            uint64 ft = mws_file::get_inst(fsh_file_name)->last_write_time();
-            uint64 vt = mws_file::get_inst(vsh_file_name)->last_write_time();
+            uint64_t ft = mws_file::get_inst(fsh_file_name)->last_write_time();
+            uint64_t vt = mws_file::get_inst(vsh_file_name)->last_write_time();
 
             if (ft != fsh_last_write || vt != vsh_last_write)
             {
@@ -484,15 +484,15 @@ public:
    int vertex_shader_id = -1;
    int fragment_shader_id = -1;
    unsigned int program_id = -1;
-   uint32 last_compile_time = 0;
-   uint64 fsh_last_write = 0;
-   uint64 vsh_last_write = 0;
+   uint32_t last_compile_time = 0;
+   uint64_t fsh_last_write = 0;
+   uint64_t vsh_last_write = 0;
    std::unordered_map<std::string, mws_sp<gfx_input> > input_list;
    mws_sp<gfx_shader_listener> listener;
    bool suppress_nex_msg = false;
 
    static inline int shader_idx = -1;
-   static inline uint32 wait_for_modifications_interval = 3000;
+   static inline uint32_t wait_for_modifications_interval = 3000;
 };
 
 

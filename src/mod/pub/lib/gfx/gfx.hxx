@@ -82,7 +82,7 @@ class mws_px : public mws_dim
 {
 public:
    mws_px(float i_size = 0.f, dpi_types i_dpi_type = e_average) : dpi_type(i_dpi_type) { size = i_size; }
-   uint32 int_val() const;
+   uint32_t int_val() const;
    virtual mws_cm to_cm() const override;
    virtual mws_in to_in() const override;
    virtual mws_pt to_pt() const override;
@@ -196,7 +196,7 @@ public:
       [itex_name-posx.png, itex_name-negx.png, itex_name-posy.png, itex_name-negy.png, itex_name-posz.png, itex_name-negz.png]
       */
       mws_sp<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
-      mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32 i_size);
+      mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32_t i_size);
       mws_sp<gfx_tex> get_texture_by_name(std::string i_filename);
       // returns an existing texture by that name, or creates an new one if it doesn't exist yet
       mws_sp<gfx_tex> load_tex(std::string i_name);

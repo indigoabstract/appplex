@@ -41,7 +41,7 @@ namespace control_curve_ns
 
 		void addPoint(float x, float y)
 		{
-			if (xpoints.size() <= (uint32)npoints)
+			if (xpoints.size() <= (uint32_t)npoints)
 			{
 				int new_size = npoints + 1;
 

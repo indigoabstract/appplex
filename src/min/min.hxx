@@ -30,31 +30,31 @@ template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)
 inline std::string mws_to_str(const bool& i_input) { return (i_input) ? "true" : "false"; }
 inline std::string mws_to_str(const std::byte& i_input) { return std::to_string(static_cast<char>(i_input)); }
 inline std::string mws_to_str(const char& i_input) { return std::string(1, i_input); }
-inline std::string mws_to_str(const int8& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const uint8& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const int16& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const uint16& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const int32& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const uint32& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const int64& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const uint64& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const fltp32& i_input) { return std::to_string(i_input); }
-inline std::string mws_to_str(const fltp64& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const int8_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint8_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const int16_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint16_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const int32_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint32_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const int64_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const uint64_t& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const float32& i_input) { return std::to_string(i_input); }
+inline std::string mws_to_str(const float64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
 template<typename T> T mws_to(const std::string& i_input) { mws_assert(false); return T(); }
 template<> bool mws_to(const std::string& i_input);
 template<> std::byte mws_to(const std::string& i_input);
 template<> char mws_to(const std::string& i_input);
-template<> int8 mws_to(const std::string& i_input);
-template<> uint8 mws_to(const std::string& i_input);
-template<> int16 mws_to(const std::string& i_input);
-template<> uint16 mws_to(const std::string& i_input);
-template<> int32 mws_to(const std::string& i_input);
-template<> uint32 mws_to(const std::string& i_input);
-template<> int64 mws_to(const std::string& i_input);
-template<> uint64 mws_to(const std::string& i_input);
-template<> fltp32 mws_to(const std::string& i_input);
-template<> fltp64 mws_to(const std::string& i_input);
+template<> int8_t mws_to(const std::string& i_input);
+template<> uint8_t mws_to(const std::string& i_input);
+template<> int16_t mws_to(const std::string& i_input);
+template<> uint16_t mws_to(const std::string& i_input);
+template<> int32_t mws_to(const std::string& i_input);
+template<> uint32_t mws_to(const std::string& i_input);
+template<> int64_t mws_to(const std::string& i_input);
+template<> uint64_t mws_to(const std::string& i_input);
+template<> float32 mws_to(const std::string& i_input);
+template<> float64 mws_to(const std::string& i_input);
 
 template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
 {
@@ -100,7 +100,7 @@ struct mws_str
    static void to_lower(std::string& i_str);
    static void to_upper(std::string& i_str);
    // comparisons
-   static int32 cmp_ignore_case(const std::string& i_0, const std::string& i_1);
+   static int32_t cmp_ignore_case(const std::string& i_0, const std::string& i_1);
    static bool starts_with(const std::string& i_str, const std::string& i_match);
    static bool ends_with(const std::string& i_str, const std::string& i_match);
    // trim from start
@@ -111,7 +111,7 @@ struct mws_str
    static std::string trim(const std::string& i_str);
    static bool is_double_quoted(const std::string& i_str);
    static bool is_single_quoted(const std::string& i_str);
-   // strips enclosing (front and back) quotes and fltp64 quotes
+   // strips enclosing (front and back) quotes and float64 quotes
    static std::string strip_enclosing_quotes(const std::string& i_text);
    static std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
    template<typename T2, typename T1, class unary_operation> std::vector<T2> static map(const std::vector<T1>& original, unary_operation mapping_function)
@@ -158,15 +158,15 @@ template <typename T, typename mixer> class mws_val_mixer
 public:
    struct pos_val
    {
-      fltp32 pos;
+      float32 pos;
       T val;
    };
 
    mws_val_mixer() { clear(); }
 
-   uint32 size() const { return pos_val_vect.size(); }
+   uint32_t size() const { return pos_val_vect.size(); }
 
-   const pos_val& operator[](uint32 i_idx) const { return pos_val_vect[i_idx]; }
+   const pos_val& operator[](uint32_t i_idx) const { return pos_val_vect[i_idx]; }
 
    void clear()
    {
@@ -187,7 +187,7 @@ public:
       pos_val_vect = i_pos_val_vect;
    }
 
-   int set_val_at(T i_val, fltp32 i_position)
+   int set_val_at(T i_val, float32 i_position)
    {
       mws_assert(pos_val_vect.size() >= 2);
       if (i_position < 0.f || i_position > 1.f)
@@ -216,7 +216,7 @@ public:
       return idx;
    }
 
-   T get_val_at(fltp32 i_position)
+   T get_val_at(float32 i_position)
    {
       if (i_position <= 0.f)
       {
@@ -232,13 +232,13 @@ public:
       auto lim_sup = closest_gte_val(pos_val_vect, i_position);
       auto lim_inf = lim_sup - 1;
       // switch interval to [0, lim_sup - lim_inf]
-      fltp32 interval = lim_sup->pos - lim_inf->pos;
-      fltp32 mixf = (i_position - lim_inf->pos) / interval;
+      float32 interval = lim_sup->pos - lim_inf->pos;
+      float32 mixf = (i_position - lim_inf->pos) / interval;
 
       return mixer()(lim_inf->val, lim_sup->val, mixf);
    }
 
-   bool remove_idx(uint32 i_idx)
+   bool remove_idx(uint32_t i_idx)
    {
       if (i_idx <= 0 || i_idx >= pos_val_vect.size() - 1)
       {
@@ -252,7 +252,7 @@ public:
 
 protected:
    // find the the closest match that's not less than i_position (can be equal)
-   typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, fltp32 i_position)
+   typename std::vector<pos_val>::iterator closest_gte_val(std::vector<pos_val>& i_vect, float32 i_position)
    {
       const auto cmp_positions = [](const pos_val& i_a, const pos_val& i_b) { return i_a.pos < i_b.pos; };
       pos_val pc;
@@ -300,7 +300,7 @@ public:
    static mws_sp<mws_ptr_evt_base> nwi();
    virtual ~mws_ptr_evt_base() {}
 
-   static const uint32 max_touch_points = 8;
+   static const uint32_t max_touch_points = 8;
 
    enum e_touch_type
    {
@@ -324,17 +324,17 @@ public:
    struct touch_point
    {
       uintptr_t identifier = 0;
-      fltp32 x = 0.f;
-      fltp32 y = 0.f;
+      float32 x = 0.f;
+      float32 y = 0.f;
       bool is_changed = false;
    };
 
    e_touch_type type = touch_invalid;
    e_pointer_press_type press_type = e_touch_pressed;
-   uint32 time = 0;
-   uint32 touch_count = 0;
+   uint32_t time = 0;
+   uint32_t touch_count = 0;
    touch_point points[max_touch_points];
-   fltp32 mouse_wheel_delta = 0;
+   float32 mouse_wheel_delta = 0;
 
 protected:
    mws_ptr_evt_base() : mws_dp("ts-") {}
@@ -458,12 +458,12 @@ template <typename T> T const& mws_any_cast(mws_any const& a)
 }
 
 
-template<typename T> T lerp(const T& start, const T& end, fltp32 t)
+template<typename T> T lerp(const T& start, const T& end, float32 t)
 {
    return start * (1.f - t) + end * t;
 }
 
-inline bool is_inside_box(fltp32 x, fltp32 y, fltp32 box_x, fltp32 box_y, fltp32 box_width, fltp32 box_height)
+inline bool is_inside_box(float32 x, float32 y, float32 box_x, float32 box_y, float32 box_width, float32 box_height)
 {
    return (x >= box_x && x < (box_x + box_width)) && (y >= box_y && y < (box_y + box_height));
 }

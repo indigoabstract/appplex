@@ -22,7 +22,7 @@ mws_sp<gfx_tex> mws_kawase_bloom::get_blurred_tex() const { return blurred_tex; 
 
 mws_sp<gfx_tex> mws_kawase_bloom::get_bloom_tex() const { return bloomed_tex; }
 
-void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, float i_weight_fact)
+void mws_kawase_bloom::set_iter_count(uint32_t i_iter_count, float i_weight_fact)
 {
    if (i_iter_count == 0 || weight_fact <= 0.f)
    {
@@ -34,7 +34,7 @@ void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, float i_weight_fact)
    weight_fact_vect.assign(iteration_count, weight_fact);
 }
 
-void mws_kawase_bloom::set_iter_count(uint32 i_iter_count, const std::vector<float>& i_weight_fact)
+void mws_kawase_bloom::set_iter_count(uint32_t i_iter_count, const std::vector<float>& i_weight_fact)
 {
    if (i_iter_count == 0 || i_weight_fact.size() != i_iter_count)
    {
@@ -86,7 +86,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       //prm.set_format_id("RGBA32F");
       kawase_blur_shader = gfx::i()->shader.nwi_inex_by_shader_root_name(kawase_blur_sh_id);
 
-      for (uint32 k = 0; k < 2; k++)
+      for (uint32_t k = 0; k < 2; k++)
       {
          mws_gfx_ppb& rt = ping_pong_vect[k];
 
@@ -100,7 +100,7 @@ void mws_kawase_bloom::init(mws_sp<gfx_tex> i_input_tex)
       }
 
       // accumulation buffer
-      for (uint32 k = 0; k < 2; k++)
+      for (uint32_t k = 0; k < 2; k++)
       {
          mws_gfx_ppb& rt = accumulation_buff[k];
 
@@ -171,9 +171,9 @@ void mws_kawase_bloom::update()
       gfx::i()->rt.set_current_render_target();
    }
 
-   for (uint32 k = 0; k < iteration_count; k++)
+   for (uint32_t k = 0; k < iteration_count; k++)
    {
-      uint32 idx = k % 2;
+      uint32_t idx = k % 2;
       float sample_factor = sample_offset_start_val + k;
       mws_gfx_ppb& rt = ping_pong_vect[idx];
       mws_gfx_ppb& rt_acc = accumulation_buff[idx];

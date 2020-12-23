@@ -28,7 +28,7 @@ void mod_test_freeimage::init()
 {
 }
 
-void mod_test_freeimage::save_image(string i_filename, mws_sp<vector<uint32> > ibgra)
+void mod_test_freeimage::save_image(string i_filename, mws_sp<vector<uint32_t> > ibgra)
 {
 	int width = pfm::screen::get_width();
 	int height = pfm::screen::get_height();
@@ -38,7 +38,7 @@ void mod_test_freeimage::save_image(string i_filename, mws_sp<vector<uint32> > i
 	unsigned green_mask = FI_RGBA_GREEN_MASK;
 	unsigned blue_mask = FI_RGBA_BLUE_MASK;
 	BOOL topdown = false;
-	BYTE* bits = (uint8*)begin_ptr(ibgra);
+	BYTE* bits = (uint8_t*)begin_ptr(ibgra);
 	bool result = false;
 
 	// create image
@@ -134,9 +134,9 @@ private:
 };
 
 
-mws_sp<std::vector<uint8> > loadByteVect(bfs::path& p)
+mws_sp<std::vector<uint8_t> > loadByteVect(bfs::path& p)
 {
-	mws_sp<vector<uint8> > res;
+	mws_sp<vector<uint8_t> > res;
 
 	if(exists(p))
 	{
@@ -144,14 +144,14 @@ mws_sp<std::vector<uint8> > loadByteVect(bfs::path& p)
 		fs->io.open();
 		int size = file_size(p);
 
-		res = mws_sp<vector<uint8> >(new vector<uint8>(size));
+		res = mws_sp<vector<uint8_t> >(new vector<uint8_t>(size));
 		fs->io.read(begin_ptr(res), size);
 	}
 
 	return res;
 }
 
-mws_sp<gfx_tex> newImage(const char *filename, mws_sp<vector<uint8> > dt)
+mws_sp<gfx_tex> newImage(const char *filename, mws_sp<vector<uint8_t> > dt)
 {
 	mws_sp<gfx_tex> img;
 	FIBITMAP* fbmp = 0;
@@ -347,7 +347,7 @@ namespace mod_freeimage_page2
 		{
 			mws_sp<dir_node> rootNode = dirtree->get_root_node();
 			bfs::path p2 = rootNode->files[fidx]->abs_file_path;
-			mws_sp<vector<uint8> > dt = loadByteVect(p2);
+			mws_sp<vector<uint8_t> > dt = loadByteVect(p2);
 
 			imgxxx = newImage(p2.string().c_str(), dt);
 		}

@@ -60,7 +60,7 @@ void gfx_plane::set_dimensions(float i_dx, float i_dy, float i_z_val)
       1, 0, 2, 3, 2, 0,
    };
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -128,7 +128,7 @@ void gfx_grid::set_dimensions(int i_h_point_count, int i_v_point_count)
       }
    }
 
-   set_mesh_data((const uint8*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f) * tvertices_data.size(),
+   set_mesh_data((const uint8_t*)tvertices_data.data(), sizeof(vx_fmt_p3f_n3f_t2f) * tvertices_data.size(),
       tindices_data.data(), sizeof(gfx_indices_type) * tindices_data.size(), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
@@ -192,7 +192,7 @@ void gfx_box::set_dimensions(float i_dx, float i_dy, float i_dz)
       pos.z *= i_dz * 0.5f;
    }
 
-   set_mesh_data((const uint8*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8_t*)tvertices_data, sizeof(tvertices_data), tindices_data, sizeof(tindices_data), std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
 }
 
 
@@ -330,7 +330,7 @@ void gfx_vpc_ring_sphere::set_dimensions(float i_radius, int i_grid_point_count)
 
    int vdata_size = rs_vertices_data.size() * sizeof(vx_fmt_p3f_n3f_t2f);
    int idata_size = rs_indices_data.size() * sizeof(gfx_indices_type);
-   set_mesh_data((const uint8*)rs_vertices_data.data(), vdata_size, rs_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
+   set_mesh_data((const uint8_t*)rs_vertices_data.data(), vdata_size, rs_indices_data.data(), idata_size, std::static_pointer_cast<gfx_vxo>(get_mws_sp()));
    //mws_print("ind length %d") % indicesLength;
 }
 
@@ -339,7 +339,7 @@ gfx_right_prism::gfx_right_prism() : gfx_vxo(vx_info("a_v3_position, a_v3_normal
 
 void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertices, float i_height)
 {
-   const uint32 side_count = i_base_vertices.size();
+   const uint32_t side_count = i_base_vertices.size();
    mws_assert(side_count >= 3);
    const gfx_indices_type vx_offset = 2;
    // origin in zero
@@ -373,7 +373,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    dsw.write_f32(0.f);
 
    // write bottom face vertices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
       const glm::vec2& vx = i_base_vertices[k];
       // bottom face positions
@@ -390,7 +390,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    }
 
    // write top face vertices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
       const glm::vec2& vx = i_base_vertices[k];
       // top face positions
@@ -407,9 +407,9 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    }
 
    // write side face vertices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
-      uint32 kxx = (k + 1) % side_count;
+      uint32_t kxx = (k + 1) % side_count;
       const glm::vec2& vx = i_base_vertices[k];
       const glm::vec2& vx_next = i_base_vertices[kxx];
       glm::vec3 side_dir = glm::vec3(vx_next - vx, 0.f);
@@ -466,9 +466,9 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
       dsw.write_f32(0.f);
    }
 
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
-      uint32 k_next = (k + 1) % side_count;
+      uint32_t k_next = (k + 1) % side_count;
       // bottom face indices
       indices_data.push_back(0);
       indices_data.push_back(vx_offset + k);
@@ -480,7 +480,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    }
 
    // side face indices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
       const gfx_indices_type vx_side_offset = vx_offset + 2 * side_count;
       indices_data.push_back(vx_side_offset + 4 * k + 0);
@@ -502,7 +502,7 @@ gfx_right_pyramid::gfx_right_pyramid() : gfx_vxo(vx_info("a_v3_position, a_v3_no
 
 void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vertices, float i_height)
 {
-   const uint32 side_count = i_base_vertices.size();
+   const uint32_t side_count = i_base_vertices.size();
    mws_assert(side_count >= 3);
    const gfx_indices_type vx_offset = 1;
    // origin in zero
@@ -525,7 +525,7 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    dsw.write_f32(0.f);
 
    // write bottom face vertices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
       const glm::vec2& vx = i_base_vertices[k];
       // bottom face positions
@@ -542,9 +542,9 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    }
 
    // write side face vertices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
-      uint32 kxx = (k + 1) % side_count;
+      uint32_t kxx = (k + 1) % side_count;
       const glm::vec2& vx = i_base_vertices[k];
       const glm::vec2& vx_next = i_base_vertices[kxx];
       glm::vec3 side_dir = glm::vec3(vx_next - vx, 0.f);
@@ -591,9 +591,9 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
       dsw.write_f32(0.f);
    }
 
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
-      uint32 k_next = (k + 1) % side_count;
+      uint32_t k_next = (k + 1) % side_count;
       // bottom face indices
       indices_data.push_back(0);
       indices_data.push_back(vx_offset + k);
@@ -601,7 +601,7 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    }
 
    // side face indices
-   for (uint32 k = 0; k < side_count; k++)
+   for (uint32_t k = 0; k < side_count; k++)
    {
       const gfx_indices_type vx_side_offset = vx_offset + side_count;
       indices_data.push_back(vx_side_offset + 3 * k + 0);

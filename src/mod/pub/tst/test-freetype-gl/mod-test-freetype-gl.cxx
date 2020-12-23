@@ -30,7 +30,7 @@ public:
 
 	mws_sp<gfx_plane> q2d;
 	mws_sp<gfx_shader> texture_display;
-	uint32 last_time;
+	uint32_t last_time;
 	mws_sp<mws_font> f;
 	std::string tx;
 
@@ -75,7 +75,7 @@ bool mod_test_freetype_gl::update()
 		mws_cam->draw_mesh(p->q2d);
 	}
 
-	uint32 crt_time = mws::time::get_time_millis();
+	uint32_t crt_time = mws::time::get_time_millis();
 
 	if (crt_time - p->last_time > 750)
 	{

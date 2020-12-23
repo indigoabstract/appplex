@@ -39,21 +39,21 @@ gfx_color gfx_color::colors::yellow = gfx_color::from_rgba(0xffff00ff);
 
 
 gfx_color::gfx_color() { abgr = 0; }
-gfx_color::gfx_color(uint8 i_r, uint8 i_g, uint8 i_b, uint8 i_a) { r = i_r; g = i_g; b = i_b; a = i_a; }
-gfx_color::gfx_color(const uint8* i_c) { r = i_c[0]; g = i_c[1]; b = i_c[2]; a = i_c[3]; }
+gfx_color::gfx_color(uint8_t i_r, uint8_t i_g, uint8_t i_b, uint8_t i_a) { r = i_r; g = i_g; b = i_b; a = i_a; }
+gfx_color::gfx_color(const uint8_t* i_c) { r = i_c[0]; g = i_c[1]; b = i_c[2]; a = i_c[3]; }
 gfx_color::gfx_color(const gfx_color& i_c) { abgr = i_c.abgr; }
 
-gfx_color gfx_color::from_abgr(uint32 i_abgr)
+gfx_color gfx_color::from_abgr(uint32_t i_abgr)
 {
    return gfx_color(i_abgr);
 }
 
-gfx_color gfx_color::from_argb(uint32 i_argb)
+gfx_color gfx_color::from_argb(uint32_t i_argb)
 {
    return gfx_color((i_argb >> 16) & 0x000000ff, (i_argb >> 8) & 0x000000ff, (i_argb >> 0) & 0x000000ff, (i_argb >> 24) & 0x000000ff);
 }
 
-gfx_color gfx_color::from_rgba(uint32 i_rgba)
+gfx_color gfx_color::from_rgba(uint32_t i_rgba)
 {
    return gfx_color((i_rgba >> 24) & 0x000000ff, (i_rgba >> 16) & 0x000000ff, (i_rgba >> 8) & 0x000000ff, (i_rgba >> 0) & 0x000000ff);
 }
@@ -102,7 +102,7 @@ gfx_color gfx_color::operator + (gfx_color const& c)
 
    clamp(rr, gg, bb, aa);
 
-   return gfx_color((uint8)rr, (uint8)gg, (uint8)bb, (uint8)aa);
+   return gfx_color((uint8_t)rr, (uint8_t)gg, (uint8_t)bb, (uint8_t)aa);
 }
 
 gfx_color gfx_color::operator * (gfx_color const& c)
@@ -112,7 +112,7 @@ gfx_color gfx_color::operator * (gfx_color const& c)
    int bb = (c.b * b) / 255;
    int aa = (c.a * a) / 255;
 
-   return gfx_color((uint8)rr, (uint8)gg, (uint8)bb, (uint8)aa);
+   return gfx_color((uint8_t)rr, (uint8_t)gg, (uint8_t)bb, (uint8_t)aa);
 }
 
 
@@ -125,10 +125,10 @@ gfx_color gfx_color::operator * (float f)
 
    clamp(rr, gg, bb, aa);
 
-   return gfx_color((uint8)rr, (uint8)gg, (uint8)bb, (uint8)aa);
+   return gfx_color((uint8_t)rr, (uint8_t)gg, (uint8_t)bb, (uint8_t)aa);
 }
 
-gfx_color::operator uint8* ()
+gfx_color::operator uint8_t* ()
 {
    return &r;
 }
@@ -158,27 +158,27 @@ gfx_color gfx_color::operator += (gfx_color const& c)
 
    clamp(rr, gg, bb, aa);
 
-   r = (uint8)rr;
-   g = (uint8)gg;
-   b = (uint8)bb;
-   a = (uint8)aa;
+   r = (uint8_t)rr;
+   g = (uint8_t)gg;
+   b = (uint8_t)bb;
+   a = (uint8_t)aa;
 
    return *this;
 }
 
-uint32 gfx_color::to_argb() const { return (a << 24) | (r << 16) | (g << 8) | (b << 0); };
+uint32_t gfx_color::to_argb() const { return (a << 24) | (r << 16) | (g << 8) | (b << 0); };
 
 glm::vec4 gfx_color::to_vec4() const
 {
    return glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
-uint8 gfx_color::intensity()
+uint8_t gfx_color::intensity()
 {
    float h, s, b;
    to_hsb(h, s, b);
 
-   return (uint8)(b * 255.0f);
+   return (uint8_t)(b * 255.0f);
 }
 
 void gfx_color::to_hsv(float& hue, float& saturation, float& value)
@@ -327,10 +327,10 @@ gfx_color gfx_color::mix(const gfx_color& i_c0, const gfx_color& i_c1, float i_m
 {
    float one_minus_mixf = 1.f - i_mixf;
    return gfx_color(
-      uint8(one_minus_mixf * i_c0.r + i_mixf * i_c1.r),
-      uint8(one_minus_mixf * i_c0.g + i_mixf * i_c1.g),
-      uint8(one_minus_mixf * i_c0.b + i_mixf * i_c1.b),
-      uint8(one_minus_mixf * i_c0.a + i_mixf * i_c1.a));
+      uint8_t(one_minus_mixf * i_c0.r + i_mixf * i_c1.r),
+      uint8_t(one_minus_mixf * i_c0.g + i_mixf * i_c1.g),
+      uint8_t(one_minus_mixf * i_c0.b + i_mixf * i_c1.b),
+      uint8_t(one_minus_mixf * i_c0.a + i_mixf * i_c1.a));
 }
 
 void gfx_color::clamp(int& i_r, int& i_g, int& i_b, int& i_a)
@@ -363,7 +363,7 @@ gfx_color gfx_color_mixer::get_color_at(float i_position)
    return mixer.get_val_at(i_position);
 }
 
-bool gfx_color_mixer::remove_idx(uint32 i_idx)
+bool gfx_color_mixer::remove_idx(uint32_t i_idx)
 {
    return mixer.remove_idx(i_idx);
 }
