@@ -20,6 +20,9 @@
 #include <numeric>
 
 
+using namespace ns_kxmd;
+
+
 mws_vkb_file_store_impl::mws_vkb_file_store_impl(mws_sp<mws_mod> i_mod) : mod(i_mod) {}
 
 std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()

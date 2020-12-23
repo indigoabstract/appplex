@@ -91,6 +91,18 @@ private:
 };
 
 
+class file_inst
+{
+public:
+   virtual bool is_open() const = 0;
+   virtual uint64_t length() const = 0;
+   virtual void close() = 0;
+   virtual void set_io_position(uint64_t i_position) = 0;
+   virtual int read_byte_seqv(uint8* i_buffer, int i_size) = 0;
+   virtual int write_byte_seqv(const uint8* i_buffer, int i_size) = 0;
+};
+
+
 class file_data_seqv : public data_seqv
 {
 public:

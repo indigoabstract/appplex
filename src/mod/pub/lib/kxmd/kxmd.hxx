@@ -90,6 +90,3 @@ namespace ns_kxmd
       kxmd_impl* p = nullptr;
    };
 }
-using ns_kxmd::kv_ref;
-using ns_kxmd::kxmd;
-using ns_kxmd::kxmd_kv;
