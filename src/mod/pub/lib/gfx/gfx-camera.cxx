@@ -606,7 +606,7 @@ public:
 
       while (read_pos < size)
       {
-         draw_op* d_o = 0;
+         draw_op* d_o = nullptr;
 
          draw_ops->r.read_pointer(d_o);
          d_o->read_data(draw_ops);
