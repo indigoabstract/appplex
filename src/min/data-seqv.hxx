@@ -42,9 +42,9 @@ public:
    // sets current reading & writing position
    virtual void set_io_position(uint64_t i_position) = 0;
    // returns number of bytes read
-   int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
+   int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    // returns number of bytes written
-   int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
+   int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
 
 protected:
    // returns number of bytes read
@@ -246,17 +246,17 @@ public:
    std::string read_line();
    template<class T0> void read_pointer(T0*& i_seqv);
    // seqv data versions. each returns the number of bytes read
-   int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_u8(uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_i16(int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_u16(uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_i32(int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_u32(uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_i64(int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_u64(uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_f32(float* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   int read_f64(double* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
+   int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_u8(uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_i16(int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_u16(uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_i32(int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_u32(uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_i64(int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_u64(uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_f32(float* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   int read_f64(double* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
 
 protected:
    data_seqv_reader_base(const data_seqv_reader_base&) = delete;
@@ -329,17 +329,17 @@ public:
    void write_line(const std::string& i_text, bool i_new_line = true);
    template<class T0> void write_pointer(T0* const i_seqv);
    // seqv data versions
-   void write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_i8(const int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_u8(const uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_i16(const int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_u16(const uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_i32(const int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_u32(const uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_i64(const int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_u64(const uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_f32(const float* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void write_f64(const double* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
+   void write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_i8(const int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_u8(const uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_i16(const int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_u16(const uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_i32(const int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_u32(const uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_i64(const int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_u64(const uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_f32(const float* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_f64(const double* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
 
 protected:
    data_seqv_writer_base(const data_seqv_writer_base&) = delete;
@@ -433,16 +433,16 @@ public:
    float read_f32();
    double read_f64();
    // seqv data versions
-   void read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   void read_u8(uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_i16(int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_u16(uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_i32(int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_u32(uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_i64(int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_u64(uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_f32(float* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
-   //void read_f64(double* i_seqv, uint32_t i_elem_count, uint32_t i_offset);
+   void read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void read_u8(uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_i16(int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_u16(uint16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_i32(int32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_u32(uint32_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_i64(int64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_u64(uint64_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_f32(float* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   //void read_f64(double* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
 
 private:
    data_seqv* seqv;
