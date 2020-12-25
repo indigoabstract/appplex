@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
+#include "data-seqv.hxx"
 #include "input/input-def.hxx"
 #include <cstdio>
 #include <vector>
@@ -146,7 +147,6 @@ public:
       void flush();
       bool reached_eof() const;
       void set_io_position(uint64_t i_pos);
-
       int read(std::vector<uint8_t>& i_buffer);
       int write(const std::vector<uint8_t>& i_buffer);
       int read(uint8_t* i_buffer, int i_size);
@@ -161,6 +161,45 @@ public:
 
 private:
    mws_file();
+};
+
+
+class mws_file_wrapper : public file_wrapper
+{
+public:
+   mws_file_wrapper();
+   mws_file_wrapper(std::shared_ptr<mws_file> i_file);
+   virtual bool is_open() const override;
+   virtual bool is_writable() const override;
+   virtual uint64_t length() const override;
+   virtual void close() override;
+   virtual void set_io_position(uint64_t i_position) override;
+   virtual int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
+   virtual int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
+
+private:
+   std::shared_ptr<mws_file> file;
+};
+
+
+class mws_file_data_seqv : public file_data_seqv_base<mws_file_wrapper, ref_adapter<mws_file_wrapper>>
+{
+public:
+   mws_file_data_seqv();
+   mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is_writable);
+   void set_file_wrapper(const mws_file_wrapper& i_file);
+};
+
+
+class mws_rw_file_seqv : public mws_file_data_seqv
+{
+public:
+   static std::shared_ptr<mws_rw_file_seqv> nwi(const mws_file_wrapper& i_file, bool i_is_writable);
+   data_seqv_reader_sp r;
+   data_seqv_writer_sp w;
+
+private:
+   mws_rw_file_seqv(const mws_file_wrapper& i_file, bool i_is_writable);
 };
 
 

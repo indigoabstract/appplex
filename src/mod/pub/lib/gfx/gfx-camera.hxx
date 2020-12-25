@@ -57,8 +57,8 @@ public:
 class draw_op
 {
 public:
-   virtual void read_data(mws_sp<rw_seqv> seq) = 0;
-   virtual void write_data(mws_sp<rw_seqv> seq) = 0;
+   virtual void read_data(rw_seqv& seq) = 0;
+   virtual void write_data(rw_seqv& seq) = 0;
    virtual void draw(mws_sp<draw_context> idc) = 0;
 };
 
@@ -130,7 +130,7 @@ protected:
    virtual void load(mws_sp<gfx_camera> inst);
    virtual void update_camera_state_impl();
    mws_sp<draw_context> draw_ctx;
-   mws_sp<rw_seqv> draw_ops;
+   rw_seqv draw_ops;
 
 public:
    glm::mat4 camera_mx = glm::mat4(1.f);
@@ -144,87 +144,77 @@ public:
 
 namespace seq_util
 {
-   inline float read_f32(mws_sp<rw_seqv> isq)
-   {
-      return isq->r.read_f32();
-   }
-
-   inline glm::vec2 read_vec2(mws_sp<rw_seqv> isq)
+   inline glm::vec2 read_vec2(rw_seqv& i_sq)
    {
       glm::vec2 val;
 
-      val.x = isq->r.read_f32();
-      val.y = isq->r.read_f32();
+      val.x = i_sq.r.read_f32();
+      val.y = i_sq.r.read_f32();
 
       return val;
    }
 
-   inline glm::vec3 read_vec3(mws_sp<rw_seqv> isq)
+   inline glm::vec3 read_vec3(rw_seqv& i_sq)
    {
       glm::vec3 val;
 
-      val.x = isq->r.read_f32();
-      val.y = isq->r.read_f32();
-      val.z = isq->r.read_f32();
+      val.x = i_sq.r.read_f32();
+      val.y = i_sq.r.read_f32();
+      val.z = i_sq.r.read_f32();
 
       return val;
    }
 
-   inline glm::vec4 read_vec4(mws_sp<rw_seqv> isq)
+   inline glm::vec4 read_vec4(rw_seqv& i_sq)
    {
       glm::vec4 val;
 
-      val.x = isq->r.read_f32();
-      val.y = isq->r.read_f32();
-      val.z = isq->r.read_f32();
-      val.w = isq->r.read_f32();
+      val.x = i_sq.r.read_f32();
+      val.y = i_sq.r.read_f32();
+      val.z = i_sq.r.read_f32();
+      val.w = i_sq.r.read_f32();
 
       return val;
    }
 
-   inline glm::quat read_quat(mws_sp<rw_seqv> isq)
+   inline glm::quat read_quat(rw_seqv& i_sq)
    {
       glm::quat val;
 
-      val.x = isq->r.read_f32();
-      val.y = isq->r.read_f32();
-      val.z = isq->r.read_f32();
-      val.w = isq->r.read_f32();
+      val.x = i_sq.r.read_f32();
+      val.y = i_sq.r.read_f32();
+      val.z = i_sq.r.read_f32();
+      val.w = i_sq.r.read_f32();
 
       return val;
    }
 
-   inline void write_f32(mws_sp<rw_seqv> isq, float ival)
+   inline void write_vec2(rw_seqv& i_sq, glm::vec2& i_val)
    {
-      isq->w.write_f32(ival);
+      i_sq.w.write_f32(i_val.x);
+      i_sq.w.write_f32(i_val.y);
    }
 
-   inline void write_vec2(mws_sp<rw_seqv> isq, glm::vec2& ival)
+   inline void write_vec3(rw_seqv& i_sq, glm::vec3& i_val)
    {
-      isq->w.write_f32(ival.x);
-      isq->w.write_f32(ival.y);
+      i_sq.w.write_f32(i_val.x);
+      i_sq.w.write_f32(i_val.y);
+      i_sq.w.write_f32(i_val.z);
    }
 
-   inline void write_vec3(mws_sp<rw_seqv> isq, glm::vec3& ival)
+   inline void write_vec4(rw_seqv& i_sq, glm::vec4& i_val)
    {
-      isq->w.write_f32(ival.x);
-      isq->w.write_f32(ival.y);
-      isq->w.write_f32(ival.z);
+      i_sq.w.write_f32(i_val.x);
+      i_sq.w.write_f32(i_val.y);
+      i_sq.w.write_f32(i_val.z);
+      i_sq.w.write_f32(i_val.w);
    }
 
-   inline void write_vec4(mws_sp<rw_seqv> isq, glm::vec4& ival)
+   inline void write_quat(rw_seqv& i_sq, glm::quat& i_val)
    {
-      isq->w.write_f32(ival.x);
-      isq->w.write_f32(ival.y);
-      isq->w.write_f32(ival.z);
-      isq->w.write_f32(ival.w);
-   }
-
-   inline void write_quat(mws_sp<rw_seqv> isq, glm::quat& ival)
-   {
-      isq->w.write_f32(ival.x);
-      isq->w.write_f32(ival.y);
-      isq->w.write_f32(ival.z);
-      isq->w.write_f32(ival.w);
+      i_sq.w.write_f32(i_val.x);
+      i_sq.w.write_f32(i_val.y);
+      i_sq.w.write_f32(i_val.z);
+      i_sq.w.write_f32(i_val.w);
    }
 }

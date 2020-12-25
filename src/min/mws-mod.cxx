@@ -751,7 +751,7 @@ void mws_mod::set_internal_name_from_include_guard(const char* i_include_guard)
 
    std::string internal_name = name_t.substr(idx + 1, std::string::npos);
 
-   std::transform(internal_name.begin(), internal_name.end(), internal_name.begin(), ::tolower);
+   std::transform(internal_name.begin(), internal_name.end(), internal_name.begin(), [](char c) { return static_cast<char>(std::tolower(c)); });
    // replace all '_' with '-'
    std::replace(internal_name.begin(), internal_name.end(), '_', '-');
    name(internal_name);
@@ -1347,12 +1347,12 @@ void mws_mod_list::init_mws()
 
    mws_sp<mws_mod_list> ul = static_pointer_cast<mws_mod_list>(get_smtp_instance());
    mws_sp<mws_list_model> lm((mws_list_model*)new lmodel(ul));
-   mws_sp<mws_page> p = mws_page::nwi(mws_root);
+   mws_sp<mws_page> pg = mws_page::nwi(mws_root);
    mws_sp<mws_list> l = mws_list::nwi();
 
    ulmodel = lm;
    l->set_model(lm);
-   p->attach(l);
+   pg->attach(l);
    mws_cam->clear_color = true;
 
 #endif

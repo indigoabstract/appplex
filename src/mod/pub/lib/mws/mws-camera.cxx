@@ -30,35 +30,35 @@ namespace ns_mws_camera
          tx_vxo = mws_text_vxo::nwi();
       }
 
-      void push_data(mws_sp<rw_seqv> seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
+      void push_data(rw_seqv& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
       {
          tx = text;
          x = ix;
          y = iy;
          fonts.push_back(ifont);
-         seq->w.write_pointer(this);
+         seq.w.write_pointer(this);
          write_data(seq);
          font_idx++;
       }
 
-      virtual void read_data(mws_sp<rw_seqv> seq)
+      virtual void read_data(rw_seqv& seq)
       {
-         int length = seq->r.read_u32();
+         int length = seq.r.read_u32();
          std::vector<char> txt(length);
-         seq->r.read_i8((int8_t*)txt.data(), length * sizeof(char), 0);
+         seq.r.read_i8((int8_t*)txt.data(), length * sizeof(char), 0);
          tx = std::string(txt.data(), length);
-         x = seq_util::read_f32(seq);
-         y = seq_util::read_f32(seq);
-         font_idx = seq->r.read_u32();
+         x = seq.r.read_f32();
+         y = seq.r.read_f32();
+         font_idx = seq.r.read_u32();
       }
 
-      virtual void write_data(mws_sp<rw_seqv> seq)
+      virtual void write_data(rw_seqv& seq)
       {
-         seq->w.write_u32(tx.length());
-         seq->w.write_i8((int8_t*)tx.c_str(), tx.length() * sizeof(char), 0);
-         seq_util::write_f32(seq, x);
-         seq_util::write_f32(seq, y);
-         seq->w.write_u32(font_idx);
+         seq.w.write_u32(tx.length());
+         seq.w.write_i8((int8_t*)tx.c_str(), tx.length() * sizeof(char), 0);
+         seq.w.write_f32(x);
+         seq.w.write_f32(y);
+         seq.w.write_u32(font_idx);
       }
 
       void on_update_start(mws_sp<draw_context> idc)
@@ -90,9 +90,9 @@ namespace ns_mws_camera
 #elif defined MOD_BITMAP_FONTS
 
       draw_text_op() {}
-      void push_data(mws_sp<rw_seqv> seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont) {}
-      virtual void read_data(mws_sp<rw_seqv> seq) {}
-      virtual void write_data(mws_sp<rw_seqv> seq) {}
+      void push_data(rw_seqv& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont) {}
+      virtual void read_data(rw_seqv& seq) {}
+      virtual void write_data(rw_seqv& seq) {}
       void on_update_start(mws_sp<draw_context> idc) {}
       void draw(mws_sp<draw_context> idc) {}
       void on_update_end(mws_sp<draw_context> idc) {}

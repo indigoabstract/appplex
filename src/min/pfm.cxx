@@ -7,9 +7,7 @@
 #include "mws-mod-ctrl.hxx"
 #include "min.hxx"
 #include "mod-list.hxx"
-#include "data-seqv.hxx"
 #include "mws-vkb/mws-vkb.hxx"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -339,7 +337,7 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
 
    if (i_index_file->is_open())
    {
-      mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, false);
+      mws_sp<mws_rw_file_seqv> fs = mws_rw_file_seqv::nwi(i_index_file, false);
       uint32_t size = fs->r.read_u32();
 
       for (uint32_t k = 0; k < size; k++)
@@ -367,7 +365,7 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
 void mws_res_index::write_file_map(mws_sp<mws_file> i_index_file, const mws_file_map& i_file_map)
 {
    i_index_file->io.open("wb");
-   mws_sp<rw_file_seqv> fs = rw_file_seqv::nwi(i_index_file, true);
+   mws_sp<mws_rw_file_seqv> fs = mws_rw_file_seqv::nwi(i_index_file, true);
 
    fs->w.write_u32(i_file_map.size());
 
@@ -1132,6 +1130,51 @@ int mws_file::io_op::write(const uint8_t* i_buffer, int i_size)
 }
 
 
+// mws_file_wrapper
+mws_file_wrapper::mws_file_wrapper() {}
+mws_file_wrapper::mws_file_wrapper(std::shared_ptr<mws_file> i_file) : file(i_file) {}
+bool mws_file_wrapper::is_open() const { return file->is_open(); }
+bool mws_file_wrapper::is_writable() const { return file->is_writable(); }
+uint64_t mws_file_wrapper::length() const { return file->length(); }
+void mws_file_wrapper::close() { file->io.close(); }
+void mws_file_wrapper::set_io_position(uint64_t i_position) { file->io.set_io_position(i_position); }
+
+int mws_file_wrapper::read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
+{
+   return file->io.read((uint8_t*)(i_seqv + i_offset), i_elem_count);
+}
+
+int mws_file_wrapper::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
+{
+   return file->io.write((uint8_t*)(i_seqv + i_offset), i_elem_count);
+}
+
+
+// mws_file_data_seqv
+mws_file_data_seqv::mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is_writable)
+{
+   assert(i_file.is_open());
+   assert((i_is_writable) ? i_file.is_writable() : true);
+   file = i_file;
+   is_writable = i_is_writable;
+}
+
+mws_file_data_seqv::mws_file_data_seqv() {}
+void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { file = i_file; }
+
+
+// mws_rw_file_seqv
+std::shared_ptr<mws_rw_file_seqv> mws_rw_file_seqv::nwi(const mws_file_wrapper& i_file, bool i_is_writable)
+{
+   std::shared_ptr<mws_rw_file_seqv> inst(new mws_rw_file_seqv(i_file, i_is_writable));
+   inst->r.set_data_sequence(inst);
+   if (i_is_writable) { inst->w.set_data_sequence(inst); }
+   return inst;
+}
+
+mws_rw_file_seqv::mws_rw_file_seqv(const mws_file_wrapper& i_file, bool i_is_writable) : mws_file_data_seqv(i_file, i_is_writable) {}
+
+
 const std::string& mws_app::res_idx_name()
 {
    static std::string res_index = "res-idx.str";
@@ -1475,7 +1518,7 @@ private:
       {
          log_file->io.open("rb");
 
-         auto res_rw = rw_file_seqv::nwi(log_file, false);
+         auto res_rw = mws_rw_file_seqv::nwi(log_file, false);
          uint64_t file_length = log_file->length();
 
          while (res_rw->read_position() < file_length)
@@ -1515,7 +1558,7 @@ private:
 
       if (log_file && log_file->is_open())
       {
-         auto res_rw = rw_file_seqv::nwi(log_file, true);
+         auto res_rw = mws_rw_file_seqv::nwi(log_file, true);
 
          res_rw->w.write_text(i_msg);
          log_file->io.flush();
