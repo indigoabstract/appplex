@@ -177,12 +177,11 @@ class file_data_seqv : public file_data_seqv_base<std_file_wrapper, ref_adapter<
 {
 public:
    file_data_seqv() {}
-   file_data_seqv(const std_file_wrapper& i_file, bool i_is_writable)
+   file_data_seqv(const std_file_wrapper& i_file)
    {
       assert(i_file.is_open());
-      assert((i_is_writable) ? i_file.is_writable() : true);
       file = i_file;
-      is_writable = i_is_writable;
+      is_writable = i_file.is_writable();
    }
    void set_file_wrapper(const std_file_wrapper& i_file) { file = i_file; }
 };
@@ -193,13 +192,12 @@ class file_data_seqv_ptr : public file_data_seqv_base<file_wrapper*, ptr_adapter
 {
 public:
    file_data_seqv_ptr() { file = nullptr; }
-   file_data_seqv_ptr(file_wrapper* i_file, bool i_is_writable)
+   file_data_seqv_ptr(file_wrapper* i_file)
    {
       assert(i_file != nullptr);
       assert(i_file->is_open());
-      assert((i_is_writable) ? i_file->is_writable() : true);
       file = i_file;
-      is_writable = i_is_writable;
+      is_writable = i_file->is_writable();
    }
    void set_file_wrapper(file_wrapper* i_file) { file = i_file; }
 };
@@ -216,7 +214,7 @@ public:
       assert(i_file->is_open());
       assert((i_is_writable) ? i_file->is_writable() : true);
       file = i_file;
-      is_writable = i_is_writable;
+      is_writable = i_file->is_writable();
    }
    void set_file_wrapper(std::shared_ptr<file_wrapper> i_file) { file = i_file; }
 };
@@ -241,12 +239,14 @@ public:
    uint64_t read_u64();
    float read_f32();
    double read_f64();
+   template<class T0> T0 read();
    std::string read_text();
    // avoid using read_line(), as it's quite slow
    std::string read_line();
    template<class T0> void read_pointer(T0*& i_seqv);
    // seqv data versions. each returns the number of bytes read
    int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   template<class T0> int read(T0* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    int read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    int read_u8(uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    int read_i16(int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
@@ -325,11 +325,13 @@ public:
    void write_u64(uint64_t d);
    void write_f32(float d);
    void write_f64(double d);
+   template<class T0> void write(const T0& i_data);
    void write_text(const std::string& i_text);
    void write_line(const std::string& i_text, bool i_new_line = true);
    template<class T0> void write_pointer(T0* const i_seqv);
    // seqv data versions
    void write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   template<class T0> void write(const T0* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    void write_i8(const int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    void write_u8(const uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    void write_i16(const int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
@@ -404,10 +406,10 @@ public:
 class rw_file_seqv : public file_data_seqv
 {
 public:
-   rw_file_seqv(const std_file_wrapper& i_file, bool i_is_writable) : file_data_seqv(i_file, i_is_writable)
+   rw_file_seqv(const std_file_wrapper& i_file) : file_data_seqv(i_file)
    {
       r.set_data_sequence(*this);
-      if (i_is_writable) { w.set_data_sequence(*this); }
+      if (i_file.is_writable()) { w.set_data_sequence(*this); }
    }
 
    data_seqv_file_reader r;
@@ -722,6 +724,13 @@ template<class T, class reader> uint64_t data_seqv_reader_base<T, reader>::read_
 template<class T, class reader> float data_seqv_reader_base<T, reader>::read_f32() { int32_t r = read_i32(); return *(float*)&r; }
 template<class T, class reader> double data_seqv_reader_base<T, reader>::read_f64() { int64_t r = read_i64(); return *(double*)&r; }
 
+template<class T, class reader> template<class T0> T0 data_seqv_reader_base<T, reader>::read()
+{
+   union type_alias { T0 t; std::byte sq[sizeof(T0)]; } ta;
+   read_bytes(ta.sq, sizeof(T0), 0);
+   return ta.t;
+}
+
 template<class T, class reader> std::string data_seqv_reader_base<T, reader>::read_text()
 {
    uint32_t elem_count = read_u32();
@@ -760,12 +769,17 @@ template<class T, class reader> std::string data_seqv_reader_base<T, reader>::re
 
 template<class T, class reader> template<class T0> void data_seqv_reader_base<T, reader>::read_pointer(T0*& i_seqv)
 {
-   reader()(seqv)->read_bytes(byte_cast(&i_seqv), sizeof(uintptr_t), 0);
+   read_bytes(byte_cast(&i_seqv), sizeof(uintptr_t), 0);
 }
 
 template<class T, class reader> int data_seqv_reader_base<T, reader>::read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
    return reader()(seqv)->read_bytes(i_seqv, i_elem_count, i_offset);
+}
+
+template<class T, class reader> template<class T0> int data_seqv_reader_base<T, reader>::read(T0* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
+{
+   return read_bytes(byte_cast(i_seqv), i_elem_count * sizeof(T0), i_offset);
 }
 
 template<class T, class reader> int data_seqv_reader_base<T, reader>::read_i8(int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
@@ -834,6 +848,7 @@ template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i64
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_u64(uint64_t i_seqv) { write_i64(i_seqv); }
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f32(float i_seqv) { write_bytes(byte_cast(&i_seqv), sizeof(float), 0); }
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f64(double i_seqv) { write_bytes(byte_cast(&i_seqv), sizeof(double), 0); }
+template<class T, class writer> template<class T0> void data_seqv_writer_base<T, writer>::write(const T0& i_data) { write_bytes(byte_const_cast(&i_data), sizeof(T0), 0); }
 
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_text(const std::string& i_text)
 {
@@ -853,12 +868,17 @@ template<class T, class writer> void data_seqv_writer_base<T, writer>::write_lin
 
 template<class T, class writer> template<class T0> void data_seqv_writer_base<T, writer>::write_pointer(T0* const i_seqv)
 {
-   writer()(seqv)->write_bytes(byte_const_cast(&i_seqv), sizeof(uintptr_t), 0);
+   write_bytes(byte_const_cast(&i_seqv), sizeof(uintptr_t), 0);
 }
 
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
    writer()(seqv)->write_bytes(i_seqv, i_elem_count, i_offset);
+}
+
+template<class T, class writer> template<class T0> void data_seqv_writer_base<T, writer>::write(const T0* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
+{
+   write_bytes(byte_const_cast(i_seqv), i_elem_count * sizeof(T0), i_offset);
 }
 
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_i8(const int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
