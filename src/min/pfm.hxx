@@ -177,6 +177,7 @@ public:
    virtual void set_io_position(uint64_t i_position) override;
    virtual int read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
    virtual int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
+   virtual std::shared_ptr<mws_file> file_inst() const;
 
 private:
    std::shared_ptr<mws_file> file_v;
@@ -187,8 +188,26 @@ class mws_file_data_seqv : public file_data_seqv_base<mws_file_wrapper, ref_adap
 {
 public:
    mws_file_data_seqv();
-   mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is_writable);
+   mws_file_data_seqv(const mws_file_wrapper& i_file);
    void set_file_wrapper(const mws_file_wrapper& i_file);
+};
+
+
+class mws_file_reader : public data_seqv_reader_base<mws_file_data_seqv, ref_adapter<data_seqv>>
+{
+public:
+   mws_file_reader() {}
+   mws_file_reader(const mws_file_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const mws_file_data_seqv& i_seqv) { seqv = i_seqv; }
+};
+
+
+class mws_file_writer : public data_seqv_writer_base<mws_file_data_seqv, ref_adapter<data_seqv>>
+{
+public:
+   mws_file_writer() {}
+   mws_file_writer(const mws_file_data_seqv& i_seqv) { seqv = i_seqv; }
+   void set_data_sequence(const mws_file_data_seqv& i_seqv) { seqv = i_seqv; }
 };
 
 
@@ -197,10 +216,11 @@ class mws_fsv : public mws_file_data_seqv
 {
 public:
    mws_fsv();
-   mws_fsv(const mws_file_wrapper& i_file, bool i_is_writable);
+   mws_fsv(const mws_file_wrapper& i_file);
+   void set_file_wrapper(const mws_file_wrapper& i_file);
 
-   data_seqv_file_reader r;
-   data_seqv_file_reader w;
+   mws_file_reader r;
+   mws_file_writer w;
 };
 
 
@@ -212,7 +232,7 @@ public:
    data_seqv_writer_sp w;
 
 private:
-   mws_rw_file_seqv(const mws_file_wrapper& i_file, bool i_is_writable);
+   mws_rw_file_seqv(const mws_file_wrapper& i_file);
 };
 
 

@@ -1037,6 +1037,7 @@ bool mws_file_wrapper::is_writable() const { return file_v->is_writable(); }
 uint64_t mws_file_wrapper::length() const { return file_v->length(); }
 void mws_file_wrapper::close() { file_v->io.close(); }
 void mws_file_wrapper::set_io_position(uint64_t i_position) { file_v->io.set_io_position(i_position); }
+std::shared_ptr<mws_file> mws_file_wrapper::file_inst() const { return file_v; }
 
 int mws_file_wrapper::read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
@@ -1050,33 +1051,33 @@ int mws_file_wrapper::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count
 
 
 // mws_file_data_seqv
-mws_file_data_seqv::mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is_writable)
-{
-   assert(i_file.is_open());
-   assert((i_is_writable) ? i_file.is_writable() : true);
-   file_v = i_file;
-   is_writable = i_is_writable;
-}
-
+mws_file_data_seqv::mws_file_data_seqv(const mws_file_wrapper& i_file) { set_file_wrapper(i_file); }
 mws_file_data_seqv::mws_file_data_seqv() {}
-void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { file_v = i_file; }
+void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { assert(i_file.is_open()); file_v = i_file; is_writable = file_v.is_writable(); }
 
 
 // mws_fsv
 mws_fsv::mws_fsv() {}
-mws_fsv::mws_fsv(const mws_file_wrapper& i_file, bool i_is_writable) : mws_file_data_seqv(i_file, i_is_writable) {}
+mws_fsv::mws_fsv(const mws_file_wrapper& i_file) : mws_file_data_seqv(i_file), r(*this), w(*this) {}
+
+void mws_fsv::set_file_wrapper(const mws_file_wrapper& i_file)
+{
+   file_v = i_file;
+   r.set_data_sequence(*this);
+   w.set_data_sequence(*this);
+}
 
 
 // mws_rw_file_seqv
 std::shared_ptr<mws_rw_file_seqv> mws_rw_file_seqv::nwi(const mws_file_wrapper& i_file, bool i_is_writable)
 {
-   std::shared_ptr<mws_rw_file_seqv> inst(new mws_rw_file_seqv(i_file, i_is_writable));
+   std::shared_ptr<mws_rw_file_seqv> inst(new mws_rw_file_seqv(i_file));
    inst->r.set_data_sequence(inst);
    if (i_is_writable) { inst->w.set_data_sequence(inst); }
    return inst;
 }
 
-mws_rw_file_seqv::mws_rw_file_seqv(const mws_file_wrapper& i_file, bool i_is_writable) : mws_file_data_seqv(i_file, i_is_writable) {}
+mws_rw_file_seqv::mws_rw_file_seqv(const mws_file_wrapper& i_file) : mws_file_data_seqv(i_file) {}
 
 
 const std::string& mws_app::res_idx_name()

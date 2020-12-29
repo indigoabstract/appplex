@@ -188,7 +188,7 @@ public:
       file_v = i_file;
       is_writable = i_file.is_writable();
    }
-   void set_file_wrapper(const std_file_wrapper& i_file) { file_v = i_file; }
+   virtual void set_file_wrapper(const std_file_wrapper& i_file) { file_v = i_file; }
 };
 
 
@@ -204,7 +204,7 @@ public:
       file_v = i_file;
       is_writable = i_file->is_writable();
    }
-   void set_file_wrapper(file_wrapper* i_file) { file_v = i_file; }
+   virtual void set_file_wrapper(file_wrapper* i_file) { file_v = i_file; }
 };
 
 
@@ -221,7 +221,7 @@ public:
       file_v = i_file;
       is_writable = i_file->is_writable();
    }
-   void set_file_wrapper(std::shared_ptr<file_wrapper> i_file) { file_v = i_file; }
+   virtual void set_file_wrapper(std::shared_ptr<file_wrapper> i_file) { file_v = i_file; }
 };
 
 
@@ -1015,7 +1015,7 @@ inline void data_seqv_reader_big_endian::read_u8(uint8_t* i_seqv, uint32_t i_ele
 
 // dsv_exception
 inline dsv_exception::dsv_exception() { set_msg(""); }
-inline dsv_exception::dsv_exception(const std::string & i_msg) { set_msg(i_msg.c_str()); }
+inline dsv_exception::dsv_exception(const std::string& i_msg) { set_msg(i_msg.c_str()); }
 inline dsv_exception::dsv_exception(const char* i_msg) { set_msg(i_msg); }
 inline dsv_exception::~dsv_exception() {}
 inline const char* dsv_exception::what() const noexcept { return msg.c_str(); }
