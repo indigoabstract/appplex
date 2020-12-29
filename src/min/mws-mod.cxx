@@ -58,10 +58,10 @@ public:
 
       if (i_file->io.open())
       {
-         int size = (int)i_file->length();
+         uint32_t size = static_cast<uint32_t>(i_file->length());
 
          res.resize(size);
-         i_file->io.read(res.data(), size);
+         i_file->io.read(reinterpret_cast<std::byte*>(res.data()), size);
          i_file->io.close();
       }
 
@@ -83,10 +83,10 @@ public:
 
       if (fs->io.open())
       {
-         int size = (int)fs->length();
+         uint32_t size = static_cast<uint32_t>(fs->length());
 
          res = mws_sp<std::vector<uint8_t>>(new std::vector<uint8_t>(size));
-         fs->io.read(res->data(), size);
+         fs->io.read(reinterpret_cast<std::byte*>(res->data()), size);
          fs->io.close();
       }
 
@@ -99,13 +99,12 @@ public:
 
       if (i_file->io.open("rt"))
       {
-         int size = (int)i_file->length();
-         std::vector<uint8_t> res(size);
-         const char* res_bytes = (const char*)res.data();
+         uint32_t size = static_cast<uint32_t>(i_file->length());
+         std::vector<std::byte> res(size);
          int text_size = i_file->io.read(res.data(), size);
 
          i_file->io.close();
-         text = std::string(res_bytes, text_size);
+         text = std::string(reinterpret_cast<const char*>(res.data()), text_size);
       }
 
       // copy elision

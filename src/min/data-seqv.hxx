@@ -24,7 +24,8 @@ public:
    // returns true when there are no more bytes to read
    virtual bool reached_end_of_sequence();
    virtual void close();
-   virtual const uint8_t* data_as_byte_array() const = 0;
+   virtual const std::byte* data_as_byte_array() const = 0;
+   virtual std::vector<std::byte> data_as_byte_vector() const = 0;
    // returns total number of bytes in this sequence
    virtual uint64_t size() const = 0;
    // current reading position
@@ -33,8 +34,8 @@ public:
    uint64_t write_position() const;
    uint64_t total_bytes_read() const;
    uint64_t total_bytes_written() const;
-   virtual bool can_set_read_position() const { return true; }
-   virtual bool can_set_write_position() const { return true; }
+   virtual bool is_readable() const { return true; }
+   virtual bool is_writable() const { return true; }
    // sets current reading & writing position to 0
    virtual void rewind() = 0;
    // same as rewind, but also discards the allocated buffers for in memory sequences
@@ -61,19 +62,21 @@ private:
 };
 
 
-// read only memory data sequence. doesn't copy the input data, but uses it directly. be very careful with this.
+// read only memory data sequence. doesn't copy the input data, but only stores a reference. be very careful with this.
 class ro_mem_seqv : public data_seqv
 {
 public:
-   ro_mem_seqv(const uint8_t* i_seqv, uint64_t i_elem_count);
+   ro_mem_seqv();
+   ro_mem_seqv(const data_seqv& i_ds);
+   ro_mem_seqv(const std::byte* i_seqv, uint64_t i_elem_count);
    virtual ~ro_mem_seqv();
-   const uint8_t* data_as_byte_array() const override;
+   virtual const std::byte* data_as_byte_array() const override;
+   virtual std::vector<std::byte> data_as_byte_vector() const override;
    virtual uint64_t size() const override;
-   virtual bool can_set_write_position() const { return false; }
+   virtual bool is_writable() const { return false; }
    virtual void rewind() override;
    virtual void reset() override;
    virtual void set_io_position(uint64_t i_position) override;
-   std::shared_ptr<std::vector<uint8_t>> data_as_byte_vector() const;
    void set_read_position(uint64_t i_position);
 
 protected:
@@ -81,7 +84,7 @@ protected:
    virtual int write_bytes_impl(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
 
 private:
-   const uint8_t* seqv = nullptr;
+   const std::byte* seqv = nullptr;
    uint64_t size_v = 0;
 };
 
@@ -91,14 +94,14 @@ class mem_data_seqv : public data_seqv
 {
 public:
    mem_data_seqv();
-   mem_data_seqv(const uint8_t* i_seqv, uint32_t i_elem_count);
+   mem_data_seqv(const std::byte* i_seqv, uint32_t i_elem_count);
    virtual ~mem_data_seqv();
    virtual uint64_t size() const override;
    virtual void rewind() override;
    virtual void reset() override;
    virtual void set_io_position(uint64_t i_position) override;
-   const uint8_t* data_as_byte_array() const override;
-   std::shared_ptr<std::vector<uint8_t>> data_as_byte_vector() const;
+   virtual const std::byte* data_as_byte_array() const override;
+   virtual std::vector<std::byte> data_as_byte_vector() const override;
    void set_read_position(uint64_t i_position);
    void set_write_position(uint64_t i_position);
 
@@ -143,7 +146,7 @@ public:
    virtual int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
 
 private:
-   FILE* file;
+   FILE* file_v;
    bool is_writable_v;
 };
 
@@ -156,17 +159,19 @@ public:
    virtual ~file_data_seqv_base();
    virtual bool reached_end_of_sequence() override;
    virtual void close() override;
-   virtual const uint8_t* data_as_byte_array() const override { return nullptr; }
+   virtual const std::byte* data_as_byte_array() const override { return nullptr; }
+   virtual std::vector<std::byte> data_as_byte_vector() const override { return std::vector<std::byte>(); }
    virtual uint64_t size() const override;
    virtual void rewind() override;
    virtual void reset() override;
    virtual void set_io_position(uint64_t i_pos) override;
+   virtual const T& file() const;
 
 protected:
    virtual int read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
    virtual int write_bytes_impl(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
 
-   T file;
+   T file_v;
    uint64_t file_size = 0;
    bool is_writable = false;
 };
@@ -180,10 +185,10 @@ public:
    file_data_seqv(const std_file_wrapper& i_file)
    {
       assert(i_file.is_open());
-      file = i_file;
+      file_v = i_file;
       is_writable = i_file.is_writable();
    }
-   void set_file_wrapper(const std_file_wrapper& i_file) { file = i_file; }
+   void set_file_wrapper(const std_file_wrapper& i_file) { file_v = i_file; }
 };
 
 
@@ -191,15 +196,15 @@ public:
 class file_data_seqv_ptr : public file_data_seqv_base<file_wrapper*, ptr_adapter<file_wrapper*>>
 {
 public:
-   file_data_seqv_ptr() { file = nullptr; }
+   file_data_seqv_ptr() { file_v = nullptr; }
    file_data_seqv_ptr(file_wrapper* i_file)
    {
       assert(i_file != nullptr);
       assert(i_file->is_open());
-      file = i_file;
+      file_v = i_file;
       is_writable = i_file->is_writable();
    }
-   void set_file_wrapper(file_wrapper* i_file) { file = i_file; }
+   void set_file_wrapper(file_wrapper* i_file) { file_v = i_file; }
 };
 
 
@@ -213,10 +218,10 @@ public:
       assert(i_file != nullptr);
       assert(i_file->is_open());
       assert((i_is_writable) ? i_file->is_writable() : true);
-      file = i_file;
+      file_v = i_file;
       is_writable = i_file->is_writable();
    }
-   void set_file_wrapper(std::shared_ptr<file_wrapper> i_file) { file = i_file; }
+   void set_file_wrapper(std::shared_ptr<file_wrapper> i_file) { file_v = i_file; }
 };
 
 
@@ -263,6 +268,15 @@ protected:
    data_seqv_reader_base& operator=(const data_seqv_reader_base&) = delete;
 
    T seqv;
+};
+
+
+// ro memory sequence reference version
+class ro_mem_reader : public data_seqv_reader_base<ro_mem_seqv, ref_adapter<data_seqv>>
+{
+public:
+   ro_mem_reader() {}
+   ro_mem_reader(const ro_mem_seqv& i_seqv) { seqv = i_seqv; }
 };
 
 
@@ -406,6 +420,8 @@ public:
 class rw_file_seqv : public file_data_seqv
 {
 public:
+   rw_file_seqv() {}
+
    rw_file_seqv(const std_file_wrapper& i_file) : file_data_seqv(i_file)
    {
       r.set_data_sequence(*this);
@@ -526,23 +542,24 @@ inline int data_seqv::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count
 
 
 // ro_mem_seqv
-inline ro_mem_seqv::ro_mem_seqv(const uint8_t* i_seqv, uint64_t i_elem_count) : seqv(i_seqv), size_v(i_elem_count) {}
+inline ro_mem_seqv::ro_mem_seqv() {}
+inline ro_mem_seqv::ro_mem_seqv(const data_seqv& i_ds) : seqv(i_ds.data_as_byte_array()), size_v(i_ds.size()) {}
+inline ro_mem_seqv::ro_mem_seqv(const std::byte* i_seqv, uint64_t i_elem_count) : seqv(i_seqv), size_v(i_elem_count) {}
 inline ro_mem_seqv::~ro_mem_seqv() {}
-inline const uint8_t* ro_mem_seqv::data_as_byte_array() const { return seqv; }
+inline const std::byte* ro_mem_seqv::data_as_byte_array() const { return seqv; }
 inline uint64_t ro_mem_seqv::size() const { return size_v; }
 inline void ro_mem_seqv::rewind() { set_read_position(0); }
 inline void ro_mem_seqv::reset() { rewind(); }
 inline void ro_mem_seqv::set_io_position(uint64_t i_position) { set_read_position(i_position); }
 
-inline std::shared_ptr<std::vector<uint8_t>> ro_mem_seqv::data_as_byte_vector() const
+inline std::vector<std::byte> ro_mem_seqv::data_as_byte_vector() const
 {
-   std::shared_ptr<std::vector<uint8_t>> sq;
+   std::vector<std::byte> sq;
    size_t sz = static_cast<size_t>(size());
 
    if (sz > 0)
    {
-      sq = std::shared_ptr<std::vector<uint8_t>>(new std::vector<uint8_t>(sz));
-      std::memcpy(sq->data(), seqv, sz);
+      sq.assign(seqv, seqv + sz);
    }
 
    return sq;
@@ -563,38 +580,19 @@ inline int ro_mem_seqv::read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count
    return bytes_to_read;
 }
 
-inline int ro_mem_seqv::write_bytes_impl(const std::byte*, uint32_t, uint32_t) { mws_throw dsv_exception("n/a");   return -1; }
+inline int ro_mem_seqv::write_bytes_impl(const std::byte*, uint32_t, uint32_t) { mws_throw dsv_exception("n/a"); return -1; }
 
 
 // mem_data_seqv
-inline mem_data_seqv::mem_data_seqv(const uint8_t* i_seqv, uint32_t i_elem_count)
-{
-   seqv.resize(i_elem_count);
-   std::memcpy(&seqv[0], i_seqv, i_elem_count);
-}
-
+inline mem_data_seqv::mem_data_seqv(const std::byte* i_seqv, uint32_t i_elem_count) { seqv.assign(i_seqv, i_seqv + i_elem_count); }
 inline mem_data_seqv::mem_data_seqv() {}
 inline mem_data_seqv::~mem_data_seqv() {}
+inline const std::byte* mem_data_seqv::data_as_byte_array() const { return seqv.data(); }
+inline std::vector<std::byte> mem_data_seqv::data_as_byte_vector() const { return seqv; }
 inline uint64_t mem_data_seqv::size() const { return seqv.size(); }
 inline void mem_data_seqv::rewind() { set_read_position(0); set_write_position(0); }
 inline void mem_data_seqv::reset() { rewind(); seqv.clear(); }
 inline void mem_data_seqv::set_io_position(uint64_t i_position) { set_read_position(i_position); set_write_position(i_position); }
-inline const uint8_t* mem_data_seqv::data_as_byte_array() const { return (const uint8_t*)seqv.data(); }
-
-inline std::shared_ptr<std::vector<uint8_t>> mem_data_seqv::data_as_byte_vector() const
-{
-   std::shared_ptr<std::vector<uint8_t>> sq;
-   size_t sz = static_cast<size_t>(size());
-
-   if (sz > 0)
-   {
-      sq = std::make_shared<std::vector<uint8_t>>(sz);
-      std::memcpy(sq->data(), seqv.data(), sz);
-   }
-
-   return sq;
-}
-
 inline void mem_data_seqv::set_read_position(uint64_t i_pos) { if (i_pos > size()) { mws_throw dsv_exception("n/a"); } else { read_position_v = i_pos; } }
 inline void mem_data_seqv::set_write_position(uint64_t i_pos) { if (i_pos > size()) { mws_throw dsv_exception("n/a"); } else { write_position_v = i_pos; } }
 
@@ -631,26 +629,26 @@ inline std_file_wrapper::std_file_wrapper(const std::string& i_file_path, const 
    is_writable_v = (i_open_mode.find('w') != std::string::npos) || (i_open_mode.find('a') != std::string::npos);
 #pragma warning(push)
 #pragma warning(suppress : 4996)
-   file = fopen(i_file_path.c_str(), i_open_mode.c_str());
+   file_v = fopen(i_file_path.c_str(), i_open_mode.c_str());
 #pragma warning(pop)
 }
 
-inline std_file_wrapper::std_file_wrapper() : file(nullptr), is_writable_v(false) {}
-inline std_file_wrapper::std_file_wrapper(FILE* i_file, bool i_is_writable) : file(i_file), is_writable_v(i_is_writable) {}
-inline bool std_file_wrapper::is_open() const { return file != nullptr; }
+inline std_file_wrapper::std_file_wrapper() : file_v(nullptr), is_writable_v(false) {}
+inline std_file_wrapper::std_file_wrapper(FILE* i_file, bool i_is_writable) : file_v(i_file), is_writable_v(i_is_writable) {}
+inline bool std_file_wrapper::is_open() const { return file_v != nullptr; }
 inline bool std_file_wrapper::is_writable() const { return is_writable_v; }
-inline uint64_t std_file_wrapper::length() const { fseek(file, 0L, SEEK_END); long size = ftell(file); rewind(file); return size; }
-inline void std_file_wrapper::close() { fclose(file); }
-inline void std_file_wrapper::set_io_position(uint64_t i_position) { fseek(file, static_cast<long>(i_position), 0); }
+inline uint64_t std_file_wrapper::length() const { fseek(file_v, 0L, SEEK_END); long size = ftell(file_v); rewind(file_v); return size; }
+inline void std_file_wrapper::close() { fclose(file_v); }
+inline void std_file_wrapper::set_io_position(uint64_t i_position) { fseek(file_v, static_cast<long>(i_position), 0); }
 
 inline int std_file_wrapper::read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
-   return fread(i_seqv + i_offset, 1, i_elem_count, file);
+   return fread(i_seqv + i_offset, 1, i_elem_count, file_v);
 }
 
 inline int std_file_wrapper::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
-   return fwrite(i_seqv + i_offset, 1, i_elem_count, file);
+   return fwrite(i_seqv + i_offset, 1, i_elem_count, file_v);
 }
 
 
@@ -673,14 +671,15 @@ template<class T, class io> bool file_data_seqv_base<T, io>::reached_end_of_sequ
    return read_position() >= file_size;
 }
 
-template<class T, class io> void file_data_seqv_base<T, io>::close() { io()(file)->close(); }
-template<class T, class io> uint64_t file_data_seqv_base<T, io>::size() const { return io()(file)->length(); }
+template<class T, class io> void file_data_seqv_base<T, io>::close() { io()(file_v)->close(); }
+template<class T, class io> uint64_t file_data_seqv_base<T, io>::size() const { return io()(file_v)->length(); }
 template<class T, class io> void file_data_seqv_base<T, io>::rewind() { set_io_position(0); }
 template<class T, class io> void file_data_seqv_base<T, io>::reset() { rewind(); }
+template<class T, class io> const T& file_data_seqv_base<T, io>::file() const { return file_v; }
 
 template<class T, class io> void file_data_seqv_base<T, io>::set_io_position(uint64_t i_pos)
 {
-   io()(file)->set_io_position(i_pos);
+   io()(file_v)->set_io_position(i_pos);
    read_position_v = i_pos;
    write_position_v = i_pos;
 }
@@ -691,7 +690,7 @@ template<class T, class io> int file_data_seqv_base<T, io>::read_bytes_impl(std:
 
    if (read_position() < size())
    {
-      bytes_read = io()(file)->read_bytes(i_seqv, i_elem_count, i_offset);
+      bytes_read = io()(file_v)->read_bytes(i_seqv, i_elem_count, i_offset);
    }
 
    if (bytes_read < 0 || static_cast<uint32_t>(bytes_read) != i_elem_count)
@@ -704,7 +703,7 @@ template<class T, class io> int file_data_seqv_base<T, io>::read_bytes_impl(std:
 
 template<class T, class io> int file_data_seqv_base<T, io>::write_bytes_impl(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
-   return io()(file)->write_bytes(i_seqv, i_elem_count, i_offset);
+   return io()(file_v)->write_bytes(i_seqv, i_elem_count, i_offset);
 }
 
 

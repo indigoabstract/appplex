@@ -146,11 +146,12 @@ public:
       void close();
       void flush();
       bool reached_eof() const;
+      uint64_t io_position() const;
       void set_io_position(uint64_t i_pos);
-      int read(std::vector<uint8_t>& i_buffer);
-      int write(const std::vector<uint8_t>& i_buffer);
-      int read(uint8_t* i_buffer, int i_size);
-      int write(const uint8_t* i_buffer, int i_size);
+      int read(std::vector<std::byte>& i_buffer);
+      int write(const std::vector<std::byte>& i_buffer);
+      int read(std::byte* i_buffer, uint32_t i_size);
+      int write(const std::byte* i_buffer, uint32_t i_size);
 
    private:
       friend class mws_file;
@@ -178,7 +179,7 @@ public:
    virtual int write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0) override;
 
 private:
-   std::shared_ptr<mws_file> file;
+   std::shared_ptr<mws_file> file_v;
 };
 
 
@@ -188,6 +189,18 @@ public:
    mws_file_data_seqv();
    mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is_writable);
    void set_file_wrapper(const mws_file_wrapper& i_file);
+};
+
+
+// file read/write sequence
+class mws_fsv : public mws_file_data_seqv
+{
+public:
+   mws_fsv();
+   mws_fsv(const mws_file_wrapper& i_file, bool i_is_writable);
+
+   data_seqv_file_reader r;
+   data_seqv_file_reader w;
 };
 
 

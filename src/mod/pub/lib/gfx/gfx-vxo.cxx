@@ -119,10 +119,11 @@ void gfx_vxo::set_data(const std::vector<uint8_t>& i_vertices_buffer, const std:
    set_data(i_vertices_buffer.data(), i_vertices_buffer.size(), i_indices_buffer.data(), i_indices_buffer.size());
 }
 
-void gfx_vxo::set_data(const uint8_t* i_vx_buff, uint32_t i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32_t i_idx_buff_count)
+void gfx_vxo::set_data(const std::byte* i_vx_buff, uint32_t i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32_t i_idx_buff_count)
 {
+   const uint8_t* vx_buff = reinterpret_cast<const uint8_t*>(i_vx_buff);
    vertices_buffer.clear();
-   vertices_buffer.insert(vertices_buffer.end(), i_vx_buff, i_vx_buff + i_vx_buff_count);
+   vertices_buffer.insert(vertices_buffer.end(), vx_buff, vx_buff + i_vx_buff_count);
    indices_buffer.clear();
    indices_buffer.insert(indices_buffer.end(), i_idx_buff, i_idx_buff + i_idx_buff_count);
    idx_count = indices_buffer.size();
@@ -133,6 +134,10 @@ void gfx_vxo::set_data(const uint8_t* i_vx_buff, uint32_t i_vx_buff_count, const
       setup_tangent_basis = false;
       compute_tangent_basis();
    }
+}
+void gfx_vxo::set_data(const uint8_t* i_vx_buff, uint32_t i_vx_buff_count, const gfx_indices_type* i_idx_buff, uint32_t i_idx_buff_count)
+{
+   set_data(reinterpret_cast<const std::byte*>(i_vx_buff), i_vx_buff_count, i_idx_buff, i_idx_buff_count);
 }
 
 void gfx_vxo::update_data()
@@ -471,9 +476,9 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                      //mws_print("shape[%ld].indices: %ld\n", i, shapes[i].mesh.indices.size());
                      //assert((shapes[i].mesh.indices.size() % 3) == 0);
 
-                     for (size_t f = 0; f < shapes[i].mesh.indices.size(); f++)
+                     for (size_t k = 0; k < shapes[i].mesh.indices.size(); k++)
                      {
-                        ks_indices_data.push_back((gfx_indices_type)shapes[i].mesh.indices[f]);
+                        ks_indices_data.push_back((gfx_indices_type)shapes[i].mesh.indices[k]);
                         //mws_print("  idx[%ld] = %d\n", f, shapes[i].mesh.indices[f]);
                      }
 

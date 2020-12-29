@@ -95,11 +95,12 @@ public:
    virtual void close();
    virtual void flush();
    virtual bool reached_eof() const;
+   virtual uint64_t io_position() const;
    virtual void set_io_position(uint64_t i_pos);
-   virtual int read(std::vector<uint8_t>& i_buffer);
-   virtual int write(const std::vector<uint8_t>& i_buffer);
-   virtual int read(uint8_t* i_buffer, int i_size);
-   virtual int write(const uint8_t* i_buffer, int i_size);
+   virtual int read(std::vector<std::byte>& i_buffer);
+   virtual int write(const std::vector<std::byte>& i_buffer);
+   virtual int read(std::byte* i_buffer, uint32_t i_size);
+   virtual int write(const std::byte* i_buffer, uint32_t i_size);
    virtual void check_state() const;
 
    mws_path ppath;
@@ -116,7 +117,7 @@ protected:
    virtual void flush_impl() = 0;
    virtual void set_io_position_impl(uint64_t i_pos, int i_io_pos);
    virtual uint64_t tell_impl();
-   virtual int read_impl(uint8_t* i_buffer, int i_size);
-   virtual int write_impl(const uint8_t* i_buffer, int i_size);
+   virtual int read_impl(std::byte* i_buffer, uint32_t i_size);
+   virtual int write_impl(const std::byte* i_buffer, uint32_t i_size);
    virtual void check_file_is_writable();
 };

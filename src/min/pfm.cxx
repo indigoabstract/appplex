@@ -460,6 +460,8 @@ bool mws_file_impl::reached_eof() const
    return is_eof != 0;
 }
 
+uint64_t mws_file_impl::io_position() const { return file_pos; }
+
 void mws_file_impl::set_io_position(uint64_t i_pos)
 {
    check_state();
@@ -468,7 +470,7 @@ void mws_file_impl::set_io_position(uint64_t i_pos)
    file_pos = i_pos;
 }
 
-int mws_file_impl::read(std::vector<uint8_t>& i_buffer)
+int mws_file_impl::read(std::vector<std::byte>& i_buffer)
 {
    check_state();
 
@@ -477,14 +479,14 @@ int mws_file_impl::read(std::vector<uint8_t>& i_buffer)
    return read(i_buffer.data(), i_buffer.size());
 }
 
-int mws_file_impl::write(const std::vector<uint8_t>& i_buffer)
+int mws_file_impl::write(const std::vector<std::byte>& i_buffer)
 {
    check_state();
 
    return write(i_buffer.data(), i_buffer.size());
 }
 
-int mws_file_impl::read(uint8_t* i_buffer, int i_size)
+int mws_file_impl::read(std::byte* i_buffer, uint32_t i_size)
 {
    check_state();
 
@@ -493,7 +495,7 @@ int mws_file_impl::read(uint8_t* i_buffer, int i_size)
    return bytes_read;
 }
 
-int mws_file_impl::write(const uint8_t* i_buffer, int i_size)
+int mws_file_impl::write(const std::byte* i_buffer, uint32_t i_size)
 {
    check_state();
 
@@ -514,7 +516,7 @@ void mws_file_impl::check_state() const
 
 void mws_file_impl::set_io_position_impl(uint64_t i_pos, int i_io_pos)
 {
-   fseek(get_file_impl(), (long)i_pos, i_io_pos);
+   fseek(get_file_impl(), static_cast<long>(i_pos), i_io_pos);
 }
 
 uint64_t mws_file_impl::tell_impl()
@@ -522,12 +524,12 @@ uint64_t mws_file_impl::tell_impl()
    return ftell(get_file_impl());
 }
 
-int mws_file_impl::read_impl(uint8_t* i_buffer, int i_size)
+int mws_file_impl::read_impl(std::byte* i_buffer, uint32_t i_size)
 {
    return fread(i_buffer, 1, i_size, get_file_impl());
 }
 
-int mws_file_impl::write_impl(const uint8_t* i_buffer, int i_size)
+int mws_file_impl::write_impl(const std::byte* i_buffer, uint32_t i_size)
 {
    return fwrite(i_buffer, 1, i_size, get_file_impl());
 }
@@ -914,10 +916,7 @@ bool mws_path::is_internal() const
    return mws_str::starts_with(path, res_dir.string());
 }
 
-void mws_path::make_standard_path()
-{
-   std::replace(path.begin(), path.end(), '\\', '/');
-}
+void mws_path::make_standard_path() { std::replace(path.begin(), path.end(), '\\', '/'); }
 
 mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs)
 {
@@ -928,14 +927,8 @@ mws_path operator/(const mws_path& i_lhs, const mws_path& i_rhs)
 }
 
 
-mws_file::mws_file()
-{
-}
-
-mws_file::~mws_file()
-{
-   io.close();
-}
+mws_file::mws_file() {}
+mws_file::~mws_file() { io.close(); }
 
 mws_sp<mws_file> mws_file::get_inst(const mws_path& i_path)
 {
@@ -991,86 +984,22 @@ mws_sp<mws_file> mws_file::get_inst(mws_sp<mws_file_impl> i_impl)
    return inst;
 }
 
-bool mws_file::exists() const
-{
-   return io.impl->exists();
-}
-
-bool mws_file::is_open() const
-{
-   return io.impl->is_open();
-}
-
-bool mws_file::is_writable() const
-{
-   return io.impl->is_writable();
-}
-
-uint64_t mws_file::length()
-{
-   return io.impl->length();
-}
-
-uint64_t mws_file::creation_time() const
-{
-   return io.impl->creation_time();
-}
-
-uint64_t mws_file::last_write_time() const
-{
-   return io.impl->last_write_time();
-}
-
-const mws_path& mws_file::path() const
-{
-   return io.impl->ppath;
-}
-
-std::string mws_file::string_path() const
-{
-   return io.impl->ppath.string();
-}
-
-std::string mws_file::filename() const
-{
-   return io.impl->ppath.filename();
-}
-
-std::string mws_file::stem() const
-{
-   return io.impl->ppath.stem();
-}
-
-std::string mws_file::extension() const
-{
-   return io.impl->ppath.extension();
-}
-
-mws_path mws_file::directory() const
-{
-   return io.impl->ppath.directory();
-}
-
-bool mws_file::is_internal() const
-{
-   return io.impl->is_internal();
-}
-
-FILE* mws_file::get_file_impl() const
-{
-   return io.impl->get_file_impl();
-}
-
-mws_file::io_op::io_op()
-{
-}
-
-bool mws_file::io_op::open()
-{
-   bool file_opened = open("rb");
-
-   return file_opened;
-}
+bool mws_file::exists() const { return io.impl->exists(); }
+bool mws_file::is_open() const { return io.impl->is_open(); }
+bool mws_file::is_writable() const { return io.impl->is_writable(); }
+uint64_t mws_file::length() { return io.impl->length(); }
+uint64_t mws_file::creation_time() const { return io.impl->creation_time(); }
+uint64_t mws_file::last_write_time() const { return io.impl->last_write_time(); }
+const mws_path& mws_file::path() const { return io.impl->ppath; }
+std::string mws_file::string_path() const { return io.impl->ppath.string(); }
+std::string mws_file::filename() const { return io.impl->ppath.filename(); }
+std::string mws_file::stem() const { return io.impl->ppath.stem(); }
+std::string mws_file::extension() const { return io.impl->ppath.extension(); }
+mws_path mws_file::directory() const { return io.impl->ppath.directory(); }
+bool mws_file::is_internal() const { return io.impl->is_internal(); }
+FILE* mws_file::get_file_impl() const { return io.impl->get_file_impl(); }
+mws_file::io_op::io_op() {}
+bool mws_file::io_op::open() { return open("rb"); }
 
 bool mws_file::io_op::open(std::string i_open_mode)
 {
@@ -1089,64 +1018,34 @@ bool mws_file::io_op::open(std::string i_open_mode)
    return file_opened;
 }
 
-void mws_file::io_op::close()
-{
-   impl->close();
-}
-
-void mws_file::io_op::flush()
-{
-   impl->flush();
-}
-
-bool mws_file::io_op::reached_eof() const
-{
-   return impl->reached_eof();
-}
-
-void mws_file::io_op::set_io_position(uint64_t i_pos)
-{
-   impl->set_io_position(i_pos);
-}
-
-int mws_file::io_op::read(std::vector<uint8_t>& i_buffer)
-{
-   return impl->read(i_buffer);
-}
-
-int mws_file::io_op::write(const std::vector<uint8_t>& i_buffer)
-{
-   return impl->write(i_buffer);
-}
-
-int mws_file::io_op::read(uint8_t* i_buffer, int i_size)
-{
-   return impl->read(i_buffer, i_size);
-}
-
-int mws_file::io_op::write(const uint8_t* i_buffer, int i_size)
-{
-   return impl->write(i_buffer, i_size);
-}
+void mws_file::io_op::close() { impl->close(); }
+void mws_file::io_op::flush() { impl->flush(); }
+bool mws_file::io_op::reached_eof() const { return impl->reached_eof(); }
+uint64_t mws_file::io_op::io_position() const { return impl->io_position(); }
+void mws_file::io_op::set_io_position(uint64_t i_pos) { impl->set_io_position(i_pos); }
+int mws_file::io_op::read(std::vector<std::byte>& i_buffer) { return impl->read(i_buffer); }
+int mws_file::io_op::write(const std::vector<std::byte>& i_buffer) { return impl->write(i_buffer); }
+int mws_file::io_op::read(std::byte* i_buffer, uint32_t i_size) { return impl->read(i_buffer, i_size); }
+int mws_file::io_op::write(const std::byte* i_buffer, uint32_t i_size) { return impl->write(i_buffer, i_size); }
 
 
 // mws_file_wrapper
 mws_file_wrapper::mws_file_wrapper() {}
-mws_file_wrapper::mws_file_wrapper(std::shared_ptr<mws_file> i_file) : file(i_file) {}
-bool mws_file_wrapper::is_open() const { return file->is_open(); }
-bool mws_file_wrapper::is_writable() const { return file->is_writable(); }
-uint64_t mws_file_wrapper::length() const { return file->length(); }
-void mws_file_wrapper::close() { file->io.close(); }
-void mws_file_wrapper::set_io_position(uint64_t i_position) { file->io.set_io_position(i_position); }
+mws_file_wrapper::mws_file_wrapper(std::shared_ptr<mws_file> i_file) : file_v(i_file) {}
+bool mws_file_wrapper::is_open() const { return file_v->is_open(); }
+bool mws_file_wrapper::is_writable() const { return file_v->is_writable(); }
+uint64_t mws_file_wrapper::length() const { return file_v->length(); }
+void mws_file_wrapper::close() { file_v->io.close(); }
+void mws_file_wrapper::set_io_position(uint64_t i_position) { file_v->io.set_io_position(i_position); }
 
 int mws_file_wrapper::read_bytes(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
-   return file->io.read((uint8_t*)(i_seqv + i_offset), i_elem_count);
+   return file_v->io.read(i_seqv + i_offset, i_elem_count);
 }
 
 int mws_file_wrapper::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
-   return file->io.write((uint8_t*)(i_seqv + i_offset), i_elem_count);
+   return file_v->io.write(i_seqv + i_offset, i_elem_count);
 }
 
 
@@ -1155,12 +1054,17 @@ mws_file_data_seqv::mws_file_data_seqv(const mws_file_wrapper& i_file, bool i_is
 {
    assert(i_file.is_open());
    assert((i_is_writable) ? i_file.is_writable() : true);
-   file = i_file;
+   file_v = i_file;
    is_writable = i_is_writable;
 }
 
 mws_file_data_seqv::mws_file_data_seqv() {}
-void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { file = i_file; }
+void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { file_v = i_file; }
+
+
+// mws_fsv
+mws_fsv::mws_fsv() {}
+mws_fsv::mws_fsv(const mws_file_wrapper& i_file, bool i_is_writable) : mws_file_data_seqv(i_file, i_is_writable) {}
 
 
 // mws_rw_file_seqv

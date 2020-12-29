@@ -492,7 +492,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    }
 
    std::shared_ptr<data_seqv> ds = dsw.data_sequence();
-   const uint8_t* vertices_data = ds->data_as_byte_array();
+   const std::byte* vertices_data = ds->data_as_byte_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
 }
@@ -610,7 +610,7 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    }
 
    std::shared_ptr<data_seqv> ds = dsw.data_sequence();
-   const uint8_t* vertices_data = ds->data_as_byte_array();
+   const std::byte* vertices_data = ds->data_as_byte_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
 }
