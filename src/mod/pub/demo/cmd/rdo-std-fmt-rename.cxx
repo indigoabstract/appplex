@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "rdo-std-fmt-rename.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/conversions-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"

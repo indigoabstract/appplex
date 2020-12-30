@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "long-operation.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include <thread>
 #include <exception>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
-#include "min.hxx"
+#include "krn.hxx"
 mws_push_disable_all_warnings
 #include <glm/fwd.hpp>
 #include <string>

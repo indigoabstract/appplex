@@ -5,7 +5,7 @@
 
 #include "snd/snd.hxx"
 #include "pfm.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include <fmod/fmod.hpp>
 #include <fmod/fmod_errors.h>
 #pragma comment (lib, "fmodex_vc.lib")

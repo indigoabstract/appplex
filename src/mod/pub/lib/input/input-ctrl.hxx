@@ -1,7 +1,7 @@
 #pragma once
 
 #include "input-def.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "util/util.hxx"
 mws_push_disable_all_warnings
 #include <glm/inc.hpp>

@@ -5,7 +5,7 @@
 #include "pfm-gl.h"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "mod-list.hxx"
 #include "mws-vkb/mws-vkb.hxx"
 #include <cstdio>

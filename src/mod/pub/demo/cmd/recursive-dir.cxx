@@ -2,7 +2,7 @@
 
 #include "recursive-dir.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include <boost/algorithm/string.hpp>
 #include <string>
 

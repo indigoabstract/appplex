@@ -1,6 +1,6 @@
 #pragma once
 
-#include "min.hxx"
+#include "krn.hxx"
 #include "input/gesture-detectors.hxx"
 mws_push_disable_all_warnings
 #include <glm/inc.hpp>

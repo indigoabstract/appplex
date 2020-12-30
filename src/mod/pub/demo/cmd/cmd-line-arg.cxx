@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "cmd-line-arg.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
 #include "util/unicode/conversions-util.hxx"
 #include "rdo-call-ffmpeg.hxx"

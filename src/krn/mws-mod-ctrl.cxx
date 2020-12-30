@@ -4,7 +4,7 @@
 #include "mws-impl.hxx"
 #include "mws-mod.hxx"
 #include "input/input-ctrl.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx.hxx"
 #include "snd/snd.hxx"
 #include "mws-vkb/mws-vkb.hxx"

@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "ovg-obj.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx-color.hxx"
 #include <vg/openvg.h>
 #include <vg/vgext.h>

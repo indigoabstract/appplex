@@ -1,6 +1,6 @@
 #include "stdafx.hxx"
 
-#include "min.hxx"
+#include "krn.hxx"
 #include "mws-mod-ctrl.hxx"
 mws_push_disable_all_warnings
 #include <cstring>

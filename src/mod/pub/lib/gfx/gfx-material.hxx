@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm-def.h"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx-scene.hxx"
 #include "gfx-util.hxx"
 #include "gfx-tex.hxx"

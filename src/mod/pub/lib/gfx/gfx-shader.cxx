@@ -7,7 +7,7 @@
 #include "pfm-def.h"
 #include "gfx-util.hxx"
 #include "pfm-gl.h"
-#include "min.hxx"
+#include "krn.hxx"
 #include "pfm.hxx"
 
 

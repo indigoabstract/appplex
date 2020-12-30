@@ -3,7 +3,7 @@
 #include "venc-ffmpeg.hxx"
 #include "vdec-ffmpeg.hxx"
 #include "pfm.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx.hxx"
 #include "gfx-quad-2d.hxx"
 #include "gfx-tex.hxx"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pfm.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include <string>
 #include <vector>
 

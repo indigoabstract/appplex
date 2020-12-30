@@ -3,7 +3,7 @@
 #include "kxmd.hxx"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "pfm.hxx"
 #include <cctype>
 

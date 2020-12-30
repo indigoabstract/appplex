@@ -1,7 +1,7 @@
 #include "stdafx.hxx"
 
 #include "rdo-directory-statistics.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "util/unicode/boost-filesystem-util.hxx"
 #include "util/unicode/boost-program-options-util.hxx"
 #include "rdo-recursive-copy.hxx"

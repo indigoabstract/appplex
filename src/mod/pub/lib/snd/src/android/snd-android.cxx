@@ -5,7 +5,7 @@
 
 #include "snd.hxx"
 #include "pfm.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "main.hxx"
 #include <snd/android/opensl-stream.h>
 #include <jni.h>

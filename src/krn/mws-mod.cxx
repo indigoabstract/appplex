@@ -4,7 +4,7 @@
 #include "mws-mod.hxx"
 #include "mws-impl.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "res-ld/res-ld.hxx"
 #include "util/util.hxx"
 #include "mws/mws.hxx"

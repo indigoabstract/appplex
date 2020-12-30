@@ -14,7 +14,7 @@
 #include "pfm.hxx"
 #include "mws-impl.hxx"
 #include "pfm-gl.h"
-#include "min.hxx"
+#include "krn.hxx"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "input/input-ctrl.hxx"

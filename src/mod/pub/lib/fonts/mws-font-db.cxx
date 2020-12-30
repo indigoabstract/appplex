@@ -8,7 +8,7 @@
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
 #include "mws-font.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 
 
 #if defined MOD_VECTOR_FONTS

@@ -2,7 +2,7 @@
 
 #include "gfx-tex.hxx"
 #include "gfx.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx-util.hxx"
 #include "gfx-shader.hxx"
 #include "pfm-gl.h"

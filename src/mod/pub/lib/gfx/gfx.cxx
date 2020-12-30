@@ -10,7 +10,7 @@
 #include "gfx-vxo.hxx"
 #include "gfx-state.hxx"
 #include "res-ld/res-ld.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "pfm-gl.h"
 mws_push_disable_all_warnings
 #include <glm/inc.hpp>

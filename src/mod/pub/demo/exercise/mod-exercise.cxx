@@ -4,7 +4,7 @@
 #include "mws/mws-camera.hxx"
 #include "mws/mws-com.hxx"
 #include "input/transitions.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "demo/cmd/start-process.hxx"
 #include "demo/cmd/long-operation.hxx"
 #include <boost/date_time.hpp>

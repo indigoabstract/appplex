@@ -4,7 +4,7 @@
 #include "mws/mws.hxx"
 #include "mws-font-db.hxx"
 #include "gfx-color.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 #include "gfx.hxx"
 #include "gfx-tex.hxx"
 mws_push_disable_all_warnings

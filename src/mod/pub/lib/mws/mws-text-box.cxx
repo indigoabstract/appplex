@@ -13,7 +13,7 @@
 #include "fonts/mws-text-vxo.hxx"
 #include "gfx-quad-2d.hxx"
 #include "mws-vkb/mws-vkb.hxx"
-#include "min.hxx"
+#include "krn.hxx"
 
 
 static const std::string nl_char_size = "n";
