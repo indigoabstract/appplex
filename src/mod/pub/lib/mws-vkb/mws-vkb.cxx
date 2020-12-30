@@ -73,7 +73,7 @@ void mws_vkb_file_store_impl::save_vkb(const std::string& i_vkb_filename, const 
    mws_sp<mws_file> map_file_save = mws_file::get_inst(dir / i_vkb_filename);
 
    map_file_save->io.open("wt");
-   map_file_save->io.write((const uint8_t*)i_data.c_str(), i_data.length());
+   map_file_save->io.write(reinterpret_cast<const std::byte*>(i_data.c_str()), i_data.length());
    map_file_save->io.close();
 }
 

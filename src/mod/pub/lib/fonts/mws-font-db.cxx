@@ -118,7 +118,7 @@ public:
    std::string font_file_name;
    float font_size = 0.f;
 
-   mws_font_cache(std::string i_font_file_name, float i_font_size, texture_font_t* itex_font, mws_sp<std::vector<uint8_t> > i_font_mem_data)
+   mws_font_cache(std::string i_font_file_name, float i_font_size, texture_font_t* itex_font, mws_sp<std::vector<std::byte> > i_font_mem_data)
    {
       mws_assert(!i_font_file_name.empty());
       font_file_name = i_font_file_name;
@@ -142,7 +142,7 @@ public:
       return tex_font;
    }
 
-   mws_sp<std::vector<uint8_t>> get_font_data()
+   mws_sp<std::vector<std::byte>> get_font_data()
    {
       return font_mem_data;
    }
@@ -169,7 +169,7 @@ public:
 
 private:
    texture_font_t* tex_font = nullptr;
-   mws_sp<std::vector<uint8_t> > font_mem_data;
+   mws_sp<std::vector<std::byte> > font_mem_data;
    // the glyphs get destroyed in texture_font_delete()
    std::vector<font_glyph> glyph_vect;
    std::unordered_map<int, font_glyph> glyph_ht;
@@ -335,7 +335,8 @@ public:
             {
                if (font_file_name == mws_font_db::default_font_name)
                {
-                  res = std::make_shared<std::vector<uint8_t>>(mws_def_font_data, mws_def_font_data + mws_def_font_data_size);
+                  const std::byte* fnt_data = reinterpret_cast<const std::byte*>(mws_def_font_data);
+                  res = std::make_shared<std::vector<std::byte>>(fnt_data, fnt_data + mws_def_font_data_size);
                }
                else
                {
@@ -471,7 +472,7 @@ public:
    std::unordered_map<std::string, font_info> font_name_ht;
    // hold weak ref to font data so the same font with different sizes can use the same font data.
    // this way, when all sizes/instances of particular font are deleted, the common font data is also deleted.
-   std::unordered_map<std::string, mws_wp<std::vector<uint8_t>>> font_data_by_path_ht;
+   std::unordered_map<std::string, mws_wp<std::vector<std::byte>>> font_data_by_path_ht;
    std::vector<char> glyphs_to_load;
    std::unordered_map<uint32_t, bool> marked_for_loading;
    mws_sp<mws_font> global_font;

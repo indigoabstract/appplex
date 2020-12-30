@@ -402,7 +402,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
 
                struct membuf : std::streambuf
                {
-                  membuf(uint8_t* begin, uint8_t* end)
+                  membuf(std::byte* begin, std::byte* end)
                   {
                      this->setg((char*)begin, (char*)begin, (char*)end);
                   }
@@ -439,7 +439,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                      }
 
                      mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-                     std::vector<uint8_t> data = mod->storage.load_as_byte_vect(name);
+                     std::vector<std::byte> data = mod->storage.load_as_byte_vect(name);
                      membuf sbuf(data.data(), data.data() + data.size());
                      std::istream matIStream(&sbuf);
                      //std::ifstream matIStream(filepath.c_str());
@@ -451,7 +451,7 @@ void gfx_vxo::push_material_params(mws_sp<gfx_material> i_mat)
                };
 
                mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-               std::vector<uint8_t> data = mod->storage.load_as_byte_vect(mesh_name);
+               std::vector<std::byte> data = mod->storage.load_as_byte_vect(mesh_name);
                membuf sbuf(data.data(), data.data() + data.size());
                std::istream in(&sbuf);
                material_mem_reader mr(mesh_name);

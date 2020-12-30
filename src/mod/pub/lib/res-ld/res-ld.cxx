@@ -131,7 +131,7 @@ mws_sp<gfx_tex> res_ld::load_tex(std::string i_filename)
 mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
 {
    mws_sp<raw_img_data> rd(new raw_img_data());
-   std::vector<uint8_t> png_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_file);
+   std::vector<std::byte> png_data = mws_mod_ctrl::inst()->app_storage().load_as_byte_vect(i_file);
    {
       uint32_t error = 0;
       uint8_t* img_data = nullptr;
@@ -140,7 +140,7 @@ mws_sp<raw_img_data> res_ld::load_image(mws_sp<mws_file> i_file)
       int bpp = 0;
 
       lodepng_state_init(&state);
-      error = lodepng_decode(&img_data, &width, &height, &state, png_data.data(), png_data.size());
+      error = lodepng_decode(&img_data, &width, &height, &state, reinterpret_cast<uint8_t*>(png_data.data()), png_data.size());
 
       if (error)
       {

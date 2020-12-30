@@ -58,9 +58,9 @@ namespace mod_png_ns
          lodepng::State state; //optionally customize this one
          uint32_t error = 0;
          uint32_t width = 0, height = 0;
-         std::vector<uint8_t> img_data =get_mod()->storage.load_as_byte_vect(i_img_name);
+         std::vector<std::byte> img_data = get_mod()->storage.load_as_byte_vect(i_img_name);
          std::vector<uint8_t> png;
-         error = lodepng::decode(png, width, height, state, img_data);
+         error = lodepng::decode(png, width, height, state, reinterpret_cast<uint8_t*>(img_data.data()), img_data.size());
 
          if (error)
          {

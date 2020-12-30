@@ -54,9 +54,9 @@ class mws_app_storage
 {
 public:
    const mws_file_map& get_res_file_list() const;
-   std::vector<uint8_t> load_as_byte_vect(mws_sp<mws_file> i_file) const;
-   std::vector<uint8_t> load_as_byte_vect(const mws_path& i_file_path) const;
-   mws_sp<std::vector<uint8_t>> load_as_sp_byte_vect(const mws_path& i_file_path) const;
+   std::vector<std::byte> load_as_byte_vect(mws_sp<mws_file> i_file) const;
+   std::vector<std::byte> load_as_byte_vect(const mws_path& i_file_path) const;
+   mws_sp<std::vector<std::byte>> load_as_sp_byte_vect(const mws_path& i_file_path) const;
    std::string load_as_string(mws_sp<mws_file> i_file) const;
    std::string load_as_string(const mws_path& i_file_path) const;
    // writable/private/persistent files directory

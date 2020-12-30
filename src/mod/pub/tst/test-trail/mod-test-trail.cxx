@@ -411,24 +411,23 @@ public:
       if (file->exists())
       {
          file->io.open();
-         auto fds = std::make_shared<file_data_seqv>(file, false);
-         auto dr = std::make_shared<data_seqv_reader_sp>(fds);
-         int size = dr->read_i32();
+         mws_fsv dr(file);
+         int size = dr.r.read_i32();
 
          tube_pos.resize(size);
          tube_ts.resize(size);
 
          for (int i = 0; i < tube_pos.size(); i++)
          {
-            float x = dr->read_f32();
-            float y = dr->read_f32();
-            float z = dr->read_f32();
+            float x = dr.r.read_f32();
+            float y = dr.r.read_f32();
+            float z = dr.r.read_f32();
             tube_pos[i] = glm::vec3(x, y, z);
          }
 
          for (int i = 0; i < tube_ts.size(); i++)
          {
-            int ts = dr->read_i32();
+            int ts = dr.r.read_i32();
             tube_ts[i] = ts;
          }
       }

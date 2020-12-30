@@ -52,16 +52,16 @@ public:
       return res_files_map;
    }
 
-   std::vector<uint8_t> load_as_byte_vect(mws_sp<mws_file> i_file) const
+   std::vector<std::byte> load_as_byte_vect(mws_sp<mws_file> i_file) const
    {
-      std::vector<uint8_t> res;
+      std::vector<std::byte> res;
 
       if (i_file->io.open())
       {
          uint32_t size = static_cast<uint32_t>(i_file->length());
 
          res.resize(size);
-         i_file->io.read(reinterpret_cast<std::byte*>(res.data()), size);
+         i_file->io.read(res.data(), size);
          i_file->io.close();
       }
 
@@ -69,24 +69,24 @@ public:
       return res;
    }
 
-   std::vector<uint8_t> load_as_byte_vect(const mws_path& i_file_path) const
+   std::vector<std::byte> load_as_byte_vect(const mws_path& i_file_path) const
    {
       mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
 
       return load_as_byte_vect(fs);
    }
 
-   mws_sp<std::vector<uint8_t>> load_as_sp_byte_vect(const mws_path& i_file_path) const
+   mws_sp<std::vector<std::byte>> load_as_sp_byte_vect(const mws_path& i_file_path) const
    {
-      mws_sp<std::vector<uint8_t>> res;
+      mws_sp<std::vector<std::byte>> res;
       mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
 
       if (fs->io.open())
       {
          uint32_t size = static_cast<uint32_t>(fs->length());
 
-         res = mws_sp<std::vector<uint8_t>>(new std::vector<uint8_t>(size));
-         fs->io.read(reinterpret_cast<std::byte*>(res->data()), size);
+         res = std::make_shared<std::vector<std::byte>>(size);
+         fs->io.read(res->data(), size);
          fs->io.close();
       }
 
@@ -580,17 +580,17 @@ const mws_file_map& mws_app_storage::get_res_file_list() const
    return p->get_res_file_list();
 }
 
-std::vector<uint8_t> mws_app_storage::load_as_byte_vect(mws_sp<mws_file> i_file) const
+std::vector<std::byte> mws_app_storage::load_as_byte_vect(mws_sp<mws_file> i_file) const
 {
    return p->load_as_byte_vect(i_file);
 }
 
-std::vector<uint8_t> mws_app_storage::load_as_byte_vect(const mws_path& i_file_path) const
+std::vector<std::byte> mws_app_storage::load_as_byte_vect(const mws_path& i_file_path) const
 {
    return p->load_as_byte_vect(i_file_path);
 }
 
-mws_sp<std::vector<uint8_t>> mws_app_storage::load_as_sp_byte_vect(const mws_path& i_file_path) const
+mws_sp<std::vector<std::byte>> mws_app_storage::load_as_sp_byte_vect(const mws_path& i_file_path) const
 {
    return p->load_as_sp_byte_vect(i_file_path);
 }
