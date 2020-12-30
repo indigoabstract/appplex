@@ -178,7 +178,7 @@ mod-dependencies
 	freetype-gl[ req[ freetype ] ],
 	mws [ req[ gfx, fonts ] ],
 	obj-loader [ req[ gfx ] ],
-	opengl [ pths[ "src/min/pfm-gl.h", "src/lib/std/inc/GL" ], req[ lib-opengl ] ],
+	opengl [ pths[ "src/krn/pfm-gl.h", "src/lib/std/inc/GL" ], req[ lib-opengl ] ],
 	png [ req[ zlib ] ],
 	res-loader [ req[ gfx, png ] ],
 	vector-fonts[ req[ freetype-gl ] ],
@@ -192,7 +192,7 @@ paths
 	@@[ mod dir location, relative to 'appplex' dir ],
 	proj-rel-mod-path[ "src/mod" ],
 	@@[ appplex conf dir location, relative to 'appplex' dir ],
-	proj-rel-appplex-conf-path[ "src/min" ],
+	proj-rel-appplex-conf-path[ "src/krn" ],
 
 	appplex-conf-hxx-name[ "appplex-conf.hxx" ],
 	appplex-conf-cxx-name[ "appplex-conf.cxx" ],
