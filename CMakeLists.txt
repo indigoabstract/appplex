@@ -24,7 +24,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/krn"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
@@ -43,7 +43,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	find_library(FREETYPE_LIB freetype.lib)
 	
 	link_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/msvc/lib")
-	include("${CMAKE_CURRENT_LIST_DIR}/src/min/windows/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/krn/windows/CMakeLists.txt")
 	
 	if(GLEW_LIB)
 	else()
@@ -63,7 +63,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/krn"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
@@ -79,7 +79,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	#find_library(FREETYPE_LIB freetype.lib)
 	
 	link_directories("${CMAKE_CURRENT_LIST_DIR}/pfm/linux/lib")
-	include("${CMAKE_CURRENT_LIST_DIR}/src/min/linux/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/krn/linux/CMakeLists.txt")
 		
 elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
@@ -121,7 +121,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/krn"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
@@ -141,7 +141,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		message("Libraries: " ${ZLIB_LIB} " and " ${PNG_LIB} "and " ${FREETYPE_LIB})
 	endif()
 	
-	include("${CMAKE_CURRENT_LIST_DIR}/src/min/emscripten/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/krn/emscripten/CMakeLists.txt")
 	
 elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 
@@ -153,7 +153,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/krn"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
@@ -162,7 +162,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
-	include("${CMAKE_CURRENT_LIST_DIR}/src/min/android/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/src/krn/android/CMakeLists.txt")
 	
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jniLibs/armeabi-v7a")
 	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_CURRENT_LIST_DIR}/pfm/android/default/app/src/main/jniLibs/arm64-v8a")
@@ -218,7 +218,7 @@ else() # Assume iOS
 	# common include directories
 	include_directories(
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${CMAKE_CURRENT_LIST_DIR}/src/min"
+	"${CMAKE_CURRENT_LIST_DIR}/src/krn"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/prv"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib"
