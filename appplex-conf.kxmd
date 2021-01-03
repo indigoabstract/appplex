@@ -10,8 +10,8 @@ default
 	],
 	start
 	[
-		mod-list[ house ], exclusive [ true ], launch-mod [ true ],
-		excluded-mod-list[ cmd, exercise, kappaxx ],
+		mod-list[ kxmdb ], exclusive [ true ], launch-mod [ true ],
+		excluded-mod-list[ cmd, demo-fx, exercise, kappaxx ],
 	],
 ],
 
@@ -166,6 +166,7 @@ mod
 	mouse-input[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	font-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	storage-dir-tst[ uses[ gfx, fonts, freetype, freetype-gl, vector-fonts ] ],
+	data-seqv-tst[ uses[] ],
 ],
 
 mod-dependencies
