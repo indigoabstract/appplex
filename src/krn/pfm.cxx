@@ -1050,24 +1050,6 @@ int mws_file_wrapper::write_bytes(const std::byte* i_seqv, uint32_t i_elem_count
 }
 
 
-// mws_file_data_seqv
-mws_file_data_seqv::mws_file_data_seqv(const mws_file_wrapper& i_file) { set_file_wrapper(i_file); }
-mws_file_data_seqv::mws_file_data_seqv() {}
-void mws_file_data_seqv::set_file_wrapper(const mws_file_wrapper& i_file) { assert(i_file.is_open()); file_v = i_file; is_writable = file_v.is_writable(); }
-
-
-// mws_fsv
-mws_fsv::mws_fsv() {}
-mws_fsv::mws_fsv(const mws_file_wrapper& i_file) : mws_file_data_seqv(i_file), r(*this), w(*this) {}
-
-void mws_fsv::set_file_wrapper(const mws_file_wrapper& i_file)
-{
-   file_v = i_file;
-   r.set_data_sequence(*this);
-   w.set_data_sequence(*this);
-}
-
-
 // mws_rw_file_seqv
 std::shared_ptr<mws_rw_file_seqv> mws_rw_file_seqv::nwi(const mws_file_wrapper& i_file, bool i_is_writable)
 {
@@ -1076,8 +1058,6 @@ std::shared_ptr<mws_rw_file_seqv> mws_rw_file_seqv::nwi(const mws_file_wrapper& 
    if (i_is_writable) { inst->w.set_data_sequence(inst); }
    return inst;
 }
-
-mws_rw_file_seqv::mws_rw_file_seqv(const mws_file_wrapper& i_file) : mws_file_data_seqv(i_file) {}
 
 
 const std::string& mws_app::res_idx_name()
