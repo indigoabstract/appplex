@@ -61,6 +61,31 @@ namespace
          dsr_sp.data_sequence()->rewind(); // equivalent to sequence_sp->rewind();
          float magic_number = dsr_sp.read_f32();
       }
+      {
+         const uint32_t nr = 0x12345678;
+         rw_seqv seqv;
+         seqv.w.write_u32(nr);
+         seqv.w.write(nr);
+         seqv.rewind();
+         uint32_t t0 = seqv.r.read_u32();
+         uint32_t t1 = seqv.r.read<uint32_t>();
+         seqv.rewind();
+         uint32_t t2 = seqv.r.read<uint32_t>();
+         uint32_t t3 = seqv.r.read_u32();
+         assert(t0 == nr);
+         assert(t0 == t1);
+         assert(t0 == t2);
+         assert(t0 == t3);
+         seqv.rewind();
+         seqv.w.write_u32(nr);
+         seqv.rewind();
+         float f0 = seqv.r.read_f32();
+         seqv.rewind();
+         seqv.w.write_f32(f0);
+         seqv.rewind();
+         uint32_t t4 = seqv.r.read_u32();
+         assert(t0 == t4);
+      }
 
       mws_println_all_builds("all tests passed");
    }
