@@ -37,6 +37,8 @@ res-idx.str
 /nbproject
 /src/krn/appplex-conf.hxx
 /src/krn/appplex-conf.cxx
+/src/krn/new-appplex-conf.hxx
+/src/krn/new-appplex-conf.cxx
 /src/mod/prv
 
 /src/mod/pub/demo/CMakeLists.txt

@@ -46,7 +46,7 @@ mod
 			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn
 		]
 	],
-	kxmdb[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, util, vector-fonts, vrn ] ],
+	kxmdb[ uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, png, res-ld, util, vector-fonts, vrn ] ],
 	mws-lisp
 	[
 		uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
