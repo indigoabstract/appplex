@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ kxmdb ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ ws-client-server-async ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, demo-fx, exercise, kappaxx ],
 	],
 ],
@@ -55,6 +55,7 @@ mod
 	robobo1221-bloom[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	songbook[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ], ],
 	house[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts, vrn ] ],
+	cmd-exe[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, vector-fonts, vrn ] ],
 
 	@@[ npw ],
 	
@@ -78,7 +79,7 @@ mod
 	ws-server-sync[ uses[ fmt ] ],
 	ws-client-server-async
 	[
-		uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
+		uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
 	],
 	
 	@@[ public mods ],

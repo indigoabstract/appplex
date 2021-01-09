@@ -188,7 +188,7 @@ void snd::update() { err_na(); }
 #include "tiny-obj-loader/tiny_obj_loader.hxx"
 namespace tinyobj
 {
-   std::string LoadObj(std::vector<shape_t>& shapes, std::istream& inStream, MaterialReader& readMatFn) { return ""; }
-   std::string LoadMtl(std::map<std::string, material_t>& material_map, std::istream& inStream) { return ""; }
+   std::string LoadObj(std::vector<shape_t>&, std::istream&, MaterialReader&) { return ""; }
+   std::string LoadMtl(std::map<std::string, material_t>&, std::istream&) { return ""; }
 }
 #endif
