@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ mws-lisp ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ network-service-discovery ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, demo-fx, exercise, kappaxx ],
 	],
 ],
@@ -78,6 +78,10 @@ mod
 	ws-client-sync[ uses[ fmt ] ],
 	ws-server-sync[ uses[ fmt ] ],
 	ws-client-server-async
+	[
+		uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
+	],
+	network-service-discovery
 	[
 		uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
 	],
