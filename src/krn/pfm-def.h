@@ -13,18 +13,12 @@ template <typename T> using mws_sp = std::shared_ptr<T>;
 template <typename T> using mws_wp = std::weak_ptr<T>;
 template <typename T> using mws_up = std::unique_ptr<T>;
 #else
+#include <stdint.h>
+
 #if !defined bool && !defined false
 typedef unsigned int bool;
 typedef enum { false = 0, true = 1 }bool_type;
 #endif
-typedef char int8_t;
-typedef unsigned char uint8_t;
-typedef short int16_t;
-typedef unsigned short uint16_t;
-typedef int int32_t;
-typedef unsigned int uint32_t;
-typedef long long int64_t;
-typedef unsigned long long uint64_t;
 typedef float float32;
 typedef double float64;
 #endif

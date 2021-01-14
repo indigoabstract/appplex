@@ -6,7 +6,7 @@
 #include "krn.hxx"
 #include "mws-mod.hxx"
 #include "mws-mod-ctrl.hxx"
-#include "data-sequence.hxx"
+#include "data-seqv.hxx"
 #include "gfx.hxx"
 #include "java-callbacks.h"
 #include "jni-helper.hxx"
@@ -266,7 +266,7 @@ public:
       return 0;
    }
 
-   virtual int read_impl(uint8_t* i_buffer, int i_size) override
+   virtual int read_impl(std::byte* i_buffer, uint32_t i_size) override
    {
       if (file)
       {
@@ -276,7 +276,7 @@ public:
       return AAsset_read(asset_file, i_buffer, i_size);
    }
 
-   virtual int write_impl(const uint8_t* i_buffer, int i_size) override
+   virtual int write_impl(const std::byte* i_buffer, uint32_t i_size) override
    {
       if (file)
       {
@@ -433,7 +433,7 @@ const mws_path& android_main::tmp_dir() const
 
 void android_main::reconfigure_directories(mws_sp<mws_mod> i_crt_mod)
 {
-   std::string mod_dir = i_crt_mod->get_name() + "/";
+   std::string mod_dir = i_crt_mod->name() + "/";
 
    mws_assert(i_crt_mod != nullptr);
    prv_path = mws_path(global_prv_path) / mod_dir;
@@ -605,25 +605,25 @@ extern "C"
 
    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)
    {
-      uint8_t* byte_buff_addr = (uint8_t*)i_env->GetDirectBufferAddress(i_byte_buff);
+       std::byte* byte_buff_addr = reinterpret_cast<std::byte*>(i_env->GetDirectBufferAddress(i_byte_buff));
       // type + count + 8 * (id, x, y, is_changed)
       const int touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
-      mws_ro_mem_seq ro_mem(byte_buff_addr, touch_data_size);
-      data_seq_rdr_ptr dsr(&ro_mem);
+      ro_mem_seqv ro_mem(byte_buff_addr, touch_data_size);
+      ro_mem_reader_ref dsr(ro_mem);
       auto pfm_te = mws_ptr_evt_base::nwi();
 
-      pfm_te->type = static_cast<mws_ptr_evt_base::e_touch_type>(dsr.read_int32());
-      pfm_te->touch_count = dsr.read_uint32();
+      pfm_te->type = static_cast<mws_ptr_evt_base::e_touch_type>(dsr.read_u32());
+      pfm_te->touch_count = dsr.read_u32();
       pfm_te->time = mws::time::get_time_millis();
 
       for (uint32_t k = 0; k < pfm_te->touch_count; k++)
       {
          auto& te = pfm_te->points[k];
 
-         te.identifier = dsr.read_uint32();
-         te.x = dsr.read_fltp32();
-         te.y = dsr.read_fltp32();
-         te.is_changed = static_cast<bool>(dsr.read_uint32());
+         te.identifier = dsr.read_u32();
+         te.x = dsr.read_f32();
+         te.y = dsr.read_f32();
+         te.is_changed = static_cast<bool>(dsr.read_u32());
       }
 
       mws_mod_ctrl::inst()->pointer_action(pfm_te);

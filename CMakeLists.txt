@@ -160,6 +160,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Android")
 	"${CMAKE_CURRENT_LIST_DIR}/src/mod/pub/lib/gfx"
 	)
 	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/mod/prv/kxmdb/lib")
+	include_directories("${CMAKE_CURRENT_LIST_DIR}/src/krn/android")
 	
 	include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 	include("${CMAKE_CURRENT_LIST_DIR}/src/krn/android/CMakeLists.txt")
