@@ -77,7 +77,7 @@ mod
 	
 	ws-client-sync[ uses[ fmt ] ],
 	ws-server-sync[ uses[ fmt ] ],
-	ws-client-server-async
+	websocket-msg
 	[
 		uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
 	],
