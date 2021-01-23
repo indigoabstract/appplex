@@ -9,32 +9,64 @@ mws_push_disable_all_warnings
 mws_pop_disable_all_warnings
 
 
-template<> std::byte mws_to(const std::string& i_input) { return static_cast<std::byte>(std::stoi(i_input)); }
-template<> char mws_to(const std::string& i_input) { return i_input[0]; }
-template<> int8_t mws_to(const std::string& i_input) { return static_cast<int8_t>(std::stoi(i_input)); }
-template<> uint8_t mws_to(const std::string& i_input) { return static_cast<uint8_t>(std::stoi(i_input)); }
-template<> int16_t mws_to(const std::string& i_input) { return static_cast<int16_t>(std::stoi(i_input)); }
-template<> uint16_t mws_to(const std::string& i_input) { return static_cast<uint16_t>(std::stoi(i_input)); }
-template<> int32_t mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> uint32_t mws_to(const std::string& i_input) { return std::stoi(i_input); }
-template<> int64_t mws_to(const std::string& i_input) { return std::stoll(i_input); }
-template<> uint64_t mws_to(const std::string& i_input) { return std::stoull(i_input); }
-template<> float32 mws_to(const std::string& i_input) { return std::stof(i_input); }
-template<> float64 mws_to(const std::string& i_input) { return std::stod(i_input); }
-template<> bool mws_to(const std::string& i_input)
+static bool str_to_i64(const std::string& i_input, int64_t& i_result)
+{
+   char* end = nullptr;
+   const char* in = i_input.c_str();
+   i_result = strtoll(in, &end, 10);
+   return (end != in);
+}
+
+static bool str_to_u64(const std::string& i_input, uint64_t& i_result)
+{
+   char* end = nullptr;
+   const char* in = i_input.c_str();
+   i_result = strtoull(in, &end, 10);
+   return (end != in);
+}
+
+static bool str_to_f32(const std::string& i_input, float32& i_result)
+{
+   char* end = nullptr;
+   const char* in = i_input.c_str();
+   i_result = strtof(in, &end);
+   return (end != in);
+}
+
+static bool str_to_f64(const std::string& i_input, float64& i_result)
+{
+   char* end = nullptr;
+   const char* in = i_input.c_str();
+   i_result = strtod(in, &end);
+   return (end != in);
+}
+
+template<> bool mws_to(const std::string& i_input, bool& i_result)
 {
    if (i_input == "0" || i_input == "false")
    {
-      return false;
+      i_result = false; return true;
    }
    else if (i_input == "1" || i_input == "true")
    {
-      return true;
+      i_result = true; return true;
    }
 
-   mws_throw mws_exception("mws_to<bool> failed");
    return false;
 }
+
+template<> bool mws_to(const std::string& i_in, std::byte& i_res) { int64_t v = 0; bool r = str_to_i64(i_in, v); i_res = static_cast<std::byte>(v); return r; }
+template<> bool mws_to(const std::string& i_in, char& i_res) { mws_assert(!i_in.empty()); i_res = i_in[0]; return true; }
+template<> bool mws_to(const std::string& i_in, int8_t& i_res) { int64_t v = 0; bool r = str_to_i64(i_in, v); i_res = static_cast<int8_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, uint8_t& i_res) { uint64_t v = 0; bool r = str_to_u64(i_in, v); i_res = static_cast<uint8_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, int16_t& i_res) { int64_t v = 0; bool r = str_to_i64(i_in, v); i_res = static_cast<int16_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, uint16_t& i_res) { uint64_t v = 0; bool r = str_to_u64(i_in, v); i_res = static_cast<uint16_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, int32_t& i_res) { int64_t v = 0; bool r = str_to_i64(i_in, v); i_res = static_cast<int32_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, uint32_t& i_res) { uint64_t v = 0; bool r = str_to_u64(i_in, v); i_res = static_cast<uint32_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, int64_t& i_res) { int64_t v = 0; bool r = str_to_i64(i_in, v); i_res = static_cast<int64_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, uint64_t& i_res) { uint64_t v = 0; bool r = str_to_u64(i_in, v); i_res = static_cast<uint64_t>(v); return r; }
+template<> bool mws_to(const std::string& i_in, float32& i_res) { bool r = str_to_f32(i_in, i_res); return r; }
+template<> bool mws_to(const std::string& i_in, float64& i_res) { bool r = str_to_f64(i_in, i_res); return r; }
 
 
 std::wstring mws_str::to_wstr(const std::string& i_input)

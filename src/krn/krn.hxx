@@ -41,38 +41,21 @@ inline std::string mws_to_str(const uint64_t& i_input) { return std::to_string(i
 inline std::string mws_to_str(const float32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const float64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
-template<typename T> T mws_to(const std::string& i_input) { mws_assert(false); return T(); }
-template<> bool mws_to(const std::string& i_input);
-template<> std::byte mws_to(const std::string& i_input);
-template<> char mws_to(const std::string& i_input);
-template<> int8_t mws_to(const std::string& i_input);
-template<> uint8_t mws_to(const std::string& i_input);
-template<> int16_t mws_to(const std::string& i_input);
-template<> uint16_t mws_to(const std::string& i_input);
-template<> int32_t mws_to(const std::string& i_input);
-template<> uint32_t mws_to(const std::string& i_input);
-template<> int64_t mws_to(const std::string& i_input);
-template<> uint64_t mws_to(const std::string& i_input);
-template<> float32 mws_to(const std::string& i_input);
-template<> float64 mws_to(const std::string& i_input);
-
-template<typename T> bool mws_safe_to(const std::string& i_input, T& i_val)
-{
-   bool result = true;
-
-   mws_try
-   {
-      i_val = mws_to<T>(i_input);
-   }
-      mws_catch(...)
-   {
-#ifdef MWS_USES_EXCEPTIONS
-      result = false;
-#endif
-   }
-
-   return result;
-}
+/** parses input string(first param) as a number and stores the result in the second param. returns false on error */
+template<typename T> bool mws_to(const std::string& /*i_input*/, T& /*i_result*/) { mws_assert(false); return false; }
+template<> bool mws_to(const std::string& i_input, bool& i_result);
+template<> bool mws_to(const std::string& i_input, std::byte& i_result);
+template<> bool mws_to(const std::string& i_input, char& i_result);
+template<> bool mws_to(const std::string& i_input, int8_t& i_result);
+template<> bool mws_to(const std::string& i_input, uint8_t& i_result);
+template<> bool mws_to(const std::string& i_input, int16_t& i_result);
+template<> bool mws_to(const std::string& i_input, uint16_t& i_result);
+template<> bool mws_to(const std::string& i_input, int32_t& i_result);
+template<> bool mws_to(const std::string& i_input, uint32_t& i_result);
+template<> bool mws_to(const std::string& i_input, int64_t& i_result);
+template<> bool mws_to(const std::string& i_input, uint64_t& i_result);
+template<> bool mws_to(const std::string& i_input, float32& i_result);
+template<> bool mws_to(const std::string& i_input, float64& i_result);
 
 
 // only ASCII and 16-bit windows wstrings supported. don't use with multibyte encodings, like utf-8

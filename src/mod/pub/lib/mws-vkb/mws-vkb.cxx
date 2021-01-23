@@ -133,9 +133,9 @@ vkb_info mws_vkb_impl::get_vkb_info(const std::string& i_filename)
       size_t nr_2_end_idx = i_filename.find(VKB_EXT, nr_1_start_idx);
       std::string nr_2 = i_filename.substr(nr_2_start_idx, nr_2_end_idx - nr_2_start_idx);
 
-      vkb_i.width = mws_to<uint32_t>(nr_0);
-      vkb_i.height = mws_to<uint32_t>(nr_1);
-      vkb_i.index = mws_to<uint32_t>(nr_2);
+      mws_to<uint32_t>(nr_0, vkb_i.width);
+      mws_to<uint32_t>(nr_1, vkb_i.height);
+      mws_to<uint32_t>(nr_2, vkb_i.index);
       vkb_i.aspect_ratio = float(vkb_i.width) / vkb_i.height;
    }
 
@@ -556,7 +556,8 @@ void mws_vkb_impl::load_map(std::string i_filename)
    // size
    {
       kv_ref size = main["size"];
-      diag_original_dim = glm::vec2(mws_to<float>(size[0].key()), mws_to<float>(size[1].key()));
+      mws_to(size[0].key(), diag_original_dim.x);
+      mws_to(size[1].key(), diag_original_dim.y);
       resize_fact = glm::vec2(screen_dim) / diag_original_dim;
    }
    // pages
@@ -597,8 +598,9 @@ void mws_vkb_impl::load_map(std::string i_filename)
                for (uint32_t k = 0; k < size; k++)
                {
                   const std::string& key = keys_mod_none[k].key();
-                  uint32_t key_id = mws_to<uint32_t>(key);
+                  uint32_t key_id = 0;
 
+                  mws_to<uint32_t>(key, key_id);
                   invalid_key_check(key_id, i_filename);
                   key_mod_vect[(uint32_t)key_mod_types::mod_none][k] = mws_key_types(key_id);
                }
@@ -609,8 +611,9 @@ void mws_vkb_impl::load_map(std::string i_filename)
                   for (uint32_t k = 0; k < size; k++)
                   {
                      const std::string& key = keys_mod_alt[k].key();
-                     uint32_t key_id = mws_to<uint32_t>(key);
+                     uint32_t key_id = 0;
 
+                     mws_to<uint32_t>(key, key_id);
                      invalid_key_check(key_id, i_filename);
                      key_mod_vect[(uint32_t)key_mod_types::mod_alt][k] = mws_key_types(key_id);
                   }
@@ -622,8 +625,9 @@ void mws_vkb_impl::load_map(std::string i_filename)
                   for (uint32_t k = 0; k < size; k++)
                   {
                      const std::string& key = keys_mod_shift[k].key();
-                     uint32_t key_id = mws_to<uint32_t>(key);
+                     uint32_t key_id = 0;
 
+                     mws_to<uint32_t>(key, key_id);
                      invalid_key_check(key_id, i_filename);
                      key_mod_vect[(uint32_t)key_mod_types::mod_shift][k] = mws_key_types(key_id);
                   }
@@ -639,9 +643,10 @@ void mws_vkb_impl::load_map(std::string i_filename)
 
          for (uint32_t k = 0; k < point_count; k++)
          {
-            float pos_0 = mws_to<float>(key_coord[2 * k + 0].key());
-            float pos_1 = mws_to<float>(key_coord[2 * k + 1].key());
-            glm::vec2 dim = glm::vec2(pos_0, pos_1) * resize_fact;
+            glm::vec2 dim;
+            mws_to(key_coord[2 * k + 0].key(), dim.x);
+            mws_to(key_coord[2 * k + 1].key(), dim.y);
+            dim *= resize_fact;
 
             key_coord_pos.push_back(dim);
          }
