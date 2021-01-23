@@ -4,6 +4,7 @@
 #include "data-seqv.hxx"
 #include "input/input-def.hxx"
 #include <cstdio>
+#include <functional>
 #include <vector>
 #include <unordered_map>
 #include <utility>
@@ -48,6 +49,8 @@ class mws_file;
 class mws_path;
 class mws_file_impl;
 using mws_file_map = std::unordered_map<std::string, mws_sp<mws_file>>;
+/** logs a message to console */
+using mws_log_msg_function = std::function<void(const std::string& i_msg)>;
 
 
 // represents either an internal path(inside the app's bundled resources) or an external path(outside of the bundled resources)
