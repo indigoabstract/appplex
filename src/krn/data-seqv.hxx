@@ -280,17 +280,17 @@ protected:
 
 
 // ro memory sequence embedded instance version
-class ro_mem_reader : public data_seqv_reader_base<ro_mem_seqv, ref_adapter<data_seqv>>
+class data_seqv_ro_mem_reader : public data_seqv_reader_base<ro_mem_seqv, ref_adapter<data_seqv>>
 {
 public:
-   ro_mem_reader(ro_mem_seqv i_seqv) : data_seqv_reader_base(i_seqv) {}
+   data_seqv_ro_mem_reader(ro_mem_seqv i_seqv) : data_seqv_reader_base(i_seqv) {}
 };
 
 // ro memory sequence reference version
-class ro_mem_reader_ref : public data_seqv_reader_base<ro_mem_seqv&, ref_adapter<data_seqv>>
+class data_seqv_ro_mem_reader_ref : public data_seqv_reader_base<ro_mem_seqv&, ref_adapter<data_seqv>>
 {
 public:
-   ro_mem_reader_ref(ro_mem_seqv& i_seqv) : data_seqv_reader_base(i_seqv) {}
+   data_seqv_ro_mem_reader_ref(ro_mem_seqv& i_seqv) : data_seqv_reader_base(i_seqv) {}
 };
 
 

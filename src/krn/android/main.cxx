@@ -605,11 +605,10 @@ extern "C"
 
    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)
    {
-       std::byte* byte_buff_addr = reinterpret_cast<std::byte*>(i_env->GetDirectBufferAddress(i_byte_buff));
+      const std::byte* byte_buff_addr = reinterpret_cast<std::byte*>(i_env->GetDirectBufferAddress(i_byte_buff));
       // type + count + 8 * (id, x, y, is_changed)
-      const int touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
-      ro_mem_seqv ro_mem(byte_buff_addr, touch_data_size);
-      ro_mem_reader_ref dsr(ro_mem);
+      const uint32_t touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
+      data_seqv_ro_mem_reader dsr(ro_mem_seqv(byte_buff_addr, touch_data_size));
       auto pfm_te = mws_ptr_evt_base::nwi();
 
       pfm_te->type = static_cast<mws_ptr_evt_base::e_touch_type>(dsr.read_u32());
