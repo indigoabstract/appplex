@@ -276,6 +276,14 @@ public:
    };
 
 
+   struct net
+   {
+      /** see WifiManager.MulticastLock in android */
+      static bool is_wifi_multicast_lock_enabled();
+      static void set_wifi_multicast_lock_enabled(bool i_enabled);
+   };
+
+
    struct screen
    {
       static bool is_gfx_available();

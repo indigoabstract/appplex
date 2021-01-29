@@ -28,18 +28,27 @@ class android_main : public mws_app
 public:
    android_main();
    virtual ~android_main();
+
+   // update
    void init();
    void start();
    void run();
 
+   // input
    virtual mws_key_types translate_key(int i_pfm_key_id) const override;
    virtual mws_key_types apply_key_modifiers_impl(mws_key_types i_key_id) const override;
+
+   // net
+   virtual bool is_wifi_multicast_lock_enabled() const override;
+   virtual void set_wifi_multicast_lock_enabled(bool i_enabled) override;
+
    // screen
    virtual bool is_full_screen_mode() const override;
    virtual void set_full_screen_mode(bool i_enabled) const override;
    virtual float get_screen_scale() const override;
    virtual float get_screen_brightness() const override;
    virtual void set_screen_brightness(float i_brightness) const override;
+
    // screen metrix
    virtual std::pair<uint32_t, uint32_t> get_screen_res_px() const override;
    virtual float get_avg_screen_dpi() const override;
@@ -48,12 +57,14 @@ public:
    virtual float get_avg_screen_dpcm() const override;
    virtual std::pair<float, float> get_screen_dpcm() const override;
    virtual std::pair<float, float> get_screen_dim_cm() const override;
+
    // log
    virtual void write_text(const char* i_text) const override;
    virtual void write_text_nl(const char* i_text) const override;
    virtual void write_text(const wchar_t* i_text) const override;
    virtual void write_text_nl(const wchar_t* i_text) const override;
    virtual void write_text_v(const char* i_format, ...) const override;
+
    // filesystem
    virtual mws_sp<mws_file_impl> new_mws_file_impl(const mws_path& i_path, bool i_is_internal = false) const override;
    //virtual mws_file_map list_internal_directory() const override;
@@ -63,6 +74,7 @@ public:
    virtual void reconfigure_directories(mws_sp<mws_mod> i_crt_mod) override;
    virtual std::string get_timezone_id() const override;
 
+   // sound
    void snd_init(int i_sample_rate, int i_buffer_size);
    void snd_close();
 
@@ -311,14 +323,26 @@ mws_key_types android_main::translate_key(int i_pfm_key_id) const
 
 mws_key_types android_main::apply_key_modifiers_impl(mws_key_types i_key_id) const { return i_key_id; }
 
-bool android_main::is_full_screen_mode() const
+bool android_main::is_wifi_multicast_lock_enabled() const
 {
-   return true;
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_brightness", "()Z");
+    jboolean enabled = env->CallStaticBooleanMethod(clazz, mid);
+
+    return (bool)enabled;
 }
 
-void android_main::set_full_screen_mode(bool ienabled) const
+void android_main::set_wifi_multicast_lock_enabled(bool i_enabled)
 {
+    JNIEnv* env = JniHelper::getEnv();
+    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+    jmethodID mid = env->GetStaticMethodID(clazz, "set_wifi_multicast_lock_enabled", "(Z)V");
+    env->CallStaticVoidMethod(clazz, mid, (jboolean)i_enabled);
 }
+
+bool android_main::is_full_screen_mode() const { return true; }
+void android_main::set_full_screen_mode(bool ienabled) const {}
 
 float android_main::get_screen_scale() const
 {

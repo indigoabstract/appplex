@@ -21,6 +21,10 @@ public:
    // return true to exit the app
    virtual bool back_evt() const;
 
+   // net
+   virtual bool is_wifi_multicast_lock_enabled() const;
+   virtual void set_wifi_multicast_lock_enabled(bool i_enabled);
+
    // screen
    virtual bool is_full_screen_mode() const = 0;
    virtual void set_full_screen_mode(bool i_enabled) const = 0;

@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -476,6 +477,35 @@ public class main extends Activity
 		}
 	}
 
+	// net
+    public static boolean is_wifi_multicast_lock_enabled()
+    {
+        return (multicast_lock != null) && multicast_lock.isHeld();
+    }
+
+    public static void set_wifi_multicast_lock_enabled(boolean i_enabled)
+    {
+        if(i_enabled)
+        {
+            if(multicast_lock == null)
+            {
+                Context ctx = inst();
+                WifiManager wifi = (WifiManager) ctx.getSystemService(WIFI_SERVICE);
+
+                multicast_lock = wifi.createMulticastLock("multicast_lock");
+                multicast_lock.setReferenceCounted(false);
+            }
+
+            if(!multicast_lock.isHeld()) { multicast_lock.acquire(); }
+        }
+        else if(multicast_lock != null)
+        {
+            multicast_lock.release();
+            multicast_lock = null;
+        }
+    }
+
+    // screen
 	public static float get_screen_brightness()
     {
         WindowManager.LayoutParams layoutParams = instance.getWindow().getAttributes();
@@ -582,6 +612,7 @@ public class main extends Activity
 	private static native void native_snd_close();
 	private native void native_set_prv_tmp_dirs(String i_prv_dir, String i_tmp_dir);
 
-    private DisplayMetrics display_metrics;
+    private static WifiManager.MulticastLock multicast_lock = null;
+    private static DisplayMetrics display_metrics = null;
 	private static main instance = null;
 }

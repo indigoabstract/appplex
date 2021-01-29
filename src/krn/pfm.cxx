@@ -24,6 +24,12 @@
 mws_sp<mws_app> mws_app_inst();
 
 
+namespace
+{
+   bool is_wifi_multicast_lock_enabled_v = false;
+}
+
+
 // platform specific code
 #if defined MWS_POSIX_API
 
@@ -1101,6 +1107,9 @@ bool mws_app::back_evt() const
    return mws_mod_ctrl::inst()->back_evt();
 }
 
+bool mws_app::is_wifi_multicast_lock_enabled() const { return is_wifi_multicast_lock_enabled_v; }
+void mws_app::set_wifi_multicast_lock_enabled(bool i_enabled) { is_wifi_multicast_lock_enabled_v = i_enabled; }
+
 float mws_app::get_screen_scale() const { return 1.f; }
 float mws_app::get_screen_brightness() const { return 1.f; }
 void mws_app::set_screen_brightness(float i_brightness) const {}
@@ -1237,6 +1246,11 @@ void mws::args::set_unicode_args(int i_argument_count, unicode_char** i_argument
       mws_wstr_arg_vector.push_back(i_argument_vector[k]);
    }
 }
+
+
+// net
+bool mws::net::is_wifi_multicast_lock_enabled() { return mws_app_inst()->is_wifi_multicast_lock_enabled(); }
+void mws::net::set_wifi_multicast_lock_enabled(bool i_enabled) { mws_app_inst()->set_wifi_multicast_lock_enabled(i_enabled); }
 
 
 // screen
