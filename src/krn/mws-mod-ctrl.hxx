@@ -1,6 +1,8 @@
 #pragma once
 
 #include "pfm.hxx"
+#include "krn.hxx"
+#include <functional>
 
 
 class mws_mod;
@@ -39,12 +41,16 @@ public:
    static bool is_gfx_available();
    static uint32_t get_screen_width();
    static uint32_t get_screen_height();
+   void run_on_next_frame_start(const std::function<void()>& i_op);
 
 private:
+   using operation_queue_type = std::vector<std::function<void()>>;
    mws_mod_ctrl();
-
    void set_current_mod(mws_sp<mws_mod> i_mod);
    void load_current_mod();
+
    mws_sp<mws_mod_list> ul;
    mws_wp<mws_mod> crt_mod;
+   operation_queue_type on_frame_begin_q0, on_frame_begin_q1;
+   mws_atomic_ptr_swap<operation_queue_type> on_frame_begin_q_ptr = mws_atomic_ptr_swap<operation_queue_type>(&on_frame_begin_q0, &on_frame_begin_q1);
 };

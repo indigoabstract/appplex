@@ -131,8 +131,6 @@ glm::vec2 mws_ptr_evt::get_pos(const mws_ptr_evt::touch_point& i_tp)
 mws_touch_ctrl::mws_touch_ctrl()
 {
    //if (mws_debug_enabled) { mws_dbg::set_flags(mws_dbg::pfm_touch); }
-   queue_tab.resize(2);
-   queue_ptr = &queue_tab[queue_idx];
 }
 
 mws_sp<mws_touch_ctrl> mws_touch_ctrl::nwi()
@@ -152,23 +150,20 @@ bool mws_touch_ctrl::is_pointer_released()
 
 void mws_touch_ctrl::update()
 {
+   // swap queues, so the currently empty queue will be used for taking input events
+   input_queue_ptr.swap();
    // set the current input queue as the queue for processing the input
-   std::vector<mws_sp<mws_ptr_evt>>* input_queue_ptr = &queue_tab[queue_idx];
+   input_queue_type& input_queue = *input_queue_ptr.second();
 
-   // switch queues, so the currently empty queue is used for taking input events
-   queue_idx = (queue_idx + 1) % 2;
-   queue_tab[queue_idx].clear();
-   queue_ptr = &queue_tab[queue_idx];
-
-   if (!input_queue_ptr->empty())
+   if (!input_queue.empty())
    {
-      for (auto i_pe : *input_queue_ptr)
+      for (auto evt : input_queue)
       {
          if (mws_dbg::enabled(mws_dbg::pfm_touch))
          {
             const char* evt_type = nullptr;
 
-            switch (i_pe->type)
+            switch (evt->type)
             {
             case mws_ptr_evt::touch_invalid:
                break;
@@ -182,9 +177,9 @@ void mws_touch_ctrl::update()
                if (!evt_type) { evt_type = "ended"; }
                std::string msg = mws_to_str_fmt("ptr-%s[ ", evt_type);
 
-               for (uint32_t k = 0; k < i_pe->touch_count; k++)
+               for (uint32_t k = 0; k < evt->touch_count; k++)
                {
-                  const mws_ptr_evt::touch_point& pt = i_pe->points[k];
+                  const mws_ptr_evt::touch_point& pt = evt->points[k];
 
                   if (pt.is_changed)
                   {
@@ -204,26 +199,26 @@ void mws_touch_ctrl::update()
                break;
 
             case mws_ptr_evt::mouse_wheel:
-               mws_println("ptr-mouse-wheel[ %4.2f ]", i_pe->mouse_wheel_delta);
+               mws_println("ptr-mouse-wheel[ %4.2f ]", evt->mouse_wheel_delta);
                break;
             }
          }
 
-         switch (i_pe->type)
+         switch (evt->type)
          {
          case mws_ptr_evt::touch_invalid:
             break;
 
          case mws_ptr_evt::touch_began:
          {
-            if (i_pe->touch_count == 1)
+            if (evt->touch_count == 1)
             {
                prev_ptr_evt = nullptr;
             }
 
             is_pointer_down = true;
-            broadcast(get_instance(), i_pe);
-            prev_ptr_evt = i_pe;
+            broadcast(get_instance(), evt);
+            prev_ptr_evt = evt;
             break;
          }
 
@@ -234,9 +229,9 @@ void mws_touch_ctrl::update()
                // calculate 'is_changed' for pointer move events
                if (prev_ptr_evt)
                {
-                  for (uint32_t k = 0; k < i_pe->touch_count; k++)
+                  for (uint32_t k = 0; k < evt->touch_count; k++)
                   {
-                     mws_ptr_evt::touch_point& pt = i_pe->points[k];
+                     mws_ptr_evt::touch_point& pt = evt->points[k];
 
                      if (!pt.is_changed)
                      {
@@ -253,8 +248,8 @@ void mws_touch_ctrl::update()
                   }
                }
 
-               broadcast(get_instance(), i_pe);
-               prev_ptr_evt = i_pe;
+               broadcast(get_instance(), evt);
+               prev_ptr_evt = evt;
             }
 
             break;
@@ -263,32 +258,35 @@ void mws_touch_ctrl::update()
          case mws_ptr_evt::touch_ended:
          {
             is_pointer_down = false;
-            broadcast(get_instance(), i_pe);
-            prev_ptr_evt = i_pe;
+            broadcast(get_instance(), evt);
+            prev_ptr_evt = evt;
             break;
          }
 
          case mws_ptr_evt::touch_cancelled:
          {
-            broadcast(get_instance(), i_pe);
-            prev_ptr_evt = i_pe;
+            broadcast(get_instance(), evt);
+            prev_ptr_evt = evt;
             break;
          }
 
          case mws_ptr_evt::mouse_wheel:
          {
-            broadcast(get_instance(), i_pe);
+            broadcast(get_instance(), evt);
             break;
          }
          }
       }
+
+      // now clear the queue, so it can be reused on the next frame
+      input_queue.clear();
    }
 }
 
 void mws_touch_ctrl::enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_te)
 {
    mws_sp<mws_ptr_evt> te = std::static_pointer_cast<mws_ptr_evt>(i_te);
-   (*queue_ptr).push_back(te);
+   input_queue_ptr.first()->push_back(te);
 }
 
 mws_sp<mws_sender> mws_touch_ctrl::sender_inst()

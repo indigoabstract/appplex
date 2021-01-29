@@ -8,6 +8,7 @@
 #include "krn.hxx"
 #include "mod-list.hxx"
 #include "mws-vkb/mws-vkb.hxx"
+mws_push_disable_all_warnings
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -16,9 +17,11 @@
 #include <ctime>
 #include <iomanip>
 #include <fstream>
+#include <mutex>
 #include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
+mws_pop_disable_all_warnings
 
 
 mws_sp<mws_app> mws_app_inst();

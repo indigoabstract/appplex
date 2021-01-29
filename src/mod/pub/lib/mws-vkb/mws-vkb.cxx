@@ -2232,8 +2232,8 @@ void mws_vkb::update_state()
          active_vkb->on_update_state();
       };
 
-      get_mod()->enq_op_on_next_frame_start(op_load_vkb);
-      get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+      get_mod()->run_on_next_frame_start(op_load_vkb);
+      get_mod()->run_on_crt_frame_end(get_waiting_msg_op());
    }
    else
    {
@@ -2265,8 +2265,8 @@ void mws_vkb::set_target(mws_sp<mws_text_area> i_ta)
          active_vkb->start_anim();
       };
 
-      get_mod()->enq_op_on_next_frame_start(op_load_vkb);
-      get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+      get_mod()->run_on_next_frame_start(op_load_vkb);
+      get_mod()->run_on_crt_frame_end(get_waiting_msg_op());
    }
    else
    {
@@ -2347,8 +2347,8 @@ void mws_vkb::load(bool i_blocking_load)
             active_vkb->start_anim();
          };
 
-         get_mod()->enq_op_on_next_frame_start(op_load_vkb);
-         get_mod()->enq_op_on_crt_frame_end(get_waiting_msg_op());
+         get_mod()->run_on_next_frame_start(op_load_vkb);
+         get_mod()->run_on_crt_frame_end(get_waiting_msg_op());
       }
    }
 }

@@ -711,8 +711,6 @@ bool mws_app_storage::is_recording_screen() { return p->is_recording_screen(); }
 void mws_app_storage::toggle_screen_recording() { p->toggle_screen_recording(); }
 
 
-int mws_mod::mod_count = 0;
-
 mws_mod::mws_mod(const char* i_include_guard)
 {
    init_val = false;
@@ -1036,18 +1034,14 @@ void mws_mod::unload()
 {
 }
 
-void mws_mod::enq_op_on_next_frame_start(const std::function<void()>& i_op)
+void mws_mod::run_on_next_frame_start(const std::function<void()>& i_op)
 {
-   operation_mutex.lock();
-   operation_list.push_back(i_op);
-   operation_mutex.unlock();
+   on_frame_begin_q_ptr.first()->push_back(i_op);
 }
 
-void mws_mod::enq_op_on_crt_frame_end(const std::function<void()>& i_op)
+void mws_mod::run_on_crt_frame_end(const std::function<void()>& i_op)
 {
-   operation_mutex.lock();
-   end_of_frame_op_list.push_back(i_op);
-   operation_mutex.unlock();
+   on_frame_end_q_ptr.first()->push_back(i_op);
 }
 
 bool mws_mod::back()
@@ -1094,30 +1088,38 @@ void mws_mod::run_step()
 
 #endif
 
-   if (!operation_list.empty())
    {
-      operation_mutex.lock();
-      auto temp = operation_list;
+      // swap queues, so the currently empty queue will be used for taking new operations
+      on_frame_begin_q_ptr.swap();
+      operation_queue_type& on_frame_begin_queue = *on_frame_begin_q_ptr.second();
 
-      operation_list.clear();
-      operation_mutex.unlock();
-
-      for (const auto& function : temp)
+      if (!on_frame_begin_queue.empty())
       {
-         function();
+         for (const auto& exe : on_frame_begin_queue)
+         {
+            exe();
+         }
+
+         on_frame_begin_queue.clear();
       }
    }
 
    update();
 
-   if (!end_of_frame_op_list.empty())
    {
-      for (const auto& function : end_of_frame_op_list)
-      {
-         function();
-      }
+      // swap queues, so the currently empty queue will be used for taking new operations
+      on_frame_end_q_ptr.swap();
+      operation_queue_type& on_frame_end_queue = *on_frame_end_q_ptr.second();
 
-      end_of_frame_op_list.clear();
+      if (!on_frame_end_queue.empty())
+      {
+         for (const auto& exe : on_frame_end_queue)
+         {
+            exe();
+         }
+
+         on_frame_end_queue.clear();
+      }
    }
 
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX

@@ -61,15 +61,14 @@ public:
    void update();
    void enqueue_pointer_event(mws_sp<mws_ptr_evt_base> i_pe);
 
-   std::atomic<std::vector<mws_sp<mws_ptr_evt>>*> queue_ptr{ nullptr };
-
 private:
+   using input_queue_type = std::vector<mws_sp<mws_ptr_evt>>;
    mws_touch_ctrl();
-
    virtual mws_sp<mws_sender> sender_inst();
 
-   int queue_idx = 0;
-   std::vector<std::vector<mws_sp<mws_ptr_evt>>> queue_tab;
+   input_queue_type queue_0, queue_1;
+   // new events are pushed in the first queue, while the existing events are processed in the second one
+   mws_atomic_ptr_swap<input_queue_type> input_queue_ptr = mws_atomic_ptr_swap<input_queue_type>(&queue_0, &queue_1);
    mws_sp<mws_ptr_evt> prev_ptr_evt;
 
    // prevents mouse-move events from messing up the touch/pointer events

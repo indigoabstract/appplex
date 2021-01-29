@@ -2,7 +2,7 @@
 
 #include "pfm.hxx"
 #include "krn.hxx"
-#include <mutex>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -114,8 +114,8 @@ public:
    mws_sp<mws_mod_preferences> get_preferences();
    // true to exit app, false to continue
    virtual bool back();
-   void enq_op_on_next_frame_start(const std::function<void()>& i_op);
-   void enq_op_on_crt_frame_end(const std::function<void()>& i_op);
+   void run_on_next_frame_start(const std::function<void()>& i_op);
+   void run_on_crt_frame_end(const std::function<void()>& i_op);
    /// return a reference to the app_impl implementation
    template <typename T> T& i_m() const { mws_assert(p.get() != nullptr); return *mws_dynamic_cast<T*>(p.get()); }
    bool i_m_is_null() const { return p.get() == nullptr; }
@@ -166,6 +166,7 @@ protected:
    uint32_t last_frame_time = 0;
 
 private:
+   using operation_queue_type = std::vector<std::function<void()>>;
    friend class mws_mod_ctrl;
    friend class mws_mod_list;
 
@@ -184,11 +185,11 @@ private:
    mws_path proj_rel_path;
    mws_wp<mws_mod> parent;
    bool init_val = false;
-   std::vector<std::function<void()>> operation_list;
-   std::vector<std::function<void()>> end_of_frame_op_list;
-   std::mutex operation_mutex;
-
-   static int mod_count;
+   operation_queue_type on_frame_begin_q0, on_frame_begin_q1;
+   mws_atomic_ptr_swap<operation_queue_type> on_frame_begin_q_ptr = mws_atomic_ptr_swap<operation_queue_type>(&on_frame_begin_q0, &on_frame_begin_q1);
+   operation_queue_type on_frame_end_q0, on_frame_end_q1;
+   mws_atomic_ptr_swap<operation_queue_type> on_frame_end_q_ptr = mws_atomic_ptr_swap<operation_queue_type>(&on_frame_end_q0, &on_frame_end_q1);
+   inline static int mod_count = 0;
 };
 
 

@@ -256,6 +256,22 @@ void mws_mod_ctrl::update()
 
 #endif
 
+   {
+      // swap queues, so the currently empty queue will be used for taking new operations
+      on_frame_begin_q_ptr.swap();
+      operation_queue_type& on_frame_begin_queue = *on_frame_begin_q_ptr.second();
+
+      if (!on_frame_begin_queue.empty())
+      {
+         for (const auto& exe : on_frame_begin_queue)
+         {
+            exe();
+         }
+
+         on_frame_begin_queue.clear();
+      }
+   }
+
    mod->run_step();
 }
 
@@ -369,10 +385,13 @@ void mws_mod_ctrl::set_gfx_available(bool i_is_gfx_available)
 }
 
 bool mws_mod_ctrl::is_gfx_available() { return gfx_available; }
-
 uint32_t mws_mod_ctrl::get_screen_width() { return screen_width; }
-
 uint32_t mws_mod_ctrl::get_screen_height() { return screen_height; }
+
+void mws_mod_ctrl::run_on_next_frame_start(const std::function<void()>& i_op)
+{
+   on_frame_begin_q_ptr.first()->push_back(i_op);
+}
 
 void mws_mod_ctrl::load_current_mod()
 {

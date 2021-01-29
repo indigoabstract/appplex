@@ -2,8 +2,9 @@
 
 #include "pfm-def.h"
 mws_push_disable_all_warnings
-#include <stdio.h>
 #include <algorithm> 
+#include <atomic>
+#include <cstdio>
 #include <cctype>
 #include <functional> 
 #include <locale>
@@ -17,6 +18,22 @@ mws_pop_disable_all_warnings
 
 class mws_sender;
 class mws_receiver;
+
+
+template<class T> class mws_atomic_ptr_swap
+{
+public:
+   mws_atomic_ptr_swap(T* i_first, T* i_second) : xor_v(reinterpret_cast<uintptr_t>(i_first) ^ reinterpret_cast<uintptr_t>(i_second)),
+      first_v(reinterpret_cast<uintptr_t>(i_first)) {}
+
+   T* first() const { return reinterpret_cast<T*>(first_v.load(std::memory_order_acquire)); }
+   T* second() const { return reinterpret_cast<T*>(first_v.load(std::memory_order_acquire) ^ xor_v); }
+   void swap() { first_v.fetch_xor(xor_v, std::memory_order_release); }
+
+private:
+   uintptr_t const xor_v;
+   std::atomic<uintptr_t> first_v;
+};
 
 
 // returns true is pointer i_w was initialized(it can be either valid or expired)
