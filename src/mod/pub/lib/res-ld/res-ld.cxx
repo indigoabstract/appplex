@@ -71,7 +71,7 @@ mws_sp<std::vector<uint8_t>> res_ld::flip_buffer(int i_width, int i_height, uint
       vertical_flip();
       break;
 
-   case (flip_types::e_horizontal_flip | flip_types::e_vertical_flip):
+   case flip_types::e_horz_vert_flip:
       horizontal_flip();
       vertical_flip();
       break;

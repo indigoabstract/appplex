@@ -44,6 +44,7 @@ public:
       e_no_flip = 0,
       e_horizontal_flip = 1,
       e_vertical_flip = 1 << 1,
+      e_horz_vert_flip = (e_horizontal_flip | e_vertical_flip),
    };
 
    static mws_sp<res_ld> inst();
