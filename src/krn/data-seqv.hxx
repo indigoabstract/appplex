@@ -284,6 +284,7 @@ class data_seqv_ro_mem_reader : public data_seqv_reader_base<ro_mem_seqv, ref_ad
 {
 public:
    data_seqv_ro_mem_reader(ro_mem_seqv i_seqv) : data_seqv_reader_base(i_seqv) {}
+   data_seqv_ro_mem_reader(const std::byte* i_data, uint32_t i_size) : data_seqv_reader_base(ro_mem_seqv(i_data, i_size)) {}
 };
 
 // ro memory sequence reference version

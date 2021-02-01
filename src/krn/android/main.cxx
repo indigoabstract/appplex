@@ -654,14 +654,8 @@ extern "C"
 
    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1render(JNIEnv* env, jobject thiz)
    {
-      if (mws_mod_ctrl::inst()->is_set_app_exit_on_next_run())
-      {
-         exit_application();
-      }
-      else
-      {
-         app_inst()->run();
-      }
+      if (mws_mod_ctrl::inst()->is_set_app_exit_on_next_run()) { exit_application(); }
+      app_inst()->run();
    }
 
    JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1log(JNIEnv* env, jobject thiz, jstring i_msg)
