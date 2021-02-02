@@ -37,7 +37,7 @@ void track::loadTrackData(char* track_name)
 
 	std::string fn = trs("abstract-racing/{}", track_name);
 	std::vector<std::byte> res = mod.lock()->storage.load_as_byte_vect(fn);
-	mem_data_seqv mds(res.data(), res.size());
+	data_seqv_rw_mem mds(res.data(), res.size());
 	data_seqv_reader_big_endian dsr(&mds);
 
 	version_number = dsr.read_i32();

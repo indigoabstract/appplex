@@ -36,6 +36,7 @@ extern const bool mod_vid_on = MOD_VID;
 extern const bool mod_vorbis_on = MOD_VORBIS;
 
 
+#pragma warning(suppress: 4505)
 static void err_na() { mws_throw mws_exception("call not available"); }
 
 

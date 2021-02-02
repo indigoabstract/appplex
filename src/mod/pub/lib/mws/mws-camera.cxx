@@ -30,7 +30,7 @@ namespace ns_mws_camera
          tx_vxo = mws_text_vxo::nwi();
       }
 
-      void push_data(rw_seqv& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
+      void push_data(data_seqv_rw_mem_ops& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont)
       {
          tx = text;
          x = ix;
@@ -41,7 +41,7 @@ namespace ns_mws_camera
          font_idx++;
       }
 
-      virtual void read_data(rw_seqv& seq)
+      virtual void read_data(data_seqv_rw_mem_ops& seq)
       {
          int length = seq.r.read_u32();
          std::vector<char> txt(length);
@@ -52,7 +52,7 @@ namespace ns_mws_camera
          font_idx = seq.r.read_u32();
       }
 
-      virtual void write_data(rw_seqv& seq)
+      virtual void write_data(data_seqv_rw_mem_ops& seq)
       {
          seq.w.write_u32(tx.length());
          seq.w.write_i8((int8_t*)tx.c_str(), tx.length() * sizeof(char), 0);
@@ -90,9 +90,9 @@ namespace ns_mws_camera
 #elif defined MOD_BITMAP_FONTS
 
       draw_text_op() {}
-      void push_data(rw_seqv& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont) {}
-      virtual void read_data(rw_seqv& seq) {}
-      virtual void write_data(rw_seqv& seq) {}
+      void push_data(data_seqv_rw_mem_ops& seq, const std::string& text, float ix, float iy, const mws_sp<mws_font> ifont) {}
+      virtual void read_data(data_seqv_rw_mem_ops& seq) {}
+      virtual void write_data(data_seqv_rw_mem_ops& seq) {}
       void on_update_start(mws_sp<draw_context> idc) {}
       void draw(mws_sp<draw_context> idc) {}
       void on_update_end(mws_sp<draw_context> idc) {}

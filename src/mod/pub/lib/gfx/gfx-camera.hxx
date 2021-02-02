@@ -20,7 +20,7 @@ class gfx_shader;
 class gfx_camera;
 class gfx_camera_impl;
 class gfx_material;
-class rw_seqv;
+class data_seqv_rw_mem_ops;
 
 
 const std::string u_m4_model = "u_m4_model";
@@ -57,8 +57,8 @@ public:
 class draw_op
 {
 public:
-   virtual void read_data(rw_seqv& seq) = 0;
-   virtual void write_data(rw_seqv& seq) = 0;
+   virtual void read_data(data_seqv_rw_mem_ops& seq) = 0;
+   virtual void write_data(data_seqv_rw_mem_ops& seq) = 0;
    virtual void draw(mws_sp<draw_context> idc) = 0;
 };
 
@@ -130,7 +130,7 @@ protected:
    virtual void load(mws_sp<gfx_camera> inst);
    virtual void update_camera_state_impl();
    mws_sp<draw_context> draw_ctx;
-   rw_seqv draw_ops;
+   data_seqv_rw_mem_ops draw_ops;
 
 public:
    glm::mat4 camera_mx = glm::mat4(1.f);
@@ -144,7 +144,7 @@ public:
 
 namespace seq_util
 {
-   inline glm::vec2 read_vec2(rw_seqv& i_sq)
+   inline glm::vec2 read_vec2(data_seqv_rw_mem_ops& i_sq)
    {
       glm::vec2 val;
 
@@ -154,7 +154,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec3 read_vec3(rw_seqv& i_sq)
+   inline glm::vec3 read_vec3(data_seqv_rw_mem_ops& i_sq)
    {
       glm::vec3 val;
 
@@ -165,7 +165,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::vec4 read_vec4(rw_seqv& i_sq)
+   inline glm::vec4 read_vec4(data_seqv_rw_mem_ops& i_sq)
    {
       glm::vec4 val;
 
@@ -177,7 +177,7 @@ namespace seq_util
       return val;
    }
 
-   inline glm::quat read_quat(rw_seqv& i_sq)
+   inline glm::quat read_quat(data_seqv_rw_mem_ops& i_sq)
    {
       glm::quat val;
 
@@ -189,20 +189,20 @@ namespace seq_util
       return val;
    }
 
-   inline void write_vec2(rw_seqv& i_sq, glm::vec2& i_val)
+   inline void write_vec2(data_seqv_rw_mem_ops& i_sq, glm::vec2& i_val)
    {
       i_sq.w.write_f32(i_val.x);
       i_sq.w.write_f32(i_val.y);
    }
 
-   inline void write_vec3(rw_seqv& i_sq, glm::vec3& i_val)
+   inline void write_vec3(data_seqv_rw_mem_ops& i_sq, glm::vec3& i_val)
    {
       i_sq.w.write_f32(i_val.x);
       i_sq.w.write_f32(i_val.y);
       i_sq.w.write_f32(i_val.z);
    }
 
-   inline void write_vec4(rw_seqv& i_sq, glm::vec4& i_val)
+   inline void write_vec4(data_seqv_rw_mem_ops& i_sq, glm::vec4& i_val)
    {
       i_sq.w.write_f32(i_val.x);
       i_sq.w.write_f32(i_val.y);
@@ -210,7 +210,7 @@ namespace seq_util
       i_sq.w.write_f32(i_val.w);
    }
 
-   inline void write_quat(rw_seqv& i_sq, glm::quat& i_val)
+   inline void write_quat(data_seqv_rw_mem_ops& i_sq, glm::quat& i_val)
    {
       i_sq.w.write_f32(i_val.x);
       i_sq.w.write_f32(i_val.y);

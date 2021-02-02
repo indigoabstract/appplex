@@ -141,7 +141,7 @@ void draw_context::draw_texture(std::string tex_name, float ix, float iy, float 
 class draw_axes_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, const glm::vec3& istart, float ilength, float ithickness)
+   void push_data(data_seqv_rw_mem_ops& seq, const glm::vec3& istart, float ilength, float ithickness)
    {
       start = istart;
       length = ilength;
@@ -150,14 +150,14 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       start = seq_util::read_vec3(seq);
       length = seq.r.read_f32();
       thickness = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, start);
       seq.w.write_f32(length);
@@ -180,7 +180,7 @@ public:
 class draw_box_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, glm::vec3& iposition, glm::vec3& i_size, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
+   void push_data(data_seqv_rw_mem_ops& seq, glm::vec3& iposition, glm::vec3& i_size, glm::quat& iorientation, const glm::vec4& icolor, float ithickness)
    {
       position = iposition;
       size = i_size;
@@ -191,7 +191,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       position = seq_util::read_vec3(seq);
       size = seq_util::read_vec3(seq);
@@ -200,7 +200,7 @@ public:
       thickness = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, position);
       seq_util::write_vec3(seq, size);
@@ -249,7 +249,7 @@ public:
 class draw_circle_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, glm::vec3& iposition, float iradius, glm::vec3& inormal, const glm::vec4& icolor, float iprecision, float ithickness)
+   void push_data(data_seqv_rw_mem_ops& seq, glm::vec3& iposition, float iradius, glm::vec3& inormal, const glm::vec4& icolor, float iprecision, float ithickness)
    {
       position = iposition;
       radius = iradius;
@@ -261,7 +261,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       position = seq_util::read_vec3(seq);
       radius = seq.r.read_f32();
@@ -271,7 +271,7 @@ public:
       thickness = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, position);
       seq.w.write_f32(radius);
@@ -297,7 +297,7 @@ public:
 class draw_line_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, glm::vec3& istart, glm::vec3& ifinish, const glm::vec4& icolor, float ithickness)
+   void push_data(data_seqv_rw_mem_ops& seq, glm::vec3& istart, glm::vec3& ifinish, const glm::vec4& icolor, float ithickness)
    {
       start = istart;
       finish = ifinish;
@@ -307,7 +307,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       start = seq_util::read_vec3(seq);
       finish = seq_util::read_vec3(seq);
@@ -315,7 +315,7 @@ public:
       thickness = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, start);
       seq_util::write_vec3(seq, finish);
@@ -338,7 +338,7 @@ public:
 class draw_image_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, mws_sp<gfx_tex> img, float ix, float iy, float iwidth, float iheight)
+   void push_data(data_seqv_rw_mem_ops& seq, mws_sp<gfx_tex> img, float ix, float iy, float iwidth, float iheight)
    {
       name = img->get_name();
       x = ix;
@@ -349,7 +349,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       name = seq.r.read_text();
       x = seq.r.read_f32();
@@ -358,7 +358,7 @@ public:
       height = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq.w.write_text(name);
       seq.w.write_f32(x);
@@ -383,7 +383,7 @@ public:
 class draw_plane_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& i_size, const glm::vec4& icolor)
+   void push_data(data_seqv_rw_mem_ops& seq, glm::vec3& icenter, glm::vec3& ilook_at_dir, glm::vec2& i_size, const glm::vec4& icolor)
    {
       center = icenter;
       look_at_dir = ilook_at_dir;
@@ -393,7 +393,7 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       center = seq_util::read_vec3(seq);
       look_at_dir = seq_util::read_vec3(seq);
@@ -401,7 +401,7 @@ public:
       color = seq_util::read_vec4(seq);
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, center);
       seq_util::write_vec3(seq, look_at_dir);
@@ -468,7 +468,7 @@ public:
 class draw_point_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, glm::vec3& icenter, const glm::vec4& icolor, float ithickness)
+   void push_data(data_seqv_rw_mem_ops& seq, glm::vec3& icenter, const glm::vec4& icolor, float ithickness)
    {
       center = icenter;
       color = icolor;
@@ -477,14 +477,14 @@ public:
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       center = seq_util::read_vec3(seq);
       color = seq_util::read_vec4(seq);
       thickness = seq.r.read_f32();
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq_util::write_vec3(seq, center);
       seq_util::write_vec4(seq, color);
@@ -551,19 +551,19 @@ public:
 class draw_mesh_op : public draw_op
 {
 public:
-   void push_data(rw_seqv& seq, mws_sp<gfx_vxo> imesh)
+   void push_data(data_seqv_rw_mem_ops& seq, mws_sp<gfx_vxo> imesh)
    {
       mesh = imesh.get();
       seq.w.write_pointer(this);
       write_data(seq);
    }
 
-   virtual void read_data(rw_seqv& seq)
+   virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
       seq.r.read_pointer(mesh);
    }
 
-   virtual void write_data(rw_seqv& seq)
+   virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
       seq.w.write_pointer(mesh);
    }
@@ -596,7 +596,7 @@ public:
 
    void flush_commands(mws_sp<gfx_camera> icam)
    {
-      rw_seqv& draw_ops = icam->draw_ops;
+      data_seqv_rw_mem_ops& draw_ops = icam->draw_ops;
       uint64_t size = draw_ops.size();
 
       draw_ops.rewind();

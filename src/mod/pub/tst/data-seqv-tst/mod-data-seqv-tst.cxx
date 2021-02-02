@@ -10,7 +10,7 @@ namespace
    {
       {
          // write an int and a float to a memory sequence and then read them back
-         rw_seqv sequence;
+         data_seqv_rw_mem_ops sequence;
          sequence.w.write_i32(42);
          sequence.w.write_f32(666.66f);
          sequence.rewind();
@@ -29,7 +29,7 @@ namespace
          // same steps, but with a file sequence now
          // and also showing the equivalent template versions for reading/writing
          mws_path file_path = i_tmp_path / "test.binary";
-         rw_file_seqv sequence(std_file_wrapper(file_path.string(), "w+b"));
+         data_seqv_rw_file_ops sequence(data_seqv_std_file_wrapper(file_path.string(), "w+b"));
          sequence.w.write(42);
          sequence.w.write(666.66f);
          sequence.rewind();
@@ -44,26 +44,28 @@ namespace
       }
       {
          // sequence readers and writers also work with pointers to data sequences
-         mem_data_seqv* sequence_ptr = new mem_data_seqv();
+         data_seqv_rw_mem* sequence_ptr = new data_seqv_rw_mem();
          data_seqv_writer_ptr dsw_ptr(sequence_ptr);
          data_seqv_reader_ptr dsr_ptr(sequence_ptr);
          dsw_ptr.write_u32(0x5f3759df);
-         dsr_ptr.data_sequence()->rewind(); // equivalent to sequence_ptr->rewind();
+         dsr_ptr.dsv()->rewind(); // equivalent to sequence_ptr->rewind();
          float magic_number = dsr_ptr.read_f32();
          delete sequence_ptr;
       }
       {
          // and shared pointers
-         std::shared_ptr<mem_data_seqv> sequence_sp = std::make_shared<mem_data_seqv>();
+         std::shared_ptr<data_seqv_rw_mem> sequence_sp = std::make_shared<data_seqv_rw_mem>();
          data_seqv_writer_sp dsw_sp(sequence_sp);
          data_seqv_reader_sp dsr_sp(sequence_sp);
          dsw_sp.write_u32(0x5f3759df);
-         dsr_sp.data_sequence()->rewind(); // equivalent to sequence_sp->rewind();
+         dsr_sp.dsv()->rewind(); // equivalent to sequence_sp->rewind();
          float magic_number = dsr_sp.read_f32();
       }
+      // same steps also work for a file sequence by replacing mem_data_seqv with
+      // data_seqv_file( "new data_seqv_file(..);" or "std::make_shared<data_seqv_file>(..);" )
       {
          const uint32_t nr = 0x12345678;
-         rw_seqv seqv;
+         data_seqv_rw_mem_ops seqv;
          seqv.w.write_u32(nr);
          seqv.w.write(nr);
          seqv.rewind();

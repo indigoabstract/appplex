@@ -346,7 +346,7 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
    const glm::vec3 origin(0.f);
    const glm::vec3 up_dir(0.f, 0.f, 1.f);
    std::vector<gfx_indices_type> indices_data;
-   data_seqv_writer_sp dsw(std::make_shared<mem_data_seqv>());
+   data_seqv_writer_sp dsw(std::make_shared<data_seqv_rw_mem>());
 
    // write bottom origin positions
    dsw.write_f32(0.f);
@@ -491,8 +491,8 @@ void gfx_right_prism::set_dimensions(const std::vector<glm::vec2>& i_base_vertic
       indices_data.push_back(vx_side_offset + 4 * k + 2);
    }
 
-   std::shared_ptr<data_seqv> ds = dsw.data_sequence();
-   const std::byte* vertices_data = ds->data_as_byte_array();
+   std::shared_ptr<data_seqv> ds = dsw.dsv();
+   const std::byte* vertices_data = ds->seqv_as_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
 }
@@ -510,7 +510,7 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
    const glm::vec3 up_dir(0.f, 0.f, 1.f);
    const glm::vec3 top_pos(0.f, 0.f, i_height);
    std::vector<gfx_indices_type> indices_data;
-   data_seqv_writer_sp dsw(std::make_shared<mem_data_seqv>());
+   data_seqv_writer_sp dsw(std::make_shared<data_seqv_rw_mem>());
 
    // write bottom origin positions
    dsw.write_f32(0.f);
@@ -609,8 +609,8 @@ void gfx_right_pyramid::set_dimensions(const std::vector<glm::vec2>& i_base_vert
       indices_data.push_back(vx_side_offset + 3 * k + 1);
    }
 
-   std::shared_ptr<data_seqv> ds = dsw.data_sequence();
-   const std::byte* vertices_data = ds->data_as_byte_array();
+   std::shared_ptr<data_seqv> ds = dsw.dsv();
+   const std::byte* vertices_data = ds->seqv_as_array();
 
    set_data(vertices_data, ds->size(), indices_data.data(), indices_data.size());
 }

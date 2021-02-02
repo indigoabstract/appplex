@@ -168,7 +168,7 @@ private:
 };
 
 
-class mws_file_wrapper : public file_wrapper
+class mws_file_wrapper : public data_seqv_file_wrapper
 {
 public:
    mws_file_wrapper();
@@ -187,10 +187,10 @@ private:
 };
 
 
-class mws_file_data_seqv : public file_data_seqv_base<mws_file_wrapper, ref_adapter<mws_file_wrapper>>
+class mws_file_data_seqv : public data_seqv_file_base<mws_file_wrapper, ref_adapter<mws_file_wrapper>>
 {
 public:
-   mws_file_data_seqv(const mws_file_wrapper& i_file) : file_data_seqv_base(i_file) {}
+   mws_file_data_seqv(const mws_file_wrapper& i_file) : data_seqv_file_base(i_file) {}
 };
 
 
