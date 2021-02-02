@@ -61,7 +61,7 @@ namespace
          dsr_sp.dsv()->rewind(); // equivalent to sequence_sp->rewind();
          float magic_number = dsr_sp.read_f32();
       }
-      // same steps also work for a file sequence by replacing mem_data_seqv with
+      // same steps also work for a file sequence by replacing data_seqv_rw_mem with
       // data_seqv_file( "new data_seqv_file(..);" or "std::make_shared<data_seqv_file>(..);" )
       {
          const uint32_t nr = 0x12345678;
