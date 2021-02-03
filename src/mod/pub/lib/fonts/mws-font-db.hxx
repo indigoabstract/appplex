@@ -2,8 +2,10 @@
 
 #include "pfm.hxx"
 #include "mws-font.hxx"
+mws_push_disable_all_warnings
 #include <glm/fwd.hpp>
 #include <utility>
+mws_pop_disable_all_warnings
 
 
 namespace ftgl

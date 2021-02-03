@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <exception>
 #include <memory>
 #include <vector>
@@ -21,7 +22,11 @@ class data_seqv
 {
 public:
    data_seqv();
-   virtual ~data_seqv();
+   data_seqv(const data_seqv& i_obj) { operator=(i_obj); }
+   data_seqv(data_seqv&& i_obj) noexcept { operator=(std::move(i_obj)); }
+   virtual ~data_seqv() {}
+   data_seqv& operator=(const data_seqv& i_obj);
+   data_seqv& operator=(data_seqv&& i_obj) noexcept;
    /** returns true when there are no more bytes to read */
    virtual bool is_end_of_seqv();
    virtual void close();
@@ -60,8 +65,6 @@ protected:
 
    uint64_t read_position_v;
    uint64_t write_position_v;
-
-private:
    uint64_t total_bytes_read_v;
    uint64_t total_bytes_written_v;
 };
@@ -92,7 +95,6 @@ protected:
    virtual int read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
    virtual int write_bytes_impl(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
 
-private:
    const std::byte* seqv = nullptr;
    uint64_t size_v = 0;
 };
@@ -102,12 +104,16 @@ private:
 class data_seqv_rw_mem : public data_seqv
 {
 public:
-   data_seqv_rw_mem();
+   data_seqv_rw_mem() {}
    /** constructs a memory data sequence with its size the specified number of bytes */
-   data_seqv_rw_mem(uint32_t i_elem_count);
-   data_seqv_rw_mem(const std::vector<std::byte>& i_seqv);
+   data_seqv_rw_mem(uint32_t i_elem_count) : seqv(i_elem_count) {}
+   data_seqv_rw_mem(const std::vector<std::byte>& i_seqv) { seqv = i_seqv; }
    data_seqv_rw_mem(const std::byte* i_seqv, uint32_t i_elem_count);
-   virtual ~data_seqv_rw_mem();
+   data_seqv_rw_mem(const data_seqv_rw_mem& i_obj) : data_seqv(i_obj), seqv(i_obj.seqv) {}
+   data_seqv_rw_mem(data_seqv_rw_mem&& i_obj) noexcept : data_seqv(std::move(i_obj)), seqv(std::move(i_obj.seqv)) {}
+   virtual ~data_seqv_rw_mem() {}
+   data_seqv_rw_mem& operator=(const data_seqv_rw_mem& i_obj);
+   data_seqv_rw_mem& operator=(data_seqv_rw_mem&& i_obj) noexcept;
    virtual uint64_t size() const override;
    virtual void rewind() override;
    virtual void reset() override;
@@ -123,7 +129,6 @@ protected:
    virtual int read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
    virtual int write_bytes_impl(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
 
-private:
    std::vector<std::byte> seqv;
 };
 
@@ -237,8 +242,12 @@ public:
 template<class T, class reader> class data_seqv_reader_base
 {
 public:
-   data_seqv_reader_base(T i_seqv);
-   virtual ~data_seqv_reader_base();
+   data_seqv_reader_base(T i_seqv) : seqv(i_seqv) {}
+   data_seqv_reader_base(const data_seqv_reader_base& i_obj) : seqv(i_obj.seqv) {}
+   data_seqv_reader_base(data_seqv_reader_base&& i_obj) noexcept : seqv(std::move(i_obj.seqv)) {}
+   virtual ~data_seqv_reader_base() {}
+   data_seqv_reader_base& operator=(const data_seqv_reader_base& i_obj) = delete;
+   data_seqv_reader_base& operator=(data_seqv_reader_base&& i_obj) noexcept;
    /** returns the underlying data sequence */
    T& dsv();
    /** returns the underlying data sequence */
@@ -343,8 +352,12 @@ public:
 template<class T, class writer> class data_seqv_writer_base
 {
 public:
-   data_seqv_writer_base(T i_seqv);
-   virtual ~data_seqv_writer_base();
+   data_seqv_writer_base(T i_seqv) : seqv(i_seqv) {}
+   data_seqv_writer_base(const data_seqv_writer_base& i_obj) : seqv(i_obj.seqv) {}
+   data_seqv_writer_base(data_seqv_writer_base&& i_obj) noexcept : seqv(std::move(i_obj.seqv)) {}
+   virtual ~data_seqv_writer_base() {}
+   data_seqv_writer_base& operator=(const data_seqv_writer_base& i_obj) = delete;
+   data_seqv_writer_base& operator=(data_seqv_writer_base&& i_obj) noexcept;
    /** returns the underlying data sequence */
    T& dsv();
    /** returns the underlying data sequence */
@@ -374,7 +387,7 @@ public:
    void write_sized_byte_vect(const std::vector<std::byte>& i_seqv) { write_sized_byte_vect(i_seqv.data(), i_seqv.size()); }
    void write_sized_byte_vect(const std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    template<class T0> void write(const T0* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
-   void write_chars(const char* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
+   void write_chars(const char* i_seqv, uint32_t i_elem_count = 0, uint32_t i_offset = 0);
    void write_i8(const int8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    void write_u8(const uint8_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
    void write_i16(const int16_t* i_seqv, uint32_t i_elem_count, uint32_t i_offset = 0);
@@ -398,6 +411,10 @@ public:
    data_seqv_mem_writer() : data_seqv_writer_base(data_seqv_rw_mem()) {}
    /** constructs a memory data sequence with its size the specified number of bytes */
    data_seqv_mem_writer(uint32_t i_elem_count) : data_seqv_writer_base(data_seqv_rw_mem()) { dsv().resize(i_elem_count); }
+   data_seqv_mem_writer(const data_seqv_mem_writer& i_obj) : data_seqv_writer_base(i_obj) {}
+   data_seqv_mem_writer(data_seqv_mem_writer&& i_obj) noexcept : data_seqv_writer_base(std::move(i_obj)) {}
+   data_seqv_mem_writer& operator=(const data_seqv_mem_writer& i_obj);
+   data_seqv_mem_writer& operator=(data_seqv_mem_writer&& i_obj) noexcept;
 };
 
 
@@ -543,7 +560,31 @@ private:
 
 // data_seqv
 inline data_seqv::data_seqv() : read_position_v(0), write_position_v(0), total_bytes_read_v(0), total_bytes_written_v(0) {}
-inline data_seqv::~data_seqv() {}
+
+inline data_seqv& data_seqv::operator=(const data_seqv& i_obj)
+{
+   if (this != &i_obj)
+   {
+      read_position_v = i_obj.read_position_v;
+      write_position_v = i_obj.write_position_v;
+      total_bytes_read_v = i_obj.total_bytes_read_v;
+      total_bytes_written_v = i_obj.total_bytes_written_v;
+   }
+   return *this;
+}
+
+inline data_seqv& data_seqv::operator=(data_seqv&& i_obj) noexcept
+{
+   if (this != &i_obj)
+   {
+      read_position_v = i_obj.read_position_v; i_obj.read_position_v = 0;
+      write_position_v = i_obj.write_position_v; i_obj.write_position_v = 0;
+      total_bytes_read_v = i_obj.total_bytes_read_v; i_obj.total_bytes_read_v = 0;
+      total_bytes_written_v = i_obj.total_bytes_written_v; i_obj.total_bytes_written_v = 0;
+   }
+   return *this;
+}
+
 inline bool data_seqv::is_end_of_seqv() { return read_position() >= size(); }
 inline void data_seqv::close() {}
 inline uint64_t data_seqv::read_position() const { return read_position_v; }
@@ -620,11 +661,27 @@ inline int data_seqv_ro_mem::write_bytes_impl(const std::byte*, uint32_t, uint32
 
 
 // data_seqv_rw_mem
-inline data_seqv_rw_mem::data_seqv_rw_mem() {}
-inline data_seqv_rw_mem::data_seqv_rw_mem(uint32_t i_elem_count) : seqv(i_elem_count) {}
-inline data_seqv_rw_mem::data_seqv_rw_mem(const std::vector<std::byte>& i_seqv) { seqv = i_seqv; }
 inline data_seqv_rw_mem::data_seqv_rw_mem(const std::byte* i_seqv, uint32_t i_elem_count) { seqv.assign(i_seqv, i_seqv + i_elem_count); }
-inline data_seqv_rw_mem::~data_seqv_rw_mem() {}
+
+inline data_seqv_rw_mem& data_seqv_rw_mem::operator=(const data_seqv_rw_mem& i_obj)
+{
+   if (this != &i_obj)
+   {
+      seqv = i_obj.seqv;
+   }
+   return *this;
+}
+
+inline data_seqv_rw_mem& data_seqv_rw_mem::operator=(data_seqv_rw_mem&& i_obj) noexcept
+{
+   if (this != &i_obj)
+   {
+      data_seqv::operator=(std::move(i_obj));
+      seqv = std::move(i_obj.seqv);
+   }
+   return *this;
+}
+
 inline const std::byte* data_seqv_rw_mem::seqv_as_array() const { return seqv.data(); }
 inline std::vector<std::byte> data_seqv_rw_mem::seqv_as_vector() const { return seqv; }
 inline uint64_t data_seqv_rw_mem::size() const { return seqv.size(); }
@@ -760,8 +817,15 @@ template<class T, class io> int data_seqv_file_base<T, io>::write_bytes_impl(con
 
 
 // data_seqv_reader_base
-template<class T, class reader> data_seqv_reader_base<T, reader>::data_seqv_reader_base(T i_seqv) : seqv(i_seqv) {}
-template<class T, class reader> data_seqv_reader_base<T, reader>::~data_seqv_reader_base() {}
+template<class T, class reader> data_seqv_reader_base<T, reader>& data_seqv_reader_base<T, reader>::operator=(data_seqv_reader_base<T, reader>&& i_obj) noexcept
+{
+   if (this != &i_obj)
+   {
+      seqv = std::move(i_obj.seqv);
+   }
+   return *this;
+}
+
 template<class T, class reader> T& data_seqv_reader_base<T, reader>::dsv() { return seqv; }
 template<class T, class reader> const T& data_seqv_reader_base<T, reader>::dsv() const { return seqv; }
 template<class T, class reader> bool data_seqv_reader_base<T, reader>::is_end_of_seqv() { return reader()(seqv)->is_end_of_seqv(); }
@@ -908,8 +972,15 @@ template<class T, class reader> int data_seqv_reader_base<T, reader>::read_f64(d
 
 
 // data_seqv_writer_base
-template<class T, class writer> data_seqv_writer_base<T, writer>::data_seqv_writer_base(T i_seqv) : seqv(i_seqv) {}
-template<class T, class writer> data_seqv_writer_base<T, writer>::~data_seqv_writer_base() {}
+template<class T, class writer> data_seqv_writer_base<T, writer>& data_seqv_writer_base<T, writer>::operator=(data_seqv_writer_base<T, writer>&& i_obj) noexcept
+{
+   if (this != &i_obj)
+   {
+      seqv = std::move(i_obj.seqv);
+   }
+   return *this;
+}
+
 template<class T, class writer> T& data_seqv_writer_base<T, writer>::dsv() { return seqv; }
 template<class T, class writer> const T& data_seqv_writer_base<T, writer>::dsv() const { return seqv; }
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_byte(std::byte i_seqv) { write(i_seqv); }
@@ -961,6 +1032,7 @@ template<class T, class writer> template<class T0> void data_seqv_writer_base<T,
 
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_chars(const char* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
+   if (i_elem_count == 0) { i_elem_count = strlen(i_seqv); }
    write_bytes(byte_const_cast(i_seqv), i_elem_count, i_offset);
 }
 
@@ -1012,6 +1084,26 @@ template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f32
 template<class T, class writer> void data_seqv_writer_base<T, writer>::write_f64(const double* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
 {
    write_i64((int64_t*)i_seqv, i_elem_count, i_offset);
+}
+
+
+// data_seqv_mem_writer
+inline data_seqv_mem_writer& data_seqv_mem_writer::operator=(const data_seqv_mem_writer& i_obj)
+{
+   if (this != &i_obj)
+   {
+      seqv = i_obj.seqv;
+   }
+   return *this;
+}
+
+inline data_seqv_mem_writer& data_seqv_mem_writer::operator=(data_seqv_mem_writer&& i_obj) noexcept
+{
+   if (this != &i_obj)
+   {
+      data_seqv_writer_base::operator=(std::move(i_obj));
+   }
+   return *this;
 }
 
 
