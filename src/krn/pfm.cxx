@@ -351,7 +351,7 @@ mws_file_map mws_res_index::read_file_map(mws_sp<mws_file> i_index_file)
 
       for (uint32_t k = 0; k < size; k++)
       {
-         std::string file_path = fs->r.read_text();
+         std::string file_path = fs->r.read_sized_text();
          mws_path path = res_dir / file_path;
          std::string filename = path.filename();
 
@@ -382,7 +382,7 @@ void mws_res_index::write_file_map(mws_sp<mws_file> i_index_file, const mws_file
    {
       std::string path = it.second->string_path();
 
-      fs->w.write_text(path);
+      fs->w.write_sized_text(path);
    }
 
    i_index_file->io.close();
@@ -1425,7 +1425,7 @@ private:
 
          while (res_rw->read_position() < file_length)
          {
-            std::string line = res_rw->r.read_text();
+            std::string line = res_rw->r.read_sized_text();
             log.push_back(line);
          }
 
@@ -1462,7 +1462,7 @@ private:
       {
          auto res_rw = mws_rw_file_seqv::nwi(log_file, true);
 
-         res_rw->w.write_text(i_msg);
+         res_rw->w.write_sized_text(i_msg);
          log_file->io.flush();
       }
 

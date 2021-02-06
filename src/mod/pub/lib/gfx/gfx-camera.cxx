@@ -351,7 +351,7 @@ public:
 
    virtual void read_data(data_seqv_rw_mem_ops& seq)
    {
-      name = seq.r.read_text();
+      name = seq.r.read_sized_text();
       x = seq.r.read_f32();
       y = seq.r.read_f32();
       width = seq.r.read_f32();
@@ -360,7 +360,7 @@ public:
 
    virtual void write_data(data_seqv_rw_mem_ops& seq)
    {
-      seq.w.write_text(name);
+      seq.w.write_sized_text(name);
       seq.w.write_f32(x);
       seq.w.write_f32(y);
       seq.w.write_f32(width);
