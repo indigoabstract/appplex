@@ -8,6 +8,8 @@ namespace
 {
    void main_test(const mws_path& i_tmp_path)
    {
+      mws_path path = i_tmp_path / "test.binary";
+      std::string file_path = path.string();
       {
          // write an int and a float to a memory sequence and then read them back
          data_seqv_rw_mem_ops sequence;
@@ -28,8 +30,7 @@ namespace
       {
          // same steps, but with a file sequence now
          // and also showing the equivalent template versions for reading/writing
-         mws_path file_path = i_tmp_path / "test.binary";
-         data_seqv_rw_file_ops sequence(data_seqv_std_file_wrapper(file_path.string(), "w+b"));
+         data_seqv_rw_file_ops sequence(data_seqv_std_file_wrapper(file_path, "w+b"));
          sequence.w.write(42);
          sequence.w.write(666.66f);
          sequence.rewind();
@@ -55,8 +56,8 @@ namespace
       {
          // and shared pointers
          std::shared_ptr<data_seqv_rw_mem> sequence_sp = std::make_shared<data_seqv_rw_mem>();
-         data_seqv_writer_sp dsw_sp(sequence_sp);
-         data_seqv_reader_sp dsr_sp(sequence_sp);
+         data_seqv_writer_shr dsw_sp(sequence_sp);
+         data_seqv_reader_shr dsr_sp(sequence_sp);
          dsw_sp.write_u32(0x5f3759df);
          dsr_sp.dsv()->rewind(); // equivalent to sequence_sp->rewind();
          float magic_number = dsr_sp.read_f32();

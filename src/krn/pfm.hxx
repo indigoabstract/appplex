@@ -225,8 +225,8 @@ class mws_rw_file_seqv : public mws_file_data_seqv
 {
 public:
    static std::shared_ptr<mws_rw_file_seqv> nwi(const mws_file_wrapper& i_file, bool i_is_writable);
-   data_seqv_reader_sp r;
-   data_seqv_writer_sp w;
+   data_seqv_reader_shr r;
+   data_seqv_writer_shr w;
 
 private:
    mws_rw_file_seqv(const mws_file_wrapper& i_file) : mws_file_data_seqv(i_file) {}
