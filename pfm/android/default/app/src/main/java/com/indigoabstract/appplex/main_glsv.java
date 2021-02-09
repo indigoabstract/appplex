@@ -43,8 +43,6 @@ public class main_glsv extends GLSurfaceView
 		setRenderer(main_rend_inst);
 		setRenderMode(RENDERMODE_CONTINUOUSLY);
         setPreserveEGLContextOnPause(true);
-        touch_data = java.nio.ByteBuffer.allocateDirect(touch_data_size);
-        touch_data.order(java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 	@Override
@@ -79,21 +77,22 @@ public class main_glsv extends GLSurfaceView
 				return false;
 		}
 
-		int touch_count = Math.min(event.getPointerCount(), mws_ptr_evt_max_touch_points);
-		int pointer_index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+		int touch_count = event.getPointerCount();
+        if (touch_count > mws_ptr_evt_max_touch_points) { touch_count = mws_ptr_evt_max_touch_points; }
+		final int pointer_index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+		int idx = 0;
 
-        touch_data.putInt(touch_type);
-        touch_data.putInt(touch_count);
+        touch_data[idx++] = touch_type;
+        touch_data[idx++] = touch_count;
 
-		for (int k = 0; k < touch_count; k++)
-		{
-            touch_data.putInt(event.getPointerId(k));
-            touch_data.putFloat(event.getX(k));
-            touch_data.putFloat(event.getY(k));
-            touch_data.putInt((k == pointer_index) ? 1 : 0);
-		}
+        for (int k = 0; k < touch_count; k++)
+        {
+            touch_data[idx++] = event.getPointerId(k);
+            touch_data[idx++] = Float.floatToRawIntBits(event.getX(k));
+            touch_data[idx++] = Float.floatToRawIntBits(event.getY(k));
+            touch_data[idx++] = (k == pointer_index) ? 1 : 0;
+        }
 
-        touch_data.rewind();
         main.native_touch_event(touch_data);
 
 		return true;
@@ -140,8 +139,8 @@ public class main_glsv extends GLSurfaceView
     public static final int mws_ptr_evt_touch_ended = 3;
     public static final int mws_ptr_evt_touch_cancelled = 4;
     // type + count + 8 * (id, x, y, is_changed)
-    public static final int touch_data_size = 4 + 4 + mws_ptr_evt_max_touch_points * (4 + 4 + 4 + 4);
-    private java.nio.ByteBuffer touch_data;
+    public static final int touch_data_size = 1 + 1 + mws_ptr_evt_max_touch_points * 4;
+    private static int[] touch_data = new int[touch_data_size];
 }
 
 class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser

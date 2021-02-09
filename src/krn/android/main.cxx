@@ -325,20 +325,20 @@ mws_key_types android_main::apply_key_modifiers_impl(mws_key_types i_key_id) con
 
 bool android_main::is_wifi_multicast_lock_enabled() const
 {
-    JNIEnv* env = JniHelper::getEnv();
-    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-    jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_brightness", "()Z");
-    jboolean enabled = env->CallStaticBooleanMethod(clazz, mid);
+   JNIEnv* env = JniHelper::getEnv();
+   jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+   jmethodID mid = env->GetStaticMethodID(clazz, "get_screen_brightness", "()Z");
+   jboolean enabled = env->CallStaticBooleanMethod(clazz, mid);
 
-    return (bool)enabled;
+   return (bool)enabled;
 }
 
 void android_main::set_wifi_multicast_lock_enabled(bool i_enabled)
 {
-    JNIEnv* env = JniHelper::getEnv();
-    jclass clazz = env->FindClass(CLASS_MAIN_PATH);
-    jmethodID mid = env->GetStaticMethodID(clazz, "set_wifi_multicast_lock_enabled", "(Z)V");
-    env->CallStaticVoidMethod(clazz, mid, (jboolean)i_enabled);
+   JNIEnv* env = JniHelper::getEnv();
+   jclass clazz = env->FindClass(CLASS_MAIN_PATH);
+   jmethodID mid = env->GetStaticMethodID(clazz, "set_wifi_multicast_lock_enabled", "(Z)V");
+   env->CallStaticVoidMethod(clazz, mid, (jboolean)i_enabled);
 }
 
 bool android_main::is_full_screen_mode() const { return true; }
@@ -627,12 +627,24 @@ extern "C"
       app_inst()->on_resize(i_w, i_h);
    }
 
-   JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jobject i_byte_buff)
+   JNIEXPORT void JNICALL Java_com_indigoabstract_appplex_main_native_1touch_1event(JNIEnv* i_env, jobject i_this, jintArray i_touch_data)
    {
-      const std::byte* byte_buff_addr = reinterpret_cast<std::byte*>(i_env->GetDirectBufferAddress(i_byte_buff));
       // type + count + 8 * (id, x, y, is_changed)
       const uint32_t touch_data_size = 4 + 4 + mws_ptr_evt_base::max_touch_points * (4 + 4 + 4 + 4);
-      data_seqv_ro_mem_reader dsr(ro_mem_seqv(byte_buff_addr, touch_data_size));
+      std::byte byte_buff_addr[touch_data_size];
+      {
+         void* addr = i_env->GetPrimitiveArrayCritical(i_touch_data, nullptr);
+
+         if (addr == nullptr)
+         {
+            mws_println("Java_com_indigoabstract_appplex_main_native_1touch_1event nullptr");
+            return;
+         }
+
+         std::memcpy(byte_buff_addr, addr, touch_data_size);
+         i_env->ReleasePrimitiveArrayCritical(i_touch_data, addr, 0);
+      }
+      data_seqv_ro_mem_reader dsr(byte_buff_addr, touch_data_size);
       auto pfm_te = mws_ptr_evt_base::nwi();
 
       pfm_te->type = static_cast<mws_ptr_evt_base::e_touch_type>(dsr.read_u32());
