@@ -45,9 +45,9 @@ public:
    virtual bool is_readable() const { return true; }
    virtual bool is_writable() const { return true; }
    /** sets current reading & writing position to 0, but keeps the current size and what was written so far */
-   virtual void rewind() = 0;
+   virtual void rewind();
    /** same as rewind, but also discards what was written so far in memory sequences, so afterwards size() will return 0 */
-   virtual void reset() = 0;
+   virtual void reset();
    /** sets current reading & writing position */
    virtual void set_io_position(uint64_t i_position);
    virtual void set_read_position(uint64_t i_position);
@@ -136,6 +136,8 @@ public:
    virtual void set_write_position(uint64_t i_position) override;
    /** resizes this sequence to the specified number of bytes */
    virtual void resize(uint32_t i_elem_count);
+   /** moves the data in this sequence into the byte vector i_seqv. this object is left empty */
+   virtual void move_into(std::vector<std::byte>& i_seqv);
 
 protected:
    virtual int read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset) override;
@@ -592,7 +594,7 @@ private:
 
 
 // data_seqv
-inline data_seqv::data_seqv() : read_position_v(0), write_position_v(0), total_bytes_read_v(0), total_bytes_written_v(0) {}
+inline data_seqv::data_seqv() { data_seqv::reset(); }
 
 inline data_seqv& data_seqv::operator=(const data_seqv& i_seqv)
 {
@@ -610,10 +612,11 @@ inline data_seqv& data_seqv::operator=(data_seqv&& i_seqv) noexcept
 {
    if (this != &i_seqv)
    {
-      read_position_v = i_seqv.read_position_v; i_seqv.read_position_v = 0;
-      write_position_v = i_seqv.write_position_v; i_seqv.write_position_v = 0;
-      total_bytes_read_v = i_seqv.total_bytes_read_v; i_seqv.total_bytes_read_v = 0;
-      total_bytes_written_v = i_seqv.total_bytes_written_v; i_seqv.total_bytes_written_v = 0;
+      read_position_v = i_seqv.read_position_v;
+      write_position_v = i_seqv.write_position_v;
+      total_bytes_read_v = i_seqv.total_bytes_read_v;
+      total_bytes_written_v = i_seqv.total_bytes_written_v;
+      i_seqv.data_seqv::reset();
    }
    return *this;
 }
@@ -624,6 +627,8 @@ inline uint64_t data_seqv::read_position() const { return read_position_v; }
 inline uint64_t data_seqv::write_position() const { return write_position_v; }
 inline uint64_t data_seqv::total_bytes_read() const { return total_bytes_read_v; }
 inline uint64_t data_seqv::total_bytes_written() const { return total_bytes_written_v; }
+inline void data_seqv::rewind() { read_position_v = write_position_v = total_bytes_read_v = total_bytes_written_v = 0; }
+inline void data_seqv::reset() { rewind(); }
 inline void data_seqv::set_io_position(uint64_t i_position) { read_position_v = write_position_v = i_position; }
 inline void data_seqv::set_read_position(uint64_t i_position) { read_position_v = i_position; }
 inline void data_seqv::set_write_position(uint64_t i_position) { write_position_v = i_position; }
@@ -655,8 +660,8 @@ inline data_seqv_ro_mem::data_seqv_ro_mem(const std::vector<std::byte>& i_seqv) 
 inline data_seqv_ro_mem::data_seqv_ro_mem(const std::byte* i_seqv, uint64_t i_elem_count) : seqv(i_seqv), size_v(i_elem_count) {}
 inline const std::byte* data_seqv_ro_mem::seqv_as_array() const { return seqv; }
 inline uint64_t data_seqv_ro_mem::size() const { return size_v; }
-inline void data_seqv_ro_mem::rewind() { set_read_position(0); }
-inline void data_seqv_ro_mem::reset() { rewind(); }
+inline void data_seqv_ro_mem::rewind() { data_seqv::rewind(); }
+inline void data_seqv_ro_mem::reset() { data_seqv::reset(); }
 inline void data_seqv_ro_mem::set_io_position(uint64_t i_position) { set_read_position(i_position); }
 
 inline std::vector<std::byte> data_seqv_ro_mem::seqv_as_vector() const
@@ -716,8 +721,8 @@ inline data_seqv_rw_mem& data_seqv_rw_mem::operator=(data_seqv_rw_mem&& i_seqv) 
 inline const std::byte* data_seqv_rw_mem::seqv_as_array() const { return seqv.data(); }
 inline std::vector<std::byte> data_seqv_rw_mem::seqv_as_vector() const { return seqv; }
 inline uint64_t data_seqv_rw_mem::size() const { return seqv.size(); }
-inline void data_seqv_rw_mem::rewind() { set_io_position(0); }
-inline void data_seqv_rw_mem::reset() { rewind(); seqv.clear(); }
+inline void data_seqv_rw_mem::rewind() { data_seqv::rewind(); }
+inline void data_seqv_rw_mem::reset() { data_seqv::reset(); seqv.clear(); }
 inline void data_seqv_rw_mem::set_io_position(uint64_t i_position) { set_read_position(i_position); set_write_position(i_position); }
 inline void data_seqv_rw_mem::set_read_position(uint64_t i_pos) { if (i_pos > size()) { data_seqv_exception::throw_ex(); } else { read_position_v = i_pos; } }
 inline void data_seqv_rw_mem::set_write_position(uint64_t i_pos) { if (i_pos > size()) { data_seqv_exception::throw_ex(); } else { write_position_v = i_pos; } }
@@ -727,6 +732,12 @@ inline void data_seqv_rw_mem::resize(uint32_t i_elem_count)
    seqv.resize(i_elem_count);
    if (read_position_v >= i_elem_count) { set_read_position(i_elem_count); }
    if (write_position_v >= i_elem_count) { set_write_position(i_elem_count); }
+}
+
+inline void data_seqv_rw_mem::move_into(std::vector<std::byte>& i_seqv)
+{
+   i_seqv.swap(seqv);
+   reset();
 }
 
 inline int data_seqv_rw_mem::read_bytes_impl(std::byte* i_seqv, uint32_t i_elem_count, uint32_t i_offset)
@@ -796,8 +807,8 @@ template<class T, class io> bool data_seqv_file_base<T, io>::is_end_of_seqv()
 
 template<class T, class io> void data_seqv_file_base<T, io>::close() { io()(file_v)->close(); }
 template<class T, class io> uint64_t data_seqv_file_base<T, io>::size() const { return io()(file_v)->length(); }
-template<class T, class io> void data_seqv_file_base<T, io>::rewind() { set_io_position(0); }
-template<class T, class io> void data_seqv_file_base<T, io>::reset() { rewind(); }
+template<class T, class io> void data_seqv_file_base<T, io>::rewind() { data_seqv::rewind(); set_io_position(0); }
+template<class T, class io> void data_seqv_file_base<T, io>::reset() { data_seqv::reset(); set_io_position(0); }
 template<class T, class io> const T& data_seqv_file_base<T, io>::file() const { return file_v; }
 
 template<class T, class io> void data_seqv_file_base<T, io>::set_io_position(uint64_t i_pos)
