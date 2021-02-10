@@ -89,7 +89,7 @@ public:
    virtual void setup() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override {}
    virtual void update_state() override {}
-   virtual void update_view(mws_sp<mws_camera> g) override {}
+   virtual void update_view(mws_sp<mws_camera> i_g) override {}
    virtual mws_sp<mws_ptr_evt> on_receive(mws_sp<mws_ptr_evt> i_pe, mws_sp<mws_text_area> i_ta);
    virtual void on_update_state();
    virtual void on_resize(uint32_t i_width, uint32_t i_height);
@@ -214,7 +214,7 @@ protected:
    mws_sp<gfx_quad_2d> keys_bg_outline_quad;
    mws_sp<gfx_quad_2d> keys_quad;
    mws_sp<mws_vkb_pressed_key> pressed_key;
-   uintptr_t pressed_vkb_hide_finger_id = -1;
+   uintptr_t pressed_vkb_hide_finger_id = std::numeric_limits<uint32_t>::max();
    inline static const std::string vkb_keys_fonts_sh = "mws-vkb-keys-fonts";
    inline static const std::string vkb_keys_outline_sh = "mws-vkb-keys-outline";
    inline static const std::string vkb_hsv_shift_sh = "mws-vkb-hsv-shift";

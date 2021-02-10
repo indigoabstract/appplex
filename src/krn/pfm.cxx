@@ -547,9 +547,10 @@ void mws_file_impl::check_file_is_writable()
 {
    bool file_opened = get_file_impl();
 
-   if (file_opened && (open_mode.find('a') != std::string::npos || open_mode.find('w') != std::string::npos))
+   if (file_opened)
    {
-      file_is_writable = true;
+      const auto& end = std::string::npos;
+      file_is_writable = (open_mode.find('+') != end || open_mode.find('a') != end || open_mode.find('w') != end);
    }
 }
 
@@ -1304,7 +1305,7 @@ std::string mws::time::get_duration_as_string(uint32_t i_duration)
 {
    std::string duration;
 
-   uint32_t millis = i_duration % 1000;
+   //uint32_t millis = i_duration % 1000;
    uint32_t seconds = i_duration / 1000;
    uint32_t minutes = seconds / 60;
    uint32_t seconds_remainder = seconds % 60;

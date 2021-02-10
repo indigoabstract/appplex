@@ -13,8 +13,8 @@
 // type conversion utils: type aliasing/punning and reference/pointer converters
 template<class T> std::byte* byte_cast(T* i_addr) { return reinterpret_cast<std::byte*>(i_addr); }
 template<class T> const std::byte* byte_const_cast(const T* i_addr) { return reinterpret_cast<const std::byte*>(i_addr); }
-template<class T> struct ref_adapter { T* operator() (T& i_obj) { return &i_obj; } const T* operator() (const T& i_obj) { return &i_obj; } };
 template<class T> struct ptr_adapter { T operator() (T& i_obj) { return i_obj; } const T operator() (const T& i_obj) { return i_obj; } };
+template<class T> struct ref_adapter { T* operator() (T& i_obj) { return &i_obj; } const T* operator() (const T& i_obj) { return &i_obj; } };
 
 
 /** interface/base class for all data sequences. note: writing to the sequence does not change the read position and viceversa */
@@ -196,6 +196,7 @@ public:
    virtual const std::byte* seqv_as_array() const override { return nullptr; }
    virtual std::vector<std::byte> seqv_as_vector() const override { return std::vector<std::byte>(); }
    virtual uint64_t size() const override;
+   virtual bool is_writable() const override { return io()(file_v)->is_writable(); }
    virtual void rewind() override;
    virtual void reset() override;
    virtual void set_io_position(uint64_t i_position) override;
@@ -209,7 +210,6 @@ protected:
 
    uint64_t last_file_pos = 0;
    T file_v;
-   bool is_writable = false;
 };
 
 
@@ -220,7 +220,6 @@ public:
    data_seqv_file(const data_seqv_std_file_wrapper& i_file) : data_seqv_file_base(i_file)
    {
       assert(i_file.is_open());
-      is_writable = i_file.is_writable();
    }
    virtual void set_file_wrapper(const data_seqv_std_file_wrapper& i_file) { file_v = i_file; }
 };
@@ -231,10 +230,7 @@ class data_seqv_file_ptr : public data_seqv_file_base<data_seqv_file_wrapper*, p
 {
 public:
    data_seqv_file_ptr() : data_seqv_file_base(nullptr) {}
-   data_seqv_file_ptr(data_seqv_file_wrapper* i_file) : data_seqv_file_base(i_file)
-   {
-      if (i_file) { assert(i_file->is_open()); is_writable = i_file->is_writable(); }
-   }
+   data_seqv_file_ptr(data_seqv_file_wrapper* i_file) : data_seqv_file_base(i_file) { assert(!i_file || i_file->is_open()); }
    virtual void set_file_wrapper(data_seqv_file_wrapper* i_file) { file_v = i_file; }
 };
 
@@ -244,10 +240,7 @@ class data_seqv_file_shr : public data_seqv_file_base<std::shared_ptr<data_seqv_
 {
 public:
    data_seqv_file_shr() : data_seqv_file_base(nullptr) {}
-   data_seqv_file_shr(std::shared_ptr<data_seqv_file_wrapper> i_file) : data_seqv_file_base(i_file)
-   {
-      if (i_file) { assert(i_file->is_open()); is_writable = i_file->is_writable(); }
-   }
+   data_seqv_file_shr(std::shared_ptr<data_seqv_file_wrapper> i_file) : data_seqv_file_base(i_file) { assert(!i_file || i_file->is_open()); }
    virtual void set_file_wrapper(std::shared_ptr<data_seqv_file_wrapper> i_file) { file_v = i_file; }
 };
 
@@ -458,7 +451,7 @@ class data_seqv_file_writer_ref : public data_seqv_writer_base<data_seqv_file&, 
 {
 public:
    /** constructs a file data sequence with data copied from i_seqv */
-   data_seqv_file_writer_ref(data_seqv_file& i_seqv) : data_seqv_writer_base(i_seqv) {}
+   data_seqv_file_writer_ref(data_seqv_file& i_seqv) : data_seqv_writer_base(i_seqv) { assert(i_seqv.is_writable()); }
 };
 
 
@@ -467,8 +460,8 @@ class data_seqv_writer_ptr : public data_seqv_writer_base<data_seqv*, ptr_adapte
 {
 public:
    data_seqv_writer_ptr() : data_seqv_writer_base(nullptr) {}
-   data_seqv_writer_ptr(data_seqv* i_seqv) : data_seqv_writer_base(i_seqv) {}
-   void set_data_sequence(data_seqv* i_seqv) { seqv = i_seqv; }
+   data_seqv_writer_ptr(data_seqv* i_seqv) : data_seqv_writer_base(i_seqv) { assert(i_seqv->is_writable()); }
+   void set_data_sequence(data_seqv* i_seqv) { assert(i_seqv->is_writable()); seqv = i_seqv; }
 };
 
 
@@ -477,8 +470,8 @@ class data_seqv_writer_shr : public data_seqv_writer_base<std::shared_ptr<data_s
 {
 public:
    data_seqv_writer_shr() : data_seqv_writer_base(nullptr) {}
-   data_seqv_writer_shr(std::shared_ptr<data_seqv> i_seqv) : data_seqv_writer_base(i_seqv) {}
-   void set_data_sequence(std::shared_ptr<data_seqv> i_seqv) { seqv = i_seqv; }
+   data_seqv_writer_shr(std::shared_ptr<data_seqv> i_seqv) : data_seqv_writer_base(i_seqv) { assert(i_seqv->is_writable()); }
+   void set_data_sequence(std::shared_ptr<data_seqv> i_seqv) { assert(i_seqv->is_writable()); assert(i_seqv->is_writable()); seqv = i_seqv; }
 };
 
 
@@ -504,7 +497,7 @@ public:
 class data_seqv_rw_file_ops : public data_seqv_file
 {
 public:
-   data_seqv_rw_file_ops(const data_seqv_std_file_wrapper& i_file) : data_seqv_file(i_file), r(*this), w(*this) {}
+   data_seqv_rw_file_ops(const data_seqv_std_file_wrapper& i_file) : data_seqv_file(i_file), r(*this), w(*this) { assert(i_file.is_writable()); }
 
    data_seqv_file_reader_ref r;
    data_seqv_file_writer_ref w;
@@ -929,7 +922,7 @@ template<class T, class reader> std::vector<std::byte> data_seqv_reader_base<T, 
 {
    std::vector<std::byte> vect(i_elem_count);
    int bytes_read = read_bytes(vect.data(), i_elem_count, 0);
-   mws_assert(static_cast<uint32_t>(bytes_read) == i_elem_count);
+   assert(static_cast<uint32_t>(bytes_read) == i_elem_count);
    return vect;
 }
 
