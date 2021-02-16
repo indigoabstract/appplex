@@ -118,7 +118,7 @@ public:
       return load_as_string(fs);
    }
 
-   void setup_video_encoding(int video_width, int video_height)
+   void setup_video_encoding([[maybe_unused]] int i_video_width, [[maybe_unused]] int i_video_height)
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
@@ -157,7 +157,7 @@ public:
       default_video_params.width = gfx::i()->rt.get_screen_width();
       default_video_params.height = gfx::i()->rt.get_screen_height();
 
-      if (!scr_mirror_tex || scr_mirror_tex->get_width() != video_width || scr_mirror_tex->get_height() != video_height)
+      if (!scr_mirror_tex || scr_mirror_tex->get_width() != i_video_width || scr_mirror_tex->get_height() != i_video_height)
       {
          {
             gfx_tex_params prm;
@@ -174,8 +174,8 @@ public:
 
          // y rt
          {
-            int rt_y_width = video_width;
-            int rt_y_height = video_height;
+            int rt_y_width = i_video_width;
+            int rt_y_height = i_video_height;
 
             pixels_y_tex.resize(rt_y_width * rt_y_height);
             rt_y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), rt_y_width, rt_y_height, &prm);
@@ -197,8 +197,8 @@ public:
 
          // u rt
          {
-            int rt_u_width = video_width / 2;
-            int rt_u_height = video_height / 2;
+            int rt_u_width = i_video_width / 2;
+            int rt_u_height = i_video_height / 2;
 
             pixels_u_tex.resize(rt_u_width * rt_u_height);
             rt_u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), rt_u_width, rt_u_height, &prm);
@@ -220,8 +220,8 @@ public:
 
          // v rt
          {
-            int rt_v_width = video_width / 2;
-            int rt_v_height = video_height / 2;
+            int rt_v_width = i_video_width / 2;
+            int rt_v_height = i_video_height / 2;
 
             pixels_v_tex.resize(rt_v_width * rt_v_height);
             rt_v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), rt_v_width, rt_v_height, &prm);
@@ -404,7 +404,7 @@ public:
 #endif
    }
 
-   void start_recording_screen(const mws_path& i_file_path = "", const mws_video_params* i_params = nullptr)
+   void start_recording_screen([[maybe_unused]] const mws_path& i_file_path = "", [[maybe_unused]] const mws_video_params* i_params = nullptr)
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
