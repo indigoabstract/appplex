@@ -118,7 +118,7 @@ public:
       return load_as_string(fs);
    }
 
-   void setup_video_encoding([[maybe_unused]] int i_video_width, [[maybe_unused]] int i_video_height)
+   void setup_video_encoding([[maybe_unused]] uint32_t i_video_width, [[maybe_unused]] uint32_t i_video_height)
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
@@ -174,8 +174,8 @@ public:
 
          // y rt
          {
-            int rt_y_width = i_video_width;
-            int rt_y_height = i_video_height;
+            uint32_t rt_y_width = i_video_width;
+            uint32_t rt_y_height = i_video_height;
 
             pixels_y_tex.resize(rt_y_width * rt_y_height);
             rt_y_tex = gfx::i()->tex.nwi("y-" + gfx_tex::gen_id(), rt_y_width, rt_y_height, &prm);
@@ -197,8 +197,8 @@ public:
 
          // u rt
          {
-            int rt_u_width = i_video_width / 2;
-            int rt_u_height = i_video_height / 2;
+            uint32_t rt_u_width = i_video_width / 2;
+            uint32_t rt_u_height = i_video_height / 2;
 
             pixels_u_tex.resize(rt_u_width * rt_u_height);
             rt_u_tex = gfx::i()->tex.nwi("u-" + gfx_tex::gen_id(), rt_u_width, rt_u_height, &prm);
@@ -220,8 +220,8 @@ public:
 
          // v rt
          {
-            int rt_v_width = i_video_width / 2;
-            int rt_v_height = i_video_height / 2;
+            uint32_t rt_v_width = i_video_width / 2;
+            uint32_t rt_v_height = i_video_height / 2;
 
             pixels_v_tex.resize(rt_v_width * rt_v_height);
             rt_v_tex = gfx::i()->tex.nwi("v-" + gfx_tex::gen_id(), rt_v_width, rt_v_height, &prm);
@@ -249,12 +249,12 @@ public:
             for (size_t k = 0; k < pbos.size(); k++)
             {
                std::vector<gfx_uint>* p = pbos[k];
-               int size = p->size();
+               uint32_t size = p->size();
                auto data_size = data_sizes[k];
 
                glGenBuffers(size, p->data());
 
-               for (int l = 0; l < size; l++)
+               for (uint32_t l = 0; l < size; l++)
                {
                   glBindBuffer(GL_PIXEL_PACK_BUFFER, (*p)[l]);
                   glBufferData(GL_PIXEL_PACK_BUFFER, data_size, 0, GL_STREAM_READ);
@@ -276,8 +276,8 @@ public:
 
       auto mws_mod = u.lock();
       auto mws_cam = u.lock()->mws_cam;
-      int width = mws_mod->get_width();
-      int height = mws_mod->get_height();
+      uint32_t width = mws_mod->get_width();
+      uint32_t height = mws_mod->get_height();
 
       // show date of recording
       {
@@ -346,7 +346,7 @@ public:
       // pbo_index is used to read pixels from a framebuffer to a PBO
       pbo_index = (pbo_index + 1) % 2;
       // pbo_next_index is used to process pixels in the other PBO
-      int pbo_next_index = (pbo_index + 1) % 2;
+      uint32_t pbo_next_index = (pbo_index + 1) % 2;
 
       mws_report_gfx_errs();
       gfx::i()->rt.set_current_render_target(rt_y);
@@ -409,8 +409,8 @@ public:
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
 
       mws_path file_path = i_file_path;
-      int video_width = gfx::i()->rt.get_screen_width();
-      int video_height = gfx::i()->rt.get_screen_height();
+      uint32_t video_width = gfx::i()->rt.get_screen_width();
+      uint32_t video_height = gfx::i()->rt.get_screen_height();
 
       if (venc && venc->is_encoding())
       {
@@ -524,8 +524,8 @@ public:
    std::vector<gfx_uint> y_pbo_ids;
    std::vector<gfx_uint> u_pbo_ids;
    std::vector<gfx_uint> v_pbo_ids;
-   int frame_index;
-   int pbo_index;
+   uint32_t frame_index;
+   uint32_t pbo_index;
 
    mws_sp<venc_ffmpeg> venc;
    mws_video_params default_video_params;
@@ -642,7 +642,7 @@ void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
          "00", "0"
       };
       mws_path dir = tmp_dir() / "screens";
-      int screenshot_idx = 0;
+      uint32_t screenshot_idx = 0;
 
       // if dir doesn't exist, create it
       if (!dir.exists())
@@ -660,8 +660,8 @@ void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
       do
       {
          std::string idx_nr = "";
-         int digits = 0;
-         int ssi = screenshot_idx;
+         uint32_t digits = 0;
+         uint32_t ssi = screenshot_idx;
 
          // calc. number of digits in a number.
          while ((ssi /= 10) > 0)
@@ -691,8 +691,8 @@ void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
 
    {
       mws_print("saving screenshot to [ %s ] ... ", screenshot_file->string_path().c_str());
-      int w = gfx::i()->rt.get_screen_width();
-      int h = gfx::i()->rt.get_screen_height();
+      uint32_t w = gfx::i()->rt.get_screen_width();
+      uint32_t h = gfx::i()->rt.get_screen_height();
       mws_sp<std::vector<uint32_t>> pixels = gfx::i()->rt.get_render_target_pixels<uint32_t>();
       res_ld::inst()->save_image(screenshot_file, w, h, (uint8_t*)pixels->data(), res_ld::e_vertical_flip);
       mws_println("done.");
@@ -722,8 +722,8 @@ mws_mod::mws_mod(const char* i_include_guard)
 
 mws_mod::~mws_mod() {}
 mws_mod::mod_type mws_mod::get_mod_type() { return e_mod_base; }
-int mws_mod::get_width() { return mws::screen::get_width(); }
-int mws_mod::get_height() { return mws::screen::get_height(); }
+uint32_t mws_mod::get_width() { return mws::screen::get_width(); }
+uint32_t mws_mod::get_height() { return mws::screen::get_height(); }
 const std::string& mws_mod::name() const { return name_v; }
 void mws_mod::name(const std::string& i_name) { name_v = i_name; }
 const std::string& mws_mod::external_name() const { return (external_name_v.empty()) ? name() : external_name_v; }
@@ -762,13 +762,13 @@ bool mws_mod::update()
 #if defined MWS_PFM_IOS
       force_rebind = true;
 #endif
-      int update_count = 1;//update_ctrl_inst->update();
+      uint32_t update_count = 1;//update_ctrl_inst->update();
 
       mws_report_gfx_errs();
 
       if (mod_input_on)
       {
-         //for (int k = 0; k < updateCount; k++)
+         //for (uint32_t k = 0; k < updateCount; k++)
          {
             touch_ctrl_inst->update();
             key_ctrl_inst->update();
@@ -821,8 +821,8 @@ void mws_mod::on_resize()
    if (is_gfx_mod() && gfx::i())
    {
       mws_sp<gfx_state> gfx_st = gfx::i()->get_gfx_state();
-      int w = get_width();
-      int h = get_height();
+      uint32_t w = get_width();
+      uint32_t h = get_height();
 
       decl_gfxpl(pl1)
       {
@@ -1153,7 +1153,7 @@ void mws_mod::set_init(bool i_is_init)
    init_val = i_is_init;
 }
 
-void mws_mod::update_view(int update_count)
+void mws_mod::update_view(uint32_t update_count)
 {
 #if MOD_GFX && MOD_MWS
 
@@ -1183,7 +1183,7 @@ void mws_mod::update_view(int update_count)
 void mws_mod::post_update_view() {}
 
 
-int mws_mod_list::mod_list_count = 0;
+uint32_t mws_mod_list::mod_list_count = 0;
 
 
 mws_mod_list::mws_mod_list() : mws_mod(mws_to_str_fmt("mod_app_list_#%d", mws_mod_list::mod_list_count).c_str())
@@ -1210,16 +1210,16 @@ void mws_mod_list::add(mws_sp<mws_mod> i_mod)
    //ulmodel.lock()->notify_update();
 }
 
-mws_sp<mws_mod> mws_mod_list::mod_at(int i_index)
+mws_sp<mws_mod> mws_mod_list::mod_at(uint32_t i_index)
 {
    return ulist[i_index];
 }
 
 mws_sp<mws_mod> mws_mod_list::mod_by_name(const std::string& i_name)
 {
-   int size = ulist.size();
+   uint32_t size = ulist.size();
 
-   for (int i = 0; i < size; i++)
+   for (uint32_t i = 0; i < size; i++)
    {
       mws_sp<mws_mod> u = ulist[i];
 
@@ -1232,7 +1232,7 @@ mws_sp<mws_mod> mws_mod_list::mod_by_name(const std::string& i_name)
    return mws_sp<mws_mod>();
 }
 
-int mws_mod_list::get_mod_count()const
+uint32_t mws_mod_list::get_mod_count()const
 {
    return ulist.size();
 }
@@ -1319,17 +1319,17 @@ void mws_mod_list::init_mws()
    public:
       lmodel(mws_sp<mws_mod_list> i_ul) : ul(i_ul) {}
 
-      int get_length()
+      uint32_t get_length()
       {
          return get_mod_list()->ulist.size();
       }
 
-      std::string elem_at(int idx)
+      std::string elem_at(uint32_t idx)
       {
          return get_mod_list()->ulist[idx]->name();
       }
 
-      void on_elem_selected(int idx)
+      void on_elem_selected(uint32_t idx)
       {
          mws_sp<mws_mod> u = get_mod_list()->ulist[idx];
 

@@ -37,8 +37,8 @@ class mws_mod_preferences
 public:
    virtual bool requires_gfx();
    virtual bool log_enabled() { return false; }
-   virtual int get_preferred_screen_width() { return 0; }
-   virtual int get_preferred_screen_height() { return 0; }
+   virtual uint32_t get_preferred_screen_width() { return 0; }
+   virtual uint32_t get_preferred_screen_height() { return 0; }
    virtual double get_preferred_aspect_ratio() { return 0.; }
    virtual bool start_full_screen() { return false; }
    virtual bool draw_touch_symbols_trail() { return false; }
@@ -96,8 +96,8 @@ public:
    virtual ~mws_mod();
 
    virtual mod_type get_mod_type();
-   int get_width();
-   int get_height();
+   uint32_t get_width();
+   uint32_t get_height();
    // internal name (only used inside the engine for identification purposes). may be the same as external name
    const std::string& name() const;
    void name(const std::string& i_name);
@@ -123,7 +123,7 @@ public:
    bool handle_function_key(mws_key_types i_key);
    virtual void config_font_db_size();
 
-   int game_time = 0;
+   uint32_t game_time = 0;
    mws_sp<updatectrl> update_ctrl_inst;
    mws_sp<mws_touch_ctrl> touch_ctrl_inst;
    mws_sp<mws_key_ctrl> key_ctrl_inst;
@@ -156,12 +156,12 @@ protected:
    virtual void load();
    virtual void unload();
    virtual mws_sp<mws_sender> sender_inst();
-   virtual void update_view(int update_count);
+   virtual void update_view(uint32_t update_count);
    virtual void post_update_view();
 
    mws_up<app_impl> p;
    mws_sp<mws_mod_preferences> prefs;
-   int frame_count = 0;
+   uint32_t frame_count = 0;
    float fps = 0.f;
    uint32_t last_frame_time = 0;
 
@@ -189,7 +189,7 @@ private:
    mws_atomic_ptr_swap<operation_queue_type> on_frame_begin_q_ptr = mws_atomic_ptr_swap<operation_queue_type>(&on_frame_begin_q0, &on_frame_begin_q1);
    operation_queue_type on_frame_end_q0, on_frame_end_q1;
    mws_atomic_ptr_swap<operation_queue_type> on_frame_end_q_ptr = mws_atomic_ptr_swap<operation_queue_type>(&on_frame_end_q0, &on_frame_end_q1);
-   inline static int mod_count = 0;
+   inline static uint32_t mod_count = 0;
 };
 
 
@@ -200,9 +200,9 @@ public:
 
    mod_type get_mod_type();
    void add(mws_sp<mws_mod> i_mod);
-   mws_sp<mws_mod> mod_at(int i_index);
+   mws_sp<mws_mod> mod_at(uint32_t i_index);
    mws_sp<mws_mod> mod_by_name(const std::string& i_name);
-   int get_mod_count()const;
+   uint32_t get_mod_count()const;
    virtual void on_resize();
    virtual void receive(mws_sp<mws_dp> i_dp);
    void forward();
@@ -219,7 +219,7 @@ private:
 
    std::vector<mws_sp<mws_mod> > ulist;
    mws_wp<mws_list_model> ulmodel;
-   static int mod_list_count;
+   static uint32_t mod_list_count;
 };
 
 

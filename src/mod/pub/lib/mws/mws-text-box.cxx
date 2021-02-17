@@ -306,29 +306,29 @@ void mws_text_box::update_state()
    }
 }
 
-void mws_text_box::update_view(mws_sp<mws_camera> g)
+void mws_text_box::update_view(mws_sp<mws_camera> i_g)
 {
-   //g->setColor(0x7fff0000);
-   //g->fillRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
-   //g->setColor(0xffffffff);
-   //g->drawRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+   //i_g->setColor(0x7fff0000);
+   //i_g->fillRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+   //i_g->setColor(0xffffffff);
+   //i_g->drawRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
 
    //if(has_focus())
    //{
    //   if (cursor_left && cursor_right)
    //   {
    //      mws_rect cursor_rect(cursor_left->x + mws_r.x, cursor_left->y + mws_r.y, cursor_right->x - cursor_left->x + cursor_right->w, std::max(cursor_left->h, cursor_right->h));
-   //      g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
+   //      i_g->drawRect(cursor_rect.x, cursor_rect.y, cursor_rect.w, cursor_rect.h);
    //   }
    //   else if (cursor_left || cursor_right)
    //   {
    //      if (cursor_left)
    //      {
-   //         g->drawRect(cursor_left->x + mws_r.x, cursor_left->y + mws_r.y, cursor_left->w, cursor_left->h);
+   //         i_g->drawRect(cursor_left->x + mws_r.x, cursor_left->y + mws_r.y, cursor_left->w, cursor_left->h);
    //      }
    //      else if (cursor_right)
    //      {
-   //         g->drawRect(cursor_right->x + mws_r.x, cursor_right->y + mws_r.y, cursor_right->w, cursor_right->h);
+   //         i_g->drawRect(cursor_right->x + mws_r.x, cursor_right->y + mws_r.y, cursor_right->w, cursor_right->h);
    //      }
    //   }
    //}
@@ -670,7 +670,7 @@ void mws_text_box::text_view::sync_position()
    tx_vxo->position = glm::vec3(glm::vec2(mws_r.x, mws_r.y) - tx_offset, 0.f);
 }
 
-float mws_text_box::text_view::get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const
+float mws_text_box::text_view::get_span(const font_glyph& i_glyph, std::string& i_text, uint32_t i_idx) const
 {
    float span = 0.f;
    char ch = i_text[i_idx];
@@ -1132,7 +1132,7 @@ void mws_text_box::handle_key_evt(mws_sp<mws_key_evt> i_ke)
    }
 }
 
-float mws_text_box::get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const
+float mws_text_box::get_span(const font_glyph& i_glyph, std::string& i_text, uint32_t i_idx) const
 {
    float span = 0.f;
    char ch = i_text[i_idx];
@@ -1203,10 +1203,10 @@ void mws_text_area_model_rw::set_word_wrap(bool i_word_wrap) { word_wrap = i_wor
 
 uint32_t mws_text_area_model_rw::get_line_count()
 {
-   int length = text.length();
-   int line_count = 1;
+   uint32_t length = text.length();
+   uint32_t line_count = 1;
 
-   for (int k = 0; k < length; k++)
+   for (uint32_t k = 0; k < length; k++)
    {
       if (text[k] == '\n')
       {
@@ -1219,13 +1219,13 @@ uint32_t mws_text_area_model_rw::get_line_count()
 
 std::string mws_text_area_model_rw::get_line_at(uint32_t i_idx, bool i_keep_line_break)
 {
-   int length = text.length();
-   int line_count = 1;
-   int idx = 0;
-   int crt_idx = length;
+   uint32_t length = text.length();
+   uint32_t line_count = 1;
+   uint32_t idx = 0;
+   uint32_t crt_idx = length;
    std::string line;
 
-   for (int k = 0; k < length; k++)
+   for (uint32_t k = 0; k < length; k++)
    {
       if (text[k] == '\n')
       {
@@ -1289,7 +1289,7 @@ void mws_text_area_model_rw::set_size(uint32_t i_width, uint32_t i_height) {}
 
 void mws_text_area_model_rw::set_font(mws_sp<mws_font> i_font) {}
 
-int mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
+uint32_t mws_text_area_model_rw::get_char_at_pixel(float i_x, float i_y) { return 0; }
 
 void mws_text_area_model_rw::push_back(const char* i_text, uint32_t i_length)
 {
@@ -1317,8 +1317,8 @@ void mws_text_area_model_rw::delete_at_cursor(int32_t i_count)
    }
    else if (i_count < 0)
    {
-      int start_idx = get_cursor_pos() + i_count;
-      int count = -i_count;
+      uint32_t start_idx = get_cursor_pos() + i_count;
+      uint32_t count = -i_count;
 
       if (start_idx >= 0)
       {
@@ -1360,8 +1360,8 @@ glm::uvec2 mws_text_area_model_rw::get_cursor_coord()
 
 uint32_t mws_text_area_model_rw::get_cursor_pos_at_line(uint32_t i_line_idx)
 {
-   int cursor_idx = 0;
-   int line_idx = 0;
+   uint32_t cursor_idx = 0;
+   uint32_t line_idx = 0;
    uint32_t length = text.length();
 
    if (i_line_idx == 0)
@@ -1455,8 +1455,8 @@ uint32_t mws_text_area_model_ro::get_line_count() { return mws_text_area_model_r
 std::string mws_text_area_model_ro::get_line_at(uint32_t i_idx, bool i_keep_line_break)
 {
    return mws_text_area_model_rw::get_line_at(i_idx, i_keep_line_break);
-   //int start_idx = line_offsets[i_idx];
-   //int len = line_offsets[i_idx + 1] - start_idx;
+   //uint32_t start_idx = line_offsets[i_idx];
+   //uint32_t len = line_offsets[i_idx + 1] - start_idx;
 
    //if (!i_keep_line_break)
    //{
@@ -1519,15 +1519,15 @@ void mws_text_area_model_ro::push_front(const char* i_text, uint32_t i_length)
 
 void mws_text_area_model_ro::update_back_added_line_offsets(const std::string& i_new_text)
 {
-   int len = i_new_text.length();
-   int last_offset = line_offsets.back();
+   uint32_t len = i_new_text.length();
+   uint32_t last_offset = line_offsets.back();
    line_offsets.pop_back();
 
-   for (int k = 0; k < len; k++)
+   for (uint32_t k = 0; k < len; k++)
    {
       if (i_new_text[k] == '\n')
       {
-         int offset = last_offset + k + 1;
+         uint32_t offset = last_offset + k + 1;
          line_offsets.push_back(offset);
       }
    }
@@ -1538,15 +1538,15 @@ void mws_text_area_model_ro::update_back_added_line_offsets(const std::string& i
 void mws_text_area_model_ro::update_front_added_line_offsets(const std::string& i_new_text)
 {
    std::vector<uint32_t> lo;
-   int len = i_new_text.length();
-   int idx = 1;
+   uint32_t len = i_new_text.length();
+   uint32_t idx = 1;
 
    for (uint32_t k = 1; k < line_offsets.size(); k++)
    {
       line_offsets[k] += len;
    }
 
-   for (int k = 0; k < len; k++)
+   for (uint32_t k = 0; k < len; k++)
    {
       if (i_new_text[k] == '\n')
       {
@@ -1560,11 +1560,11 @@ void mws_text_area_model_ro::update_front_added_line_offsets(const std::string& 
 
 void mws_text_area_model_ro::update_line_offsets()
 {
-   int len = text.length();
+   uint32_t len = text.length();
    line_offsets.clear();
    line_offsets.push_back(0);
 
-   for (int k = 0; k < len; k++)
+   for (uint32_t k = 0; k < len; k++)
    {
       if (text[k] == '\n')
       {

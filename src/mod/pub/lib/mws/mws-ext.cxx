@@ -29,17 +29,17 @@ void mws_list_menu_model::notify_update()
    mws_list_model::notify_update();
 }
 
-int mws_list_menu_model::get_length()
+uint32_t mws_list_menu_model::get_length()
 {
    return elems.size();
 }
 
-std::string mws_list_menu_model::elem_at(int idx)
+std::string mws_list_menu_model::elem_at(uint32_t idx)
 {
    return elems[idx].display;
 }
 
-void mws_list_menu_model::on_elem_selected(int idx)
+void mws_list_menu_model::on_elem_selected(uint32_t idx)
 {
    mws_sp<mws_list> ul = static_pointer_cast<mws_list>(get_view());
    mws_sp<mws_page> up = ul->get_page();
@@ -48,13 +48,13 @@ void mws_list_menu_model::on_elem_selected(int idx)
    change_page_transitions(idx);
 }
 
-void mws_list_menu_model::set_data(mws_list_menu_item ielems[], int ielemsLength)
+void mws_list_menu_model::set_data(mws_list_menu_item ielems[], uint32_t ielemsLength)
 {
    mws_sp<mws_page_tab> mws_root = get_view()->get_mws_root();
 
    elems.clear();
 
-   for (int k = 0; k < ielemsLength; k++)
+   for (uint32_t k = 0; k < ielemsLength; k++)
    {
       set_data_helper(mws_root, ielems[k]);
    }
@@ -68,7 +68,7 @@ void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> ielems)
 
    elems.clear();
 
-   for (auto e : ielems)
+   for (auto& e : ielems)
    {
       set_data_helper(mws_root, e);
    }
@@ -76,7 +76,7 @@ void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> ielems)
    notify_update();
 }
 
-void mws_list_menu_model::change_page_transitions(int idx)
+void mws_list_menu_model::change_page_transitions(uint32_t idx)
 {
 }
 

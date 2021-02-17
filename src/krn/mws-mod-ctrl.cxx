@@ -123,15 +123,15 @@ void mws_mod_ctrl::pre_init_app()
 
 void mws_mod_ctrl::init_app()
 {
-   mws_sp<mws_mod> crt_mod = get_current_mod();
+   mws_sp<mws_mod> active_mod = get_current_mod();
 
    if (mod_gfx_on && gfx_available)
    {
       gfx::global_init();
 
-      if (crt_mod)
+      if (active_mod)
       {
-         crt_mod->config_font_db_size();
+         active_mod->config_font_db_size();
       }
    }
 
@@ -143,7 +143,7 @@ void mws_mod_ctrl::init_app()
 #ifndef SINGLE_MOD_BUILD
    if (ul)
    {
-      if (!crt_mod)
+      if (!active_mod)
       {
          ul->config_font_db_size();
       }

@@ -190,7 +190,7 @@ void mws_table_layout::setup()
 {
    mws_page_item::setup();
 
-   for (int k = 0; k < 4; k++)
+   for (uint32_t k = 0; k < 4; k++)
    {
       mws_sp<mws_table_border> border = mws_table_border::nwi();
 
@@ -343,8 +343,8 @@ void mws_label::update_state()
       auto& tf = get_global_tf_mx();
       auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
       glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
-      auto root = get_mws_root();
-      auto text_ref = root->get_text_vxo();
+      auto root_ref = get_mws_root();
+      auto text_ref = root_ref->get_text_vxo();
 
       text_ref->add_text(text, pos, get_font());
    }
@@ -570,8 +570,8 @@ void mws_button::update_state()
       const glm::vec4& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
       glm::vec2 text_dim = fnt->get_text_dim(text);
       glm::vec2 pos(pos_v4.x - mws_r.w / 2 + (mws_r.w - text_dim.x) / 2.f, pos_v4.y - (mws_r.h - text_dim.y) / 2.f);
-      const auto& root = get_mws_root();
-      mws_sp<mws_text_vxo> text_ref = root->get_text_vxo();
+      const auto& root_ref = get_mws_root();
+      mws_sp<mws_text_vxo> text_ref = root_ref->get_text_vxo();
 
       text_ref->add_text(text, pos, fnt);
    }
@@ -851,12 +851,12 @@ mws_list_model::mws_list_model()
    selected_elem = 0;
 }
 
-int mws_list_model::get_selected_elem()
+uint32_t mws_list_model::get_selected_elem()
 {
    return selected_elem;
 }
 
-void mws_list_model::set_selected_elem(int iselectedElem)
+void mws_list_model::set_selected_elem(uint32_t iselectedElem)
 {
    selected_elem = iselectedElem;
 }
@@ -898,7 +898,7 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
    {
       float listheight = 0;
 
-      for (int k = 0; k < model->get_length(); k++)
+      for (uint32_t k = 0, size = model->get_length(); k < size; k++)
       {
          listheight += item_height + vertical_space;
       }
@@ -923,7 +923,7 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
 
       //   if (ts->tap_count == 1)
       //   {
-      //      int idx = element_at(x, y);
+      //      uint32_t idx = element_at(x, y);
 
       //      if (idx >= 0)
       //      {
@@ -940,26 +940,26 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
    }
 }
 
-bool mws_list::is_hit(float x, float y)
+bool mws_list::is_hit(float, float)
 {
    return false;
 }
 
 void mws_list::update_state()
 {
-   int size = model->get_length();
+   uint32_t size = model->get_length();
 
    if (size > 0)
    {
       auto& tf = get_global_tf_mx();
       auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
       glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
-      auto root = get_mws_root();
-      auto text_ref = root->get_text_vxo();
+      auto root_ref = get_mws_root();
+      auto text_ref = root_ref->get_text_vxo();
       mws_sp<mws_font> f = mws_cam.lock()->get_font();
       pos = glm::vec2(20.f);
 
-      for (int k = 0; k < size; k++)
+      for (uint32_t k = 0; k < size; k++)
       {
          std::string text = model->elem_at(k);
          text_ref->add_text(text, pos, f);
@@ -979,7 +979,7 @@ mws_sp<mws_list_model> mws_list::get_model()
    return model;
 }
 
-int mws_list::element_at(float x, float y)
+uint32_t mws_list::element_at(float x, float y)
 {
    if (!is_hit(x, y))
    {
@@ -988,7 +988,7 @@ int mws_list::element_at(float x, float y)
 
    float vertOffset = get_mws_parent()->get_pos().y;
 
-   for (int k = 0; k < model->get_length(); k++)
+   for (uint32_t k = 0; k < model->get_length(); k++)
    {
       if (is_inside_box(x, y, item_x, vertOffset, item_w, item_height))
       {
@@ -1007,12 +1007,12 @@ mws_tree_model::mws_tree_model()
    length = 0;
 }
 
-void mws_tree_model::set_length(int ilength)
+void mws_tree_model::set_length(uint32_t ilength)
 {
    length = ilength;
 }
 
-int mws_tree_model::get_length()
+uint32_t mws_tree_model::get_length()
 {
    return length;
 }
@@ -1084,15 +1084,15 @@ void mws_tree::update_state()
 {
 }
 
-//void mws_tree::update_view(mws_sp<mws_camera> g)
+//void mws_tree::update_view(mws_sp<mws_camera> i_g)
 //{
 //   mws_sp<mws_tree_model_node> node = model->get_root_node();
 //
 //   if (node->nodes.size() > 0)
 //   {
-//      int i_elem_idx = 0;
+//      uint32_t i_elem_idx = 0;
 //
-//      draw_tree_elem(g, node, 0, i_elem_idx);
+//      draw_tree_elem(i_g, node, 0, i_elem_idx);
 //   }
 //}
 
@@ -1107,11 +1107,11 @@ mws_sp<mws_tree_model> mws_tree::get_model()
    return model;
 }
 
-void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, int level, float& i_max_width)
+void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, uint32_t level, float& i_max_width)
 {
-   int size = node->nodes.size();
+   uint32_t size = node->nodes.size();
 
-   for (int k = 0; k < size; k++)
+   for (uint32_t k = 0; k < size; k++)
    {
       mws_sp<mws_tree_model_node> kv = node->nodes[k];
 
@@ -1130,24 +1130,24 @@ void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_nod
    }
 }
 
-void mws_tree::draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, int level, int& i_elem_idx)
+void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> node, uint32_t level, uint32_t& i_elem_idx)
 {
-   int size = node->nodes.size();
+   uint32_t size = node->nodes.size();
    mws_rect r = get_mws_parent()->get_pos();
 
-   for (int k = 0; k < size; k++)
+   for (uint32_t k = 0; k < size; k++)
    {
       mws_sp<mws_tree_model_node> kv = node->nodes[k];
-      glm::vec2 dim = g->get_font()->get_text_dim(kv->data);
+      glm::vec2 dim = i_g->get_font()->get_text_dim(kv->data);
 
-      g->set_color(gfx_color(0xff, 0, 0xff));
-      g->drawRect(r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
-      g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y);
+      i_g->set_color(gfx_color(0xff, 0, 0xff));
+      i_g->drawRect(r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
+      i_g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y);
       i_elem_idx++;
 
       if (kv->nodes.size() > 0)
       {
-         draw_tree_elem(g, kv, level + 1, i_elem_idx);
+         draw_tree_elem(i_g, kv, level + 1, i_elem_idx);
       }
    }
 }

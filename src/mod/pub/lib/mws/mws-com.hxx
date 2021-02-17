@@ -23,7 +23,7 @@ protected:
 };
 
 
-class mws_table_layout : public mws_page_item
+class mws_table_layout : public mws_layout
 {
 public:
    enum border_types
@@ -211,14 +211,14 @@ public:
    mws_list_model();
    virtual ~mws_list_model() {}
 
-   virtual int get_length() = 0;
-   virtual std::string elem_at(int idx) = 0;
-   virtual int get_selected_elem();
-   virtual void set_selected_elem(int iselectedElem);
-   virtual void on_elem_selected(int idx) = 0;
+   virtual uint32_t get_length() = 0;
+   virtual std::string elem_at(uint32_t i_idx) = 0;
+   virtual uint32_t get_selected_elem();
+   virtual void set_selected_elem(uint32_t i_selected_elem);
+   virtual void on_elem_selected(uint32_t i_idx) = 0;
 
 protected:
-   int selected_elem;
+   uint32_t selected_elem;
 };
 
 
@@ -239,7 +239,7 @@ protected:
    mws_list();
    void setup() override;
 
-   int element_at(float x, float y);
+   uint32_t element_at(float x, float y);
 
    float item_height;
    float vertical_space;
@@ -266,13 +266,13 @@ public:
    mws_tree_model();
    virtual ~mws_tree_model() {}
 
-   virtual void set_length(int ilength);
-   virtual int get_length();
+   virtual void set_length(uint32_t ilength);
+   virtual uint32_t get_length();
    virtual void set_root_node(mws_sp<mws_tree_model_node> iroot);
    virtual mws_sp<mws_tree_model_node> get_root_node();
 
 protected:
-   int length;
+   uint32_t length;
    mws_sp<mws_tree_model_node> root;
 };
 
@@ -296,8 +296,8 @@ protected:
    mws_tree(mws_sp<mws_page> i_parent);
    void setup() override;
 
-   void get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, int level, float& maxWidth);
-   void draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, int level, int& elemIdx);
+   void get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, uint32_t level, float& maxWidth);
+   void draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, uint32_t level, uint32_t& elemIdx);
 
    mws_sp<mws_tree_model> model;
 };
@@ -317,7 +317,7 @@ public:
    virtual void set_text(const char* i_text, uint32_t i_length) = 0;
    virtual void set_size(uint32_t i_width, uint32_t i_height) = 0;
    virtual void set_font(mws_sp<mws_font> i_font) = 0;
-   virtual int get_char_at_pixel(float i_x, float i_y) = 0;
+   virtual uint32_t get_char_at_pixel(float i_x, float i_y) = 0;
 
    // viewer only
    virtual void push_back(const char* i_text, uint32_t i_length) = 0;

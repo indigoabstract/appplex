@@ -33,7 +33,7 @@ std::vector<vkb_file_info> mws_vkb_file_store_impl::get_vkb_list()
       const mws_file_map& file_list = mod.lock()->storage.get_res_file_list();
 
       // store all the found vkb files in a list
-      for (auto file_it : file_list)
+      for (auto& file_it : file_list)
       {
          mws_sp<mws_file> file = file_it.second;
          const std::string& name = file->filename();

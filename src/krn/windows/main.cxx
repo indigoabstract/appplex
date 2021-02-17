@@ -475,8 +475,8 @@ void msvc_main::flip_screen() const
    if (u)
    {
       auto mod_pref = u->get_preferences();
-      int pref_width = mod_pref->get_preferred_screen_width();
-      int pref_height = mod_pref->get_preferred_screen_height();
+      uint32_t pref_width = mod_pref->get_preferred_screen_width();
+      uint32_t pref_height = mod_pref->get_preferred_screen_height();
       start_full_screen = mod_pref->start_full_screen();
 
       if (pref_width > 0 && pref_height > 0)

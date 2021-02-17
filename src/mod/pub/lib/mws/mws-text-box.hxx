@@ -69,7 +69,7 @@ protected:
       virtual void sync_view();
       virtual void sync_view_to_cursor_pos();
       virtual void sync_position();
-      virtual float get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const;
+      virtual float get_span(const font_glyph& i_glyph, std::string& i_text, uint32_t i_idx) const;
       virtual void update_cursor();
       virtual mws_sp<mws_text_box> get_text_box() { return static_pointer_cast<mws_text_box>(get_parent()); }
       virtual mws_rect get_cursor_rect(cursor_types i_cursor_type);
@@ -110,7 +110,7 @@ protected:
    virtual mws_sp<mws_text_area_model> new_model();
    virtual void handle_pointer_evt(mws_sp<mws_ptr_evt> i_pe);
    virtual void handle_key_evt(mws_sp<mws_key_evt> i_ke);
-   virtual float get_span(const font_glyph& i_glyph, std::string& i_text, int i_idx) const;
+   virtual float get_span(const font_glyph& i_glyph, std::string& i_text, uint32_t i_idx) const;
 
    mws_sp<text_view> view;
    bool editable = false;
@@ -156,7 +156,7 @@ public:
    virtual void set_text(const char* i_text, uint32_t i_length) override;
    virtual void set_size(uint32_t i_width, uint32_t i_height) override;
    virtual void set_font(mws_sp<mws_font> i_font) override;
-   virtual int get_char_at_pixel(float i_x, float i_y) override;
+   virtual uint32_t get_char_at_pixel(float i_x, float i_y) override;
    virtual void push_back(const char* i_text, uint32_t i_length) override;
    virtual void push_front(const char* i_text, uint32_t i_length) override;
    virtual void insert_at_cursor(const std::string& i_text) override;

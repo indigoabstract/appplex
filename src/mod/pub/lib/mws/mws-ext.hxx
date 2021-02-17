@@ -24,12 +24,12 @@ public:
    virtual ~mws_list_menu_model() {}
 
    virtual void notify_update();
-   virtual int get_length();
-   virtual std::string elem_at(int idx);
-   virtual void on_elem_selected(int idx);
-   void set_data(mws_list_menu_item ielems[], int ielemsLength);
+   virtual uint32_t get_length();
+   virtual std::string elem_at(uint32_t idx);
+   virtual void on_elem_selected(uint32_t idx);
+   void set_data(mws_list_menu_item ielems[], uint32_t ielemsLength);
    void set_data(std::vector<mws_list_menu_item> ielems);
-   virtual void change_page_transitions(int idx);
+   virtual void change_page_transitions(uint32_t idx);
 
 protected:
    std::vector<mws_list_menu_item> elems;

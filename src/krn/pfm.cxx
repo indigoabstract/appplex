@@ -113,7 +113,7 @@ std::vector<mws_sp<mws_file>> mws_app::list_external_directory(const mws_path& i
 #else
 
 
-std::vector<mws_sp<mws_file>> mws_app::list_external_directory(const mws_path& i_directory, bool i_recursive) const
+std::vector<mws_sp<mws_file>> mws_app::list_external_directory(const mws_path& /*i_directory*/, bool /*i_recursive*/) const
 {
    return std::vector<mws_sp<mws_file>>();
 }
@@ -1116,7 +1116,7 @@ void mws_app::set_wifi_multicast_lock_enabled(bool i_enabled) { is_wifi_multicas
 
 float mws_app::get_screen_scale() const { return 1.f; }
 float mws_app::get_screen_brightness() const { return 1.f; }
-void mws_app::set_screen_brightness(float i_brightness) const {}
+void mws_app::set_screen_brightness(float /*i_brightness*/) const {}
 void mws_app::flip_screen() const {}
 float mws_app::get_avg_screen_dpcm() const { return get_avg_screen_dpi() / 2.54f; }
 

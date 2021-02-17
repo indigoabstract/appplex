@@ -197,6 +197,7 @@ protected:
 };
 
 
+/** page navigator base class */
 class mws_page_nav
 {
 public:
@@ -257,8 +258,38 @@ private:
    mws_sp<mws_virtual_keyboard> vkb;
    mws_sp<mws_vkb_file_store> vkb_store;
    mws_sp<mws_text_vxo> tab_text_vxo;
-   mws_wp<mws_mod> u;
+   mws_wp<mws_mod> mod;
    mws_sp<mws_page_nav> page_nav;
+};
+
+
+class mws_page_item : public mws_obj
+{
+public:
+   virtual ~mws_page_item() {}
+
+   virtual void set_rect(const mws_rect& i_rect);
+   virtual void set_position(const glm::vec2& i_position);
+   virtual void set_size(const glm::vec2& i_size);
+   mws_sp<mws_page> get_page();
+   virtual bool has_focus();
+   virtual void set_focus(bool i_set_focus = true);
+
+protected:
+   mws_page_item();
+   void setup() override;
+};
+
+
+class mws_layout : public mws_page_item {};
+
+
+struct mws_layout_info
+{
+   uint32_t width = 0;
+   uint32_t height = 0;
+   mws_sp<mws_layout> layout;
+   float32 aspect_ratio = 0.f;
 };
 
 
@@ -274,6 +305,7 @@ public:
    virtual bool contains_mws(const mws_sp<mws_obj> i_mws);
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent() const;
+   virtual mws_layout_info find_closest_layout_match(const mws_layout_info& i_lyt_info);
 
    virtual void on_show_transition(const mws_sp<linear_transition> i_transition);
    virtual void on_hide_transition(const mws_sp<linear_transition> i_transition);
@@ -293,28 +325,12 @@ protected:
    virtual void on_resize();
    std::vector<mws_sp<mws_obj>> mws_subobj_list;
    mws_sp<mws_obj> selected_item;
+   std::vector<mws_layout_info> layouts;
+   mws_layout_info crt_layout;
 
 private:
    friend class mws_page_tab;
    friend class mws_page_item;
-};
-
-
-class mws_page_item : public mws_obj
-{
-public:
-   virtual ~mws_page_item() {}
-
-   virtual void set_rect(const mws_rect& i_rect);
-   virtual void set_position(const glm::vec2& i_position);
-   virtual void set_size(const glm::vec2& i_size);
-   mws_sp<mws_page> get_page();
-   virtual bool has_focus();
-   virtual void set_focus(bool i_set_focus = true);
-
-protected:
-   mws_page_item();
-   void setup() override;
 };
 
 

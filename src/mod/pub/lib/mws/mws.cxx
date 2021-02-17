@@ -20,6 +20,7 @@
 #endif
 
 
+// mws_model
 mws_sp<mws_model> mws_model::get_instance()
 {
    return shared_from_this();
@@ -54,6 +55,7 @@ mws_sp<mws_sender> mws_model::sender_inst()
 }
 
 
+// mws_obj
 mws_sp<mws_obj> mws_obj::nwi()
 {
    auto inst = mws_sp<mws_obj>(new mws_obj());
@@ -115,7 +117,7 @@ void mws_obj::attach(mws_sp<gfx_node> i_node)
 
 void mws_obj::list_mws_children(std::vector<mws_sp<mws_obj> >& i_mws_subobj_list)
 {
-   for (auto c : children)
+   for (auto& c : children)
    {
       if (c->get_type() == gfx_obj::e_mws)
       {
@@ -280,7 +282,7 @@ void mws_obj::update_state()
    }
 }
 
-void mws_obj::update_view(mws_sp<mws_camera> g)
+void mws_obj::update_view(mws_sp<mws_camera> i_g)
 {
    for (auto& c : children)
    {
@@ -290,7 +292,7 @@ void mws_obj::update_view(mws_sp<mws_camera> g)
 
          if (w && w->visible)
          {
-            w->update_view(g);
+            w->update_view(i_g);
          }
       }
    }
@@ -328,6 +330,7 @@ mws_sp<mws_sender> mws_obj::sender_inst()
 }
 
 
+// mws_page_tab
 mws_page_tab::mws_page_tab(mws_sp<mws_mod> i_mod)
 {
    if (!i_mod)
@@ -335,7 +338,7 @@ mws_page_tab::mws_page_tab(mws_sp<mws_mod> i_mod)
       mws_throw mws_exception("mod cannot be null");
    }
 
-   u = i_mod;
+   mod = i_mod;
    mws_r.set(0, 0, (float)i_mod->get_width(), (float)i_mod->get_height());
 }
 
@@ -364,7 +367,7 @@ void mws_page_tab::init_subobj()
       return (a->get_z() > b->get_z());
    };
 
-   for (auto p : page_tab)
+   for (auto& p : page_tab)
    {
       p->init();
       p->mws_subobj_list.clear();
@@ -380,7 +383,7 @@ void mws_page_tab::init_subobj()
 
 void mws_page_tab::on_destroy()
 {
-   for (auto p : page_tab)
+   for (auto& p : page_tab)
    {
       p->on_destroy();
    }
@@ -395,23 +398,23 @@ mws_sp<mws_obj> mws_page_tab::contains_id(const std::string& i_id)
          return get_instance();
       }
 
-      for (auto p : page_tab)
+      for (auto& p : page_tab)
       {
-         mws_sp<mws_obj> u = p->contains_id(i_id);
+         mws_sp<mws_obj> o = p->contains_id(i_id);
 
-         if (u)
+         if (o)
          {
-            return u;
+            return o;
          }
       }
    }
 
-   return mws_sp<mws_obj>();
+   return nullptr;
 }
 
 bool mws_page_tab::contains_mws(const mws_sp<mws_obj> i_mws)
 {
-   for (auto p : page_tab)
+   for (auto& p : page_tab)
    {
       if (i_mws == p || p->contains_mws(i_mws))
       {
@@ -429,7 +432,7 @@ mws_sp<mws_page_tab> mws_page_tab::get_mws_page_tab_instance()
 
 mws_sp<mws_mod> mws_page_tab::get_mod()
 {
-   return static_pointer_cast<mws_mod>(u.lock());
+   return static_pointer_cast<mws_mod>(mod.lock());
 }
 
 bool mws_page_tab::is_empty()
@@ -491,26 +494,26 @@ void mws_page_tab::update_state()
    }
 }
 
-void mws_page_tab::update_view(mws_sp<mws_camera> g)
+void mws_page_tab::update_view(mws_sp<mws_camera> i_g)
 {
    if (vkb && vkb->visible)
    {
-      vkb->update_view(g);
+      vkb->update_view(i_g);
    }
 
    for (mws_sp<mws_page> p : page_tab)
    {
       if (p->visible)
       {
-         p->update_view(g);
+         p->update_view(i_g);
       }
    }
 }
 
 void mws_page_tab::on_resize()
 {
-   mws_r.w = (float)u.lock()->get_width();
-   mws_r.h = (float)u.lock()->get_height();
+   mws_r.w = static_cast<float>(mod.lock()->get_width());
+   mws_r.h = static_cast<float>(mod.lock()->get_height());
 
    if (tab_text_vxo)
    {
@@ -551,7 +554,7 @@ int mws_page_tab::get_page_index(mws_sp<mws_page> ipage)
 {
    int k = 0;
 
-   for (auto p : page_tab)
+   for (auto& p : page_tab)
    {
       if (ipage == p)
       {
@@ -573,12 +576,12 @@ void mws_page_tab::new_instance_helper()
 
 #if defined MOD_VECTOR_FONTS
    {
-      auto tab_text_vxo = mws_text_vxo::nwi();
+      auto tab_text_vxo_ref = mws_text_vxo::nwi();
 
-      mws_root->tab_text_vxo = tab_text_vxo;
-      mws_root->attach(tab_text_vxo);
-      tab_text_vxo->camera_id_list.clear();
-      tab_text_vxo->camera_id_list.push_back("mws_cam");
+      mws_root->tab_text_vxo = tab_text_vxo_ref;
+      mws_root->attach(tab_text_vxo_ref);
+      tab_text_vxo_ref->camera_id_list.clear();
+      tab_text_vxo_ref->camera_id_list.push_back("mws_cam");
    }
 #endif
 }
@@ -638,15 +641,76 @@ mws_sp<mws_vkb_file_store> mws_page_tab::get_file_store()
 }
 
 
+// mws_page_item
+void mws_page_item::set_rect(const mws_rect& i_rect)
+{
+   set_position(glm::vec2(i_rect.x, i_rect.y));
+   set_size(glm::vec2(i_rect.w, i_rect.h));
+}
+
+void mws_page_item::set_position(const glm::vec2& i_position)
+{
+   mws_r.x = i_position.x;
+   mws_r.y = i_position.y;
+}
+
+void mws_page_item::set_size(const glm::vec2& i_size)
+{
+   mws_r.w = i_size.x;
+   mws_r.h = i_size.y;
+}
+
+mws_sp<mws_page> mws_page_item::get_page()
+{
+   mws_sp<gfx_node> parent_ref = get_parent();
+
+   while (parent_ref)
+   {
+      if (parent_ref->get_type() == gfx_obj::e_mws)
+      {
+         mws_sp<mws_page> page = mws_dynamic_pointer_cast<mws_page>(parent_ref);
+
+         if (page)
+         {
+            return page;
+         }
+      }
+
+      parent_ref = parent_ref->get_parent();
+   }
+
+   return nullptr;
+}
+
+bool mws_page_item::has_focus()
+{
+   mws_sp<mws_page> parent_ref = get_page();
+   return parent_ref->is_selected(get_instance());
+}
+
+void mws_page_item::set_focus(bool i_set_focus)
+{
+   get_page()->set_focus(get_instance(), i_set_focus);
+}
+
+mws_page_item::mws_page_item() {}
+
+void mws_page_item::setup()
+{
+   mws_obj::setup();
+}
+
+
+// mws_page
 mws_page::mws_page()
 {
    on_visibility_changed = [this](bool i_visible)
    {
       if (i_visible)
       {
-         mws_sp<mws_page_tab> parent = get_mws_page_parent();
+         mws_sp<mws_page_tab> parent_ref = get_mws_page_parent();
 
-         if (mws_r.w != parent->mws_r.w || mws_r.h != parent->mws_r.h)
+         if (mws_r.w != parent_ref->mws_r.w || mws_r.h != parent_ref->mws_r.h)
          {
             on_resize();
          }
@@ -731,6 +795,64 @@ mws_sp<mws_page> mws_page::get_mws_page_instance()
 mws_sp<mws_page_tab> mws_page::get_mws_page_parent() const
 {
    return static_pointer_cast<mws_page_tab>(get_mws_parent());
+}
+
+mws_layout_info mws_page::find_closest_layout_match(const mws_layout_info& i_lyt_info)
+{
+   if (layouts.empty())
+   {
+      return mws_layout_info();
+   }
+
+   float screen_aspect_ratio = (i_lyt_info.aspect_ratio == 0.f) ? static_cast<float>(i_lyt_info.width) / i_lyt_info.height : i_lyt_info.aspect_ratio;
+   // sort the layouts by aspect ratio
+   auto cmp_aspect_ratio = [](const mws_layout_info& i_a, const mws_layout_info& i_b) { return i_a.aspect_ratio < i_b.aspect_ratio; };
+   std::sort(layouts.begin(), layouts.end(), cmp_aspect_ratio);
+
+   // find the layout with the closest match to the screen's aspect ratio
+   auto closest_val = [&cmp_aspect_ratio](const std::vector<mws_layout_info>& i_vect, float i_value) -> const mws_layout_info&
+   {
+      mws_layout_info lyt;
+      lyt.aspect_ratio = i_value;
+      auto const it = std::lower_bound(i_vect.begin(), i_vect.end(), lyt, cmp_aspect_ratio);
+
+      // if we have an exact match, return 'it'
+      if (it == i_vect.end())
+      {
+         return i_vect.back();
+      }
+
+      // we don't have an exact match. return the closest value
+      float upper_diff = it->aspect_ratio - i_value;
+
+      // first check if i_value is less than last aspect ration and that we have a lower aspect ratio
+      if (upper_diff > 0.f && it > i_vect.begin())
+      {
+         auto const it_lower = it - 1;
+         float lower_diff = i_value - it_lower->aspect_ratio;
+
+         // if i_value is closer to the lower aspect ratio, return 'it_lower'
+         if (lower_diff < upper_diff)
+         {
+            return *it_lower;
+         }
+         // i_value is closer to the upper/last aspect ratio, so return 'it'
+         else
+         {
+            return *it;
+         }
+      }
+      // if we don't, then 'it' is already the closest available aspect ratio. return 'it'
+      else
+      {
+         return *it;
+      }
+   };
+
+   // found it
+   const mws_layout_info& lyt = closest_val(layouts, screen_aspect_ratio);
+
+   return lyt;
 }
 
 void mws_page::on_show_transition(const mws_sp<linear_transition> i_transition) {}
@@ -917,7 +1039,7 @@ void mws_page::update_state()
    //mws_r.x += p.x;
    //mws_r.y += p.y;
 
-   //for (auto b : mlist)
+   //for (auto& b : mlist)
    //{
    //   mws_r.w = std::max(mws_r.w, b->get_pos().w);
    //   mws_r.h = std::max(mws_r.h, b->get_pos().h);
@@ -955,7 +1077,7 @@ void mws_page::update_state()
    }
 }
 
-void mws_page::update_view(mws_sp<mws_camera> g)
+void mws_page::update_view(mws_sp<mws_camera> i_g)
 {
    for (auto& c : children)
    {
@@ -965,7 +1087,7 @@ void mws_page::update_view(mws_sp<mws_camera> g)
 
          if (w && w->visible)
          {
-            w->update_view(g);
+            w->update_view(i_g);
          }
       }
    }
@@ -1037,69 +1159,20 @@ void mws_page::set_focus(mws_sp<mws_obj> i_item, bool i_set_focus)
 
 void mws_page::on_resize()
 {
-   mws_sp<mws_page_tab> parent = get_mws_page_parent();
+   mws_sp<mws_mod> mod = get_mod();
+   mws_sp<mws_page_tab> parent_ref = get_mws_page_parent();
+   mws_layout_info lyt_ex{ mod->get_width(), mod->get_height(), nullptr, 0 };
+   mws_layout_info lyt = find_closest_layout_match(lyt_ex);
 
    mws_r.x = 0;
    mws_r.y = 0;
-   mws_r.w = parent->mws_r.w;
-   mws_r.h = parent->mws_r.h;
-}
+   mws_r.w = parent_ref->mws_r.w;
+   mws_r.h = parent_ref->mws_r.h;
 
-
-void mws_page_item::set_rect(const mws_rect& i_rect)
-{
-   set_position(glm::vec2(i_rect.x, i_rect.y));
-   set_size(glm::vec2(i_rect.w, i_rect.h));
-}
-
-void mws_page_item::set_position(const glm::vec2& i_position)
-{
-   mws_r.x = i_position.x;
-   mws_r.y = i_position.y;
-}
-
-void mws_page_item::set_size(const glm::vec2& i_size)
-{
-   mws_r.w = i_size.x;
-   mws_r.h = i_size.y;
-}
-
-mws_sp<mws_page> mws_page_item::get_page()
-{
-   mws_sp<gfx_node> parent = get_parent();
-
-   while (parent)
+   if (lyt.layout && lyt.layout != crt_layout.layout)
    {
-      if (parent->get_type() == gfx_obj::e_mws)
-      {
-         mws_sp<mws_page> page = mws_dynamic_pointer_cast<mws_page>(parent);
-
-         if (page)
-         {
-            return page;
-         }
-      }
-
-      parent = parent->get_parent();
+      crt_layout.layout->detach();
+      crt_layout = lyt;
+      crt_layout.layout->attach(get_instance());
    }
-
-   return nullptr;
-}
-
-bool mws_page_item::has_focus()
-{
-   mws_sp<mws_page> parent = get_page();
-   return parent->is_selected(get_instance());
-}
-
-void mws_page_item::set_focus(bool i_set_focus)
-{
-   get_page()->set_focus(get_instance(), i_set_focus);
-}
-
-mws_page_item::mws_page_item() {}
-
-void mws_page_item::setup()
-{
-   mws_obj::setup();
 }
