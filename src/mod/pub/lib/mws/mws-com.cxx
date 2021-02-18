@@ -53,6 +53,11 @@ mws_sp<mws_table_layout> mws_table_layout::nwi()
    return table;
 }
 
+void mws_table_layout::on_resize()
+{
+   set_border_size(border_size);
+}
+
 void mws_table_layout::set_position(const glm::vec2& i_position)
 {
    mws_page_item::set_position(i_position);
@@ -119,11 +124,6 @@ void mws_table_layout::set_color(const gfx_color& i_color)
    {
       tb->set_color(i_color);
    }
-}
-
-void mws_table_layout::on_resize()
-{
-   set_border_size(border_size);
 }
 
 float mws_table_layout::get_border_size() const { return border_size; }
@@ -424,7 +424,7 @@ void mws_img_btn::receive(mws_sp<mws_dp> i_dp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
@@ -526,7 +526,7 @@ void mws_button::receive(mws_sp<mws_dp> i_dp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
@@ -691,7 +691,7 @@ void mws_slider::receive(mws_sp<mws_dp> i_dp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
    {
@@ -892,7 +892,7 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
    {
@@ -1007,9 +1007,9 @@ mws_tree_model::mws_tree_model()
    length = 0;
 }
 
-void mws_tree_model::set_length(uint32_t ilength)
+void mws_tree_model::set_length(uint32_t i_length)
 {
-   length = ilength;
+   length = i_length;
 }
 
 uint32_t mws_tree_model::get_length()
@@ -1017,9 +1017,9 @@ uint32_t mws_tree_model::get_length()
    return length;
 }
 
-void mws_tree_model::set_root_node(mws_sp<mws_tree_model_node> iroot)
+void mws_tree_model::set_root_node(mws_sp<mws_tree_model_node> i_root)
 {
-   root = iroot;
+   root = i_root;
 }
 
 mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
@@ -1027,25 +1027,15 @@ mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
    return root;
 }
 
-mws_tree::mws_tree(mws_sp<mws_page> i_parent)
-{
-}
-
 void mws_tree::setup()
 {
    mws_page_item::setup();
 }
 
-mws_sp<mws_tree> mws_tree::nwi(mws_sp<mws_page> i_parent)
+mws_sp<mws_tree> mws_tree::nwi()
 {
-   mws_sp<mws_tree> u(new mws_tree(i_parent));
+   mws_sp<mws_tree> u(new mws_tree());
    u->setup();
-   return u;
-}
-
-mws_sp<mws_tree> mws_tree::new_shared_instance(mws_tree* newTreeClassInstance)
-{
-   mws_sp<mws_tree> u(newTreeClassInstance);
    return u;
 }
 
@@ -1062,7 +1052,7 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
 
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
    {
@@ -1084,21 +1074,21 @@ void mws_tree::update_state()
 {
 }
 
-//void mws_tree::update_view(mws_sp<mws_camera> i_g)
-//{
-//   mws_sp<mws_tree_model_node> node = model->get_root_node();
-//
-//   if (node->nodes.size() > 0)
-//   {
-//      uint32_t i_elem_idx = 0;
-//
-//      draw_tree_elem(i_g, node, 0, i_elem_idx);
-//   }
-//}
-
-void mws_tree::set_model(mws_sp<mws_tree_model> imodel)
+void mws_tree::update_view(mws_sp<mws_camera> i_g)
 {
-   model = imodel;
+   mws_sp<mws_tree_model_node> node = model->get_root_node();
+
+   if (node && node->nodes.size() > 0)
+   {
+      uint32_t i_elem_idx = 0;
+
+      draw_tree_elem(i_g, node, 0, i_elem_idx);
+   }
+}
+
+void mws_tree::set_model(mws_sp<mws_tree_model> i_model)
+{
+   model = i_model;
    model->set_view(get_instance());
 }
 
@@ -1107,47 +1097,47 @@ mws_sp<mws_tree_model> mws_tree::get_model()
    return model;
 }
 
-void mws_tree::get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, uint32_t level, float& i_max_width)
+void mws_tree::get_max_width(mws_sp<mws_font> i_f, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, float& i_max_width)
 {
-   uint32_t size = node->nodes.size();
+   uint32_t size = i_node->nodes.size();
 
    for (uint32_t k = 0; k < size; k++)
    {
-      mws_sp<mws_tree_model_node> kv = node->nodes[k];
+      mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
 
-      float textWidth = 0;//get_text_width(f, kv->data);
-      float twidth = 25 + level * 20 + textWidth;
+      float text_width = 0;//get_text_width(f, kv->data);
+      float t_width = 25 + i_level * 20 + text_width;
 
-      if (twidth > i_max_width)
+      if (t_width > i_max_width)
       {
-         i_max_width = twidth;
+         i_max_width = t_width;
       }
 
       if (kv->nodes.size() > 0)
       {
-         get_max_width(f, kv, level + 1, i_max_width);
+         get_max_width(i_f, kv, i_level + 1, i_max_width);
       }
    }
 }
 
-void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> node, uint32_t level, uint32_t& i_elem_idx)
+void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx)
 {
-   uint32_t size = node->nodes.size();
+   uint32_t size = i_node->nodes.size();
    mws_rect r = get_mws_parent()->get_pos();
 
    for (uint32_t k = 0; k < size; k++)
    {
-      mws_sp<mws_tree_model_node> kv = node->nodes[k];
+      mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
       glm::vec2 dim = i_g->get_font()->get_text_dim(kv->data);
 
       i_g->set_color(gfx_color(0xff, 0, 0xff));
-      i_g->drawRect(r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
-      i_g->drawText(kv->data, r.x + 20 + level * 20, r.y + 20 + i_elem_idx * dim.y);
+      i_g->drawRect(r.x + 20 + i_level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
+      i_g->drawText(kv->data, r.x + 20 + i_level * 20, r.y + 20 + i_elem_idx * dim.y);
       i_elem_idx++;
 
       if (kv->nodes.size() > 0)
       {
-         draw_tree_elem(i_g, kv, level + 1, i_elem_idx);
+         draw_tree_elem(i_g, kv, i_level + 1, i_elem_idx);
       }
    }
 }

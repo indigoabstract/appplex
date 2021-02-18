@@ -270,9 +270,9 @@ void gfx_scene::draw()
 
    std::sort(camera_list.begin(), camera_list.end(), pred());
 
-   for (auto it = camera_list.begin(); it != camera_list.end(); ++it)
+   for (auto iter = camera_list.begin(); iter != camera_list.end(); ++iter)
    {
-      mws_sp<gfx_camera> cam = *it;
+      mws_sp<gfx_camera> cam = *iter;
 
       if (!cam->enabled)
       {

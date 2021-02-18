@@ -35,7 +35,7 @@ public:
    };
 
    static mws_sp<mws_table_layout> nwi();
-   virtual ~mws_table_layout() {}
+   virtual void on_resize() override;
    virtual void set_position(const glm::vec2& i_position) override;
    virtual void set_size(const glm::vec2& i_size) override;
    virtual void add_row(mws_sp<mws_page_item> i_item);
@@ -48,7 +48,6 @@ public:
    // returns one of the inner col borders/dividers in the specified row
    virtual mws_sp<mws_table_border> get_col_divider(uint32_t i_row_idx, uint32_t i_col_idx) const;
    virtual void set_color(const gfx_color& i_color);
-   virtual void on_resize();
    virtual float get_border_size() const;
    virtual void set_border_size(float i_border_size);
 
@@ -89,7 +88,6 @@ class mws_panel : public mws_page_item
 {
 public:
    static mws_sp<mws_panel> nwi();
-   virtual ~mws_panel() {}
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual mws_sp<gfx_quad_2d> get_vxo();
 
@@ -105,7 +103,6 @@ class mws_label : public mws_page_item
 {
 public:
    static mws_sp<mws_label> nwi();
-   virtual ~mws_label() {}
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void update_state() override;
    virtual void set_text(std::string i_text);
@@ -125,7 +122,6 @@ class mws_img_btn : public mws_page_item
 {
 public:
    static mws_sp<mws_img_btn> nwi();
-   virtual ~mws_img_btn() {}
    void set_enabled(bool i_is_enabled) override;
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void set_img_name(std::string i_img_name);
@@ -147,7 +143,6 @@ protected:
 class mws_button : public mws_page_item
 {
 public:
-   virtual ~mws_button() {}
    static mws_sp<mws_button> nwi();
    void set_enabled(bool i_is_enabled);
    virtual void set_rect(const mws_rect& i_rect) override;
@@ -182,7 +177,6 @@ class mws_slider : public mws_page_item
 {
 public:
    static mws_sp<mws_slider> nwi();
-   virtual ~mws_slider() {}
    void set_value(float i_value);
    float get_value() const { return value; }
    virtual void set_rect(const mws_rect& i_rect) override;
@@ -209,8 +203,6 @@ class mws_list_model : public mws_model
 {
 public:
    mws_list_model();
-   virtual ~mws_list_model() {}
-
    virtual uint32_t get_length() = 0;
    virtual std::string elem_at(uint32_t i_idx) = 0;
    virtual uint32_t get_selected_elem();
@@ -225,12 +217,9 @@ protected:
 class mws_list : public mws_page_item
 {
 public:
-   virtual ~mws_list() {}
    static mws_sp<mws_list> nwi();
-
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual bool is_hit(float x, float y);
-
    virtual void update_state();
    void set_model(mws_sp<mws_list_model> imodel);
    mws_sp<mws_list_model> get_model();
@@ -238,7 +227,6 @@ public:
 protected:
    mws_list();
    void setup() override;
-
    uint32_t element_at(float x, float y);
 
    float item_height;
@@ -252,10 +240,10 @@ protected:
 class mws_tree_model_node
 {
 public:
-   mws_tree_model_node(const std::string& idata) : data(idata) {}
+   mws_tree_model_node(const std::string& i_data) : data(i_data) {}
    virtual ~mws_tree_model_node() {}
 
-   std::vector<mws_sp<mws_tree_model_node> > nodes;
+   std::vector<mws_sp<mws_tree_model_node>> nodes;
    std::string data;
 };
 
@@ -264,11 +252,9 @@ class mws_tree_model : public mws_model
 {
 public:
    mws_tree_model();
-   virtual ~mws_tree_model() {}
-
-   virtual void set_length(uint32_t ilength);
+   virtual void set_length(uint32_t i_length);
    virtual uint32_t get_length();
-   virtual void set_root_node(mws_sp<mws_tree_model_node> iroot);
+   virtual void set_root_node(mws_sp<mws_tree_model_node> i_root);
    virtual mws_sp<mws_tree_model_node> get_root_node();
 
 protected:
@@ -280,24 +266,19 @@ protected:
 class mws_tree : public mws_page_item
 {
 public:
-   virtual ~mws_tree() {}
-   static mws_sp<mws_tree> nwi(mws_sp<mws_page> i_parent);
-   static mws_sp<mws_tree> new_shared_instance(mws_tree* newTreeClassInstance);
-   virtual void init();
-
-   virtual void receive(mws_sp<mws_dp> i_dp);
-
-   virtual void update_state();
-   //virtual void update_view(mws_sp<mws_camera> g);
-   void set_model(mws_sp<mws_tree_model> imodel);
+   static mws_sp<mws_tree> nwi();
+   virtual void init() override;
+   virtual void receive(mws_sp<mws_dp> i_dp) override;
+   virtual void update_state() override;
+   virtual void update_view(mws_sp<mws_camera> i_g) override;
+   void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
 
 protected:
-   mws_tree(mws_sp<mws_page> i_parent);
+   mws_tree() {}
    void setup() override;
-
-   void get_max_width(mws_sp<mws_font> f, const mws_sp<mws_tree_model_node> node, uint32_t level, float& maxWidth);
-   void draw_tree_elem(mws_sp<mws_camera> g, const mws_sp<mws_tree_model_node> node, uint32_t level, uint32_t& elemIdx);
+   void get_max_width(mws_sp<mws_font> i_f, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, float& i_max_width);
+   void draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx);
 
    mws_sp<mws_tree_model> model;
 };

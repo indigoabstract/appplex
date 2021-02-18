@@ -242,7 +242,7 @@ void mws_obj::receive(mws_sp<mws_dp> i_dp)
 {
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else
    {
@@ -456,7 +456,7 @@ void mws_page_tab::receive(mws_sp<mws_dp> i_dp)
    {
       if (receive_handler)
       {
-         receive_handler(get_instance(), i_dp);
+         receive_handler(i_dp);
       }
       else
       {
@@ -855,15 +855,21 @@ mws_layout_info mws_page::find_closest_layout_match(const mws_layout_info& i_lyt
    return lyt;
 }
 
-void mws_page::on_show_transition(const mws_sp<linear_transition> i_transition) {}
+void mws_page::add_layout(mws_layout_info& i_lyt_info)
+{
+   mws_assert(i_lyt_info.layout != nullptr);
+   i_lyt_info.aspect_ratio = static_cast<float>(i_lyt_info.width) / i_lyt_info.height;
+   layouts.push_back(i_lyt_info);
+}
 
+void mws_page::on_show_transition(const mws_sp<linear_transition> i_transition) {}
 void mws_page::on_hide_transition(const mws_sp<linear_transition> i_transition) {}
 
 void mws_page::receive(mws_sp<mws_dp> i_dp)
 {
    if (receive_handler)
    {
-      receive_handler(get_instance(), i_dp);
+      receive_handler(i_dp);
    }
    else
    {
@@ -1171,8 +1177,12 @@ void mws_page::on_resize()
 
    if (lyt.layout && lyt.layout != crt_layout.layout)
    {
-      crt_layout.layout->detach();
+      if (crt_layout.layout)
+      {
+         crt_layout.layout->detach();
+      }
+
       crt_layout = lyt;
-      crt_layout.layout->attach(get_instance());
+      attach(crt_layout.layout);
    }
 }

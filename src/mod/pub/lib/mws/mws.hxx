@@ -37,6 +37,7 @@ struct vkb_file_info;
 const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
 const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
 
+
 // contains a relative(to parent) dimension
 class mws_rel_dim
 {
@@ -57,6 +58,7 @@ public:
    {
       return mws_size(mws_size_elem(mws_px(i_width_px, mws_dim::e_horizontal)), mws_size_elem(mws_px(i_height_px, mws_dim::e_vertical)));
    };
+
    mws_size() {}
    mws_size(const mws_size_elem& i_width, const mws_size_elem& i_height) : width(i_width), height(i_height) {}
 
@@ -143,11 +145,12 @@ public:
    virtual float get_z();
    virtual void set_z(float i_z_position);
 
-   std::function<void(mws_sp<mws_obj> i_mws, mws_sp<mws_dp> i_idp)> receive_handler;
+   std::function<void(mws_sp<mws_dp> i_idp)> receive_handler;
 
 protected:
    mws_obj(mws_sp<gfx> i_gi = nullptr);
    virtual void setup() {}
+   virtual mws_sp<mws_sender> sender_inst();
 
    bool enabled = true;
    bool is_opaque = true;
@@ -155,10 +158,6 @@ protected:
    mws_wp<mws_page_tab> mwsroot;
    mws_wp<mws_camera> mws_cam;
    mws_size best_size;
-
-private:
-   virtual mws_sp<mws_sender> sender_inst();
-
    std::string id;
 };
 
@@ -215,7 +214,7 @@ class mws_page_tab : public mws_obj
 public:
    virtual ~mws_page_tab() {}
    static mws_sp<mws_page_tab> nwi(mws_sp<mws_mod> i_mod);
-   virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
+   virtual void add_to_draw_list(const std::string& i_cam_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
    virtual void init();
    virtual void init_subobj();
    virtual void on_destroy();
@@ -232,7 +231,7 @@ public:
    virtual void update_view(mws_sp<mws_camera> g) override;
    virtual void on_resize();
    virtual void add_page(mws_sp<mws_page> i_page);
-   template <typename T> mws_sp<T> new_page() { mws_sp<T> p(new T()); add_page(p); return p; }
+   template <typename T, typename... var_args> mws_sp<T> new_page(var_args... i_args) { mws_sp<T> p(new T(i_args...)); add_page(p); return p; }
    // returns true if it handled(consumed) the back event, false otherwise
    virtual bool handle_back_evt();
    virtual mws_sp<mws_virtual_keyboard> get_keyboard();
@@ -245,12 +244,9 @@ public:
    std::vector<mws_sp<mws_page>> page_tab;
 
 protected:
-   mws_page_tab(mws_sp<mws_mod> i_mod);
-
-private:
    friend class mws_mod_ctrl;
    friend class mws_page;
-
+   mws_page_tab(mws_sp<mws_mod> i_mod);
    void add(mws_sp<mws_page> p);
    int get_page_index(mws_sp<mws_page> p);
    void new_instance_helper();
@@ -281,7 +277,12 @@ protected:
 };
 
 
-class mws_layout : public mws_page_item {};
+class mws_layout : public mws_page_item
+{
+public:
+   virtual ~mws_layout() {}
+   virtual void on_resize() {}
+};
 
 
 struct mws_layout_info
@@ -293,6 +294,7 @@ struct mws_layout_info
 };
 
 
+/** represents a single ui page or a screen */
 class mws_page : public mws_obj
 {
 public:
@@ -306,6 +308,7 @@ public:
    mws_sp<mws_page> get_mws_page_instance();
    mws_sp<mws_page_tab> get_mws_page_parent() const;
    virtual mws_layout_info find_closest_layout_match(const mws_layout_info& i_lyt_info);
+   virtual void add_layout(mws_layout_info& i_lyt_info);
 
    virtual void on_show_transition(const mws_sp<linear_transition> i_transition);
    virtual void on_hide_transition(const mws_sp<linear_transition> i_transition);
@@ -321,16 +324,14 @@ public:
    virtual void set_focus(mws_sp<mws_obj> i_item, bool i_set_focus = true);
 
 protected:
+   friend class mws_page_tab;
+   friend class mws_page_item;
    mws_page();
    virtual void on_resize();
    std::vector<mws_sp<mws_obj>> mws_subobj_list;
    mws_sp<mws_obj> selected_item;
    std::vector<mws_layout_info> layouts;
    mws_layout_info crt_layout;
-
-private:
-   friend class mws_page_tab;
-   friend class mws_page_item;
 };
 
 
