@@ -17,6 +17,10 @@ mws_push_disable_all_warnings
 mws_pop_disable_all_warnings
 
 
+static const uint32_t u32_max = std::numeric_limits<uint32_t>::max();
+
+
+// mws_table_border
 mws_sp<mws_table_border> mws_table_border::nwi()
 {
    mws_sp<mws_table_border> tb = mws_sp<mws_table_border>(new mws_table_border());
@@ -46,6 +50,7 @@ void mws_table_border::setup()
 }
 
 
+// mws_table_layout
 mws_sp<mws_table_layout> mws_table_layout::nwi()
 {
    mws_sp<mws_table_layout> table = mws_sp<mws_table_layout>(new mws_table_layout());
@@ -200,6 +205,7 @@ void mws_table_layout::setup()
 }
 
 
+// mws_stack_page_nav
 mws_sp<mws_stack_page_nav> mws_stack_page_nav::nwi(mws_sp<mws_page_tab> i_tab)
 {
    auto i = mws_sp<mws_stack_page_nav>(new mws_stack_page_nav());
@@ -282,6 +288,7 @@ void mws_stack_page_nav::set_current(const std::string& i_page_id)
 void mws_stack_page_nav::setup() {}
 
 
+// mws_panel
 mws_sp<mws_panel> mws_panel::nwi()
 {
    auto inst = mws_sp<mws_panel>(new mws_panel());
@@ -323,6 +330,7 @@ void mws_panel::setup()
 }
 
 
+// mws_label
 mws_sp<mws_label> mws_label::nwi()
 {
    auto inst = mws_sp<mws_label>(new mws_label());
@@ -372,6 +380,7 @@ void mws_label::setup()
 }
 
 
+// mws_img_btn
 mws_sp<mws_img_btn> mws_img_btn::nwi()
 {
    auto inst = mws_sp<mws_img_btn>(new mws_img_btn());
@@ -417,29 +426,25 @@ void mws_img_btn::set_img_name(std::string i_img_name)
 
 void mws_img_btn::receive(mws_sp<mws_dp> i_dp)
 {
-   if (!is_enabled())
-   {
-      return;
-   }
+   mws_page_item::receive(i_dp);
 
-   if (receive_handler)
+   if (!i_dp->is_processed())
    {
-      receive_handler(i_dp);
-   }
-   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
-   {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-
-      if (!is_hit(ts->points[0].x, ts->points[0].y))
+      if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
-         return;
-      }
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
-      //mws_print("evt type [%d]\n", type);
-      if (ts->type == ts->touch_began)
-      {
-         on_click();
-         process(ts);
+         if (!is_hit(ts->points[0].x, ts->points[0].y))
+         {
+            return;
+         }
+
+         //mws_print("evt type [%d]\n", type);
+         if (ts->type == ts->touch_began)
+         {
+            on_click();
+            process(ts);
+         }
       }
    }
 }
@@ -491,6 +496,7 @@ void mws_img_btn::setup()
 }
 
 
+// mws_button
 mws_sp<mws_button> mws_button::nwi()
 {
    auto inst = mws_sp<mws_button>(new mws_button());
@@ -519,33 +525,29 @@ void mws_button::set_rect(const mws_rect& i_rect)
 
 void mws_button::receive(mws_sp<mws_dp> i_dp)
 {
-   if (!is_enabled())
-   {
-      return;
-   }
+   mws_page_item::receive(i_dp);
 
-   if (receive_handler)
+   if (!i_dp->is_processed())
    {
-      receive_handler(i_dp);
-   }
-   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
-   {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-
-      if (!is_hit(ts->points[0].x, ts->points[0].y))
+      if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
-         return;
-      }
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
 
-      //mws_print("evt type [%d]\n", type);
-      if (ts->type == ts->touch_began)
-      {
-         if (on_click_handler)
+         if (!is_hit(ts->points[0].x, ts->points[0].y))
          {
-            on_click_handler();
+            return;
          }
 
-         process(ts);
+         //mws_print("evt type [%d]\n", type);
+         if (ts->type == ts->touch_began)
+         {
+            if (on_click_handler)
+            {
+               on_click_handler();
+            }
+
+            process(ts);
+         }
       }
    }
 }
@@ -641,6 +643,7 @@ void mws_button::setup()
 }
 
 
+// mws_slider
 mws_sp<mws_slider> mws_slider::nwi()
 {
    auto inst = mws_sp<mws_slider>(new mws_slider());
@@ -684,88 +687,84 @@ void mws_slider::set_rect(const mws_rect& i_rect)
 
 void mws_slider::receive(mws_sp<mws_dp> i_dp)
 {
-   if (!is_enabled())
+   mws_page_item::receive(i_dp);
+
+   if (!i_dp->is_processed())
    {
-      return;
-   }
-
-   if (receive_handler)
-   {
-      receive_handler(i_dp);
-   }
-   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
-   {
-      mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-      bool dragging_detected = dragging_dt.detect_helper(ts);
-      bool process_evt = false;
-
-      if (dragging_detected && active)
+      if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
-         auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
-         auto tr = s_ball->get_translation();
-         float tx = tr.x + dragging_dt.drag_diff.x;
-         float x_off = mws_r.x;
-         float t_val = 0.f;
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
+         bool dragging_detected = dragging_dt.detect_helper(ts);
+         bool process_evt = false;
 
-         //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
-         if (tx < x_off)
+         if (dragging_detected && active)
          {
-            tx = x_off;
-            t_val = 0.f;
-         }
-         else if (tx > (x_off + mws_r.w))
-         {
-            tx = x_off + mws_r.w;
-            t_val = 1.f;
-         }
-         else
-         {
-            t_val = (tx - x_off) / mws_r.w;
-         }
+            auto s_ball = std::static_pointer_cast<gfx_quad_2d>(slider_ball);
+            auto tr = s_ball->get_translation();
+            float tx = tr.x + dragging_dt.drag_diff.x;
+            float x_off = mws_r.x;
+            float t_val = 0.f;
 
-         if (t_val != value)
-         {
-            set_value(t_val);
-         }
-      }
-
-      //mws_print("evt type [%d]\n", type);
-      switch (ts->type)
-      {
-      case mws_ptr_evt::touch_began:
-      {
-         bool ball_hit;
-         bool bar_hit;
-
-         if (is_hit(ts->points[0].x, ts->points[0].y, ball_hit, bar_hit))
-         {
-            // if we hit the bar, but not the ball, move the ball to the hit position
-            if (bar_hit && !ball_hit)
+            //mws_print("TS_PRESS_AND_DRAG [%f, %f]\n", dx, tx);
+            if (tx < x_off)
             {
-               float x_off = mws_r.x;
-               float t_val = (ts->points[0].x - x_off) / mws_r.w;
-
-               if (t_val != value)
-               {
-                  set_value(t_val);
-               }
+               tx = x_off;
+               t_val = 0.f;
+            }
+            else if (tx > (x_off + mws_r.w))
+            {
+               tx = x_off + mws_r.w;
+               t_val = 1.f;
+            }
+            else
+            {
+               t_val = (tx - x_off) / mws_r.w;
             }
 
-            active = true;
-            process_evt = true;
+            if (t_val != value)
+            {
+               set_value(t_val);
+            }
          }
-         break;
-      }
 
-      case mws_ptr_evt::touch_ended:
-         active = false;
-         process_evt = false;
-         break;
-      }
+         //mws_print("evt type [%d]\n", type);
+         switch (ts->type)
+         {
+         case mws_ptr_evt::touch_began:
+         {
+            bool ball_hit;
+            bool bar_hit;
 
-      if (!ts->is_processed() && process_evt)
-      {
-         process(ts);
+            if (is_hit(ts->points[0].x, ts->points[0].y, ball_hit, bar_hit))
+            {
+               // if we hit the bar, but not the ball, move the ball to the hit position
+               if (bar_hit && !ball_hit)
+               {
+                  float x_off = mws_r.x;
+                  float t_val = (ts->points[0].x - x_off) / mws_r.w;
+
+                  if (t_val != value)
+                  {
+                     set_value(t_val);
+                  }
+               }
+
+               active = true;
+               process_evt = true;
+            }
+            break;
+         }
+
+         case mws_ptr_evt::touch_ended:
+            active = false;
+            process_evt = false;
+            break;
+         }
+
+         if (!ts->is_processed() && process_evt)
+         {
+            process(ts);
+         }
       }
    }
 }
@@ -846,6 +845,7 @@ void mws_slider::setup()
 }
 
 
+// mws_list_model
 mws_list_model::mws_list_model()
 {
    selected_elem = 0;
@@ -862,6 +862,7 @@ void mws_list_model::set_selected_elem(uint32_t iselectedElem)
 }
 
 
+// mws_list
 mws_list::mws_list()
 {
 }
@@ -885,58 +886,54 @@ mws_sp<mws_list> mws_list::nwi()
 
 void mws_list::receive(mws_sp<mws_dp> i_dp)
 {
-   if (!is_enabled())
-   {
-      return;
-   }
+   mws_page_item::receive(i_dp);
 
-   if (receive_handler)
+   if (!i_dp->is_processed())
    {
-      receive_handler(i_dp);
-   }
-   else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
-   {
-      float listheight = 0;
-
-      for (uint32_t k = 0, size = model->get_length(); k < size; k++)
+      if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
       {
-         listheight += item_height + vertical_space;
-      }
+         float listheight = 0;
 
-      if (listheight > 0)
+         for (uint32_t k = 0, size = model->get_length(); k < size; k++)
+         {
+            listheight += item_height + vertical_space;
+         }
+
+         if (listheight > 0)
+         {
+            listheight -= vertical_space;
+         }
+
+         mws_r.h = listheight;
+      }
+      else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
-         listheight -= vertical_space;
+         //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
+
+         //switch (ts->get_type())
+         //{
+         //case touch_sym_evt::TS_FIRST_TAP:
+         //{
+         //   float x = ts->pressed.te->points[0].x;
+         //   float y = ts->pressed.te->points[0].y;
+
+         //   if (ts->tap_count == 1)
+         //   {
+         //      uint32_t idx = element_at(x, y);
+
+         //      if (idx >= 0)
+         //      {
+         //         model->set_selected_elem(idx);
+         //         model->on_elem_selected(idx);
+         //      }
+
+         //      ts->process();
+         //   }
+
+         //   break;
+         //}
+         //}
       }
-
-      mws_r.h = listheight;
-   }
-   else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
-   {
-      //mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-
-      //switch (ts->get_type())
-      //{
-      //case touch_sym_evt::TS_FIRST_TAP:
-      //{
-      //   float x = ts->pressed.te->points[0].x;
-      //   float y = ts->pressed.te->points[0].y;
-
-      //   if (ts->tap_count == 1)
-      //   {
-      //      uint32_t idx = element_at(x, y);
-
-      //      if (idx >= 0)
-      //      {
-      //         model->set_selected_elem(idx);
-      //         model->on_elem_selected(idx);
-      //      }
-
-      //      ts->process();
-      //   }
-
-      //   break;
-      //}
-      //}
    }
 }
 
@@ -983,25 +980,26 @@ uint32_t mws_list::element_at(float x, float y)
 {
    if (!is_hit(x, y))
    {
-      return -1;
+      return u32_max;
    }
 
-   float vertOffset = get_mws_parent()->get_pos().y;
+   float vert_offset = get_mws_parent()->get_pos().y;
 
    for (uint32_t k = 0; k < model->get_length(); k++)
    {
-      if (is_inside_box(x, y, item_x, vertOffset, item_w, item_height))
+      if (is_inside_box(x, y, item_x, vert_offset, item_w, item_height))
       {
          return k;
       }
 
-      vertOffset += item_height + vertical_space;
+      vert_offset += item_height + vertical_space;
    }
 
-   return -1;
+   return u32_max;
 }
 
 
+// mws_tree_model
 mws_tree_model::mws_tree_model()
 {
    length = 0;
@@ -1027,6 +1025,8 @@ mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
    return root;
 }
 
+
+// mws_tree
 void mws_tree::setup()
 {
    mws_page_item::setup();
@@ -1045,33 +1045,35 @@ void mws_tree::init()
 
 void mws_tree::receive(mws_sp<mws_dp> i_dp)
 {
-   if (!is_enabled())
-   {
-      return;
-   }
+   mws_page_item::receive(i_dp);
 
-   if (receive_handler)
+   if (!i_dp->is_processed())
    {
-      receive_handler(i_dp);
-   }
-   else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
-   {
-      float h = 25.f + model->get_length() * 20.f;
-      float w = 0;
-
-      if (model->get_root_node())
+      if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
-         //mws_sp<mws_font> f = gfx_openvg::get_instance()->getFont();
-         //get_max_width(f, model->get_root_node(), 0, w);
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
+         bool dbl_tap_detected = dbl_tap_det.detect_helper(ts);
+
+         if (dbl_tap_detected)
+         {
+            trx("dbl_tap_detected");
+         }
       }
+      else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
+      {
+         float h = 25.f + model->get_length() * 20.f;
+         float w = 0;
 
-      mws_r.h = h;
-      mws_r.w = w / 2;
+         if (model->get_root_node())
+         {
+            //mws_sp<mws_font> f = gfx_openvg::get_instance()->getFont();
+            //get_max_width(f, model->get_root_node(), 0, w);
+         }
+
+         mws_r.h = h;
+         mws_r.w = w / 2;
+      }
    }
-}
-
-void mws_tree::update_state()
-{
 }
 
 void mws_tree::update_view(mws_sp<mws_camera> i_g)

@@ -269,7 +269,6 @@ public:
    static mws_sp<mws_tree> nwi();
    virtual void init() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
-   virtual void update_state() override;
    virtual void update_view(mws_sp<mws_camera> i_g) override;
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
@@ -281,6 +280,7 @@ protected:
    void draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx);
 
    mws_sp<mws_tree_model> model;
+   double_tap_detector dbl_tap_det;
 };
 
 

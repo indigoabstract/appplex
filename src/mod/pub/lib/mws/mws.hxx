@@ -111,12 +111,10 @@ class mws_obj : public gfx_node, public mws_node
 {
 public:
    static mws_sp<mws_obj> nwi();
-
    virtual ~mws_obj() {}
    virtual void init() {}
    virtual void on_destroy() {}
    mws_sp<mws_obj> get_instance();
-
    virtual gfx_obj::e_gfx_obj_type get_type()const override;
    virtual void add_to_draw_list(const std::string& i_camera_id, std::vector<mws_sp<gfx_vxo>>& i_opaque, std::vector<mws_sp<gfx_vxo>>& i_translucent) override;
    virtual void attach(mws_sp<gfx_node> i_node) override;
@@ -133,7 +131,6 @@ public:
    mws_sp<mws_obj> get_mws_parent() const;
    mws_sp<mws_page_tab> get_mws_root() const;
    virtual mws_sp<mws_mod> get_mod() const;
-
    virtual void on_focus_changed(bool /*i_has_focus*/) {}
    virtual void process(mws_sp<mws_dp> i_dp);
    virtual void receive(mws_sp<mws_dp> i_dp);
@@ -262,8 +259,6 @@ protected:
 class mws_page_item : public mws_obj
 {
 public:
-   virtual ~mws_page_item() {}
-
    virtual void set_rect(const mws_rect& i_rect);
    virtual void set_position(const glm::vec2& i_position);
    virtual void set_size(const glm::vec2& i_size);

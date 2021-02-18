@@ -244,7 +244,8 @@ void mws_obj::receive(mws_sp<mws_dp> i_dp)
    {
       receive_handler(i_dp);
    }
-   else
+
+   if (!i_dp->is_processed())
    {
       for (auto& c : children)
       {
