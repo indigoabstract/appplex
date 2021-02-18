@@ -172,6 +172,7 @@ mod
 	font-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	storage-dir-tst[ uses[ gfx, fonts, freetype, freetype-gl, vector-fonts ] ],
 	data-seqv-tst[ uses[] ],
+	sws-tree-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies
