@@ -1,18 +1,18 @@
 #include "stdafx.hxx"
 
-#include "mod-test-mws.hxx"
+#include "mod-sws-list-tst.hxx"
 #include "mws/mws-ext.hxx"
 #include "mws/mws-camera.hxx"
 
 
-mod_test_mws::mod_test_mws() : mws_mod(mws_stringify(MOD_TEST_MWS)) {}
+mod_sws_list_tst::mod_sws_list_tst() : mws_mod(mws_stringify(MOD_SWS_LIST_TST)) {}
 
-mws_sp<mod_test_mws> mod_test_mws::nwi()
+mws_sp<mod_sws_list_tst> mod_sws_list_tst::nwi()
 {
-	return mws_sp<mod_test_mws>(new mod_test_mws());
+	return mws_sp<mod_sws_list_tst>(new mod_sws_list_tst());
 }
 
-void mod_test_mws::init_mws()
+void mod_sws_list_tst::init_mws()
 {
 	mws_sp<mws_list_menu_page> up;
 	mws_sp<mws_list_menu_model> ulmm;

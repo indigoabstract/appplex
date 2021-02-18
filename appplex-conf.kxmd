@@ -152,7 +152,6 @@ mod
 	test-freetype-gl[ uses[ gfx, fonts, freetype, freetype-gl, mws, vector-fonts ] ],
 	test-normal-mapping[ uses[ gfx, fmt, fonts, freetype, freetype-gl, input, mws, png, res-ld, tiny-obj-loader, util, vector-fonts ], ],
 	test-fmod[ enabled[ false ], uses[ boost, gfx, fmod ], ],
-	test-mws[ enabled[ false ], ],
 	test-freeimage[ enabled[ false ], uses[ boost, gfx, freeimage ], ],
 	test-openvg[ enabled[ false ], uses[ boost, gfx, openvg ], ],
 	test-stk[ uses[ boost, gfx, fmod, stk ], platf[ windows ], ],
@@ -172,7 +171,10 @@ mod
 	font-metrix[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	storage-dir-tst[ uses[ gfx, fonts, freetype, freetype-gl, vector-fonts ] ],
 	data-seqv-tst[ uses[] ],
+	
+	@@[ sws tests ],
 	sws-tree-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
+	sws-list-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

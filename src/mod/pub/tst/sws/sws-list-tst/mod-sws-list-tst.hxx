@@ -2,20 +2,20 @@
 
 #include "appplex-conf.hxx"
 
-#ifdef MOD_TEST_MWS
+#ifdef MOD_SWS_LIST_TST
 
 #include "mws-mod.hxx"
 
 
-class mod_test_mws : public mws_mod
+class mod_sws_list_tst : public mws_mod
 {
 public:
-	static mws_sp<mod_test_mws> nwi();
+	static mws_sp<mod_sws_list_tst> nwi();
 
 	virtual void init_mws();
 
 private:
-	mod_test_mws();
+	mod_sws_list_tst();
 };
 
 #endif
