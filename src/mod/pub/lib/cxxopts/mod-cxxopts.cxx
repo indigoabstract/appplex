@@ -6,19 +6,9 @@
 #include <vector>
 
 
-namespace cxxopts_mod_pref
-{
-   class mod_preferences_detail : public mws_mod_preferences
-   {
-   public:
-      virtual bool requires_gfx() override { return false; }
-   };
-}
-
-
 mod_cxxopts::mod_cxxopts() : mws_mod(mws_stringify(MOD_CXXOPTS))
 {
-   prefs = std::make_shared<cxxopts_mod_pref::mod_preferences_detail>();
+   settings_v.requires_gfx = false;
 }
 
 mws_sp<mod_cxxopts> mod_cxxopts::nwi()

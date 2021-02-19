@@ -83,28 +83,30 @@ public:
    bool is_external_texture();
    std::string get_name();
    gfx_tex_types get_tex_type();
-   int get_texture_gl_id();
-   void set_texture_gl_id(int itexture_id);
-   int get_width();
-   int get_height();
-    void set_dim(int i_width, int i_height);
-   void send_uniform(const std::string iuniform_name, int iactive_tex_index);
-   void set_active(int itex_unit_index);
-   void update(int iactive_tex_index, const char* ibb);
+   gfx_uint get_texture_gl_id();
+   void set_texture_gl_id(gfx_uint i_texture_id);
+   uint32_t get_width();
+   uint32_t get_height();
+   void set_dim(uint32_t i_width, uint32_t i_height);
+   void send_uniform(const std::string iuniform_name, uint32_t iactive_tex_index);
+   void set_active(uint32_t itex_unit_index);
+   void update(uint32_t iactive_tex_index, const char* ibb);
    void reload();
 
 protected:
    friend class gfx;
 
    gfx_tex(const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, int itexture_id, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
-   gfx_tex(std::string iuni_tex_name, int iwith, int iheight, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string i_uni_tex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string i_uni_tex_name, uint32_t i_texture_id, uint32_t i_width, uint32_t i_height,
+      gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex(std::string i_uni_tex_name, uint32_t i_width, uint32_t i_height, gfx_tex_types iuni_tex_type,
+      const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
 
-   void set_texture_name(std::string iuni_tex_name);
-   void init_dimensions(int iwidth, int iheight);
+   void set_texture_name(std::string i_uni_tex_name);
+   void init_dimensions(uint32_t i_width, uint32_t i_height);
    void set_params(const gfx_tex_params* i_prm);
-   int gen_texture_gl_id();
+   gfx_uint gen_texture_gl_id();
    void check_valid_state();
    void release();
 
@@ -113,8 +115,8 @@ protected:
    gfx_enum gl_tex_target;
    std::string	tex_name;
    gfx_uint texture_gl_id;
-   int width;
-   int height;
+   uint32_t width;
+   uint32_t height;
    gfx_tex_types uni_tex_type;
    gfx_tex_params prm;
    bool texture_updated = false;
@@ -127,7 +129,7 @@ public:
    virtual ~gfx_tex_2d();
 
 protected:
-   gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex_2d(std::string i_tex_name, const gfx_tex_params* i_prm = nullptr, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };
@@ -139,7 +141,7 @@ public:
    virtual ~gfx_tex_3d();
 
 protected:
-   gfx_tex_3d(std::string itex_name, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex_3d(std::string i_tex_name, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;
 };
@@ -151,7 +153,7 @@ public:
    virtual ~gfx_tex_cube_map();
 
 protected:
-   gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi = nullptr);
+   gfx_tex_cube_map(std::string i_tex_name, mws_sp<gfx> i_gi = nullptr);
    gfx_tex_cube_map(uint32_t i_size, mws_sp<gfx> i_gi = nullptr);
 
    friend class gfx;

@@ -167,7 +167,7 @@ void gfx_tex_params::set_rt_params()
 }
 
 
-static int texture_name_idx = 0;
+static uint32_t texture_name_idx = 0;
 
 gfx_tex::~gfx_tex()
 {
@@ -227,13 +227,13 @@ gfx_tex::gfx_tex_types gfx_tex::get_tex_type()
    return uni_tex_type;
 }
 
-int gfx_tex::get_texture_gl_id()
+gfx_uint gfx_tex::get_texture_gl_id()
 {
    check_valid_state();
    return texture_gl_id;
 }
 
-void gfx_tex::set_texture_gl_id(int i_texture_id)
+void gfx_tex::set_texture_gl_id(gfx_uint i_texture_id)
 {
    check_valid_state();
    // only available for external textures
@@ -241,19 +241,19 @@ void gfx_tex::set_texture_gl_id(int i_texture_id)
    texture_gl_id = i_texture_id;
 }
 
-int gfx_tex::get_width()
+uint32_t gfx_tex::get_width()
 {
    check_valid_state();
    return width;
 }
 
-int gfx_tex::get_height()
+uint32_t gfx_tex::get_height()
 {
    check_valid_state();
    return height;
 }
 
-void gfx_tex::set_dim(int i_width, int i_height)
+void gfx_tex::set_dim(uint32_t i_width, uint32_t i_height)
 {
     check_valid_state();
     // only available for external textures
@@ -261,7 +261,7 @@ void gfx_tex::set_dim(int i_width, int i_height)
     init_dimensions(i_width, i_height);
 }
 
-void gfx_tex::send_uniform(const std::string iuniform_name, int i_active_tex_index)
+void gfx_tex::send_uniform(const std::string iuniform_name, uint32_t i_active_tex_index)
 {
    check_valid_state();
 
@@ -278,7 +278,7 @@ void gfx_tex::send_uniform(const std::string iuniform_name, int i_active_tex_ind
    }
 }
 
-void gfx_tex::set_active(int i_tex_unit_index)
+void gfx_tex::set_active(uint32_t i_tex_unit_index)
 {
    check_valid_state();
    mws_report_gfx_errs();
@@ -314,7 +314,7 @@ void gfx_tex::set_active(int i_tex_unit_index)
    mws_report_gfx_errs();
 }
 
-void gfx_tex::update(int i_active_tex_index, const char* i_bb)
+void gfx_tex::update(uint32_t i_active_tex_index, const char* i_bb)
 {
    check_valid_state();
    set_active(i_active_tex_index);
@@ -358,7 +358,7 @@ void gfx_tex::reload()
 
          if (uni_tex_type == TEX_2D)
          {
-            int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
+            uint32_t mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
             mws_tex_img_2d(gl_tex_target, mipmap_count, prm.get_internal_format(), width, height, 0, prm.get_format(), prm.get_type(), nullptr);
          }
@@ -411,7 +411,7 @@ gfx_tex::gfx_tex(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx
 
    if (uni_tex_type == TEX_2D)
    {
-      int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
+      uint32_t mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
       mws_tex_img_2d(gl_tex_target, mipmap_count, prm.get_internal_format(), width, height, 0, prm.get_format(), prm.get_type(), nullptr);
       glTexSubImage2D(gl_tex_target, 0, 0, 0, width, height, prm.get_format(), prm.get_type(), rid->data);
@@ -438,12 +438,13 @@ gfx_tex::gfx_tex(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx
    is_valid_state = true;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string i_tex_name, uint32_t i_texture_id, uint32_t i_width, uint32_t i_height,
+   gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    is_external = true;
    uni_tex_type = iuni_tex_type;
-   set_texture_name(itex_name);
+   set_texture_name(i_tex_name);
 
    switch (uni_tex_type)
    {
@@ -452,18 +453,19 @@ gfx_tex::gfx_tex(std::string itex_name, int itexture_id, int i_width, int i_heig
       break;
    }
 
-   texture_gl_id = itexture_id;
+   texture_gl_id = i_texture_id;
    init_dimensions(i_width, i_height);
 
    mws_report_gfx_errs();
    is_valid_state = true;
 }
 
-gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
+gfx_tex::gfx_tex(std::string i_tex_name, uint32_t i_width, uint32_t i_height,
+   gfx_tex_types iuni_tex_type, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_obj(i_gi)
 {
    set_params(i_prm);
    uni_tex_type = iuni_tex_type;
-   set_texture_name(itex_name);
+   set_texture_name(i_tex_name);
    init_dimensions(i_width, i_height);
 
    switch (uni_tex_type)
@@ -479,7 +481,7 @@ gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types
 
    if (uni_tex_type == TEX_2D)
    {
-      int mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
+      uint32_t mipmap_count = (prm.gen_mipmaps && mipmaps_supported(prm.get_internal_format())) ? gfx_util::get_tex_2d_mipmap_count(width, height) : 1;
 
       mws_tex_img_2d(gl_tex_target, mipmap_count, prm.get_internal_format(), width, height, 0, prm.get_format(), prm.get_type(), nullptr);
    }
@@ -505,12 +507,12 @@ gfx_tex::gfx_tex(std::string itex_name, int i_width, int i_height, gfx_tex_types
    is_valid_state = true;
 }
 
-void gfx_tex::set_texture_name(std::string itex_name)
+void gfx_tex::set_texture_name(std::string i_tex_name)
 {
-   tex_name = itex_name;
+   tex_name = i_tex_name;
 }
 
-void gfx_tex::init_dimensions(int i_width, int i_height)
+void gfx_tex::init_dimensions(uint32_t i_width, uint32_t i_height)
 {
    mws_assert(i_width > 0 && i_height > 0);
    width = i_width;
@@ -525,9 +527,9 @@ void gfx_tex::set_params(const gfx_tex_params* i_prm)
    }
 }
 
-int gfx_tex::gen_texture_gl_id()
+gfx_uint gfx_tex::gen_texture_gl_id()
 {
-   unsigned int tex_id;
+   gfx_uint tex_id;
 
    glGenTextures(1, &tex_id);
 
@@ -565,7 +567,7 @@ gfx_tex_2d::~gfx_tex_2d()
    release();
 }
 
-gfx_tex_2d::gfx_tex_2d(std::string itex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_tex(itex_name, i_prm, i_gi)
+gfx_tex_2d::gfx_tex_2d(std::string i_tex_name, const gfx_tex_params* i_prm, mws_sp<gfx> i_gi) : gfx_tex(i_tex_name, i_prm, i_gi)
 {
 }
 
@@ -575,7 +577,7 @@ gfx_tex_3d::~gfx_tex_3d()
    release();
 }
 
-gfx_tex_3d::gfx_tex_3d(std::string itex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_3d::gfx_tex_3d(std::string i_tex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
 }
 
@@ -585,7 +587,7 @@ gfx_tex_cube_map::~gfx_tex_cube_map()
    release();
 }
 
-gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
+gfx_tex_cube_map::gfx_tex_cube_map(std::string i_tex_name, mws_sp<gfx> i_gi) : gfx_tex(nullptr, i_gi)
 {
    {
       gfx_tex_params t_prm;
@@ -597,7 +599,7 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gf
    }
 
    uni_tex_type = TEX_CUBE_MAP;
-   set_texture_name(itex_name);
+   set_texture_name(i_tex_name);
    gl_tex_target = GL_TEXTURE_CUBE_MAP;
    texture_gl_id = gen_texture_gl_id();
    glActiveTexture(GL_TEXTURE0);
@@ -607,14 +609,14 @@ gfx_tex_cube_map::gfx_tex_cube_map(std::string itex_name, mws_sp<gfx> i_gi) : gf
    std::string ends[] = { "posx", "negx", "posy", "negy", "posz", "negz" };
    bool is_init = false;
 
-   for (int k = 0; k < 6; k++)
+   for (uint32_t k = 0; k < 6; k++)
    {
-      std::string img_name = itex_name + "-" + ends[k] + ".png";
+      std::string img_name = i_tex_name + "-" + ends[k] + ".png";
       mws_sp<raw_img_data> rid = res_ld::inst()->load_image(img_name);
 
       if (!is_init)
       {
-         int mipmap_count = mipmaps_supported(prm.get_internal_format()) ? gfx_util::get_tex_2d_mipmap_count(rid->width, rid->height) : 1;
+         uint32_t mipmap_count = mipmaps_supported(prm.get_internal_format()) ? gfx_util::get_tex_2d_mipmap_count(rid->width, rid->height) : 1;
 
          is_init = true;
          init_dimensions(rid->width, rid->height);

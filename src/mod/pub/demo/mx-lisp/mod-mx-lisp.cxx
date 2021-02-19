@@ -9,15 +9,6 @@ extern "C"
    void run_mx_lisp_repl();
 }
 
-namespace mod_mx_lisp_pref
-{
-	class mod_preferences_detail : public mws_mod_preferences
-	{
-	public:
-		virtual bool requires_gfx(){return false;}
-	};
-}
-
 
 class long_op_run_mx_lisp
 {
@@ -31,7 +22,7 @@ public:
 
 mod_mx_lisp::mod_mx_lisp() : mws_mod(mws_stringify(MOD_MX_LISP))
 {
-	prefs = mws_sp<mws_mod_preferences>(new mod_mx_lisp_pref::mod_preferences_detail());
+	settings_v.requires_gfx = false;
 }
 
 mws_sp<mod_mx_lisp> mod_mx_lisp::nwi()

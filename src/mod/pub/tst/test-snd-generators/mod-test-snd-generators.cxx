@@ -156,9 +156,9 @@ namespace mod_test_snd_generators_ns
 		}
 
 		// Change the sound being generated
-		void SetGenerator(GeneratorType g)
+		void SetGenerator(GeneratorType i_g)
 		{
-			generator = g;
+			generator = i_g;
 		}
 
 		void set_frequency(float ifrequency)
@@ -505,21 +505,21 @@ namespace mod_test_snd_generators_ns
 			fmodSystem->update();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			const std::string& text = get_mod()->name();
 
-			g->drawText(text, 10, 20);
+			i_g->drawText(text, 10, 20);
 
 			std::string notes = "A, A#, B, C, C#, D, D#, E, F, F#, G, G#";
 
-			g->drawText(notes, 10, 50);
+			i_g->drawText(notes, 10, 50);
 
-			g->set_color(gfx_color::from_argb(0x808080));
-			g->drawLine(60, 0, 60, get_mod()->get_height());
-			g->drawLine(780, 0, 780, get_mod()->get_height());
+			i_g->set_color(gfx_color::from_argb(0x808080));
+			i_g->drawLine(60, 0, 60, get_mod()->get_height());
+			i_g->drawLine(780, 0, 780, get_mod()->get_height());
 
 			int string_count = tuning.size();
 
@@ -535,19 +535,19 @@ namespace mod_test_snd_generators_ns
 					if (last_played_note && last_played_note->equal_to(crt_note))
 					{
 						gfx_color c2(0xff, 0xff, 0xff);
-						g->set_color(c2);
-						g->fillRect(10 + j * 60 - 10, 200 + k * 60 - 10, 40 + 20, 20 + 20);
+						i_g->set_color(c2);
+						i_g->fillRect(10 + j * 60 - 10, 200 + k * 60 - 10, 40 + 20, 20 + 20);
 					}
 
-					g->set_color(c);
-					g->fillRect(10 + j * 60, 200 + k * 60, 40, 20);
+					i_g->set_color(c);
+					i_g->fillRect(10 + j * 60, 200 + k * 60, 40, 20);
 					std::string note_name = (j == 0) ? crt_note->get_full_name() : crt_note->get_name();
-					g->drawText(note_name, 10 + j * 60, 200 + k * 60, note_font);
+					i_g->drawText(note_name, 10 + j * 60, 200 + k * 60, note_font);
 					crt_note = crt_note->next_note();
 				}
 			}
 
-			g->drawText(show_note, 10, 90);
+			i_g->drawText(show_note, 10, 90);
 		}
 
 		FMOD::System* fmodSystem;

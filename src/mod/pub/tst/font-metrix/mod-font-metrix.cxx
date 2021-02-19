@@ -14,8 +14,7 @@
 
 mod_font_metrix::mod_font_metrix() : mws_mod(mws_stringify(MOD_FONT_METRIX))
 {
-   struct mod_preferences_detail : public mws_mod_preferences { virtual uint32_t get_font_db_pow_of_two_size() const override { return 13; } };
-   prefs = mws_sp<mws_mod_preferences>(new mod_preferences_detail());
+   settings_v.font_db_pow_of_two_size = 13;
 }
 
 mws_sp<mod_font_metrix> mod_font_metrix::nwi()
@@ -52,7 +51,7 @@ namespace mod_font_metrix_ns
    public:
       virtual void init() override
       {
-         mws_sp<mws_camera> g = get_mod()->mws_cam;
+         mws_sp<mws_camera> cam = get_mod()->mws_cam;
          gfx_tex_params params;
 
          smallest_font_size = font_steps.front().start_size;
@@ -66,7 +65,7 @@ namespace mod_font_metrix_ns
 
          if (!ref_font)
          {
-            ref_font = mws_font::nwi(g->get_font());
+            ref_font = mws_font::nwi(cam->get_font());
          }
 
          params.set_rt_params();
@@ -74,7 +73,7 @@ namespace mod_font_metrix_ns
          params.min_filter = gfx_tex_params::e_tf_nearest;
          font_tex.init("font-tex", 512, 1024);
          tex_dim = glm::vec2(font_tex.get_tex()->get_width(), font_tex.get_tex()->get_height());
-         g->set_color(gfx_color::colors::cyan);
+         cam->set_color(gfx_color::colors::cyan);
          size_height_mixer.set_edges(0.f, 0.f);
          height_size_mixer.set_edges(0.f, 0.f);
 
@@ -119,13 +118,13 @@ namespace mod_font_metrix_ns
                finished = true;
             }
 
-            mws_sp<mws_camera> g = get_mod()->mws_cam;
+            mws_sp<mws_camera> cam = get_mod()->mws_cam;
             mws_sp<mws_font> font = mws_font::nwi(ref_font, (float)current_font_size);
             const font_step& crt_font_step = font_steps[crt_font_step_idx];
             uint32_t font_step_size = crt_font_step.step;
 
             {
-               font_pixel_info fpi = draw_letters(g, font);
+               font_pixel_info fpi = draw_letters(cam, font);
                fpi_vect.push_back(fpi);
                float alpha = float(current_font_size - smallest_font_size) / (largest_font_size - smallest_font_size);
                float height = (float)fpi.height;

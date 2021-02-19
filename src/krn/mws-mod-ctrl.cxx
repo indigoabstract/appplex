@@ -71,7 +71,7 @@ bool mws_mod_ctrl::app_uses_gfx()
       {
          for (int k = 0; k < mod_count; k++)
          {
-            req_gfx = req_gfx || ul->mod_at(k)->get_preferences()->requires_gfx();
+            req_gfx = req_gfx || ul->mod_at(k)->settings().requires_gfx;
          }
       }
       else

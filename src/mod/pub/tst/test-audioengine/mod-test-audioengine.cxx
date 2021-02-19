@@ -37,13 +37,13 @@ namespace mod_test_audioengine_ns
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			const std::string& text = get_mod()->name();
 
-			g->drawText(text, 10, 20);
+			i_g->drawText(text, 10, 20);
 		}
 	};
 }

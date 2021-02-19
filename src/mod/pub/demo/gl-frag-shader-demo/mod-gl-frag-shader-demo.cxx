@@ -550,8 +550,8 @@ public:
 			{
 				int x = ts->points[0].x;
 				int y = ts->points[0].y;
-				int k = glm::max(glm::min(x, (int)mws::screen::get_width() - tsh), tsh);
-				int l = glm::max(glm::min(y, (int)mws::screen::get_height() - tsh), tsh);
+				//int k = glm::max(glm::min(x, (int)mws::screen::get_width() - tsh), tsh);
+				//int l = glm::max(glm::min(y, (int)mws::screen::get_height() - tsh), tsh);
 				pointer_pos = glm::vec2(ts->points[0].x, ts->points[0].y);
 				mod->process(ts);
 				break;
@@ -610,10 +610,10 @@ public:
 	{
 		mws_sp<mod_gl_frag_shader_demo> u = static_pointer_cast<mod_gl_frag_shader_demo>(get_mod());
 		mws_sp<mod_gl_frag_shader_demo_impl> p = u->p;
-		mws_sp<shader_state> ss = p->shader_state_list[p->current_fx_index];
 
 		if (p->is_active)
 		{
+			mws_sp<shader_state> sh_state = p->shader_state_list[p->current_fx_index];
 			int rt_index = p->current_rt_index;
 			int next_rt_index = (rt_index + 1) % 2;
 			back_buffer = p->rt_tex_vect[next_rt_index];
@@ -629,7 +629,7 @@ public:
 			glm::vec2 pressed_position = glm::vec2(pressed_pos.x, screen_size.y - pressed_pos.y) * tex_scale;
 
 			glm::vec2 dim = tex_size;
-			float time = (mws::time::get_time_millis() - ss->start_time - ss->pause_time) / 1000.f;
+			float time = (mws::time::get_time_millis() - sh_state->start_time - sh_state->pause_time) / 1000.f;
 			//mws_print("timeee %f\n", time / 5.f);
 			glm::vec2 mouse(pointer_position / tex_size);
 
@@ -705,17 +705,17 @@ public:
 		mws_page::update_state();
 	}
 
-	virtual void update_view(mws_sp<mws_camera> g)
+	virtual void update_view(mws_sp<mws_camera> i_g)
 	{
 		mws_sp<mod_gl_frag_shader_demo> u = static_pointer_cast<mod_gl_frag_shader_demo>(get_mod());
 		mws_sp<mod_gl_frag_shader_demo_impl> p = u->p;
 		mws_sp<shader_state> ss = p->shader_state_list[p->current_fx_index];
 
-		g->drawText(ss->name, 10, 10);
+		i_g->drawText(ss->name, 10, 10);
 
 		mws_report_gfx_errs();
 
-		mws_page::update_view(g);
+		mws_page::update_view(i_g);
 	}
 
 	void reset()

@@ -96,14 +96,14 @@ void draw_context::draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4&
    line_mesh->draw_in_sync(cam);
 }
 
-void draw_context::draw_texture(std::string tex_name, float ix, float iy, float iwidth, float iheight)
+void draw_context::draw_texture(std::string tex_name, float ix, float iy, float i_width, float i_height)
 {
    auto tex = cam.lock()->gi()->tex.get_texture_by_name(tex_name);
 
    if (tex)
    {
-      float tex_w = (iwidth > 0) ? iwidth : tex->get_width();
-      float tex_h = (iheight > 0) ? iheight : tex->get_height();
+      float tex_w = (i_width > 0) ? i_width : tex->get_width();
+      float tex_h = (i_height > 0) ? i_height : tex->get_height();
 
       mws_sp<gfx_camera> cam = get_cam();
       glm::vec3 bl;
@@ -338,13 +338,13 @@ public:
 class draw_image_op : public draw_op
 {
 public:
-   void push_data(data_seqv_rw_mem_ops& seq, mws_sp<gfx_tex> img, float ix, float iy, float iwidth, float iheight)
+   void push_data(data_seqv_rw_mem_ops& seq, mws_sp<gfx_tex> img, float ix, float iy, float i_width, float i_height)
    {
       name = img->get_name();
       x = ix;
       y = iy;
-      width = iwidth;
-      height = iheight;
+      width = i_width;
+      height = i_height;
       seq.w.write_pointer(this);
       write_data(seq);
    }

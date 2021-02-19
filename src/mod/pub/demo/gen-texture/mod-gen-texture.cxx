@@ -22,7 +22,7 @@ void mod_gen_texture::init()
 
 namespace mod_gen_texture_texture
 {
-	void draw_texture(mws_sp<mws_camera> g, int iwidth, int iheight)
+	void draw_texture(mws_sp<mws_camera> i_g, int i_width, int i_height)
 	{
 		//spvg_path fg = vg_util::new_ellipse(0,0, 100, 60);
 		//VGfloat white[] = {0,0,1,1};
@@ -36,19 +36,19 @@ namespace mod_gen_texture_texture
 		//vgSetPaint(fillPaint->handle(), VG_FILL_PATH);
 		//vgSetPaint(strokePaint->handle(), VG_STROKE_PATH);
 
-		//g->clear(0, 0, iwidth, iheight, 0xff);
+		//i_g->clear(0, 0, i_width, i_height, 0xff);
 		////vgSetfv(VG_CLEAR_COLOR, 4, white);
-		////vgClear(0, 0, iwidth, iheight);
+		////vgClear(0, 0, i_width, i_height);
 
 		//vgSeti(VG_MATRIX_MODE, VG_MATRIX_PATH_USER_TO_SURFACE);
 
-		//g->sf.set_line_width(2.5f);
-		//g->sf.set_miter_limit(10.5f);
-		//g->sf.set_cap_style(vg::cap_style::CAP_BUTT);
-		//g->sf.set_join_style(vg::join_style::JOIN_MITER);
-		//g->sf.set_dash_pattern(dashes, 2);
-		//g->sf.set_dash_phase(0.5f);
-		//g->sf.set_dash_phase_reset(true);
+		//i_g->sf.set_line_width(2.5f);
+		//i_g->sf.set_miter_limit(10.5f);
+		//i_g->sf.set_cap_style(vg::cap_style::CAP_BUTT);
+		//i_g->sf.set_join_style(vg::join_style::JOIN_MITER);
+		//i_g->sf.set_dash_pattern(dashes, 2);
+		//i_g->sf.set_dash_phase(0.5f);
+		//i_g->sf.set_dash_phase_reset(true);
 
 		////vgSetf(VG_STROKE_LINE_WIDTH, 2.5f);
 		////vgSetf(VG_STROKE_MITER_LIMIT, 10.5f);
@@ -104,15 +104,15 @@ namespace mod_gen_texture_rtt_screen
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			//mws_sp<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
 			//r->g2d.draw_quad(0, 0, shvg_tex->get_width(), shvg_tex->get_height());
 
-			g->drawText("rtt_screen", 10, 20);
+			i_g->drawText("rtt_screen", 10, 20);
 		}
 	};
 }
@@ -156,15 +156,15 @@ namespace mod_gen_texture_rtt_fbo
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			//mws_sp<renderer> r = renderer::get_instance();
 			//r->tx.set_texture_id(shvg_tex->get_texture_id());
 			//r->g2d.draw_quad(0, 0, shvg_tex->get_width(), shvg_tex->get_height());
 
-			g->drawText("rtt_fbo", 10, 20);
+			i_g->drawText("rtt_fbo", 10, 20);
 		}
 	};
 }
@@ -190,9 +190,9 @@ namespace mod_gen_texture_mainpage
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			//mws_sp<renderer> r = renderer::get_instance();
 			////mod_gen_texture::draw_texture(gfx_openvg::get_instance(), 256, 256);
@@ -219,7 +219,7 @@ namespace mod_gen_texture_mainpage
 
 			const std::string& text = get_mod()->name();
 
-			g->drawText(text, 10, 20);
+			i_g->drawText(text, 10, 20);
 		}
 	};
 }

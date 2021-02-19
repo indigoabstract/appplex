@@ -189,9 +189,9 @@ public:
       mws_report_gfx_errs();
    }
 
-   virtual void update_view(mws_sp<mws_camera> g) override
+   virtual void update_view(mws_sp<mws_camera> i_g) override
    {
-      g->drawText(message, 20.f, 20.f, remaining_fnt);
+      i_g->drawText(message, 20.f, 20.f, remaining_fnt);
    }
 
    std::string message;

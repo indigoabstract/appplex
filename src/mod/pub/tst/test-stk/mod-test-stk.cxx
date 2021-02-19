@@ -155,9 +155,9 @@ namespace mod_test_stk_ns
 		}
 
 		// Change the sound being generated
-		void SetGenerator(GeneratorType g)
+		void SetGenerator(GeneratorType i_g)
 		{
-			generator = g;
+			generator = i_g;
 		}
 
 		void set_frequency(float ifrequency)
@@ -367,12 +367,12 @@ void mod_test_stk::init_mws()
 			fmodSystem->update();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
-			g->drawText("test stk", 10, 10);
-			g->drawText(show_note, 10, 50);
+			i_g->drawText("test stk", 10, 10);
+			i_g->drawText(show_note, 10, 50);
 		}
 
 		FMOD::System* fmodSystem;

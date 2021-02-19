@@ -25,11 +25,11 @@ namespace ns_mod_test_normal_mapping
 	class mws_select_button : public gfx_plane
 	{
 	public:
-		mws_select_button(mws_sp<mod_test_normal_mapping> i_mod, int ibutton_id, std::string itex_name)
+		mws_select_button(mws_sp<mod_test_normal_mapping> i_mod, int ibutton_id, std::string i_tex_name)
 		{
 			mws_mod = i_mod;
 			button_id = ibutton_id;
-			tex_name = itex_name;
+			tex_name = i_tex_name;
 			z_pos = -1;
 			is_init = false;
 		}

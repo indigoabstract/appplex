@@ -366,9 +366,9 @@ glm::quat gfx_util::look_at(glm::vec3 direction, glm::vec3 desiredUp)
    return rot2 * rot1; // remember, in reverse order.
 }
 
-int gfx_util::get_tex_2d_mipmap_count(int iwidth, int iheight)
+uint32_t gfx_util::get_tex_2d_mipmap_count(uint32_t i_width, uint32_t i_height)
 {
-   return int(floor(log2(std::max(iwidth, iheight))) + 1);
+   return uint32_t(floor(log2(std::max(i_width, i_height))) + 1);
 }
 
 uint32_t gfx_util::next_power_of_2(uint32_t in)

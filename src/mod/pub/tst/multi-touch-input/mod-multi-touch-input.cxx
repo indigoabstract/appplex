@@ -189,11 +189,11 @@ namespace mod_multi_touch_input_ns
          }
       }
 
-      virtual void update_view(mws_sp<mws_camera> g) override
+      virtual void update_view(mws_sp<mws_camera> i_g) override
       {
          std::string txt = mws_to_str_fmt("t0 [ %4.2f, %4.2f ] cw %d ch %d", touch_0.x, touch_0.y, mws::screen::get_width(), mws::screen::get_height());
 
-         g->draw_text(txt, 0.5f * ready_icon_size_px, 1.5f * ready_icon_size_px);
+         i_g->draw_text(txt, 0.5f * ready_icon_size_px, 1.5f * ready_icon_size_px);
       }
 
       mws_sp<gfx_2d_sprite> ready_vxo;

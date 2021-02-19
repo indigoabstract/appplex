@@ -622,9 +622,9 @@ mws_sp<gfx_tex> gfx::ic_tex::nwi_external(std::string i_tex_id, int i_gl_id, std
    return tex;
 }
 
-mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bool iforce_new_inst)
+mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string i_tex_name, bool iforce_new_inst)
 {
-   mws_sp<gfx_tex> tex = get_texture_by_name(itex_name);
+   mws_sp<gfx_tex> tex = get_texture_by_name(i_tex_name);
    mws_sp<gfx_tex_cube_map> tex_cube_map;
    bool new_tex = false;
 
@@ -646,7 +646,7 @@ mws_sp<gfx_tex_cube_map> gfx::ic_tex::get_tex_cube_map(std::string itex_name, bo
 
    if (new_tex)
    {
-      tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(itex_name));
+      tex_cube_map = mws_sp<gfx_tex_cube_map>(new gfx_tex_cube_map(i_tex_name));
       gi()->tex_list.push_back(tex_cube_map);
    }
 

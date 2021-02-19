@@ -98,7 +98,7 @@ namespace
 			}
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
 			/*
 			mws_sp<mod_abstract_racing> u = ar_mod();
@@ -170,9 +170,9 @@ namespace
 			r.mx.pop_projection_matrix();
 			r.mx.pop_view_matrix();
 
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 			const string& text = ar_mod()->get_name();
-			g->drawText(text, 10, 10);
+			i_g->drawText(text, 10, 10);
 			*/
 		}
 

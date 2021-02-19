@@ -13,21 +13,11 @@
 #include "pfm-gl.h"
 
 
-namespace mod_test_touch_input_ns
-{
-   class mod_preferences_detail : public mws_mod_preferences
-   {
-   public:
-      virtual uint32_t get_preferred_screen_width() override { return 586; }//640
-      virtual uint32_t get_preferred_screen_height() override { return 1040; }//1136
-      virtual double get_preferred_aspect_ratio() override { return 640. / 1136.; }
-   };
-}
-
-
 mod_test_touch_input::mod_test_touch_input() : mws_mod(mws_stringify(MOD_TEST_TOUCH_INPUT))
 {
-   prefs = mws_sp<mws_mod_preferences>(new mod_test_touch_input_ns::mod_preferences_detail());
+   settings_v.pref_screen_width = 586;//640
+   settings_v.pref_screen_height = 1040;//1136
+   settings_v.pref_aspect_ratio = 640. / 1136.;
 }
 
 mws_sp<mod_test_touch_input> mod_test_touch_input::nwi()
@@ -275,12 +265,12 @@ namespace mod_test_touch_input_ns
          mws_page::update_state();
       }
 
-      virtual void update_view(mws_sp<mws_camera> g)
+      virtual void update_view(mws_sp<mws_camera> i_g)
       {
-         //mws_page::update_view(g);
+         //mws_page::update_view(i_g);
 
-         //g->drawLine(pos_pt.x, pos_pt.y, pointer_pt.x, pointer_pt.y);
-         //g->drawLine(pos_pt.x, pos_pt.y, side_pt.x, side_pt.y);
+         //i_g->drawLine(pos_pt.x, pos_pt.y, pointer_pt.x, pointer_pt.y);
+         //i_g->drawLine(pos_pt.x, pos_pt.y, side_pt.x, side_pt.y);
 
          if (gpu_readback_enabled)
          {
@@ -328,7 +318,7 @@ namespace mod_test_touch_input_ns
             };
 
             std::sort(obj_vect.begin(), obj_vect.end(), z_sort);
-            g->update_rt_cam_state = false;
+            i_g->update_rt_cam_state = false;
 
             for (auto m : obj_vect)
             {
@@ -337,19 +327,19 @@ namespace mod_test_touch_input_ns
                (*m)[MP_DEPTH_TEST] = false;
                (*m)[MP_BLENDING] = MV_NONE;
                (*m)["u_v1_z_pos"] = z_pos;
-               m->draw_out_of_sync(g);
+               m->draw_out_of_sync(i_g);
                (*m)[MP_SHADER_NAME] = gfx::basic_tex_sh_id;
                (*m)[MP_DEPTH_TEST] = true;
                (*m)[MP_BLENDING] = MV_ALPHA;
             }
 
-            g->update_rt_cam_state = true;
+            i_g->update_rt_cam_state = true;
             bool pbo_supported = true;
 
             // with PBO
             if (pbo_supported)
             {
-               read_pixels_pbo(g);
+               read_pixels_pbo(i_g);
             }
 
             mws_report_gfx_errs();
@@ -357,9 +347,9 @@ namespace mod_test_touch_input_ns
 
             if (picking_dgb_q2d && picking_dgb_q2d->visible)
             {
-               //picking_dgb_q2d->draw_out_of_sync(g);
+               //picking_dgb_q2d->draw_out_of_sync(i_g);
                auto tr = picking_dgb_q2d->get_translation();
-               g->draw_point(glm::vec3(tr.x + map_click_x, tr.y + map_click_y, picking_dgb_q2d->get_z() + 1.f), glm::vec4(1., 1, 1, 1.), 5.f);
+               i_g->draw_point(glm::vec3(tr.x + map_click_x, tr.y + map_click_y, picking_dgb_q2d->get_z() + 1.f), glm::vec4(1., 1, 1, 1.), 5.f);
             }
 
             // increment current index first then get the next index
@@ -393,7 +383,7 @@ namespace mod_test_touch_input_ns
          frame_idx++;
       }
 
-      void read_pixels_pbo(mws_sp<mws_camera> g)
+      void read_pixels_pbo(mws_sp<mws_camera> i_g)
       {
          auto& tex_prm = picking_tex->get_params();
 
@@ -424,7 +414,7 @@ namespace mod_test_touch_input_ns
             {
                auto tmp_last_click = last_click;
 
-               if (g->projection_type == g->e_perspective_proj)
+               if (i_g->projection_type == i_g->e_perspective_proj)
                {
                   float screen_aspect_ratio = gfx::i()->rt.get_screen_width() / float(gfx::i()->rt.get_screen_height());
                   float new_hs_tex_width = picking_tex->get_height() * screen_aspect_ratio;
@@ -434,7 +424,7 @@ namespace mod_test_touch_input_ns
                   map_click_x = int(hs_tex_width_delta / 2.f + last_click.x * tf_x);
                   map_click_y = int(last_click.y * tf_y);
                }
-               else if (g->projection_type == g->e_orthographic_proj)
+               else if (i_g->projection_type == i_g->e_orthographic_proj)
                {
                   float tf_x = picking_tex->get_width() / float(gfx::i()->rt.get_screen_width());
                   float tf_y = picking_tex->get_height() / float(gfx::i()->rt.get_screen_height());

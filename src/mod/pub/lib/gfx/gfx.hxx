@@ -193,9 +193,9 @@ public:
 
       /**
       expects to find in the resources 6 same size images named like this:
-      [itex_name-posx.png, itex_name-negx.png, itex_name-posy.png, itex_name-negy.png, itex_name-posz.png, itex_name-negz.png]
+      [i_tex_name-posx.png, i_tex_name-negx.png, i_tex_name-posy.png, i_tex_name-negy.png, i_tex_name-posz.png, i_tex_name-negz.png]
       */
-      mws_sp<gfx_tex_cube_map> get_tex_cube_map(std::string itex_name, bool inew_inst = false);
+      mws_sp<gfx_tex_cube_map> get_tex_cube_map(std::string i_tex_name, bool inew_inst = false);
       mws_sp<gfx_tex_cube_map> new_tex_cube_map(uint32_t i_size);
       mws_sp<gfx_tex> get_texture_by_name(std::string i_filename);
       // returns an existing texture by that name, or creates an new one if it doesn't exist yet

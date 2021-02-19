@@ -135,7 +135,7 @@ public:
    virtual void process(mws_sp<mws_dp> i_dp);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
+   virtual void update_view(mws_sp<mws_camera> i_g);
    virtual const mws_size& get_best_size() const;
    virtual void set_best_size(const mws_size& i_size);
    virtual mws_rect get_pos();
@@ -225,7 +225,7 @@ public:
 
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual void update_state() override;
-   virtual void update_view(mws_sp<mws_camera> g) override;
+   virtual void update_view(mws_sp<mws_camera> i_g) override;
    virtual void on_resize();
    virtual void add_page(mws_sp<mws_page> i_page);
    template <typename T, typename... var_args> mws_sp<T> new_page(var_args... i_args) { mws_sp<T> p(new T(i_args...)); add_page(p); return p; }
@@ -313,7 +313,7 @@ public:
    virtual void update_input_sub_mws(mws_sp<mws_dp> i_dp);
    virtual void update_input_std_behaviour(mws_sp<mws_dp> i_dp);
    virtual void update_state() override;
-   virtual void update_view(mws_sp<mws_camera> g) override;
+   virtual void update_view(mws_sp<mws_camera> i_g) override;
    virtual glm::vec2 get_dim() const;
    mws_sp<mws_obj> get_mws_at(uint32_t i_idx);
    virtual bool is_selected(mws_sp<mws_obj> i_item);

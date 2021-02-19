@@ -18,7 +18,7 @@ public:
    static mws_sp<mws_camera> nwi(mws_sp<gfx> i_gi = nullptr);
    virtual void draw_text(const std::string& i_text, float i_x, float i_y, const mws_sp<mws_font> i_font = nullptr) override;
    void clearScreen(int iargb = 0);
-   void clear(int ix, int iy, int iwidth, int iheight, int iargb = 0);
+   void clear(int ix, int iy, int i_width, int i_height, int iargb = 0);
    void drawImage(mws_sp<gfx_tex> img, float x, float y, float width = 0.f, float height = 0.f);
    void drawLine(float i, float j, float k, float l);
    void drawRect(float x, float y, float width, float height);

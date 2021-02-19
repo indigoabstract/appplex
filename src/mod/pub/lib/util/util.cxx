@@ -30,40 +30,40 @@ float interpolate_smooth_step(float intervalPosition, float start, float end, in
    return (end * v) + (start * (1 - v));
 }
 
-//void draw_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor)
+//void draw_border_rect(mws_sp<mws_camera> i_g, float x, float y, float w, float h, float borderSize, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
 //		return;
 //	}
 //
-//	g->setColor(borderColor);
+//	i_g->setColor(borderColor);
 //
 //	float hbs = borderSize / 2;
 //
 //	// left border
-//	g->fillRect(x - hbs, y, borderSize, h);
+//	i_g->fillRect(x - hbs, y, borderSize, h);
 //	// bottom border
-//	g->fillRect(x - hbs, y - hbs + h, w + borderSize, borderSize);
+//	i_g->fillRect(x - hbs, y - hbs + h, w + borderSize, borderSize);
 //	// right border
-//	g->fillRect(x - hbs + w, y, borderSize, h);
+//	i_g->fillRect(x - hbs + w, y, borderSize, h);
 //	// top border
-//	g->fillRect(x - hbs, y - hbs, w + borderSize, borderSize);
+//	i_g->fillRect(x - hbs, y - hbs, w + borderSize, borderSize);
 //}
 //
-//void fill_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
+//void fill_border_rect(mws_sp<mws_camera> i_g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor)
 //{
 //	if(w <= 0 || h <= 0)
 //	{
 //		return;
 //	}
 //
-//	g->setColor(fillColor);
-//	g->fillRect(x, y, w, h);
+//	i_g->setColor(fillColor);
+//	i_g->fillRect(x, y, w, h);
 //
 //	if(borderSize > 0)
 //	{
-//		draw_border_rect(g, x, y, w, h, borderSize, borderColor);
+//		draw_border_rect(i_g, x, y, w, h, borderSize, borderColor);
 //	}
 //}
 

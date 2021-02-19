@@ -138,7 +138,7 @@ mws_sp<mws_mod> mws_obj::get_mod() const { return nullptr; }
 void mws_obj::process(mws_sp<mws_dp> i_dp) {}
 void mws_obj::receive(mws_sp<mws_dp> i_dp) {}
 void mws_obj::update_state() {}
-void mws_obj::update_view(mws_sp<mws_camera> g) {}
+void mws_obj::update_view(mws_sp<mws_camera> i_g) {}
 const mws_size& mws_obj::get_best_size() const { static mws_size t; return t; }
 void mws_obj::set_best_size(const mws_size& i_size) {}
 mws_rect mws_obj::get_pos() { return  mws_rect(); }

@@ -72,13 +72,13 @@ namespace mod_texxed_ns
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			std::string text = "texxed : texxt-editor";
 
-			g->drawText(text, 10, 20);
+			i_g->drawText(text, 10, 20);
 		}
 
 		mws_sp<mws_text_box> ta;

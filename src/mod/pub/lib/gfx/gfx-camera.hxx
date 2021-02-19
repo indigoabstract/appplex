@@ -46,7 +46,7 @@ public:
    draw_context(mws_sp<gfx_camera> icam);
    mws_sp<gfx_camera> get_cam() { return cam.lock(); }
    void draw_line(glm::vec3 start, glm::vec3 finish, const glm::vec4& color, float thickness);
-   void draw_texture(std::string tex_name, float ix, float iy, float iwidth, float iheight);
+   void draw_texture(std::string tex_name, float ix, float iy, float i_width, float i_height);
 
    mws_wp<gfx_camera> cam;
    mws_sp<gfx_vxo> line_mesh;

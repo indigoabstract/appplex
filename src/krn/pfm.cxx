@@ -1156,7 +1156,7 @@ bool mws::input::has_touchscreen()
 bool mws::input::uses_touchscreen()
 {
    mws_sp<mws_mod> mod = mws_mod_ctrl::inst()->get_current_mod();
-   bool uses_touchscreen = (mod) ? mod->get_preferences()->emulate_mobile_screen() : false;
+   bool uses_touchscreen = (mod) ? mod->settings().emulate_mobile_screen : false;
 
    return has_touchscreen() || uses_touchscreen;
 }

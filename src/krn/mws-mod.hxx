@@ -32,21 +32,22 @@ protected:
 };
 
 
-class mws_mod_preferences
+class mws_mod_settings
 {
 public:
-   virtual bool requires_gfx();
-   virtual bool log_enabled() { return false; }
-   virtual uint32_t get_preferred_screen_width() { return 0; }
-   virtual uint32_t get_preferred_screen_height() { return 0; }
-   virtual double get_preferred_aspect_ratio() { return 0.; }
-   virtual bool start_full_screen() { return false; }
-   virtual bool draw_touch_symbols_trail() { return false; }
-   virtual bool show_onscreen_console() { return false; }
-   virtual bool show_fps() const { return true; }
-   virtual uint32_t get_font_db_pow_of_two_size() const { return 9; }
+   mws_mod_settings();
 
-   virtual bool emulate_mobile_screen() { return false; }
+   bool requires_gfx;
+   bool log_enabled;
+   uint32_t pref_screen_width;
+   uint32_t pref_screen_height;
+   double pref_aspect_ratio;
+   bool start_full_screen;
+   bool draw_touch_symbols_trail;
+   bool show_onscreen_console;
+   bool show_fps;
+   uint32_t font_db_pow_of_two_size;
+   bool emulate_mobile_screen;
 };
 
 
@@ -111,7 +112,7 @@ public:
    const mws_path& get_proj_rel_path();
    void set_proj_rel_path(const mws_path& i_path);
    bool is_gfx_mod();
-   mws_sp<mws_mod_preferences> get_preferences();
+   const mws_mod_settings& settings() const { return settings_v; }
    // true to exit app, false to continue
    virtual bool back();
    void run_on_next_frame_start(const std::function<void()>& i_op);
@@ -160,7 +161,7 @@ protected:
    virtual void post_update_view();
 
    mws_up<app_impl> p;
-   mws_sp<mws_mod_preferences> prefs;
+   mws_mod_settings settings_v;
    uint32_t frame_count = 0;
    float fps = 0.f;
    uint32_t last_frame_time = 0;

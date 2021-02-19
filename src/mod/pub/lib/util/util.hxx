@@ -373,6 +373,6 @@ inline float smooth_step(float x)
 }
 
 float interpolate_smooth_step(float intervalPosition, float start, float end, int octaveCount);
-//void draw_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int borderColor);
-//void fill_border_rect(mws_sp<mws_camera> g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
-//void draw_bar(mws_sp<mws_camera> g, int x, int y, int w, int h, int color);
+//void draw_border_rect(mws_sp<mws_camera> i_g, float x, float y, float w, float h, float borderSize, int borderColor);
+//void fill_border_rect(mws_sp<mws_camera> i_g, float x, float y, float w, float h, float borderSize, int fillColor, int borderColor);
+//void draw_bar(mws_sp<mws_camera> i_g, int x, int y, int w, int h, int color);

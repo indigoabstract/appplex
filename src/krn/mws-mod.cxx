@@ -35,10 +35,21 @@
 mws_sp<mws_app> mws_app_inst();
 
 
-bool mws_mod_preferences::requires_gfx()
+mws_mod_settings::mws_mod_settings()
 {
-   return mod_gfx_on;
+   requires_gfx = mod_gfx_on;
+   log_enabled = false;
+   pref_screen_width = 0;
+   pref_screen_height = 0;
+   pref_aspect_ratio = 0.;
+   start_full_screen = false;
+   draw_touch_symbols_trail = false;
+   show_onscreen_console = false;
+   show_fps = true;
+   font_db_pow_of_two_size = 9;
+   emulate_mobile_screen = false;
 }
+
 
 class mws_app_storage_impl
 {
@@ -469,12 +480,10 @@ public:
    bool is_recording_screen()
    {
 #if MOD_FFMPEG && MOD_TEST_FFMPEG && MOD_GFX
-
       return venc && venc->is_encoding();
-
-#endif
-
+#else
       return false;
+#endif
    }
 
    void toggle_screen_recording()
@@ -548,8 +557,6 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
    {
       if (i_mod != crt_mod.lock())
       {
-         auto mod_pref = i_mod->get_preferences();
-
          if (!crt_mod.expired())
          {
             crt_mod.lock()->base_unload();
@@ -557,7 +564,7 @@ void mws_mod_ctrl::set_current_mod(mws_sp<mws_mod> i_mod)
 
          crt_mod = i_mod;
          mws_app_inst()->reconfigure_directories(i_mod);
-         mws_log::set_enabled(mod_pref->log_enabled());
+         mws_log::set_enabled(i_mod->settings().log_enabled);
 
          // reload resources
          i_mod->storage.p->res_files_map = mws_app_inst()->list_internal_directory();
@@ -716,7 +723,6 @@ mws_mod::mws_mod(const char* i_include_guard)
    init_val = false;
    set_internal_name_from_include_guard(i_include_guard);
    mod_count++;
-   prefs = std::make_shared<mws_mod_preferences>();
    game_time = 0;
 }
 
@@ -931,8 +937,7 @@ void mws_mod::config_font_db_size()
 {
 #if MOD_VECTOR_FONTS
 
-   uint32_t pow_of_two = get_preferences()->get_font_db_pow_of_two_size();
-   mws_font_db::nwi_inex(pow_of_two);
+   mws_font_db::nwi_inex(settings().font_db_pow_of_two_size);
 
 #endif
 }
@@ -1062,12 +1067,7 @@ bool mws_mod::back()
 
 bool mws_mod::is_gfx_mod()
 {
-   return get_preferences()->requires_gfx();
-}
-
-mws_sp<mws_mod_preferences> mws_mod::get_preferences()
-{
-   return prefs;
+   return settings().requires_gfx;
 }
 
 bool mws_mod::is_init()
@@ -1161,7 +1161,7 @@ void mws_mod::update_view(uint32_t update_count)
 
 #ifdef MWS_DEBUG_BUILD
 
-   if (prefs->show_fps() && fps > 0 && !storage.is_recording_screen())
+   if (settings_v.show_fps && fps > 0 && !storage.is_recording_screen())
    {
       mws_sp<mws_font> font = mws_cam->get_font();
 

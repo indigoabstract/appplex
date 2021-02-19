@@ -11,18 +11,9 @@
 #include "mws/mws-com.hxx"
 
 
-namespace ns_mod_who_am_i
-{
-   class mod_preferences_detail : public mws_mod_preferences
-   {
-   public:
-      virtual bool show_fps() const override { return false; }
-   };
-}
-
 mod_who_am_i::mod_who_am_i() : mws_mod(mws_stringify(MOD_WHO_AM_I))
 {
-   prefs = mws_sp<mws_mod_preferences>(new ns_mod_who_am_i::mod_preferences_detail());
+   settings_v.show_fps = false;
 }
 
 mws_sp<mod_who_am_i> mod_who_am_i::nwi()
@@ -69,7 +60,7 @@ namespace mod_who_am_i_ns
             text_font->set_color(gfx_color::colors::white);
             glm::vec2 letter_dim = letter_font->get_text_dim("I");
             //struct { mws_px x; mws_px y; } letter_dim = { mws_pt(letter_dim_pt.x).to_px(),  mws_pt(letter_dim_pt.y).to_px() };
-            mws_sp<mws_camera> g = get_mod()->mws_cam;
+            mws_sp<mws_camera> cam = get_mod()->mws_cam;
             glm::ivec2 tex_dim(256, 512);
             glm::ivec2 scr_dim(mws::screen::get_width(), mws::screen::get_height());
 
@@ -80,8 +71,8 @@ namespace mod_who_am_i_ns
             gfx::i()->rt.set_current_render_target(font_tex.get_rt());
             gfx_rt::clear_buffers();
             //gfx_rt::clear_buffers(true, true, true, gfx_color::colors::blue);
-            g->drawText("I", (tex_dim.x - letter_dim.x) / 2.f, (tex_dim.y - 0.7f * letter_dim.y) / 2.f, letter_font);
-            g->update_camera_state();
+            cam->drawText("I", (tex_dim.x - letter_dim.x) / 2.f, (tex_dim.y - 0.7f * letter_dim.y) / 2.f, letter_font);
+            cam->update_camera_state();
             gfx::i()->rt.set_current_render_target();
 
             font_quad = gfx_quad_2d::nwi();

@@ -145,7 +145,7 @@ public:
    static glm::mat4 mat4_from_trs(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale);
    static glm::quat quat_from_two_vectors(glm::vec3 u, glm::vec3 v);
    static glm::quat look_at(glm::vec3 direction, glm::vec3 desiredUp);
-   static int get_tex_2d_mipmap_count(int iwidth, int iheight);
+   static uint32_t get_tex_2d_mipmap_count(uint32_t i_width, uint32_t i_height);
    static uint32_t next_power_of_2(uint32_t in);
 
    static void init();

@@ -20,24 +20,24 @@ void stroke(int s)
 {
 }
 
-void fill(mws_sp<mws_camera> g, int f)
+void fill(mws_sp<mws_camera> i_g, int f)
 {
-	g->set_color(gfx_color(f, f, f, 255));
+	i_g->set_color(gfx_color(f, f, f, 255));
 };
 
-void fill(mws_sp<mws_camera> g, int x, int y, int z)
+void fill(mws_sp<mws_camera> i_g, int x, int y, int z)
 {
-	g->set_color(gfx_color(x, y, z, 255));
+	i_g->set_color(gfx_color(x, y, z, 255));
 }
 
-void line(mws_sp<mws_camera> g, float x1, float y1, float x2, float y2)
+void line(mws_sp<mws_camera> i_g, float x1, float y1, float x2, float y2)
 {
-	g->drawLine(x1, y1, x2, y2);
+	i_g->drawLine(x1, y1, x2, y2);
 };
 
-void rect(mws_sp<mws_camera> g, float x, float y, float w, float h)
+void rect(mws_sp<mws_camera> i_g, float x, float y, float w, float h)
 {
-	g->fillRect(x, y, w, h);
+	i_g->fillRect(x, y, w, h);
 };
 
 int color(int r, int g, int b, int a)
@@ -45,19 +45,19 @@ int color(int r, int g, int b, int a)
 	return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-int textWidth(mws_sp<mws_camera> g, string& s)
+int textWidth(mws_sp<mws_camera> i_g, string& s)
 {
-	return g->get_font()->get_text_width(s);
+	return i_g->get_font()->get_text_width(s);
 }
 
-void text(mws_sp<mws_camera> g, int num, float x, float y)
+void text(mws_sp<mws_camera> i_g, int num, float x, float y)
 {
-	g->drawText(trs("{}", num), x, y);
+	i_g->drawText(trs("{}", num), x, y);
 }
 
-void text(mws_sp<mws_camera> g, string& name, float x, float y)
+void text(mws_sp<mws_camera> i_g, string& name, float x, float y)
 {
-	g->drawText(name, x, y);
+	i_g->drawText(name, x, y);
 }
 
 int constrain(int val, int min, int max)
@@ -97,8 +97,8 @@ public:
 	bool isAtStart();
 	void gen_random_events(int n);
 	void setup(int width, int height);
-	void draw(mws_sp<mws_camera> g);
-	void draw_scale(mws_sp<mws_camera> g);
+	void draw(mws_sp<mws_camera> i_g);
+	void draw_scale(mws_sp<mws_camera> i_g);
 	void mouseDragged(int iMouseX, int iMouseY);
 	void mousePressed(int iMouseX, int iMouseY);
 	void mouseReleased(int iMouseX, int iMouseY);
@@ -115,24 +115,24 @@ public:
 	int col;
 	string name;
 
-	void draw(kscroll2& ks, mws_sp<mws_camera> g, int mouseX, int mouseY){
+	void draw(kscroll2& ks, mws_sp<mws_camera> i_g, int mouseX, int mouseY){
 		int lpos = ks.lpos;
 
 		if (x > lpos - (l*ks.unitsize) && x<lpos + ks.W + (l*ks.unitsize))
 		{
 			stroke(col);
-			fill(g, col);
-			rect(g, x - lpos, y, l*ks.unitsize, h);
-			fill(g, 0);
-			text(g, name, x - lpos, y + 12);
+			fill(i_g, col);
+			rect(i_g, x - lpos, y, l*ks.unitsize, h);
+			fill(i_g, 0);
+			text(i_g, name, x - lpos, y + 12);
 
 			if (is_mouseover(ks, mouseX, mouseY))
 			{
 				stroke(200);
-				fill(g, 0, 0, 255);
-				rect(g, mouseX, mouseY - 20, textWidth(g, name) + 10, 25);
-				fill(g, 255);
-				text(g, name, mouseX + 5, mouseY);
+				fill(i_g, 0, 0, 255);
+				rect(i_g, mouseX, mouseY - 20, textWidth(i_g, name) + 10, 25);
+				fill(i_g, 255);
+				text(i_g, name, mouseX + 5, mouseY);
 			}
 		}
 	}
@@ -198,36 +198,36 @@ void kscroll2::setup(int width, int height) {
 
 }
 
-void kscroll2::draw(mws_sp<mws_camera> g) {
+void kscroll2::draw(mws_sp<mws_camera> i_g) {
 	glm::vec2 p = scroller.update();
 	lpos = constrain(lpos - p.x, lopx, hipx - W);
 
 	for (int i = 0; i < test; i++)
 	{
 		ksevent e = arrEvent[i];
-		e.draw(*this, g, mouseX, mouseY);
+		e.draw(*this, i_g, mouseX, mouseY);
 	}
 
-	draw_scale(g);
+	draw_scale(i_g);
 }
 
-void kscroll2::draw_scale(mws_sp<mws_camera> g)
+void kscroll2::draw_scale(mws_sp<mws_camera> i_g)
 {
 	stroke(255);
-	fill(g, 100);
-	line(g, 0, H / 2, W, H / 2);
+	fill(i_g, 100);
+	line(i_g, 0, H / 2, W, H / 2);
 
 	for (int i = lpos; i < lpos + W; i++)
 	{
 		float x = i - lpos;
 		if (i % tick1 == 0) {
 			stroke(200);
-			line(g, x, H / 2 + 15, x, H / 2 - 15);
-			text(g, i / tick1 + 1, x, H / 2 - 20);
+			line(i_g, x, H / 2 + 15, x, H / 2 - 15);
+			text(i_g, i / tick1 + 1, x, H / 2 - 20);
 		}
 		else if (i % tick2 == 0) {
 			stroke(200);
-			line(g, x, H / 2 + 10, x, H / 2 - 10);
+			line(i_g, x, H / 2 + 10, x, H / 2 - 10);
 		}
 	}
 }
@@ -308,11 +308,11 @@ void mod_kinetic_scrolling::init_mws()
 			mws_page::receive(idp);
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
-			kscrollinst.draw(g);
+			kscrollinst.draw(i_g);
 		}
 	};
 

@@ -155,9 +155,9 @@ namespace mod_test_main_page
 			mws_page::update_state();
 		}
 
-		virtual void update_view(mws_sp<mws_camera> g)
+		virtual void update_view(mws_sp<mws_camera> i_g)
 		{
-			mws_page::update_view(g);
+			mws_page::update_view(i_g);
 
 			int linew = 350;
 			int lineh = 25;
@@ -167,22 +167,22 @@ namespace mod_test_main_page
 			int visibleLines = get_mod()->get_height() / lineHeight;
 			int lineIdx = 0;
 
-			//g->clearScreen();
-			g->set_color(gfx_color::from_argb(0xff9f007f));
+			//i_g->clearScreen();
+			i_g->set_color(gfx_color::from_argb(0xff9f007f));
 
 			for (int k = 0; k < visibleLines; k++)
 			{
-				g->fillRect((get_mod()->get_width() - linew) / 2, k * lineHeight, linew, lineh);
+				i_g->fillRect((get_mod()->get_width() - linew) / 2, k * lineHeight, linew, lineh);
 			}
 
-			g->set_color(gfx_color::from_argb(0xffff0000));
-			g->drawLine(50, 50, 250, 350);
-			//g->fillAlphaRect(122, 233, 255, 122, 0x7fff00ff);
-			//g->drawImage(img, 144, 33);
+			i_g->set_color(gfx_color::from_argb(0xffff0000));
+			i_g->drawLine(50, 50, 250, 350);
+			//i_g->fillAlphaRect(122, 233, 255, 122, 0x7fff00ff);
+			//i_g->drawImage(img, 144, 33);
 
 			const std::string& text = get_mod()->name();
 
-			g->drawText(text, 10, 20);
+			i_g->drawText(text, 10, 20);
 		}
 	};
 }

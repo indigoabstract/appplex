@@ -474,10 +474,10 @@ void msvc_main::flip_screen() const
 
    if (u)
    {
-      auto mod_pref = u->get_preferences();
-      uint32_t pref_width = mod_pref->get_preferred_screen_width();
-      uint32_t pref_height = mod_pref->get_preferred_screen_height();
-      start_full_screen = mod_pref->start_full_screen();
+      auto& settings = u->settings();
+      uint32_t pref_width = settings.pref_screen_width;
+      uint32_t pref_height = settings.pref_screen_height;
+      start_full_screen = settings.start_full_screen;
 
       if (pref_width > 0 && pref_height > 0)
       {
@@ -797,11 +797,11 @@ bool init_app(int argc, const char** argv)
 
       if (start_mod)
       {
-         auto mod_pref = start_mod->get_preferences();
-         uint32_t pref_width = mod_pref->get_preferred_screen_width();
-         uint32_t pref_height = mod_pref->get_preferred_screen_height();
-         start_full_screen = mod_pref->start_full_screen();
-         emulate_mobile_screen = mod_pref->emulate_mobile_screen();
+         auto& settings = start_mod->settings();
+         uint32_t pref_width = settings.pref_screen_width;
+         uint32_t pref_height = settings.pref_screen_height;
+         start_full_screen = settings.start_full_screen;
+         emulate_mobile_screen = settings.emulate_mobile_screen;
 
          if (pref_width > 0 && pref_height > 0)
          {

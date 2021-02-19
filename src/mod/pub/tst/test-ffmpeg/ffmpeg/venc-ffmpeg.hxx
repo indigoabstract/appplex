@@ -6,7 +6,7 @@
 
 #include "vid/video-enc.hxx"
 #include "pfm.hxx"
-
+mws_push_disable_all_warnings
 extern "C"
 {
 #define __STDC_CONSTANT_MACROS
@@ -23,8 +23,8 @@ extern "C"
 #include <ffmpeg/libswscale/swscale.h>
 #include <ffmpeg/libswresample/swresample.h>
 }
-
 #include <string>
+mws_pop_disable_all_warnings
 
 
 class mws_ffmpeg_reencoder_impl;

@@ -41,7 +41,7 @@ public:
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual void select_char_at(const glm::vec2& i_pos);
    virtual void update_state();
-   virtual void update_view(mws_sp<mws_camera> g);
+   virtual void update_view(mws_sp<mws_camera> i_g);
    virtual void on_focus_changed(bool i_has_focus);
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual mws_rect get_cursor_rect(cursor_types i_cursor_type, bool i_absolute_pos = true) override;

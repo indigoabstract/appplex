@@ -788,7 +788,7 @@ void mws_vkb_impl::build_keys_tex()
    setup_font_dimensions();
    keys_tex.resize((uint32_t)key_mod_types::count);
    uint32_t key_map_size = keys_tex.size();
-   mws_sp<mws_camera> g = get_mod()->mws_cam;
+   mws_sp<mws_camera> cam = get_mod()->mws_cam;
    glm::vec2 dim = letter_font->get_text_dim("M");
    std::string vkb_type = (diag_original_dim.x > diag_original_dim.y) ? "landscape" : "portrait";
 
@@ -816,14 +816,14 @@ void mws_vkb_impl::build_keys_tex()
          vk->vgeom->nexus_pairs_mesh->visible = true;
          gfx::i()->rt.set_current_render_target(key_border_tex.get_rt());
          gfx_rt::clear_buffers();
-         //rvxo.draw_out_of_sync(g);
+         //rvxo.draw_out_of_sync(cam);
          float line_thickness = std::max(mws::screen::get_width(), mws::screen::get_height()) * 0.007f;
          (*vk->vgeom->nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness;
          (*vk->vgeom->nexus_pairs_mesh)["u_v4_color"] = glm::vec4(0.f, 0.f, 1.f, 1.f);
-         vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(g);
+         vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(cam);
          (*vk->vgeom->nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness / 5.f;
          (*vk->vgeom->nexus_pairs_mesh)["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 1.f);
-         vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(g);
+         vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(cam);
          gfx::i()->rt.set_current_render_target();
 
          mws_sp<mws_kawase_bloom> bloom = mws_kawase_bloom::nwi(key_border_tex.get_tex());
@@ -841,10 +841,10 @@ void mws_vkb_impl::build_keys_tex()
          rvxo.set_v_flip(true);
 
          gfx::i()->rt.set_current_render_target(key_border_tex.get_rt());
-         rvxo.draw_out_of_sync(g);
+         rvxo.draw_out_of_sync(cam);
          (*vk->vgeom->nexus_pairs_mesh)["u_v1_line_thickness"] = line_thickness / 8.f;
          (*vk->vgeom->nexus_pairs_mesh)["u_v4_color"] = glm::vec4(1.f, 1.f, 1.f, 1.f);
-         //vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(g);
+         //vk->vgeom->nexus_pairs_mesh->draw_out_of_sync(cam);
          gfx::i()->rt.set_current_render_target();
          vk->vgeom->nexus_pairs_mesh->visible = false;
       }
@@ -924,17 +924,17 @@ void mws_vkb_impl::build_keys_tex()
       {
          gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
          gfx_rt::clear_buffers(true, true, true, gfx_color::from_float(0.f, 0.f, 0.f, 0.35f));
-         draw_keys(g, letter_font_bg_outline, word_font_bg_outline, mod_vect[k], kp_vect);
-         g->update_camera_state();
+         draw_keys(cam, letter_font_bg_outline, word_font_bg_outline, mod_vect[k], kp_vect);
+         cam->update_camera_state();
       }
 
       gfx::i()->rt.set_current_render_target();
    }
 
    // disable writing to alpha channel
-   mws_sp<mws_text_vxo> cam_txt_vxo = g->get_text_vxo();
+   mws_sp<mws_text_vxo> cam_txt_vxo = cam->get_text_vxo();
    (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, false);
-   g->set_text_blending(MV_ADD);
+   cam->set_text_blending(MV_ADD);
 
    // draw the key letters/words
    {
@@ -948,8 +948,8 @@ void mws_vkb_impl::build_keys_tex()
       for (uint32_t k = 0; k < key_map_size; k++)
       {
          gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
-         draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
-         g->update_camera_state();
+         draw_keys(cam, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+         cam->update_camera_state();
       }
 
       gfx::i()->rt.set_current_render_target();
@@ -991,9 +991,9 @@ void mws_vkb_impl::build_keys_tex()
 
          // draw the white keys on top
          gfx::i()->rt.set_current_render_target(keys_tex[k].get_rt());
-         rvxo.draw_out_of_sync(g);
-         draw_keys(g, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
-         g->update_camera_state();
+         rvxo.draw_out_of_sync(cam);
+         draw_keys(cam, letter_font_bg, word_font_bg, mod_vect[k], kp_vect);
+         cam->update_camera_state();
       }
 
       gfx::i()->rt.set_current_render_target();
@@ -1001,7 +1001,7 @@ void mws_vkb_impl::build_keys_tex()
 
    // reenable writing to alpha channel
    (*cam_txt_vxo)[MP_COLOR_WRITE] = glm::bvec4(true, true, true, true);
-   g->set_text_blending(MV_ALPHA);
+   cam->set_text_blending(MV_ALPHA);
    set_key_transparency(0.f);
 
    if(!pressed_key)

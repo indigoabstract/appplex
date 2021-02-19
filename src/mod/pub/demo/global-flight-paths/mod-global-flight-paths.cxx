@@ -1044,9 +1044,9 @@ namespace global_flight_paths_ns
          mws_report_gfx_errs();
       }
 
-      virtual void update_view(mws_sp<mws_camera> g)
+      virtual void update_view(mws_sp<mws_camera> i_g)
       {
-         mws_page::update_view(g);
+         mws_page::update_view(i_g);
       }
 
       mws_sp<gfx_box> skybox;
