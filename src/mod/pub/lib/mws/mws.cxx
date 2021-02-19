@@ -139,9 +139,9 @@ bool mws_obj::is_enabled() const
    return enabled;
 }
 
-void mws_obj::set_visible(bool iis_visible)
+void mws_obj::set_visible(bool i_is_visible)
 {
-   visible = iis_visible;
+   visible = i_is_visible;
 }
 
 bool mws_obj::is_visible()const
@@ -703,21 +703,7 @@ void mws_page_item::setup()
 
 
 // mws_page
-mws_page::mws_page()
-{
-   on_visibility_changed = [this](bool i_visible)
-   {
-      if (i_visible)
-      {
-         mws_sp<mws_page_tab> parent_ref = get_mws_page_parent();
-
-         if (mws_r.w != parent_ref->mws_r.w || mws_r.h != parent_ref->mws_r.h)
-         {
-            on_resize();
-         }
-      }
-   };
-}
+mws_page::mws_page() {}
 
 mws_sp<mws_page> mws_page::nwi(mws_sp<mws_page_tab> i_parent)
 {
@@ -861,6 +847,21 @@ void mws_page::add_layout(mws_layout_info& i_lyt_info)
    mws_assert(i_lyt_info.layout != nullptr);
    i_lyt_info.aspect_ratio = static_cast<float>(i_lyt_info.width) / i_lyt_info.height;
    layouts.push_back(i_lyt_info);
+}
+
+void mws_page::on_visibility_changed_handler(bool i_is_visible)
+{
+   mws_obj::on_visibility_changed_handler(i_is_visible);
+
+   if (i_is_visible)
+   {
+      mws_sp<mws_page_tab> parent_ref = get_mws_page_parent();
+
+      if (mws_r.w != parent_ref->mws_r.w || mws_r.h != parent_ref->mws_r.h)
+      {
+         on_resize();
+      }
+   }
 }
 
 void mws_page::on_show_transition(const mws_sp<linear_transition> i_transition) {}

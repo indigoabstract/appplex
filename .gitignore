@@ -44,4 +44,4 @@ res-idx.str
 /src/mod/pub/demo/CMakeLists.txt
 /src/mod/pub/lib/CMakeLists.txt
 /src/mod/pub/tst/CMakeLists.txt
-
+/src/mod/pub/tst/sws/CMakeLists.txt

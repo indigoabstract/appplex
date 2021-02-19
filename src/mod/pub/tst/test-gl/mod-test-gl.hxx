@@ -14,7 +14,7 @@ public:
 
    virtual void init();
    virtual void load();
-   void update_view(int update_count) override;
+   void update_view(uint32_t update_count) override;
 
 private:
    mod_test_gl();

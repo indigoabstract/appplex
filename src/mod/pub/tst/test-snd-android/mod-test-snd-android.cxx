@@ -51,7 +51,7 @@ namespace mod_test_snd_android_ns
 				auto b = mws_button::nwi();
 				b->set_rect(mws_rect(100, get_mod()->get_height() - h - 100, w, h));
 				b->set_text("start");
-				b->on_click_handler = [b, update_visibility, player = player1, snd_is_playing = false]() mutable
+				b->on_click = [b, update_visibility, player = player1, snd_is_playing = false]() mutable
 				{
 					snd_is_playing = !snd_is_playing;
 					update_visibility(b, snd_is_playing);
@@ -71,7 +71,7 @@ namespace mod_test_snd_android_ns
 				auto b = mws_button::nwi();
 				b->set_rect(mws_rect(500, get_mod()->get_height() - h - 100, w, h));
 				b->set_text("start");
-				b->on_click_handler = [b, update_visibility, player = player2, snd_is_playing = false]() mutable
+				b->on_click = [b, update_visibility, player = player2, snd_is_playing = false]() mutable
 				{
 					snd_is_playing = !snd_is_playing;
 					update_visibility(b, snd_is_playing);

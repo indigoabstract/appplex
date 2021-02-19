@@ -3,6 +3,7 @@
 #include "mws-com.hxx"
 #include "fonts/mws-text-vxo.hxx"
 #include "fonts/mws-font.hxx"
+#include "fonts/mws-font-db.hxx"
 #include "mws-camera.hxx"
 #include "mws-mod.hxx"
 #include "util/util.hxx"
@@ -442,7 +443,15 @@ void mws_img_btn::receive(mws_sp<mws_dp> i_dp)
          //mws_print("evt type [%d]\n", type);
          if (ts->type == ts->touch_began)
          {
-            on_click();
+            if (on_click)
+            {
+               on_click();
+            }
+            else
+            {
+               on_click_handler();
+            }
+
             process(ts);
          }
       }
@@ -458,14 +467,6 @@ bool mws_img_btn::is_hit(float x, float y)
    bool hit = is_inside_box(x, y, pos.x - mws_r.w / 2, pos.y - mws_r.h / 2, mws_r.w, mws_r.h);
 
    return hit;
-}
-
-void mws_img_btn::on_click()
-{
-   if (on_click_handler)
-   {
-      on_click_handler();
-   }
 }
 
 mws_sp<gfx_quad_2d> mws_img_btn::get_vxo()
@@ -541,7 +542,11 @@ void mws_button::receive(mws_sp<mws_dp> i_dp)
          //mws_print("evt type [%d]\n", type);
          if (ts->type == ts->touch_began)
          {
-            if (on_click_handler)
+            if (on_click)
+            {
+               on_click();
+            }
+            else
             {
                on_click_handler();
             }
@@ -665,7 +670,11 @@ void mws_slider::set_value(float i_value)
    {
       value = i_value;
 
-      if (on_drag_handler)
+      if (on_drag)
+      {
+         on_drag();
+      }
+      else
       {
          on_drag_handler();
       }
@@ -1056,22 +1065,37 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
 
          if (dbl_tap_detected)
          {
-            trx("dbl_tap_detected");
+            glm::vec2 pos = dbl_tap_det.get_avg_press_pos();
+
+            for (uint32_t k = 0, size = bounding_box_list.size(); k < size; k++)
+            {
+               node_bounding_box& nbb = bounding_box_list[k];
+               mws_rect& bbx = nbb.bounding_box;
+
+               if (is_inside_box(pos.x, pos.y, bbx.x, bbx.y, bbx.w, bbx.h))
+               {
+                  if (on_click)
+                  {
+                     on_click(nbb.node_ref);
+                  }
+                  else
+                  {
+                     on_click_handler(nbb.node_ref);
+                  }
+                  break;
+               }
+            }
          }
       }
       else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
       {
-         float h = 25.f + model->get_length() * 20.f;
-         float w = 0;
+         bounding_box_list.clear();
 
          if (model->get_root_node())
          {
-            //mws_sp<mws_font> f = gfx_openvg::get_instance()->getFont();
-            //get_max_width(f, model->get_root_node(), 0, w);
+            mws_sp<mws_font> font = mws_font_db::inst()->get_global_font();
+            calc_bounding_box_list(font, model->get_root_node(), 0);
          }
-
-         mws_r.h = h;
-         mws_r.w = w / 2;
       }
    }
 }
@@ -1099,47 +1123,47 @@ mws_sp<mws_tree_model> mws_tree::get_model()
    return model;
 }
 
-void mws_tree::get_max_width(mws_sp<mws_font> i_f, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, float& i_max_width)
-{
-   uint32_t size = i_node->nodes.size();
-
-   for (uint32_t k = 0; k < size; k++)
-   {
-      mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
-
-      float text_width = 0;//get_text_width(f, kv->data);
-      float t_width = 25 + i_level * 20 + text_width;
-
-      if (t_width > i_max_width)
-      {
-         i_max_width = t_width;
-      }
-
-      if (kv->nodes.size() > 0)
-      {
-         get_max_width(i_f, kv, i_level + 1, i_max_width);
-      }
-   }
-}
-
 void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx)
 {
-   uint32_t size = i_node->nodes.size();
    mws_rect r = get_mws_parent()->get_pos();
 
-   for (uint32_t k = 0; k < size; k++)
+   for (uint32_t k = 0, size = i_node->nodes.size(); k < size; k++)
    {
       mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
       glm::vec2 dim = i_g->get_font()->get_text_dim(kv->data);
 
       i_g->set_color(gfx_color(0xff, 0, 0xff));
-      i_g->drawRect(r.x + 20 + i_level * 20, r.y + 20 + i_elem_idx * dim.y, dim.x, dim.y);
-      i_g->drawText(kv->data, r.x + 20 + i_level * 20, r.y + 20 + i_elem_idx * dim.y);
+      i_g->drawRect(r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y, dim.x, dim.y);
+      i_g->drawText(kv->data, r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y);
       i_elem_idx++;
 
       if (kv->nodes.size() > 0)
       {
          draw_tree_elem(i_g, kv, i_level + 1, i_elem_idx);
+      }
+   }
+}
+
+void mws_tree::calc_bounding_box_list(const mws_sp<mws_font>& i_fnt, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level)
+{
+   for (uint32_t k = 0, size = i_node->nodes.size(); k < size; k++)
+   {
+      mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
+      glm::vec2 dim = i_fnt->get_text_dim(kv->data);
+      float y_off = margin;
+
+      if (bounding_box_list.size() > 0)
+      {
+         mws_rect& bbx = bounding_box_list.back().bounding_box;
+         y_off = bbx.y + bbx.h;
+      }
+
+      node_bounding_box nbb{ kv, {margin + i_level * level_indentation, y_off, dim.x, dim.y} };
+      bounding_box_list.push_back(nbb);
+
+      if (kv->nodes.size() > 0)
+      {
+         calc_bounding_box_list(i_fnt, kv, i_level + 1);
       }
    }
 }

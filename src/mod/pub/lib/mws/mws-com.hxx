@@ -127,10 +127,10 @@ public:
    virtual void set_img_name(std::string i_img_name);
    virtual void receive(mws_sp<mws_dp> i_dp) override;
    virtual bool is_hit(float x, float y);
-   virtual void on_click();
+   virtual void on_click_handler() {}
    virtual mws_sp<gfx_quad_2d> get_vxo();
 
-   std::function<void()> on_click_handler;
+   std::function<void()> on_click;
 
 protected:
    mws_img_btn() {}
@@ -148,6 +148,7 @@ public:
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual bool is_hit(float x, float y);
+   virtual void on_click_handler() {}
    virtual void update_state() override;
    virtual const std::string& get_text() const;
    virtual void set_text(std::string i_text);
@@ -159,7 +160,7 @@ public:
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual mws_sp<gfx_quad_2d> get_vxo();
 
-   std::function<void()> on_click_handler;
+   std::function<void()> on_click;
 
 protected:
    mws_button() {}
@@ -182,10 +183,11 @@ public:
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
    virtual bool is_hit(float x, float y, bool& i_ball_hit, bool& i_bar_hit);
+   virtual void on_drag_handler() {}
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
 
-   std::function<void()> on_drag_handler;
+   std::function<void()> on_drag;
 
 protected:
    mws_slider();
@@ -269,17 +271,25 @@ public:
    static mws_sp<mws_tree> nwi();
    virtual void init() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
+   virtual void on_click_handler(mws_sp<mws_tree_model_node> i_node_ref) {}
    virtual void update_view(mws_sp<mws_camera> i_g) override;
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
 
+   std::function<void(mws_sp<mws_tree_model_node> i_node_ref)> on_click;
+
 protected:
+   struct node_bounding_box { mws_sp<mws_tree_model_node> node_ref; mws_rect bounding_box; };
+
    mws_tree() {}
    void setup() override;
-   void get_max_width(mws_sp<mws_font> i_f, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, float& i_max_width);
    void draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx);
+   void calc_bounding_box_list(const mws_sp<mws_font>& i_fnt, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level);
 
    mws_sp<mws_tree_model> model;
+   float level_indentation = 20.f;
+   float margin = 10.f;
+   std::vector<node_bounding_box> bounding_box_list;
    double_tap_detector dbl_tap_det;
 };
 

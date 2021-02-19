@@ -18,8 +18,8 @@ namespace mod_test_touch_input_ns
    class mod_preferences_detail : public mws_mod_preferences
    {
    public:
-      virtual int get_preferred_screen_width() override { return 586; }//640
-      virtual int get_preferred_screen_height() override { return 1040; }//1136
+      virtual uint32_t get_preferred_screen_width() override { return 586; }//640
+      virtual uint32_t get_preferred_screen_height() override { return 1040; }//1136
       virtual double get_preferred_aspect_ratio() override { return 640. / 1136.; }
    };
 }

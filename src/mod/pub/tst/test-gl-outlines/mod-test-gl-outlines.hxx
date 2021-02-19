@@ -14,7 +14,7 @@ public:
    static mws_sp<mod_test_gl_outlines> nwi();
 
    virtual void load() override;
-   virtual void update_view(int update_count) override;
+   virtual void update_view(uint32_t update_count) override;
 
 private:
    mod_test_gl_outlines();

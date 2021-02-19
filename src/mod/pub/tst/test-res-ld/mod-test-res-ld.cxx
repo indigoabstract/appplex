@@ -60,7 +60,7 @@ void mod_test_res_ld::load()
 	mws_report_gfx_errs();
 }
 
-void mod_test_res_ld::update_view(int update_count)
+void mod_test_res_ld::update_view(uint32_t update_count)
 {
    ortho_cam->clear_buffers();
 

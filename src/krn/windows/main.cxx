@@ -798,8 +798,8 @@ bool init_app(int argc, const char** argv)
       if (start_mod)
       {
          auto mod_pref = start_mod->get_preferences();
-         int pref_width = mod_pref->get_preferred_screen_width();
-         int pref_height = mod_pref->get_preferred_screen_height();
+         uint32_t pref_width = mod_pref->get_preferred_screen_width();
+         uint32_t pref_height = mod_pref->get_preferred_screen_height();
          start_full_screen = mod_pref->start_full_screen();
          emulate_mobile_screen = mod_pref->emulate_mobile_screen();
 

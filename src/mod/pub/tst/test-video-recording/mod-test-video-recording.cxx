@@ -425,7 +425,7 @@ void mod_test_video_recording::load()
    i.load();
 }
 
-void mod_test_video_recording::update_view(int update_count)
+void mod_test_video_recording::update_view(uint32_t update_count)
 {
    im& i = i_m<im>();
 

@@ -117,7 +117,7 @@ void mod_test_ffmpeg::load()
    }
 }
 
-void mod_test_ffmpeg::update_view(int update_count)
+void mod_test_ffmpeg::update_view(uint32_t update_count)
 {
 	mws_sp<mws_media_info> mi = vdec->get_media_info();
 	mws_sp<gfx_tex> tex = mi->get_current_frame();

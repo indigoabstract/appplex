@@ -14,7 +14,7 @@ public:
 
    virtual void init();
    virtual void load();
-   virtual void update_view(int update_count);
+   virtual void update_view(uint32_t update_count);
 
 private:
    mod_test_ffmpeg();

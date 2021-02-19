@@ -68,6 +68,7 @@ public:
    virtual void detach();
    virtual void on_attach();
    virtual void on_detach();
+   virtual void on_visibility_changed_handler(bool /*i_is_visible*/) {}
    bool contains(const mws_sp<gfx_node> inode);
    mws_sp<gfx_node> find_node_by_name(const std::string& i_name);
    // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
@@ -101,6 +102,10 @@ public:
             if (i_host->on_visibility_changed)
             {
                i_host->on_visibility_changed(i_value);
+            }
+            else
+            {
+               i_host->on_visibility_changed_handler(i_value);
             }
          }
       }

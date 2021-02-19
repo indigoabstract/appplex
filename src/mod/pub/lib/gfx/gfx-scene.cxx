@@ -128,7 +128,6 @@ void gfx_node::detach()
 }
 
 void gfx_node::on_attach() {}
-
 void gfx_node::on_detach() {}
 
 bool gfx_node::contains(const mws_sp<gfx_node> inode)

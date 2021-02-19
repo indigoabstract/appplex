@@ -69,7 +69,8 @@ public:
    bool detect_helper(mws_sp<mws_ptr_evt> evt);
    gesture_state detect(const mws_sp<mws_ptr_evt> new_event);
    gesture_state reset();
-   glm::vec2 get_first_press_pos()const { return first_press_pos; }
+   glm::vec2 get_avg_press_pos() const { return (first_press_pos + second_press_pos) / 2.f; }
+   glm::vec2 get_first_press_pos() const { return first_press_pos; }
    glm::vec2 get_second_press_pos() const { return second_press_pos; }
    // max duration of a double tap(in ms). if more that this time has passed between taps, it's not considered a double tap anymore
    uint32_t get_double_tap_max_duration() const;

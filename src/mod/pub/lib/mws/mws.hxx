@@ -305,6 +305,7 @@ public:
    virtual mws_layout_info find_closest_layout_match(const mws_layout_info& i_lyt_info);
    virtual void add_layout(mws_layout_info& i_lyt_info);
 
+   virtual void on_visibility_changed_handler(bool i_is_visible) override;
    virtual void on_show_transition(const mws_sp<linear_transition> i_transition);
    virtual void on_hide_transition(const mws_sp<linear_transition> i_transition);
 

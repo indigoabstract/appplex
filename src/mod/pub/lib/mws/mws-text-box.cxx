@@ -1317,8 +1317,8 @@ void mws_text_area_model_rw::delete_at_cursor(int32_t i_count)
    }
    else if (i_count < 0)
    {
-      uint32_t start_idx = get_cursor_pos() + i_count;
-      uint32_t count = -i_count;
+      int32_t start_idx = get_cursor_pos() + i_count;
+      int32_t count = -i_count;
 
       if (start_idx >= 0)
       {
@@ -1382,6 +1382,7 @@ uint32_t mws_text_area_model_rw::get_cursor_pos_at_line(uint32_t i_line_idx)
       }
    }
 
+   mws_signal_error("");
    return -1;
 }
 

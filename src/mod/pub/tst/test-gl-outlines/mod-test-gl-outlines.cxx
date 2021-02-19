@@ -265,7 +265,7 @@ void mod_test_gl_outlines::load()
 {
 }
 
-void mod_test_gl_outlines::update_view(int update_count)
+void mod_test_gl_outlines::update_view(uint32_t update_count)
 {
    static test_gl_outlines test;
 

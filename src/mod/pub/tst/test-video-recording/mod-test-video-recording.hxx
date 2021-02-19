@@ -13,7 +13,7 @@ public:
 
    void init() override;
    void load() override;
-   void update_view(int update_count) override;
+   void update_view(uint32_t update_count) override;
    void post_update_view() override;
    void receive(mws_sp<mws_dp> idp) override;
 
