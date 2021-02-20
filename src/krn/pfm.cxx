@@ -893,7 +893,7 @@ std::vector<mws_sp<mws_file>> mws_path::list_directory(bool i_recursive) const
       }
    }
 
-   const auto cmp = [](const mws_sp<mws_file>& i_left, const mws_sp<mws_file>& i_right)
+   auto cmp = [](const mws_sp<mws_file>& i_left, const mws_sp<mws_file>& i_right)
    {
       return i_left->creation_time() > i_right->creation_time();
    };

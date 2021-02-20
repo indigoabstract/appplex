@@ -363,7 +363,7 @@ void mws_page_tab::init()
 
 void mws_page_tab::init_subobj()
 {
-   const auto z_sort = [](mws_sp<mws_obj> a, mws_sp<mws_obj> b)
+   auto z_sort = [](mws_sp<mws_obj> a, mws_sp<mws_obj> b)
    {
       return (a->get_z() > b->get_z());
    };
@@ -376,9 +376,16 @@ void mws_page_tab::init_subobj()
       std::sort(p->mws_subobj_list.begin(), p->mws_subobj_list.end(), z_sort);
    }
 
-   if (page_nav && !(page_nav->get_main_page_id().empty()))
+   if (page_nav)
    {
-      page_nav->reset_pages();
+      if (page_nav->page_stack_size() > 0)
+      {
+         page_nav->set_current(page_nav->top_page());
+      }
+      else if (!page_nav->get_main_page_id().empty())
+      {
+         page_nav->reset_pages();
+      }
    }
 }
 
@@ -703,7 +710,7 @@ void mws_page_item::setup()
 
 
 // mws_page
-mws_page::mws_page() {}
+mws_page::mws_page() { visible = false; }
 
 mws_sp<mws_page> mws_page::nwi(mws_sp<mws_page_tab> i_parent)
 {
@@ -891,7 +898,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
    {
       mws_sp<mws_obj> new_selected_item;
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
-      const auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
+      auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
          auto& pos_1 = gfx_util::get_pos_from_tf_mx(b->get_global_tf_mx());

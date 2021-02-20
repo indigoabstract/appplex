@@ -198,10 +198,13 @@ class mws_page_nav
 {
 public:
    virtual ~mws_page_nav() {}
-   virtual std::string get_main_page_id() const = 0;
+   virtual const std::string& get_main_page_id() const = 0;
    virtual void set_main_page_id(const std::string& i_main_page_id) = 0;
+   virtual uint32_t page_stack_size() const = 0;
+   virtual const std::string& top_page() const = 0;
    virtual void pop() = 0;
    virtual void push(std::string i_page_id) = 0;
+   virtual void set_current(const std::string& i_page_id) = 0;
    virtual void reset_pages() = 0;
 };
 

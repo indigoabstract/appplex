@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 #include <cstdint>
+#include <limits>
 #include <memory>
 
 using float32 = float;
@@ -12,6 +13,11 @@ using std::static_pointer_cast;
 template <typename T> using mws_sp = std::shared_ptr<T>;
 template <typename T> using mws_wp = std::weak_ptr<T>;
 template <typename T> using mws_up = std::unique_ptr<T>;
+
+inline const uint32_t mws_u8_max = std::numeric_limits<uint8_t>::max();
+inline const uint32_t mws_u16_max = std::numeric_limits<uint16_t>::max();
+inline const uint32_t mws_u32_max = std::numeric_limits<uint32_t>::max();
+inline const uint64_t mws_u64_max = std::numeric_limits<uint64_t>::max();
 #else
 #include <stdint.h>
 

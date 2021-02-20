@@ -67,15 +67,17 @@ class mws_stack_page_nav : public mws_page_nav
 {
 public:
    static mws_sp<mws_stack_page_nav> nwi(mws_sp<mws_page_tab> i_tab);
-   std::string get_main_page_id() const override;
-   void set_main_page_id(const std::string& i_main_page_id) override;
-   void pop() override;
-   void push(std::string i_page_id) override;
-   void reset_pages() override;
+   const std::string& get_main_page_id() const override;
+   virtual void set_main_page_id(const std::string& i_main_page_id) override;
+   virtual uint32_t page_stack_size() const;
+   virtual const std::string& top_page() const override;
+   virtual void pop() override;
+   virtual void push(std::string i_page_id) override;
+   virtual void set_current(const std::string& i_page_id);
+   virtual void reset_pages() override;
 
 protected:
    mws_stack_page_nav() {}
-   virtual void set_current(const std::string& i_page_id);
    virtual void setup();
 
    mws_wp<mws_page_tab> tab;
@@ -276,10 +278,10 @@ public:
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
 
-   std::function<void(mws_sp<mws_tree_model_node> i_node_ref)> on_click;
+   std::function<void(mws_sp<mws_tree_model_node> i_node_ref, uint32_t i_child_list_idx)> on_click;
 
 protected:
-   struct node_bounding_box { mws_sp<mws_tree_model_node> node_ref; mws_rect bounding_box; };
+   struct node_bounding_box { mws_sp<mws_tree_model_node> node_ref; mws_rect bounding_box; uint32_t child_list_idx; };
 
    mws_tree() {}
    void setup() override;
@@ -289,6 +291,7 @@ protected:
    mws_sp<mws_tree_model> model;
    float level_indentation = 20.f;
    float margin = 10.f;
+   uint32_t selected_idx = mws_u32_max;
    std::vector<node_bounding_box> bounding_box_list;
    double_tap_detector dbl_tap_det;
 };

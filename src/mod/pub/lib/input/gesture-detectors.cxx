@@ -904,8 +904,8 @@ bool swipe_detector::was_started_from_edge() const
 {
    bool started_from_edge = false;
    float dist = 0.f;
-   float horiz_threshold = mws::screen::get_width() * 0.02f;
-   float vert_threshold = mws::screen::get_height() * 0.02f;
+   float horiz_threshold = mws::screen::get_width() * 0.08f;
+   float vert_threshold = mws::screen::get_height() * 0.08f;
 
    switch (swipe_direction)
    {
@@ -961,6 +961,7 @@ gesture_state swipe_detector::detect(const mws_sp<mws_ptr_evt> new_event)
 
          if (is_valid_swipe())
          {
+            //mws_println("swipe_direction %d was_started_from_edge %d", swipe_direction, (int)was_started_from_edge());
             reset();
             return GS_END;
          }

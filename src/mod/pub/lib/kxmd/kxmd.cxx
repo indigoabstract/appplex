@@ -94,9 +94,9 @@ namespace ns_kxmd
          {
             std::vector<kv_ref> val_vect(kv->val.size());
 
-            for (mws_sp<kxmd_kv>& kv : kv->val)
+            for (mws_sp<kxmd_kv>& kvv : kv->val)
             {
-               val_vect.push_back(kv_ref(db, kv));
+               val_vect.push_back(kv_ref(db, kvv));
             }
 
             return val_vect;
@@ -1143,9 +1143,9 @@ namespace ns_kxmd
 
          for (uint32_t k = ss->crt_idx; k < ss->src.length(); k++)
          {
-            char c = ss->src.at(k);
+            char ch = ss->src.at(k);
 
-            if (c == end)
+            if (ch == end)
             {
                ss->crt_idx++;
                token_found = true;

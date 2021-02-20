@@ -35,7 +35,7 @@ mws_sp<std::vector<uint8_t>> res_ld::flip_buffer(int i_width, int i_height, uint
    mws_sp<std::vector<uint8_t>> buffer = std::make_shared<std::vector<uint8_t>>(buffer_size);
    uint8_t* buf_data = buffer->data();
    size_t row_size = i_width * 4;
-   const auto horizontal_flip = [&]()
+   auto horizontal_flip = [&]()
    {
       for (int i = 0; i < i_height; i++)
       {
@@ -47,7 +47,7 @@ mws_sp<std::vector<uint8_t>> res_ld::flip_buffer(int i_width, int i_height, uint
          }
       }
    };
-   const auto vertical_flip = [&]()
+   auto vertical_flip = [&]()
    {
       for (int i = 0, j = i_height - 1; i < i_height; i++, j--)
       {

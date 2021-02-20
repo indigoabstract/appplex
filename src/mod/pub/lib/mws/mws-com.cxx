@@ -215,7 +215,7 @@ mws_sp<mws_stack_page_nav> mws_stack_page_nav::nwi(mws_sp<mws_page_tab> i_tab)
    return i;
 }
 
-std::string mws_stack_page_nav::get_main_page_id() const
+const std::string& mws_stack_page_nav::get_main_page_id() const
 {
    return main_page_id;
 }
@@ -223,6 +223,16 @@ std::string mws_stack_page_nav::get_main_page_id() const
 void mws_stack_page_nav::set_main_page_id(const std::string& i_main_page_id)
 {
    main_page_id = i_main_page_id;
+}
+
+uint32_t mws_stack_page_nav::page_stack_size() const
+{
+   return page_stack.size();
+}
+
+const std::string& mws_stack_page_nav::top_page() const
+{
+   return page_stack.top();
 }
 
 void mws_stack_page_nav::pop()
@@ -252,38 +262,41 @@ void mws_stack_page_nav::push(std::string i_page_id)
    set_current(i_page_id);
 }
 
-void mws_stack_page_nav::reset_pages()
-{
-   page_stack = std::stack<std::string>();
-   set_current(get_main_page_id());
-}
-
 void mws_stack_page_nav::set_current(const std::string& i_page_id)
 {
    mws_sp<mws_page_tab> tab_inst = tab.lock();
    auto page = std::static_pointer_cast<mws_page>(tab_inst->find_by_id(i_page_id));
-   mws_assert(page != nullptr);
-   auto& pt = tab_inst->page_tab;
-   auto it = std::find(pt.begin(), pt.end(), page);
-   mws_assert(it != pt.end());
 
-   if (it != pt.end() - 1)
+   if (page != nullptr)
    {
-      std::iter_swap(it, pt.end() - 1);
-   }
+      auto& pt = tab_inst->page_tab;
+      auto it = std::find(pt.begin(), pt.end(), page);
+      mws_assert(it != pt.end());
 
-   for (auto p : pt)
-   {
-      if (p->visible && p != page)
+      if (it != pt.end() - 1)
       {
-         p->visible = false;
+         std::iter_swap(it, pt.end() - 1);
+      }
+
+      for (auto& p : pt)
+      {
+         if (p->visible && p != page)
+         {
+            p->visible = false;
+         }
+      }
+
+      if (!page->visible)
+      {
+         page->visible = true;
       }
    }
+}
 
-   if (!page->visible)
-   {
-      page->visible = true;
-   }
+void mws_stack_page_nav::reset_pages()
+{
+   page_stack = std::stack<std::string>();
+   set_current(get_main_page_id());
 }
 
 void mws_stack_page_nav::setup() {}
@@ -1062,29 +1075,47 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
       {
          mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
          bool dbl_tap_detected = dbl_tap_det.detect_helper(ts);
+         glm::vec2 press_pos(0.f);
+         bool selected = true;
+
+         if (ts->type == mws_ptr_evt::touch_began)
+         {
+            press_pos = mws_ptr_evt::get_pos(ts->points[0]); selected = false;
+         }
 
          if (dbl_tap_detected)
          {
-            glm::vec2 pos = dbl_tap_det.get_avg_press_pos();
+            press_pos = dbl_tap_det.get_avg_press_pos(); selected = false;
+         }
 
-            for (uint32_t k = 0, size = bounding_box_list.size(); k < size; k++)
+         for (uint32_t k = 0, size = bounding_box_list.size(); k < size; k++)
+         {
+            node_bounding_box& nbb = bounding_box_list[k];
+            mws_rect& bbx = nbb.bounding_box;
+
+            if (is_inside_box(press_pos.x, press_pos.y, bbx.x, bbx.y, bbx.w, bbx.h))
             {
-               node_bounding_box& nbb = bounding_box_list[k];
-               mws_rect& bbx = nbb.bounding_box;
-
-               if (is_inside_box(pos.x, pos.y, bbx.x, bbx.y, bbx.w, bbx.h))
+               if (dbl_tap_detected)
                {
                   if (on_click)
                   {
-                     on_click(nbb.node_ref);
+                     on_click(nbb.node_ref, nbb.child_list_idx);
                   }
                   else
                   {
                      on_click_handler(nbb.node_ref);
                   }
-                  break;
                }
+
+               selected = true;
+               selected_idx = k;
+               break;
             }
+         }
+
+         if (!selected)
+         {
+            selected_idx = mws_u32_max;
          }
       }
       else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
@@ -1132,8 +1163,12 @@ void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_mode
       mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
       glm::vec2 dim = i_g->get_font()->get_text_dim(kv->data);
 
-      i_g->set_color(gfx_color(0xff, 0, 0xff));
-      i_g->drawRect(r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y, dim.x, dim.y);
+      if (i_elem_idx == selected_idx)
+      {
+         i_g->set_color(gfx_color(0xff, 0, 0));
+         i_g->drawRect(r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y, dim.x, dim.y);
+      }
+
       i_g->drawText(kv->data, r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y);
       i_elem_idx++;
 
@@ -1158,8 +1193,7 @@ void mws_tree::calc_bounding_box_list(const mws_sp<mws_font>& i_fnt, const mws_s
          y_off = bbx.y + bbx.h;
       }
 
-      node_bounding_box nbb{ kv, {margin + i_level * level_indentation, y_off, dim.x, dim.y} };
-      bounding_box_list.push_back(nbb);
+      bounding_box_list.emplace_back(node_bounding_box{ kv, {margin + i_level * level_indentation, y_off, dim.x, dim.y}, k });
 
       if (kv->nodes.size() > 0)
       {

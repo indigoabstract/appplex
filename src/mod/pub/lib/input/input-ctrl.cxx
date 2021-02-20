@@ -421,7 +421,7 @@ void mws_key_ctrl::update()
       auto inst = get_instance();
       uint32_t crt_time = mws::time::get_time_millis();
       bool events_still_pending = false;
-      const auto key_released = [&](int i_idx, mws_key_types i_key_id)
+      auto key_released = [&](int i_idx, mws_key_types i_key_id)
       {
          mws_key_types key_id = mws::input::apply_key_modifiers(i_key_id);
 
