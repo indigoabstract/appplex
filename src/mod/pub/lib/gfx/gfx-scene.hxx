@@ -73,7 +73,7 @@ public:
    mws_sp<gfx_node> find_node_by_name(const std::string& i_name);
    // i_update_global_mx will be true when i_global_tf_mx has changed and so the subojects need to be updated
    virtual void update_recursive(const glm::mat4& i_global_tf_mx, bool i_update_global_mx);
-
+   /** if not null, this function will be called instead of on_visibility_changed_handler() */
    std::function<void(bool i_visible)> on_visibility_changed;
 
    template <class host> class name_accessor : public string_accessor<host>

@@ -34,8 +34,8 @@ class mws_text_vxo;
 struct vkb_file_info;
 
 
-const std::string MWS_EVT_MODEL_UPDATE = "mws-model-update";
-const std::string MWS_EVT_PAGE_TRANSITION = "mws-page-transition";
+inline const std::string mws_evt_model_update = "mws-model-update";
+inline const std::string mws_evt_page_transition = "mws-page-transition";
 
 
 // contains a relative(to parent) dimension
@@ -141,7 +141,7 @@ public:
    virtual mws_rect get_pos();
    virtual float get_z();
    virtual void set_z(float i_z_position);
-
+   /** if not null, this function will be called instead of receive() */
    std::function<void(mws_sp<mws_dp> i_idp)> receive_handler;
 
 protected:

@@ -1383,7 +1383,7 @@ uint32_t mws_text_area_model_rw::get_cursor_pos_at_line(uint32_t i_line_idx)
    }
 
    mws_signal_error("");
-   return -1;
+   return mws_u32_max;
 }
 
 void mws_text_area_model_rw::advance_cursor(mws_dir_types i_direction)

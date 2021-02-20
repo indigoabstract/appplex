@@ -40,7 +40,7 @@ void mws_model::notify_update()
 {
    if (get_view())
    {
-      send(get_view(), mws_dp::nwi(MWS_EVT_MODEL_UPDATE));
+      send(get_view(), mws_dp::nwi(mws_evt_model_update));
    }
 }
 

@@ -131,7 +131,7 @@ public:
    virtual bool is_hit(float x, float y);
    virtual void on_click_handler() {}
    virtual mws_sp<gfx_quad_2d> get_vxo();
-
+   /** if not null, this function will be called instead of on_click_handler() */
    std::function<void()> on_click;
 
 protected:
@@ -161,7 +161,7 @@ public:
    virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_font);
    virtual mws_sp<gfx_quad_2d> get_vxo();
-
+   /** if not null, this function will be called instead of on_click_handler() */
    std::function<void()> on_click;
 
 protected:
@@ -188,7 +188,7 @@ public:
    virtual void on_drag_handler() {}
    virtual mws_sp<gfx_vxo> get_bar_vxo() const;
    virtual mws_sp<gfx_vxo> get_ball_vxo() const;
-
+   /** if not null, this function will be called instead of on_drag_handler() */
    std::function<void()> on_drag;
 
 protected:
@@ -277,7 +277,7 @@ public:
    virtual void update_view(mws_sp<mws_camera> i_g) override;
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
-
+   /** if not null, this function will be called instead of on_click_handler() */
    std::function<void(mws_sp<mws_tree_model_node> i_node_ref, uint32_t i_child_list_idx)> on_click;
 
 protected:

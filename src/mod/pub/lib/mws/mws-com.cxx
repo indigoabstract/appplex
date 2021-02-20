@@ -912,7 +912,7 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
 
    if (!i_dp->is_processed())
    {
-      if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
+      if (i_dp->is_type(mws_evt_model_update))
       {
          float listheight = 0;
 
@@ -1118,7 +1118,7 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
             selected_idx = mws_u32_max;
          }
       }
-      else if (i_dp->is_type(MWS_EVT_MODEL_UPDATE))
+      else if (i_dp->is_type(mws_evt_model_update))
       {
          bounding_box_list.clear();
 
