@@ -23,12 +23,12 @@ public:
    mws_list_menu_model();
    virtual ~mws_list_menu_model() {}
 
-   virtual void notify_update();
-   virtual uint32_t get_length();
-   virtual std::string elem_at(uint32_t idx);
-   virtual void on_elem_selected(uint32_t idx);
-   void set_data(mws_list_menu_item ielems[], uint32_t ielemsLength);
-   void set_data(std::vector<mws_list_menu_item> ielems);
+   virtual void notify_update() override;
+   virtual uint32_t get_length() override;
+   virtual const std::string& elem_at(uint32_t idx) override;
+   virtual void on_elem_selected(uint32_t idx) override;
+   virtual void set_data(mws_list_menu_item i_elems[], uint32_t i_elems_length);
+   virtual void set_data(std::vector<mws_list_menu_item> i_elems);
    virtual void change_page_transitions(uint32_t idx);
 
 protected:

@@ -175,6 +175,7 @@ mod
 	@@[ sws tests ],
 	sws-tree-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 	sws-list-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
+	sws-drop-down-list-tst[ uses[ gfx, fonts, freetype, freetype-gl, input, mws, vector-fonts ], ],
 ],
 
 mod-dependencies

@@ -630,7 +630,7 @@ const mws_path& mws_app_storage::tmp_dir() const
    return mws_app_inst()->tmp_dir();
 }
 
-void mws_app_storage::save_screenshot(const mws_path& i_file_path) const
+void mws_app_storage::save_screenshot([[maybe_unused]] const mws_path& i_file_path) const
 {
 #if MOD_GFX && MOD_PNG
    if (!p->u.lock()->is_gfx_mod())
@@ -1324,7 +1324,7 @@ void mws_mod_list::init_mws()
          return get_mod_list()->ulist.size();
       }
 
-      std::string elem_at(uint32_t idx)
+      const std::string& elem_at(uint32_t idx)
       {
          return get_mod_list()->ulist[idx]->name();
       }

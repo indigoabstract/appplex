@@ -38,8 +38,10 @@ public:
    virtual void on_resize() override;
    virtual void set_position(const glm::vec2& i_position) override;
    virtual void set_size(const glm::vec2& i_size) override;
+   virtual uint32_t row_count() const { return item_rows.size(); }
    virtual void add_row(mws_sp<mws_page_item> i_item);
    virtual void add_col(uint32_t i_row_idx, mws_sp<mws_page_item> i_item);
+   virtual mws_sp<mws_page_item> get_cell_at(uint32_t i_row_idx, uint32_t i_col_idx);
    virtual void set_cell_at(uint32_t i_row_idx, uint32_t i_col_idx, mws_sp<mws_page_item> i_item);
    // returns one of the 4 table enclosing borders
    virtual mws_sp<mws_table_border> get_border(border_types i_border_type) const;
@@ -209,13 +211,28 @@ class mws_list_model : public mws_model
 public:
    mws_list_model();
    virtual uint32_t get_length() = 0;
-   virtual std::string elem_at(uint32_t i_idx) = 0;
+   virtual const std::string& elem_at(uint32_t i_idx) = 0;
    virtual uint32_t get_selected_elem();
    virtual void set_selected_elem(uint32_t i_selected_elem);
    virtual void on_elem_selected(uint32_t i_idx) = 0;
 
 protected:
    uint32_t selected_elem;
+};
+
+
+class mws_str_list_model : public mws_list_model
+{
+public:
+   virtual void notify_update() override;
+   virtual uint32_t get_length() override;
+   virtual const std::string& elem_at(uint32_t i_idx) override;
+   virtual void on_elem_selected(uint32_t /*i_idx*/) override {}
+   virtual void set_data(const std::string* i_elems, uint32_t i_elems_length);
+   virtual void set_data(const std::vector<std::string>& i_elems);
+
+protected:
+   std::vector<std::string> elems;
 };
 
 
@@ -226,8 +243,8 @@ public:
    virtual void receive(mws_sp<mws_dp> i_dp);
    virtual bool is_hit(float x, float y);
    virtual void update_state();
-   void set_model(mws_sp<mws_list_model> imodel);
-   mws_sp<mws_list_model> get_model();
+   virtual void set_model(mws_sp<mws_list_model> i_model);
+   virtual mws_sp<mws_list_model> get_model();
 
 protected:
    mws_list();
@@ -245,18 +262,26 @@ protected:
 class mws_drop_down_list : public mws_page_item
 {
 public:
-   static mws_sp<mws_drop_down_list> nwi() { return nullptr; }
+   static mws_sp<mws_drop_down_list> nwi();
    virtual void init() override {}
-   virtual void receive(mws_sp<mws_dp> i_dp) override {}
-   virtual void on_click_handler() {}
-   void set_model(mws_sp<mws_list_model> imodel) {}
-   mws_sp<mws_list_model> get_model() { return nullptr; }
+   virtual void receive(mws_sp<mws_dp> i_dp) override;
+   virtual void update_view(mws_sp<mws_camera> i_g) override;
+   virtual void on_click_handler(uint32_t /*i_selected_idx*/) {}
+   virtual uint32_t selected_idx() const { return selected_idx_v; }
+   virtual void set_selected_idx(uint32_t i_selected_idx);
+   virtual void set_model(mws_sp<mws_list_model> i_model);
+   virtual mws_sp<mws_list_model> get_model();
 
-   std::function<void(uint32_t i_elem_idx)> on_click;
+   std::function<void(uint32_t i_selected_idx)> on_click;
 
 protected:
    mws_drop_down_list() {}
-   virtual void setup() override {}
+   virtual void setup() override;
+
+   mws_sp<mws_list_model> model;
+   uint32_t selected_idx_v = 0;
+   glm::vec2 collapsed_dim = glm::vec2(0.f);
+   bool is_expanded_v = false;
 };
 
 
@@ -292,8 +317,9 @@ public:
    static mws_sp<mws_tree> nwi();
    virtual void init() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
-   virtual void on_click_handler(mws_sp<mws_tree_model_node> /**i_node_ref*/, uint32_t /**i_child_list_idx*/) {}
    virtual void update_view(mws_sp<mws_camera> i_g) override;
+   virtual void on_click_handler(mws_sp<mws_tree_model_node> /*i_node_ref*/, uint32_t /*i_child_list_idx*/) {}
+   virtual uint32_t selected_idx() const { return selected_idx_v; }
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
    /** if not null, this function will be called instead of on_click_handler() */
@@ -310,7 +336,7 @@ protected:
    mws_sp<mws_tree_model> model;
    float level_indentation = 20.f;
    float margin = 10.f;
-   uint32_t selected_idx = mws_u32_max;
+   uint32_t selected_idx_v = mws_u32_max;
    std::vector<node_bounding_box> bounding_box_list;
    double_tap_detector dbl_tap_det;
 };

@@ -386,6 +386,14 @@ void mws_page_tab::init_subobj()
       {
          page_nav->reset_pages();
       }
+      else if(!page_tab.empty())
+      {
+         page_tab[0]->visible = true;
+      }
+   }
+   else if (!page_tab.empty())
+   {
+      page_tab[0]->visible = true;
    }
 }
 
@@ -898,6 +906,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
    {
       mws_sp<mws_obj> new_selected_item;
       mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
+      bool touch_select = ts->type == mws_ptr_evt_base::touch_began;// || ts->type == mws_ptr_evt_base::touch_ended;
       auto z_sort = [](mws_sp<gfx_node> a, mws_sp<gfx_node> b)
       {
          auto& pos_0 = gfx_util::get_pos_from_tf_mx(a->get_global_tf_mx());
@@ -918,7 +927,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
             {
                send(w, i_dp);
 
-               if (i_dp->is_processed())
+               if (touch_select && i_dp->is_processed())
                {
                   new_selected_item = mws_dynamic_pointer_cast<mws_obj>(i_dp->destination());
                   break;
@@ -927,7 +936,7 @@ void mws_page::update_input_sub_mws(mws_sp<mws_dp> i_dp)
          }
       }
 
-      if (selected_item != new_selected_item)
+      if (touch_select && selected_item != new_selected_item)
       {
          if (selected_item)
          {

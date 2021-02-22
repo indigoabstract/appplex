@@ -34,41 +34,41 @@ uint32_t mws_list_menu_model::get_length()
    return elems.size();
 }
 
-std::string mws_list_menu_model::elem_at(uint32_t idx)
+const std::string& mws_list_menu_model::elem_at(uint32_t i_idx)
 {
-   return elems[idx].display;
+   return elems[i_idx].display;
 }
 
-void mws_list_menu_model::on_elem_selected(uint32_t idx)
+void mws_list_menu_model::on_elem_selected(uint32_t i_idx)
 {
    mws_sp<mws_list> ul = static_pointer_cast<mws_list>(get_view());
    mws_sp<mws_page> up = ul->get_page();
    mws_sp<mws_page_tab> ut = up->get_mws_page_parent();
 
-   change_page_transitions(idx);
+   change_page_transitions(i_idx);
 }
 
-void mws_list_menu_model::set_data(mws_list_menu_item ielems[], uint32_t ielemsLength)
+void mws_list_menu_model::set_data(mws_list_menu_item i_elems[], uint32_t i_elems_length)
 {
    mws_sp<mws_page_tab> mws_root = get_view()->get_mws_root();
 
    elems.clear();
 
-   for (uint32_t k = 0; k < ielemsLength; k++)
+   for (uint32_t k = 0; k < i_elems_length; k++)
    {
-      set_data_helper(mws_root, ielems[k]);
+      set_data_helper(mws_root, i_elems[k]);
    }
 
    notify_update();
 }
 
-void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> ielems)
+void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> i_elems)
 {
    mws_sp<mws_page_tab> mws_root = get_view()->get_mws_root();
 
    elems.clear();
 
-   for (auto& e : ielems)
+   for (auto& e : i_elems)
    {
       set_data_helper(mws_root, e);
    }
@@ -76,7 +76,7 @@ void mws_list_menu_model::set_data(std::vector<mws_list_menu_item> ielems)
    notify_update();
 }
 
-void mws_list_menu_model::change_page_transitions(uint32_t idx)
+void mws_list_menu_model::change_page_transitions(uint32_t i_idx)
 {
 }
 

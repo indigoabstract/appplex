@@ -94,6 +94,11 @@ void mws_table_layout::add_col(uint32_t i_row_idx, mws_sp<mws_page_item> i_item)
    //attach(i_item);
 }
 
+mws_sp<mws_page_item> mws_table_layout::get_cell_at(uint32_t i_row_idx, uint32_t /*i_col_idx*/)
+{
+   return item_rows[i_row_idx];
+}
+
 void mws_table_layout::set_cell_at(uint32_t i_row_idx, uint32_t i_col_idx, mws_sp<mws_page_item> i_item)
 {
    //attach(i_item);
@@ -617,7 +622,7 @@ void mws_button::update_state()
       const glm::mat4& tf = get_vxo()->get_global_tf_mx();
       const glm::vec4& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
       glm::vec2 text_dim = fnt->get_text_dim(text);
-      glm::vec2 pos(pos_v4.x - mws_r.w / 2 + (mws_r.w - text_dim.x) / 2.f, pos_v4.y - (mws_r.h - text_dim.y) / 2.f);
+      glm::vec2 pos(pos_v4.x - mws_r.w / 2 + (mws_r.w - text_dim.x) / 2.f, pos_v4.y - mws_r.h / 2 + (mws_r.h - text_dim.y) / 2.f);
       const auto& root_ref = get_mws_root();
       mws_sp<mws_text_vxo> text_ref = root_ref->get_text_vxo();
 
@@ -906,9 +911,39 @@ uint32_t mws_list_model::get_selected_elem()
    return selected_elem;
 }
 
-void mws_list_model::set_selected_elem(uint32_t iselectedElem)
+void mws_list_model::set_selected_elem(uint32_t i_selected_elem)
 {
-   selected_elem = iselectedElem;
+   selected_elem = i_selected_elem;
+}
+
+
+// mws_str_list_model
+void mws_str_list_model::notify_update()
+{
+   mws_list_model::notify_update();
+}
+
+uint32_t mws_str_list_model::get_length()
+{
+   return elems.size();
+}
+
+const std::string& mws_str_list_model::elem_at(uint32_t i_idx)
+{
+   return elems[i_idx];
+}
+
+void mws_str_list_model::set_data(const std::string* i_elems, uint32_t i_elems_length)
+{
+   elems.clear();
+   elems.assign(i_elems, i_elems + i_elems_length);
+   notify_update();
+}
+
+void mws_str_list_model::set_data(const std::vector<std::string>& i_elems)
+{
+   elems = i_elems;
+   notify_update();
 }
 
 
@@ -942,19 +977,19 @@ void mws_list::receive(mws_sp<mws_dp> i_dp)
    {
       if (i_dp->is_type(mws_evt_model_update))
       {
-         float listheight = 0;
+         float list_height = 0;
 
          for (uint32_t k = 0, size = model->get_length(); k < size; k++)
          {
-            listheight += item_height + vertical_space;
+            list_height += item_height + vertical_space;
          }
 
-         if (listheight > 0)
+         if (list_height > 0)
          {
-            listheight -= vertical_space;
+            list_height -= vertical_space;
          }
 
-         mws_r.h = listheight;
+         mws_r.h = list_height;
       }
       else if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
       {
@@ -1015,9 +1050,9 @@ void mws_list::update_state()
    }
 }
 
-void mws_list::set_model(mws_sp<mws_list_model> imodel)
+void mws_list::set_model(mws_sp<mws_list_model> i_model)
 {
-   model = imodel;
+   model = i_model;
    model->set_view(get_instance());
 }
 
@@ -1046,6 +1081,156 @@ uint32_t mws_list::element_at(float x, float y)
    }
 
    return u32_max;
+}
+
+
+// mws_drop_down_list
+mws_sp<mws_drop_down_list> mws_drop_down_list::nwi()
+{
+   auto inst = mws_sp<mws_drop_down_list>(new mws_drop_down_list());
+   inst->setup();
+   return inst;
+}
+
+void mws_drop_down_list::receive(mws_sp<mws_dp> i_dp)
+{
+   mws_page_item::receive(i_dp);
+
+   if (!i_dp->is_processed())
+   {
+      if (i_dp->is_type(mws_ptr_evt::ptr_evt_type))
+      {
+         mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
+
+         if (ts->type == mws_ptr_evt::touch_began)
+         {
+            glm::vec2 press_pos = mws_ptr_evt::get_pos(ts->points[0]);
+            mws_rect& r = mws_r;
+            float margin = 0.f;
+            mws_sp<mws_font> font = mws_font_db::inst()->get_global_font();
+
+            if (is_expanded_v)
+            {
+               if (!is_inside_box(press_pos.x, press_pos.y, r.x + margin, r.y + margin, collapsed_dim.x, collapsed_dim.y))
+               {
+                  for (uint32_t k = 0, size = model->get_length(); k < size; k++)
+                  {
+                     const std::string& str = model->elem_at(k);
+                     glm::vec2 dim = font->get_text_dim(str);
+
+                     if (is_inside_box(press_pos.x, press_pos.y, r.x + margin, r.y + margin + collapsed_dim.y + k * dim.y, collapsed_dim.x, dim.y))
+                     {
+                        selected_idx_v = k;
+
+                        if (on_click)
+                        {
+                           on_click(selected_idx_v);
+                        }
+                        else
+                        {
+                           on_click_handler(selected_idx_v);
+                        }
+                        break;
+                     }
+                  }
+               }
+
+               is_expanded_v = false;
+            }
+            else
+            {
+               if (is_inside_box(press_pos.x, press_pos.y, r.x + margin, r.y + margin, collapsed_dim.x, collapsed_dim.y))
+               {
+                  if (model->get_length() > 0)
+                  {
+                     is_expanded_v = true;
+                  }
+               }
+            }
+         }
+      }
+      else if (i_dp->is_type(mws_evt_model_update))
+      {
+         mws_sp<mws_font> font = mws_font_db::inst()->get_global_font();
+
+         if (model->get_length() > 0)
+         {
+            collapsed_dim.x = 0.f;
+            collapsed_dim.y = font->get_height();
+
+            for (uint32_t k = 0, size = model->get_length(); k < size; k++)
+            {
+               const std::string& str = model->elem_at(k);
+               glm::vec2 dim = font->get_text_dim(str);
+               collapsed_dim.x = glm::max(collapsed_dim.x, dim.x);
+            }
+         }
+         else
+         {
+            collapsed_dim = font->get_text_dim("n/a");
+         }
+
+         mws_r.w = collapsed_dim.x;
+         mws_r.h = collapsed_dim.y;
+      }
+   }
+}
+
+void mws_drop_down_list::update_view(mws_sp<mws_camera> i_g)
+{
+   mws_rect& r = mws_r;
+   float margin = 0.f;
+
+   {
+      std::string sel = (model->get_length() > 0) ? model->elem_at(selected_idx_v) : "n/a";
+
+      i_g->set_color(gfx_color::colors::white);
+      i_g->drawRect(r.x + margin, r.y + margin, collapsed_dim.x, collapsed_dim.y);
+      i_g->drawText(sel, r.x + margin, r.y + margin);
+   }
+
+   if (is_expanded_v)
+   {
+      for (uint32_t k = 0, size = model->get_length(); k < size; k++)
+      {
+         const std::string& str = model->elem_at(k);
+         glm::vec2 dim = i_g->get_font()->get_text_dim(str);
+
+         if (k == selected_idx_v)
+         {
+            i_g->set_color(gfx_color::colors::red);
+         }
+         else
+         {
+            i_g->set_color(gfx_color::colors::white);
+         }
+
+         i_g->drawRect(r.x + margin, r.y + margin + collapsed_dim.y + k * dim.y, collapsed_dim.x, dim.y);
+         i_g->drawText(str, r.x + margin, r.y + margin + collapsed_dim.y + k * dim.y);
+      }
+   }
+}
+
+void mws_drop_down_list::set_selected_idx(uint32_t i_selected_idx)
+{
+   mws_assert(i_selected_idx < model->get_length());
+   selected_idx_v = i_selected_idx;
+}
+
+void mws_drop_down_list::set_model(mws_sp<mws_list_model> i_model)
+{
+   model = i_model;
+   model->set_view(get_instance());
+}
+
+mws_sp<mws_list_model> mws_drop_down_list::get_model()
+{
+   return model;
+}
+
+void mws_drop_down_list::setup()
+{
+   mws_page_item::setup();
 }
 
 
@@ -1136,14 +1321,14 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
                }
 
                selected = true;
-               selected_idx = k;
+               selected_idx_v = k;
                break;
             }
          }
 
          if (!selected)
          {
-            selected_idx = mws_u32_max;
+            selected_idx_v = mws_u32_max;
          }
       }
       else if (i_dp->is_type(mws_evt_model_update))
@@ -1191,7 +1376,7 @@ void mws_tree::draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_mode
       mws_sp<mws_tree_model_node> kv = i_node->nodes[k];
       glm::vec2 dim = i_g->get_font()->get_text_dim(kv->data);
 
-      if (i_elem_idx == selected_idx)
+      if (i_elem_idx == selected_idx_v)
       {
          i_g->set_color(gfx_color(0xff, 0, 0));
          i_g->drawRect(r.x + margin + i_level * level_indentation, r.y + margin + i_elem_idx * dim.y, dim.x, dim.y);
