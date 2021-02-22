@@ -310,8 +310,11 @@ void mws_text_box::update_view(mws_sp<mws_camera> i_g)
 {
    //i_g->setColor(0x7fff0000);
    //i_g->fillRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
-   //i_g->setColor(0xffffffff);
-   //i_g->drawRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+   if (draw_border)
+   {
+      i_g->set_color(gfx_color::colors::white);
+      i_g->drawRect(mws_r.x, mws_r.y, mws_r.w, mws_r.h);
+   }
 
    //if(has_focus())
    //{

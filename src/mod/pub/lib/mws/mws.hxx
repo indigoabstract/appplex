@@ -202,9 +202,15 @@ public:
    virtual void set_main_page_id(const std::string& i_main_page_id) = 0;
    virtual uint32_t page_stack_size() const = 0;
    virtual const std::string& top_page() const = 0;
+   /** pops the current page and makes the previous one the active page */
    virtual void pop() = 0;
-   virtual void push(std::string i_page_id) = 0;
+   /** pops the page stack until 'i_page_id' is reached(or the main page) */
+   virtual void unwind_to(const std::string& i_page_id) = 0;
+   /** pushes 'i_page_id' on the page stack and makes it the active page */
+   virtual void push(const std::string& i_page_id) = 0;
+   /** makes 'i_page_id' visible and hides the other pages */
    virtual void set_current(const std::string& i_page_id) = 0;
+   /** clears the page stack and makes the main page the active page */
    virtual void reset_pages() = 0;
 };
 

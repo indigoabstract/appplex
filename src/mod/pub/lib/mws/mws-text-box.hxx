@@ -48,6 +48,7 @@ public:
    virtual void update_cursor();
    virtual void update_gfx_cursor();
 
+   bool draw_border = false;
    // called after a click inside the text box
    std::function<void()> on_click;
    // called after gaining focus(if did not already have focus)

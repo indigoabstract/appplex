@@ -72,7 +72,8 @@ public:
    virtual uint32_t page_stack_size() const;
    virtual const std::string& top_page() const override;
    virtual void pop() override;
-   virtual void push(std::string i_page_id) override;
+   virtual void unwind_to(const std::string& i_page_id) override;
+   virtual void push(const std::string& i_page_id) override;
    virtual void set_current(const std::string& i_page_id);
    virtual void reset_pages() override;
 
@@ -95,7 +96,7 @@ public:
 
 protected:
    mws_panel() {}
-   void setup() override;
+   virtual void setup() override;
 
    mws_sp<gfx_quad_2d> vxo;
 };
@@ -107,13 +108,13 @@ public:
    static mws_sp<mws_label> nwi();
    virtual void set_rect(const mws_rect& i_rect) override;
    virtual void update_state() override;
-   virtual void set_text(std::string i_text);
+   virtual void set_text(const std::string& i_text);
    virtual mws_sp<mws_font> get_font() const;
    virtual void set_font(mws_sp<mws_font> i_font);
 
 protected:
    mws_label() {}
-   void setup() override;
+   virtual void setup() override;
 
    std::string text;
    mws_sp<mws_font> font;
@@ -136,7 +137,7 @@ public:
 
 protected:
    mws_img_btn() {}
-   void setup() override;
+   virtual void setup() override;
 
    mws_sp<gfx_quad_2d> vxo;
 };
@@ -166,7 +167,7 @@ public:
 
 protected:
    mws_button() {}
-   void setup() override;
+   virtual void setup() override;
 
    std::string text;
    bool text_visible = true;
@@ -193,7 +194,7 @@ public:
 
 protected:
    mws_slider();
-   void setup() override;
+   virtual void setup() override;
 
    float value;
    mws_sp<gfx_vxo> slider_bar;
@@ -230,7 +231,7 @@ public:
 
 protected:
    mws_list();
-   void setup() override;
+   virtual void setup() override;
    uint32_t element_at(float x, float y);
 
    float item_height;
@@ -238,6 +239,24 @@ protected:
    float item_w;
    float item_x;
    mws_sp<mws_list_model> model;
+};
+
+
+class mws_drop_down_list : public mws_page_item
+{
+public:
+   static mws_sp<mws_drop_down_list> nwi() { return nullptr; }
+   virtual void init() override {}
+   virtual void receive(mws_sp<mws_dp> i_dp) override {}
+   virtual void on_click_handler() {}
+   void set_model(mws_sp<mws_list_model> imodel) {}
+   mws_sp<mws_list_model> get_model() { return nullptr; }
+
+   std::function<void(uint32_t i_elem_idx)> on_click;
+
+protected:
+   mws_drop_down_list() {}
+   virtual void setup() override {}
 };
 
 
@@ -273,7 +292,7 @@ public:
    static mws_sp<mws_tree> nwi();
    virtual void init() override;
    virtual void receive(mws_sp<mws_dp> i_dp) override;
-   virtual void on_click_handler(mws_sp<mws_tree_model_node> i_node_ref) {}
+   virtual void on_click_handler(mws_sp<mws_tree_model_node> /**i_node_ref*/, uint32_t /**i_child_list_idx*/) {}
    virtual void update_view(mws_sp<mws_camera> i_g) override;
    void set_model(mws_sp<mws_tree_model> i_model);
    mws_sp<mws_tree_model> get_model();
@@ -284,7 +303,7 @@ protected:
    struct node_bounding_box { mws_sp<mws_tree_model_node> node_ref; mws_rect bounding_box; uint32_t child_list_idx; };
 
    mws_tree() {}
-   void setup() override;
+   virtual void setup() override;
    void draw_tree_elem(mws_sp<mws_camera> i_g, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level, uint32_t& i_elem_idx);
    void calc_bounding_box_list(const mws_sp<mws_font>& i_fnt, const mws_sp<mws_tree_model_node> i_node, uint32_t i_level);
 

@@ -256,7 +256,35 @@ void mws_stack_page_nav::pop()
    set_current(active_page);
 }
 
-void mws_stack_page_nav::push(std::string i_page_id)
+void mws_stack_page_nav::unwind_to(const std::string& i_page_id)
+{
+   std::string active_page;
+
+   while (!page_stack.empty())
+   {
+      if (page_stack.top() == i_page_id)
+      {
+         break;
+      }
+      else
+      {
+         page_stack.pop();
+      }
+   }
+
+   if (page_stack.empty())
+   {
+      active_page = get_main_page_id();
+   }
+   else
+   {
+      active_page = page_stack.top();
+   }
+
+   set_current(active_page);
+}
+
+void mws_stack_page_nav::push(const std::string& i_page_id)
 {
    page_stack.push(i_page_id);
    set_current(i_page_id);
@@ -364,7 +392,7 @@ void mws_label::update_state()
    {
       auto& tf = get_global_tf_mx();
       auto& pos_v4 = gfx_util::get_pos_from_tf_mx(tf);
-      glm::vec2 pos(pos_v4.x - mws_r.w / 2, pos_v4.y);
+      glm::vec2 pos(pos_v4.x/* - mws_r.w / 2*/, pos_v4.y);
       auto root_ref = get_mws_root();
       auto text_ref = root_ref->get_text_vxo();
 
@@ -372,7 +400,7 @@ void mws_label::update_state()
    }
 }
 
-void mws_label::set_text(std::string i_text)
+void mws_label::set_text(const std::string& i_text)
 {
    text = i_text;
 }
@@ -1103,7 +1131,7 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
                   }
                   else
                   {
-                     on_click_handler(nbb.node_ref);
+                     on_click_handler(nbb.node_ref, nbb.child_list_idx);
                   }
                }
 
