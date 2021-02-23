@@ -630,20 +630,10 @@ void mws_button::update_state()
    }
 }
 
-const std::string& mws_button::get_text() const
-{
-   return text;
-}
-
-void mws_button::set_text(std::string i_text)
-{
-   text = i_text;
-}
-
-const gfx_color& mws_button::get_bg_color() const
-{
-   return color;
-}
+const std::string& mws_button::get_text() const { return text; }
+void mws_button::set_text(std::string i_text) { text = i_text; }
+gfx_color mws_button::default_bg_color() const { return gfx_color(0x33, 0x33, 0x33); }
+const gfx_color& mws_button::get_bg_color() const { return color; }
 
 void mws_button::set_bg_color(const gfx_color& i_color)
 {

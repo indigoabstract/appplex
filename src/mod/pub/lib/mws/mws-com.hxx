@@ -158,6 +158,7 @@ public:
    virtual const std::string& get_text() const;
    virtual void set_text(std::string i_text);
    virtual void set_text_visible(bool i_visible) { text_visible = i_visible; }
+   virtual gfx_color default_bg_color() const;
    virtual const gfx_color& get_bg_color() const;
    virtual void set_bg_color(const gfx_color& i_color);
    virtual void set_bg_visible(bool i_visible);
