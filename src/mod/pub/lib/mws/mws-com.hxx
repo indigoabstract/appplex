@@ -339,6 +339,8 @@ protected:
    float margin = 10.f;
    uint32_t selected_idx_v = mws_u32_max;
    std::vector<node_bounding_box> bounding_box_list;
+   node_bounding_box* crt_selected_nbb = nullptr;
+   node_bounding_box* last_selected_nbb = nullptr;
    double_tap_detector dbl_tap_det;
 };
 

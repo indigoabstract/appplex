@@ -1255,6 +1255,7 @@ mws_sp<mws_tree_model_node> mws_tree_model::get_root_node()
 void mws_tree::setup()
 {
    mws_page_item::setup();
+   dbl_tap_det.set_double_tap_max_pointer_distance(mws_cm(5.f));
 }
 
 mws_sp<mws_tree> mws_tree::nwi()
@@ -1278,47 +1279,55 @@ void mws_tree::receive(mws_sp<mws_dp> i_dp)
       {
          mws_sp<mws_ptr_evt> ts = mws_ptr_evt::as_pointer_evt(i_dp);
          bool dbl_tap_detected = dbl_tap_det.detect_helper(ts);
-         glm::vec2 press_pos(0.f);
+         glm::vec2 press_pos = mws_ptr_evt::get_pos(ts->points[0]);
          bool selected = true;
 
          if (ts->type == mws_ptr_evt::touch_began)
          {
-            press_pos = mws_ptr_evt::get_pos(ts->points[0]); selected = false;
+            selected = false;
          }
 
-         if (dbl_tap_detected)
+         if (ts->type == mws_ptr_evt::touch_began || ts->type == mws_ptr_evt::touch_ended)
          {
-            press_pos = dbl_tap_det.get_avg_press_pos(); selected = false;
-         }
-
-         for (uint32_t k = 0, size = bounding_box_list.size(); k < size; k++)
-         {
-            node_bounding_box& nbb = bounding_box_list[k];
-            mws_rect& bbx = nbb.bounding_box;
-
-            if (is_inside_box(press_pos.x, press_pos.y, bbx.x, bbx.y, bbx.w, bbx.h))
+            for (uint32_t k = 0, size = bounding_box_list.size(); k < size; k++)
             {
-               if (dbl_tap_detected)
+               node_bounding_box& nbb = bounding_box_list[k];
+               mws_rect& bbx = nbb.bounding_box;
+
+               if (is_inside_box(press_pos.x, press_pos.y, bbx.x, bbx.y, bbx.w, bbx.h))
                {
-                  if (on_click)
+                  if (ts->type == mws_ptr_evt::touch_began)
                   {
-                     on_click(nbb.node_ref, nbb.child_list_idx);
+                     last_selected_nbb = crt_selected_nbb;
+                     crt_selected_nbb = &nbb;
                   }
-                  else
+
+                  if (dbl_tap_detected)
                   {
-                     on_click_handler(nbb.node_ref, nbb.child_list_idx);
+                     if (crt_selected_nbb == last_selected_nbb)
+                     {
+                        if (on_click)
+                        {
+                           on_click(nbb.node_ref, nbb.child_list_idx);
+                        }
+                        else
+                        {
+                           on_click_handler(nbb.node_ref, nbb.child_list_idx);
+                        }
+                     }
                   }
+
+                  selected = true;
+                  selected_idx_v = k;
+                  break;
                }
-
-               selected = true;
-               selected_idx_v = k;
-               break;
             }
-         }
 
-         if (!selected)
-         {
-            selected_idx_v = mws_u32_max;
+            if (!selected)
+            {
+               selected_idx_v = mws_u32_max;
+               crt_selected_nbb = last_selected_nbb = nullptr;
+            }
          }
       }
       else if (i_dp->is_type(mws_evt_model_update))
