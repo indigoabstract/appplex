@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ network-service-discovery ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ kxmdb ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, demo-fx, exercise, kappaxx ],
 	],
 ],
@@ -46,7 +46,7 @@ mod
 			gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, png, res-ld, util, vector-fonts, vrn
 		]
 	],
-	kxmdb[ uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, network-service-discovery, png, res-ld, util, vector-fonts, vrn, websocket-msg ] ],
+	kxmdb[ uses[ base85, cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, network-service-discovery, png, res-ld, util, vector-fonts, vrn, websocket-msg ] ],
 	mws-lisp
 	[
 		uses[ cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mx-lisp, mws, mws-vkb, res-ld, util, vector-fonts, vrn ],
@@ -90,6 +90,7 @@ mod
 
 	@@[ lib ],
 	
+	base85[],
 	cxxopts[ uses[], platf[ windows, linux ], ],
 	ffmpeg,
 	fmod,
