@@ -639,6 +639,8 @@ mws_path::mws_path(const std::string& i_path)
 }
 
 mws_path::mws_path(const mws_path& i_path) : path(i_path.string()) {}
+bool mws_path::operator==(const mws_path& i_path) const { return this->string() == i_path.string(); }
+bool mws_path::operator!=(const mws_path& i_path) const { return !(*this == i_path); }
 
 mws_path& mws_path::operator/=(const mws_path& i_path)
 {

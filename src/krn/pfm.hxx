@@ -64,6 +64,8 @@ public:
    mws_path(const char* i_path);
    mws_path(const std::string& i_path);
    mws_path(const mws_path& i_path);
+   bool operator==(const mws_path& i_path) const;
+   bool operator!=(const mws_path& i_path) const;
    mws_path& operator/=(const mws_path& i_path);
    // removes a file or directory. returns true on success
    bool remove() const;
