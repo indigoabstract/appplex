@@ -36,12 +36,9 @@ private:
 };
 
 
-// returns true is pointer i_w was initialized(it can be either valid or expired)
-// returns false otherwise(if it's an empty weak_ptr)
-template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w)
-{
-   return i_w.owner_before(mws_wp<T>{}) || mws_wp<T>{}.owner_before(i_w);
-}
+/** returns true is pointer i_w was initialized(it can be either valid or expired)
+returns false otherwise(if it's an empty weak_ptr) */
+template <class T> bool is_valid_or_expired(const mws_wp<T>& i_w) { return i_w.owner_before(mws_wp<T>{}) || mws_wp<T>{}.owner_before(i_w); }
 
 
 inline std::string mws_to_str(const bool& i_input) { return (i_input) ? "true" : "false"; }
@@ -58,8 +55,10 @@ inline std::string mws_to_str(const uint64_t& i_input) { return std::to_string(i
 inline std::string mws_to_str(const float32& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const float64& i_input) { return std::to_string(i_input); }
 inline std::string mws_to_str(const char* i_input) { return i_input; }
+
+
 /** parses input string(first param) as a number and stores the result in the second param. returns false on error */
-template<typename T> bool mws_to(const std::string& /*i_input*/, T& /*i_result*/) { mws_assert(false); return false; }
+template<typename T> bool mws_to(const std::string& /*i_input*/, T& /*i_result*/) { static_assert(false); return false; }
 template<> bool mws_to(const std::string& i_input, bool& i_result);
 template<> bool mws_to(const std::string& i_input, std::byte& i_result);
 template<> bool mws_to(const std::string& i_input, char& i_result);
