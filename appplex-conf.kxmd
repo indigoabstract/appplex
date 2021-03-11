@@ -10,7 +10,7 @@ default
 	],
 	start
 	[
-		mod-list[ kxmdb ], exclusive [ true ], launch-mod [ true ],
+		mod-list[ kxmd-parser ], exclusive [ true ], launch-mod [ true ],
 		excluded-mod-list[ cmd, demo-fx, exercise, kappaxx ],
 	],
 ],
@@ -56,6 +56,7 @@ mod
 	songbook[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kxmd, mws, vector-fonts ], ],
 	house[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, mws, png, res-ld, util, vector-fonts, vrn ] ],
 	cmd-exe[ uses[ gfx, fonts, fmt, freetype, freetype-gl, input, kawase-bloom, kxmd, mws, mws-vkb, res-ld, vector-fonts, vrn ] ],
+	kxmd-parser[ uses[ base85, cmd-exe, gfx, fonts, fmt, freetype, freetype-gl, input, mws, util, vector-fonts ] ],
 
 	@@[ npw ],
 	

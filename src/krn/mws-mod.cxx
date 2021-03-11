@@ -63,71 +63,12 @@ public:
       return res_files_map;
    }
 
-   std::vector<std::byte> load_as_byte_vect(mws_sp<mws_file> i_file) const
-   {
-      std::vector<std::byte> res;
-
-      if (i_file->io.open())
-      {
-         uint32_t size = static_cast<uint32_t>(i_file->length());
-
-         res.resize(size);
-         i_file->io.read(res.data(), size);
-         i_file->io.close();
-      }
-
-      // copy elision
-      return res;
-   }
-
-   std::vector<std::byte> load_as_byte_vect(const mws_path& i_file_path) const
-   {
-      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
-
-      return load_as_byte_vect(fs);
-   }
-
-   mws_sp<std::vector<std::byte>> load_as_sp_byte_vect(const mws_path& i_file_path) const
-   {
-      mws_sp<std::vector<std::byte>> res;
-      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
-
-      if (fs->io.open())
-      {
-         uint32_t size = static_cast<uint32_t>(fs->length());
-
-         res = std::make_shared<std::vector<std::byte>>(size);
-         fs->io.read(res->data(), size);
-         fs->io.close();
-      }
-
-      return res;
-   }
-
-   std::string load_as_string(mws_sp<mws_file> i_file) const
-   {
-      std::string text;
-
-      if (i_file->io.open("rt"))
-      {
-         uint32_t size = static_cast<uint32_t>(i_file->length());
-         std::vector<std::byte> res(size);
-         int text_size = i_file->io.read(res.data(), size);
-
-         i_file->io.close();
-         text = std::string(reinterpret_cast<const char*>(res.data()), text_size);
-      }
-
-      // copy elision
-      return text;
-   }
-
-   std::string load_as_string(const mws_path& i_file_path) const
-   {
-      mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
-
-      return load_as_string(fs);
-   }
+   std::vector<std::byte> load_as_byte_vect(const mws_path& i_file_path) const { return mws::res::load_as_byte_vect(i_file_path); }
+   std::vector<std::byte> load_as_byte_vect(mws_sp<mws_file> i_file) const { return mws::res::load_as_byte_vect(i_file); }
+   mws_sp<std::vector<std::byte>> load_as_sp_byte_vect(const mws_path& i_file_path) const { return mws::res::load_as_byte_vect_shr(i_file_path); }
+   mws_sp<std::vector<std::byte>> load_as_sp_byte_vect(mws_sp<mws_file> i_file) const { return mws::res::load_as_byte_vect_shr(i_file); }
+   std::string load_as_string(const mws_path& i_file_path, bool i_open_as_binary = false) const { return mws::res::load_as_string(i_file_path, i_open_as_binary); }
+   std::string load_as_string(mws_sp<mws_file> i_file, bool i_open_as_binary = false) const { return mws::res::load_as_string(i_file, i_open_as_binary); }
 
    void setup_video_encoding([[maybe_unused]] uint32_t i_video_width, [[maybe_unused]] uint32_t i_video_height)
    {

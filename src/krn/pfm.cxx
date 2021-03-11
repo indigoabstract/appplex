@@ -1259,6 +1259,81 @@ bool mws::net::is_wifi_multicast_lock_enabled() { return mws_app_inst()->is_wifi
 void mws::net::set_wifi_multicast_lock_enabled(bool i_enabled) { mws_app_inst()->set_wifi_multicast_lock_enabled(i_enabled); }
 
 
+// res
+std::vector<std::byte> mws::res::load_as_byte_vect(const mws_path& i_file_path)
+{
+   mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+   return load_as_byte_vect(fs);
+}
+
+std::vector<std::byte> mws::res::load_as_byte_vect(mws_sp<mws_file> i_file)
+{
+   std::vector<std::byte> res;
+
+   if (i_file->io.open())
+   {
+      uint32_t size = static_cast<uint32_t>(i_file->length());
+
+      res.resize(size);
+      i_file->io.read(res.data(), size);
+      i_file->io.close();
+   }
+
+   // copy elision
+   return res;
+}
+
+mws_sp<std::vector<std::byte>> mws::res::load_as_byte_vect_shr(const mws_path& i_file_path)
+{
+   mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+   return load_as_byte_vect_shr(fs);
+}
+
+mws_sp<std::vector<std::byte>> mws::res::load_as_byte_vect_shr(mws_sp<mws_file> i_file)
+{
+   mws_sp<std::vector<std::byte>> res;
+
+   if (i_file->io.open())
+   {
+      uint32_t size = static_cast<uint32_t>(i_file->length());
+
+      res = std::make_shared<std::vector<std::byte>>(size);
+      i_file->io.read(res->data(), size);
+      i_file->io.close();
+   }
+
+   return res;
+}
+
+std::string mws::res::load_as_string(const mws_path& i_file_path, bool i_open_as_binary)
+{
+   mws_sp<mws_file> fs = mws_file::get_inst(i_file_path);
+
+   return load_as_string(fs, i_open_as_binary);
+}
+
+std::string mws::res::load_as_string(mws_sp<mws_file> i_file, bool i_open_as_binary)
+{
+   const char* open_mode = (i_open_as_binary) ? "rb" : "rt";
+   std::string text;
+
+   if (i_file->io.open(open_mode))
+   {
+      uint32_t size = static_cast<uint32_t>(i_file->length());
+      text = std::string(size, 0);
+      int text_size = i_file->io.read(reinterpret_cast<std::byte*>(text.data()), size);
+      text.resize(text_size);
+
+      i_file->io.close();
+   }
+
+   // copy elision
+   return text;
+}
+
+
 // screen
 bool mws::screen::is_gfx_available() { return mws_mod_ctrl::is_gfx_available(); }
 int mws::screen::get_target_fps() { return 30; }

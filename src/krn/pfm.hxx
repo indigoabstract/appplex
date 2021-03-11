@@ -286,6 +286,17 @@ public:
    };
 
 
+   struct res
+   {
+      static std::vector<std::byte> load_as_byte_vect(const mws_path& i_file_path);
+      static std::vector<std::byte> load_as_byte_vect(mws_sp<mws_file> i_file);
+      static mws_sp<std::vector<std::byte>> load_as_byte_vect_shr(const mws_path& i_file_path);
+      static mws_sp<std::vector<std::byte>> load_as_byte_vect_shr(mws_sp<mws_file> i_file);
+      static std::string load_as_string(const mws_path& i_file_path, bool i_open_as_binary = false);
+      static std::string load_as_string(mws_sp<mws_file> i_file, bool i_open_as_binary = false);
+   };
+
+
    struct screen
    {
       static bool is_gfx_available();
@@ -479,6 +490,8 @@ protected:
 #define wtrn() mws::output::write_text_nl("")
 std::string mws_to_str_fmt(const char* i_format, ...);
 
+inline void trx(const std::string& i_msg) { mws::output::write_text_nl(i_msg.c_str()); }
+
 template <typename... argst> void trx(const char* i_format, const argst& ... i_args)
 {
    std::string s = fmt::format(i_format, i_args...);
@@ -490,6 +503,8 @@ template <typename... argst> void wtrx(const wchar_t* i_format, const argst& ...
    std::wstring s = fmt::format(i_format, i_args...);
    mws::output::write_text_nl(s.c_str());
 }
+
+inline void trc(const std::string& i_msg) { mws::output::write_text(i_msg.c_str()); }
 
 template <typename... argst> void trc(const char* i_format, const argst& ... i_args)
 {

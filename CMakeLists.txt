@@ -365,7 +365,7 @@ else() # Assume iOS
 	#   PUBLIC ${PROJECT_SOURCE_DIR}/framework/include
 	# )
 
-	# Build the C++ dynamically linked framework
+	# Build the cxx dynamically linked framework
 	#add_subdirectory(cppframework)
 	#add_dependencies(${APP_NAME} ${FRAMEWORK_NAME})
 
